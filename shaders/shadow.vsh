@@ -30,6 +30,7 @@ void main(){
 	gl_Position.xyz = distort(gl_Position.xyz);
 
     #ifndef RENDER_FOLIAGE_SHD
-        if(mc_Entity.x == 10000.0) gl_Position = vec4(10.0);
+        if(mc_Entity.x == 10001.0 || mc_Entity.x == 10002.0 || mc_Entity.x == 10003.0 || mc_Entity.x == 10004.0 || mc_Entity.x == 10007.0 || mc_Entity.x == 10011.0 || mc_Entity.x == 10013.0)
+            gl_Position = vec4(10.0);
     #endif
 }

@@ -66,7 +66,7 @@ vec3 getNormal(vec2 st){
 
 // Linear noise texture
 vec4 getRandTex(vec2 st, int tile){
-	return texture2D(noisetex, st * tile + 0.5);
+	return texture2D(noisetex, st * tile);
 }
 
 // Get random vec
