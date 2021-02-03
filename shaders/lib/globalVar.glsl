@@ -64,6 +64,7 @@ uniform float twilight;
 uniform float phase;
 
 uniform float far;
+uniform float near;
 
 // Position uniforms
 uniform vec3 cameraPosition;

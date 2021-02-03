@@ -27,6 +27,10 @@ vec3 getFog(positionVectors posVec, vec3 color, vec3 fogCol){
         fogNear = max(far - fogNear, 0.0) * (1.0 - skyMask) + 128.0 * skyMask;
         fogFar = max(far - fogFar, 0.0) * (1.0 - skyMask) + 160.0 * skyMask;
     #endif
+    if(isEyeInWater >= 1){
+        fogNear = near * 0.72;
+        fogFar = far * 0.72;
+    }
 
     float fogAmount = smoothstep(fogNear, fogFar, viewPosLength);
     float mistFog = atmoFog(posVec, viewPosLength);

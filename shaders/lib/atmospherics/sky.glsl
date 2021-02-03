@@ -37,6 +37,10 @@ vec3 getSkyRender(positionVectors posVec, vec3 skyCol, vec3 lightCol){
 
         float newSkyData = max(star, sunMoon);
 
+        if(isEyeInWater >= 1){
+            skyCol = fogColor * 0.9;
+        }
+
         vec3 fogCol = skyCol * (0.5 * (1.0 - voidGradient) + voidGradient) * 0.75;
 
         return mix(mix(mix(fogCol, skyCol, skyFogGradient), lightCol + cubed(lightRange) * 0.25, lightRange), lightCol + newSkyData, newSkyData);
