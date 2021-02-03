@@ -6,6 +6,8 @@
 
 #include "/lib/frameBuffer.glsl"
 
+#include "/lib/transform/wave.glsl"
+
 attribute vec2 mc_midTexCoord;
 
 attribute vec4 mc_Entity;
@@ -46,21 +48,11 @@ void main(){
 
 	TBN = mat3(tangent, binormal, norm);
 
-	float weight = 0.128;
-	if(mc_Entity.x == 10003.0)
-		weight *= float(texcoord.y < mc_midTexCoord.y) + 1.0;
-	
-	if(mc_Entity.x == 10001.0 || mc_Entity.x == 10002.0 || mc_Entity.x == 10004.0)
-		weight *= float(texcoord.y < mc_midTexCoord.y);
+	vertexPos = gbufferModelViewInverse * vertexPos;
 
-	float windRand = sin(worldPos.x + worldPos.z * 2.0 + frameTimeCounter * 1.28) * weight;
+	getWave(vertexPos.xyz, vertexPos.xyz + cameraPosition, texcoord, mc_midTexCoord, mc_Entity.x);
 
-	if(mc_Entity.x == 10001.0 || mc_Entity.x == 10002.0 || mc_Entity.x == 10003.0 || mc_Entity.x == 10004.0 || mc_Entity.x == 10012.0)
-		vertexPos.x += windRand;
-	else if(mc_Entity.x == 10013.0)
-		vertexPos.x += windRand * 0.32;
-
-	gl_Position = gl_ProjectionMatrix * vertexPos;
+	gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
 
 	glcolor = gl_Color;
 }

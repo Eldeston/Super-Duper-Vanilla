@@ -52,7 +52,10 @@ const bool shadowHardwareFiltering = true;
 
 const int shadowMapResolution = 1024; // Shadow map resolution [512 1024 1536 2048 2560 3072 3584 4096 4608 5120]
 // Shadow noise tile
-const int shdNoiseTile = 64;
+const int shdNoiseTile = 128;
+
+// Lm noise tile
+const int lmNoiseTile = 16;
 
 // Shadow bias
 const float shdBias = 0.02; // Don't go below it otherwise it'll mess up lighting
@@ -84,9 +87,13 @@ uniform vec3 skyColor;
 // Matrix uniforms
 uniform mat4 gbufferModelView;
 uniform mat4 gbufferModelViewInverse;
+uniform mat4 gbufferProjection;
 uniform mat4 gbufferProjectionInverse;
+
 uniform mat4 shadowModelView;
+uniform mat4 shadowModelViewInverse;
 uniform mat4 shadowProjection;
+uniform mat4 shadowProjectionInverse;
 
 float newDawnDusk = smoothstep(0.32, 0.96, dawnDusk);
 float newTwilight = smoothstep(0.64, 0.96, twilight);

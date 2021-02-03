@@ -6,6 +6,10 @@
 
 #include "/lib/frameBuffer.glsl"
 
+#include "/lib/transform/wave.glsl"
+
+attribute vec2 mc_midTexCoord;
+
 attribute vec4 mc_Entity;
 attribute vec4 at_tangent;
 
@@ -24,9 +28,8 @@ OUT mat3 TBN;
 OUT mat3 lmTBN;
 
 void main(){
-
-	gl_Position = ftransform();
-	viewPos = mat3(gbufferModelViewInverse) * (gl_ModelViewMatrix * gl_Vertex).xyz;
+	vec4 vertexPos = gl_ModelViewMatrix * gl_Vertex;
+	viewPos = mat3(gbufferModelViewInverse) * vertexPos.xyz;
 	vec4 clipPos = gl_ProjectionMatrix * vec4(viewPos, 1.0);
 	screenPos = clipPos.xyz / clipPos.w;
 
@@ -45,5 +48,12 @@ void main(){
 
 	TBN = mat3(tangent, binormal, norm);
 
+	vertexPos = gbufferModelViewInverse * vertexPos;
+
+	getWave(vertexPos.xyz, vertexPos.xyz + cameraPosition, texcoord, mc_midTexCoord, mc_Entity.x);
+
+	gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
+
 	glcolor = gl_Color;
+	//glcolor.rgb = vec3(windRand);
 }

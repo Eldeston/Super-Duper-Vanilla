@@ -29,13 +29,13 @@ void main(){
 	vec2 randVec = getRandVec(screenPos.xy, lmNoiseTile);
 	vec2 nLmCoord = lmcoord;
 
+	vec4 color = texture2D(texture, texcoord);
+
 	vec3 normal = mat3(gbufferModelViewInverse) * norm;
 
 	#ifdef LIGHTMAP_NOISE
 		nLmCoord = saturate(nLmCoord + randVec * LIGHTMAP_NOISE_INTENSITY);
 	#endif
-
-	vec4 color = texture2D(texture, texcoord);
 
 	float maxCol = maxC(color.rgb); float satCol = rgb2hsv(color).y;
 

@@ -32,9 +32,6 @@ const int noiseTextureResolution = 256;
 // Noise sample(blueNoise3)
 uniform sampler2D noisetex;
 
-// Lm noise tile
-const int lmNoiseTile = 8;
-
 // Filter by iq
 vec4 tex2DFilter(sampler2D image, vec2 st, vec2 texRes){
     vec2 uv = st * texRes + 0.5;
