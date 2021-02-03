@@ -27,7 +27,7 @@ IN mat3 TBN;
 
 void main(){
 	vec2 randVec = getRandVec(screenPos.xy, lmNoiseTile);
-	vec2 nLmCoord = lmcoord;
+	vec2 nLmCoord = squared(lmcoord);
 
 	vec3 normal = mat3(gbufferModelViewInverse) * norm;
 
@@ -39,8 +39,8 @@ void main(){
 
 	float maxCol = maxC(color.rgb); float satCol = rgb2hsv(color).y;
 
-	float specularMap = entity.x == 10008.0 || entity.x == 10009.0 || entity.x == 10010.0 || entity.x == 10015.0 ? min((maxCol + 0.1) * 2.5, 1.0) : 0.0;
-	float ss = entity.x == 10001.0 || entity.x == 10002.0 || entity.x == 10003.0 || entity.x == 10004.0 || entity.x == 10007.0 || entity.x == 10011.0 || entity.x == 10013.0 ? sqrt(maxCol) * 0.8 : 0.0;
+	float specularMap = (entity.x >= 10008.0 && entity.x <= 10010.0) || entity.x == 10015.0 ? min((maxCol + 0.125) * 2.5, 1.0) : 0.0;
+	float ss = (entity.x >= 10001.0 && entity.x <= 10004.0) || entity.x == 10007.0 || entity.x == 10011.0 || entity.x == 10013.0 ? sqrt(maxCol) * 0.8 : 0.0;
 	float emissive = entity.x == 10005.0 || entity.x == 10006.0 ? maxCol
 		: entity.x == 10014.0 ? satCol : 0.0;
 	float alpha = color.a * 0.64;
@@ -57,7 +57,7 @@ void main(){
 
 		normal = normalize(vec3(dx, WATER_DEPTH_SIZE, dy));
 		// Multiply brightness to make fake absorbtion
-		color.rgb *= mix(0.6, 0.06, smootherstep(d));
+		color.rgb *= mix(0.5, 0.05, smootherstep(d));
 		color.a = mix(color.a, 1.0, saturate(length(viewPos) / 48.0));
 	}
 

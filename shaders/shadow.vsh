@@ -20,7 +20,7 @@ void main(){
 
     texcoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
     
-    getWave(vertexPos.xyz, vertexPos.xyz, texcoord, mc_midTexCoord, mc_Entity.x);
+    getWave(vertexPos.xyz, vertexPos.xyz + cameraPosition, texcoord, mc_midTexCoord, mc_Entity.x);
 
 	gl_Position = shadowProjection * (shadowModelView * vertexPos);
 

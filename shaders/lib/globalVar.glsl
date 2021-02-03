@@ -1,14 +1,3 @@
-#ifdef NETHER
-    #define BLOCK_LIGHT_COL LIGHT_COL0
-    #define BLOCK_AMBIENT WORLD_AMBIENT0
-#elif defined END
-    #define BLOCK_LIGHT_COL LIGHT_COL2
-    #define BLOCK_AMBIENT WORLD_AMBIENT2
-#else
-    #define BLOCK_LIGHT_COL LIGHT_COL1
-    #define BLOCK_AMBIENT WORLD_AMBIENT1
-#endif
-
 #define PI 3.14159265359
 #define PI2 6.28318530718
 

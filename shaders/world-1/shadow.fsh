@@ -6,7 +6,6 @@ uniform sampler2D tex;
 
 IN vec2 texcoord;
 IN vec4 color;
-IN float getTransparent;
 
 void main(){
     vec4 shdColor = texture2D(tex, texcoord) * color;

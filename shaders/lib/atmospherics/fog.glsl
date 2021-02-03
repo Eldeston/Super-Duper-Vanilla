@@ -2,9 +2,9 @@ float atmoFog(positionVectors posVec, float viewPosLength){
     #ifdef NETHER
         float c = 0.16; float b = 0.08; float o = 0.4;
     #elif defined END
-        float c = 0.1; float b = 0.05; float o = 0.4;
+        float c = 0.1; float b = 0.05; float o = 0.5;
     #else
-        float c = 0.08; float b = 0.08; float o = 0.64;
+        float c = 0.081; float b = 0.081; float o = 0.63;
     #endif
     float fogAmount = c * exp(-posVec.viewPos.y * b) * (1.0 - exp(-viewPosLength * posVec.worldPos.y * b)) / posVec.worldPos.y;
     return saturate(fogAmount) * o;

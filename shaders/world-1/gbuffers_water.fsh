@@ -18,6 +18,7 @@ IN vec2 texcoord;
 IN vec3 screenPos;
 IN vec3 norm;
 IN vec3 viewPos;
+IN vec3 worldPos;
 
 IN vec4 glcolor;
 IN vec4 entity;
@@ -26,10 +27,8 @@ IN mat3 TBN;
 
 void main(){
 	vec2 randVec = getRandVec(screenPos.xy, lmNoiseTile);
-	vec2 nLmCoord = lmcoord;
+	vec2 nLmCoord = squared(lmcoord);
 
-	vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
-	vec3 worldPos = eyePlayerPos + cameraPosition;
 	vec3 normal = mat3(gbufferModelViewInverse) * norm;
 
 	#ifdef LIGHTMAP_NOISE
@@ -40,21 +39,21 @@ void main(){
 
 	float maxCol = maxC(color.rgb); float satCol = rgb2hsv(color).y;
 
-	float specularMap = entity.x == 10003.0 || entity.x == 10004.0 || entity.x == 10005.0 ? min((maxCol + 0.1) * 2.5, 1.0) : 0.0;
-	float ss = entity.x == 10000.0 ? sqrt(maxCol) * 0.8 : 0.0;
-	float emissive = entity.x == 10001.0 ? maxCol
-		: entity.x == 10002.0 ? satCol : 0.0;
+	float specularMap = (entity.x >= 10008.0 && entity.x <= 10010.0) || entity.x == 10015.0 ? min((maxCol + 0.125) * 2.5, 1.0) : 0.0;
+	float ss = (entity.x >= 10001.0 && entity.x <= 10004.0) || entity.x == 10007.0 || entity.x == 10011.0 || entity.x == 10013.0 ? sqrt(maxCol) * 0.8 : 0.0;
+	float emissive = entity.x == 10005.0 || entity.x == 10006.0 ? maxCol
+		: entity.x == 10014.0 ? satCol : 0.0;
 	float alpha = color.a * 0.64;
 
 	vec4 nGlcolor = glcolor * (1.0 - emissive) + sqrt(sqrt(glcolor)) * emissive;
 
-	if(entity.x == 10005.0){
+	if(entity.x == 10008.0){
 		vec2 waterUv = worldPos.xz / WATER_TILE_SIZE;
 		float d = getCellNoise(waterUv);
 
 		// Multiply brightness to make fake absorbtion
-		color.rgb *= mix(0.6, 0.06, smootherstep(d));
-		color.a = mix(color.a, 1.0, saturate(length(eyePlayerPos) / 36.0));
+		color.rgb *= mix(0.5, 0.05, smootherstep(d));
+		color.a = mix(color.a, 1.0, saturate(length(viewPos) / 48.0));
 	}
 
 	#ifndef WHITE_MODE

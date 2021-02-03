@@ -8,8 +8,6 @@
 
 uniform sampler2D texture;
 
-uniform mat4 gbufferProjection;
-
 IN vec2 texcoord;
 
 IN vec4 glcolor;

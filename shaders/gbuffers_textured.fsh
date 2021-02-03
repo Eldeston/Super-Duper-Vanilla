@@ -27,7 +27,7 @@ IN mat3 TBN;
 
 void main(){
 	vec2 randVec = getRandVec(screenPos.xy, lmNoiseTile);
-	vec2 nLmCoord = lmcoord;
+	vec2 nLmCoord = squared(lmcoord);
 
 	vec3 normal = mat3(gbufferModelViewInverse) * norm;
 
@@ -39,7 +39,7 @@ void main(){
 
 	float maxCol = maxC(color.rgb); float satCol = rgb2hsv(color).y;
 
-	float ss = entity.x == 10001.0 || entity.x == 10002.0 || entity.x == 10003.0 || entity.x == 10004.0 || entity.x == 10007.0 || entity.x == 10011.0 || entity.x == 10013.0 ? sqrt(maxCol) * 0.8 : 0.0;
+	float ss = (entity.x >= 10001.0 && entity.x <= 10004.0) || entity.x == 10007.0 || entity.x == 10011.0 || entity.x == 10013.0 ? sqrt(maxCol) * 0.8 : 0.0;
 	float emissive = entity.x == 10005.0 || entity.x == 10006.0 ? maxCol
 		: entity.x == 10014.0 ? satCol : 0.0;
 

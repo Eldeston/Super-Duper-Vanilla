@@ -18,6 +18,7 @@ IN vec2 texcoord;
 IN vec3 screenPos;
 IN vec3 norm;
 IN vec3 viewPos;
+IN vec3 worldPos;
 
 IN vec4 glcolor;
 IN vec4 entity;
@@ -26,25 +27,22 @@ IN mat3 TBN;
 
 void main(){
 	vec2 randVec = getRandVec(screenPos.xy, lmNoiseTile);
-	vec2 nLmCoord = lmcoord;
+	vec2 nLmCoord = squared(lmcoord);
 
-	vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
-	vec3 camPos = mat3(gbufferModelViewInverse) * cameraPosition;
-	vec3 worldPos = eyePlayerPos + cameraPosition;
+	vec4 color = texture2D(texture, texcoord);
+
 	vec3 normal = mat3(gbufferModelViewInverse) * norm;
 
 	#ifdef LIGHTMAP_NOISE
 		nLmCoord = saturate(nLmCoord + randVec * LIGHTMAP_NOISE_INTENSITY);
 	#endif
 
-	vec4 color = texture2D(texture, texcoord);
-
 	float maxCol = maxC(color.rgb); float satCol = rgb2hsv(color).y;
 
-	float specularMap = entity.x == 10003.0 || entity.x == 10004.0 || entity.x == 10005.0 ? min((maxCol + 0.1) * 2.5, 1.0) : 0.0;
-	float ss = entity.x == 10000.0 ? sqrt(maxCol) * 0.8 : 0.0;
-	float emissive = entity.x == 10001.0 ? maxCol
-		: entity.x == 10002.0 ? satCol : 0.0;
+	float specularMap = (entity.x >= 10008.0 && entity.x <= 10010.0) || entity.x == 10015.0 ? min((maxCol + 0.125) * 2.5, 1.0) : 0.0;
+	float ss = (entity.x >= 10001.0 && entity.x <= 10004.0) || entity.x == 10007.0 || entity.x == 10011.0 || entity.x == 10013.0 ? sqrt(maxCol) * 0.8 : 0.0;
+	float emissive = entity.x == 10005.0 || entity.x == 10006.0 ? maxCol
+		: entity.x == 10014.0 ? satCol : 0.0;
 
 	vec4 nGlcolor = glcolor * (1.0 - emissive) + sqrt(sqrt(glcolor)) * emissive;
 
@@ -58,8 +56,10 @@ void main(){
 		#endif
 	#endif
 
-	// Apply standard Minecraft light
-	color *= texture2D(lightmap, nLmCoord) * (1.0 - emissive) + emissive;
+	vec4 texLight = texture2D(lightmap, nLmCoord);
+
+	// Apply standard Minecraft lighting
+	color *= mix(vec4(0.128), vec4(1.0), texLight) * (1.0 - emissive) + emissive;
 
 /* DRAWBUFFERS:01245 */
 	gl_FragData[0] = color; // buffer0
