@@ -14,13 +14,17 @@ float genStar(vec2 nSkyPos){
 }
 
 vec3 getSkyRender(positionVectors posVec, vec3 skyCol, vec3 lightCol){
+    vec3 nViewPos = normalize(posVec.viewPos);
+    if(isEyeInWater >= 1){
+        float waterVoid = smoothstep(0.9 - eyeBrightFact, 1.2 - eyeBrightFact, nViewPos.y);
+        skyCol = mix(fogColor * 0.72, skyCol, waterVoid);
+    }
     #ifdef NETHER
         return fogColor;
     #elif defined END
         return fogColor;
     #else
-        vec3 nViewPos = normalize(posVec.viewPos);
-        vec3 nLightPos = normalize(posVec.lightPos);
+        float isSkyDepth = float(getDepth(posVec.st) == 1.0);
         vec3 nSkyPos = normalize(mat3(shadowProjection) * (mat3(shadowModelView) * posVec.viewPos));
         float skyFogGradient = smoothstep(-0.125, 0.125, nViewPos.y);
         float voidGradient = smoothstep(-0.4, 0.0, nViewPos.y);
@@ -35,11 +39,7 @@ vec3 getSkyRender(positionVectors posVec, vec3 skyCol, vec3 lightCol){
         vec2 starPos = 0.5 > abs(nSkyPos.y) ? vec2(atan(nSkyPos.x, nSkyPos.z), nSkyPos.y) * 0.25 : nSkyPos.xz * 0.333;
         float star = genStar(starPos * 0.128) * night * voidGradient;
 
-        float newSkyData = max(star, sunMoon);
-
-        if(isEyeInWater >= 1){
-            skyCol = fogColor * 0.9;
-        }
+        float newSkyData = max(star, sunMoon) * isSkyDepth;
 
         vec3 fogCol = skyCol * (0.5 * (1.0 - voidGradient) + voidGradient) * 0.75;
 

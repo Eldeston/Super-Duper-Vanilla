@@ -37,33 +37,23 @@ void main(){
 
 	vec4 color = texture2D(texture, texcoord);
 
-	float maxCol = maxC(color.rgb); float satCol = rgb2hsv(color).y;
-
-	float ss = (entity.x >= 10001.0 && entity.x <= 10004.0) || entity.x == 10007.0 || entity.x == 10011.0 || entity.x == 10013.0 ? sqrt(maxCol) * 0.8 : 0.0;
-	float emissive = entity.x == 10005.0 || entity.x == 10006.0 ? maxCol
-		: entity.x == 10014.0 ? satCol : 0.0;
-
-	vec4 nGlcolor = glcolor * (1.0 - emissive) + pow(glcolor, vec4(1.0 / 3.0)) * emissive;
-
-	float glSatCol = rgb2hsv(glcolor).y;
-
 	#ifndef WHITE_MODE
-		color *= nGlcolor;
+		color.rgb *= glcolor.rgb;
 	#else
 		#ifdef WHITE_MODE_F
-			color = color.aaaa * nGlcolor;
+			color.rgb = color.aaa * glcolor.rgb;
 		#else
-			color = color.aaaa;
+			color.rgb = color.aaa;
 		#endif
 	#endif
 
 	// Apply standard Minecraft light
-	color *= texture2D(lightmap, nLmCoord) * (1.0 - emissive) + emissive;
+	color.rgb *= texture2D(lightmap, nLmCoord).rgb;
 
 /* DRAWBUFFERS:01245 */
 	gl_FragData[0] = color; // buffer0
 	gl_FragData[1] = vec4(nLmCoord, 0.0, 1.0); // buffer1
 	gl_FragData[2] = vec4(0.5 + 0.5 * normal, 1.0); // buffer2
-	gl_FragData[3] = vec4(0.0, ss, emissive, 1.0); // buffer4
+	gl_FragData[3] = vec4(0.0, 0.5, 0.0, 1.0); // buffer4
 	gl_FragData[4] = vec4(1.0, 1.0, 0.0, 1.0); // buffer5
 }

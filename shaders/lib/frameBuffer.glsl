@@ -61,7 +61,7 @@ vec3 getNormal(vec2 st){
     return texture2D(colortex2, st).rgb * 2.0 - 1.0;
 }
 
-// Linear noise texture
+// Noise texture
 vec4 getRandTex(vec2 st, int tile){
 	return texture2D(noisetex, st * tile);
 }
@@ -76,4 +76,16 @@ float getCellNoise(vec2 st){
     float d0 = texture2D(noisetex, st + frameTimeCounter * 0.00675).z;
     float d1 = texture2D(noisetex, st * 4.0 - frameTimeCounter * 0.025).z;
     return d0 * 0.875 + d1 * 0.125;
+}
+
+// Convert height map of water to a normal map
+vec4 H2NWater(vec2 st){
+    float waterPixel = WATER_BLUR_SIZE / noiseTextureResolution;
+	vec2 waterUv = st / WATER_TILE_SIZE;
+
+	float d = getCellNoise(waterUv);
+	float dx = (d - getCellNoise(waterUv + vec2(waterPixel, 0.0))) / waterPixel;
+	float dy = (d - getCellNoise(waterUv + vec2(0.0, waterPixel))) / waterPixel;
+
+    return vec4(normalize(vec3(dx, dy, WATER_DEPTH_SIZE)), d);
 }

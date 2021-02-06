@@ -57,12 +57,12 @@ void main(){
 	}
 
 	#ifndef WHITE_MODE
-		color *= nGlcolor;
+		color.rgb *= glcolor.rgb;
 	#else
 		#ifdef WHITE_MODE_F
-			color = color.aaaa * nGlcolor;
+			color.rgb = color.aaa * glcolor.rgb;
 		#else
-			color = color.aaaa;
+			color.rgb = color.aaa;
 		#endif
 	#endif
 

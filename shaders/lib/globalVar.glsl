@@ -66,6 +66,8 @@ uniform float phase;
 uniform float far;
 uniform float near;
 
+uniform ivec2 eyeBrightnessSmooth;
+
 // Position uniforms
 uniform vec3 cameraPosition;
 uniform vec3 shadowLightPosition;
@@ -84,6 +86,8 @@ uniform mat4 shadowModelView;
 uniform mat4 shadowModelViewInverse;
 uniform mat4 shadowProjection;
 uniform mat4 shadowProjectionInverse;
+
+float eyeBrightFact = eyeBrightnessSmooth.y / 240.0;
 
 float newDawnDusk = smoothstep(0.32, 0.96, dawnDusk);
 float newTwilight = smoothstep(0.64, 0.96, twilight);

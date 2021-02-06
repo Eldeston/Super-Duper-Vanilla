@@ -43,22 +43,20 @@ void main(){
 	float ss = (entity.x >= 10001.0 && entity.x <= 10004.0) || entity.x == 10007.0 || entity.x == 10011.0 || entity.x == 10013.0 ? sqrt(maxCol) * 0.8 : 0.0;
 	float emissive = entity.x == 10005.0 || entity.x == 10006.0 ? maxCol
 		: entity.x == 10014.0 ? satCol : 0.0;
-	float alpha = color.a * 0.64;
+	float alpha = color.a >= 0.95 ? 1.0 : color.a * 0.64;
 
 	vec4 nGlcolor = glcolor * (1.0 - emissive) + sqrt(sqrt(glcolor)) * emissive;
 
 	if(entity.x == 10008.0){
-		float waterPixel = WATER_BLUR_SIZE / noiseTextureResolution;
-		vec2 waterUv = worldPos.xz / WATER_TILE_SIZE;
+		vec2 waterUv = worldPos.xz * (1.0 - normal.y) + worldPos.xz * normal.y;
+		vec4 waterData = H2NWater(waterUv);
 
-		float d = getCellNoise(waterUv);
-		float dx = (d - getCellNoise(waterUv + vec2(waterPixel, 0.0))) / waterPixel;
-		float dy = (d - getCellNoise(waterUv + vec2(0.0, waterPixel))) / waterPixel;
-
-		normal = normalize(vec3(dx, WATER_DEPTH_SIZE, dy));
+		vec3 waterNorm = TBN * waterData.xyz;
+		normal = mat3(gbufferModelViewInverse) * waterNorm;
+		
 		// Multiply brightness to make fake absorbtion
-		color.rgb *= mix(0.5, 0.05, smootherstep(d));
-		color.a = mix(color.a, 1.0, saturate(length(viewPos) / 48.0));
+		color.rgb *= mix(0.5, 0.05, smootherstep(waterData.w));
+		color.a = mix(color.a, 1.0, saturate(length(viewPos) / 32.0));
 	}
 
 	#ifndef WHITE_MODE

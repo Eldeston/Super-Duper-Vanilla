@@ -27,10 +27,14 @@ float getSpecular(vec3 norm, vec3 nViewPos, vec3 lightVec, float specularMap){
 	return spec;
 }
 
+float getAmbient(matPBR material, positionVectors posVec, vec2 lm){
+	return max((abs(material.normal_m.x) * 0.25 + material.normal_m.y * 0.25 + 0.75) * smootherstep(lm.y), 0.5);
+}
+
 // Shadow function
 vec3 getLighting(matPBR material, positionVectors posVec, vec2 lm){
 	// Get ambient
-	material.ambient_m *= max((abs(material.normal_m.x) + abs(material.normal_m.z) * 0.8 + material.normal_m.y) * smootherstep(lm.y), 0.6);
+	material.ambient_m *= getAmbient(material, posVec, lm);
 	vec3 ambient = BLOCK_AMBIENT * material.ambient_m;
 	// Get twilight amount
 	float newTwilight = hermiteMix(0.64, 0.96, twilight);
@@ -40,11 +44,7 @@ vec3 getLighting(matPBR material, positionVectors posVec, vec2 lm){
 	vec3 nLightPos = normalize(posVec.lightPos);
 	// Light vector
 	vec3 lightVec = normalize(posVec.lightPos - posVec.viewPos);
-
-	positionVectors reflectVec;
-	reflectVec.viewPos = reflect(posVec.viewPos, material.normal_m);
-	reflectVec.lightPos = posVec.lightPos;
-
+	
 	// Light diffuse
 	float lightDot = dot(material.normal_m, nLightPos) * (1.0 - material.ss_m) + material.ss_m;
 
@@ -96,15 +96,26 @@ vec3 getLighting(matPBR material, positionVectors posVec, vec2 lm){
 
 	float spec = getSpecular(material.normal_m, nViewPos, lightVec, material.specular_m) * sqrt(sqrt(shd0)) * (1.0 - newTwilight);
 
-	vec3 reflectCol = getSkyRender(reflectVec, skyCol, lightCol) * ambient * material.specular_m;
+	positionVectors reflectRefractVec;
+
+	if(isEyeInWater == 1)
+		reflectRefractVec.viewPos = refract(posVec.viewPos, material.normal_m, 1.0 / 1.52);
+	else
+		reflectRefractVec.viewPos = reflect(posVec.viewPos, material.normal_m);
+
+	vec3 reflectRefractCol = getSkyRender(reflectRefractVec, skyCol, lightCol) * ambient * material.specular_m;
 	float fresnel = getFresnel(material.normal_m, nViewPos, material.specular_m);
-	reflectCol = mix(vec3(spec), reflectCol, fresnel);
+	
+	if(isEyeInWater == 1)
+		reflectRefractCol = mix(reflectRefractCol, vec3(spec), fresnel);
+	else
+		reflectRefractCol = mix(vec3(spec), reflectRefractCol, fresnel);
 
 	float emissive = material.emissive_m;
 	float lightMap = min(lm.x * 1.2, 1.0);
 	vec3 diffuse = (shdCol * (1.0 - emissive) + squared(emissive)) * (1.0 - lightMap) + BLOCK_LIGHT_COL * lightMap;
 
-	return material.albedo_t * diffuse + reflectCol;
+	return material.albedo_t * diffuse + reflectRefractCol;
 }
 
 // Shadow function

@@ -1,3 +1,4 @@
+// Wave calculation function
 void getWave(inout vec3 vertexPos, in vec3 worldPos, in vec2 texCoord, in vec2 midTexCoord, in float id){
     float plantWeight = 0.128;
     float waterWeight = 0.072;

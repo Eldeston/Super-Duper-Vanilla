@@ -11,17 +11,17 @@
 // #define WHITE_MODE_F // Enable white mode with foliage colors (if WHITE_MODE is on)
 
 #define BLOOM // Enable bloom
-// #define FAST_BLOOM // Fast bloom using a 1 pass blur
+// #define FAST_BLOOM // Fast bloom with increased LOD, but uses a constant sample amount. May cause certain artifacts!
 #define BLOOM_BRIGHTNESS 0.6 // Bloom brghtness [0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
-#define BLOOM_AMOUNT 0.8 // Bloom amount, must not go below the threshold amount [0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
-#define BLOOM_THRESHOLD 0.6 // Bloom threshold, must not go above the bloom amount [0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9]
-#define BLOOM_SIZE 4.0 // Bloom size [1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0 10.0 11.0 12.0 13.0 14.0 15.0 16.0 17.0 18.0 19.0 20.0]
-#define BLOOM_SAMPLES 6 // Bloom blur samples, affects the quality of the blur [4 6 8 10 12 14 16 18 20 22 24]
+#define BLOOM_AMOUNT 0.8 // Bloom amount. Must not go below the threshold amount! [0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
+#define BLOOM_THRESHOLD 0.6 // Bloom threshold. Must not go above the bloom amount! [0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9]
+#define BLOOM_SIZE 8.0 // Bloom size, may need to increase sample amount as the size increases [4.0 5.0 6.0 7.0 8.0 9.0 10.0 11.0 12.0 13.0 14.0 15.0 16.0]
+#define BLOOM_SAMPLES 6 // Bloom blur samples, affects the quality of the blur. Does not affect if fast bloom is on! [8 10 12 14 16 18 20 22 24 26 28 30 32]
 
 #define UNDERWATER_BLUR // Enable underwater blur
-// #define FAST_UNDERWATER_BLUR // Fast underwater blur using a 1 pass blur
-#define UNDERWATER_BLUR_SIZE 4.0 // Underwater blur size [1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0 10.0 11.0 12.0 13.0 14.0 15.0 16.0 17.0 18.0 19.0 20.0]
-#define UNDERWATER_BLUR_SAMPLES 6 // Underwater blur samples, affects the quality of the blur [4 6 8 10 12 14 16 18 20 22 24]
+// #define FAST_UNDERWATER_BLUR // Fast underwater blur with increased LOD, but uses a constant sample amount. May cause certain artifacts!
+#define UNDERWATER_BLUR_SIZE 8.0 // Underwater blur size, may need to increase sample amount as the size increases [4.0 5.0 6.0 7.0 8.0 9.0 10.0 11.0 12.0 13.0 14.0 15.0 16.0]
+#define UNDERWATER_BLUR_SAMPLES 6 // Underwater blur samples, affects the quality of the blur. Does not affect if fast underwater blur is on! [8 10 12 14 16 18 20 22 24 26 28 30 32]
 
 #define LIGHTMAP_NOISE // Enable noise on lightmaps
 
