@@ -1,5 +1,7 @@
 #version 120
 
+/* Blur and bloom goes here */
+
 #include "/lib/settings.glsl"
 #include "/lib/globalVar.glsl"
 #include "/lib/util.glsl"
@@ -22,7 +24,7 @@ void main(){
 	#endif
 /* DRAWBUFFERS:03 */
 	gl_FragData[0] = vec4(albedo, 1.0); //gcolor
-	gl_FragData[1] = vec4(albedo * smoothstep(BLOOM_THRESHOLD, BLOOM_AMOUNT, A_Saturation(albedo, 0.0).r), 1.0); // colortex3
+	gl_FragData[1] = vec4(albedo * hermiteMix(BLOOM_THRESHOLD, BLOOM_AMOUNT, A_Saturation(albedo, 0.0).r), 1.0); // colortex3
 
 	#ifdef AUTO_EXPOSURE
 	/* DRAWBUFFERS:036 */
