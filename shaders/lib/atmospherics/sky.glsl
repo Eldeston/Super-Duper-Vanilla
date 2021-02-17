@@ -16,7 +16,7 @@ float genStar(vec2 nSkyPos){
 vec3 getSkyRender(positionVectors posVec, vec3 skyCol, vec3 lightCol){
     vec3 nViewPos = normalize(posVec.viewPos);
     if(isEyeInWater >= 1){
-        float waterVoid = smoothstep(0.9 - eyeBrightFact, 1.2 - eyeBrightFact, nViewPos.y);
+        float waterVoid = smootherstep(nViewPos.y + (eyeBrightFact - 0.56));
         skyCol = mix(fogColor * 0.72, skyCol, waterVoid);
     }
     #ifdef NETHER

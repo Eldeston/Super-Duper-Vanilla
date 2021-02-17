@@ -4,7 +4,7 @@ float atmoFog(positionVectors posVec, float viewPosLength){
     #elif defined END
         float c = 0.1; float b = 0.05; float o = 0.5;
     #else
-        float c = 0.081; float b = 0.081; float o = 0.63;
+        float c = 0.081; float b = 0.072; float o = 0.63;
     #endif
     if(isEyeInWater >= 1){
         c *= 1.44; b *= 1.44; o *= 1.24;
@@ -15,21 +15,21 @@ float atmoFog(positionVectors posVec, float viewPosLength){
 
 float getFogAmount(positionVectors posVec, float viewPosLength){
     vec3 nViewPos = normalize(posVec.viewPos);
-    float waterVoid = smoothstep(0.9 - eyeBrightFact, 1.2 - eyeBrightFact, nViewPos.y);
+    float waterVoid = smootherstep(nViewPos.y + (eyeBrightFact - 0.6));
     float isSkyDepth = float(getDepth(posVec.st) == 1.0);
     float skyMask = max(getSkyMask(posVec.st) - isSkyDepth, 0.0);
     #ifdef NETHER
-        float fogNear = 64.0; float fogFar = 16.0;
-        fogNear = max(far - fogNear, 0.0);
+        float fogFar = 32.0;
         fogFar = max(far - fogFar, 0.0);
+        float fogNear = fogFar * 0.25;
     #elif defined END
-        float fogNear = 48.0; float fogFar = 16.0;
-        fogNear = max(far - fogNear, 0.0);
+        float fogFar = 16.0;
         fogFar = max(far - fogFar, 0.0);
+        float fogNear = fogFar * 0.5;
     #else
-        float fogNear = 32.0; float fogFar = 16.0;
-        fogNear = max(far - fogNear, 0.0) * (1.0 - skyMask) + 128.0 * skyMask;
+        float fogFar = 16.0;
         fogFar = max(far - fogFar, 0.0) * (1.0 - skyMask) + 160.0 * skyMask;
+        float fogNear = fogFar * 0.5 * (1.0 - skyMask) + 128.0 * skyMask;
     #endif
     if(isEyeInWater >= 1){
         fogNear = mix(near * 0.64, fogNear, waterVoid);

@@ -21,6 +21,7 @@ void getMaterial(inout matPBR materialRaw, vec2 st){
 void getPosVectors(inout positionVectors posVec, vec2 st){
     // Assign positions
 	posVec.shdPos = getShdPos(st, true);
+	posVec.localPos = getCamSpacePos(st, false);
 	posVec.viewPos = getEyePlayerPos(st, false).xyz;
 	posVec.camPos = mat3(gbufferModelViewInverse) * cameraPosition;
 	posVec.worldPos = posVec.viewPos + posVec.camPos;

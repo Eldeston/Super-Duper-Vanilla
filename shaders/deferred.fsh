@@ -38,8 +38,10 @@ void main(){
 	if(isSkyDepth != 1.0)
 		materials.albedo_t = getLighting(materials, posVector, posVector.lm);
 
+	vec3 reflecBuffer = materials.albedo_t;
 	materials.albedo_t = getFog(posVector, materials.albedo_t, skyCol2);
 
-/* DRAWBUFFERS:0 */
+/* DRAWBUFFERS:07 */
 	gl_FragData[0] = vec4(materials.albedo_t, 1.0); // gcolor
+	gl_FragData[1] = vec4(reflecBuffer, 1.0); // colortex7
 }

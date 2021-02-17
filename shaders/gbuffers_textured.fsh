@@ -45,15 +45,13 @@ void main(){
 
 	vec4 nGlcolor = glcolor * (1.0 - emissive) + pow(glcolor, vec4(1.0 / 3.0)) * emissive;
 
-	float glSatCol = rgb2hsv(glcolor).y;
-
 	#ifndef WHITE_MODE
-		color *= nGlcolor;
+		color.rgb *= nGlcolor.rgb;
 	#else
 		#ifdef WHITE_MODE_F
-			color = color.aaaa * nGlcolor;
+			color.rgb = nGlcolor.rgb;
 		#else
-			color = color.aaaa;
+			color.rgb = vec3(1.0);
 		#endif
 	#endif
 

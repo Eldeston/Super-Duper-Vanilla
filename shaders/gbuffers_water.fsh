@@ -56,16 +56,16 @@ void main(){
 		
 		// Multiply brightness to make fake absorbtion
 		color.rgb *= mix(0.5, 0.05, smootherstep(waterData.w));
-		color.a = mix(color.a, 1.0, saturate(length(viewPos) / 32.0));
+		color.a = mix(color.a, 1.0, min(length(viewPos) / 32.0, 1.0));
 	}
 
 	#ifndef WHITE_MODE
-		color *= nGlcolor;
+		color.rgb *= nGlcolor.rgb;
 	#else
 		#ifdef WHITE_MODE_F
-			color = color.aaaa * nGlcolor;
+			color.rgb = nGlcolor.rgb;
 		#else
-			color = color.aaaa;
+			color.rgb = vec3(1.0);
 		#endif
 	#endif
 

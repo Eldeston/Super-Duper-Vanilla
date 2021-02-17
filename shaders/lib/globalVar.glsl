@@ -22,6 +22,8 @@ struct matPBR{
 struct positionVectors{
     // Shadow position
     vec4 shdPos;
+    // Local pos
+    vec4 localPos;
     // View position
     vec3 viewPos;
     // Camera position
@@ -77,15 +79,11 @@ uniform vec3 fogColor;
 uniform vec3 skyColor;
 
 // Matrix uniforms
-uniform mat4 gbufferModelView;
-uniform mat4 gbufferModelViewInverse;
-uniform mat4 gbufferProjection;
-uniform mat4 gbufferProjectionInverse;
+uniform mat4 gbufferModelView, gbufferModelViewInverse;
+uniform mat4 gbufferProjection, gbufferProjectionInverse;
 
-uniform mat4 shadowModelView;
-uniform mat4 shadowModelViewInverse;
-uniform mat4 shadowProjection;
-uniform mat4 shadowProjectionInverse;
+uniform mat4 shadowModelView, shadowModelViewInverse;
+uniform mat4 shadowProjection, shadowProjectionInverse;
 
 float eyeBrightFact = eyeBrightnessSmooth.y / 240.0;
 

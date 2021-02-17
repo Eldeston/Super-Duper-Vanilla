@@ -5,6 +5,7 @@ const bool gcolorMipmapEnabled = true;
 const bool colortex3MipmapEnabled = true;
 const bool colortex6MipmapEnabled = true;
 const bool colortex6Clear = false;
+const bool colortex7Clear = false;
 
 uniform float viewWidth;
 uniform float viewHeight;
@@ -19,12 +20,16 @@ uniform sampler2D colortex1;
 uniform sampler2D colortex2;
 // Bloom buffer 3
 uniform sampler2D colortex3;
+
 // Material buffer 4
 uniform sampler2D colortex4;
 // Material buffer 5
 uniform sampler2D colortex5;
-// Loop trail buffer 6
+
+// Exposure buffer 6
 uniform sampler2D colortex6;
+// Reflection buffer 7
+uniform sampler2D colortex7;
 
 // Default resolution
 const int noiseTextureResolution = 256;
