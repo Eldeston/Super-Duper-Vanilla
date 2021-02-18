@@ -5,15 +5,11 @@ uniform sampler2DShadow shadowtex1;
 // Shadow color
 uniform sampler2D shadowcolor0;
 
-vec2 offSetShd[8] = vec2[8](
+vec2 offSetShd[4] = vec2[4](
     vec2(0.00084),
     vec2(-0.00084),
     vec2(-0.00084, 0.00084),
-    vec2(0.00084, -0.00084),
-    vec2(0.00042),
-    vec2(-0.00042),
-    vec2(-0.00042, 0.00042),
-    vec2(0.00042, -0.00042)
+    vec2(0.00084, -0.00084)
 );
 
 float getFresnel(vec3 norm, vec3 nViewPos, float specularMap){
@@ -76,6 +72,30 @@ vec3 getScreenSpaceCoords(vec3 st, vec3 normal){
 	return vec3(result.xy, smoothstep(0.2, 0.0, length(maskUv * maskUv * maskUv)));
 }
 
+vec3 getShdFilter(vec4 shdPos){
+	// Get random vector
+	vec2 shdRandVec = getRandVec(shdPos.xy, shdNoiseTile);
+
+	float shd0, shd1 = 0.0;
+	vec3 shdCol = vec3(0.0);
+	float lightDiff = saturate(shdPos.w);
+
+	for(int i = 0; i < 4; i++){
+		vec2 shdOffSet = shdRandVec * offSetShd[i];
+		shd0 = min(shadow2D(shadowtex0, vec3(shdPos.xy + shdOffSet, shdPos.z)).x, lightDiff);
+		shd1 = min(shadow2D(shadowtex1, vec3(shdPos.xy + shdOffSet, shdPos.z)).x, lightDiff) - shd0;
+
+		#ifdef SHD_COL
+			if(shd0 <= 1.0 || shdPos.w <= 1.0)
+				shdCol += texture2D(shadowcolor0, shdPos.xy + shdOffSet).rgb * shd1 * (1.0 - shd0) + shd0;
+		#else
+			if(shd0 <= 1.0 || shdPos.w <= 1.0)
+				shdCol += shd0;
+		#endif
+	}
+	return shdCol * 0.25;
+}
+
 // Shadow function
 vec3 getLighting(matPBR material, positionVectors posVec, vec2 lm){
 	// Get ambient
@@ -95,51 +115,36 @@ vec3 getLighting(matPBR material, positionVectors posVec, vec2 lm){
 
 	posVec.shdPos.xyz = distort(posVec.shdPos.xyz, posVec.shdPos.w) * 0.5 + 0.5;
 	posVec.shdPos.z -= shdBias * squared(posVec.shdPos.w) / abs(lightDot);
-	
-	float lightDiff = saturate(lightDot);
-
-	// Get random vector
-	vec2 shdRandVec = getRandVec(posVec.shdPos.xy, shdNoiseTile);
 
 	int shdSample = 4; // adding more doesn't give much of a difference except a slight performace decrease (limit 8)
-	float shd0, shd1 = 0.0;
 	vec3 shdCol = vec3(0.0);
 
 	if(lightDot > 0.0){
 		#ifdef SHADOW_FILTER
-			for(int i = 0; i < shdSample; i++){
-				vec2 shdOffSet = shdRandVec * offSetShd[i];
-				shd0 = min(shadow2D(shadowtex0, vec3(posVec.shdPos.xy + shdOffSet, posVec.shdPos.z)).x, lightDiff);
-				shd1 = min(shadow2D(shadowtex1, vec3(posVec.shdPos.xy + shdOffSet, posVec.shdPos.z)).x, lightDiff) - shd0;
-				
-				#ifdef SHD_COL
-					if(shd0 <= 1.0 || lightDot <= 1.0)
-						shdCol += mix(ambient, vec3(1.0), texture2D(shadowcolor0, posVec.shdPos.xy + shdOffSet).rgb * shd1) * (1.0 - shd0) + shd0;
-				#else
-					if(shd0 <= 1.0 || lightDot <= 1.0)
-						shdCol += ambient * (1.0 - shd0) + shd0;
-				#endif
-			}
-			// Divide by the amount of samples
-			shdCol /= shdSample;
+			shdCol = getShdFilter(vec4(posVec.shdPos.xyz, lightDot));
 		#else
+			float lightDiff = saturate(lightDot);
+			float shd0, shd1 = 0.0;
+
 			shd0 = min(shadow2D(shadowtex0, posVec.shdPos.xyz).x, lightDiff);
 			shd1 = min(shadow2D(shadowtex1, posVec.shdPos.xyz).x, lightDiff) - shd0;
+			
 			#ifdef SHD_COL
 				if(shd0 <= 1.0 || lightDot <= 1.0)
-					shdCol = mix(ambient, vec3(1.0), texture2D(shadowcolor0, posVec.shdPos.xy).rgb * shd1) * (1.0 - shd0) + shd0;
+					shdCol = texture2D(shadowcolor0, posVec.shdPos.xy).rgb * shd1 * (1.0 - shd0) + shd0;
 			#else
 				if(shd0 <= 1.0 || lightDot <= 1.0)
-					shdCol = ambient * (1.0 - shd0) + shd0;
+					shdCol = shd0;
 			#endif
 		#endif
-	}else{
-		shdCol = ambient;
 	}
+	vec3 specShdMask = shdCol;
+	shdCol = ambient * (1.0 - shdCol) + shdCol;
+
 	shdCol = (1.0 - material.alpha_m) + shdCol * material.alpha_m;
 	shdCol = mix(shdCol, ambient, newTwilight);
 
-	float spec = getSpecular(material.normal_m, nViewPos, lightVec, material.specular_m) * sqrt(sqrt(shd0)) * (1.0 - newTwilight);
+	vec3 spec = getSpecular(material.normal_m, nViewPos, lightVec, material.specular_m) * sqrt(sqrt(specShdMask)) * (1.0 - newTwilight);
 
 	positionVectors reflectRefractVec;
 
@@ -158,9 +163,9 @@ vec3 getLighting(matPBR material, positionVectors posVec, vec2 lm){
 	float fresnel = getFresnel(material.normal_m, nViewPos, material.specular_m);
 	
 	if(isEyeInWater == 1) // Refract
-		reflectRefractCol = mix(reflectRefractCol, vec3(spec), fresnel);
+		reflectRefractCol = mix(reflectRefractCol, spec, fresnel);
 	else // Reflect
-		reflectRefractCol = mix(vec3(spec), reflectRefractCol, fresnel);
+		reflectRefractCol = mix(spec, reflectRefractCol, fresnel);
 
 	reflectRefractCol = mix(reflectRefractCol, sSRefCol, fresnel * sSRefMask) * float(material.specular_m > 0.0);
 
