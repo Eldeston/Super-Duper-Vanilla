@@ -21,15 +21,15 @@ float getFogAmount(positionVectors posVec, float viewPosLength){
     #ifdef NETHER
         float fogFar = 32.0;
         fogFar = max(far - fogFar, 0.0);
-        float fogNear = fogFar * 0.25;
+        float fogNear = fogFar * 0.64;
     #elif defined END
         float fogFar = 16.0;
         fogFar = max(far - fogFar, 0.0);
-        float fogNear = fogFar * 0.5;
+        float fogNear = fogFar * 0.72;
     #else
         float fogFar = 16.0;
         fogFar = max(far - fogFar, 0.0) * (1.0 - skyMask) + 160.0 * skyMask;
-        float fogNear = fogFar * 0.5 * (1.0 - skyMask) + 128.0 * skyMask;
+        float fogNear = fogFar * 0.72 * (1.0 - skyMask) + 128.0 * skyMask;
     #endif
     if(isEyeInWater >= 1){
         fogNear = mix(near * 0.64, fogNear, waterVoid);
