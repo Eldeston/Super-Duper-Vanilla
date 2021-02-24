@@ -20,22 +20,23 @@ struct matPBR{
 };
 
 struct positionVectors{
-    // Shadow position
-    vec4 shdPos;
-    // Local pos
-    vec4 localPos;
-    // View position
-    vec3 viewPos;
-    // Camera position
-    vec3 camPos;
-    // World position
-    vec3 worldPos;
-    // Light position
-    vec3 lightPos;
     // Texcoord
     vec2 st;
     // Lightmap
     vec2 lm;
+    // Screenspace pos
+    vec3 screenPos;
+    // Local pos
+    vec3 localPos;
+    // View position
+    vec3 viewPos;
+    // World/scene position
+    vec3 worldPos;
+    // Light position
+    vec3 lightPos;
+
+    // Shadow position
+    vec4 shdPos;
 };
 
 // Enable mipmap filtering on shadows

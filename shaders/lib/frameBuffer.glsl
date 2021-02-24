@@ -1,9 +1,16 @@
 const int RGBA16F = 1;
+const int RGB8 = 1;
+
 const int gcolorFormat = RGBA16F;
+const int colortex2Format = RGB8;
+const int colortex3Format = RGB8;
+const int colortex4Format = RGB8;
+const int colortex5Format = RGB8;
 
 const bool gcolorMipmapEnabled = true;
 const bool colortex3MipmapEnabled = true;
 const bool colortex6MipmapEnabled = true;
+
 const bool colortex6Clear = false;
 const bool colortex7Clear = false;
 
@@ -34,7 +41,7 @@ uniform sampler2D colortex7;
 // Default resolution
 const int noiseTextureResolution = 256;
 
-// Noise sample(blueNoise3)
+// Noise sample, r for blue noise, g for white noise, and b for cell noise
 uniform sampler2D noisetex;
 
 // Filter by iq
@@ -80,7 +87,11 @@ vec2 getRandVec(vec2 st, int tile){
 float getCellNoise(vec2 st){
     float d0 = texture2D(noisetex, st + frameTimeCounter * 0.00675).z;
     float d1 = texture2D(noisetex, st * 4.0 - frameTimeCounter * 0.025).z;
-    return d0 * 0.875 + d1 * 0.125;
+    #ifdef INVERSE
+        return 1.0 - d0 * 0.875 + d1 * 0.125;
+    #else
+        return d0 * 0.875 + d1 * 0.125;
+    #endif
 }
 
 // Convert height map of water to a normal map
@@ -92,5 +103,9 @@ vec4 H2NWater(vec2 st){
 	float dx = (d - getCellNoise(waterUv + vec2(waterPixel, 0.0))) / waterPixel;
 	float dy = (d - getCellNoise(waterUv + vec2(0.0, waterPixel))) / waterPixel;
 
+    #ifdef INVERSE
+        d = 1.0 - d;
+    #endif
+    
     return vec4(normalize(vec3(dx, dy, WATER_DEPTH_SIZE)), d);
 }

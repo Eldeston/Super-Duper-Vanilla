@@ -20,13 +20,14 @@ void getMaterial(inout matPBR materialRaw, vec2 st){
 
 void getPosVectors(inout positionVectors posVec, vec2 st){
     // Assign positions
-	posVec.shdPos = getShdPos(st, true);
-	posVec.localPos = getCamSpacePos(st, false);
-	posVec.viewPos = getEyePlayerPos(st, false).xyz;
-	posVec.camPos = mat3(gbufferModelViewInverse) * cameraPosition;
-	posVec.worldPos = posVec.viewPos + posVec.camPos;
-	posVec.worldPos.y /= 128.0;
-	posVec.lightPos = mat3(gbufferModelViewInverse) * shadowLightPosition;
 	posVec.st = st;
     posVec.lm = getLightMap(st);
+	posVec.screenPos = toScreenSpacePos(st);
+	posVec.localPos = toLocal(posVec.screenPos);
+	posVec.viewPos = mat3(gbufferModelViewInverse) * posVec.localPos.xyz;
+	posVec.worldPos = posVec.viewPos + gbufferModelViewInverse[3].xyz;
+	posVec.worldPos.y /= 128.0;
+	posVec.lightPos = mat3(gbufferModelViewInverse) * shadowLightPosition;
+
+	posVec.shdPos = toShadow(vec4(posVec.viewPos, 1.0));
 }
