@@ -108,22 +108,23 @@ vec3 getScreenSpaceCoords(vec3 st, vec3 normal){
 	return vec3(result.xy, float(hit) * maskEdge * smoothstep(0.64, 0.56, normal.z));
 }
 
-/*
-float getGodRays(vec2 st){
-	vec4 pos = vec4(getScreenSpacePos(st), 1.0);
+vec3 getGodRays(vec2 st){
+	vec4 pos = vec4(toScreenSpacePos(st), 1.0);
 	pos.xyz = mat3(gbufferModelViewInverse) * toLocal(pos.xyz);
-	float isRay = 0.0;
-	int steps = 8;
-	for(int x = 0; x < steps; x++){
-		pos.xyz *= 0.8;
-		pos = shadowProjection * (shadowModelView * vec4(pos.xyz, 1.0));
-		float distortFactor = getDistortFactor(pos.xy);
-		pos.xyz = distort(pos.xyz, distortFactor) * 0.5 + 0.5;
-		isRay = shadow2D(shadowtex0, pos.xyz).x;
+	vec3 isRay = vec3(0.0);
+	// Dither to decrease banding
+	pos.xyz *= max(1.0, 1.0 + getRandTex(st + frameTimeCounter, 16).x);
+	for(int x = 0; x < 8; x++){
+		pos.xyz *= 0.75;
+		vec3 shdPos = toShadow(pos.xyz).xyz;
+		shdPos = distort(shdPos) * 0.5 + 0.5;
+		float shd0 = shadow2D(shadowtex0, shdPos.xyz).x;
+		float shd1 = shadow2D(shadowtex1, shdPos.xyz).x - shd0;
+		vec3 rayCol = texture2D(shadowcolor0, shdPos.xy).rgb * shd1 * (1.0 - shd0) + shd0;
+		isRay = mix(rayCol, isRay, exp2(length(pos.xyz) * -0.0625));
 	}
 	return isRay;
 }
-*/
 
 vec3 getShdFilter(vec4 shdPos){
 	// Get random vector
@@ -170,7 +171,6 @@ vec3 getLighting(matPBR material, positionVectors posVec, vec2 lm){
 	posVec.shdPos.xyz = distort(posVec.shdPos.xyz, posVec.shdPos.w) * 0.5 + 0.5;
 	posVec.shdPos.z -= shdBias * squared(posVec.shdPos.w) / abs(lightDot);
 
-	int shdSample = 4; // adding more doesn't give much of a difference except a slight performace decrease (limit 8)
 	vec3 shdCol = vec3(0.0);
 
 	if(lightDot >= 0.0){

@@ -12,15 +12,13 @@ vec3 toLocal(vec3 pos){
     return viewPos / (gbufferProjectionInverse[2].w * result.z + gbufferProjectionInverse[3].w);
 }
 
-vec4 toShadow(vec4 pos){
-	vec4 shdPos = shadowProjection * (shadowModelView * pos);
-	shdPos.xyz /= shdPos.w;
+vec4 toShadow(vec3 pos){
+	vec3 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * pos + shadowModelView[3].xyz) + shadowProjection[3].xyz;
 	float distortFactor = getDistortFactor(shdPos.xy);
 
 	return vec4(shdPos.xyz, distortFactor); // Output final result with distort factor
 }
 
-// Get screen space pos
 vec3 toScreenSpacePos(vec2 st){
 	return vec3(st, texture2D(depthtex0, st).x);
 }

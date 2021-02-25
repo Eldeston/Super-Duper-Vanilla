@@ -28,7 +28,7 @@ struct positionVectors{
     vec3 screenPos;
     // Local pos
     vec3 localPos;
-    // View position
+    // View/player position
     vec3 viewPos;
     // World/scene position
     vec3 worldPos;
