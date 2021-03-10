@@ -49,8 +49,6 @@ const int shdNoiseTile = 128;
 // Lm noise tile
 const int lmNoiseTile = 16;
 
-// Shadow bias
-const float shdBias = 0.02; // Don't go below it otherwise it'll mess up lighting
 const float sunPathRotation = 45.0; // Light/sun/moon angle by degrees [-63.0 -54.0 -45.0 -36.0 -27.0 -18.0 -9.0 0.0 9.0 18.0 27.0 36.0 45.0 54.0 63.0]
 
 uniform int isEyeInWater;

@@ -5,11 +5,24 @@ uniform sampler2DShadow shadowtex1;
 // Shadow color
 uniform sampler2D shadowcolor0;
 
+/*
 vec2 offSetShd[4] = vec2[4](
     vec2(0.00084),
     vec2(-0.00084),
     vec2(-0.00084, 0.00084),
     vec2(0.00084, -0.00084)
+);
+*/
+
+// Shadow bias
+const float shdBias = 0.025; // Don't go below it otherwise it'll mess up lighting
+const float offSetNumerator = 0.5;
+
+vec2 offSetShd[4] = vec2[4](
+    vec2(offSetNumerator / shadowMapResolution),
+    vec2(-offSetNumerator / shadowMapResolution),
+    vec2(-offSetNumerator, offSetNumerator) / shadowMapResolution,
+    vec2(offSetNumerator, -offSetNumerator) / shadowMapResolution
 );
 
 float getFresnel(vec3 norm, vec3 nViewPos, float specularMap){
@@ -66,14 +79,14 @@ float getAmbient(matPBR material, positionVectors posVec, vec2 lm){
 }
 
 const float rayDistance = 192.0; // Distance [64.0 80.0 96.0 112.0 128.0]
-const int steps = 16; // Steps [16 32 48 64]
+const int steps = 32; // Steps [16 32 48 64]
 
 void binarySearch(inout vec3 result, vec3 refineDir){
-	for(int refineStep = 0; refineStep < (steps / 8); refineStep++){
+	for(int y = 0; y < (steps / 8); y++){
 		vec2 screenQuery = toScreen(result).xy;
 		if(screenQuery.x < 0.0 || screenQuery.y < 0.0 || screenQuery.x > 1.0 || screenQuery.y > 1.0) break;
 
-		bool hit = result.z - (gbufferProjectionInverse[3].z / (gbufferProjectionInverse[2].w * (texture2D(depthtex0, screenQuery).r * 2.0 - 1.0) + gbufferProjectionInverse[3].w)) < 0.0;
+		bool hit = result.z < (gbufferProjectionInverse[3].z / (gbufferProjectionInverse[2].w * (texture2D(depthtex0, screenQuery).r * 2.0 - 1.0) + gbufferProjectionInverse[3].w));
 		result += hit ? -refineDir : refineDir;
 		refineDir *= 0.5;
 	}
@@ -88,13 +101,14 @@ vec3 getScreenSpaceCoords(vec3 st, vec3 normal){
 	vec3 hitPos = startPos;
 	
 	float stepSize = 1.0 / float(steps);
+	endPos *= stepSize;
 	bool hit = false;
 
 	for(int x = 0; x < steps; x++){
-		hitPos += endPos * stepSize;
+		hitPos += endPos;
 		vec2 screenQuery = toScreen(hitPos).xy;
 		if(screenQuery.x < 0.0 || screenQuery.y < 0.0 || screenQuery.x > 1.0 || screenQuery.y > 1.0) break;
-		hit = hitPos.z - (gbufferProjectionInverse[3].z / (gbufferProjectionInverse[2].w * (texture2D(depthtex0, screenQuery).r * 2.0 - 1.0) + gbufferProjectionInverse[3].w)) < 0.0;
+		hit = hitPos.z < (gbufferProjectionInverse[3].z / (gbufferProjectionInverse[2].w * (texture2D(depthtex0, screenQuery).x * 2.0 - 1.0) + gbufferProjectionInverse[3].w));
 
 		if(hit) result = hitPos;
 		if(hit) break;
@@ -113,7 +127,7 @@ vec3 getGodRays(vec2 st){
 	pos.xyz = mat3(gbufferModelViewInverse) * toLocal(pos.xyz);
 	vec3 isRay = vec3(0.0);
 	// Dither to decrease banding
-	pos.xyz *= max(1.0, 1.0 + getRandTex(st + frameTimeCounter, 16).x);
+	pos.xyz *= 1.0 + fract(getRandTex(st, 8).x + frameTimeCounter) * 0.333;
 	for(int x = 0; x < 8; x++){
 		pos.xyz *= 0.75;
 		vec3 shdPos = toShadow(pos.xyz).xyz;
@@ -140,11 +154,9 @@ vec3 getShdFilter(vec4 shdPos){
 		shd1 = min(shadow2D(shadowtex1, vec3(shdPos.xy + shdOffSet, shdPos.z)).x, lightDiff) - shd0;
 
 		#ifdef SHD_COL
-			if(shd0 <= 1.0 || shdPos.w <= 1.0)
-				shdCol += texture2D(shadowcolor0, shdPos.xy + shdOffSet).rgb * shd1 * (1.0 - shd0) + shd0;
+			shdCol += texture2D(shadowcolor0, shdPos.xy + shdOffSet).rgb * shd1 * (1.0 - shd0) + shd0;
 		#else
-			if(shd0 <= 1.0 || shdPos.w <= 1.0)
-				shdCol += shd0;
+			shdCol += shd0;
 		#endif
 	}
 
@@ -170,6 +182,7 @@ vec3 getLighting(matPBR material, positionVectors posVec, vec2 lm){
 
 	posVec.shdPos.xyz = distort(posVec.shdPos.xyz, posVec.shdPos.w) * 0.5 + 0.5;
 	posVec.shdPos.z -= shdBias * squared(posVec.shdPos.w) / abs(lightDot);
+	// posVec.shdPos.z -= max(0.05 * (1.0 - max(0.0, lightDot)), 0.0125) * squared(posVec.shdPos.w);
 
 	vec3 shdCol = vec3(0.0);
 
@@ -184,11 +197,9 @@ vec3 getLighting(matPBR material, positionVectors posVec, vec2 lm){
 			shd1 = min(shadow2D(shadowtex1, posVec.shdPos.xyz).x, lightDiff) - shd0;
 			
 			#ifdef SHD_COL
-				if(shd0 <= 1.0 || lightDot <= 1.0)
-					shdCol = texture2D(shadowcolor0, posVec.shdPos.xy).rgb * shd1 * (1.0 - shd0) + shd0;
+				shdCol = texture2D(shadowcolor0, posVec.shdPos.xy).rgb * shd1 * (1.0 - shd0) + shd0;
 			#else
-				if(shd0 <= 1.0 || lightDot <= 1.0)
-					shdCol = shd0;
+				shdCol = shd0;
 			#endif
 		#endif
 	}
@@ -223,6 +234,8 @@ vec3 getLighting(matPBR material, positionVectors posVec, vec2 lm){
 
 	float lightMap = min(lm.x * 1.2, 1.0);
 	vec3 diffuse = (shdCol * (1.0 - material.emissive_m) + squared(material.emissive_m)) * (1.0 - lightMap) + BLOCK_LIGHT_COL * lightMap;
+
+	float dotDiff = max(0.0, lightDot);
 
 	return material.albedo_t * diffuse + reflectRefractCol;
 

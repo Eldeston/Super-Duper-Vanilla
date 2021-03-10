@@ -19,7 +19,8 @@ IN vec2 texcoord;
 void main(){
 	vec3 albedo = texture2D(gcolor, texcoord).rgb;
 
-	albedo += lightCol * getGodRays(texcoord);
+	vec3 godRays = getGodRays(texcoord);
+	// albedo += lightCol * godRays;
 
 /* DRAWBUFFERS:0 */
 	gl_FragData[0] = vec4(albedo, 1.0); //gcolor
