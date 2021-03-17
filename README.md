@@ -1,6 +1,7 @@
 # Super-Duper-Vanilla
 [![Discord](https://img.shields.io/discord/604061216779796492.svg?logo=discord&logoColor=white&logoWidth=20&labelColor=7289DA&label=Discord)](https://discord.gg/4XNhkcd)
 [![Twitter Follow](https://img.shields.io/twitter/follow/eldeston?color=dark&label=Follow&logoColor=dark)](https://twitter.com/eldeston)
+
    A shader pack for **Minecraft Optifine**, created to convey or mimic the style of the cancelled __Super Duper Graphics Pack__. Developed by @Eldeston, and presented by __FlameRender Studios__.
 
 # Releases
