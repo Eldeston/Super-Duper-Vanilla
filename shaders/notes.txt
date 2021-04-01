@@ -1,0 +1,22 @@
+Framebuffers arrangement:
+gcolor - Main texture
+colortex1 - Normals
+colortex2 - Lightmap.xy, subsurface scattering
+colortex3 - Metal, emissive, roughness
+colortex4 - AO, exposure buffer, Alpha
+colortex5 - Bloom buffer
+colortex6 - Reflection buffer
+colortex7 - Unused
+
+Main shader folder:
+
+composite and deferred files - The name speaks for itself
+final - Final composite file
+gbuffers_clouds - Cloud shader
+gbuffers_skybasic - Sky shader
+gbuffers_skytextured - Sun and moon shader
+gbuffers_spidereyes - Spider eyes/emissive entities
+gbuffers_terrain - Terrain/block shader
+gbuffers_textured - Particle shader
+gbuffers_water - Water/transparent object shader
+shadow - Shadow shader

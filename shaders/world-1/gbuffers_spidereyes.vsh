@@ -1,10 +1,6 @@
 #version 120
 
-varying vec2 texcoord;
-varying vec4 glcolor;
+#define VERTEX
+#define NETHER
 
-void main() {
-	gl_Position = ftransform();
-	texcoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
-	glcolor = gl_Color;
-}
+#include "/main/gbuffers_spidereyes.glsl"

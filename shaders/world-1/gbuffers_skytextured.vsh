@@ -1,12 +1,6 @@
 #version 120
 
-varying vec2 texcoord;
+#define VERTEX
+#define NETHER
 
-varying vec4 glcolor;
-
-void main() {
-	gl_Position = ftransform();
-
-	texcoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
-	glcolor = gl_Color;
-}
+#include "/main/gbuffers_skytextured.glsl"

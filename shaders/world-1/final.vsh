@@ -1,11 +1,6 @@
 #version 120
 
-#include "/lib/util.glsl"
+#define VERTEX
+#define NETHER
 
-OUT vec4 texCoord;
-
-void main(){
-    gl_Position = ftransform();
-
-    texCoord = gl_MultiTexCoord0;
-}
+#include "/main/final.glsl"
