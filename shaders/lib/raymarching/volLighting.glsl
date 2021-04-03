@@ -1,7 +1,7 @@
 vec3 getGodRays(vec2 st, vec2 glTexCoord){
-	float dither = fract(getRandTex(glTexCoord * 0.0625, 1).x + frameTimeCounter);
+	float dither = fract(getRandTex(glTexCoord * 0.0625, 1).x);
 	vec4 pos = vec4(toScreenSpacePos(st), 1.0);
-	pos.xyz = mat3(gbufferModelViewInverse) * toLocal(pos.xyz);
+	pos.xyz = mat3(gbufferModelViewInverse) * toView(pos.xyz);
 	// Dither to decrease banding
 	pos.xyz *= 1.0 + dither * 0.3333;
 	// pos.xyz += normalize(pos.xyz) * dither * 0.005;

@@ -54,7 +54,7 @@ INOUT mat3 TBN;
 
         float maxCol = maxC(color.rgb); float satCol = rgb2hsv(color).y;
 
-        float metallic = (entity.x >= 10008.0 && entity.x <= 10010.0) || entity.x == 10015.0 ? min((maxCol + 0.125) * 2.5, 1.0) : 0.0;
+        float metallic = (entity.x >= 10008.0 && entity.x <= 10010.0) || entity.x == 10015.0 ? 0.75 : 0.0;
         float ss = (entity.x >= 10001.0 && entity.x <= 10004.0) || entity.x == 10007.0 || entity.x == 10011.0 || entity.x == 10013.0 ? sqrt(maxCol) * 0.8 : 0.0;
         float emissive = entity.x == 10005.0 || entity.x == 10006.0 ? maxCol
             : entity.x == 10014.0 ? satCol : 0.0;
@@ -79,7 +79,7 @@ INOUT mat3 TBN;
         gl_FragData[0] = color; //gcolor
         gl_FragData[1] = vec4(normal * 0.5 + 0.5, 1.0); //colortex1
         gl_FragData[2] = vec4(nLmCoord, ss, 1.0); //colortex2
-        gl_FragData[3] = vec4(0.0, emissive, 0.0, 1.0); //colortex3
+        gl_FragData[3] = vec4(metallic, emissive, 0.0, 1.0); //colortex3
         gl_FragData[4] = vec4(1.0, 0.0, color.a, 1.0); //colortex4
     }
 #endif

@@ -4,14 +4,15 @@
 #include "/lib/globalVar.glsl"
 
 #include "/lib/globalSamplers.glsl"
+#include "/lib/lighting/shdDistort.glsl"
+#include "/lib/conversion.glsl"
 
 #include "/lib/atmospherics/fog.glsl"
 #include "/lib/atmospherics/sky.glsl"
 
-#include "/lib/lighting/shdDistort.glsl"
 #include "/lib/lighting/AO.glsl"
 #include "/lib/lighting/shdMapping.glsl"
-#include "/lib/conversion.glsl"
+#include "/lib/raymarching/volLighting.glsl"
 
 #include "/lib/varAssembler.glsl"
 
@@ -40,6 +41,8 @@ INOUT vec2 texcoord;
         if(materials.alpha_m == 1.0){
             materials.albedo_t = getShdMapping(materials, posVector);
             materials.albedo_t = getFog(posVector, materials.albedo_t, skyRender);
+            materials.albedo_t += getGodRays(posVector.screenPos.xy, gl_FragCoord.xy) * lightCol * 0.25;
+            materials.albedo_t = saturate(materials.albedo_t);
         }
 
     /* DRAWBUFFERS:0 */
