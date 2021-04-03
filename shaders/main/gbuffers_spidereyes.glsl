@@ -16,7 +16,7 @@ INOUT vec4 glcolor;
 #ifdef FRAGMENT
     uniform sampler2D texture;
 
-    void main() {
+    void main(){
         vec4 color = texture2D(texture, texcoord) * glcolor;
 
         if(color.a < 0.01) discard;

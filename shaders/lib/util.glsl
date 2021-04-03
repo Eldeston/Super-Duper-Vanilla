@@ -97,3 +97,35 @@ vec3 toneContrast(vec3 col, float a){
 mat2 rot2D(float x){
     return mat2(cos(x),-sin(x), sin(x),cos(x));
 }
+
+vec3 rgb2hsv(vec4 c){
+	vec4 K = vec4(0, -1. / 3., 2. / 3., -1);
+	vec4 p = c.g < c.b ? vec4(c.bg, K.wz) : vec4(c.gb, K.xy);
+	vec4 q = c.r < p.x ? vec4(p.xyw, c.r) : vec4(c.r, p.yzx);
+	float d = q.x - min(q.w, q.y);
+	float e = 1e-10;
+	return vec3(abs(q.z + (q.w - q.y) / (6. * d + e)), d / (q.x + e), q.x);
+}
+
+vec3 rgb2hsv(vec3 c){
+	vec4 K = vec4(0, -1. / 3., 2. / 3., -1);
+	vec4 p = c.g < c.b ? vec4(c.bg, K.wz) : vec4(c.gb, K.xy);
+	vec4 q = c.r < p.x ? vec4(p.xyw, c.r) : vec4(c.r, p.yzx);
+	float d = q.x - min(q.w, q.y);
+	float e = 1e-10;
+	return vec3(abs(q.z + (q.w - q.y) / (6. * d + e)), d / (q.x + e), q.x);
+}
+
+// For converting hsv to rgb
+vec3 hsv2rgb(vec4 c){
+	vec4 K = vec4(1, 2. / 3., 1. / 3., 3);
+	vec3 p = abs(fract(c.xxx + K.xyz) * 6. - K.www);
+	return vec3(c.z * mix(K.xxx, clamp(p - K.xxx, 0., 1.), c.y));
+}
+
+// For converting hsv to rgb
+vec3 hsv2rgb(vec3 c){
+	vec4 K = vec4(1, 2. / 3., 1. / 3., 3);
+	vec3 p = abs(fract(c.xxx + K.xyz) * 6. - K.www);
+	return vec3(c.z * mix(K.xxx, clamp(p - K.xxx, 0., 1.), c.y));
+}
