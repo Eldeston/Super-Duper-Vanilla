@@ -2,7 +2,7 @@
 #include "/lib/settings.glsl"
 #include "/lib/globalVar.glsl"
 
-#include "/lib/tonemap.glsl"
+#include "/lib/post/tonemap.glsl"
 
 INOUT vec2 texcoord;
 
