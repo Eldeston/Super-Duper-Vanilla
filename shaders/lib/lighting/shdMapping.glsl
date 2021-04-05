@@ -6,7 +6,7 @@ uniform sampler2DShadow shadowtex1;
 uniform sampler2D shadowcolor0;
 
 // Shadow bias
-const float shdBias = 0.024; // Don't go below it otherwise it'll mess up lighting
+const float shdBias = 0.025; // Don't go below it otherwise it'll mess up lighting
 const float offSetNumerator = 1.0;
 
 vec2 offSetShd[4] = vec2[4](
