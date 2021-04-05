@@ -1,7 +1,7 @@
 const float rayDistance = 192.0; // Distance [64.0 80.0 96.0 112.0 128.0]
 const int steps = 32; // Steps [16 32 48 64]
 
-vec3 binarySearch(inout vec3 result, vec3 refineDir){
+vec3 binarySearch(vec3 result, vec3 refineDir){
 	for(int y = 0; y < (steps / 8); y++){
 		vec2 screenQuery = toScreen(result).xy;
 		if(screenQuery.x < 0.0 || screenQuery.y < 0.0 || screenQuery.x > 1.0 || screenQuery.y > 1.0) break;
@@ -13,9 +13,9 @@ vec3 binarySearch(inout vec3 result, vec3 refineDir){
 	return result;
 }
 
-vec3 getScreenSpaceCoords(vec3 st, vec3 normal){
-	vec3 startPos = toLocal(st);
-	vec3 startDir = normalize(reflect(normalize(startPos), normal));
+vec3 getScreenSpaceCoords(vec3 viewPos, vec3 normal){
+	vec3 startPos = viewPos;
+	vec3 startDir = reflect(normalize(startPos), normal);
 
 	vec3 endPos = startDir * rayDistance; // startPos + (startDir * maxDistance)
 	vec3 result = startPos + endPos;
@@ -40,5 +40,5 @@ vec3 getScreenSpaceCoords(vec3 st, vec3 normal){
 	result = toScreen(result);
 	vec2 maskUv = result.xy - 0.5;
 	float maskEdge = smoothstep(0.2, 0.0, length(maskUv * maskUv * maskUv));
-	return vec3(result.xy, float(hit0) * maskEdge * smoothstep(0.64, 0.56, normal.z));
+	return vec3(result.xy, float(hit0) * maskEdge); // * smoothstep(0.64, 0.56, normal.z));
 }
