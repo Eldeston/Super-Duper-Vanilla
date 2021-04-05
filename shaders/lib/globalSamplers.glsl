@@ -6,13 +6,13 @@ const int colortex2Format = RGB8;
 const int colortex3Format = RGB8;
 const int colortex4Format = RGB8;
 const int colortex5Format = RGB8;
+const int colortex6Format = RGBA16F;
 
 const bool gcolorMipmapEnabled = true;
-const bool colortex3MipmapEnabled = true;
+const bool colortex5MipmapEnabled = true;
 const bool colortex6MipmapEnabled = true;
 
 const bool colortex6Clear = false;
-const bool colortex7Clear = false;
 
 // Depth texture
 uniform sampler2D depthtex0;
@@ -25,12 +25,12 @@ uniform sampler2D colortex1;
 uniform sampler2D colortex2;
 // Metallic, emissive, roughness
 uniform sampler2D colortex3;
-// AO, exposure buffer, Unused
+// AO, unused, alpha
 uniform sampler2D colortex4;
 
 // Bloom buffer
 uniform sampler2D colortex5;
-// Reflection buffer
+// Reflection and exposure buffer
 uniform sampler2D colortex6;
 // Unused
 uniform sampler2D colortex7;
