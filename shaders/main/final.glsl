@@ -15,14 +15,14 @@ INOUT vec2 texcoord;
 
 #ifdef FRAGMENT
     uniform sampler2D gcolor;
-    uniform sampler2D depthtex0;
+    uniform sampler2D colortex3;
 
     void main() {
         vec3 color = texture2D(gcolor, texcoord).rgb;
 
         color = toneA(color);
 
-        // color = texture2D(colortex1, texcoord).rgb * 2.0 - 1.0;
+        // color = texture2D(colortex3, texcoord).rgb * 2.0 - 1.0;
         // color = vec3(texture2D(colortex4, texcoord).z == 1.0);
         // color = vec3(float(texture2D(depthtex0, texcoord).r != 1.0));
 

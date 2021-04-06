@@ -36,13 +36,13 @@ INOUT vec2 texcoord;
 	    getMaterial(materials, texcoord);
 
         vec3 skyRender = getSkyRender(posVector, skyCol, lightCol);
+        vec3 shdRender = getShdMapping(materials, posVector);
 
         // If the object is opaque render lighting sperately
         if(materials.alpha_m == 1.0){
-            materials.albedo_t = getShdMapping(materials, posVector);
+            materials.albedo_t *= shdRender;
             materials.albedo_t = getFog(posVector, materials.albedo_t, skyRender);
             materials.albedo_t += getGodRays(posVector.playerPos, gl_FragCoord.xy) * lightCol * 0.375;
-            materials.albedo_t = saturate(materials.albedo_t);
         }
 
     /* DRAWBUFFERS:0 */

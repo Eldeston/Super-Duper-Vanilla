@@ -83,7 +83,5 @@ vec3 getShdMapping(matPBR material, positionVectors posVec){
 	shdCol = shdCol * (1.0 - material.emissive_m) + material.emissive_m * material.emissive_m;
 	shdCol = mix(shdCol, BLOCK_LIGHT_COL, lightMap);
 
-	vec3 diffuse = shdCol;
-
-	return material.albedo_t * diffuse;
+	return shdCol;
 }

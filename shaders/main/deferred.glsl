@@ -12,7 +12,7 @@
 
     varying vec2 texcoord;
 
-    void main() {
+    void main(){
         vec3 color = texture2D(gcolor, texcoord).rgb;
 
     /* DRAWBUFFERS:0 */
