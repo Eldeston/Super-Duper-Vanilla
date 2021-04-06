@@ -37,8 +37,8 @@ INOUT vec2 texcoord;
 
         vec3 skyRender = getSkyRender(posVector, skyCol, lightCol);
 
-        // If the object is transparent render lighting sperately
-        if(materials.alpha_m != 1.0){
+        // If the object is opaque render lighting sperately
+        if(materials.alpha_m == 1.0){
             materials.albedo_t = getShdMapping(materials, posVector);
             materials.albedo_t = getFog(posVector, materials.albedo_t, skyRender);
             materials.albedo_t += getGodRays(posVector.playerPos, gl_FragCoord.xy) * lightCol * 0.375;
