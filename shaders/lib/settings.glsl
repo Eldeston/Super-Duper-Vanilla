@@ -54,11 +54,11 @@
 /*---------------------------------------------------------------------------------------------------------------------------*/
 
 #define LIGHT_COL_DAY vec3(210.0/255.0, 180.0/255.0, 150.0/255.0)
-#define LIGHT_COL_NIGHT vec3(30.0/255.0, 60.0/255.0, 120.0/255.0)
+#define LIGHT_COL_NIGHT vec3(15.0/255.0, 60.0/255.0, 120.0/255.0)
 #define LIGHT_COL_DAWN_DUSK vec3(1.0, 210.0/255.0, 90.0/255.0)
 
-#define SKY_COL_DAY vec3(112.0/255.0, 180.0/255.0, 1.0)
-#define SKY_COL_NIGHT vec3(0.0, 12.0/255.0, 36.0/255.0)
+#define SKY_COL_DAY vec3(100.0/255.0, 180.0/255.0, 1.0)
+#define SKY_COL_NIGHT vec3(0.0, 8.0/255.0, 32.0/255.0)
 #define SKY_COL_DAWN_DUSK vec3(50.0/255.0, 25.0/255.0, 62.5/255.0)
 
 #define FOG_COL_DAY vec3(0.9)
