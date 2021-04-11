@@ -71,6 +71,7 @@ INOUT mat3 TBN;
             #endif
         #endif
         
+        if(entity.x == 10008.0) color.rgb *= 0.125;
         color.rgb *= texture2D(lightmap, nLmCoord).rgb * (1.0 - emissive) + emissive;
 
         vec3 normal = mat3(gbufferModelViewInverse) * norm;

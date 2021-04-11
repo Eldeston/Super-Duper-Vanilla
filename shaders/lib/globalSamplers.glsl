@@ -1,7 +1,11 @@
 const int RGBA16F = 1;
+const int RGBA32F = 1;
 const int RGB8 = 1;
+const int RGB16 = 1;
 
 const int gcolorFormat = RGBA16F;
+const int gdepthFormat = RGBA32F;
+const int colortex1Format = RGB16;
 const int colortex2Format = RGB8;
 const int colortex3Format = RGB8;
 const int colortex4Format = RGB8;

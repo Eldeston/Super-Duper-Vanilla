@@ -48,7 +48,7 @@ vec3 getShdMapping(matPBR material, positionVectors posVec){
 	// Light vector
 	vec3 lightVec = normalize(posVec.lightPos - posVec.playerPos);
 
-	vec3 ambient = BLOCK_AMBIENT * material.ambient_m * getAmbient(material, posVec);
+	vec3 ambient = BLOCK_AMBIENT;
 	
 	// Light diffuse
 	float lightDot = dot(material.normal_m, nLightPos) * (1.0 - material.ss_m) + material.ss_m;

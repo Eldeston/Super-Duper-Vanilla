@@ -11,8 +11,10 @@
 #include "/lib/atmospherics/sky.glsl"
 
 #include "/lib/lighting/AO.glsl"
+#include "/lib/lighting/GGX.glsl"
 #include "/lib/lighting/shdMapping.glsl"
 #include "/lib/raymarching/volLighting.glsl"
+#include "/lib/raymarching/SSR.glsl"
 
 #include "/lib/varAssembler.glsl"
 
@@ -36,16 +38,26 @@ INOUT vec2 texcoord;
 	    getMaterial(materials, texcoord);
 
         vec3 skyRender = getSkyRender(posVector, skyCol, lightCol);
+        vec3 nPlayerPos = normalize(-posVector.playerPos);
         vec3 shdRender = getShdMapping(materials, posVector);
+        vec3 reflectedScreenPos = getScreenPosReflections(posVector.screenPos, mat3(gbufferModelView) * materials.normal_m, vec3(0.0));
+
+        float fresnel = getFresnel(materials.normal_m, nPlayerPos, materials.metallic_m);
 
         // If the object is opaque render lighting sperately
         if(materials.alpha_m == 1.0){
+            materials.albedo_t = materials.albedo_t * materials.ambient_m * getAmbient(materials, posVector);
             materials.albedo_t *= shdRender;
+            // Apply reflections
+            vec3 reflectCol = texture2D(colortex6, reflectedScreenPos.xy).rgb * reflectedScreenPos.z * materials.metallic_m;
+            materials.albedo_t += saturate(reflectCol) * fresnel; // Will change this later next patch
+            // Apply fog
             materials.albedo_t = getFog(posVector, materials.albedo_t, skyRender);
             materials.albedo_t += getGodRays(posVector.playerPos, gl_FragCoord.xy) * lightCol * 0.375;
         }
 
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(materials.albedo_t, 1.0); //gcolor
+        gl_FragData[1] = vec4(materials.albedo_t, 1.0); //colortex6
     }
 #endif

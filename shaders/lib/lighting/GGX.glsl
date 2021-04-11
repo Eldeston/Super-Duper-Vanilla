@@ -1,3 +1,8 @@
+float getFresnel(vec3 norm, vec3 nPlayerPos, float specularMap){
+	float fresnel = 1.0 - max(dot(norm, nPlayerPos), 0.0);
+	return pow(fresnel, specularMap * 5.0);
+}
+
 float getGGX(vec3 norm, vec3 halfVec, float roughness){
     float a2 = squared(roughness * roughness);
     float NdotH = max(dot(norm, halfVec), 0.0);
