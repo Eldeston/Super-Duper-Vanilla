@@ -13,7 +13,6 @@ const int colortex5Format = RGB8;
 const int colortex6Format = RGBA16F;
 
 const bool gcolorMipmapEnabled = true;
-const bool colortex5MipmapEnabled = true;
 const bool colortex6MipmapEnabled = true;
 
 const bool colortex6Clear = false;
@@ -32,9 +31,9 @@ uniform sampler2D colortex3;
 // AO, unused, alpha
 uniform sampler2D colortex4;
 
-// Bloom buffer
+// Unused
 uniform sampler2D colortex5;
-// Reflection and exposure buffer
+// Reflection, exposure, and bloom buffer
 uniform sampler2D colortex6;
 // Unused
 uniform sampler2D colortex7;
