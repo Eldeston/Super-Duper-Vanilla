@@ -45,11 +45,6 @@ vec3 getShdMapping(matPBR material, positionVectors posVec){
 	float newTwilight = hermiteMix(0.64, 0.96, twilight);
 	// Normalized light pos
 	vec3 nLightPos = normalize(posVec.lightPos);
-	// Light vector
-	vec3 lightVec = normalize(posVec.lightPos - posVec.playerPos);
-
-	vec3 ambient = BLOCK_AMBIENT;
-	
 	// Light diffuse
 	float lightDot = dot(material.normal_m, nLightPos) * (1.0 - material.ss_m) + material.ss_m;
 
@@ -75,9 +70,9 @@ vec3 getShdMapping(matPBR material, positionVectors posVec){
 			#endif
 		#endif
 	}
-	shdCol = ambient * (1.0 - shdCol) + shdCol;
+	shdCol = BLOCK_AMBIENT * (1.0 - shdCol) + shdCol;
 	shdCol = (1.0 - material.alpha_m) + shdCol * material.alpha_m;
-	shdCol = mix(shdCol, ambient, newTwilight);
+	shdCol = mix(shdCol, BLOCK_AMBIENT, newTwilight);
 
 	float lightMap = min(material.light_m.x * 1.2, 1.0);
 	shdCol = shdCol * (1.0 - material.emissive_m) + material.emissive_m * material.emissive_m;

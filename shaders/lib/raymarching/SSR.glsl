@@ -17,7 +17,7 @@ vec3 binarySearch(vec3 clipPosRayDir, vec3 startPos){
 vec3 getScreenPosReflections(vec3 screenPos, vec3 normal, vec3 dither){
 	vec3 clipPos = screenPos * 2.0 - 1.0;
 	vec3 viewPos = toView(screenPos);
-	vec3 rayDir = reflect(normalize(viewPos), normal) + dither * 0.01;
+	vec3 rayDir = reflect(normalize(viewPos), normal) + dither;
 
 	vec3 viewPosWithRayDir = viewPos + rayDir;
 	vec3 clipPosRayDir = toScreen(viewPosWithRayDir) * 2.0 - 1.0; // Put it back to clip space...

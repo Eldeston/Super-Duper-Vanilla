@@ -13,6 +13,7 @@
 #include "/lib/lighting/AO.glsl"
 #include "/lib/lighting/GGX.glsl"
 #include "/lib/lighting/shdMapping.glsl"
+
 #include "/lib/raymarching/volLighting.glsl"
 #include "/lib/raymarching/SSR.glsl"
 
@@ -37,23 +38,31 @@ INOUT vec2 texcoord;
 	    matPBR materials;
 	    getMaterial(materials, texcoord);
 
-        vec3 skyRender = getSkyRender(posVector, skyCol, lightCol);
+        vec3 dither = toScreenSpacePos(getRandVec(posVector.screenPos.xy, 8).xy);
         vec3 nPlayerPos = normalize(-posVector.playerPos);
+
+        vec3 skyRender = getSkyRender(posVector, skyCol, lightCol);
         vec3 shdRender = getShdMapping(materials, posVector);
-        vec3 reflectedScreenPos = getScreenPosReflections(posVector.screenPos, mat3(gbufferModelView) * materials.normal_m, vec3(0.0));
+        vec3 reflectedScreenPos = getScreenPosReflections(posVector.screenPos, mat3(gbufferModelView) * materials.normal_m, dither * 0.0);
 
         float fresnel = getFresnel(materials.normal_m, nPlayerPos, materials.metallic_m);
+        vec3 reflectBuffer = vec3(0.0);
 
         // If the object is transparent render lighting sperately
         if(materials.alpha_m != 1.0){
             materials.albedo_t = materials.albedo_t * materials.ambient_m * getAmbient(materials, posVector);
             materials.albedo_t *= shdRender;
+
             // Apply reflections
             vec3 reflectCol = texture2D(colortex6, reflectedScreenPos.xy).rgb * reflectedScreenPos.z * materials.metallic_m;
-            materials.albedo_t += saturate(reflectCol) * fresnel; // Will change this later next patch
+            materials.albedo_t += saturate(reflectCol); // Will change this later next patch
+
+            // Assign to reflect buffer before applying atmospherics
+            reflectBuffer = materials.albedo_t;
+
             // Apply fog
             materials.albedo_t = getFog(posVector, materials.albedo_t, skyRender);
-            materials.albedo_t += getGodRays(posVector.playerPos, gl_FragCoord.xy) * lightCol * 0.375;
+            materials.albedo_t += getGodRays(posVector.playerPos, gl_FragCoord.xy) * lightCol * 0.32;
         }
 
     /* DRAWBUFFERS:06 */
