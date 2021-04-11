@@ -13,8 +13,10 @@ float genStar(vec2 nSkyPos){
     return starShape;
 }
 
-vec3 getSkyRender(positionVectors posVec, vec3 skyCol, vec3 lightCol){
-    vec3 nPlayerPos = normalize(posVec.playerPos);
+vec3 getSkyRender(vec3 playerPos, float skyMask, vec3 skyCol, vec3 lightCol){
+    vec3 nPlayerPos = normalize(playerPos);
+    vec3 nSkyPos = normalize(mat3(shadowProjection) * (mat3(shadowModelView) * playerPos));
+
     if(isEyeInWater >= 1){
         float waterVoid = smootherstep(nPlayerPos.y + (eyeBrightFact - 0.56));
         skyCol = mix(fogColor * 0.72, skyCol, waterVoid);
@@ -24,8 +26,6 @@ vec3 getSkyRender(positionVectors posVec, vec3 skyCol, vec3 lightCol){
     #elif defined END
         return fogColor;
     #else
-        float skyMask = float(texture2D(depthtex0, posVec.screenPos.xy).x == 1.0);
-        vec3 nSkyPos = normalize(mat3(shadowProjection) * (mat3(shadowModelView) * posVec.playerPos));
         float skyFogGradient = smoothstep(-0.125, 0.125, nPlayerPos.y);
         float voidGradient = smoothstep(-0.4, 0.0, nPlayerPos.y);
         // Instead of calculating the dot of the viewPos and lightPos, we get the skyPos' z channel

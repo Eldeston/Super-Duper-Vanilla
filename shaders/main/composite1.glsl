@@ -38,13 +38,18 @@ INOUT vec2 texcoord;
 	    matPBR materials;
 	    getMaterial(materials, texcoord);
 
+        vec3 reflectedPlayerPos = reflect(posVector.playerPos, materials.normal_m);
+        float mask = float(posVector.screenPos.z == 1.0);
+
         vec3 dither = toScreenSpacePos(getRandVec(posVector.screenPos.xy, 8).xy);
         vec3 nPlayerPos = normalize(-posVector.playerPos);
 
-        vec3 skyRender = getSkyRender(posVector, skyCol, lightCol);
+        vec3 skyRender = getSkyRender(posVector.playerPos, mask, skyCol, lightCol);
         vec3 shdRender = getShdMapping(materials, posVector);
+    
         vec3 reflectedScreenPos = getScreenPosReflections(posVector.screenPos, mat3(gbufferModelView) * materials.normal_m, dither * 0.0);
-
+        vec3 reflectedSkyRender = getSkyRender(reflectedPlayerPos, 10, skyCol, lightCol);
+        
         float fresnel = getFresnel(materials.normal_m, nPlayerPos, materials.metallic_m);
         vec3 reflectBuffer = vec3(0.0);
 
@@ -54,13 +59,13 @@ INOUT vec2 texcoord;
             materials.albedo_t *= shdRender;
 
             // Apply reflections
-            vec3 reflectCol = texture2D(colortex6, reflectedScreenPos.xy).rgb * reflectedScreenPos.z * materials.metallic_m;
-            materials.albedo_t += saturate(reflectCol); // Will change this later next patch
+            vec3 reflectCol = reflectedSkyRender * (1.0 - reflectedScreenPos.z) + texture2D(colortex6, reflectedScreenPos.xy).rgb * reflectedScreenPos.z;
+            materials.albedo_t += saturate(reflectCol) * materials.metallic_m * fresnel; // Will change this later next patch
 
             // Assign to reflect buffer before applying atmospherics
             reflectBuffer = materials.albedo_t;
 
-            // Apply fog
+            // Apply atmospherics
             materials.albedo_t = getFog(posVector, materials.albedo_t, skyRender);
             materials.albedo_t += getGodRays(posVector.playerPos, gl_FragCoord.xy) * lightCol * 0.32;
         }

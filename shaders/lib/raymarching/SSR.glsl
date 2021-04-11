@@ -31,11 +31,9 @@ vec3 getScreenPosReflections(vec3 screenPos, vec3 normal, vec3 dither){
 		startPos += clipPosRayDir;
 		vec3 screenPos = startPos * 0.5 + 0.5;
 		if(screenPos.x < 0.0 || screenPos.y < 0.0 || screenPos.x > 1.0 || screenPos.y > 1.0) break;
-
 		float depth = texture2D(depthtex0, screenPos.xy).x;
-		float dDepth = depth - screenPos.z;
 
-		if(dDepth < 0.0) return vec3(binarySearch(clipPosRayDir, startPos).xy * 0.5 + 0.5, float(depth != 1.0));
+		if(depth < screenPos.z) return vec3(binarySearch(clipPosRayDir, startPos).xy * 0.5 + 0.5, float(depth != 1.0));
 		// if(dDepth < 0.0) return vec3(screenPos.xy, float(depth != 1.0));
 	}
 	return vec3(0.0);
