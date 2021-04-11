@@ -4,6 +4,9 @@
 
    A shader pack for **Minecraft Optifine**, created to convey or mimic the style of the cancelled __Super Duper Graphics Pack__. Developed by @Eldeston, and presented by __FlameRender Studios__.
 
+# Contribution
+   Will be planned soon, but as of right now, it is closed.
+
 # Releases
    See all releases [here](https://github.com/Eldeston/Super-Duper-Vanilla/releases). Pre-releases are expected to be unstable, report any issues or bugs anytime.
 
