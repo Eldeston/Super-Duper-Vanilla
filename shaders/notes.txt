@@ -1,18 +1,27 @@
-Framebuffers arrangement:
+Goal:
+
+-Optimize and effeciently use the available resources while keeping good fps.
+-Keep the codes squeaky clean, understandable, and portable.
+-Retain the material system.
+
+Framebuffers:
+
 gcolor - Main texture
 colortex1 - Normals
 colortex2 - Lightmap.xy, subsurface scattering
 colortex3 - Metal, emissive, roughness
 colortex4 - AO, unused, Alpha
-colortex5 - Bloom buffer
-colortex6 - Reflection buffer
+colortex5 - Unused
+colortex6 - Reflection/exposure/bloom buffer
 colortex7 - Unused
 
 Main shader folder:
 
-composite and deferred files - The name speaks for itself
+composite - Composite shader
+deferred - Deferred shader
 final - Final composite file
 gbuffers_clouds - Cloud shader
+gbuffers_entities - Entity shader
 gbuffers_skybasic - Sky shader
 gbuffers_skytextured - Sun and moon shader
 gbuffers_spidereyes - Spider eyes/emissive entities
