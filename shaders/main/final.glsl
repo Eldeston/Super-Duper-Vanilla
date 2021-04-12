@@ -7,7 +7,7 @@
 INOUT vec2 texcoord;
 
 #ifdef VERTEX
-    void main() {
+    void main(){
         gl_Position = ftransform();
         texcoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
     }
@@ -17,7 +17,7 @@ INOUT vec2 texcoord;
     uniform sampler2D gcolor;
     uniform sampler2D colortex3;
 
-    void main() {
+    void main(){
         vec3 color = texture2D(gcolor, texcoord).rgb;
 
         color = toneA(color);

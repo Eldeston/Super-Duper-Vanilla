@@ -48,28 +48,31 @@ vec3 getShdMapping(matPBR material, positionVectors posVec){
 	// Light diffuse
 	float lightDot = dot(material.normal_m, nLightPos) * (1.0 - material.ss_m) + material.ss_m;
 
-	posVec.shdPos.xyz = distort(posVec.shdPos.xyz, posVec.shdPos.w) * 0.5 + 0.5;
-	posVec.shdPos.z -= shdBias * squared(posVec.shdPos.w) / abs(lightDot);
-
 	vec3 shdCol = vec3(0.0);
 
-	if(lightDot >= 0.0){
-		#ifdef SHADOW_FILTER
-			shdCol = getShdFilter(vec4(posVec.shdPos.xyz, lightDot));
-		#else
-			float lightDiff = saturate(lightDot);
-			float shd0, shd1 = 0.0;
+	#ifndef NETHER
+		posVec.shdPos.xyz = distort(posVec.shdPos.xyz, posVec.shdPos.w) * 0.5 + 0.5;
+		posVec.shdPos.z -= shdBias * squared(posVec.shdPos.w) / abs(lightDot);
 
-			shd0 = min(shadow2D(shadowtex0, posVec.shdPos.xyz).x, lightDiff);
-			shd1 = min(shadow2D(shadowtex1, posVec.shdPos.xyz).x, lightDiff) - shd0;
-			
-			#ifdef SHD_COL
-				shdCol = texture2D(shadowcolor0, posVec.shdPos.xy).rgb * shd1 * (1.0 - shd0) + shd0;
+		if(lightDot >= 0.0){
+			#ifdef SHADOW_FILTER
+				shdCol = getShdFilter(vec4(posVec.shdPos.xyz, lightDot));
 			#else
-				shdCol = shd0;
+				float lightDiff = saturate(lightDot);
+				float shd0, shd1 = 0.0;
+
+				shd0 = min(shadow2D(shadowtex0, posVec.shdPos.xyz).x, lightDiff);
+				shd1 = min(shadow2D(shadowtex1, posVec.shdPos.xyz).x, lightDiff) - shd0;
+				
+				#ifdef SHD_COL
+					shdCol = texture2D(shadowcolor0, posVec.shdPos.xy).rgb * shd1 * (1.0 - shd0) + shd0;
+				#else
+					shdCol = shd0;
+				#endif
 			#endif
-		#endif
-	}
+		}
+	#endif
+
 	shdCol = BLOCK_AMBIENT * (1.0 - shdCol) + shdCol;
 	shdCol = (1.0 - material.alpha_m) + shdCol * material.alpha_m;
 	shdCol = mix(shdCol, BLOCK_AMBIENT, newTwilight);

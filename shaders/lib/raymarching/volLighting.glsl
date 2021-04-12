@@ -1,4 +1,8 @@
 vec3 getGodRays(vec3 playerPos, vec2 glTexCoord){
+	#if defined NETHER || defined END
+		return vec3(0);
+	#endif
+
 	float dither = fract(texture2D(noisetex, glTexCoord * 0.0625, 1).x);
 	playerPos *= 1.0 + dither * 0.3333;
 	vec3 rayData = vec3(0.0);
