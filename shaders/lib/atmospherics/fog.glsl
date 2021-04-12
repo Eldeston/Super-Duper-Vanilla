@@ -4,7 +4,7 @@ float atmoFog(positionVectors posVec, float playerPosLength){
     #elif defined END
         float c = 0.1; float b = 0.05; float o = 0.5;
     #else
-        float c = 0.081; float b = 0.072; float o = 0.63;
+        float c = 0.081; float b = 0.07; float o = 0.6;
     #endif
     if(isEyeInWater >= 1){
         c *= 1.44; b *= 1.44; o *= 1.24;
