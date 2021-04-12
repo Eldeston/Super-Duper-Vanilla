@@ -24,7 +24,7 @@ INOUT vec2 texcoord;
 
         #ifdef VIGNETTE
             // Apply vignette
-            color *= pow(max(1.0 - length(texCoord - 0.5), 0.0), VIGNETTE_INTENSITY);
+            color *= pow(max(1.0 - length(texcoord - 0.5), 0.0), VIGNETTE_INTENSITY);
         #endif
 
         // color = texture2D(colortex3, texcoord).rgb * 2.0 - 1.0;
