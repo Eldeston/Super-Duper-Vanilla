@@ -39,7 +39,7 @@ INOUT vec2 texcoord;
 	    getMaterial(materials, texcoord);
 
         vec3 reflectedPlayerPos = reflect(posVector.playerPos, materials.normal_m);
-        float mask = float(posVector.screenPos.z == 1.0);
+        float mask = float(posVector.screenPos.z >= 1.0);
 
         vec3 dither = toScreenSpacePos(getRandVec(posVector.screenPos.xy, 8).xy);
         vec3 nPlayerPos = normalize(-posVector.playerPos);
@@ -47,7 +47,7 @@ INOUT vec2 texcoord;
         vec3 skyRender = getSkyRender(posVector.playerPos, mask, skyCol, lightCol);
         vec3 shdRender = getShdMapping(materials, posVector);
     
-        vec3 reflectedScreenPos = getScreenPosReflections(posVector.screenPos, mat3(gbufferModelView) * materials.normal_m, dither * 0.0);
+        vec3 reflectedScreenPos = getScreenPosReflections(posVector.screenPos, mat3(gbufferModelView) * materials.normal_m, dither * materials.roughness_m);
         vec3 reflectedSkyRender = getSkyRender(reflectedPlayerPos, 10, skyCol, lightCol);
         
         float fresnel = getFresnel(materials.normal_m, nPlayerPos, materials.metallic_m);
@@ -71,7 +71,7 @@ INOUT vec2 texcoord;
         }
 
     /* DRAWBUFFERS:06 */
-        gl_FragData[0] = vec4(materials.albedo_t, 1.0); //gcolor
-        gl_FragData[1] = vec4(materials.albedo_t, 1.0); //colortex6
+        gl_FragData[0] = vec4(materials.albedo_t, 1); //gcolor
+        gl_FragData[1] = vec4(materials.albedo_t, 1); //colortex6
     }
 #endif
