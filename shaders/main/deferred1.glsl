@@ -48,7 +48,7 @@ INOUT vec2 texcoord;
         vec3 shdRender = getShdMapping(materials, posVector);
 
         vec3 reflectedScreenPos = getScreenPosReflections(posVector.screenPos, mat3(gbufferModelView) * materials.normal_m, dither * materials.roughness_m);
-        vec3 reflectedSkyRender = getSkyRender(reflectedPlayerPos, 1.0, skyCol, lightCol);
+        vec3 reflectedSkyRender = getSkyRender(reflectedPlayerPos, 1.0, skyCol, lightCol) * materials.light_m.y;
 
         float fresnel = getFresnel(materials.normal_m, nPlayerPos, materials.metallic_m);
         vec3 reflectBuffer = vec3(0.0);
@@ -67,7 +67,7 @@ INOUT vec2 texcoord;
 
             // Apply atmospherics
             materials.albedo_t = getFog(posVector, materials.albedo_t, skyRender);
-            materials.albedo_t += getGodRays(posVector.playerPos, gl_FragCoord.xy) * lightCol * 0.32;
+            materials.albedo_t += getGodRays(posVector.playerPos, dither.y) * lightCol;
         }
 
     /* DRAWBUFFERS:06 */
