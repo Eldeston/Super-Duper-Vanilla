@@ -3,7 +3,7 @@ float getStarShape(vec2 st, float size){
 }
 
 float getSunMoonShape(vec3 pos){
-    return smoothstep(0.0005, 0.00025, length(cubed(pos.xy)));
+    return smoothstep(0.0004, 0.00024, length(cubed(pos.xy)));
 }
 
 float genStar(vec2 nSkyPos){
@@ -43,6 +43,6 @@ vec3 getSkyRender(vec3 playerPos, float skyMask, vec3 skyCol, vec3 lightCol){
 
         vec3 fogCol = skyCol * (0.5 * (1.0 - voidGradient) + voidGradient) * 0.75;
 
-        return mix(mix(mix(fogCol, skyCol, skyFogGradient), lightCol + cubed(lightRange) * 0.25, lightRange), lightCol + newSkyData, newSkyData);
+        return mix(mix(mix(fogCol, skyCol, skyFogGradient), lightCol + cubed(lightRange) * 0.25, lightRange), lightCol, newSkyData) + newSkyData;
     #endif
 }
