@@ -1,10 +1,10 @@
 float atmoFog(positionVectors posVec, float playerPosLength){
     #ifdef NETHER
-        float c = 0.16; float b = 0.08; float o = 0.4;
+        float c = 0.12; float b = 0.08; float o = 0.4;
     #elif defined END
-        float c = 0.1; float b = 0.05; float o = 0.5;
+        float c = 0.08; float b = 0.05; float o = 0.5;
     #else
-        float c = 0.081; float b = 0.07; float o = 0.6;
+        float c = 0.08; float b = 0.07; float o = 0.6;
     #endif
     if(isEyeInWater >= 1){
         c *= 1.44; b *= 1.44; o *= 1.24;
