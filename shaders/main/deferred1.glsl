@@ -13,6 +13,7 @@
 #include "/lib/lighting/AO.glsl"
 #include "/lib/lighting/GGX.glsl"
 #include "/lib/lighting/shdMapping.glsl"
+#include "/lib/lighting/complexLighting.glsl"
 
 #include "/lib/raymarching/volLighting.glsl"
 #include "/lib/raymarching/SSR.glsl"
@@ -45,9 +46,10 @@ INOUT vec2 texcoord;
         vec3 nPlayerPos = normalize(-posVector.playerPos);
         
         vec3 skyRender = getSkyRender(posVector.playerPos, mask, skyCol, lightCol);
-        vec3 shdRender = getShdMapping(materials, posVector);
+        vec3 shdCol = getShdMapping(materials, posVector);
+        vec3 specCol = getSpecGGX(materials, posVector);
 
-        vec3 reflectedScreenPos = getScreenPosReflections(posVector.screenPos, mat3(gbufferModelView) * materials.normal_m, dither * materials.roughness_m);
+        vec3 reflectedScreenPos = getScreenPosReflections(posVector.screenPos, mat3(gbufferModelView) * materials.normal_m, dither * squared(materials.roughness_m * materials.roughness_m));
         vec3 reflectedSkyRender = getSkyRender(reflectedPlayerPos, 1.0, skyCol, lightCol) * materials.light_m.y;
 
         float fresnel = getFresnel(materials.normal_m, nPlayerPos, materials.metallic_m);
@@ -56,7 +58,7 @@ INOUT vec2 texcoord;
         // If the object is opaque render lighting sperately
         if(materials.alpha_m == 1.0){
             materials.albedo_t = materials.albedo_t * materials.ambient_m * getAmbient(materials, posVector);
-            materials.albedo_t *= shdRender;
+            materials.albedo_t = complexLighting(materials, shdCol, specCol);
 
             // Apply reflections
             vec3 reflectCol = reflectedSkyRender * (1.0 - reflectedScreenPos.z) + texture2D(colortex6, reflectedScreenPos.xy).rgb * reflectedScreenPos.z;

@@ -73,13 +73,5 @@ vec3 getShdMapping(matPBR material, positionVectors posVec){
 		}
 	#endif
 
-	shdCol = BLOCK_AMBIENT * (1.0 - shdCol) + shdCol;
-	shdCol = (1.0 - material.alpha_m) + shdCol * material.alpha_m;
-	shdCol = mix(shdCol, BLOCK_AMBIENT, newTwilight);
-
-	float lightMap = min(material.light_m.x * 1.2, 1.0);
-	shdCol = shdCol * (1.0 - material.emissive_m) + material.emissive_m * material.emissive_m;
-	shdCol = mix(shdCol, BLOCK_LIGHT_COL, lightMap);
-
-	return shdCol;
+	return shdCol * (1.0 - newTwilight);
 }
