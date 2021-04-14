@@ -49,7 +49,7 @@ INOUT vec2 texcoord;
         vec3 shdCol = getShdMapping(materials, posVector);
         vec3 specCol = getSpecGGX(materials, posVector);
 
-        vec3 reflectedScreenPos = getScreenPosReflections(posVector.screenPos, mat3(gbufferModelView) * materials.normal_m, dither * squared(materials.roughness_m * materials.roughness_m));
+        vec3 reflectedScreenPos = getScreenPosReflections(posVector.screenPos, mat3(gbufferModelView) * materials.normal_m, dither, materials.roughness_m);
         vec3 reflectedSkyRender = getSkyRender(reflectedPlayerPos, 1.0, skyCol, lightCol) * materials.light_m.y;
 
         float fresnel = getFresnel(materials.normal_m, nPlayerPos, materials.metallic_m);
