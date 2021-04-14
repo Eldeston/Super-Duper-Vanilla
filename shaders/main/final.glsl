@@ -27,7 +27,7 @@ INOUT vec2 texcoord;
             color *= pow(max(1.0 - length(texcoord - 0.5), 0.0), VIGNETTE_INTENSITY);
         #endif
 
-        // color = texture2D(colortex3, texcoord).rgb * 2.0 - 1.0;
+        // color = texture2D(colortex3, texcoord).rgb;
         // color = vec3(texture2D(colortex4, texcoord).z == 1.0);
         // color = vec3(float(texture2D(depthtex0, texcoord).r != 1.0));
 

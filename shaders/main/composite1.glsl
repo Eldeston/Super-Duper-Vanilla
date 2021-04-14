@@ -42,7 +42,7 @@ INOUT vec2 texcoord;
         vec3 reflectedPlayerPos = reflect(posVector.playerPos, materials.normal_m);
         float mask = float(posVector.screenPos.z >= 1.0);
 
-        vec3 dither = toScreenSpacePos(getRandVec(posVector.screenPos.xy, 8).xy);
+        vec3 dither = getRand3(texcoord, 8) * 2.0 - 1.0;
         vec3 nPlayerPos = normalize(-posVector.playerPos);
 
         vec3 skyRender = getSkyRender(posVector.playerPos, mask, skyCol, lightCol);
@@ -52,8 +52,8 @@ INOUT vec2 texcoord;
         vec3 reflectedScreenPos = getScreenPosReflections(posVector.screenPos, mat3(gbufferModelView) * materials.normal_m, dither, materials.roughness_m);
         vec3 reflectedSkyRender = getSkyRender(reflectedPlayerPos, 10, skyCol, lightCol) * materials.light_m.y;
         
-        float fresnel = getFresnel(materials.normal_m, nPlayerPos, materials.metallic_m);
-        vec3 reflectBuffer = vec3(0.0);
+        vec3 F0 = mix(vec3(0.04), materials.albedo_t, materials.metallic_m);
+        vec3 fresnel = getFresnelSchlick(dot(materials.normal_m, nPlayerPos), F0);
 
         // If the object is transparent render lighting sperately
         if(materials.alpha_m != 1.0){
@@ -61,11 +61,8 @@ INOUT vec2 texcoord;
             materials.albedo_t = complexLighting(materials, shdCol, specCol);
 
             // Apply reflections
-            vec3 reflectCol = reflectedSkyRender * (1.0 - reflectedScreenPos.z) + texture2D(colortex6, reflectedScreenPos.xy).rgb * reflectedScreenPos.z;
-            materials.albedo_t += saturate(reflectCol) * materials.metallic_m * fresnel; // Will change this later next patch
-
-            // Assign to reflect buffer before applying atmospherics
-            reflectBuffer = materials.albedo_t;
+            vec3 reflectCol = mix(reflectedSkyRender, texture2D(colortex6, reflectedScreenPos.xy).rgb, reflectedScreenPos.z);
+            materials.albedo_t += reflectCol * fresnel * (1.0 - materials.roughness_m); // Will change this later next patch
 
             // Apply atmospherics
             materials.albedo_t = getFog(posVector, materials.albedo_t, skyRender);
@@ -74,6 +71,6 @@ INOUT vec2 texcoord;
 
     /* DRAWBUFFERS:06 */
         gl_FragData[0] = vec4(materials.albedo_t, 1); //gcolor
-        gl_FragData[1] = vec4(materials.albedo_t, 1); //colortex6
+        gl_FragData[1] = vec4(saturate(materials.albedo_t), 1); //colortex6
     }
 #endif

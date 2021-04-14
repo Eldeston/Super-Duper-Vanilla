@@ -10,7 +10,7 @@ gcolor - Main texture
 colortex1 - Normals
 colortex2 - Lightmap.xy, subsurface scattering
 colortex3 - Metal, emissive, roughness
-colortex4 - AO, unused, Alpha
+colortex4 - AO, cloud mask, Alpha
 colortex5 - Unused
 colortex6 - Reflection/exposure/bloom buffer
 colortex7 - Unused

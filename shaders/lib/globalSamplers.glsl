@@ -28,7 +28,7 @@ uniform sampler2D colortex1;
 uniform sampler2D colortex2;
 // Metallic, emissive, roughness
 uniform sampler2D colortex3;
-// AO, unused, alpha
+// AO, cloud mask, alpha
 uniform sampler2D colortex4;
 
 // Unused
@@ -62,6 +62,13 @@ vec4 getRandTex(vec2 st, int tile){
 vec2 getRandVec(vec2 st, int tile){
 	float n = getRandTex(st, tile).x * PI * 2;
 	return vec2(cos(n), sin(n));
+}
+
+vec3 getRand3(vec2 st, int tile){
+    float x = texture2D(noisetex, st * tile).x;
+    float y = texture2D(noisetex, vec2(-st.x, st.y) * tile).x;
+    float z = texture2D(noisetex, -st * tile).x;
+	return vec3(x, y, z);
 }
 
 float getCellNoise(vec2 st){
