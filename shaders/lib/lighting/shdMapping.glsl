@@ -40,32 +40,32 @@ vec3 getShdFilter(vec4 shdPos){
 }
 
 // Shadow function
-vec3 getShdMapping(matPBR material, positionVectors posVec){
+vec3 getShdMapping(matPBR material, vec4 shdPos, vec3 lightPos){
 	// Get twilight amount
 	float newTwilight = hermiteMix(0.64, 0.96, twilight);
 	// Normalized light pos
-	vec3 nLightPos = normalize(posVec.lightPos);
+	vec3 nLightPos = normalize(lightPos);
 	// Light diffuse
 	float lightDot = dot(material.normal_m, nLightPos) * (1.0 - material.ss_m) + material.ss_m;
 
 	vec3 shdCol = vec3(0.0);
 
 	#ifndef NETHER
-		posVec.shdPos.xyz = distort(posVec.shdPos.xyz, posVec.shdPos.w) * 0.5 + 0.5;
-		posVec.shdPos.z -= shdBias * squared(posVec.shdPos.w) / abs(lightDot);
+		shdPos.xyz = distort(shdPos.xyz, shdPos.w) * 0.5 + 0.5;
+		shdPos.z -= shdBias * squared(shdPos.w) / abs(lightDot);
 
 		if(lightDot >= 0.0){
 			#ifdef SHADOW_FILTER
-				shdCol = getShdFilter(vec4(posVec.shdPos.xyz, lightDot));
+				shdCol = getShdFilter(vec4(shdPos.xyz, lightDot));
 			#else
 				float lightDiff = saturate(lightDot);
 				float shd0, shd1 = 0.0;
 
-				shd0 = min(shadow2D(shadowtex0, posVec.shdPos.xyz).x, lightDiff);
-				shd1 = min(shadow2D(shadowtex1, posVec.shdPos.xyz).x, lightDiff) - shd0;
+				shd0 = min(shadow2D(shadowtex0, shdPos.xyz).x, lightDiff);
+				shd1 = min(shadow2D(shadowtex1, shdPos.xyz).x, lightDiff) - shd0;
 				
 				#ifdef SHD_COL
-					shdCol = texture2D(shadowcolor0, posVec.shdPos.xy).rgb * shd1 * (1.0 - shd0) + shd0;
+					shdCol = texture2D(shadowcolor0, shdPos.xy).rgb * shd1 * (1.0 - shd0) + shd0;
 				#else
 					shdCol = shd0;
 				#endif

@@ -7,7 +7,7 @@ void getWave(inout vec3 vertexPos, in vec3 worldPos, in vec2 texCoord, in vec2 m
 		plantWeight *= float(texCoord.y < midTexCoord.y) + float(id == 10003.0);
 
     float windDisp = sin(worldPos.x + worldPos.z * 2.0 + frameTimeCounter * 1.36) * plantWeight;
-	float waterDisp = sin(worldPos.x + worldPos.z + frameTimeCounter * 1.36) * waterWeight;
+	float waterDisp = sin(worldPos.x + worldPos.z + frameTimeCounter * 1.6) * waterWeight;
 	
 	// Tall grass
 	if(id >= 10001.0 && id <= 10004.0)

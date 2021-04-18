@@ -13,10 +13,11 @@
 #include "/lib/lighting/AO.glsl"
 #include "/lib/lighting/GGX.glsl"
 #include "/lib/lighting/shdMapping.glsl"
-#include "/lib/lighting/complexLighting.glsl"
 
 #include "/lib/raymarching/volLighting.glsl"
 #include "/lib/raymarching/SSR.glsl"
+
+#include "/lib/lighting/complexLighting.glsl"
 
 #include "/lib/varAssembler.glsl"
 
@@ -39,30 +40,18 @@ INOUT vec2 texcoord;
 	    matPBR materials;
 	    getMaterial(materials, texcoord);
 
-        vec3 reflectedPlayerPos = reflect(posVector.playerPos, materials.normal_m);
-        float mask = float(posVector.screenPos.z >= 1.0);
+        float mask = float(posVector.screenPos.z == 1);
 
         vec3 dither = getRand3(texcoord, 8) * 2.0 - 1.0;
         vec3 nPlayerPos = normalize(-posVector.playerPos);
         
         vec3 skyRender = getSkyRender(posVector.playerPos, mask, skyCol, lightCol);
-        vec3 shdCol = getShdMapping(materials, posVector);
-        vec3 specCol = getSpecGGX(materials, posVector);
-
-        vec3 reflectedScreenPos = getScreenPosReflections(posVector.screenPos, mat3(gbufferModelView) * materials.normal_m, dither, materials.roughness_m);
-        vec3 reflectedSkyRender = getSkyRender(reflectedPlayerPos, 1.0, skyCol, lightCol) * materials.light_m.y;
-
-        vec3 F0 = mix(vec3(0.04), materials.albedo_t, materials.metallic_m);
-        vec3 fresnel = getFresnelSchlick(dot(materials.normal_m, nPlayerPos), F0);
+        vec3 shdCol = getShdMapping(materials, posVector.shdPos, posVector.lightPos);
 
         // If the object is opaque render lighting sperately
         if(materials.alpha_m == 1.0){
             materials.albedo_t = materials.albedo_t * materials.ambient_m * getAmbient(materials, posVector);
-            materials.albedo_t = complexLighting(materials, shdCol, specCol);
-
-            // Apply reflections
-            vec3 reflectCol = mix(reflectedSkyRender, texture2D(colortex6, reflectedScreenPos.xy).rgb, reflectedScreenPos.z);
-            materials.albedo_t += reflectCol * fresnel * (1.0 - materials.roughness_m); // Will change this later next patch
+            materials.albedo_t = complexLighting(materials, posVector, shdCol, dither);
 
             // Apply atmospherics
             materials.albedo_t = getFog(posVector, materials.albedo_t, skyRender);
