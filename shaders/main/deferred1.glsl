@@ -17,6 +17,7 @@
 #include "/lib/raymarching/volLighting.glsl"
 #include "/lib/raymarching/SSR.glsl"
 
+#include "/lib/atmospherics/complexAtmo.glsl"
 #include "/lib/lighting/complexLighting.glsl"
 
 #include "/lib/varAssembler.glsl"
@@ -40,26 +41,23 @@ INOUT vec2 texcoord;
 	    matPBR materials;
 	    getMaterial(materials, texcoord);
 
-        float mask = float(posVector.screenPos.z == 1);
-
-        vec3 dither = getRand3(texcoord, 8) * 2.0 - 1.0;
-        vec3 nPlayerPos = normalize(-posVector.playerPos);
-        
-        vec3 skyRender = getSkyRender(posVector.playerPos, mask, skyCol, lightCol);
-        vec3 shdCol = getShdMapping(materials, posVector.shdPos, posVector.lightPos);
-
         // If the object is opaque render lighting sperately
         if(materials.alpha_m == 1.0){
+            vec3 dither = getRand3(texcoord, 8) * 2.0 - 1.0;
+            float mask = float(posVector.screenPos.z == 1);
+            
+            vec3 skyRender = getSkyRender(posVector.playerPos, mask, skyCol, lightCol);
+
+            // Apply lighting
             materials.albedo_t = materials.albedo_t * materials.ambient_m * getAmbient(materials, posVector);
-            materials.albedo_t = complexLighting(materials, posVector, shdCol, dither);
+            materials.albedo_t = complexLighting(materials, posVector, dither);
 
             // Apply atmospherics
             materials.albedo_t = getFog(posVector, materials.albedo_t, skyRender);
             materials.albedo_t += getGodRays(posVector.playerPos, dither.y) * lightCol;
         }
 
-    /* DRAWBUFFERS:06 */
+    /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(materials.albedo_t, 1); //gcolor
-        gl_FragData[1] = vec4(saturate(materials.albedo_t), 1); //colortex6
     }
 #endif

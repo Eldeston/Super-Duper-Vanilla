@@ -40,11 +40,7 @@ vec3 getShdFilter(vec4 shdPos){
 }
 
 // Shadow function
-vec3 getShdMapping(matPBR material, vec4 shdPos, vec3 lightPos){
-	// Get twilight amount
-	float newTwilight = hermiteMix(0.64, 0.96, twilight);
-	// Normalized light pos
-	vec3 nLightPos = normalize(lightPos);
+vec3 getShdMapping(matPBR material, vec4 shdPos, vec3 nLightPos){
 	// Light diffuse
 	float lightDot = dot(material.normal_m, nLightPos) * (1.0 - material.ss_m) + material.ss_m;
 

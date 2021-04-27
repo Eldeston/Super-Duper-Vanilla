@@ -72,7 +72,7 @@ vec3 getSkyRender(vec3 playerPos, float skyMask, vec3 skyCol, vec3 lightCol){
     vec2 starPos = 0.5 > abs(nSkyPos.y) ? vec2(atan(nSkyPos.x, nSkyPos.z), nSkyPos.y) * 0.25 : nSkyPos.xz * 0.333;
     float star = genStar(starPos * 0.128) * night * voidGradient;
 
-    float newSkyData = max(star, sunMoon * 5.0) * skyMask * 2.0;
+    float newSkyData = max(star, sunMoon) * skyMask;
 
     vec3 fogCol = skyCol * (0.5 * (1.0 - voidGradient) + voidGradient) * 0.75;
     vec3 final = saturate(mix(mix(fogCol, skyCol, skyFogGradient), lightCol + cubed(lightRange) * 0.25, lightRange));

@@ -31,12 +31,21 @@ uniform vec3 shadowLightPosition;
 uniform vec3 fogColor;
 uniform vec3 skyColor;
 
-// Matrix uniforms
-uniform mat4 gbufferModelView, gbufferModelViewInverse;
-uniform mat4 gbufferProjection, gbufferProjectionInverse;
+// View matrix uniforms
+uniform mat4 gbufferModelView;
+uniform mat4 gbufferModelViewInverse;
 
-uniform mat4 shadowModelView, shadowModelViewInverse;
-uniform mat4 shadowProjection, shadowProjectionInverse;
+// Projection matrix uniforms
+uniform mat4 gbufferProjection;
+uniform mat4 gbufferProjectionInverse;
+
+// Shadow view matrix uniforms
+uniform mat4 shadowModelView;
+uniform mat4 shadowModelViewInverse;
+
+// Shadow projection matrix uniforms
+uniform mat4 shadowProjection;
+uniform mat4 shadowProjectionInverse;
 
 // Enable mipmap filtering on shadows
 const bool shadowHardwareFiltering = true;

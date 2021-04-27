@@ -12,7 +12,7 @@ colortex2 - Lightmap.xy, subsurface scattering
 colortex3 - Metal, emissive, roughness
 colortex4 - AO, cloud mask, Alpha
 colortex5 - Unused
-colortex6 - Reflection/exposure/bloom buffer
+colortex6 - Exposure/bloom buffer
 colortex7 - Unused
 
 Main shader folder:

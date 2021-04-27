@@ -33,7 +33,7 @@ uniform sampler2D colortex4;
 
 // Unused
 uniform sampler2D colortex5;
-// Reflection, exposure, and bloom buffer
+// Exposure, and bloom buffer
 uniform sampler2D colortex6;
 // Unused
 uniform sampler2D colortex7;

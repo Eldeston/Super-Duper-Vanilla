@@ -72,7 +72,12 @@ INOUT mat3 TBN;
             materials.ambient_m = 1.0;
         #else
             getPBR(materials, TBN, texcoord);
-            materials.normal_m = mat3(gbufferModelViewInverse) * materials.normal_m;
+            materials.normal_m = mat3(gbufferModelViewInverse) * (entity.x == 10008 ? norm : materials.normal_m);
+            if(entity.x == 10008){
+                materials.metallic_m = 0.75;
+                materials.roughness_m = 0.2 * maxCol;
+                materials.ambient_m = 1.0;
+            }
         #endif
 
         vec4 nGlcolor = glcolor * (1.0 - materials.emissive_m) + sqrt(sqrt(glcolor)) * materials.emissive_m;
