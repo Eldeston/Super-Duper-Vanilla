@@ -9,7 +9,7 @@ void getPBR(inout matPBR material, mat3 TBN, vec2 st){
     // Encode and extract the materials
     vec3 normalMap = vec3(normalAOH.xy * 2.0 - 1.0, sqrt(1.0 - dot(normalAOH.xy, normalAOH.xy)));
     // Assign normal
-    material.normal_m = TBN * normalMap;
+    material.normal_m = normalize(TBN * normalMap);
 
     // Assign ambient
     material.ambient_m = normalAOH.b;
