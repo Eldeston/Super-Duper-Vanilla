@@ -34,5 +34,7 @@ vec3 complexLighting(matPBR material, positionVectors posVector, vec3 dither){
 	shdCol = shdCol * (1.0 - material.emissive_m) + material.emissive_m * material.emissive_m;
 	shdCol = mix(shdCol, BLOCK_LIGHT_COL, lightMap);
 
+	// material.albedo_t *= 1.0 + material.emissive_m;
+
     return material.albedo_t * shdCol + specCol + reflectCol;
 }

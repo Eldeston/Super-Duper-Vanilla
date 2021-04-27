@@ -6,9 +6,10 @@
 #include "/lib/vertexWave.glsl"
 #include "/lib/PBR.glsl"
 
+INOUT float blockId;
+
 INOUT vec2 lmcoord;
 INOUT vec2 texcoord;
-INOUT vec2 entity;
 
 INOUT vec3 norm;
 
@@ -27,7 +28,7 @@ INOUT mat3 TBN;
 
         texcoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         lmcoord  = (gl_TextureMatrix[1] * gl_MultiTexCoord1).xy;
-        entity = mc_Entity.xy;
+        blockId = mc_Entity.x;
 
         vec3 tangent = normalize(gl_NormalMatrix * at_tangent.xyz);
 	    vec3 binormal = normalize(gl_NormalMatrix * cross(at_tangent.xyz, gl_Normal) * sign(at_tangent.w));
@@ -61,19 +62,20 @@ INOUT mat3 TBN;
 	    matPBR materials;
 
         float maxCol = maxC(color.rgb); float satCol = rgb2hsv(color).y;
+        int rBlockId = int(blockId + 0.5);
 
         #ifdef DEFAULT_MAT
-            materials.metallic_m = (entity.x >= 10008 && entity.x <= 10010) || entity.x == 10015 ? 0.75 : 0.0;
-            materials.ss_m = (entity.x >= 10001 && entity.x <= 10004) || entity.x == 10007 || entity.x == 10011 || entity.x == 10013 ? sqrt(maxCol) * 0.8 : 0.0;
-            materials.emissive_m = entity.x == 10005 || entity.x == 10006 ? maxCol
-                : entity.x == 10014 ? satCol : 0.0;
-            materials.roughness_m = (entity.x >= 10008 && entity.x <= 10010) || entity.x == 10015 ? 0.2 * maxCol : 1.0;
+            materials.metallic_m = (rBlockId >= 10008 && rBlockId <= 10010) || rBlockId == 10015 ? 0.75 : 0.0;
+            materials.ss_m = (rBlockId >= 10001 && rBlockId <= 10004) || rBlockId == 10007 || rBlockId == 10011 || rBlockId == 10013 ? sqrt(maxCol) * 0.8 : 0.0;
+            materials.emissive_m = rBlockId == 10005 || rBlockId == 10006 ? maxCol
+                : rBlockId == 10014 ? satCol : 0.0;
+            materials.roughness_m = (rBlockId >= 10008 && rBlockId <= 10010) || rBlockId == 10015 ? 0.2 * maxCol : 1.0;
             materials.normal_m = mat3(gbufferModelViewInverse) * norm;
             materials.ambient_m = 1.0;
         #else
             getPBR(materials, TBN, texcoord);
-            materials.normal_m = mat3(gbufferModelViewInverse) * (entity.x == 10008 ? norm : materials.normal_m);
-            if(entity.x == 10008){
+            materials.normal_m = mat3(gbufferModelViewInverse) * (rBlockId == 10008 ? norm : materials.normal_m);
+            if(rBlockId == 10008){
                 materials.metallic_m = 0.75;
                 materials.roughness_m = 0.2 * maxCol;
                 materials.ambient_m = 1.0;
