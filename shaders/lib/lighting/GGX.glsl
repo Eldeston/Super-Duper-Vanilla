@@ -1,5 +1,5 @@
 float getGGX(vec3 norm, vec3 halfVec, float roughness){
-    float a2 = squared(roughness * roughness);
+    float a2 = roughness * roughness;
     float NdotH = max(dot(norm, halfVec), 0.0);
     float NdotH2 = NdotH * NdotH;
 	
@@ -10,8 +10,7 @@ float getGGX(vec3 norm, vec3 halfVec, float roughness){
     return nom / denom;
 }
 
-float getGeometrySchlickGGX(float NdotV, float roughness)
-{
+float getGeometrySchlickGGX(float NdotV, float roughness){
     float r = (roughness + 1.0);
     float k = (r * r) / 8.0;
 
@@ -21,8 +20,7 @@ float getGeometrySchlickGGX(float NdotV, float roughness)
     return num / denom;
 }
 
-float getGeometrySmith(vec3 norm, vec3 nViewPos, vec3 lightVec, float roughness)
-{
+float getGeometrySmith(vec3 norm, vec3 nViewPos, vec3 lightVec, float roughness){
     float NdotV = max(dot(norm, nViewPos), 0.0);
     float NdotL = max(dot(norm, lightVec), 0.0);
     float GGX2 = getGeometrySchlickGGX(NdotV, roughness);

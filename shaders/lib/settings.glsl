@@ -42,7 +42,7 @@
 #define GAMMA 1.2 // Gamma [0.05 0.1 0.15 0.2 0.25 0.3 0.35 0.4 0.45 0.5 0.55 0.6 0.65 0.7 0.75 0.8 0.85 0.9 0.95 1.0 1.05 1.1 1.15 1.2 1.25 1.3 1.35 1.4 1.45 1.5 1.55 1.6 1.65 1.7 1.75 1.8 1.85 1.9 1.95 2.0]
 
 #define WATER_BLUR_SIZE 8.0 // Water blur size, the smaller the sharper the waves look, the larger the smoother the waves look [1.0 2.0 4.0 8.0 12.0 16.0 32.0]
-#define WATER_DEPTH_SIZE 6 // The depth amount of the water, the smaller the more deeper it looks [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16]
+#define WATER_DEPTH_SIZE 16 // The depth amount of the water, the smaller the more deeper it looks [4 8 12 16 20]
 #define WATER_TILE_SIZE 24 // Tile size of the water [8 16 24 32 40 48 56 64 72 80]
 #define INVERSE // Inverses the heightmap of the water normals which is more realistic
 
@@ -53,25 +53,25 @@
 
 /*---------------------------------------------------------------------------------------------------------------------------*/
 
-#define LIGHT_COL_DAY vec3(210.0/255.0, 180.0/255.0, 150.0/255.0)
-#define LIGHT_COL_NIGHT vec3(15.0/255.0, 60.0/255.0, 120.0/255.0)
-#define LIGHT_COL_DAWN_DUSK vec3(1.0, 210.0/255.0, 90.0/255.0)
+#define LIGHT_COL_DAY vec3(2.0, 1.8, 1.6)
+#define LIGHT_COL_NIGHT vec3(0.2, 0.4, 0.8)
+#define LIGHT_COL_DAWN_DUSK vec3(1.2, 0.6, 0.3)
 
-#define SKY_COL_DAY vec3(100.0/255.0, 180.0/255.0, 1.0)
-#define SKY_COL_NIGHT vec3(0.0, 8.0/255.0, 32.0/255.0)
-#define SKY_COL_DAWN_DUSK vec3(50.0/255.0, 25.0/255.0, 62.5/255.0)
+#define SKY_COL_DAY vec3(0.2, 0.4, 0.8)
+#define SKY_COL_NIGHT vec3(0.0, 0.02, 0.08)
+#define SKY_COL_DAWN_DUSK vec3(0.2, 0.1, 0.25)
 
 #define FOG_COL_DAY vec3(0.9)
 #define FOG_COL_NIGHT vec3(0.05, 0.1, 0.2)
 #define FOG_COL_DAWN_DUSK vec3(0.05, 0.1, 0.2)
 
 #ifdef NETHER
-    #define BLOCK_LIGHT_COL vec3(1.0, 0.8, 0.6) // Nether light color
-    #define BLOCK_AMBIENT vec3(0.375, 0.375, 0.25) // Nether ambient
+    #define BLOCK_LIGHT_COL vec3(0.9, 0.9, 0.8) // Nether light color
+    // #define BLOCK_AMBIENT vec3(0.375, 0.375, 0.25) // Nether ambient
 #elif defined END
-    #define BLOCK_LIGHT_COL vec3(1.0, 0.9, 0.8) // The End light color
-    #define BLOCK_AMBIENT vec3(0.28, 0.28, 0.35) // The End ambient
+    #define BLOCK_LIGHT_COL vec3(0.9, 0.9, 0.8) // The End light color
+    // #define BLOCK_AMBIENT vec3(0.28, 0.28, 0.35) // The End ambient
 #else
-    #define BLOCK_LIGHT_COL vec3(0.99, 0.91, 0.84) // Overworld light color
-    #define BLOCK_AMBIENT vec3(0.3, 0.3, 0.4) // Overworld ambient
+    #define BLOCK_LIGHT_COL vec3(0.9, 0.9, 0.8) // Overworld light color
+    // #define BLOCK_AMBIENT vec3(0.3, 0.3, 0.4) // Overworld ambient
 #endif

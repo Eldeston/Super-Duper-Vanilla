@@ -3,18 +3,19 @@ const int RGBA32F = 1;
 const int RGB8 = 1;
 const int RGB16 = 1;
 
-const int gcolorFormat = RGBA16F;
-const int gdepthFormat = RGBA32F;
+const int gcolorFormat = RGBA32F;
+const int gdepthFormat = RGBA16F;
 const int colortex1Format = RGB16;
 const int colortex2Format = RGB8;
 const int colortex3Format = RGB8;
 const int colortex4Format = RGB8;
 const int colortex5Format = RGB8;
-const int colortex6Format = RGBA16F;
+const int colortex6Format = RGBA32F;
 
 const bool gcolorMipmapEnabled = true;
 const bool colortex6MipmapEnabled = true;
 
+const bool colortex5Clear = false;
 const bool colortex6Clear = false;
 
 // Depth texture
@@ -31,7 +32,7 @@ uniform sampler2D colortex3;
 // AO, cloud mask, alpha
 uniform sampler2D colortex4;
 
-// Unused
+// Reflections
 uniform sampler2D colortex5;
 // Exposure, and bloom buffer
 uniform sampler2D colortex6;

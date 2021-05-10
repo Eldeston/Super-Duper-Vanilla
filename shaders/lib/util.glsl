@@ -82,15 +82,19 @@ vec4 smootherstep(vec4 x){
 	return cubed(x) * (x * (x * 6. - 15.) + 10.);
 	}
 
+float getLuminance(vec3 col){
+	return col.r * 0.2125 + col.g * 0.7154 + col.b * 0.0721;
+}
+
 // Saturation function
 vec3 toneSaturation(vec3 col, float a){
 	// Algorithm from Chapter 16 of OpenGL Shading Language
-	return (col.r * 0.2125 + col.g * 0.7154 + col.b * 0.0721) * (1.0 - a) + col * a;
+	return getLuminance(col) * (1.0 - a) + col * a;
 }
 
 // Contrast function
 vec3 toneContrast(vec3 col, float a){
-	return saturate(0.5 * (1. - a) + col.rgb * a);
+	return saturate(0.5 * (1.0 - a) + col.rgb * a);
 }
 
 // Rotation function

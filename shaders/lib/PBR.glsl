@@ -7,7 +7,8 @@ void getPBR(inout matPBR material, mat3 TBN, vec2 st){
 	vec4 SRPSSE = texture2D(specular, st);
 
     // Encode and extract the materials
-    vec3 normalMap = vec3(normalAOH.xy * 2.0 - 1.0, sqrt(1.0 - dot(normalAOH.xy, normalAOH.xy)));
+    vec3 normalMap = normalAOH.xyz * 2.0 - 1.0;
+    normalMap.z = saturate(sqrt(1.0 - dot(normalMap.xy, normalMap.xy)));
     // Assign normal
     material.normal_m = normalize(TBN * normalMap);
 

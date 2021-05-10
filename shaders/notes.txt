@@ -11,7 +11,7 @@ colortex1 - Normals
 colortex2 - Lightmap.xy, subsurface scattering
 colortex3 - Metal, emissive, roughness
 colortex4 - AO, cloud mask, Alpha
-colortex5 - Unused
+colortex5 - Reflections
 colortex6 - Exposure/bloom buffer
 colortex7 - Unused
 

@@ -16,6 +16,7 @@
 
 #include "/lib/raymarching/volLighting.glsl"
 #include "/lib/raymarching/SSR.glsl"
+#include "/lib/raymarching/SSGI.glsl"
 
 #include "/lib/atmospherics/complexAtmo.glsl"
 #include "/lib/lighting/complexLighting.glsl"
@@ -49,7 +50,6 @@ INOUT vec2 texcoord;
             vec3 skyRender = getSkyRender(posVector.playerPos, mask, skyCol, lightCol);
 
             // Apply lighting
-            materials.albedo_t = materials.albedo_t * materials.ambient_m * getAmbient(materials, posVector);
             materials.albedo_t = complexLighting(materials, posVector, dither);
 
             // Apply atmospherics
@@ -57,7 +57,8 @@ INOUT vec2 texcoord;
             materials.albedo_t += getGodRays(posVector.playerPos, dither.y) * lightCol;
         }
 
-    /* DRAWBUFFERS:0 */
+    /* DRAWBUFFERS:05 */
         gl_FragData[0] = vec4(materials.albedo_t, 1); //gcolor
+        gl_FragData[1] = vec4(materials.albedo_t, 1); //colortex5
     }
 #endif
