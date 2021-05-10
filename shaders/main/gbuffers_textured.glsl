@@ -41,8 +41,6 @@ INOUT mat3 TBN;
     void main(){
         vec4 color = texture2D(texture, texcoord) * glcolor;
         vec2 nLmCoord = squared(lmcoord);
-        
-        color *= texture2D(lightmap, nLmCoord);
 
         vec3 normal = mat3(gbufferModelViewInverse) * norm;
 

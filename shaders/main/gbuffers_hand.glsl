@@ -32,7 +32,6 @@ INOUT vec4 glcolor;
         vec2 nLmCoord = squared(lmcoord);
 
 	    color.rgb = mix(color.rgb, entityColor.rgb, entityColor.a);
-	    color *= texture2D(lightmap, nLmCoord);
 
         vec3 normal = mat3(gbufferModelViewInverse) * norm;
 

@@ -15,10 +15,9 @@
     varying vec2 texcoord;
     varying vec4 glcolor;
 
-    void main() {
-        vec4 color = texture2D(texture, texcoord) * glcolor;
-
+    void main(){
+        discard;
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = color; //gcolor
+        gl_FragData[0] = vec4(0); //gcolor
     }
 #endif
