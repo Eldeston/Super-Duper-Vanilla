@@ -3,6 +3,8 @@
 #include "/lib/settings.glsl"
 #include "/lib/globalVar.glsl"
 
+#include "/lib/globalSamplers.glsl"
+
 #include "/lib/vertexWave.glsl"
 #include "/lib/PBR.glsl"
 
@@ -12,6 +14,7 @@ INOUT vec2 lmcoord;
 INOUT vec2 texcoord;
 
 INOUT vec3 norm;
+INOUT vec3 worldPos;
 
 INOUT vec4 glcolor;
 
@@ -25,6 +28,7 @@ INOUT mat3 TBN;
 
     void main(){
         vec4 vertexPos = gl_ModelViewMatrix * gl_Vertex;
+        vec3 camPos = (gbufferModelViewInverse)[3].xyz + cameraPosition;
 
         texcoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         lmcoord  = (gl_TextureMatrix[1] * gl_MultiTexCoord1).xy;
@@ -37,7 +41,9 @@ INOUT mat3 TBN;
 
 	    TBN = mat3(tangent, binormal, norm);
 
+        // Viewpos
         vertexPos = gbufferModelViewInverse * vertexPos;
+        worldPos = vertexPos.xyz + camPos;
 
 	    getWave(vertexPos.xyz, vertexPos.xyz + cameraPosition, texcoord, mc_midTexCoord, mc_Entity.x);
 
@@ -70,17 +76,31 @@ INOUT mat3 TBN;
             materials.emissive_m = rBlockId == 10005 || rBlockId == 10006 ? maxCol
                 : rBlockId == 10014 ? satCol : 0.0;
             materials.roughness_m = (rBlockId >= 10008 && rBlockId <= 10010) || rBlockId == 10015 ? 0.2 * maxCol : 1.0;
-            materials.normal_m = mat3(gbufferModelViewInverse) * norm;
+            materials.normal_m = norm;
             materials.ambient_m = 1.0;
         #else
-            getPBR(materials, TBN, texcoord);
-            materials.normal_m = mat3(gbufferModelViewInverse) * (rBlockId == 10008 ? norm : materials.normal_m);
+            // If water
             if(rBlockId == 10008){
-                materials.metallic_m = 0.75;
-                materials.roughness_m = 0.2 * maxCol;
+                color = vec4(color.rgb, 0.5);
+                materials.normal_m = norm;
+                materials.metallic_m = 1.0;
+                materials.ss_m = 0.0;
+                materials.emissive_m = 0.0;
+                materials.roughness_m = 0.0;
                 materials.ambient_m = 1.0;
+            } else {
+                getPBR(materials, TBN, texcoord);
             }
         #endif
+        materials.normal_m = mat3(gbufferModelViewInverse) * materials.normal_m;
+
+        if(rBlockId == 10008){
+            vec2 waterUv = worldPos.xz * (1.0 - materials.normal_m.y) + worldPos.xz * materials.normal_m.y;
+            vec4 waterData = H2NWater(waterUv);
+
+            vec3 waterNorm = normalize(TBN * waterData.xyz);
+		    materials.normal_m = mat3(gbufferModelViewInverse) * waterNorm;
+        }
 
         vec4 nGlcolor = glcolor * (1.0 - materials.emissive_m) + sqrt(sqrt(glcolor)) * materials.emissive_m;
 
@@ -93,16 +113,12 @@ INOUT mat3 TBN;
                 color.rgb = vec3(1);
             #endif
         #endif
-        
-        if(rBlockId == 10008) color.rgb *= 0.125;
-        
-        color.rgb *= texture2D(lightmap, nLmCoord).rgb * (1.0 - materials.emissive_m) + materials.emissive_m;
 
     /* DRAWBUFFERS:01234 */
         gl_FragData[0] = color; //gcolor
         gl_FragData[1] = vec4(materials.normal_m * 0.5 + 0.5, 1); //colortex1
         gl_FragData[2] = vec4(nLmCoord, materials.ss_m, 1); //colortex2
-        gl_FragData[3] = vec4(materials.metallic_m, materials.emissive_m, materials.roughness_m, 1); //colortex3
+        gl_FragData[3] = vec4(materials.metallic_m, materials.emissive_m, max(materials.roughness_m, 0.025), 1); //colortex3
         gl_FragData[4] = vec4(materials.ambient_m, 0, color.a, 1); //colortex4
     }
 #endif
