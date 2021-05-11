@@ -28,5 +28,5 @@ vec3 complexLighting(matPBR material, positionVectors posVector, vec3 dither){
 	material.albedo_t *= 1.0 - material.metallic_m;
 
 	// return reflectCol;
-    return material.albedo_t * (lightCol + GISky + material.light_m.x * BLOCK_LIGHT_COL + material.emissive_m) + specCol + reflectCol;
+    return material.albedo_t * (lightCol + (GISky + material.light_m.x * BLOCK_LIGHT_COL) * material.ambient_m + material.emissive_m) + specCol + reflectCol;
 }

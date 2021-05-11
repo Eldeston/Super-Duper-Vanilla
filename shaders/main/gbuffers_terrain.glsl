@@ -83,7 +83,7 @@ INOUT mat3 TBN;
             if(rBlockId == 10008){
                 color = vec4(color.rgb, 0.5);
                 materials.normal_m = norm;
-                materials.metallic_m = 1.0;
+                materials.metallic_m = 0.9;
                 materials.ss_m = 0.0;
                 materials.emissive_m = 0.0;
                 materials.roughness_m = 0.0;

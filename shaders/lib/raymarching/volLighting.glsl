@@ -14,5 +14,5 @@ vec3 getGodRays(vec3 playerPos, float dither){
 		vec3 rayCol = texture2D(shadowcolor0, shdPos.xy).rgb * shd1 * (1.0 - shd0) + shd0;
 		rayData = mix(rayCol, rayData, exp2(length(playerPos) * -0.0078125 * densityMult));
 	}
-	return rayData * float(isEyeInWater + 1) * 0.32 * (1.0 - newTwilight);
+	return rayData * float(isEyeInWater + 1) * VOL_LIGHT_BRIGHTNESS * (1.0 - newTwilight);
 }

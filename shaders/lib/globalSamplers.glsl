@@ -1,16 +1,21 @@
-const int RGBA16F = 1;
-const int RGBA32F = 1;
-const int RGB8 = 1;
 const int RGB16 = 1;
 
-const int gcolorFormat = RGBA32F;
-const int gdepthFormat = RGBA16F;
+const int RGB32 = 1;
+
+const int RGB16F = 1;
+const int RGBA16F = 1;
+
+const int RGB32F = 1;
+const int RGBA32F = 1;
+
+const int gcolorFormat = RGB16F;
+const int gdepthFormat = RGB16F;
 const int colortex1Format = RGB16;
-const int colortex2Format = RGB8;
-const int colortex3Format = RGB8;
-const int colortex4Format = RGB8;
-const int colortex5Format = RGB8;
-const int colortex6Format = RGBA32F;
+const int colortex2Format = RGB16;
+const int colortex3Format = RGB16;
+const int colortex4Format = RGB16;
+const int colortex5Format = RGB16;
+const int colortex6Format = RGB16F;
 
 const bool gcolorMipmapEnabled = true;
 const bool colortex6MipmapEnabled = true;
@@ -69,12 +74,12 @@ vec3 getRand3(vec2 st, int tile){
     float x = texture2D(noisetex, st * tile).x;
     float y = texture2D(noisetex, vec2(-st.x, st.y) * tile).x;
     float z = texture2D(noisetex, -st * tile).x;
-	return vec3(x, y, z);
+	return fract(vec3(x, y, z) + frameTimeCounter * NOISE_SPEED);
 }
 
 float getCellNoise(vec2 st){
     float d0 = texture2D(noisetex, st + frameTimeCounter * 0.00675).z;
-    float d1 = texture2D(noisetex, st * 4.0 - frameTimeCounter * 0.025).z;
+    float d1 = texture2D(noisetex, st * 4.0 - frameTimeCounter * 0.05).z;
     #ifdef INVERSE
         return 1.0 - d0 * 0.875 + d1 * 0.125;
     #else

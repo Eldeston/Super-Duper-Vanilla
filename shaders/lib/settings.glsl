@@ -23,23 +23,19 @@
 #define UNDERWATER_BLUR_SIZE 8.0 // Underwater blur size, may need to increase sample amount as the size increases [4.0 5.0 6.0 7.0 8.0 9.0 10.0 11.0 12.0 13.0 14.0 15.0 16.0]
 #define UNDERWATER_BLUR_SAMPLES 6 // Underwater blur samples, affects the quality of the blur. Does not affect if fast underwater blur is on! [8 10 12 14 16 18 20 22 24 26 28 30 32]
 
-#define LIGHTMAP_NOISE // Enable noise on lightmaps
-
-#define LIGHTMAP_NOISE_INTENSITY 0.05 // Lightmap noise intensity [0.05 0.1 0.15 0.2 0.25 0.3 0.35 0.4 0.45 0.5 0.55 0.6 0.65 0.7 0.75 0.8 0.85 0.9 0.95 1.0]
-
 #define AUTO_EXPOSURE // Auto exposure, can be potentionally buggy in certain situations
-#define SHADOW_EXPOSURE 1.2 // The amount of exposure in dark areas [0.05 0.1 0.15 0.2 0.25 0.3 0.35 0.4 0.45 0.5 0.55 0.6 0.65 0.7 0.75 0.8 0.85 0.9 0.95 1.0 1.05 1.1 1.15 1.2 1.25 1.3 1.35 1.4 1.45 1.5 1.55 1.6 1.65 1.7 1.75 1.8 1.85 1.9 1.95 2.0]
-#define HIGHLIGHT_EXPOSURE 0.8 // The amount of exposure in lit areas [0.05 0.1 0.15 0.2 0.25 0.3 0.35 0.4 0.45 0.5 0.55 0.6 0.65 0.7 0.75 0.8 0.85 0.9 0.95 1.0 1.05 1.1 1.15 1.2 1.25 1.3 1.35 1.4 1.45 1.5 1.55 1.6 1.65 1.7 1.75 1.8 1.85 1.9 1.95 2.0]
 
+/*
 #define UNDERWATER_DISTORTION // Distorts view when underwater
 #define DISTORT_AMOUNT 0.004 // Distortion amount [0.0005 0.001 0.0015 0.002 0.0025 0.003 0.0035 0.004 0.0045 0.005 0.0055 0.006 0.0065 0.007 0.0075 0.008 0.0085 0.009 0.0095 0.01]
 #define DISTORT_SPEED 2.0 // Distortion speed [1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0 10.0]
 #define DISTORT_FREQUENCY 64.0 // Distortion frequency [1.0 2.0 4.0 8.0 16.0 32.0 64.0 128.0 256.0]
+*/
 
 #define SATURATION 1.4 // Saturation [0.05 0.1 0.15 0.2 0.25 0.3 0.35 0.4 0.45 0.5 0.55 0.6 0.65 0.7 0.75 0.8 0.85 0.9 0.95 1.0 1.05 1.1 1.15 1.2 1.25 1.3 1.35 1.4 1.45 1.5 1.55 1.6 1.65 1.7 1.75 1.8 1.85 1.9 1.95 2.0]
 #define EXPOSURE 1.0 // Exposure [0.05 0.1 0.15 0.2 0.25 0.3 0.35 0.4 0.45 0.5 0.55 0.6 0.65 0.7 0.75 0.8 0.85 0.9 0.95 1.0 1.05 1.1 1.15 1.2 1.25 1.3 1.35 1.4 1.45 1.5 1.55 1.6 1.65 1.7 1.75 1.8 1.85 1.9 1.95 2.0]
 #define CONTRAST 1.1 // Contrast [0.05 0.1 0.15 0.2 0.25 0.3 0.35 0.4 0.45 0.5 0.55 0.6 0.65 0.7 0.75 0.8 0.85 0.9 0.95 1.0 1.05 1.1 1.15 1.2 1.25 1.3 1.35 1.4 1.45 1.5 1.55 1.6 1.65 1.7 1.75 1.8 1.85 1.9 1.95 2.0]
-#define GAMMA 1.2 // Gamma [0.05 0.1 0.15 0.2 0.25 0.3 0.35 0.4 0.45 0.5 0.55 0.6 0.65 0.7 0.75 0.8 0.85 0.9 0.95 1.0 1.05 1.1 1.15 1.2 1.25 1.3 1.35 1.4 1.45 1.5 1.55 1.6 1.65 1.7 1.75 1.8 1.85 1.9 1.95 2.0]
+#define GAMMA 1.0 // Gamma [0.05 0.1 0.15 0.2 0.25 0.3 0.35 0.4 0.45 0.5 0.55 0.6 0.65 0.7 0.75 0.8 0.85 0.9 0.95 1.0 1.05 1.1 1.15 1.2 1.25 1.3 1.35 1.4 1.45 1.5 1.55 1.6 1.65 1.7 1.75 1.8 1.85 1.9 1.95 2.0]
 
 #define WATER_BLUR_SIZE 8.0 // Water blur size, the smaller the sharper the waves look, the larger the smoother the waves look [1.0 2.0 4.0 8.0 12.0 16.0 32.0]
 #define WATER_DEPTH_SIZE 16 // The depth amount of the water, the smaller the more deeper it looks [4 8 12 16 20]
@@ -47,18 +43,21 @@
 #define INVERSE // Inverses the heightmap of the water normals which is more realistic
 
 #define SHADOW_FILTER // Enable soft shadow filtering, if enabled shadows will appear softer, this costs performance
-#define SHD_COL 
+#define SHD_COL
 
-#define DEFAULT_MAT // Enable inbuilt default PBR materials (emissiveMap, speculars, subsurface scaterring etc.)
+#define DEFAULT_MAT // Enable inbuilt default PBR materials(emissiveMap, speculars, subsurface scaterring etc.). Disable to use your PBR resource packs(Latest LabPBR ver. required)
+#define NOISE_SPEED 0.1 // The speed in which the noise randomises each frame. Set it zero if you want the noise to be constant each frame [0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
+
+#define VOL_LIGHT_BRIGHTNESS 0.5 // The brightness/amount of volumetric lighting [0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
 
 /*---------------------------------------------------------------------------------------------------------------------------*/
 
-#define LIGHT_COL_DAY vec3(2.0, 1.8, 1.6)
-#define LIGHT_COL_NIGHT vec3(0.2, 0.4, 0.8)
-#define LIGHT_COL_DAWN_DUSK vec3(1.2, 0.6, 0.3)
+#define LIGHT_COL_DAY vec3(2.0, 1.9, 1.8)
+#define LIGHT_COL_NIGHT vec3(0.1, 0.2, 0.4)
+#define LIGHT_COL_DAWN_DUSK vec3(1.2, 0.9, 0.3)
 
 #define SKY_COL_DAY vec3(0.2, 0.4, 0.8)
-#define SKY_COL_NIGHT vec3(0.0, 0.02, 0.08)
+#define SKY_COL_NIGHT vec3(0.0, 0.01, 0.04)
 #define SKY_COL_DAWN_DUSK vec3(0.2, 0.1, 0.25)
 
 #define FOG_COL_DAY vec3(0.9)

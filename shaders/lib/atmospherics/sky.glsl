@@ -39,5 +39,5 @@ vec3 getSkyRender(vec3 playerPos, float skyMask, vec3 skyCol, vec3 lightCol){
     float star = genStar(starPos * 0.128) * night * voidGradient;
 
     vec3 fogCol = skyCol * (0.5 * (1.0 - voidGradient) + voidGradient) * 0.75;
-    return vec3((star + sunMoon + lightRange * lightCol) * skyMask + mix(fogCol, skyCol, skyFogGradient));
+    return (star + sunMoon + lightRange * lightCol) * skyMask + mix(fogCol, skyCol, skyFogGradient);
 }

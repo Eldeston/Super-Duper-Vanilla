@@ -41,12 +41,13 @@ screen.LIGHTING=Lighting
     option.shadowMapResolution=Shadowmap resolution
     option.sunPathRotation=Light rotation
     option.SHADOW_FILTER=Soft shadow filter
+    option.VOL_LIGHT_BRIGHTNESS=Volumetric light amount
     screen.LIGHTING.comment=Lighting settings for shadow resolution, lightmap etc.
 
 WATER_BLUR_SIZE WATER_DEPTH_SIZE WATER_TILE_SIZE
 
 screen.PBR=PBR settings
-    option.DEFAULT_MAT=Default materials
+    option.DEFAULT_MAT=Default PBR materials
 
 screen.WATER_SETTINGS=Water settings
     option.WATER_BLUR_SIZE=Water blur size
@@ -56,4 +57,5 @@ screen.WATER_SETTINGS=Water settings
 screen.DEBUG=Debug
     option.WHITE_MODE=White mode
     option.WHITE_MODE_F=White mode foliage
-    screen.DEBUG.comment=Dev debug settings used to visualize certain things like ao, shadows etc.
+    option.NOISE_SPEED=Noise speed
+    screen.DEBUG.comment=Dev debug settings used to visualize certain things like ao, shadows etc. and other settings.

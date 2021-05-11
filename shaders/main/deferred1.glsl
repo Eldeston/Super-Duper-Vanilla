@@ -43,10 +43,11 @@ INOUT vec2 texcoord;
 	    getMaterial(materials, texcoord);
 
         // If the object is opaque render lighting sperately
-        if(materials.alpha_m == 1.0){
+        if(materials.alpha_m == 1){
             vec3 dither = getRand3(texcoord, 8) * 2.0 - 1.0;
             float mask = float(posVector.screenPos.z == 1);
             
+            // Get sky color
             vec3 skyRender = getSkyRender(posVector.playerPos, mask, skyCol, lightCol);
 
             // Apply lighting

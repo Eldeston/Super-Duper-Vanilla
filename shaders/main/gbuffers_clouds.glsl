@@ -27,7 +27,6 @@ INOUT vec4 glcolor;
         vec4 color = texture2D(texture, texcoord) * glcolor;
 
         vec3 normal = mat3(gbufferModelViewInverse) * norm;
-
     /* DRAWBUFFERS:01234 */
         gl_FragData[0] = color; //gcolor
         gl_FragData[1] = vec4(normal * 0.5 + 0.5, 1); //colortex1
