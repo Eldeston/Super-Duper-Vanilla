@@ -6,11 +6,13 @@ void getPBR(inout matPBR material, mat3 TBN, vec2 st){
 	vec4 normalAOH = texture2D(normals, st);
 	vec4 SRPSSE = texture2D(specular, st);
 
-    // Encode and extract the materials
+    // Decode and extract the materials
+    // Extract normals
     vec3 normalMap = normalAOH.xyz * 2.0 - 1.0;
-    normalMap.z = saturate(sqrt(1.0 - dot(normalMap.xy, normalMap.xy)));
+    if(length(normalMap.xy) > 1.0) normalMap.xy = normalize(normalMap.xy);
+    normalMap.z = sqrt(1.0 - dot(normalMap.xy, normalMap.xy));
     // Assign normal
-    material.normal_m = normalize(TBN * normalMap);
+    material.normal_m = normalize(TBN * normalize(clamp(normalMap, -1.0, 1.0)));
 
     // Assign ambient
     material.ambient_m = normalAOH.b;

@@ -31,7 +31,7 @@ INOUT vec2 texcoord;
             // Calculate luminance
             float lumi = maxC(colPrev);
             // Apply exposure
-            color /= max(0.25, lumi) * 2.0;
+            color /= clamp(lumi * 2.0, 0.5, 2.5);
         #endif
         // Clamp
         color = saturate(color * EXPOSURE);

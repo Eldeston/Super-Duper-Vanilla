@@ -1,3 +1,5 @@
+const int RGB8 = 1;
+
 const int RGB16 = 1;
 
 const int RGB32 = 1;
@@ -12,8 +14,8 @@ const int gcolorFormat = RGB16F;
 const int gdepthFormat = RGB16F;
 const int colortex1Format = RGB16;
 const int colortex2Format = RGB16;
-const int colortex3Format = RGB16;
-const int colortex4Format = RGB16;
+const int colortex3Format = RGB8;
+const int colortex4Format = RGB8;
 const int colortex5Format = RGB16;
 const int colortex6Format = RGB16F;
 
@@ -27,10 +29,10 @@ const bool colortex6Clear = false;
 uniform sampler2D depthtex0;
 // Main texture color 0
 uniform sampler2D gcolor;
-// Normal map buffer(rgb) 2
+// Normal map buffer(rgb)
 uniform sampler2D colortex1;
 
-// Lightmap coord(rg) and subsurface scattering 2
+// Lightmap coord(rg) and subsurface scattering
 uniform sampler2D colortex2;
 // Metallic, emissive, roughness
 uniform sampler2D colortex3;

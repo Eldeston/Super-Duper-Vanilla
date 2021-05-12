@@ -23,7 +23,7 @@ vec3 complexLighting(matPBR material, positionVectors posVector, vec3 dither){
 
 	// Sample reflections
     vec3 reflectCol = mix(reflectedSkyRender, texture2D(colortex5, reflectedScreenPos.xy).rgb, reflectedScreenPos.z);
-    reflectCol = max(reflectCol, vec3(0.0)) * fresnel * (1.0 - material.roughness_m); // Will change this later next patch
+    reflectCol = max(reflectCol, vec3(0.0)) * fresnel * squared(1.0 - material.roughness_m); // Will change this later next patch...
 
 	material.albedo_t *= 1.0 - material.metallic_m;
 
