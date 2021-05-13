@@ -33,8 +33,9 @@ INOUT vec2 texcoord;
             // Apply exposure
             color /= clamp(lumi * 2.0, 0.5, 2.5);
         #endif
+        color *= EXPOSURE;
         // Clamp
-        color = saturate(color * EXPOSURE);
+        color = saturate(color);
 
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(color, 1); //gcolor

@@ -6,7 +6,7 @@ vec3 getGodRays(vec3 playerPos, float dither){
 	vec3 rayData = vec3(0.0);
 	float densityMult = float(1 + isEyeInWater * 2);
 	for(int x = 0; x < 8; x++){
-		playerPos *= 0.765;
+		playerPos *= 0.766;
 		vec3 shdPos = toShadow(playerPos).xyz;
 		shdPos = distort(shdPos) * 0.5 + 0.5;
 		float shd0 = shadow2D(shadowtex0, shdPos.xyz).x;
