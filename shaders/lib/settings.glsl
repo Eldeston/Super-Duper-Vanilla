@@ -58,7 +58,7 @@
 
 #define SKY_COL_DAY vec3(0.2, 0.4, 0.8)
 #define SKY_COL_NIGHT vec3(0.0, 0.01, 0.04)
-#define SKY_COL_DAWN_DUSK vec3(0.2, 0.1, 0.25)
+#define SKY_COL_DAWN_DUSK vec3(0.12, 0.06, 0.24)
 
 #define FOG_COL_DAY vec3(0.9)
 #define FOG_COL_NIGHT vec3(0.05, 0.1, 0.2)
