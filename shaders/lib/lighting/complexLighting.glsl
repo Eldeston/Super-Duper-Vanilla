@@ -25,6 +25,7 @@ vec3 complexLighting(matPBR material, positionVectors posVector, vec3 dither){
 	vec3 SSRCol = texture2D(colortex5, reflectedScreenPos.xy).rgb;
 	// Transform it back to HDR
 	SSRCol = 1.0 / (1.0 - SSRCol) - 1.0;
+	
     vec3 reflectCol = mix(reflectedSkyRender, SSRCol, reflectedScreenPos.z);
     reflectCol = max(reflectCol, vec3(0.0)) * fresnel * squared(1.0 - material.roughness_m); // Will change this later next patch...
 
