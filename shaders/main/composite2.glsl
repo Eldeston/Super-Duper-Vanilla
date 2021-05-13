@@ -22,11 +22,21 @@ INOUT vec2 texcoord;
         #ifdef AUTO_EXPOSURE
             // Get lod
             float lod = int(exp2(min(viewWidth, viewHeight))) - 1.0;
-            // Get average scene brightenss...
+            // Get current average scene brightenss...
+            // Middle pixel
             vec3 colCurrent = texture2D(gcolor, vec2(0.5), lod).rgb;
+            // Top right pixel
+            colCurrent += texture2D(gcolor, vec2(1), lod).rgb;
+            // Top left pixel
+            colCurrent += texture2D(gcolor, vec2(0, 1), lod).rgb;
+            // Bottom right pixel
+            colCurrent += texture2D(gcolor, vec2(1, 0), lod).rgb;
+            // Bottom left pixel
+            colCurrent += texture2D(gcolor, vec2(0), lod).rgb;
+            // Previous color
             vec3 colPrev = texture2D(colortex6, vec2(0.5), lod).rgb;
             // Mix previous and current buffer...
-            vec3 finalCol = mix(colCurrent, colPrev, exp2(-1.0 * frameTime));
+            vec3 finalCol = mix(colCurrent / 5.0, colPrev, exp2(-1.0 * frameTime));
 
             // Calculate luminance
             float lumi = maxC(colPrev);
