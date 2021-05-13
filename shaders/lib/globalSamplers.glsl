@@ -13,7 +13,7 @@ const int RGBA32F = 1;
 const int gcolorFormat = RGB16F;
 const int gdepthFormat = RGB16F;
 const int colortex1Format = RGB16;
-const int colortex2Format = RGB16;
+const int colortex2Format = RGB8;
 const int colortex3Format = RGB8;
 const int colortex4Format = RGB8;
 const int colortex5Format = RGB16;
@@ -66,17 +66,13 @@ vec4 getRandTex(vec2 st, int tile){
 	return texture2D(noisetex, st * tile);
 }
 
-// Get random vec
-vec2 getRandVec(vec2 st, int tile){
-	float n = getRandTex(st, tile).x * PI * 2;
-	return vec2(cos(n), sin(n));
-}
-
 vec3 getRand3(vec2 st, int tile){
-    float x = texture2D(noisetex, st * tile).x;
-    float y = texture2D(noisetex, vec2(-st.x, st.y) * tile).x;
-    float z = texture2D(noisetex, -st * tile).x;
-	return fract(vec3(x, y, z) + frameTimeCounter * NOISE_SPEED);
+    st *= tile;
+    float x = texture2D(noisetex, st).x;
+    float y = texture2D(noisetex, vec2(-st.x, st.y)).x;
+    float z = texture2D(noisetex, -st).x;
+    if(NOISE_SPEED == 0.0) return fract(vec3(x, y, z) * 2.0);
+    return fract(vec3(x, y, z) * 2.0 + frameTimeCounter * NOISE_SPEED);
 }
 
 float getCellNoise(vec2 st){

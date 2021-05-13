@@ -16,16 +16,15 @@ vec2 offSetShd[4] = vec2[4](
     vec2(1.0, -1.0) / shadowMapResolution
 );
 
-vec3 getShdFilter(vec4 shdPos){
-	// Get random vector
-	vec2 shdRandVec = getRandVec(shdPos.xy, shdNoiseTile);
-
+vec3 getShdFilter(vec4 shdPos, float dither){
+	dither *= PI2;
+	vec2 randVec = vec2(sin(dither), cos(dither));
 	float shd0, shd1 = 0.0;
 	vec3 shdCol = vec3(0.0);
 	float lightDiff = saturate(shdPos.w);
 
 	for(int i = 0; i < 4; i++){
-		vec2 shdOffSet = shdRandVec * offSetShd[i];
+		vec2 shdOffSet = randVec * offSetShd[i];
 		shd0 = min(shadow2D(shadowtex0, vec3(shdPos.xy + shdOffSet, shdPos.z)).x, lightDiff);
 		shd1 = min(shadow2D(shadowtex1, vec3(shdPos.xy + shdOffSet, shdPos.z)).x, lightDiff) - shd0;
 
@@ -40,7 +39,7 @@ vec3 getShdFilter(vec4 shdPos){
 }
 
 // Shadow function
-vec3 getShdMapping(matPBR material, vec4 shdPos, vec3 nLightPos){
+vec3 getShdMapping(matPBR material, vec4 shdPos, vec3 nLightPos, float dither){
 	// Light diffuse
 	float lightDot = dot(material.normal_m, nLightPos) * (1.0 - material.ss_m) + material.ss_m;
 
@@ -52,7 +51,7 @@ vec3 getShdMapping(matPBR material, vec4 shdPos, vec3 nLightPos){
 
 		if(lightDot >= 0.0){
 			#ifdef SHADOW_FILTER
-				shdCol = getShdFilter(vec4(shdPos.xyz, lightDot));
+				shdCol = getShdFilter(vec4(shdPos.xyz, lightDot), dither);
 			#else
 				float lightDiff = saturate(lightDot);
 				float shd0, shd1 = 0.0;

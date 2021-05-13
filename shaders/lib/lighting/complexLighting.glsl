@@ -7,9 +7,9 @@ vec3 complexLighting(matPBR material, positionVectors posVector, vec3 dither){
 	vec3 lightVec = normalize(posVector.lightPos - posVector.playerPos);
 
 	// Get light color
-	vec3 lightCol = getShdMapping(material, posVector.shdPos, nLightPos) * lightCol;
+	vec3 lightCol = getShdMapping(material, posVector.shdPos, nLightPos, dither.r) * lightCol;
 	// Get reflected screenpos
-    vec3 reflectedScreenPos = getScreenPosReflections(posVector.screenPos, posVector.viewPos, mat3(gbufferModelView) * material.normal_m, dither, material.roughness_m);
+    vec3 reflectedScreenPos = getScreenPosReflections(posVector.screenPos, posVector.viewPos, mat3(gbufferModelView) * material.normal_m, dither.r, material.roughness_m);
 	// Get reflected sky
     vec3 reflectedSkyRender = getSkyRender(reflectedPlayerPos, 1.0, skyCol, lightCol) * material.light_m.y;
 	// Get globally illuminated sky
