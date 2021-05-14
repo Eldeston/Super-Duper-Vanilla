@@ -9,7 +9,7 @@ void getPBR(inout matPBR material, mat3 TBN, vec2 st){
     // Decode and extract the materials
     // Extract normals
     vec3 normalMap = normalAOH.xyz * 2.0 - 1.0;
-    if(length(normalMap.xy) > 1.0) normalMap.xy = normalize(normalMap.xy);
+    if(length(normalMap.xy) > 1) normalMap.xy = normalize(normalMap.xy);
     normalMap.z = sqrt(1.0 - dot(normalMap.xy, normalMap.xy));
     // Assign normal
     material.normal_m = normalize(TBN * normalize(clamp(normalMap, -1.0, 1.0)));
@@ -18,7 +18,7 @@ void getPBR(inout matPBR material, mat3 TBN, vec2 st){
     material.ambient_m = normalAOH.b;
 
     // Assign roughness
-    material.roughness_m = pow(1.0 - SRPSSE.r, 2.0);
+    material.roughness_m = saturate(pow(1.0 - SRPSSE.r, 2.0));
 
     // Extract reflectance
     float reflectance = SRPSSE.g * 255.0;
