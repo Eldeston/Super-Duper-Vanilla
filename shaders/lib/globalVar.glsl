@@ -25,6 +25,7 @@ uniform ivec2 eyeBrightnessSmooth;
 
 // Position uniforms
 uniform vec3 cameraPosition;
+uniform vec3 previousCameraPosition;
 uniform vec3 shadowLightPosition;
 
 // Vec3 color uniforms
@@ -34,10 +35,12 @@ uniform vec3 skyColor;
 // View matrix uniforms
 uniform mat4 gbufferModelView;
 uniform mat4 gbufferModelViewInverse;
+uniform mat4 gbufferPreviousModelView;
 
 // Projection matrix uniforms
 uniform mat4 gbufferProjection;
 uniform mat4 gbufferProjectionInverse;
+uniform mat4 gbufferPreviousProjection;
 
 // Shadow view matrix uniforms
 uniform mat4 shadowModelView;

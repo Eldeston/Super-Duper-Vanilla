@@ -15,7 +15,7 @@
 #include "/lib/lighting/shdMapping.glsl"
 
 #include "/lib/raymarching/volLighting.glsl"
-#include "/lib/raymarching/SSR.glsl"
+#include "/lib/raymarching/rayTracer.glsl"
 #include "/lib/raymarching/SSGI.glsl"
 
 #include "/lib/atmospherics/complexAtmo.glsl"
