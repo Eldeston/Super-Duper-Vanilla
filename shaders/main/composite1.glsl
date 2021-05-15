@@ -52,6 +52,7 @@ INOUT vec2 texcoord;
 
             // Apply lighting
             materials.albedo_t = complexLighting(materials, posVector, dither);
+            materials.albedo_t *= 1.0 - mask; // Mask out the rest
 
             // Apply atmospherics
             materials.albedo_t = getFog(posVector, materials.albedo_t, skyRender);

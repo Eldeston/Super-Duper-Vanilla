@@ -19,7 +19,7 @@ bool isNan(float x) {
 
 #ifdef FRAGMENT
     uniform sampler2D gcolor;
-    uniform sampler2D colortex1;
+    uniform sampler2D colortex3;
 
     void main(){
         vec3 color = texture2D(gcolor, texcoord).rgb;
@@ -30,7 +30,7 @@ bool isNan(float x) {
             color *= pow(max(1.0 - length(texcoord - 0.5), 0.0), VIGNETTE_INTENSITY);
         #endif
 
-        // color = texture2D(colortex1, texcoord).rgb;
+        // color = texture2D(colortex3, texcoord).rgb;
         // color = vec3(texture2D(colortex4, texcoord).z == 1.0);
         // color = vec3(float(texture2D(depthtex0, texcoord).r != 1.0));
 
