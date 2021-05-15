@@ -18,12 +18,12 @@ void getPBR(inout matPBR material, mat3 TBN, vec2 st){
     material.ambient_m = normalAOH.b;
 
     // Assign roughness
-    material.roughness_m = saturate(pow(1.0 - SRPSSE.r, 2.0));
+    material.roughness_m = pow(1.0 - SRPSSE.r, 2.0);
 
     // Extract reflectance
     float reflectance = SRPSSE.g * 255.0;
     // Assign metallic
-    material.metallic_m = min(1.0, reflectance / 229.0);
+    material.metallic_m = min(1.0, reflectance / 229.0); // * float(reflectance <= 229);
 
     // Extact SS
     float PSS = SRPSSE.b * 255.0;
@@ -31,5 +31,5 @@ void getPBR(inout matPBR material, mat3 TBN, vec2 st){
     material.ss_m = saturate((PSS - 64.0) / (255.0 - 64.0));
 
     // Assign emissive
-    material.emissive_m = min(1.0, SRPSSE.a / 254.0);
+    material.emissive_m = SRPSSE.a * float(SRPSSE.a != 1);
 }
