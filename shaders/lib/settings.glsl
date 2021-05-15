@@ -53,24 +53,21 @@
 /*---------------------------------------------------------------------------------------------------------------------------*/
 
 #define LIGHT_COL_DAY vec3(2.0, 1.9, 1.8)
-#define LIGHT_COL_NIGHT vec3(0.1, 0.2, 0.4)
+#define LIGHT_COL_NIGHT vec3(0.125, 0.25, 0.5)
 #define LIGHT_COL_DAWN_DUSK vec3(1.2, 0.9, 0.3)
 
-#define SKY_COL_DAY vec3(0.2, 0.6, 1.0)
+#define SKY_COL_DAY vec3(0.6, 0.8, 1)
 #define SKY_COL_NIGHT vec3(0.0, 0.01, 0.04)
 #define SKY_COL_DAWN_DUSK vec3(0.12, 0.06, 0.24)
 
-#define FOG_COL_DAY vec3(0.9)
-#define FOG_COL_NIGHT vec3(0.05, 0.1, 0.2)
-#define FOG_COL_DAWN_DUSK vec3(0.05, 0.1, 0.2)
+#define FOG_COL_DAY vec3(1)
+#define FOG_COL_NIGHT vec3(1)
+#define FOG_COL_DAWN_DUSK vec3(1)
 
 #ifdef NETHER
     #define BLOCK_LIGHT_COL vec3(1, 0.9, 0.8) // Nether light color
-    // #define BLOCK_AMBIENT vec3(0.375, 0.375, 0.25) // Nether ambient
 #elif defined END
     #define BLOCK_LIGHT_COL vec3(1, 0.9, 0.8) // The End light color
-    // #define BLOCK_AMBIENT vec3(0.28, 0.28, 0.35) // The End ambient
 #else
     #define BLOCK_LIGHT_COL vec3(1, 0.9, 0.8) // Overworld light color
-    // #define BLOCK_AMBIENT vec3(0.3, 0.3, 0.4) // Overworld ambient
 #endif

@@ -19,9 +19,9 @@ vec3 complexLighting(matPBR material, positionVectors posVector, vec3 dither){
 	vec3 specCol = getSpecGGX(material, fresnel, nPlayerPos, nLightPos, lightVec) * diffuseCol;
 
 	// Reflected direction
-	vec3 rayDir = reflect(normalize(posVector.viewPos), gBMVNorm) * (1.0 + dither.r * squared(material.roughness_m * material.roughness_m));
+	vec3 reflectedRayDir = reflect(normalize(posVector.viewPos), gBMVNorm) * (1.0 + dither.r * squared(material.roughness_m * material.roughness_m));
 	// Get reflected screenpos
-    vec3 reflectedScreenPos = rayTraceScene(posVector.screenPos, posVector.viewPos, rayDir);
+    vec3 reflectedScreenPos = rayTraceScene(posVector.screenPos, posVector.viewPos, reflectedRayDir);
 
 	// Previous frame reprojection from Chocapic13
 	vec4 viewPosPrev = gbufferProjectionInverse * vec4(vec3(reflectedScreenPos.xy, texture2D(depthtex0, reflectedScreenPos.xy).x) * 2.0 - 1.0, 1);
@@ -34,7 +34,7 @@ vec3 complexLighting(matPBR material, positionVectors posVector, vec3 dither){
 	reflectedScreenPos.xy = prevPosition.xy / prevPosition.w * 0.5 + 0.5;
 
 	// Get reflected sky
-    vec3 reflectedSkyRender = getSkyRender(reflectedPlayerPos, maxC(diffuseCol), skyCol, lightCol) * sqrt(material.light_m.y);
+    vec3 reflectedSkyRender = getSkyRender(reflectedPlayerPos, 1.0, skyCol, lightCol) * sqrt(material.light_m.y);
 
 	// Sample reflections
 	vec3 SSRCol = texture2D(colortex5, reflectedScreenPos.xy).rgb;
