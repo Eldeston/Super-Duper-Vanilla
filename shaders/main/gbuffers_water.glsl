@@ -81,13 +81,7 @@ INOUT mat3 TBN;
         #else
             // If water
             if(rBlockId == 10008){
-                color = vec4(color.rgb, 0.5);
                 materials.normal_m = norm;
-                materials.metallic_m = 0.9;
-                materials.ss_m = 0.0;
-                materials.emissive_m = 0.0;
-                materials.roughness_m = 0.0;
-                materials.ambient_m = 1.0;
             } else {
                 getPBR(materials, TBN, texcoord);
             }
@@ -97,9 +91,16 @@ INOUT mat3 TBN;
         if(rBlockId == 10008){
             vec2 waterUv = worldPos.xz * (1.0 - materials.normal_m.y) + worldPos.xz * materials.normal_m.y;
             vec4 waterData = H2NWater(waterUv);
+            waterData.w = waterData.w;
 
             vec3 waterNorm = normalize(TBN * waterData.xyz);
 		    materials.normal_m = mat3(gbufferModelViewInverse) * waterNorm;
+            materials.metallic_m = 0.99;
+            materials.ss_m = 0.0;
+            materials.emissive_m = 0.0;
+            materials.roughness_m = 0.0;
+            materials.ambient_m = 1.0;
+            color = vec4(color.rgb, 0.5);
         }
 
         vec4 nGlcolor = glcolor * (1.0 - materials.emissive_m) + sqrt(sqrt(glcolor)) * materials.emissive_m;
@@ -119,6 +120,6 @@ INOUT mat3 TBN;
         gl_FragData[1] = vec4(materials.normal_m * 0.5 + 0.5, 1); //colortex1
         gl_FragData[2] = vec4(nLmCoord, materials.ss_m, 1); //colortex2
         gl_FragData[3] = vec4(materials.metallic_m, materials.emissive_m, max(materials.roughness_m, 0.025), 1); //colortex3
-        gl_FragData[4] = vec4(materials.ambient_m, 0, color.a, 1); //colortex4
+        gl_FragData[4] = vec4(materials.ambient_m, 0, 0, 1); //colortex4
     }
 #endif
