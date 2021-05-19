@@ -18,7 +18,7 @@ INOUT vec2 texcoord;
 #ifdef FRAGMENT
     void main(){
         vec3 color = texture2D(BUFFER_VIEW, texcoord).rgb;
-        if(BUFFER_VIEW == gcolor) color = toneA(color);
+        color = toneA(color);
 
         #ifdef VIGNETTE
             // Apply vignette
