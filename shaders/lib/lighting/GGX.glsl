@@ -30,7 +30,7 @@ float getGeometrySmith(vec3 norm, vec3 nViewPos, vec3 lightVec, float roughness)
 }
 
 vec3 getFresnelSchlick(float cosTheta, vec3 F0){
-	return F0 + (1.0 - F0) * pow(max(1.0 - cosTheta, 0.0), 5.0);
+	return F0 + (1.0 - F0) * pow(saturate(1.0 - cosTheta), 5.0);
 }
 
 vec3 getSpecGGX(matPBR material, vec3 fresnel, vec3 nPlayerPos, vec3 nLightPos, vec3 lightVec){
