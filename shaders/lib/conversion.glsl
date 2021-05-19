@@ -22,3 +22,19 @@ vec4 toShadow(vec3 pos){
 vec3 toScreenSpacePos(vec2 st){
 	return vec3(st, texture2D(depthtex0, st).x);
 }
+
+vec2 toPrevScreenPos(vec2 currentPos){
+	// Previous frame reprojection from Chocapic13
+	vec4 viewPosPrev = gbufferProjectionInverse * vec4(vec3(currentPos.xy, texture2D(depthtex0, currentPos.xy).x) * 2.0 - 1.0, 1);
+	viewPosPrev /= viewPosPrev.w;
+	viewPosPrev = gbufferModelViewInverse * viewPosPrev;
+
+	vec4 prevPosition = viewPosPrev + vec4(cameraPosition - previousCameraPosition, 0);
+	prevPosition = gbufferPreviousModelView * prevPosition;
+	prevPosition = gbufferPreviousProjection * prevPosition;
+	return prevPosition.xy / prevPosition.w * 0.5 + 0.5;
+}
+
+float linearizeDepth(float depth) {
+	return (2.0 * near * far) / (far + near - depth * (far - near));
+}

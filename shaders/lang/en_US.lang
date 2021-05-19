@@ -44,10 +44,12 @@ screen.LIGHTING=Lighting
     option.VOL_LIGHT_BRIGHTNESS=Volumetric light amount
     screen.LIGHTING.comment=Lighting settings for shadow resolution, lightmap etc.
 
-WATER_BLUR_SIZE WATER_DEPTH_SIZE WATER_TILE_SIZE
-
 screen.PBR=PBR settings
     option.DEFAULT_MAT=Default PBR materials
+
+screen.RAY_TRACING=Ray tracing settings
+    option.SSGI_STEPS=SSGI steps
+    option.SSR_STEPS=SSR steps
 
 screen.WATER_SETTINGS=Water settings
     option.WATER_BLUR_SIZE=Water blur size
@@ -58,4 +60,5 @@ screen.DEBUG=Debug
     option.WHITE_MODE=White mode
     option.WHITE_MODE_F=White mode foliage
     option.NOISE_SPEED=Noise speed
+    option.BUFFER_VIEW=Buffer view
     screen.DEBUG.comment=Dev debug settings used to visualize certain things like ao, shadows etc. and other settings.

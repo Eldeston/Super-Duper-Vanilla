@@ -72,7 +72,12 @@ vec3 getRand3(vec2 st, int tile){
     float y = texture2D(noisetex, vec2(-st.x, st.y)).x;
     float z = texture2D(noisetex, -st).x;
     if(NOISE_SPEED == 0.0) return fract(vec3(x, y, z) * 2.0);
-    return fract(vec3(x, y, z) * 2.0 + frameTimeCounter * NOISE_SPEED);
+    return fract(vec3(x, y, z) * 4.0 + frameTimeCounter * NOISE_SPEED);
+}
+
+vec3 getRandWorld(vec3 worldPos, vec3 norm, int tile){
+    vec2 worldUv = norm.x * worldPos.zy + norm.y * worldPos.xz + norm.z * worldPos.yx;
+    return getRand3(worldUv, tile);
 }
 
 float getCellNoise(vec2 st){
