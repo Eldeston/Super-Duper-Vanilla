@@ -14,9 +14,11 @@
 #include "/lib/lighting/GGX.glsl"
 #include "/lib/lighting/shdMapping.glsl"
 
-#include "/lib/raymarching/volLighting.glsl"
 #include "/lib/raymarching/rayTracer.glsl"
-#include "/lib/raymarching/SSGI.glsl"
+#include "/lib/raymarching/volLighting.glsl"
+
+#include "/lib/lighting/SSGI.glsl"
+#include "/lib/lighting/SSR.glsl"
 
 #include "/lib/atmospherics/complexAtmo.glsl"
 #include "/lib/lighting/complexLighting.glsl"
@@ -42,6 +44,8 @@ INOUT vec2 texcoord;
 	    matPBR materials;
 	    getMaterial(materials, texcoord);
 
+        vec3 reflectBuffer = materials.albedo_t;
+
         // If the object is opaque render lighting sperately
         if(materials.alpha_m == 1){
             vec3 dither = getRand3(texcoord, 8);
@@ -56,12 +60,13 @@ INOUT vec2 texcoord;
 
             // Apply atmospherics
             materials.albedo_t = getFog(posVector, materials.albedo_t, skyRender);
+            reflectBuffer = materials.albedo_t;
             materials.albedo_t += getGodRays(posVector.playerPos, dither.y) * lightCol;
         }
 
     /* DRAWBUFFERS:05 */
         gl_FragData[0] = vec4(materials.albedo_t, 1); //gcolor
         // Apparently I have to transform it to 0-1 range then back to HDR with the reflection buffer due to an annoying bug...
-        gl_FragData[1] = vec4(materials.albedo_t / (materials.albedo_t + 1.0), 1); //colortex5
+        gl_FragData[1] = vec4(reflectBuffer / (reflectBuffer + 1.0), 1); //colortex5
     }
 #endif

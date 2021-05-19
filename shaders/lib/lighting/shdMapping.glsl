@@ -7,23 +7,21 @@ uniform sampler2D shadowcolor0;
 
 // Shadow bias
 const float shdBias = 0.025; // Don't go below it otherwise it'll mess up lighting
-const float offSetNumerator = 1.0;
 
-vec2 offSetShd[4] = vec2[4](
-    vec2(1.0 / shadowMapResolution),
-    vec2(-1.0 / shadowMapResolution),
-    vec2(-1.0, 1.0) / shadowMapResolution,
-    vec2(1.0, -1.0) / shadowMapResolution
+vec2 offSetShd[3] = vec2[3](
+    vec2(0),
+    vec2(-1) / shadowMapResolution,
+    vec2(1) / shadowMapResolution
 );
 
 vec3 getShdFilter(vec4 shdPos, float dither){
 	dither *= PI2;
 	vec2 randVec = vec2(sin(dither), cos(dither));
 	float shd0, shd1 = 0.0;
-	vec3 shdCol = vec3(0.0);
-	float lightDiff = saturate(shdPos.w);
+	vec3 shdCol = vec3(0);
+	float lightDiff = max(0.0, shdPos.w);
 
-	for(int i = 0; i < 4; i++){
+	for(int i = 1; i < 3; i++){
 		vec2 shdOffSet = randVec * offSetShd[i];
 		shd0 = min(shadow2D(shadowtex0, vec3(shdPos.xy + shdOffSet, shdPos.z)).x, lightDiff);
 		shd1 = min(shadow2D(shadowtex1, vec3(shdPos.xy + shdOffSet, shdPos.z)).x, lightDiff) - shd0;
@@ -35,15 +33,14 @@ vec3 getShdFilter(vec4 shdPos, float dither){
 		#endif
 	}
 
-	return shdCol * 0.25;
+	return shdCol * 0.333;
 }
 
 // Shadow function
 vec3 getShdMapping(matPBR material, vec4 shdPos, vec3 nLightPos, float dither){
 	// Light diffuse
 	float lightDot = dot(material.normal_m, nLightPos) * (1.0 - material.ss_m) + material.ss_m;
-
-	vec3 shdCol = vec3(0.0);
+	vec3 shdCol = vec3(0);
 
 	#ifndef NETHER
 		shdPos.xyz = distort(shdPos.xyz, shdPos.w) * 0.5 + 0.5;

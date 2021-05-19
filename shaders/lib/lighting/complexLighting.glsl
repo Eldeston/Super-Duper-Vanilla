@@ -6,11 +6,23 @@ vec3 complexLighting(matPBR material, positionVectors posVector, vec3 dither){
     vec3 nPlayerPos = normalize(-posVector.playerPos);
 	vec3 lightVec = normalize(posVector.lightPos - posVector.playerPos);
 	vec3 gBMVNorm = mat3(gbufferModelView) * material.normal_m;
+	vec3 nDither = dither * 2.0 - 1.0;
 
-	// Get light diffuse color
+	/* -Global illumination- */
+
+	// Get direct light diffuse color
 	vec3 diffuseCol = getShdMapping(material, posVector.shdPos, nLightPos, dither.r) * lightCol;
 	// Get globally illuminated sky
 	vec3 GISky = getSkyRender(material.normal_m, 0.0, skyCol, lightCol) * material.light_m.y;
+
+	#ifdef SSGI
+		// Get SSGI
+		vec3 GIcol = getSSGICol(posVector.viewPos, posVector.screenPos, gBMVNorm, dither.xy);
+	#else
+		vec3 GIcol = vec3(0);
+	#endif
+
+	/* -Reflections- */
 
 	// Get fresnel
     vec3 F0 = mix(vec3(0.04), material.albedo_t, material.metallic_m);
@@ -18,34 +30,21 @@ vec3 complexLighting(matPBR material, positionVectors posVector, vec3 dither){
 	// Get specular GGX
 	vec3 specCol = getSpecGGX(material, fresnel, nPlayerPos, nLightPos, lightVec) * diffuseCol;
 
-	// Reflected direction
-	vec3 reflectedRayDir = reflect(normalize(posVector.viewPos), gBMVNorm) * (1.0 + dither.r * squared(material.roughness_m * material.roughness_m));
-	// Get reflected screenpos
-    vec3 reflectedScreenPos = rayTraceScene(posVector.screenPos, posVector.viewPos, reflectedRayDir);
-
-	// Previous frame reprojection from Chocapic13
-	vec4 viewPosPrev = gbufferProjectionInverse * vec4(vec3(reflectedScreenPos.xy, texture2D(depthtex0, reflectedScreenPos.xy).x) * 2.0 - 1.0, 1);
-	viewPosPrev /= viewPosPrev.w;
-	viewPosPrev = gbufferModelViewInverse * viewPosPrev;
-
-	vec4 prevPosition = viewPosPrev + vec4(cameraPosition - previousCameraPosition, 0);
-	prevPosition = gbufferPreviousModelView * prevPosition;
-	prevPosition = gbufferPreviousProjection * prevPosition;
-	reflectedScreenPos.xy = prevPosition.xy / prevPosition.w * 0.5 + 0.5;
-
+	#ifdef SSR
+		vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.screenPos, gBMVNorm, nDither, material.roughness_m);
+	#else
+		vec4 SSRCol = vec4(0);
+	#endif
+	
 	// Get reflected sky
-    vec3 reflectedSkyRender = getSkyRender(reflectedPlayerPos, 1.0, skyCol, lightCol) * sqrt(material.light_m.y);
+    vec3 reflectedSkyRender = getSkyRender(reflectedPlayerPos, material.light_m.y, skyCol, lightCol) * sqrt(material.light_m.y);
 
-	// Sample reflections
-	vec3 SSRCol = texture2D(colortex5, reflectedScreenPos.xy).rgb;
-	// Transform it back to HDR
-	SSRCol = 1.0 / (1.0 - SSRCol) - 1.0;
 	// Mask reflections
-    vec3 reflectCol = mix(reflectedSkyRender, SSRCol, reflectedScreenPos.z);
-    reflectCol = max(reflectCol, vec3(0)) * fresnel * squared(1.0 - material.roughness_m); // Will change this later next patch...
+    vec3 reflectCol = mix(reflectedSkyRender, SSRCol.rgb, SSRCol.a);
+    reflectCol = reflectCol * fresnel * squared(1.0 - material.roughness_m); // Will change this later next patch...
 
 	material.albedo_t *= 1.0 - material.metallic_m;
 
-	// return reflectCol;
-    return material.albedo_t * (diffuseCol + (GISky + material.light_m.x * BLOCK_LIGHT_COL) * material.ambient_m + material.emissive_m) + specCol + reflectCol;
+	/* Add lighting */
+    return material.albedo_t * (diffuseCol + (GISky + material.light_m.x * BLOCK_LIGHT_COL) * material.ambient_m + GIcol + material.emissive_m) + specCol + reflectCol;
 }
