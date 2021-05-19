@@ -23,7 +23,7 @@ void getPBR(inout matPBR material, mat3 TBN, vec2 st){
     // Extract reflectance
     float reflectance = SRPSSE.g * 255.0;
     // Assign metallic
-    material.metallic_m = min(1.0, reflectance / 229.0); // * float(reflectance <= 229);
+    material.metallic_m = reflectance <= 229 ? reflectance / 229.0 : 0.99;
 
     // Extact SS
     float PSS = SRPSSE.b * 255.0;
