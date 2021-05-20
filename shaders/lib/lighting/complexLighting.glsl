@@ -38,11 +38,11 @@ vec3 complexLighting(matPBR material, positionVectors posVector, vec3 dither){
 	#endif
 	
 	// Get reflected sky
-    vec3 reflectedSkyRender = getSkyRender(reflectedPlayerPos, pow(material.light_m.y, 1.0 / 5.0), skyCol, lightCol) * sqrt(material.light_m.y);
+    vec3 reflectedSkyRender = getSkyRender(reflectedPlayerPos, pow(material.light_m.y, 1.0 / 4.0), skyCol, lightCol) * material.light_m.y;
 
 	// Mask reflections
     vec3 reflectCol = mix(reflectedSkyRender, SSRCol.rgb, SSRCol.a);
-    reflectCol = reflectCol * fresnel * (1.0 - material.roughness_m); // Will change this later next patch...
+    reflectCol = reflectCol * fresnel * sqrt(1.0 - material.roughness_m); // Will change this later next patch...
 
 	material.albedo_t *= 1.0 - material.metallic_m;
 

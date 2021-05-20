@@ -47,7 +47,7 @@ INOUT vec2 texcoord;
         // Clamp
         color = saturate(color);
         // A simple tonemap with the help of Desmos...
-        color = mix(color, pow(color, vec3(1.2)), color) / 1.2;
+        color = mix(color, pow(color, vec3(1.2)), color);
 
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(color, 1); //gcolor

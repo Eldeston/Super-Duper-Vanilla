@@ -65,7 +65,7 @@
 
 #define SKY_COL_DAY vec3(0.6, 0.8, 1)
 #define SKY_COL_NIGHT vec3(0.0125, 0.025, 0.1)
-#define SKY_COL_DAWN_DUSK vec3(0.16, 0.08, 0.24)
+#define SKY_COL_DAWN_DUSK vec3(0.24, 0.08, 0.16)
 
 #ifdef NETHER
     #define BLOCK_LIGHT_COL vec3(1, 0.9, 0.8) // Nether light color

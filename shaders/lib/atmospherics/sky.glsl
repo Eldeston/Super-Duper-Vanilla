@@ -19,7 +19,7 @@ vec3 getSkyRender(vec3 playerPos, float skyMask, vec3 skyCol, vec3 lightCol){
 
     if(isEyeInWater >= 1){
         float waterVoid = smootherstep(nPlayerPos.y + (eyeBrightFact - 0.56));
-        skyCol = mix(fogColor * 0.72, skyCol, waterVoid);
+        skyCol = mix(fogColor, skyCol, waterVoid);
     }
     #ifdef NETHER
         return fogColor;
