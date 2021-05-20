@@ -20,8 +20,8 @@ float getGeometrySchlickGGX(float NdotV, float roughness){
     return num / denom;
 }
 
-float getGeometrySmith(vec3 norm, vec3 nViewPos, vec3 lightVec, float roughness){
-    float NdotV = max(dot(norm, nViewPos), 0.0);
+float getGeometrySmith(vec3 norm, vec3 nPlayerPos, vec3 lightVec, float roughness){
+    float NdotV = max(dot(norm, nPlayerPos), 0.0);
     float NdotL = max(dot(norm, lightVec), 0.0);
     float GGX2 = getGeometrySchlickGGX(NdotV, roughness);
     float GGX1 = getGeometrySchlickGGX(NdotL, roughness);
