@@ -61,7 +61,7 @@ INOUT vec2 texcoord;
             // Apply atmospherics
             materials.albedo_t = getFog(posVector, materials.albedo_t, skyRender);
             reflectBuffer = materials.albedo_t;
-            materials.albedo_t += getGodRays(posVector.playerPos, dither.y) * lightCol;
+            materials.albedo_t += getGodRays(posVector.playerPos, posVector.worldPos.y, dither.y) * lightCol;
         }
 
     /* DRAWBUFFERS:05 */

@@ -102,13 +102,13 @@ INOUT mat3 TBN;
             color = vec4(color.rgb, 0.5);
         }
 
-        vec4 nGlcolor = glcolor * (1.0 - materials.emissive_m) + sqrt(sqrt(glcolor)) * materials.emissive_m;
+        vec3 nGlcolor = glcolor.rgb * (1.0 - materials.emissive_m) + sqrt(sqrt(glcolor.rgb)) * materials.emissive_m;
 
         #ifndef WHITE_MODE
-            color.rgb *= nGlcolor.rgb;
+            color.rgb *= nGlcolor;
         #else
             #ifdef WHITE_MODE_F
-                color.rgb = nGlcolor.rgb;
+                color.rgb = nGlcolor;
             #else
                 color.rgb = vec3(1);
             #endif
@@ -119,6 +119,6 @@ INOUT mat3 TBN;
         gl_FragData[1] = vec4(materials.normal_m * 0.5 + 0.5, 1); //colortex1
         gl_FragData[2] = vec4(lmcoord, materials.ss_m, 1); //colortex2
         gl_FragData[3] = vec4(materials.metallic_m, materials.emissive_m, max(materials.roughness_m, 0.025), 1); //colortex3
-        gl_FragData[4] = vec4(materials.ambient_m, 0, 0, 1); //colortex4
+        gl_FragData[4] = vec4(materials.ambient_m * glcolor.a, 0, 0, 1); //colortex4
     }
 #endif

@@ -48,6 +48,8 @@ uniform sampler2D colortex7;
 
 // Default resolution
 const int noiseTextureResolution = 256;
+// Default AO
+const float ambientOcclusionLevel = 1.0;
 
 // Noise sample, r for blue noise, g for white noise, and b for cell noise
 uniform sampler2D noisetex;

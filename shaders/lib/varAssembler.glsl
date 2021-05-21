@@ -22,7 +22,7 @@ void getPosVectors(inout positionVectors posVec, vec2 st){
 	posVec.viewPos = toView(posVec.screenPos);
 	posVec.playerPos = mat3(gbufferModelViewInverse) * posVec.viewPos;
 	posVec.worldPos = posVec.playerPos + gbufferModelViewInverse[3].xyz;
-	posVec.worldPos.y /= 128.0;
+	posVec.worldPos.y /= 256.0;
 	posVec.lightPos = mat3(gbufferModelViewInverse) * shadowLightPosition;
 	
 	posVec.shdPos = toShadow(posVec.playerPos);

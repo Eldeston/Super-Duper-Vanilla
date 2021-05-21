@@ -1,8 +1,7 @@
-vec3 getGodRays(vec3 playerPos, float dither){
+vec3 getGodRays(vec3 playerPos, float worldPosY, float dither){
 	#if defined NETHER || defined END
 		return vec3(0);
 	#endif
-	float worldPosY = (playerPos.y + gbufferModelViewInverse[3].y) / 128.0;
 	playerPos *= 1.0 + dither * 0.3333;
 
 	vec3 rayData = vec3(0.0);
