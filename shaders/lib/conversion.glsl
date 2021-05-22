@@ -34,7 +34,3 @@ vec2 toPrevScreenPos(vec2 currentPos){
 	prevPosition = gbufferPreviousProjection * prevPosition;
 	return prevPosition.xy / prevPosition.w * 0.5 + 0.5;
 }
-
-float linearizeDepth(float depth) {
-	return (2.0 * near * far) / (far + near - depth * (far - near));
-}

@@ -28,8 +28,10 @@ struct positionVectors{
     vec3 clipPos;
     // View position
     vec3 viewPos;
-    // Player pos
-    vec3 playerPos;
+    // Player pos from the eye
+    vec3 eyePlayerPos;
+    // Player pos from the foot
+    vec3 feetPlayerPos;
     // World/scene position
     vec3 worldPos;
     // Light position

@@ -20,10 +20,11 @@ void getPosVectors(inout positionVectors posVec, vec2 st){
     // Assign positions
 	posVec.screenPos = toScreenSpacePos(st);
 	posVec.viewPos = toView(posVec.screenPos);
-	posVec.playerPos = mat3(gbufferModelViewInverse) * posVec.viewPos;
-	posVec.worldPos = posVec.playerPos + gbufferModelViewInverse[3].xyz;
-	posVec.worldPos.y /= 256.0;
+	posVec.eyePlayerPos = mat3(gbufferModelViewInverse) * posVec.viewPos;
+	posVec.feetPlayerPos = posVec.eyePlayerPos + gbufferModelViewInverse[3].xyz;
+	posVec.worldPos = posVec.feetPlayerPos + cameraPosition;
+	posVec.worldPos.y /= 256.0; // Divide by max build height...
 	posVec.lightPos = mat3(gbufferModelViewInverse) * shadowLightPosition;
 	
-	posVec.shdPos = toShadow(posVec.playerPos);
+	posVec.shdPos = toShadow(posVec.feetPlayerPos);
 }

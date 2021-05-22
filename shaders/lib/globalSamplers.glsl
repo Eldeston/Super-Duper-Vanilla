@@ -18,12 +18,14 @@ const int colortex3Format = RGB8;
 const int colortex4Format = RGB8;
 const int colortex5Format = RGB16;
 const int colortex6Format = RGB16F;
+const int colortex7Format = RGB16;
 
 const bool gcolorMipmapEnabled = true;
 const bool colortex6MipmapEnabled = true;
 
 const bool colortex5Clear = false;
 const bool colortex6Clear = false;
+const bool colortex7Clear = false;
 
 // Depth texture
 uniform sampler2D depthtex0;

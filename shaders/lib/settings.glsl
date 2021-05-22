@@ -52,7 +52,7 @@
 #define SSR_STEPS 24 // SSR steps, more steps means more quality, and more quality means more performance [16 20 24 28 32]
 
 #define DEFAULT_MAT // Enable inbuilt default PBR materials(emissiveMap, speculars, subsurface scaterring etc.). Disable to use your PBR resource packs(Latest LabPBR ver. required)
-#define NOISE_SPEED 0.1 // The speed in which the noise randomises each frame. Set it zero if you want the noise to be constant each frame [0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
+#define NOISE_SPEED 1.0 // The speed in which the noise randomises each frame. Set it zero if you want the noise to be constant each frame [0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
 #define BUFFER_VIEW gcolor // Views buffers. colortex1 views normals(in 0-1 range), colortex2 views lightmap and subsurface scattering material, colortex3-4 are the rest of the materials, colortex5 for reflection buffer, colortex6 for exposure buffer and colortex7 remains unused will output a black screen. [gcolor colortex1 colortex2 colortex3 colortex4 colortex5 colortex6 colortex7]
 
 #define VOL_LIGHT_BRIGHTNESS 0.5 // The brightness/amount of volumetric lighting, set it to zero to disable it [0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
@@ -67,10 +67,4 @@
 #define SKY_COL_NIGHT vec3(0.0125, 0.025, 0.1)
 #define SKY_COL_DAWN_DUSK vec3(0.24, 0.08, 0.16)
 
-#ifdef NETHER
-    #define BLOCK_LIGHT_COL vec3(1, 0.9, 0.8) // Nether light color
-#elif defined END
-    #define BLOCK_LIGHT_COL vec3(1, 0.9, 0.8) // The End light color
-#else
-    #define BLOCK_LIGHT_COL vec3(1, 0.9, 0.8) // Overworld light color
-#endif
+#define BLOCK_LIGHT_COL vec3(1, 0.9, 0.8)

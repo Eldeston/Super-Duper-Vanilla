@@ -52,7 +52,7 @@ INOUT vec2 texcoord;
             float mask = float(posVector.screenPos.z == 1);
             
             // Get sky color
-            vec3 skyRender = getSkyRender(posVector.playerPos, mask, skyCol, lightCol);
+            vec3 skyRender = getSkyRender(posVector.eyePlayerPos, mask, skyCol, lightCol);
 
             // Apply lighting
             materials.albedo_t = complexLighting(materials, posVector, dither);
@@ -61,7 +61,7 @@ INOUT vec2 texcoord;
             // Apply atmospherics
             materials.albedo_t = getFog(posVector, materials.albedo_t, skyRender);
             reflectBuffer = materials.albedo_t;
-            materials.albedo_t += getGodRays(posVector.playerPos, posVector.worldPos.y, dither.y) * lightCol;
+            materials.albedo_t += getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.y) * lightCol;
         }
 
     /* DRAWBUFFERS:05 */
