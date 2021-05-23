@@ -22,24 +22,26 @@ INOUT vec2 texcoord;
         #ifdef AUTO_EXPOSURE
             // Get lod
             float lod = int(exp2(min(viewWidth, viewHeight))) - 1.0;
-            // Get current average scene brightenss...
+            
+            // Get current average scene luminance...
             // Middle pixel
-            vec3 colCurrent = texture2D(gcolor, vec2(0.5), lod).rgb;
+            float lumiCurrent = maxC(texture2D(gcolor, vec2(0.5), lod).rgb);
             // Top right pixel
-            colCurrent += texture2D(gcolor, vec2(1), lod).rgb;
+            lumiCurrent += maxC(texture2D(gcolor, vec2(1), lod).rgb);
             // Top left pixel
-            colCurrent += texture2D(gcolor, vec2(0, 1), lod).rgb;
+            lumiCurrent += maxC(texture2D(gcolor, vec2(0, 1), lod).rgb);
             // Bottom right pixel
-            colCurrent += texture2D(gcolor, vec2(1, 0), lod).rgb;
+            lumiCurrent += maxC(texture2D(gcolor, vec2(1, 0), lod).rgb);
             // Bottom left pixel
-            colCurrent += texture2D(gcolor, vec2(0), lod).rgb;
-            // Previous color
-            vec3 colPrev = texture2D(colortex6, vec2(0.5), lod).rgb;
+            lumiCurrent += maxC(texture2D(gcolor, vec2(0), lod).rgb);
+
+            // Previous max luminance
+            float lumiPrev = texture2D(colortex6, vec2(0.5), lod).r;
             // Mix previous and current buffer...
-            vec3 finalCol = mix(colCurrent / 5.0, colPrev, exp2(-1.0 * frameTime));
+            float finalLumi = mix(lumiCurrent / 5.0, lumiPrev, exp2(-1.0 * frameTime));
 
             // Calculate luminance
-            float lumi = maxC(colPrev);
+            float lumi = finalLumi;
             // Apply exposure
             color /= max(lumi * 2.0, 0.5);
         #endif
@@ -47,14 +49,14 @@ INOUT vec2 texcoord;
         // Clamp
         color = saturate(color);
         // A simple tonemap with the help of Desmos...
-        color = mix(color, pow(color, vec3(1.2)), color);
+        color = mix(color, pow(color / 1.2, vec3(1.2)), color);
 
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(color, 1); //gcolor
 
         #ifdef AUTO_EXPOSURE
         /* DRAWBUFFERS:06 */
-            gl_FragData[1] = vec4(finalCol, 1); //colortex6
+            gl_FragData[1] = vec4(finalLumi, 0, 0, 1); //colortex6
         #endif
     }
 #endif

@@ -5,14 +5,16 @@ vec3 complexLighting(matPBR material, positionVectors posVector, vec3 dither){
 	vec3 nLightPos = normalize(posVector.lightPos);
     vec3 nEyePlayerPos = normalize(-posVector.eyePlayerPos);
 	vec3 lightVec = normalize(posVector.lightPos - posVector.eyePlayerPos);
+
 	vec3 gBMVNorm = mat3(gbufferModelView) * material.normal_m;
 	vec3 nDither = dither * 2.0 - 1.0;
-	material.light_m = material.light_m;
+	float smoothness = 1.0 - material.roughness_m;
+	float sqrtSmoothness = sqrt(smoothness);
 
 	/* -Global illumination- */
 
 	// Get direct light diffuse color
-	vec3 diffuseCol = getShdMapping(material, posVector.shdPos, nLightPos, dither.r) * lightCol;
+	vec3 diffuseCol = getShdMapping(posVector.shdPos, material.normal_m, nLightPos, dither.r, material.ss_m) * lightCol;
 	// Get globally illuminated sky
 	vec3 GISky = getSkyRender(material.normal_m, 0.0, skyCol, lightCol) * cubed(material.light_m.y);
 
@@ -38,11 +40,11 @@ vec3 complexLighting(matPBR material, positionVectors posVector, vec3 dither){
 	#endif
 	
 	// Get reflected sky
-    vec3 reflectedSkyRender = getSkyRender(reflectedEyePlayerPos, pow(material.light_m.y, 1.0 / 4.0), skyCol, lightCol) * material.light_m.y;
+    vec3 reflectedSkyRender = getSkyRender(reflectedEyePlayerPos, pow(material.light_m.y, 1.0 / 4.0) * sqrtSmoothness, skyCol, lightCol) * material.light_m.y;
 
 	// Mask reflections
     vec3 reflectCol = mix(reflectedSkyRender, SSRCol.rgb, SSRCol.a);
-    reflectCol = reflectCol * fresnel * sqrt(1.0 - material.roughness_m); // Will change this later next patch...
+    reflectCol = reflectCol * fresnel * smoothness; // Will change this later next patch...
 
 	material.albedo_t *= 1.0 - material.metallic_m;
 
