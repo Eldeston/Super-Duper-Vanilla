@@ -36,8 +36,7 @@ screen.UNDERWATER_BLUR_SETTINGS=Underwater settings
 
 screen.LIGHTING=Lighting
     option.RENDER_FOLIAGE_SHD=Foliage shadows
-    option.LIGHTMAP_NOISE=Lightmap noise
-    option.LIGHTMAP_NOISE_INTENSITY=Lightmap noise intensity
+    option.SHD_COL=Shadow color
     option.shadowMapResolution=Shadowmap resolution
     option.sunPathRotation=Light rotation
     option.SHADOW_FILTER=Soft shadow filter
@@ -50,6 +49,8 @@ screen.PBR=PBR settings
 screen.RAY_TRACING=Ray tracing settings
     option.SSGI_STEPS=SSGI steps
     option.SSR_STEPS=SSR steps
+    option.SSGI_BISTEPS=SSGI refinement steps
+    option.SSR_BISTEPS=SSR refinement steps
 
 screen.WATER_SETTINGS=Water settings
     option.WATER_BLUR_SIZE=Water blur size
