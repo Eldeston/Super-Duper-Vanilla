@@ -1,6 +1,7 @@
 #version 120
 
-#define VERTEX
 #define END
+#define FINAL
+#define VERTEX
 
 #include "/main/final.glsl"

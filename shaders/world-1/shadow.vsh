@@ -1,6 +1,7 @@
 #version 120
 
-#define VERTEX
 #define NETHER
+#define SHADOW
+#define VERTEX
 
 #include "/main/shadow.glsl"

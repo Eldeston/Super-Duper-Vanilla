@@ -1,6 +1,7 @@
 #version 120
 
-#define VERTEX
 #define NETHER
+#define COMPOSITE3
+#define VERTEX
 
 #include "/main/composite3.glsl"

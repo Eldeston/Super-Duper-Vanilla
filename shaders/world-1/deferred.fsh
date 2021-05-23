@@ -1,6 +1,7 @@
 #version 120
 
-#define FRAGMENT
 #define NETHER
+#define DEFERRED
+#define FRAGMENT
 
 #include "/main/deferred.glsl"

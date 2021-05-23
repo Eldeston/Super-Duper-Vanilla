@@ -1,6 +1,7 @@
 #version 120
 
-#define FRAGMENT
 #define END
+#define COMPOSITE4
+#define FRAGMENT
 
 #include "/main/composite4.glsl"

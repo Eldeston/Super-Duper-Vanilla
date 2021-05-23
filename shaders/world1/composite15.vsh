@@ -1,6 +1,7 @@
 #version 120
 
+#define END
 #define COMPOSITE15
-#define FRAGMENT
+#define VERTEX
 
 #include "/main/composite15.glsl"

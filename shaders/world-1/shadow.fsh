@@ -1,6 +1,7 @@
 #version 120
 
-#define FRAGMENT
 #define NETHER
+#define SHADOW
+#define FRAGMENT
 
 #include "/main/shadow.glsl"

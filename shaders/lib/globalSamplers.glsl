@@ -10,22 +10,32 @@ const int RGBA16F = 1;
 const int RGB32F = 1;
 const int RGBA32F = 1;
 
-const int gcolorFormat = RGB16F;
+#ifndef GBUFFERS
+    const int gcolorFormat = RGB16F;
+#endif
+
 const int gdepthFormat = RGB16F;
+
 const int colortex1Format = RGB16;
 const int colortex2Format = RGB8;
 const int colortex3Format = RGB8;
 const int colortex4Format = RGB8;
 const int colortex5Format = RGB16;
-const int colortex6Format = RGB16F;
+
+#ifndef GBUFFERS
+    const int colortex6Format = RGB16F;
+#endif
+
 const int colortex7Format = RGB16;
 
-const bool gcolorMipmapEnabled = true;
-const bool colortex6MipmapEnabled = true;
+#ifndef GBUFFERS
+    const bool gcolorMipmapEnabled = true;
+    const bool colortex6MipmapEnabled = true;
 
-const bool colortex5Clear = false;
-const bool colortex6Clear = false;
-const bool colortex7Clear = false;
+    const bool colortex5Clear = false;
+    const bool colortex6Clear = false;
+    const bool colortex7Clear = false;
+#endif
 
 // Depth texture
 uniform sampler2D depthtex0;

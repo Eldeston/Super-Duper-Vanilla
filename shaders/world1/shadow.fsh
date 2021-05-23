@@ -1,6 +1,7 @@
 #version 120
 
-#define FRAGMENT
 #define END
+#define SHADOW
+#define FRAGMENT
 
 #include "/main/shadow.glsl"

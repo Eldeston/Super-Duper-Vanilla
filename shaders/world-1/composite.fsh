@@ -1,6 +1,7 @@
 #version 120
 
-#define FRAGMENT
 #define NETHER
+#define COMPOSITE
+#define FRAGMENT
 
 #include "/main/composite.glsl"

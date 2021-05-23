@@ -1,6 +1,7 @@
 #version 120
 
-#define FRAGMENT
 #define NETHER
+#define FINAL
+#define FRAGMENT
 
 #include "/main/final.glsl"

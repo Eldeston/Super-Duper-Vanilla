@@ -1,6 +1,7 @@
 #version 120
 
-#define VERTEX
 #define NETHER
+#define DEFERRED
+#define VERTEX
 
 #include "/main/deferred.glsl"
