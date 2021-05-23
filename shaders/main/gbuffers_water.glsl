@@ -102,13 +102,17 @@ INOUT mat3 TBN;
             color = vec4(color.rgb, 0.5);
         }
 
-        vec3 nGlcolor = glcolor.rgb * (1.0 - materials.emissive_m) + sqrt(sqrt(glcolor.rgb)) * materials.emissive_m;
+        if(rBlockId == 10006){
+            materials.emissive_m = 1.0;
+            materials.roughness_m = 1.0;
+            materials.ambient_m = 1.0;
+        }
 
         #ifndef WHITE_MODE
-            color.rgb *= nGlcolor;
+            color.rgb *= glcolor.rgb;
         #else
             #ifdef WHITE_MODE_F
-                color.rgb = nGlcolor;
+                color.rgb = glcolor.rgb;
             #else
                 color.rgb = vec3(1);
             #endif
