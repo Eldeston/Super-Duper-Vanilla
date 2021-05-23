@@ -16,7 +16,7 @@ vec3 complexLighting(matPBR material, positionVectors posVector, vec3 dither){
 	// Get direct light diffuse color
 	vec3 diffuseCol = getShdMapping(posVector.shdPos, material.normal_m, nLightPos, dither.r, material.ss_m) * lightCol;
 	// Get globally illuminated sky
-	vec3 GISky = getSkyRender(material.normal_m, 0.0, skyCol, lightCol) * cubed(material.light_m.y);
+	vec3 GISky = getSkyRender(material.normal_m, 0.0, skyCol, lightCol) * squared(material.light_m.y);
 
 	#ifdef SSGI
 		// Get SSGI
@@ -49,5 +49,5 @@ vec3 complexLighting(matPBR material, positionVectors posVector, vec3 dither){
 	material.albedo_t *= 1.0 - material.metallic_m;
 
 	/* Add lighting */
-    return material.albedo_t * (diffuseCol + GISky * material.ambient_m + cubed(material.light_m.x) * BLOCK_LIGHT_COL + GIcol + material.emissive_m) + specCol + reflectCol;
+    return material.albedo_t * (diffuseCol + GISky * material.ambient_m + cubed(material.light_m.x) * BLOCK_LIGHT_COL * pow(material.ambient_m, 1.0 / 4.0) + GIcol + material.emissive_m) + specCol + reflectCol;
 }
