@@ -19,21 +19,6 @@ screen.TONEMAP=Tonemap
     option.GAMMA=Gamma
     screen.TONEMAP.comment=Edit camera's tone settings for saturation, contrast etc.
 
-screen.BLOOM_SETTINGS=Bloom settings
-    option.FAST_BLOOM=Fast bloom
-    option.BLOOM_BRIGHTNESS=Bloom brightnesss
-    option.BLOOM_AMOUNT=Bloom amount
-    option.BLOOM_THRESHOLD=Bloom threshold
-    option.BLOOM_SIZE=Bloom size
-    option.BLOOM_SAMPLES=Bloom blur samples
-    option.BLOOM_LOD=Bloom LOD
-
-screen.UNDERWATER_BLUR_SETTINGS=Underwater settings
-    option.FAST_UNDERWATER_BLUR=Fast underwater blur
-    option.UNDERWATER_BLUR_SIZE=Underwater blur size
-    option.UNDERWATER_BLUR_SAMPLES=Underwater blur samples
-    option.UNDERWATER_BLUR_LOD=Underwater blur LOD
-
 screen.LIGHTING=Lighting
     option.RENDER_FOLIAGE_SHD=Foliage shadows
     option.SHD_COL=Shadow color
@@ -41,6 +26,7 @@ screen.LIGHTING=Lighting
     option.sunPathRotation=Light rotation
     option.SHADOW_FILTER=Soft shadow filter
     option.VOL_LIGHT_BRIGHTNESS=Volumetric light amount
+    option.MIST_GROUND_FOG_BRIGHTNESS=Groung fog amount
     screen.LIGHTING.comment=Lighting settings for shadow resolution, lightmap etc.
 
 screen.PBR=PBR settings
