@@ -25,8 +25,6 @@ screen.LIGHTING=Lighting
     option.shadowMapResolution=Shadowmap resolution
     option.sunPathRotation=Light rotation
     option.SHADOW_FILTER=Soft shadow filter
-    option.VOL_LIGHT_BRIGHTNESS=Volumetric light amount
-    option.MIST_GROUND_FOG_BRIGHTNESS=Groung fog amount
     screen.LIGHTING.comment=Lighting settings for shadow resolution, lightmap etc.
 
 screen.PBR=PBR settings
@@ -42,6 +40,10 @@ screen.WATER_SETTINGS=Water settings
     option.WATER_BLUR_SIZE=Water blur size
     option.WATER_DEPTH_SIZE=Water depth size
     option.WATER_TILE_SIZE=Water tile size
+
+screen.ATMOSPHERICS=Atmospherics
+    option.VOL_LIGHT_BRIGHTNESS=Volumetric light amount
+    option.MIST_GROUND_FOG_BRIGHTNESS=Groung fog amount
 
 screen.DEBUG=Debug
     option.WHITE_MODE=White mode
