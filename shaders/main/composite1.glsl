@@ -10,7 +10,6 @@
 #include "/lib/atmospherics/fog.glsl"
 #include "/lib/atmospherics/sky.glsl"
 
-#include "/lib/lighting/AO.glsl"
 #include "/lib/lighting/GGX.glsl"
 #include "/lib/lighting/shdMapping.glsl"
 

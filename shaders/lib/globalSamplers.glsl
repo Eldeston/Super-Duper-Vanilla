@@ -10,25 +10,28 @@ const int RGBA16F = 1;
 const int RGB32F = 1;
 const int RGBA32F = 1;
 
-#ifndef GBUFFERS
+#if !defined GBUFFERS || !defined FINAL
     const int gcolorFormat = RGB16F;
+#else
+    const int gcolorFormat = RGB16;
 #endif
 
 const int gdepthFormat = RGB16F;
-
 const int colortex1Format = RGB16;
 const int colortex2Format = RGB8;
 const int colortex3Format = RGB8;
 const int colortex4Format = RGB8;
 const int colortex5Format = RGB16;
 
-#ifndef GBUFFERS
+#if !defined GBUFFERS || !defined FINAL
     const int colortex6Format = RGB16F;
+#else
+    const int colortex6Format = RGB16;
 #endif
 
 const int colortex7Format = RGB16;
 
-#ifndef GBUFFERS
+#if !defined GBUFFERS || !defined FINAL
     const bool gcolorMipmapEnabled = true;
     const bool colortex6MipmapEnabled = true;
 
@@ -85,7 +88,7 @@ vec3 getRand3(vec2 st, int tile){
     float x = texture2D(noisetex, st).x;
     float y = texture2D(noisetex, vec2(-st.x, st.y)).x;
     float z = texture2D(noisetex, -st).x;
-    if(NOISE_SPEED == 0.0) return fract(vec3(x, y, z) * 2.0);
+    if(NOISE_SPEED == 0) return fract(vec3(x, y, z) * 4.0);
     return fract(vec3(x, y, z) * 4.0 + frameTimeCounter * NOISE_SPEED);
 }
 
@@ -110,8 +113,8 @@ vec4 H2NWater(vec2 st){
 	vec2 waterUv = st / WATER_TILE_SIZE;
 
 	float d = getCellNoise(waterUv);
-	float dx = (d - getCellNoise(waterUv + vec2(waterPixel, 0.0))) / waterPixel;
-	float dy = (d - getCellNoise(waterUv + vec2(0.0, waterPixel))) / waterPixel;
+	float dx = (d - getCellNoise(waterUv + vec2(waterPixel, 0))) / waterPixel;
+	float dy = (d - getCellNoise(waterUv + vec2(0, waterPixel))) / waterPixel;
 
     #ifdef INVERSE
         d = 1.0 - d;
