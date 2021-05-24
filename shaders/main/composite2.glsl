@@ -36,7 +36,7 @@ INOUT vec2 texcoord;
             lumiCurrent += maxC(texture2D(gcolor, vec2(0), lod).rgb);
 
             // Previous max luminance
-            float lumiPrev = texture2D(colortex6, vec2(0.5), lod).r;
+            float lumiPrev = texture2D(colortex6, vec2(0.5), lod).a;
             // Mix previous and current buffer...
             float finalLumi = mix(lumiCurrent / 5.0, lumiPrev, exp2(-1.0 * frameTime));
 
@@ -44,19 +44,23 @@ INOUT vec2 texcoord;
             float lumi = finalLumi;
             // Apply exposure
             color /= max(lumi * 2.0, 0.5);
+        #else
+            float finalLumi = 0.0;
         #endif
         color *= EXPOSURE;
         // Clamp
         color = saturate(color);
-        // A simple tonemap with the help of Desmos...
-        // color = mix(color, pow(color / 1.2, vec3(1.2)), color);
 
-    /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(color, 1); //gcolor
-
-        #ifdef AUTO_EXPOSURE
-        /* DRAWBUFFERS:06 */
-            gl_FragData[1] = vec4(finalLumi, 0, 0, 1); //colortex6
+        #ifdef TEMPORAL_ACCUMULATION
+            vec3 prevCol = texture2D(colortex6, texcoord).rgb;
+            vec3 accumulated = mix(color, prevCol, exp2(-ACCUMILATION_SPEED * frameTime));
+            color = accumulated;
+        #else
+            vec3 accumulated = vec3(0);
         #endif
+
+    /* DRAWBUFFERS:06 */
+        gl_FragData[0] = vec4(color, 1); //gcolor
+        gl_FragData[1] = vec4(accumulated, finalLumi); //colortex6
     }
 #endif

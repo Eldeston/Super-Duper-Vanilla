@@ -1,14 +1,8 @@
 const int RGB8 = 1;
-
 const int RGB16 = 1;
-
-const int RGB32 = 1;
 
 const int RGB16F = 1;
 const int RGBA16F = 1;
-
-const int RGB32F = 1;
-const int RGBA32F = 1;
 
 #if !defined GBUFFERS || !defined FINAL
     const int gcolorFormat = RGB16F;
@@ -24,7 +18,7 @@ const int colortex4Format = RGB8;
 const int colortex5Format = RGB16;
 
 #if !defined GBUFFERS || !defined FINAL
-    const int colortex6Format = RGB16F;
+    const int colortex6Format = RGBA16F;
 #else
     const int colortex6Format = RGB16;
 #endif

@@ -35,6 +35,8 @@ screen.RAY_TRACING=Ray tracing settings
     option.SSR_STEPS=SSR steps
     option.SSGI_BISTEPS=SSGI refinement steps
     option.SSR_BISTEPS=SSR refinement steps
+    option.TEMPORAL_ACCUMULATION=Temporal accumulation
+    option.ACCUMILATION_SPEED=Accumulation speed
 
 screen.WATER_SETTINGS=Water settings
     option.WATER_BLUR_SIZE=Water blur size

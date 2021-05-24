@@ -32,6 +32,9 @@
 #define SSR_STEPS 24 // SSR steps, more steps means more quality, and more quality means more performance [16 20 24 28 32]
 #define SSR_BISTEPS 4 // SSR binary refinement steps, more steps means more accurate reflections, and more quality means more performance [0 4 8 16]
 
+#define TEMPORAL_ACCUMULATION // Reduces the amount of noise by temporal acumulation, currently experimental.
+#define ACCUMILATION_SPEED 4.0 // The fade speed of temporal accumulation. The higher the faster [1.0 2.0 4.0 8.0 16.0]
+
 #define DEFAULT_MAT // Enable inbuilt default PBR materials(emissiveMap, speculars, subsurface scaterring etc.). Disable to use your PBR resource packs. Latest LabPBR version required!
 #define NOISE_SPEED 1.0 // The speed in which the noise randomises each frame. Set it zero if you want the noise to be constant each frame [0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
 #define BUFFER_VIEW gcolor // Views buffers. colortex1 views normals(in 0-1 range), colortex2 views lightmap and subsurface scattering material, colortex3-4 are the rest of the materials, colortex5 for reflection buffer, colortex6 for exposure buffer and colortex7 remains unused will output a black screen. [gcolor colortex1 colortex2 colortex3 colortex4 colortex5 colortex6 colortex7]
