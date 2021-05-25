@@ -94,7 +94,7 @@ INOUT mat3 TBN;
 
             vec3 waterNorm = normalize(TBN * waterData.xyz);
 		    materials.normal_m = mat3(gbufferModelViewInverse) * waterNorm;
-            materials.metallic_m = 0.99;
+            materials.metallic_m = 0.5;
             materials.ss_m = 0.0;
             materials.emissive_m = 0.0;
             materials.roughness_m = 0.0;
