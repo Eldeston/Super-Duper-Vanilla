@@ -49,13 +49,13 @@ INOUT vec2 texcoord;
             float finalLumi = mix(lumiCurrent / 5.0, lumiPrev, exp2(-1.0 * frameTime));
 
             // Apply exposure
-            color /= max(finalLumi * 2.0, 0.5);
+            color /= max(finalLumi * 2.0, 0.6);
         #else
             float finalLumi = 1.0;
         #endif
         color *= EXPOSURE;
         // Tonemap and clamp
-        color = saturate(color / (color * 0.16 + 1.0));
+        color = saturate(color / (color * 0.2 + 1.0));
 
     /* DRAWBUFFERS:06 */
         gl_FragData[0] = vec4(color, 1); //gcolor
