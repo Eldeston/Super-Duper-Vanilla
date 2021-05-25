@@ -51,7 +51,7 @@ INOUT vec2 texcoord;
             // Apply exposure
             color /= max(finalLumi * 2.0, 0.5);
         #else
-            float finalLumi = 0.0;
+            float finalLumi = 1.0;
         #endif
         color *= EXPOSURE;
         // Tonemap and clamp

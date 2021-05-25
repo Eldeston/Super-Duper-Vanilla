@@ -40,7 +40,7 @@
 #define BUFFER_VIEW gcolor // Views buffers. colortex1 views normals(in 0-1 range), colortex2 views lightmap and subsurface scattering material, colortex3-4 are the rest of the materials, colortex5 for reflection buffer, colortex6 for exposure buffer and colortex7 remains unused will output a black screen. [gcolor colortex1 colortex2 colortex3 colortex4 colortex5 colortex6 colortex7]
 
 #define VOL_LIGHT_BRIGHTNESS 0.5 // The brightness/amount of volumetric lighting, set it to zero to disable it [0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
-#define MIST_GROUND_FOG_BRIGHTNESS 0.9 // The brightness/amount of mist/ground fog, set it to zero to disable it [0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
+#define MIST_GROUND_FOG_BRIGHTNESS 0.8 // The brightness/amount of mist/ground fog, set it to zero to disable it [0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
 
 /*---------------------------------------------------------------------------------------------------------------------------*/
 

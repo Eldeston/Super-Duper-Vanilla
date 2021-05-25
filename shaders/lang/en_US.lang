@@ -45,7 +45,7 @@ screen.WATER_SETTINGS=Water settings
 
 screen.ATMOSPHERICS=Atmospherics
     option.VOL_LIGHT_BRIGHTNESS=Volumetric light amount
-    option.MIST_GROUND_FOG_BRIGHTNESS=Groung fog amount
+    option.MIST_GROUND_FOG_BRIGHTNESS=Ground fog amount
 
 screen.DEBUG=Debug
     option.WHITE_MODE=White mode
