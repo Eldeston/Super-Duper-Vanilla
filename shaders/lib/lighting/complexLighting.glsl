@@ -46,8 +46,6 @@ vec3 complexLighting(matPBR material, positionVectors posVector, vec3 dither){
     vec3 reflectCol = mix(reflectedSkyRender, SSRCol.rgb, SSRCol.a);
     reflectCol = reflectCol * fresnel * smoothness; // Will change this later next patch...
 
-	material.albedo_t *= 1.0 - material.metallic_m;
-
-	/* Add lighting */
-    return material.albedo_t * (diffuseCol + GISky * material.ambient_m + cubed(material.light_m.x) * BLOCK_LIGHT_COL * pow(material.ambient_m, 1.0 / 4.0) + GIcol + material.emissive_m) + specCol + reflectCol;
+	/* Calculate total lighting and return color */
+    return material.albedo_t * ((diffuseCol + GISky * material.ambient_m + GIcol + cubed(material.light_m.x) * BLOCK_LIGHT_COL * pow(material.ambient_m, 1.0 / 4.0)) * (1.0 - material.metallic_m) + material.emissive_m) + specCol + reflectCol;
 }
