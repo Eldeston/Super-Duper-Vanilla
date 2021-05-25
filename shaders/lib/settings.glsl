@@ -32,7 +32,7 @@
 #define SSR_STEPS 24 // SSR steps, more steps means more quality, and more quality means more performance [16 20 24 28 32]
 #define SSR_BISTEPS 4 // SSR binary refinement steps, more steps means more accurate reflections, and more quality means more performance [0 4 8 16]
 
-#define TEMPORAL_ACCUMULATION // Reduces the amount of noise by temporal acumulation, currently experimental.
+// #define TEMPORAL_ACCUMULATION // Reduces the amount of noise by temporal acumulation, currently experimental.
 #define ACCUMILATION_SPEED 4.0 // The fade speed of temporal accumulation. The higher the faster [1.0 2.0 4.0 8.0 16.0]
 
 #define DEFAULT_MAT // Enable inbuilt default PBR materials(emissiveMap, speculars, subsurface scaterring etc.). Disable to use your PBR resource packs. Latest LabPBR version required!
