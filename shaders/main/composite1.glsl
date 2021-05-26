@@ -57,8 +57,12 @@ INOUT vec2 texcoord;
         // Tonemap and clamp
         color = saturate(color / (color * 0.2 + 1.0));
 
-    /* DRAWBUFFERS:06 */
+        float skyMask = float(texture2D(depthtex0, texcoord).r != 1);
+        float luminance = getLuminance(color);
+
+    /* DRAWBUFFERS:067 */
         gl_FragData[0] = vec4(color, 1); //gcolor
         gl_FragData[1] = vec4(accumulated, finalLumi); //colortex6
+        gl_FragData[2] = vec4(color * texture2D(colortex3, texcoord).g * skyMask * luminance, 1); //colortex7
     }
 #endif

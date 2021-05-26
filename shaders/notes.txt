@@ -12,20 +12,5 @@ colortex2 - Lightmap.xy, subsurface scattering
 colortex3 - Metal, emissive, roughness
 colortex4 - AO, cloud mask, Alpha
 colortex5 - Reflections
-colortex6 - Exposure/bloom buffer
-colortex7 - Unused
-
-Main shader folder:
-
-composite - Composite shader
-deferred - Deferred shader
-final - Final composite file
-gbuffers_clouds - Cloud shader
-gbuffers_entities - Entity shader
-gbuffers_skybasic - Sky shader
-gbuffers_skytextured - Sun and moon shader
-gbuffers_spidereyes - Spider eyes/emissive entities
-gbuffers_terrain - Terrain/block shader
-gbuffers_textured - Particle shader
-gbuffers_water - Water/transparent object shader
-shadow - Shadow shader
+colortex6 - Accumulation buffer, exposure
+colortex7 - Bloom

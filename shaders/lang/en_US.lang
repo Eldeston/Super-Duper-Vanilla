@@ -1,15 +1,13 @@
 screen.CAMERA=Camera
-    option.BLOOM=Bloom
     option.VIGNETTE=Vignette
     option.UNDERWATER_BLUR=Underwater blur
     option.VIGNETTE_INTENSITY=Vignette intensity
     option.AUTO_EXPOSURE=Auto exposure
-    option.SHADOW_EXPOSURE=Shadow exposure
-    option.HIGHLIGHT_EXPOSURE=Hightlight exposure
-    option.UNDERWATER_DISTORTION=Underwater distortion
-    option.DISTORT_AMOUNT=Distortion amount
-    option.DISTORT_SPEED=Distortion speed
-    option.DISTORT_FREQUENCY=Distortion frequencey
+    option.BLOOM=Bloom
+    option.BLOOM_LOD=Bloom LOD
+    option.BLOOM_PIX_SIZE=Bloom pixel size
+    option.BLOOM_BRIGHTNESS=Bloom brightness
+    option.BLOOM_QUALITY=Bloom quality
     screen.CAMERA.comment=Camera settings for tonemap, vignette, HDR, postprocessing etc.
 
 screen.TONEMAP=Tonemap

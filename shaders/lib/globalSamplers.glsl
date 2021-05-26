@@ -28,10 +28,10 @@ const int colortex7Format = RGB16;
 #if !defined GBUFFERS || !defined FINAL
     const bool gcolorMipmapEnabled = true;
     const bool colortex6MipmapEnabled = true;
+    const bool colortex7MipmapEnabled = true;
 
     const bool colortex5Clear = false;
     const bool colortex6Clear = false;
-    const bool colortex7Clear = false;
 #endif
 
 // Depth texture
@@ -51,11 +51,11 @@ uniform sampler2D colortex1;
 
     // Reflections
     uniform sampler2D colortex5;
-    // Exposure, and bloom buffer
+    // Accumulation buffer, and exposure
     uniform sampler2D colortex6;
 #endif
 
-// Unused
+// Bloom
 uniform sampler2D colortex7;
 
 // Default resolution

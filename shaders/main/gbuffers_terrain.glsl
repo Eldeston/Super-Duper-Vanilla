@@ -85,7 +85,6 @@ INOUT mat3 TBN;
                 getPBR(materials, TBN, texcoord);
             }
         #endif
-        materials.normal_m = mat3(gbufferModelViewInverse) * materials.normal_m;
 
         // If lava
         if(rBlockId == 10006){

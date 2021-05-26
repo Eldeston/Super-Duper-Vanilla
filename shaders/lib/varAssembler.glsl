@@ -9,7 +9,7 @@ void getMaterial(inout matPBR material, vec2 st){
     // Assign materials
 	material.light_m = matRaw0.xy;
 	material.albedo_t = texture2D(gcolor, st).rgb;
-	material.normal_m = texture2D(colortex1, st).rgb * 2.0 - 1.0;
+	material.normal_m = mat3(gbufferModelViewInverse) * (texture2D(colortex1, st).rgb * 2.0 - 1.0);
 	
 	material.ss_m = matRaw0.z; material.metallic_m = matRaw1.x;
 	material.emissive_m = matRaw1.y; material.roughness_m = matRaw1.z;

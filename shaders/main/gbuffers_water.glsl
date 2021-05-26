@@ -85,16 +85,15 @@ INOUT mat3 TBN;
                 getPBR(materials, TBN, texcoord);
             }
         #endif
-        materials.normal_m = mat3(gbufferModelViewInverse) * materials.normal_m;
 
         // If water
         if(rBlockId == 10008){
-            vec2 waterUv = worldPos.xz * (1.0 - materials.normal_m.y) + worldPos.xz * materials.normal_m.y;
+            vec3 normGBMVI = mat3(gbufferModelViewInverse) * norm;
+            vec2 waterUv = worldPos.xz * (1.0 - normGBMVI.y) + worldPos.xz * normGBMVI.y;
             vec4 waterData = H2NWater(waterUv);
             waterData.w = waterData.w;
 
-            vec3 waterNorm = normalize(TBN * waterData.xyz);
-		    materials.normal_m = mat3(gbufferModelViewInverse) * waterNorm;
+		    materials.normal_m = normalize(TBN * waterData.xyz);
             materials.metallic_m = 0.5;
             materials.roughness_m = 0.0;
             materials.ambient_m = 1.0;

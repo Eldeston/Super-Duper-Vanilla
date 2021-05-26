@@ -19,7 +19,6 @@
 #include "/lib/lighting/SSGI.glsl"
 #include "/lib/lighting/SSR.glsl"
 
-#include "/lib/atmospherics/complexAtmo.glsl"
 #include "/lib/lighting/complexLighting.glsl"
 
 #include "/lib/varAssembler.glsl"
@@ -60,7 +59,7 @@ INOUT vec2 texcoord;
 
             // Apply atmospherics
             materials.albedo_t = getFog(posVector, materials.albedo_t, skyRender);
-            reflectBuffer = materials.albedo_t; // Assign current scense color WITHOUT the godrays...
+            reflectBuffer = materials.albedo_t; // Assign current scene color WITHOUT the godrays...
             materials.albedo_t += getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.y) * lightCol;
         }
 

@@ -30,7 +30,6 @@ uniform vec3 shadowLightPosition;
 
 // Vec3 color uniforms
 uniform vec3 fogColor;
-uniform vec3 skyColor;
 uniform vec4 entityColor;
 
 // View matrix uniforms
