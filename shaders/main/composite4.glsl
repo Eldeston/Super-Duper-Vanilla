@@ -1,7 +1,12 @@
-#ifdef VERTEX
-    varying vec2 texcoord;
+#include "/lib/util.glsl"
+#include "/lib/structs.glsl"
+#include "/lib/settings.glsl"
+#include "/lib/globalVar.glsl"
 
-    void main() {
+INOUT vec2 texcoord;
+
+#ifdef VERTEX
+    void main(){
         gl_Position = ftransform();
         texcoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
     }
@@ -10,9 +15,7 @@
 #ifdef FRAGMENT
     uniform sampler2D gcolor;
 
-    varying vec2 texcoord;
-
-    void main() {
+    void main(){
         vec3 color = texture2D(gcolor, texcoord).rgb;
 
     /* DRAWBUFFERS:0 */

@@ -4,25 +4,6 @@
 #include "/lib/globalVar.glsl"
 
 #include "/lib/globalSamplers.glsl"
-#include "/lib/lighting/shdDistort.glsl"
-#include "/lib/conversion.glsl"
-
-#include "/lib/atmospherics/fog.glsl"
-#include "/lib/atmospherics/sky.glsl"
-
-#include "/lib/lighting/GGX.glsl"
-#include "/lib/lighting/shdMapping.glsl"
-
-#include "/lib/raymarching/rayTracer.glsl"
-#include "/lib/raymarching/volLighting.glsl"
-
-#include "/lib/lighting/SSGI.glsl"
-#include "/lib/lighting/SSR.glsl"
-
-#include "/lib/atmospherics/complexAtmo.glsl"
-#include "/lib/lighting/complexLighting.glsl"
-
-#include "/lib/varAssembler.glsl"
 
 INOUT vec2 texcoord;
 
@@ -35,37 +16,49 @@ INOUT vec2 texcoord;
 
 #ifdef FRAGMENT
     void main(){
-        // Declare and get positions
-        positionVectors posVector;
-	    getPosVectors(posVector, texcoord);
+        // Original scene color
+        vec3 color = texture2D(gcolor, texcoord).rgb;
 
-	    // Declare and get materials
-	    matPBR materials;
-	    getMaterial(materials, texcoord);
+        #ifdef TEMPORAL_ACCUMULATION
+            vec3 prevCol = texture2D(colortex6, texcoord).rgb;
+            vec3 accumulated = mix(color, prevCol, exp2(-ACCUMILATION_SPEED * frameTime));
+            color = accumulated;
+        #else
+            vec3 accumulated = vec3(0);
+        #endif
 
-        vec3 reflectBuffer = materials.albedo_t;
+        #ifdef AUTO_EXPOSURE
+            // Get lod
+            float lod = int(exp2(min(viewWidth, viewHeight))) - 1.0;
+            
+            // Get current average scene luminance...
+            // Center pixel
+            float lumiCurrent = maxC(texture2D(gcolor, vec2(0.5), lod).rgb);
+            // Top right pixel
+            lumiCurrent += maxC(texture2D(gcolor, vec2(1), lod).rgb);
+            // Top left pixel
+            lumiCurrent += maxC(texture2D(gcolor, vec2(0, 1), lod).rgb);
+            // Bottom right pixel
+            lumiCurrent += maxC(texture2D(gcolor, vec2(1, 0), lod).rgb);
+            // Bottom left pixel
+            lumiCurrent += maxC(texture2D(gcolor, vec2(0), lod).rgb);
 
-        // If the object is transparent render lighting sperately
-        if(materials.alpha_m != 1){
-            vec3 dither = getRand3(texcoord, 8);
-            float mask = float(posVector.screenPos.z == 1);
+            // Previous luminance
+            float lumiPrev = texture2D(colortex6, vec2(0)).a;
+            // Mix previous and current buffer...
+            float finalLumi = mix(lumiCurrent / 5.0, lumiPrev, exp2(-1.0 * frameTime));
 
-            // Get sky color
-            vec3 skyRender = getSkyRender(posVector.eyePlayerPos, mask, skyCol, lightCol);
+            // Apply exposure
+            color /= max(finalLumi * 2.0, 0.6);
+        #else
+            float finalLumi = 1.0;
+        #endif
+        color *= EXPOSURE;
+        // Tonemap and clamp
+        color = saturate(color / (color * 0.2 + 1.0));
 
-            // Apply lighting
-            materials.albedo_t = complexLighting(materials, posVector, dither);
-            materials.albedo_t *= 1.0 - mask; // Mask out the rest
-
-            // Apply atmospherics
-            materials.albedo_t = getFog(posVector, materials.albedo_t, skyRender);
-            reflectBuffer = materials.albedo_t;
-            materials.albedo_t += getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.y) * lightCol;
-        }
-
-    /* DRAWBUFFERS:05 */
-        gl_FragData[0] = vec4(materials.albedo_t, 1); //gcolor
-        // Apparently I have to transform it to 0-1 range then back to HDR with the reflection buffer due to an annoying bug...
-        gl_FragData[1] = vec4(reflectBuffer / (reflectBuffer + 1.0), 1); //colortex5
+    /* DRAWBUFFERS:06 */
+        gl_FragData[0] = vec4(color, 1); //gcolor
+        gl_FragData[1] = vec4(accumulated, finalLumi); //colortex6
     }
 #endif
