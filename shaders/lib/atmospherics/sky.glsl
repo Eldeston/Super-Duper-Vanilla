@@ -13,6 +13,12 @@ float genStar(vec2 nSkyPos){
 }
 
 vec3 getSkyRender(vec3 playerPos, float skyMask, vec3 skyCol, vec3 lightCol){
+    #ifdef NETHER
+        return fogColor;
+    #elif defined END
+        return fogColor;
+    #endif
+    
     // Get positions
     vec3 nPlayerPos = normalize(playerPos);
     vec3 nSkyPos = normalize(mat3(shadowProjection) * (mat3(shadowModelView) * playerPos));
@@ -21,15 +27,10 @@ vec3 getSkyRender(vec3 playerPos, float skyMask, vec3 skyCol, vec3 lightCol){
         float waterVoid = smootherstep(nPlayerPos.y + (eyeBrightFact - 0.56));
         skyCol = mix(fogColor, skyCol, waterVoid);
     }
-    #ifdef NETHER
-        return fogColor;
-    #elif defined END
-        return fogColor;
-    #endif
     
     float skyFogGradient = smoothstep(-0.125, 0.125, nPlayerPos.y);
     float voidGradient = smoothstep(-0.1, -0.05, nPlayerPos.y) * 0.9;
-    float lightRange = smootherstep(-nSkyPos.z * 0.56) * (1.0 - newTwilight);
+    float lightRange = smootherstep(smootherstep(-nSkyPos.z * 0.56)) * (1.0 - newTwilight);
 
     // Get sun/moon
     float sunMoon = getSunMoonShape(nSkyPos) * voidGradient;
