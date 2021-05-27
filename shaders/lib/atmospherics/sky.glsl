@@ -29,7 +29,7 @@ vec3 getSkyRender(vec3 playerPos, float skyMask, vec3 skyCol, vec3 lightCol){
     
     float skyFogGradient = smoothstep(-0.125, 0.125, nPlayerPos.y);
     float voidGradient = smoothstep(-0.1, -0.05, nPlayerPos.y) * 0.9;
-    float lightRange = squared(smootherstep(-nSkyPos.z * 0.56)) * (1.0 - newTwilight);
+    float lightRange = smootherstep(-nSkyPos.z * 0.56) * (1.0 - newTwilight);
 
     // Get sun/moon
     float sunMoon = getSunMoonShape(nSkyPos) * voidGradient;

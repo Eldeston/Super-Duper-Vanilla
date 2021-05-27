@@ -18,11 +18,12 @@ screen.TONEMAP=Tonemap
     screen.TONEMAP.comment=Edit camera's tone settings for saturation, contrast etc.
 
 screen.LIGHTING=Lighting
-    option.RENDER_FOLIAGE_SHD=Foliage shadows
+    option.RENDER_FOLIAGE_SHD=Cutout shadows
     option.SHD_COL=Shadow color
     option.shadowMapResolution=Shadowmap resolution
     option.sunPathRotation=Light rotation
     option.SHADOW_FILTER=Soft shadow filter
+    option.SHADOW_DISTORT_FACTOR=Shadow distortion factor
     screen.LIGHTING.comment=Lighting settings for shadow resolution, lightmap etc.
 
 screen.PBR=PBR settings
@@ -44,6 +45,10 @@ screen.WATER_SETTINGS=Water settings
 screen.ATMOSPHERICS=Atmospherics
     option.VOL_LIGHT_BRIGHTNESS=Volumetric light amount
     option.MIST_GROUND_FOG_BRIGHTNESS=Ground fog amount
+
+screen.ANIMATION=Animation
+    option.ANIMATE=Animate
+    option.ANIMATION_SPEED=Animation speed
 
 screen.DEBUG=Debug
     option.WHITE_MODE=White mode

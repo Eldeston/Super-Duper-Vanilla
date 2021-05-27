@@ -17,7 +17,9 @@ INOUT vec4 color;
 
         texcoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         
-        getWave(vertexPos.xyz, vertexPos.xyz + cameraPosition, texcoord, mc_midTexCoord, mc_Entity.x);
+        #ifdef ANIMATE
+            getWave(vertexPos.xyz, vertexPos.xyz + cameraPosition, texcoord, mc_midTexCoord, mc_Entity.x);
+        #endif
 
         gl_Position = shadowProjection * (shadowModelView * vertexPos);
 
@@ -25,7 +27,7 @@ INOUT vec4 color;
 
         #ifndef RENDER_FOLIAGE_SHD
             if(mc_Entity.x == 10001.0 || mc_Entity.x == 10002.0 || mc_Entity.x == 10003.0 || mc_Entity.x == 10004.0 || mc_Entity.x == 10007.0 || mc_Entity.x == 10011.0 || mc_Entity.x == 10013.0)
-                gl_Position = vec4(10.0);
+                gl_Position = vec4(10);
         #endif
 
         color = gl_Color;

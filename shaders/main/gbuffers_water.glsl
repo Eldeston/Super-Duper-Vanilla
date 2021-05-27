@@ -28,7 +28,6 @@ INOUT mat3 TBN;
 
     void main(){
         vec4 vertexPos = gl_ModelViewMatrix * gl_Vertex;
-        vec3 camPos = (gbufferModelViewInverse)[3].xyz + cameraPosition;
 
         texcoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         lmcoord  = (gl_TextureMatrix[1] * gl_MultiTexCoord1).xy;
@@ -41,12 +40,14 @@ INOUT mat3 TBN;
 
 	    TBN = mat3(tangent, binormal, norm);
 
-        // Viewpos
+        // Feet player pos
         vertexPos = gbufferModelViewInverse * vertexPos;
-        worldPos = vertexPos.xyz + camPos;
+        worldPos = vertexPos.xyz + cameraPosition;
 
-	    getWave(vertexPos.xyz, vertexPos.xyz + cameraPosition, texcoord, mc_midTexCoord, mc_Entity.x);
-
+        #ifdef ANIMATE
+	        getWave(vertexPos.xyz, worldPos, texcoord, mc_midTexCoord, mc_Entity.x);
+        #endif
+        
 	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
 
         glcolor = gl_Color;

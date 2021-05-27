@@ -2,8 +2,10 @@
 #define VIGNETTE_INTENSITY 1 // Vignette intensity in powers (vignette ^ VIGNETTE_INTENSITY) [1 2 3 4 5]
 
 // Shadow distortion factor
-#define SHADOW_DISTORT_FACTOR 0.06
-#define RENDER_FOLIAGE_SHD // Enable foliage shadow render
+#define SHADOW_DISTORT_FACTOR 0.06 // Higher values means higher quality shadows near the player, and lower quality shadows far from the player [0.05 0.06 0.07 0.08 0.09 0.1]
+#define RENDER_FOLIAGE_SHD // Enable cutout objects shadow render
+#define ANIMATE // Enable foliage animations, water animations etc.
+#define ANIMATION_SPEED 1.0 // Adjust global animation speed [0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0]
 
 // Off by default
 // #define WHITE_MODE // Enable white mode/textureless mode, keeps materials
