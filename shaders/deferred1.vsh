@@ -3,4 +3,4 @@
 #define DEFERRED
 #define VERTEX
 
-#include "/main/deferred.glsl"
+#include "/main/deferred1.glsl"

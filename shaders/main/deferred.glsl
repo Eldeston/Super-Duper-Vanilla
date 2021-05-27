@@ -60,13 +60,10 @@ INOUT vec2 texcoord;
 
             // Apply atmospherics
             finalCol = getFog(posVector, finalCol, skyRender);
-            reflectBuffer = finalCol; // Assign current scene color WITHOUT the godrays...
-            finalCol += getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.y) * lightCol;
         }
 
-    /* DRAWBUFFERS:58 */
+    /* DRAWBUFFERS:5 */
         // Apparently I have to transform it to 0-1 range then back to HDR with the reflection buffer due to an annoying bug...
-        gl_FragData[0] = vec4(reflectBuffer / (reflectBuffer + 1.0), 1); //colortex5
-        gl_FragData[1] = vec4(finalCol, 1); //colortex8
+        gl_FragData[0] = vec4(finalCol / (finalCol + 1.0), 1); //colortex5
     }
 #endif
