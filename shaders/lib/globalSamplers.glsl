@@ -5,9 +5,9 @@ const int RGB16F = 1;
 const int RGBA16F = 1;
 
 #if !defined GBUFFERS || !defined FINAL
-    const int gcolorFormat = RGB16F;
+    const int colortex8Format = RGB16F;
 #else
-    const int gcolorFormat = RGB16;
+    const int colortex8Format = RGB16;
 #endif
 
 const int gdepthFormat = RGB16F;
@@ -26,9 +26,9 @@ const int colortex5Format = RGB16;
 const int colortex7Format = RGB16;
 
 #if !defined GBUFFERS || !defined FINAL
-    const bool gcolorMipmapEnabled = true;
     const bool colortex6MipmapEnabled = true;
     const bool colortex7MipmapEnabled = true;
+    const bool colortex8MipmapEnabled = true;
 
     const bool colortex5Clear = false;
     const bool colortex6Clear = false;
@@ -36,7 +36,7 @@ const int colortex7Format = RGB16;
 
 // Depth texture
 uniform sampler2D depthtex0;
-// Main texture color 0
+// Albedo texture color 0
 uniform sampler2D gcolor;
 // Normal map buffer(rgb)
 uniform sampler2D colortex1;
@@ -57,6 +57,8 @@ uniform sampler2D colortex1;
 
 // Bloom
 uniform sampler2D colortex7;
+// Final color
+uniform sampler2D colortex8;
 
 // Default resolution
 const int noiseTextureResolution = 256;

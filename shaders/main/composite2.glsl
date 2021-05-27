@@ -16,40 +16,53 @@ INOUT vec2 texcoord;
 
 #ifdef FRAGMENT
     void main(){
-        vec3 color = texture2D(gcolor, texcoord).rgb;
+        // Original scene color
+        vec3 color = texture2D(colortex8, texcoord).rgb;
 
-        #ifdef BLOOM
-            float pixelSize = BLOOM_PIX_SIZE / min(viewWidth, viewHeight);
-            vec3 eBloom = vec3(0);
-            #if BLOOM_QUALITY == 0
-                eBloom += texture2D(colortex7, texcoord, 0.5).rgb;
-            #elif BLOOM_QUALITY == 1
-                eBloom += texture2D(colortex7, texcoord + vec2(pixelSize, 0) * 1.2).rgb * 0.25;
-                eBloom += texture2D(colortex7, texcoord).rgb * 0.5;
-                eBloom += texture2D(colortex7, texcoord - vec2(pixelSize, 0) * 1.2).rgb * 0.25;
-            #elif BLOOM_QUALITY == 2
-                eBloom += texture2D(colortex7, texcoord + vec2(pixelSize, 0) * 1.8).rgb * 0.0625;
-                eBloom += texture2D(colortex7, texcoord + vec2(pixelSize, 0)).rgb * 0.25;
-                eBloom += texture2D(colortex7, texcoord).rgb * 0.375;
-                eBloom += texture2D(colortex7, texcoord - vec2(pixelSize, 0)).rgb * 0.25;
-                eBloom += texture2D(colortex7, texcoord - vec2(pixelSize, 0) * 1.8).rgb * 0.0625;
-            #elif BLOOM_QUALITY == 3
-                eBloom += texture2D(colortex7, texcoord + vec2(pixelSize, 0) * 2.0).rgb * 0.015625;
-                eBloom += texture2D(colortex7, texcoord + vec2(pixelSize, 0) * 1.8).rgb * 0.09375;
-                eBloom += texture2D(colortex7, texcoord + vec2(pixelSize, 0)).rgb * 0.234375;
-                eBloom += texture2D(colortex7, texcoord).rgb * 0.3125;
-                eBloom += texture2D(colortex7, texcoord - vec2(pixelSize, 0)).rgb * 0.234375;
-                eBloom += texture2D(colortex7, texcoord - vec2(pixelSize, 0) * 1.8).rgb * 0.09375;
-                eBloom += texture2D(colortex7, texcoord + vec2(pixelSize, 0) * 2.0).rgb * 0.015625;
-            #endif
+        #ifdef TEMPORAL_ACCUMULATION
+            vec3 prevCol = texture2D(colortex6, texcoord).rgb;
+            vec3 accumulated = mix(color, prevCol, exp2(-ACCUMILATION_SPEED * frameTime));
+            color = accumulated;
+        #else
+            vec3 accumulated = vec3(0);
         #endif
 
-    /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(color, 1); //gcolor
+        #ifdef AUTO_EXPOSURE
+            // Get lod
+            float lod = int(exp2(min(viewWidth, viewHeight))) - 1.0;
+            
+            // Get current average scene luminance...
+            // Center pixel
+            float lumiCurrent = maxC(texture2D(colortex8, vec2(0.5), lod).rgb);
+            // Top right pixel
+            lumiCurrent += maxC(texture2D(colortex8, vec2(1), lod).rgb);
+            // Top left pixel
+            lumiCurrent += maxC(texture2D(colortex8, vec2(0, 1), lod).rgb);
+            // Bottom right pixel
+            lumiCurrent += maxC(texture2D(colortex8, vec2(1, 0), lod).rgb);
+            // Bottom left pixel
+            lumiCurrent += maxC(texture2D(colortex8, vec2(0), lod).rgb);
 
-        #ifdef BLOOM
-        /* DRAWBUFFERS:07 */
-            gl_FragData[1] = vec4(eBloom, 1); //colortex7
+            // Previous luminance
+            float lumiPrev = texture2D(colortex6, vec2(0)).a;
+            // Mix previous and current buffer...
+            float finalLumi = mix(lumiCurrent / 5.0, lumiPrev, exp2(-1.0 * frameTime));
+
+            // Apply exposure
+            color /= max(finalLumi * 2.0, 0.6);
+        #else
+            float finalLumi = 1.0;
         #endif
+        color *= EXPOSURE;
+        // Tonemap and clamp
+        color = saturate(color / (color * 0.2 + 1.0));
+
+        float skyMask = float(texture2D(depthtex0, texcoord).r != 1);
+        float luminance = getLuminance(color);
+
+    /* DRAWBUFFERS:678 */
+        gl_FragData[0] = vec4(accumulated, finalLumi); //colortex6
+        gl_FragData[1] = vec4(color * texture2D(colortex3, texcoord).g * skyMask * luminance, 1); //colortex7
+        gl_FragData[2] = vec4(color, 1); //colortex8
     }
 #endif

@@ -7,7 +7,7 @@ vec4 getSSRCol(vec3 viewPos, vec3 screenPos, vec3 gBMVNorm, vec3 nDither, float 
 	reflectedScreenPos.xy = toPrevScreenPos(reflectedScreenPos.xy);
 
 	// Sample reflections
-	vec3 SSRCol = texture2D(colortex5, reflectedScreenPos.xy).rgb;
+	vec3 SSRCol = texture2D(colortex8, reflectedScreenPos.xy).rgb;
     // Transform it back to HDR and output SSR mask in the alpha channel
-    return vec4(1.0 / (1.0 - SSRCol) - 1.0, reflectedScreenPos.z);
+    return vec4(SSRCol, reflectedScreenPos.z);
 }

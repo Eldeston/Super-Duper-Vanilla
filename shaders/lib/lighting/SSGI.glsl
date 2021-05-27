@@ -22,7 +22,7 @@ vec3 getSSGICol(vec3 viewPos, vec3 screenPos, vec3 gBMVNorm, vec2 dither){
 	GIScreenPos.xy = toPrevScreenPos(GIScreenPos.xy);
     
     // Sample color
-    vec3 GIcol = texture2D(colortex5, GIScreenPos.xy).rgb * GIScreenPos.z;
+    vec3 GIcol = texture2D(colortex8, GIScreenPos.xy).rgb * GIScreenPos.z;
     // Output final color and bring it back to HDR
-	return 1.0 / (1.0 - GIcol) - 1.0;
+	return GIcol;
 }
