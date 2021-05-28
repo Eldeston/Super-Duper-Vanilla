@@ -44,7 +44,6 @@ INOUT vec2 texcoord;
 
         // Transform the color back to HDR
         vec3 reflectBuffer = 1.0 / (1.0 - texture2D(colortex5, texcoord).rgb) - 1.0;
-        vec3 finalCol = texture2D(colortex8, texcoord).rgb;
 
         // If the object is opaque render lighting sperately
         if(materials.alpha_m == 1){
@@ -55,15 +54,18 @@ INOUT vec2 texcoord;
             vec3 skyRender = getSkyRender(posVector.eyePlayerPos, mask, skyCol, lightCol);
 
             // Apply lighting
-            finalCol = complexLighting(materials, posVector, dither);
-            finalCol *= 1.0 - mask; // Mask out the sky
+            materials.albedo_t = complexLighting(materials, posVector, dither);
+            materials.albedo_t *= 1.0 - mask; // Mask out the sky
 
             // Apply atmospherics
-            finalCol = getFog(posVector, finalCol, skyRender);
+            materials.albedo_t = getFog(posVector, materials.albedo_t, skyRender);
+            reflectBuffer = materials.albedo_t; // Assign current scene color WITHOUT the godrays...
+            materials.albedo_t += getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.y) * lightCol;
         }
 
-    /* DRAWBUFFERS:5 */
+    /* DRAWBUFFERS:05 */
+        gl_FragData[0] = vec4(materials.albedo_t, 1); //gcolor
         // Apparently I have to transform it to 0-1 range then back to HDR with the reflection buffer due to an annoying bug...
-        gl_FragData[0] = vec4(finalCol / (finalCol + 1.0), 1); //colortex5
+        gl_FragData[1] = vec4(reflectBuffer / (reflectBuffer + 1.0), 1); //colortex5
     }
 #endif

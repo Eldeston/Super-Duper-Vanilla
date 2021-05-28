@@ -17,7 +17,7 @@ INOUT vec2 texcoord;
 
 #ifdef FRAGMENT
     void main(){
-        vec3 color = texture2D(colortex8, texcoord).rgb;
+        vec3 color = texture2D(gcolor, texcoord).rgb;
         color = toneA(color);
 
         #ifdef VIGNETTE
@@ -25,7 +25,7 @@ INOUT vec2 texcoord;
             color *= pow(max(1.0 - length(texcoord - 0.5), 0.0), VIGNETTE_INTENSITY);
         #endif
 
-    /* DRAWBUFFERS:8 */
-        gl_FragData[0] = vec4(color, 1); //colortex8
+    /* DRAWBUFFERS:0 */
+        gl_FragData[0] = vec4(color, 1); //gcolor
     }
 #endif
