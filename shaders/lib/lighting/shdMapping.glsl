@@ -32,21 +32,22 @@ vec3 getShdFilter(vec3 shdPos, float dither){
 
 // Shadow function
 vec3 getShdMapping(vec4 shdPos, vec3 normal, vec3 nLightPos, float dither, float ss){
-	vec3 shdCol = vec3(0);
-
 	#ifndef NETHER
-		// Light diffuse
-		float lightDot = dot(normal, nLightPos) * (1.0 - ss) + ss;
-		shdPos.xyz = distort(shdPos.xyz, shdPos.w) * 0.5 + 0.5;
-		shdPos.z -= shdBias * squared(shdPos.w) / abs(lightDot);
-
-		if(lightDot >= 0)
-			#ifdef SHADOW_FILTER
-				shdCol = getShdFilter(shdPos.xyz, dither);
-			#else
-				shdCol = getShdTex(shdPos.xyz);
-			#endif
+		return vec3(0);
 	#endif
+	
+	vec3 shdCol = vec3(0);
+	// Light diffuse
+	float lightDot = dot(normal, nLightPos) * (1.0 - ss) + ss;
+	shdPos.xyz = distort(shdPos.xyz, shdPos.w) * 0.5 + 0.5;
+	shdPos.z -= shdBias * squared(shdPos.w) / abs(lightDot);
+
+	if(lightDot >= 0)
+		#ifdef SHADOW_FILTER
+			shdCol = getShdFilter(shdPos.xyz, dither);
+		#else
+			shdCol = getShdTex(shdPos.xyz);
+		#endif
 
 	return shdCol * max(0.0, lightDot) * (1.0 - newTwilight);
 }

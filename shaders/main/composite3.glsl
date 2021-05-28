@@ -43,7 +43,7 @@ INOUT vec2 texcoord;
                 eBloom += texture2D(colortex7, scaledUv + vec2(0, pixelSize) * 2.0, BLOOM_LOD).rgb * 0.015625;
             #endif
         /* DRAWBUFFERS:7 */
-            gl_FragData[0] = vec4(eBloom, 1); //colortex7
+            gl_FragData[0] = vec4(eBloom * BLOOM_BRIGHTNESS, 1); //colortex7
         #endif
     }
 #endif
