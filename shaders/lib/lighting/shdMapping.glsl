@@ -32,10 +32,10 @@ vec3 getShdFilter(vec3 shdPos, float dither){
 
 // Shadow function
 vec3 getShdMapping(vec4 shdPos, vec3 normal, vec3 nLightPos, float dither, float ss){
-	#ifndef NETHER
+	#ifdef NETHER
 		return vec3(0);
 	#endif
-	
+
 	vec3 shdCol = vec3(0);
 	// Light diffuse
 	float lightDot = dot(normal, nLightPos) * (1.0 - ss) + ss;
