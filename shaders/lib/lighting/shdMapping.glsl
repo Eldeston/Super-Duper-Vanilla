@@ -40,14 +40,13 @@ vec3 getShdMapping(vec4 shdPos, vec3 normal, vec3 nLightPos, float dither, float
 		shdPos.xyz = distort(shdPos.xyz, shdPos.w) * 0.5 + 0.5;
 		shdPos.z -= shdBias * squared(shdPos.w) / abs(lightDot);
 
-		if(lightDot >= 0){
+		if(lightDot >= 0)
 			#ifdef SHADOW_FILTER
-				shdCol = getShdFilter(shdPos.xyz, dither) * max(0.0, lightDot);
+				shdCol = getShdFilter(shdPos.xyz, dither);
 			#else
-				shdCol = getShdTex(shdPos.xyz) * max(0.0, lightDot);
+				shdCol = getShdTex(shdPos.xyz);
 			#endif
-		}
 	#endif
 
-	return shdCol * (1.0 - newTwilight);
+	return shdCol * max(0.0, lightDot) * (1.0 - newTwilight);
 }
