@@ -20,7 +20,7 @@ INOUT vec2 texcoord;
         vec3 color = texture2D(gcolor, texcoord).rgb;
 
         #ifdef BLOOM
-            vec3 eBloom = texture2D(colortex7, texcoord * 0.5).rgb;
+            vec3 eBloom = texture2D(colortex7, texcoord * 0.5).rgb * BLOOM_BRIGHTNESS;
             color += eBloom;
         #endif
         color = toneA(color);
