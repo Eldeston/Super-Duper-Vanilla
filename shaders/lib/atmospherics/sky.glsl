@@ -12,7 +12,7 @@ float genStar(vec2 nSkyPos){
     return getStarShape(starGrid, starRand.r * 0.9 + 0.3);
 }
 
-vec3 getSkyRender(vec3 playerPos, float skyMask, vec3 skyCol, vec3 lightCol){
+vec3 getSkyRender(vec3 playerPos, vec3 skyCol, vec3 lightCol, float skyMask, float skyDiffuseMask){
     #ifdef NETHER
         return fogColor;
     #elif defined END
@@ -34,10 +34,11 @@ vec3 getSkyRender(vec3 playerPos, float skyMask, vec3 skyCol, vec3 lightCol){
 
     // Get sun/moon
     float sunMoon = getSunMoonShape(nSkyPos) * voidGradient;
-    vec2 starPos = 0.5 > abs(nSkyPos.y) ? vec2(atan(nSkyPos.x, nSkyPos.z), nSkyPos.y) * 0.25 : nSkyPos.xz * 0.333;
+
     // Get star
+    vec2 starPos = 0.5 > abs(nSkyPos.y) ? vec2(atan(nSkyPos.x, nSkyPos.z), nSkyPos.y) * 0.25 : nSkyPos.xz * 0.333;
     float star = genStar(starPos * 0.128) * night * voidGradient;
 
     vec3 fogCol = skyCol * 0.75 * (1.0 - voidGradient) + voidGradient * skyCol;
-    return (star + sunMoon * 5.0 + lightRange * lightCol) * skyMask + mix(fogCol, skyCol, skyFogGradient);
+    return (star + sunMoon * 5.0) * skyMask + (lightRange * lightCol * skyDiffuseMask) + mix(fogCol, skyCol, skyFogGradient);
 }

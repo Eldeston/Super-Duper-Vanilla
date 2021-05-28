@@ -2,10 +2,17 @@
 #include "/lib/settings.glsl"
 #include "/lib/globalVar.glsl"
 
+#include "/lib/globalSamplers.glsl"
+
 #include "/lib/lighting/shdDistort.glsl"
 #include "/lib/vertexWave.glsl"
 
+INOUT float blockId;
+
 INOUT vec2 texcoord;
+
+INOUT vec3 worldPos;
+
 INOUT vec4 color;
 
 #ifdef VERTEX
@@ -14,11 +21,13 @@ INOUT vec4 color;
 
     void main(){
         vec4 vertexPos = shadowModelViewInverse * (shadowProjectionInverse * ftransform());
+        worldPos = vertexPos.xyz + cameraPosition;
 
         texcoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        blockId = mc_Entity.x;
         
         #ifdef ANIMATE
-            getWave(vertexPos.xyz, vertexPos.xyz + cameraPosition, texcoord, mc_midTexCoord, mc_Entity.x);
+            getWave(vertexPos.xyz, worldPos, texcoord, mc_midTexCoord, mc_Entity.x);
         #endif
 
         gl_Position = shadowProjection * (shadowModelView * vertexPos);
@@ -38,7 +47,14 @@ INOUT vec4 color;
     uniform sampler2D tex;
 
     void main(){
-        vec4 shdColor = texture2D(tex, texcoord) * color;
+        vec4 shdColor = texture2D(tex, texcoord);
+        shdColor *= color;
+
+        #ifdef UNDERWATER_CAUSTICS
+            int rBlockId = int(blockId + 0.5);
+            float waterData = squared(1.0 - H2NWater(worldPos.xz).w) * 4.0;
+            if(rBlockId == 10008) shdColor = shdColor * (1.0 + waterData);
+        #endif
 
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = shdColor;

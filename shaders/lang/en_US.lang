@@ -24,6 +24,7 @@ screen.LIGHTING=Lighting
     option.sunPathRotation=Light rotation
     option.SHADOW_FILTER=Soft shadow filter
     option.SHADOW_DISTORT_FACTOR=Shadow distortion factor
+    option.UNDERWATER_CAUSTICS=Underwater caustics
     screen.LIGHTING.comment=Lighting settings for shadow resolution, lightmap etc.
 
 screen.PBR=PBR settings

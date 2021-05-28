@@ -95,7 +95,7 @@ vec3 getRandWorld(vec3 worldPos, vec3 norm, int tile){
 }
 
 float getCellNoise(vec2 st){
-    float d0 = texture2D(noisetex, st + frameTimeCounter * 0.00675).z;
+    float d0 = texture2D(noisetex, st + frameTimeCounter * 0.0125).z;
     float d1 = texture2D(noisetex, st * 4.0 - frameTimeCounter * 0.05).z;
     #ifdef INVERSE
         return 1.0 - d0 * 0.875 + d1 * 0.125;

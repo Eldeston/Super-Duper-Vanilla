@@ -51,7 +51,7 @@ INOUT vec2 texcoord;
             float mask = float(posVector.screenPos.z == 1);
             
             // Get sky color
-            vec3 skyRender = getSkyRender(posVector.eyePlayerPos, mask, skyCol, lightCol);
+            vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyCol, lightCol, mask, 1.0);
 
             // Apply lighting
             materials.albedo_t = complexLighting(materials, posVector, dither);
