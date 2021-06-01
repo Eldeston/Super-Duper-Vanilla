@@ -31,7 +31,16 @@ INOUT vec4 glcolor;
 
     void main(){
 	    vec4 color = texture2D(texture, texcoord);
-        color.rgb *= glcolor.rgb;
+        
+        #ifndef WHITE_MODE
+            color.rgb *= glcolor.rgb;
+        #else
+            #ifdef WHITE_MODE_F
+                color.rgb = glcolor.rgb;
+            #else
+                color.rgb = vec3(1);
+            #endif
+        #endif
 
 	    color.rgb = mix(color.rgb, entityColor.rgb, entityColor.a);
         

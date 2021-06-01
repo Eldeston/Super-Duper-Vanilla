@@ -1,3 +1,9 @@
+    profile.POTATO=Potato
+    profile.LOW=Low(default)
+    profile.MEDIUM=Medium
+    profile.HIGH=High
+    profile.ULTRA=Ultra
+
 screen.CAMERA=Camera
     option.VIGNETTE=Vignette
     option.UNDERWATER_BLUR=Underwater blur
@@ -47,6 +53,7 @@ screen.WATER_SETTINGS=Water settings
     option.WATER_TILE_SIZE=Water tile size
 
 screen.ATMOSPHERICS=Atmospherics
+    option.VOLUMETRIC_LIGHT=Volumetric lighting
     option.VOL_LIGHT_BRIGHTNESS=Volumetric light amount
     option.MIST_GROUND_FOG_BRIGHTNESS=Ground fog amount
 

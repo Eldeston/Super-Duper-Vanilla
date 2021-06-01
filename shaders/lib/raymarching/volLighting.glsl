@@ -1,5 +1,5 @@
 vec3 getGodRays(vec3 feetPlayerPos, float worldPosY, float dither){
-	#if defined NETHER || defined END
+	#if defined NETHER || defined END || !defined VOLUMETRIC_LIGHT
 		return vec3(0);
 	#endif
 	if(VOL_LIGHT_BRIGHTNESS == 0) return vec3(0);
