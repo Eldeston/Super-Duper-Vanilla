@@ -84,7 +84,7 @@ INOUT vec2 texcoord;
             float totalDepth = depth1 + depth2 + depth3 + depth4 + depth5 + depth6 + depth7 + depth8;
             float dDepth = totalDepth - depth0 * 8.0;
 
-            color *= 1.0 + saturate(1.0 - dDepth) * (OUTLINE_BRIGHTNESS - 1.0);
+            color *= 1.0 + saturate(dDepth) * (OUTLINE_BRIGHTNESS - 1.0);
         #endif
 
     /* DRAWBUFFERS:067 */
