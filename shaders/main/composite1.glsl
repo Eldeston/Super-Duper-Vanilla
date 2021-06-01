@@ -65,23 +65,23 @@ INOUT vec2 texcoord;
 
         #ifdef OUTLINES
             /* Outline calculation */
-            float offSet = 1.0 / viewWidth;
+            float offSet = OUTLINE_PIX_SIZE / max(viewWidth, viewHeight);
             float depth0 = toView(texture2D(depthtex0, texcoord).x);
+            float totalDepth = 0.0;
 
-            float depth1 = toView(texture2D(depthtex0, texcoord - offSet).x);
-            float depth2 = toView(texture2D(depthtex0, texcoord + offSet).x);
+            totalDepth += toView(texture2D(depthtex0, texcoord - offSet).x);
+            totalDepth += toView(texture2D(depthtex0, texcoord + offSet).x);
 
-            float depth3 = toView(texture2D(depthtex0, texcoord - vec2(offSet, -offSet)).x);
-            float depth4 = toView(texture2D(depthtex0, texcoord + vec2(offSet, -offSet)).x);
+            totalDepth += toView(texture2D(depthtex0, texcoord - vec2(offSet, -offSet)).x);
+            totalDepth += toView(texture2D(depthtex0, texcoord + vec2(offSet, -offSet)).x);
 
-            float depth5 = toView(texture2D(depthtex0, texcoord - vec2(offSet, 0)).x);
-            float depth6 = toView(texture2D(depthtex0, texcoord + vec2(offSet, 0)).x);
+            totalDepth += toView(texture2D(depthtex0, texcoord - vec2(offSet, 0)).x);
+            totalDepth += toView(texture2D(depthtex0, texcoord + vec2(offSet, 0)).x);
 
-            float depth7 = toView(texture2D(depthtex0, texcoord - vec2(0, offSet)).x);
-            float depth8 = toView(texture2D(depthtex0, texcoord + vec2(0, offSet)).x);
+            totalDepth += toView(texture2D(depthtex0, texcoord - vec2(0, offSet)).x);
+            totalDepth += toView(texture2D(depthtex0, texcoord + vec2(0, offSet)).x);
 
             // Calculate the differences of the offsetted depths...
-            float totalDepth = depth1 + depth2 + depth3 + depth4 + depth5 + depth6 + depth7 + depth8;
             float dDepth = totalDepth - depth0 * 8.0;
 
             color *= 1.0 + saturate(dDepth) * (OUTLINE_BRIGHTNESS - 1.0);
