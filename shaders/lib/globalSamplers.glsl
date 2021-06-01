@@ -41,10 +41,10 @@ const int colortex8Format = RGBA1;
 uniform sampler2D depthtex0;
 // Albedo texture color 0
 uniform sampler2D gcolor;
-// Normal map buffer(rgb)
-uniform sampler2D colortex1;
 
 #if !defined GBUFFERS
+    // Normal map buffer(rgb)
+    uniform sampler2D colortex1;
     // Lightmap coord(rg) and subsurface scattering
     uniform sampler2D colortex2;
     // Metallic, emissive, roughness
@@ -56,12 +56,11 @@ uniform sampler2D colortex1;
     uniform sampler2D colortex5;
     // Accumulation buffer, and exposure
     uniform sampler2D colortex6;
+    // Bloom
+    uniform sampler2D colortex7;
+    // Custom cloud texture
+    uniform sampler2D colortex8;
 #endif
-
-// Bloom
-uniform sampler2D colortex7;
-// Custom cloud texture
-uniform sampler2D colortex8;
 
 // Default resolution
 const int noiseTextureResolution = 256;

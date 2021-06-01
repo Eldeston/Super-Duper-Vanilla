@@ -7,6 +7,8 @@
 #include "/lib/lighting/shdDistort.glsl"
 #include "/lib/conversion.glsl"
 
+#include "/lib/post/outline.glsl"
+
 #include "/lib/atmospherics/fog.glsl"
 #include "/lib/atmospherics/sky.glsl"
 
@@ -56,6 +58,11 @@ INOUT vec2 texcoord;
             // Apply lighting
             materials.albedo_t = complexLighting(materials, posVector, dither);
             materials.albedo_t *= 1.0 - mask; // Mask out the sky
+
+            #ifdef OUTLINES
+                /* Outline calculation */
+                materials.albedo_t = getOutline(depthtex0, materials.albedo_t, texcoord);
+            #endif
 
             // Apply atmospherics
             materials.albedo_t = getFog(posVector, materials.albedo_t, skyRender);

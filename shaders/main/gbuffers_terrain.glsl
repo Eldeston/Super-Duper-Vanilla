@@ -67,24 +67,19 @@ INOUT mat3 TBN;
 	    // Declare materials
 	    matPBR materials;
 
-        float maxCol = maxC(color.rgb); float satCol = rgb2hsv(color).y;
         int rBlockId = int(blockId + 0.5);
+        materials.normal_m = norm;
 
         #ifdef DEFAULT_MAT
+            float maxCol = maxC(color.rgb); float satCol = rgb2hsv(color).y;
             materials.metallic_m = (rBlockId >= 10008 && rBlockId <= 10010) || rBlockId == 10015 ? 0.75 : 0.0;
             materials.ss_m = (rBlockId >= 10001 && rBlockId <= 10004) || rBlockId == 10007 || rBlockId == 10011 || rBlockId == 10013 ? sqrt(maxCol) * 0.8 : 0.0;
             materials.emissive_m = rBlockId == 10005 || rBlockId == 10006 ? maxCol
                 : rBlockId == 10014 ? satCol : 0.0;
             materials.roughness_m = (rBlockId >= 10008 && rBlockId <= 10010) || rBlockId == 10015 ? 0.2 * maxCol : 1.0;
-            materials.normal_m = norm;
             materials.ambient_m = 1.0;
         #else
-            // If lava
-            if(rBlockId == 10006){
-                materials.normal_m = norm;
-            } else {
-                getPBR(materials, TBN, texcoord);
-            }
+            getPBR(materials, TBN, texcoord);
         #endif
 
         // If lava

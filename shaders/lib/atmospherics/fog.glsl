@@ -3,8 +3,8 @@ float atmoFog(float playerPosY, float worldPosY, float playerPosLength, float he
     return min(fogAmount, 1.0);
 }
 
-float getFogAmount(positionVectors posVec, float eyePlayerPosLength){
-    vec3 nEyePlayerPos = normalize(posVec.eyePlayerPos);
+float getFogAmount(vec3 eyePlayerPos, float eyePlayerPosLength){
+    vec3 nEyePlayerPos = normalize(eyePlayerPos);
     float waterVoid = smootherstep(nEyePlayerPos.y + (eyeBrightFact - 0.6));
     #ifdef NETHER
         float fogFar = 32.0;
@@ -41,7 +41,7 @@ vec3 getFog(positionVectors posVec, vec3 color, vec3 fogCol){
         c *= 1.44; b *= 1.44; o *= 1.24;
     }
 
-    float fogAmount = getFogAmount(posVec, eyePlayerPosLength);
+    float fogAmount = getFogAmount(posVec.eyePlayerPos, eyePlayerPosLength);
     float mistFog = atmoFog(posVec.eyePlayerPos.y, posVec.worldPos.y, eyePlayerPosLength, c, b) * o;
     color = mix(color, pow(fogCol, vec3(1.0 / 4.0) * MIST_GROUND_FOG_BRIGHTNESS), mistFog);
     

@@ -62,31 +62,7 @@ INOUT vec2 texcoord;
         float skyMask = float(texture2D(depthtex0, texcoord).r != 1);
         float luminance = getLuminance(color);
         float emissive = texture2D(colortex3, texcoord).g;
-
-        #ifdef OUTLINES
-            /* Outline calculation */
-            float offSet = OUTLINE_PIX_SIZE / max(viewWidth, viewHeight);
-            float depth0 = toView(texture2D(depthtex0, texcoord).x);
-            float totalDepth = 0.0;
-
-            totalDepth += toView(texture2D(depthtex0, texcoord - offSet).x);
-            totalDepth += toView(texture2D(depthtex0, texcoord + offSet).x);
-
-            totalDepth += toView(texture2D(depthtex0, texcoord - vec2(offSet, -offSet)).x);
-            totalDepth += toView(texture2D(depthtex0, texcoord + vec2(offSet, -offSet)).x);
-
-            totalDepth += toView(texture2D(depthtex0, texcoord - vec2(offSet, 0)).x);
-            totalDepth += toView(texture2D(depthtex0, texcoord + vec2(offSet, 0)).x);
-
-            totalDepth += toView(texture2D(depthtex0, texcoord - vec2(0, offSet)).x);
-            totalDepth += toView(texture2D(depthtex0, texcoord + vec2(0, offSet)).x);
-
-            // Calculate the differences of the offsetted depths...
-            float dDepth = totalDepth - depth0 * 8.0;
-
-            color *= 1.0 + saturate(dDepth) * (OUTLINE_BRIGHTNESS - 1.0);
-        #endif
-
+        
     /* DRAWBUFFERS:067 */
         gl_FragData[0] = vec4(color, 1); //gcolor
         gl_FragData[1] = vec4(accumulated, finalLumi); //colortex6
