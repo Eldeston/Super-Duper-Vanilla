@@ -16,7 +16,7 @@ vec3 complexLighting(matPBR material, positionVectors posVector, vec3 dither){
 	// Get direct light diffuse color
 	vec3 diffuseCol = getShdMapping(posVector.shdPos, material.normal_m, nLightPos, dither.r, material.ss_m) * lightCol;
 	// Get globally illuminated sky
-	vec3 GISky = getSkyRender(material.normal_m, skyCol, lightCol, 0.0, 0.0) * material.light_m.y * material.light_m.y;
+	vec3 GISky = getSkyRender(material.normal_m, skyCol, lightCol, 0.0, 0.0, dither.r) * material.light_m.y * material.light_m.y;
 
 	#ifdef SSGI
 		// Get SSGI
@@ -41,7 +41,7 @@ vec3 complexLighting(matPBR material, positionVectors posVector, vec3 dither){
 	
 	// Get reflected sky
 	float skyMask = pow(material.light_m.y, 1.0 / 4.0) * sqrtSmoothness;
-    vec3 reflectedSkyRender = getSkyRender(reflectedEyePlayerPos, skyCol, lightCol, skyMask, skyMask) * material.light_m.y;
+    vec3 reflectedSkyRender = getSkyRender(reflectedEyePlayerPos, skyCol, lightCol, skyMask, skyMask, dither.r) * material.light_m.y;
 
 	// Mask reflections
     vec3 reflectCol = mix(reflectedSkyRender, SSRCol.rgb, SSRCol.a) * fresnel * sqrtSmoothness; // Will change this later...

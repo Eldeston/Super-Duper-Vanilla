@@ -1,3 +1,5 @@
+const int RGBA1 = 1;
+
 const int RGB8 = 1;
 const int RGB16 = 1;
 
@@ -24,6 +26,7 @@ const int colortex5Format = RGB16;
 #endif
 
 const int colortex7Format = RGB16;
+const int colortex8Format = RGBA1;
 
 #if !defined GBUFFERS || !defined FINAL
     const bool gcolorMipmapEnabled = true;
@@ -57,6 +60,8 @@ uniform sampler2D colortex1;
 
 // Bloom
 uniform sampler2D colortex7;
+// Custom cloud texture
+uniform sampler2D colortex8;
 
 // Default resolution
 const int noiseTextureResolution = 256;
@@ -113,4 +118,16 @@ vec4 H2NWater(vec2 st){
     #endif
     
     return vec4(normalize(vec3(dx, dy, WATER_DEPTH_SIZE)), d);
+}
+
+float getParallaxClouds3D(sampler2D source, vec2 startUv, float thickness, float dither, int steps){
+    float stepSize = 1.0 / float(steps);
+    vec2 endUv = startUv * stepSize * thickness * (1.0 + dither * 0.2);
+
+    float clouds = 0.0;
+    for(int i = 0; i < steps; i++){
+        startUv += endUv;
+        clouds += texture2D(source, startUv + vec2(frameTimeCounter * 0.001, 0)).a;
+    }
+    return sqrt(clouds * stepSize);
 }

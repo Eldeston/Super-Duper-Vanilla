@@ -34,3 +34,7 @@ vec2 toPrevScreenPos(vec2 currentPos){
 	prevPosition = gbufferPreviousProjection * prevPosition;
 	return prevPosition.xy / prevPosition.w * 0.5 + 0.5;
 }
+
+float toView(float depth){
+	return gbufferProjectionInverse[3].z / (gbufferProjectionInverse[2].w * (depth * 2.0 - 1.0) + gbufferProjectionInverse[3].w);
+}

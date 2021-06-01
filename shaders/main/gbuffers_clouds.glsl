@@ -12,7 +12,7 @@ INOUT vec3 norm;
 INOUT vec4 glcolor;
 
 #ifdef VERTEX
-    void main() {
+    void main(){
         gl_Position = ftransform();
 
         texcoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;

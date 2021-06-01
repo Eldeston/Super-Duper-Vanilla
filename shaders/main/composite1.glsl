@@ -4,6 +4,8 @@
 #include "/lib/globalVar.glsl"
 
 #include "/lib/globalSamplers.glsl"
+#include "/lib/lighting/shdDistort.glsl"
+#include "/lib/conversion.glsl"
 
 INOUT vec2 texcoord;
 
@@ -60,6 +62,30 @@ INOUT vec2 texcoord;
         float skyMask = float(texture2D(depthtex0, texcoord).r != 1);
         float luminance = getLuminance(color);
         float emissive = texture2D(colortex3, texcoord).g;
+
+        #ifdef OUTLINES
+            /* Outline calculation */
+            float offSet = 1.0 / viewWidth;
+            float depth0 = toView(texture2D(depthtex0, texcoord).x);
+
+            float depth1 = toView(texture2D(depthtex0, texcoord - offSet).x);
+            float depth2 = toView(texture2D(depthtex0, texcoord + offSet).x);
+
+            float depth3 = toView(texture2D(depthtex0, texcoord - vec2(offSet, -offSet)).x);
+            float depth4 = toView(texture2D(depthtex0, texcoord + vec2(offSet, -offSet)).x);
+
+            float depth5 = toView(texture2D(depthtex0, texcoord - vec2(offSet, 0)).x);
+            float depth6 = toView(texture2D(depthtex0, texcoord + vec2(offSet, 0)).x);
+
+            float depth7 = toView(texture2D(depthtex0, texcoord - vec2(0, offSet)).x);
+            float depth8 = toView(texture2D(depthtex0, texcoord + vec2(0, offSet)).x);
+
+            // Calculate the differences of the offsetted depths...
+            float totalDepth = depth1 + depth2 + depth3 + depth4 + depth5 + depth6 + depth7 + depth8;
+            float dDepth = totalDepth - depth0 * 8.0;
+
+            color *= 1.0 + saturate(1.0 - dDepth) * (OUTLINE_BRIGHTNESS - 1.0);
+        #endif
 
     /* DRAWBUFFERS:067 */
         gl_FragData[0] = vec4(color, 1); //gcolor

@@ -8,6 +8,8 @@ screen.CAMERA=Camera
     option.BLOOM_PIX_SIZE=Bloom pixel size
     option.BLOOM_BRIGHTNESS=Bloom brightness
     option.BLOOM_QUALITY=Bloom quality
+    option.OUTLINES=Outlines
+    option.OUTLINE_BRIGHTNESS=Outline brightness
     screen.CAMERA.comment=Camera settings for tonemap, vignette, HDR, postprocessing etc.
 
 screen.TONEMAP=Tonemap
