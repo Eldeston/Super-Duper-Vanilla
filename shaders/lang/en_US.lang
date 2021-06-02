@@ -1,9 +1,3 @@
-    profile.POTATO=Potato
-    profile.LOW=Low(default)
-    profile.MEDIUM=Medium
-    profile.HIGH=High
-    profile.ULTRA=Ultra
-
 screen.CAMERA=Camera
     option.VIGNETTE=Vignette
     option.UNDERWATER_BLUR=Underwater blur
@@ -34,6 +28,8 @@ screen.LIGHTING=Lighting
     option.SHADOW_FILTER=Soft shadow filter
     option.SHADOW_DISTORT_FACTOR=Shadow distortion factor
     option.UNDERWATER_CAUSTICS=Underwater caustics
+    option.SHADOW_DISTORT=Shadow distortion
+    option.AMBIENT_LIGHTING=Ambient lighting
     screen.LIGHTING.comment=Lighting settings for shadow resolution, lightmap etc.
 
 screen.PBR=PBR settings
