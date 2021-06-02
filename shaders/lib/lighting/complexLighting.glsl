@@ -31,7 +31,7 @@ vec3 complexLighting(matPBR material, positionVectors posVector, vec3 dither){
     vec3 F0 = mix(vec3(0.04), material.albedo_t, material.metallic_m);
     vec3 fresnel = getFresnelSchlick(dot(material.normal_m, nEyePlayerPos), F0);
 	// Get specular GGX
-	vec3 specCol = getSpecGGX(material, fresnel, nEyePlayerPos, nLightPos, lightVec) * diffuseCol;
+	vec3 specCol = getSpecGGX(nEyePlayerPos, nLightPos, lightVec, material.normal_m, fresnel, material.roughness_m) * diffuseCol;
 
 	#ifdef SSR
 		vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.screenPos, gBMVNorm, nDither, material.roughness_m);
@@ -47,5 +47,6 @@ vec3 complexLighting(matPBR material, positionVectors posVector, vec3 dither){
     vec3 reflectCol = mix(reflectedSkyRender, SSRCol.rgb, SSRCol.a) * fresnel * sqrtSmoothness; // Will change this later...
 
 	/* Calculate total lighting and return color */
-    return material.albedo_t * ((diffuseCol + GISky * material.ambient_m + GIcol + (cubed(material.light_m.x) * BLOCK_LIGHT_COL + AMBIENT_LIGHTING) * pow(material.ambient_m, 1.0 / 4.0)) * (1.0 - material.metallic_m) + material.emissive_m) + specCol + reflectCol;
+	vec3 totalDiffuse = (diffuseCol + (GISky + AMBIENT_LIGHTING) * material.ambient_m + GIcol + cubed(material.light_m.x) * BLOCK_LIGHT_COL * pow(material.ambient_m, 1.0 / 4.0)) * (1.0 - material.metallic_m) + material.emissive_m;
+    return material.albedo_t * totalDiffuse + specCol + reflectCol;
 }

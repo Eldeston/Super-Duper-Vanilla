@@ -3,9 +3,8 @@ float atmoFog(float playerPosY, float worldPosY, float playerPosLength, float he
     return min(fogAmount, 1.0);
 }
 
-float getFogAmount(vec3 eyePlayerPos, float eyePlayerPosLength){
-    vec3 nEyePlayerPos = normalize(eyePlayerPos);
-    float waterVoid = smootherstep(nEyePlayerPos.y + (eyeBrightFact - 0.6));
+float getFogAmount(float nEyePlayerPosY, float eyePlayerPosLength){
+    float waterVoid = smootherstep(nEyePlayerPosY + (eyeBrightFact - 0.6));
     #ifdef NETHER
         float fogFar = 32.0;
         fogFar = max(far - fogFar, 0.0);
@@ -27,8 +26,9 @@ float getFogAmount(vec3 eyePlayerPos, float eyePlayerPosLength){
     return smoothstep(fogNear, fogFar, eyePlayerPosLength);
 }
 
-vec3 getFog(positionVectors posVec, vec3 color, vec3 fogCol){
-    float eyePlayerPosLength = length(posVec.eyePlayerPos);
+vec3 getFog(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY){
+    vec3 nEyePlayerPos = normalize(eyePlayerPos);
+    float eyePlayerPosLength = length(eyePlayerPos);
 
     #ifdef NETHER
         float c = 0.12; float b = 0.08; float o = 0.4;
@@ -41,8 +41,8 @@ vec3 getFog(positionVectors posVec, vec3 color, vec3 fogCol){
         c *= 1.44; b *= 1.44; o *= 1.24;
     }
 
-    float fogAmount = getFogAmount(posVec.eyePlayerPos, eyePlayerPosLength);
-    float mistFog = atmoFog(posVec.eyePlayerPos.y, posVec.worldPos.y, eyePlayerPosLength, c, b) * o;
+    float fogAmount = getFogAmount(nEyePlayerPos.y, eyePlayerPosLength);
+    float mistFog = atmoFog(eyePlayerPos.y, worldPosY, eyePlayerPosLength, c, b) * o;
     color = mix(color, pow(fogCol, vec3(1.0 / 4.0) * MIST_GROUND_FOG_BRIGHTNESS), mistFog);
     
     return color * (1.0 - fogAmount) + fogCol * fogAmount;

@@ -33,17 +33,17 @@ vec3 getFresnelSchlick(float cosTheta, vec3 F0){
 	return F0 + (1.0 - F0) * pow(saturate(1.0 - cosTheta), 5.0);
 }
 
-vec3 getSpecGGX(matPBR material, vec3 fresnel, vec3 nPlayerPos, vec3 nLightPos, vec3 lightVec){
+vec3 getSpecGGX(vec3 nPlayerPos, vec3 nLightPos, vec3 lightVec, vec3 norm, vec3 fresnel, float roughness){
     #ifdef NETHER
         return vec3(0);
     #endif
 
     vec3 halfDir = normalize(nLightPos + nPlayerPos);
 
-    float NDF = getGGX(material.normal_m, halfDir, material.roughness_m);
-    float G = getGeometrySmith(material.normal_m, nPlayerPos, lightVec, material.roughness_m);
+    float NDF = getGGX(norm, halfDir, roughness);
+    float G = getGeometrySmith(norm, nPlayerPos, lightVec, roughness);
 	vec3 numerator = NDF * G * fresnel;
-	float denominator = 4.0 * max(dot(material.normal_m, nPlayerPos), 0.0) * max(dot(material.normal_m, lightVec), 0.0);
+	float denominator = 4.0 * max(dot(norm, nPlayerPos), 0.0) * max(dot(norm, lightVec), 0.0);
 
     return numerator / max(denominator, 0.001);
 }

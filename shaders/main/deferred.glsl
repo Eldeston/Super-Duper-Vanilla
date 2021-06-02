@@ -65,7 +65,7 @@ INOUT vec2 texcoord;
             #endif
 
             // Apply atmospherics
-            materials.albedo_t = getFog(posVector, materials.albedo_t, skyRender);
+            materials.albedo_t = getFog(posVector.eyePlayerPos, materials.albedo_t, skyRender, posVector.worldPos.y);
             reflectBuffer = materials.albedo_t; // Assign current scene color WITHOUT the godrays...
             materials.albedo_t += getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.y) * lightCol;
         }
