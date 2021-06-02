@@ -1,12 +1,12 @@
 vec3 getGodRays(vec3 feetPlayerPos, float worldPosY, float dither){
-	#if defined NETHER || defined END || !defined VOLUMETRIC_LIGHT
+	#if defined NETHER || defined END
 		return vec3(0);
 	#else
 		if(VOL_LIGHT_BRIGHTNESS == 0) return vec3(0);
 
 		feetPlayerPos *= 1.0 + dither * 0.3333;
 
-		vec3 rayData = vec3(0.0);
+		vec3 rayData = vec3(0);
 		float densityMult = float(1 + isEyeInWater * 2);
 		for(int x = 0; x < 8; x++){
 			feetPlayerPos *= 0.766;

@@ -84,12 +84,13 @@ INOUT mat3 TBN;
 
         // If water
         if(rBlockId == 10008){
-            float normGBMVIy = (mat3(gbufferModelViewInverse) * norm).y;
-            vec2 waterUv = worldPos.xz * (1.0 - normGBMVIy) + worldPos.xz * normGBMVIy;
-            vec4 waterData = H2NWater(waterUv);
-            waterData.w = waterData.w;
+            #ifdef WATER_NORM
+                float normGBMVIy = (mat3(gbufferModelViewInverse) * norm).y;
+                vec2 waterUv = worldPos.xz * (1.0 - normGBMVIy) + worldPos.xz * normGBMVIy;
+                vec4 waterData = H2NWater(waterUv);
+                materials.normal_m = normalize(TBN * waterData.xyz);
+            #endif
 
-		    materials.normal_m = normalize(TBN * waterData.xyz);
             materials.metallic_m = 0.5;
             materials.roughness_m = 0.0;
             materials.ambient_m = 1.0;

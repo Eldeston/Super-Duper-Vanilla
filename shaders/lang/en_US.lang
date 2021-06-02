@@ -47,19 +47,20 @@ screen.WATER_SETTINGS=Water settings
     option.WATER_BLUR_SIZE=Water blur size
     option.WATER_DEPTH_SIZE=Water depth size
     option.WATER_TILE_SIZE=Water tile size
+    option.WATER_NORM=Water normals
 
 screen.ATMOSPHERICS=Atmospherics
-    option.VOLUMETRIC_LIGHT=Volumetric lighting
     option.VOL_LIGHT_BRIGHTNESS=Volumetric light amount
+    option.VOL_LIGHT=Volumetric lighting
     option.MIST_GROUND_FOG_BRIGHTNESS=Ground fog amount
 
 screen.ANIMATION=Animation
     option.ANIMATE=Animate
     option.ANIMATION_SPEED=Animation speed
 
-screen.DEBUG=Debug
+screen.DEBUG=Super Duper Vanilla by Eldeston
     option.WHITE_MODE=White mode
     option.WHITE_MODE_F=White mode foliage
     option.NOISE_SPEED=Noise speed
     option.BUFFER_VIEW=Buffer view
-    screen.DEBUG.comment=Dev debug settings used to visualize certain things like ao, shadows etc. and other settings.
+    screen.DEBUG.comment=Developed by §2Eldeston§f§r, produced by §9FlameRender §9Studios. §eClick me to open shader debug settings!
