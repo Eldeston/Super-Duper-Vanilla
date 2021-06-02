@@ -37,12 +37,11 @@ const int colortex8Format = RGBA1;
     const bool colortex6Clear = false;
 #endif
 
-// Depth texture
-uniform sampler2D depthtex0;
-// Albedo texture color 0
-uniform sampler2D gcolor;
-
 #if !defined GBUFFERS
+    // Depth texture
+    uniform sampler2D depthtex0;
+    // Albedo texture color 0
+    uniform sampler2D gcolor;
     // Normal map buffer(rgb)
     uniform sampler2D colortex1;
     // Lightmap coord(rg) and subsurface scattering
@@ -64,8 +63,11 @@ uniform sampler2D gcolor;
 
 // Default resolution
 const int noiseTextureResolution = 256;
-// Default AO
-const float ambientOcclusionLevel = 1.0;
+
+#ifdef GBUFFERS
+    // Default AO
+    const float ambientOcclusionLevel = 1.0;
+#endif
 
 // Noise sample, r for blue noise, g for white noise, and b for cell noise
 uniform sampler2D noisetex;
