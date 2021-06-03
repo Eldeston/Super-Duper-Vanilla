@@ -43,7 +43,7 @@ vec3 getFog(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY){
 
     float fogAmount = getFogAmount(nEyePlayerPos.y, eyePlayerPosLength);
     float mistFog = atmoFog(eyePlayerPos.y, worldPosY, eyePlayerPosLength, c, b) * o;
-    color = mix(color, pow(fogCol, vec3(1.0 / 4.0) * MIST_GROUND_FOG_BRIGHTNESS), mistFog);
+    color = mix(color, pow(fogCol, vec3(1.0 / 4.0)), mistFog * MIST_GROUND_FOG_BRIGHTNESS);
     
     return color * (1.0 - fogAmount) + fogCol * fogAmount;
 }

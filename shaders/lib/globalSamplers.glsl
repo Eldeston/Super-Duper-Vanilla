@@ -26,7 +26,6 @@ const int colortex5Format = RGB16;
 #endif
 
 const int colortex7Format = RGB16;
-const int colortex8Format = RGBA1;
 
 #if !defined GBUFFERS || !defined FINAL
     const bool gcolorMipmapEnabled = true;
@@ -57,8 +56,6 @@ const int colortex8Format = RGBA1;
     uniform sampler2D colortex6;
     // Bloom
     uniform sampler2D colortex7;
-    // Custom cloud texture
-    uniform sampler2D colortex8;
 #endif
 
 // Default resolution
@@ -128,7 +125,7 @@ float getParallaxClouds3D(sampler2D source, vec2 startUv, float thickness, float
     float clouds = 0.0;
     for(int i = 0; i < steps; i++){
         startUv += endUv;
-        clouds += texture2D(source, startUv + vec2(frameTimeCounter * 0.001, 0)).a;
+        clouds += texture2D(source, startUv + vec2(frameTimeCounter * 0.001, 0)).r;
     }
     return sqrt(clouds * stepSize);
 }
