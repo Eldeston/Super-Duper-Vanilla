@@ -57,14 +57,10 @@ INOUT mat3 TBN;
 #endif
 
 #ifdef FRAGMENT
-    uniform sampler2D lightmap;
     uniform sampler2D texture;
 
     void main(){
         vec4 color = texture2D(texture, texcoord);
-
-        // Declare positions
-        positionVectors posVector;
 
 	    // Declare materials
 	    matPBR materials;

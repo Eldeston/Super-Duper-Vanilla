@@ -57,14 +57,10 @@ INOUT mat3 TBN;
 #endif
 
 #ifdef FRAGMENT
-    uniform sampler2D lightmap;
     uniform sampler2D texture;
 
     void main(){
         vec4 color = texture2D(texture, texcoord);
-
-        // Declare positions
-        positionVectors posVector;
 
 	    // Declare materials
 	    matPBR materials;
@@ -119,6 +115,6 @@ INOUT mat3 TBN;
         gl_FragData[1] = vec4(materials.normal_m * 0.5 + 0.5, 1); //colortex1
         gl_FragData[2] = vec4(lmcoord, materials.ss_m, 1); //colortex2
         gl_FragData[3] = vec4(materials.metallic_m, materials.emissive_m, max(materials.roughness_m, 0.025), 1); //colortex3
-        gl_FragData[4] = vec4(materials.ambient_m * glcolor.a, 0, 0, 1); //colortex4
+        gl_FragData[4] = vec4(materials.ambient_m * glcolor.a, 0, 1, 1); //colortex4
     }
 #endif
