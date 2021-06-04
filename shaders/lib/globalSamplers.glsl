@@ -36,9 +36,10 @@ const int colortex7Format = RGB16;
     const bool colortex6Clear = false;
 #endif
 
+// Depth texture
+uniform sampler2D depthtex0;
+
 #if !defined GBUFFERS
-    // Depth texture
-    uniform sampler2D depthtex0;
     // Albedo texture color 0
     uniform sampler2D gcolor;
     // Normal map buffer(rgb)
