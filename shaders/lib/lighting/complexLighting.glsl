@@ -10,15 +10,16 @@ vec3 complexLighting(matPBR material, positionVectors posVector, vec3 dither){
 	vec3 nDither = dither * 2.0 - 1.0;
 	float smoothness = 1.0 - material.roughness_m;
 	float sqrtSmoothness = sqrt(smoothness);
+	float ambientLighting = AMBIENT_LIGHTING + nightVision;
 
 	/* -Global illumination- */
 
 	// Cave fix
 	float caveFixShdFactor = mix(smoothstep(0.2, 0.4, material.light_m.y), 1.0, eyeBrightFact);
 	// Get direct light diffuse color
-	vec3 diffuseCol = getShdMapping(posVector.shdPos, material.normal_m, nLightPos, dither.r, material.ss_m) * lightCol * (1.0 - newTwilight) * caveFixShdFactor;
+	vec3 diffuseCol = mix(getShdMapping(posVector.shdPos, material.normal_m, nLightPos, dither.r, material.ss_m), material.light_m.yyy, rainStrength * 0.5) * lightCol * (1.0 - newTwilight) * caveFixShdFactor;
 	// Get globally illuminated sky
-	vec3 GISky = AMBIENT_LIGHTING + getSkyRender(material.normal_m, skyCol, lightCol, 0.0, 0.0, dither.r) * material.light_m.y * material.light_m.y;
+	vec3 GISky = ambientLighting + getSkyRender(material.normal_m, skyCol, lightCol, 0.0, 0.0, dither.r) * material.light_m.y * material.light_m.y;
 
 	#ifdef SSGI
 		// Get SSGI
@@ -43,7 +44,7 @@ vec3 complexLighting(matPBR material, positionVectors posVector, vec3 dither){
 	
 	// Get reflected sky
 	float skyMask = pow(material.light_m.y, 1.0 / 4.0) * sqrtSmoothness;
-    vec3 reflectedSkyRender = AMBIENT_LIGHTING + getSkyRender(reflectedEyePlayerPos, skyCol, lightCol, skyMask, skyMask, dither.r) * material.light_m.y;
+    vec3 reflectedSkyRender = ambientLighting + getSkyRender(reflectedEyePlayerPos, skyCol, lightCol, skyMask, skyMask, dither.r) * material.light_m.y;
 
 	// Mask reflections
     vec3 reflectCol = mix(reflectedSkyRender, SSRCol.rgb, SSRCol.a) * fresnel * sqrtSmoothness; // Will change this later...

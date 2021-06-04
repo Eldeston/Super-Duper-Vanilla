@@ -29,13 +29,14 @@ float getFogAmount(float nEyePlayerPosY, float eyePlayerPosLength){
 vec3 getFog(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY){
     vec3 nEyePlayerPos = normalize(eyePlayerPos);
     float eyePlayerPosLength = length(eyePlayerPos);
+    float rainMult = 1.0 + rainStrength;
 
     #ifdef NETHER
         float c = 0.12; float b = 0.08; float o = 0.4;
     #elif defined END
         float c = 0.08; float b = 0.05; float o = 0.5;
     #else
-        float c = 0.08; float b = 0.07; float o = 0.6;
+        float c = 0.08 * rainMult; float b = 0.07 * rainMult; float o = 0.6;
     #endif
     if(isEyeInWater >= 1){
         c *= 1.44; b *= 1.44; o *= 1.24;
@@ -44,6 +45,10 @@ vec3 getFog(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY){
     float fogAmount = getFogAmount(nEyePlayerPos.y, eyePlayerPosLength);
     float mistFog = atmoFog(eyePlayerPos.y, worldPosY, eyePlayerPosLength, c, b) * o;
     color = mix(color, pow(fogCol, vec3(1.0 / 4.0)), mistFog * MIST_GROUND_FOG_BRIGHTNESS);
-    
-    return color * (1.0 - fogAmount) + fogCol * fogAmount;
+
+    color = color * (1.0 - fogAmount) + fogCol * fogAmount;
+
+    // Blindness fog
+    float blindNessFog = exp(-eyePlayerPosLength * blindness);
+    return color * blindNessFog;
 }
