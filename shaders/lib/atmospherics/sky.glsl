@@ -28,7 +28,7 @@ vec3 getSkyRender(vec3 playerPos, vec3 skyCol, vec3 lightCol, float skyMask, flo
         }
         
         float skyFogGradient = smoothstep(-0.125, 0.125, nPlayerPos.y);
-        float voidGradient = smoothstep(-0.1 - offSet, -0.05 + offSet, nPlayerPos.y) * 0.9;
+        float voidGradient = smoothstep(-0.1 - offSet, -0.025 + offSet, nPlayerPos.y) * 0.9;
         float lightRange = smootherstep(smootherstep(-nSkyPos.z * 0.56)) * (1.0 - newTwilight);
         float cloudFog = smootherstep(nPlayerPos.y * 2.0);
 
