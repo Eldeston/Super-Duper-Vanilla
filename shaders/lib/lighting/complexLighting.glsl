@@ -17,7 +17,7 @@ vec3 complexLighting(matPBR material, positionVectors posVector, vec3 dither){
 	// Cave fix
 	float caveFixShdFactor = mix(smoothstep(0.2, 0.4, material.light_m.y), 1.0, eyeBrightFact);
 	// Get direct light diffuse color
-	vec3 diffuseCol = mix(getShdMapping(posVector.shdPos, material.normal_m, nLightPos, dither.r, material.ss_m), material.light_m.yyy, rainStrength * 0.5) * lightCol * (1.0 - newTwilight) * caveFixShdFactor;
+	vec3 diffuseCol = mix(getShdMapping(posVector.shdPos, material.normal_m, nLightPos, dither.r, material.ss_m), material.light_m.yyy, rainStrength * 0.5) * lightCol * caveFixShdFactor;
 	// Get globally illuminated sky
 	vec3 GISky = ambientLighting + getSkyRender(material.normal_m, skyCol, lightCol, 0.0, 0.0, dither.r) * material.light_m.y * material.light_m.y;
 

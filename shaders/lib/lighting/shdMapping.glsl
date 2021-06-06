@@ -48,6 +48,6 @@ vec3 getShdMapping(vec4 shdPos, vec3 normal, vec3 nLightPos, float dither, float
 				shdCol = getShdTex(shdPos.xyz);
 			#endif
 
-		return shdCol * saturate(lightDot);
+		return shdCol * saturate(lightDot) * (1.0 - newTwilight);
 	#endif
 }

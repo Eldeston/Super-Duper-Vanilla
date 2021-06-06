@@ -3,31 +3,17 @@ float atmoFog(float playerPosY, float worldPosY, float playerPosLength, float he
     return min(fogAmount, 1.0);
 }
 
-float getFogAmount(float nEyePlayerPosY, float eyePlayerPosLength){
-    float waterVoid = smootherstep(nEyePlayerPosY + (eyeBrightFact - 0.6));
-    #ifdef NETHER
-        float fogFar = 32.0;
-        fogFar = max(far - fogFar, 0.0);
-        float fogNear = fogFar * 0.64;
-    #elif defined END
-        float fogFar = 16.0;
-        fogFar = max(far - fogFar, 0.0);
-        float fogNear = fogFar * 0.72;
-    #else
-        float fogFar = 16.0;
-        fogFar = max(far - fogFar, 0.0); // * (1.0 - skyMask) + 160.0 * skyMask;
-        float fogNear = fogFar * 0.72; // * (1.0 - skyMask) + 128.0 * skyMask;
-    #endif
-    if(isEyeInWater >= 1){
-        fogNear = mix(near * 0.64, fogNear, waterVoid);
-        fogFar = mix(far * 0.64, fogFar, waterVoid);
-    }
+float getBorderFogAmount(float eyePlayerPosLength){
+    float fogFar = max(far - 16.0, 0.0);
+    float fogNear = max(fogFar - 32.0, 0.0);
 
     return smoothstep(fogNear, fogFar, eyePlayerPosLength);
 }
 
 vec3 getFog(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY){
     vec3 nEyePlayerPos = normalize(eyePlayerPos);
+    float waterVoid = smootherstep(nEyePlayerPos.y + (eyeBrightFact - 0.6));
+
     float eyePlayerPosLength = length(eyePlayerPos);
     float rainMult = 1.0 + rainStrength;
 
@@ -38,15 +24,18 @@ vec3 getFog(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY){
     #else
         float c = 0.08 * rainMult; float b = 0.07 * rainMult; float o = 0.6;
     #endif
+
     if(isEyeInWater >= 1){
-        c *= 1.44; b *= 1.44; o *= 1.24;
+        c = mix(c * 1.44, c, waterVoid); b = mix(b * 1.44, b, waterVoid);
     }
 
-    float fogAmount = getFogAmount(nEyePlayerPos.y, eyePlayerPosLength);
+    // Mist fog
     float mistFog = atmoFog(eyePlayerPos.y, worldPosY, eyePlayerPosLength, c, b) * o;
-    color = mix(color, pow(fogCol, vec3(1.0 / 4.0)), mistFog * MIST_GROUND_FOG_BRIGHTNESS);
+    color = mix(color, fogCol, mistFog * MIST_GROUND_FOG_BRIGHTNESS);
 
-    color = color * (1.0 - fogAmount) + fogCol * fogAmount;
+    // Border fog
+    float borderFogAmount = getBorderFogAmount(eyePlayerPosLength);
+    color = color * (1.0 - borderFogAmount) + fogCol * borderFogAmount;
 
     // Blindness fog
     float blindNessFog = exp(-eyePlayerPosLength * blindness);

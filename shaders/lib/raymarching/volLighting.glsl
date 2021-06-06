@@ -17,6 +17,6 @@ vec3 getGodRays(vec3 feetPlayerPos, float worldPosY, float dither){
 			float fog = atmoFog(feetPlayerPos.y, worldPosY, length(feetPlayerPos), 0.08, 0.07);
 			rayData = mix(rayData, rayCol, fog);
 		}
-		return rayData * float(isEyeInWater + 1) * VOL_LIGHT_BRIGHTNESS * (1.0 - newTwilight);
+		return rayData * float(isEyeInWater + 1) * VOL_LIGHT_BRIGHTNESS * (1.0 - newTwilight) * (1.0 - blindness * 0.5);
 	#endif
 }
