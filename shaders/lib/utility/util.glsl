@@ -3,6 +3,9 @@
 
 #define INOUT varying
 
+#define PI 3.14159265359
+#define PI2 6.28318530718
+
 // Saturate / clamp functions
 float saturate(float x) { return clamp(x, 0.0, 1.0); }
 vec2 saturate(vec2 x) { return clamp(x, vec2(0.0), vec2(1.0)); }
@@ -142,11 +145,23 @@ vec2 modFract(vec2 x, float tile){
 	return fract(x / tile) * tile;
 }
 
+vec2 modFract(vec2 x, vec2 tile){
+	return fract(x / tile) * tile;
+}
+
 vec3 modFract(vec3 x, float tile){
 	return fract(x / tile) * tile;
 }
 
+vec3 modFract(vec3 x, vec3 tile){
+	return fract(x / tile) * tile;
+}
+
 vec4 modFract(vec4 x, float tile){
+	return fract(x / tile) * tile;
+}
+
+vec4 modFract(vec4 x, vec4 tile){
 	return fract(x / tile) * tile;
 }
 

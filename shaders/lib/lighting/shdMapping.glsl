@@ -1,13 +1,3 @@
-// Shadow texture
-uniform sampler2DShadow shadowtex0;
-uniform sampler2DShadow shadowtex1;
-
-// Shadow color
-uniform sampler2D shadowcolor0;
-
-// Shadow bias
-const float shdBias = 0.021; // Don't go below the default value otherwise it'll mess up lighting
-
 vec3 getShdTex(vec3 shdPos){
 	float shd0 = shadow2D(shadowtex0, shdPos).x;
 	float shd1 = shadow2D(shadowtex1, shdPos).x - shd0;

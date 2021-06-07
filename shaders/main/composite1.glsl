@@ -1,11 +1,11 @@
-#include "/lib/util.glsl"
+#include "/lib/utility/util.glsl"
 #include "/lib/structs.glsl"
 #include "/lib/settings.glsl"
-#include "/lib/globalVar.glsl"
 
-#include "/lib/globalSamplers.glsl"
-#include "/lib/lighting/shdDistort.glsl"
-#include "/lib/conversion.glsl"
+#include "/lib/globalVars/constants.glsl"
+#include "/lib/globalVars/screenUniforms.glsl"
+#include "/lib/globalVars/texUniforms.glsl"
+#include "/lib/globalVars/timeUniforms.glsl"
 
 INOUT vec2 texcoord;
 

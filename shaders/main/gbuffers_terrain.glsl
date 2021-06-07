@@ -1,12 +1,15 @@
-#include "/lib/util.glsl"
+#include "/lib/utility/util.glsl"
 #include "/lib/structs.glsl"
 #include "/lib/settings.glsl"
-#include "/lib/globalVar.glsl"
 
-#include "/lib/globalSamplers.glsl"
+#include "/lib/globalVars/constants.glsl"
+#include "/lib/globalVars/matUniforms.glsl"
+#include "/lib/globalVars/posUniforms.glsl"
+#include "/lib/globalVars/timeUniforms.glsl"
 
-#include "/lib/vertexWave.glsl"
-#include "/lib/PBR.glsl"
+#include "/lib/lighting/PBR.glsl"
+
+#include "/lib/vertex/vertexWave.glsl"
 
 INOUT float blockId;
 

@@ -1,12 +1,13 @@
-#include "/lib/util.glsl"
+#include "/lib/utility/util.glsl"
 #include "/lib/structs.glsl"
 #include "/lib/settings.glsl"
-#include "/lib/globalVar.glsl"
 
-#include "/lib/globalSamplers.glsl"
+#include "/lib/globalVars/constants.glsl"
+#include "/lib/globalVars/gameUniforms.glsl"
+#include "/lib/globalVars/matUniforms.glsl"
+#include "/lib/globalVars/posUniforms.glsl"
 
-#include "/lib/vertexWave.glsl"
-#include "/lib/PBR.glsl"
+#include "/lib/lighting/PBR.glsl"
 
 INOUT float blockId;
 
@@ -43,10 +44,6 @@ INOUT mat3 TBN;
         // Feet player pos
         vertexPos = gbufferModelViewInverse * vertexPos;
         worldPos = vertexPos.xyz + cameraPosition;
-
-        #ifdef ANIMATE
-	        getWave(vertexPos.xyz, worldPos, texcoord, mc_midTexCoord, mc_Entity.x);
-        #endif
         
 	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
 

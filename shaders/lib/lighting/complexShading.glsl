@@ -1,5 +1,5 @@
 // Complex lighting calculations all go here
-vec3 complexLighting(matPBR material, positionVectors posVector, vec3 dither){
+vec3 complexShading(matPBR material, positionVectors posVector, vec3 dither){
 	// Get positions
 	vec3 reflectedEyePlayerPos = reflect(posVector.eyePlayerPos, material.normal_m);
 	vec3 nLightPos = normalize(posVector.lightPos);

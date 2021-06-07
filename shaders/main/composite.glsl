@@ -1,27 +1,32 @@
-#include "/lib/util.glsl"
+#include "/lib/utility/util.glsl"
 #include "/lib/structs.glsl"
 #include "/lib/settings.glsl"
-#include "/lib/globalVar.glsl"
 
-#include "/lib/globalSamplers.glsl"
+#include "/lib/globalVars/constants.glsl"
+#include "/lib/globalVars/gameUniforms.glsl"
+#include "/lib/globalVars/matUniforms.glsl"
+#include "/lib/globalVars/posUniforms.glsl"
+#include "/lib/globalVars/screenUniforms.glsl"
+#include "/lib/globalVars/texUniforms.glsl"
+#include "/lib/globalVars/timeUniforms.glsl"
+#include "/lib/globalVars/universalVars.glsl"
+
 #include "/lib/lighting/shdDistort.glsl"
-#include "/lib/conversion.glsl"
-
-#include "/lib/post/outline.glsl"
+#include "/lib/utility/spaceConvert.glsl"
+#include "/lib/utility/texFunctions.glsl"
+#include "/lib/rayTracing/rayTracer.glsl"
 
 #include "/lib/atmospherics/fog.glsl"
 #include "/lib/atmospherics/sky.glsl"
 
-#include "/lib/lighting/GGX.glsl"
 #include "/lib/lighting/shdMapping.glsl"
-
-#include "/lib/raymarching/rayTracer.glsl"
-#include "/lib/raymarching/volLighting.glsl"
-
-#include "/lib/lighting/SSGI.glsl"
+#include "/lib/lighting/GGX.glsl"
 #include "/lib/lighting/SSR.glsl"
+#include "/lib/lighting/SSGI.glsl"
+#include "/lib/rayTracing/volLight.glsl"
+#include "/lib/post/outline.glsl"
 
-#include "/lib/lighting/complexLighting.glsl"
+#include "/lib/lighting/complexShading.glsl"
 
 #include "/lib/varAssembler.glsl"
 
@@ -56,8 +61,8 @@ INOUT vec2 texcoord;
             vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyCol, lightCol, mask, 1.0, dither.r);
 
             // Apply lighting
-            materials.albedo_t = complexLighting(materials, posVector, dither);
-            materials.albedo_t *= 1.0 - mask; // Mask out the sky
+            materials.albedo_t = complexShading(materials, posVector, dither);
+            materials.albedo_t = materials.albedo_t * (1.0 - mask) + skyRender * mask; // Mask out the sky
 
             #ifdef OUTLINES
                 /* Outline calculation */
@@ -65,7 +70,7 @@ INOUT vec2 texcoord;
             #endif
 
             // Apply atmospherics
-            materials.albedo_t = getFog(posVector.eyePlayerPos, materials.albedo_t, skyRender, posVector.worldPos.y);
+            if(mask != 1) materials.albedo_t = getFog(posVector.eyePlayerPos, materials.albedo_t, skyRender, posVector.worldPos.y);
             reflectBuffer = materials.albedo_t; // Assign current scene color WITHOUT the godrays...
             
             #ifdef VOL_LIGHT

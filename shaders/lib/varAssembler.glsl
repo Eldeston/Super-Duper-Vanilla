@@ -19,6 +19,7 @@ void getMaterial(inout matPBR material, vec2 st){
 void getPosVectors(inout positionVectors posVec, vec2 st){
     // Assign positions
 	posVec.screenPos = toScreenSpacePos(st);
+	posVec.clipPos = posVec.screenPos * 2.0 - 1.0;
 	posVec.viewPos = toView(posVec.screenPos);
 	posVec.eyePlayerPos = mat3(gbufferModelViewInverse) * posVec.viewPos;
 	posVec.feetPlayerPos = posVec.eyePlayerPos + gbufferModelViewInverse[3].xyz;
