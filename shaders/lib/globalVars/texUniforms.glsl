@@ -19,6 +19,8 @@ uniform sampler2D depthtex0;
     uniform sampler2D colortex6;
     // Bloom
     uniform sampler2D colortex7;
+    // Temporal AA
+    uniform sampler2D colortex8;
 #endif
 
 // Noise sample, r for blue noise, g for white noise, and b for cell noise

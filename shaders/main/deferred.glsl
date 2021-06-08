@@ -66,7 +66,7 @@ INOUT vec2 texcoord;
 
             #ifdef OUTLINES
                 /* Outline calculation */
-                materials.albedo_t = getOutline(depthtex0, materials.albedo_t, texcoord);
+                materials.albedo_t *= 1.0 + getOutline(depthtex0, texcoord, OUTLINE_PIX_SIZE) * (OUTLINE_BRIGHTNESS - 1.0);
             #endif
 
             // Apply atmospherics
