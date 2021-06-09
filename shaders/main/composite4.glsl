@@ -13,12 +13,33 @@
 #include "/lib/utility/spaceConvert.glsl"
 #include "/lib/utility/texFunctions.glsl"
 
+INOUT float pixSize;
+
 INOUT vec2 texcoord;
+
+vec2 TAAOffSet[8] = vec2[8](
+	vec2( 0.0625, -0.1875),
+	vec2(-0.0625,  0.1875),
+	vec2( 0.3125,  0.0625),
+	vec2(-0.1875, -0.3125),
+	vec2(-0.3125,  0.3125),
+	vec2(-0.4375, -0.0625),
+	vec2( 0.1875,  0.4375),
+	vec2( 0.4375, -0.4375)
+);
+						   
+vec2 jitterPos(vec4 pos) {
+	return TAAOffSet[int(modFract(frameCounter, 8))] * (pos.w / vec2(viewWidth, viewHeight));
+}
 
 #ifdef VERTEX
     void main(){
+        pixSize = 0.5 / max(viewWidth, viewHeight);
+
         gl_Position = ftransform();
         texcoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+
+        gl_Position.xy += jitterPos(gl_Position);
     }
 #endif
 
@@ -29,7 +50,6 @@ INOUT vec2 texcoord;
             vec3 minCol = currCol;
             vec3 maxCol = currCol;
 
-            float pixSize = 1.0 / max(viewWidth, viewHeight);
             vec2 prevPos = toPrevScreenPos(texcoord);
 
             for(int y = -1; y <= 1; y++){

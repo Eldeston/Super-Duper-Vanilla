@@ -3,9 +3,14 @@
 #include "/lib/settings.glsl"
 
 #include "/lib/globalVars/constants.glsl"
+#include "/lib/globalVars/matUniforms.glsl"
+#include "/lib/globalVars/posUniforms.glsl"
 #include "/lib/globalVars/screenUniforms.glsl"
 #include "/lib/globalVars/texUniforms.glsl"
 #include "/lib/globalVars/timeUniforms.glsl"
+
+#include "/lib/lighting/shdDistort.glsl"
+#include "/lib/utility/spaceConvert.glsl"
 
 INOUT vec2 texcoord;
 
@@ -22,8 +27,16 @@ INOUT vec2 texcoord;
         vec3 color = texture2D(gcolor, texcoord).rgb;
 
         #ifdef TEMPORAL_ACCUMULATION
+            vec2 prevScreenPos = toPrevScreenPos(texcoord);
+            float prevMotion = max2(toPrevScreenPos(vec2(1)));
+            float velocity = abs(1.0 - prevMotion);
+            
+            float blendFact = edgeVisibility(prevScreenPos * 0.8 + 0.1);
+            blendFact *= smoothstep(0.99999, 1.0, 1.0 - velocity);
+            blendFact = clamp(blendFact, 0.1, exp2(-ACCUMILATION_SPEED * frameTime));
+            
             vec3 prevCol = texture2D(colortex6, texcoord).rgb;
-            vec3 accumulated = mix(color, prevCol, exp2(-ACCUMILATION_SPEED * frameTime));
+            vec3 accumulated = mix(color, prevCol, blendFact);
             color = accumulated;
         #else
             vec3 accumulated = vec3(0);

@@ -209,3 +209,7 @@ float vnoise(vec2 p, float time, float tiles){
 	vec2 u = f * f * f * (f * (f * 6.0 - 15.0) + 10.0);
 	return mix(mix(rand12(modFract(i, tiles)), rand12(modFract(i + vec2(1, 0), tiles)), u.x), mix(rand12(modFract(i + vec2(0, 1), tiles)), rand12(modFract(i + 1.0, tiles)), u.x), u.y);
 	}
+
+float edgeVisibility(vec2 screenPos) {
+    return 1.0 - hermiteMix(0.05, 0.0125, min2(screenPos * (1.0 - screenPos)));
+}

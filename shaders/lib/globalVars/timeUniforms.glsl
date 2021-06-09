@@ -1,4 +1,6 @@
 // Get frame time
+uniform int frameCounter;
+
 uniform float frameTime;
 uniform float frameTimeCounter;
 

@@ -26,7 +26,7 @@ const int RGBA16F = 1;
     const int colortex7Format = RGB16;
 #endif
 
-#if defined COMPOSITE1 || defined COMPOSITE2 || defined COMPOSITE3
+#if defined COMPOSITE || defined DEFERRED || defined COMPOSITE1 || defined COMPOSITE2 || defined COMPOSITE3
     const bool gcolorMipmapEnabled = true;
     const bool colortex6MipmapEnabled = true;
     const bool colortex7MipmapEnabled = true;
