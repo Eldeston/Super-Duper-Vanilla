@@ -33,7 +33,8 @@ INOUT vec2 texcoord;
             
             float blendFact = edgeVisibility(prevScreenPos * 0.8 + 0.1);
             blendFact *= smoothstep(0.99999, 1.0, 1.0 - velocity);
-            blendFact = clamp(blendFact, 0.1, exp2(-ACCUMILATION_SPEED * frameTime));
+            float decay = exp2(-ACCUMILATION_SPEED * frameTime);
+            blendFact = clamp(blendFact, decay * 0.5, decay);
             
             vec3 prevCol = texture2D(colortex6, texcoord).rgb;
             vec3 accumulated = mix(color, prevCol, blendFact);

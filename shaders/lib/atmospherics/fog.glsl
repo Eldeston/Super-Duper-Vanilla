@@ -7,7 +7,7 @@ float getBorderFogAmount(float eyePlayerPosLength){
     return squared(hermiteMix(max(far - 16.0, 0.0), far, eyePlayerPosLength));
 }
 
-vec3 getFog(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY){
+vec3 getFog(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY, float cloudMask){
     vec3 nEyePlayerPos = normalize(eyePlayerPos);
     float waterVoid = smootherstep(nEyePlayerPos.y + (eyeBrightFact - 0.6));
 
@@ -31,7 +31,7 @@ vec3 getFog(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY){
     color = mix(color, fogCol, mistFog * MIST_GROUND_FOG_BRIGHTNESS);
 
     // Border fog
-    float borderFogAmount = getBorderFogAmount(eyePlayerPosLength);
+    float borderFogAmount = getBorderFogAmount(eyePlayerPosLength / (1.0 + cloudMask * 0.6));
     color = color * (1.0 - borderFogAmount) + fogCol * borderFogAmount;
 
     // Blindness fog
