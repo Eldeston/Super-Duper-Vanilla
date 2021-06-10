@@ -27,7 +27,6 @@ INOUT vec4 glcolor;
 
     void main(){
         vec4 color = texture2D(texture, texcoord);
-        color.rgb *= glcolor.rgb;
 
     /* DRAWBUFFERS:01234 */
         gl_FragData[0] = color; //gcolor
