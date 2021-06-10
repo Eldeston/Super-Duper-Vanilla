@@ -1,8 +1,3 @@
-#if defined COMPOSITE || defined DEFERRED
-    // Enable mipmap filtering on shadows
-    const bool shadowHardwareFiltering = true;
-#endif
-
 const int RGBA1 = 1;
 
 const int RGB8 = 1;
@@ -44,6 +39,8 @@ const int noiseTextureResolution = 256;
 #endif
 
 #if defined COMPOSITE || defined DEFERRED
+    // Enable mipmap filtering on shadows
+    const bool shadowHardwareFiltering = true;
     const int shadowMapResolution = 1024; // Shadow map resolution [512 1024 1536 2048 2560 3072 3584 4096 4608 5120]
     // Shadow bias
     const float shdBias = 0.021; // Don't go below the default value otherwise it'll mess up lighting

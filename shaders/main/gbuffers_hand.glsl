@@ -15,7 +15,6 @@ INOUT vec2 lmcoord;
 INOUT vec2 texcoord;
 
 INOUT vec3 norm;
-INOUT vec3 worldPos;
 
 INOUT vec4 glcolor;
 
@@ -43,7 +42,6 @@ INOUT mat3 TBN;
 
         // Feet player pos
         vertexPos = gbufferModelViewInverse * vertexPos;
-        worldPos = vertexPos.xyz + cameraPosition;
         
 	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
 

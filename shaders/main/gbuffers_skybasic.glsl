@@ -1,6 +1,4 @@
 #include "/lib/utility/util.glsl"
-#include "/lib/structs.glsl"
-#include "/lib/settings.glsl"
 
 #ifdef VERTEX
     void main() {
@@ -10,9 +8,7 @@
 
 #ifdef FRAGMENT
     void main(){
-    /* DRAWBUFFERS:034 */
+    /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(0, 0, 0, 1); //gcolor
-        gl_FragData[1] = vec4(0, 1, 0, 1); //colortex3
-        gl_FragData[2] = vec4(0, 0, 1, 1); //colortex4
     }
 #endif

@@ -18,8 +18,7 @@ INOUT float blockId;
 INOUT vec2 texcoord;
 
 INOUT vec3 worldPos;
-
-INOUT vec4 color;
+INOUT vec3 color;
 
 #ifdef VERTEX
     attribute vec2 mc_midTexCoord;
@@ -45,7 +44,7 @@ INOUT vec4 color;
                 gl_Position = vec4(10);
         #endif
 
-        color = gl_Color;
+        color.rgb = gl_Color.rgb;
     }
 #endif
 
@@ -54,7 +53,7 @@ INOUT vec4 color;
 
     void main(){
         vec4 shdColor = texture2D(tex, texcoord);
-        shdColor *= color;
+        shdColor.rgb *= color;
 
         #ifdef UNDERWATER_CAUSTICS
             int rBlockId = int(blockId + 0.5);

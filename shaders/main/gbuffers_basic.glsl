@@ -11,8 +11,6 @@ INOUT vec3 norm;
 
 INOUT vec4 glcolor;
 
-INOUT mat3 TBN;
-
 #ifdef VERTEX
     attribute vec2 mc_midTexCoord;
 
@@ -25,12 +23,7 @@ INOUT mat3 TBN;
         texcoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         lmcoord  = (gl_TextureMatrix[1] * gl_MultiTexCoord1).xy;
 
-        vec3 tangent = normalize(gl_NormalMatrix * at_tangent.xyz);
-	    vec3 binormal = normalize(gl_NormalMatrix * cross(at_tangent.xyz, gl_Normal) * sign(at_tangent.w));
-
 	    norm = normalize(gl_NormalMatrix * gl_Normal);
-
-	    TBN = mat3(tangent, binormal, norm);
 
         glcolor = gl_Color;
     }
