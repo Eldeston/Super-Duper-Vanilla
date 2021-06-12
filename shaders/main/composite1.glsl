@@ -65,7 +65,7 @@ INOUT vec2 texcoord;
             float finalLumi = mix(lumiCurrent / 5.0, lumiPrev, exp2(-1.0 * frameTime));
 
             // Apply exposure
-            color /= max(finalLumi * 2.0, 0.6);
+            color /= max(finalLumi * AUTO_EXPOSURE_MULT, 0.6);
         #else
             float finalLumi = 1.0;
         #endif
