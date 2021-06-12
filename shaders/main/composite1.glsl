@@ -31,8 +31,7 @@ INOUT vec2 texcoord;
             float prevMotion = max2(toPrevScreenPos(vec2(1)));
             float velocity = abs(1.0 - prevMotion);
             
-            float blendFact = edgeVisibility(prevScreenPos * 0.8 + 0.1);
-            blendFact *= smoothstep(0.99999, 1.0, 1.0 - velocity);
+            float blendFact = edgeVisibility(prevScreenPos * 0.8 + 0.1) * smoothstep(0.99999, 1.0, 1.0 - velocity);
             float decay = exp2(-ACCUMILATION_SPEED * frameTime);
             blendFact = clamp(blendFact, decay * 0.5, decay);
             
@@ -59,27 +58,24 @@ INOUT vec2 texcoord;
             // Bottom left pixel
             lumiCurrent += maxC(texture2D(gcolor, vec2(0), lod).rgb);
 
-            // Previous luminance
-            float lumiPrev = texture2D(colortex6, vec2(0)).a;
             // Mix previous and current buffer...
-            float finalLumi = mix(lumiCurrent / 5.0, lumiPrev, exp2(-1.0 * frameTime));
+            float accumulatedLumi = mix(lumiCurrent / 5.0, texture2D(colortex6, vec2(0)).a, exp2(-1.0 * frameTime));
 
             // Apply exposure
-            color /= max(finalLumi * AUTO_EXPOSURE_MULT, 0.6);
+            color /= max(accumulatedLumi * AUTO_EXPOSURE_MULT, 0.6);
         #else
-            float finalLumi = 1.0;
+            float accumulatedLumi = 1.0;
         #endif
         color *= EXPOSURE;
         // Tonemap and clamp
         color = saturate(color / (color * 0.2 + 1.0));
 
-        float skyMask = float(texture2D(depthtex0, texcoord).r != 1);
         float luminance = getLuminance(color);
         float emissive = texture2D(colortex3, texcoord).g;
         
     /* DRAWBUFFERS:067 */
         gl_FragData[0] = vec4(color, 1); //gcolor
-        gl_FragData[1] = vec4(accumulated, finalLumi); //colortex6
-        gl_FragData[2] = vec4(color * emissive * skyMask * luminance, 1); //colortex7
+        gl_FragData[1] = vec4(accumulated, accumulatedLumi); //colortex6
+        gl_FragData[2] = vec4(color * emissive * luminance, 1); //colortex7
     }
 #endif

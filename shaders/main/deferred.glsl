@@ -49,9 +49,6 @@ INOUT vec2 texcoord;
 	    matPBR materials;
 	    getMaterial(materials, texcoord);
 
-        // Transform the color back to HDR
-        vec3 reflectBuffer = 1.0 / (1.0 - texture2D(colortex5, texcoord).rgb) - 1.0;
-
         // Render lighting
         vec3 dither = getRand3(texcoord, 8);
         float skyMask = float(posVector.screenPos.z == 1);
@@ -70,7 +67,7 @@ INOUT vec2 texcoord;
 
         // Fog calculation
         materials.albedo_t = getFog(posVector.eyePlayerPos, materials.albedo_t, skyRender, posVector.worldPos.y, skyMask, cloudMask);
-        reflectBuffer = materials.albedo_t; // Assign current scene color WITHOUT the godrays...
+        vec3 reflectBuffer = materials.albedo_t; // Assign current scene color WITHOUT the godrays...
 
         #ifdef VOL_LIGHT
             materials.albedo_t += getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.y) * lightCol;

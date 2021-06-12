@@ -31,7 +31,7 @@ vec3 getShdMapping(vec4 shdPos, vec3 normal, vec3 nLightPos, float dither, float
 		// Light diffuse
 		float lightDot = dot(normal, nLightPos) * (1.0 - ss) + ss;
 		shdPos.xyz = distort(shdPos.xyz, shdPos.w) * 0.5 + 0.5;
-		shdPos.z -= shdBias * squared(shdPos.w) / abs(lightDot) + 0.25 * shdRcp;
+		shdPos.z -= (shdBias + 0.125 * shdRcp) * squared(shdPos.w) / abs(lightDot);
 
 		if(lightDot >= 0)
 			#ifdef SHADOW_FILTER

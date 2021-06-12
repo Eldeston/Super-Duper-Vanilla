@@ -10,8 +10,8 @@ const int RGBA16F = 1;
 
 /* Texture buffer  settings */
 #if defined COMPOSITE || defined DEFERRED || defined COMPOSITE1
-    const int gdepthFormat = RGBA16F;
-    const int gcolorFormat = RGBA16F;
+    const int gdepthFormat = RGB16F;
+    const int gcolorFormat = RGB16F;
     const int colortex1Format = RGB16;
     const int colortex2Format = RGB8;
     const int colortex3Format = RGB8;
