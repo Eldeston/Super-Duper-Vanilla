@@ -52,32 +52,29 @@ INOUT vec2 texcoord;
         // Transform the color back to HDR
         vec3 reflectBuffer = 1.0 / (1.0 - texture2D(colortex5, texcoord).rgb) - 1.0;
 
-        // If the object is opaque render lighting sperately
-        if(materials.alpha_m == 1){
-            vec3 dither = getRand3(texcoord, 8);
-            float mask = float(posVector.screenPos.z == 1);
-            float cloudMask = texture2D(colortex4, texcoord).g;
+        // Render lighting
+        vec3 dither = getRand3(texcoord, 8);
+        float skyMask = float(posVector.screenPos.z == 1);
+        float cloudMask = texture2D(colortex4, texcoord).g;
 
-            // Get sky color
-            vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyCol, lightCol, mask, 1.0, dither.r);
+        // Get sky color
+        vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyCol, lightCol, skyMask, 1.0, dither.r);
 
-            // Apply lighting
-            materials.albedo_t = complexShading(materials, posVector, dither);
-            materials.albedo_t = materials.albedo_t * (1.0 - mask) + skyRender * mask; // Mask out the sky
+        // Apply lighting
+        materials.albedo_t = complexShading(materials, posVector, dither);
 
-            #ifdef OUTLINES
-                /* Outline calculation */
-                materials.albedo_t *= 1.0 + getOutline(depthtex0, texcoord, OUTLINE_PIX_SIZE) * (OUTLINE_BRIGHTNESS - 1.0);
-            #endif
+        #ifdef OUTLINES
+            /* Outline calculation */
+            materials.albedo_t *= 1.0 + getOutline(depthtex0, texcoord, OUTLINE_PIX_SIZE) * (OUTLINE_BRIGHTNESS - 1.0);
+        #endif
 
-            // Apply atmospherics
-            if(mask != 1) materials.albedo_t = getFog(posVector.eyePlayerPos, materials.albedo_t, skyRender, posVector.worldPos.y, cloudMask);
-            reflectBuffer = materials.albedo_t; // Assign current scene color WITHOUT the godrays...
-            
-            #ifdef VOL_LIGHT
-                materials.albedo_t += getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.y) * lightCol;
-            #endif
-        }
+        // Fog calculation
+        materials.albedo_t = getFog(posVector.eyePlayerPos, materials.albedo_t, skyRender, posVector.worldPos.y, skyMask, cloudMask);
+        reflectBuffer = materials.albedo_t; // Assign current scene color WITHOUT the godrays...
+
+        #ifdef VOL_LIGHT
+            materials.albedo_t += getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.y) * lightCol;
+        #endif
 
     /* DRAWBUFFERS:05 */
         gl_FragData[0] = vec4(materials.albedo_t, 1); //gcolor

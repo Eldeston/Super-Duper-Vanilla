@@ -9,9 +9,9 @@ vec3 getShdTex(vec3 shdPos){
 	#endif
 }
 
-vec3 getShdFilter(vec3 shdPos, float dither){
+vec3 getShdFilter(vec3 shdPos, float dither, float shdRcp){
 	dither *= PI2;
-	vec2 randVec = vec2(sin(dither), cos(dither)) / shadowMapResolution;
+	vec2 randVec = vec2(sin(dither), cos(dither)) * shdRcp;
 
 	vec3 shdCol = getShdTex(shdPos);
 	shdCol += getShdTex(vec3(shdPos.xy + randVec, shdPos.z));
@@ -26,14 +26,16 @@ vec3 getShdMapping(vec4 shdPos, vec3 normal, vec3 nLightPos, float dither, float
 		return vec3(0);
 	#else
 		vec3 shdCol = vec3(0);
+		float shdRcp = 1.0 / shadowMapResolution;
+
 		// Light diffuse
 		float lightDot = dot(normal, nLightPos) * (1.0 - ss) + ss;
 		shdPos.xyz = distort(shdPos.xyz, shdPos.w) * 0.5 + 0.5;
-		shdPos.z -= shdBias * squared(shdPos.w) / abs(lightDot);
+		shdPos.z -= shdBias * squared(shdPos.w) / abs(lightDot) + 0.25 * shdRcp;
 
 		if(lightDot >= 0)
 			#ifdef SHADOW_FILTER
-				shdCol = getShdFilter(shdPos.xyz, dither);
+				shdCol = getShdFilter(shdPos.xyz, dither, shdRcp);
 			#else
 				shdCol = getShdTex(shdPos.xyz);
 			#endif
