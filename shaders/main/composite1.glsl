@@ -68,14 +68,14 @@ INOUT vec2 texcoord;
         #endif
         color *= EXPOSURE;
         // Tonemap and clamp
-        color = saturate(color / (color * 0.2 + 1.0));
+        color = saturate(color / (color * 0.25 + 1.0));
 
         float luminance = getLuminance(color);
         float emissive = texture2D(colortex3, texcoord).g;
         
     /* DRAWBUFFERS:067 */
         gl_FragData[0] = vec4(color, 1); //gcolor
-        gl_FragData[1] = vec4(accumulated, accumulatedLumi); //colortex6
+        gl_FragData[1] = vec4(accumulated, max(0.001, accumulatedLumi)); //colortex6
         gl_FragData[2] = vec4(color * emissive * luminance, 1); //colortex7
     }
 #endif
