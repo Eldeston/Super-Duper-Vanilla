@@ -48,21 +48,21 @@ INOUT vec2 texcoord;
             
             // Get current average scene luminance...
             // Center pixel
-            float lumiCurrent = maxC(texture2D(gcolor, vec2(0.5), lod).rgb);
+            float lumiCurrent = getLuminance(texture2D(gcolor, vec2(0.5), lod).rgb);
             // Top right pixel
-            lumiCurrent += maxC(texture2D(gcolor, vec2(1), lod).rgb);
+            lumiCurrent += getLuminance(texture2D(gcolor, vec2(1), lod).rgb);
             // Top left pixel
-            lumiCurrent += maxC(texture2D(gcolor, vec2(0, 1), lod).rgb);
+            lumiCurrent += getLuminance(texture2D(gcolor, vec2(0, 1), lod).rgb);
             // Bottom right pixel
-            lumiCurrent += maxC(texture2D(gcolor, vec2(1, 0), lod).rgb);
+            lumiCurrent += getLuminance(texture2D(gcolor, vec2(1, 0), lod).rgb);
             // Bottom left pixel
-            lumiCurrent += maxC(texture2D(gcolor, vec2(0), lod).rgb);
+            lumiCurrent += getLuminance(texture2D(gcolor, vec2(0), lod).rgb);
 
             // Mix previous and current buffer...
             float accumulatedLumi = mix(lumiCurrent / 5.0, texture2D(colortex6, vec2(0)).a, exp2(-1.0 * frameTime));
 
             // Apply exposure
-            color /= max(accumulatedLumi * AUTO_EXPOSURE_MULT, 0.6);
+            color /= max(accumulatedLumi * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
         #else
             float accumulatedLumi = 1.0;
         #endif

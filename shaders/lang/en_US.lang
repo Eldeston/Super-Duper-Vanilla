@@ -4,6 +4,7 @@ screen.CAMERA=Camera
     option.VIGNETTE_INTENSITY=Vignette intensity
     option.AUTO_EXPOSURE=Auto exposure
     option.AUTO_EXPOSURE_MULT=Auto exposure multiplier
+    option.MIN_EXPOSURE_DENOM=Min exposure denominator
     option.BLOOM=Bloom
     option.BLOOM_LOD=Bloom LOD
     option.BLOOM_PIX_SIZE=Bloom pixel size
