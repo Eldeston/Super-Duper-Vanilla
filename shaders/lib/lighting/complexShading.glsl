@@ -18,7 +18,7 @@ vec3 complexShading(matPBR material, positionVectors posVector, vec3 dither){
 	float caveFixShdFactor = mix(smoothstep(0.2, 0.4, material.light_m.y), 1.0, eyeBrightFact);
 	// Get direct light diffuse color
 	float rainDiff = rainStrength * 0.5;
-	vec3 diffuseCol = (getShdMapping(posVector.shdPos, material.normal_m, nLightPos, dither.r, material.ss_m) * (1.0 - rainDiff) + smootherstep(material.light_m.y) * rainDiff) * lightCol * caveFixShdFactor;
+	vec3 directLight = (getShdMapping(posVector.shdPos, material.normal_m, nLightPos, dither.r, material.ss_m) * (1.0 - rainDiff) + smootherstep(material.light_m.y) * rainDiff) * lightCol * caveFixShdFactor;
 	// Get globally illuminated sky
 	vec3 GISky = ambientLighting + getSkyRender(material.normal_m, skyCol, lightCol, 0.0, 0.0, dither.r) * material.light_m.y * material.light_m.y;
 
@@ -35,7 +35,7 @@ vec3 complexShading(matPBR material, positionVectors posVector, vec3 dither){
     vec3 F0 = mix(vec3(0.04), material.albedo_t, material.metallic_m);
     vec3 fresnel = getFresnelSchlick(dot(material.normal_m, nEyePlayerPos), F0);
 	// Get specular GGX
-	vec3 specCol = getSpecGGX(nEyePlayerPos, nLightPos, lightVec, material.normal_m, fresnel, material.roughness_m) * diffuseCol;
+	vec3 specCol = getSpecGGX(nEyePlayerPos, nLightPos, lightVec, material.normal_m, fresnel, material.roughness_m) * directLight;
 
 	#ifdef SSR
 		vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.screenPos, gBMVNorm, nDither, material.roughness_m);
@@ -51,6 +51,6 @@ vec3 complexShading(matPBR material, positionVectors posVector, vec3 dither){
     vec3 reflectCol = mix(reflectedSkyRender, SSRCol.rgb, SSRCol.a) * fresnel * sqrtSmoothness; // Will change this later...
 
 	/* Calculate total lighting and return color */
-	vec3 totalDiffuse = (diffuseCol + GISky * material.ambient_m + GIcol + cubed(material.light_m.x) * BLOCK_LIGHT_COL * pow(material.ambient_m, 1.0 / 4.0)) * (1.0 - material.metallic_m) + material.emissive_m;
+	vec3 totalDiffuse = (directLight + GISky * material.ambient_m + GIcol + cubed(material.light_m.x) * BLOCK_LIGHT_COL * pow(material.ambient_m, 1.0 / 4.0)) * (1.0 - material.metallic_m) + material.emissive_m;
     return material.albedo_t * totalDiffuse + specCol + reflectCol;
 }

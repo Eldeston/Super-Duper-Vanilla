@@ -74,13 +74,7 @@ INOUT mat3 TBN;
         #endif
 
         // If player
-        if(rBlockId == 0){
-            materials.metallic_m = 0.0;
-            materials.ss_m = 0.0;
-            materials.emissive_m = 0.0;
-            materials.roughness_m = 1.0;
-            materials.ambient_m = 1.0;
-        }
+        if(rBlockId == 0) materials.ambient_m = 1.0;
 
         // If water
         if(rBlockId == 10008){
