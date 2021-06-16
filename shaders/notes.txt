@@ -6,11 +6,10 @@ Goal:
 
 Framebuffers:
 
-gcolor - Main texture
-colortex1 - Normals
-colortex2 - Lightmap.xy, subsurface scattering
-colortex3 - Metal, emissive, roughness
-colortex4 - AO, cloud mask, Alpha
-colortex5 - Reflections
-colortex6 - Accumulation buffer, exposure
-colortex7 - Bloom
+gcolor - Main scene : RGB16F
+colortex1 - Normals : RGB16
+colortex2 - Lightmap, subsurface scattering / Bloom : RGB8
+colortex3 - Metal, emissive, roughness : RGB8
+colortex4 - AO, cloud mask, solid : RGB8
+colortex5 - Reflections : RGB16
+colortex6 - Temporal / TAA, Auto Exposure : RGB16F

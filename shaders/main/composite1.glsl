@@ -73,9 +73,9 @@ INOUT vec2 texcoord;
         float luminance = getLuminance(color);
         float emissive = texture2D(colortex3, texcoord).g;
         
-    /* DRAWBUFFERS:067 */
+    /* DRAWBUFFERS:026 */
         gl_FragData[0] = vec4(color, 1); //gcolor
-        gl_FragData[1] = vec4(accumulated, max(0.001, accumulatedLumi)); //colortex6
-        gl_FragData[2] = vec4(color * emissive * luminance, 1); //colortex7
+        gl_FragData[1] = vec4(color * emissive * luminance, 1); //colortex2
+        gl_FragData[2] = vec4(accumulated, max(0.001, accumulatedLumi)); //colortex6
     }
 #endif

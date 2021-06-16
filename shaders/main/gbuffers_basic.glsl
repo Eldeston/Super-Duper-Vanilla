@@ -41,6 +41,6 @@ INOUT vec4 glcolor;
         gl_FragData[1] = vec4(norm * 0.5 + 0.5, 1); //colortex1
         gl_FragData[2] = vec4(lmcoord, 1, 1); //colortex2
         gl_FragData[3] = vec4(0, 0, 1, 1); //colortex3
-        gl_FragData[4] = vec4(glcolor.a, 0, 0, 1); //colortex4
+        gl_FragData[4] = vec4(glcolor.a, 0, 1, 1); //colortex4
     }
 #endif

@@ -21,7 +21,7 @@ INOUT vec2 texcoord;
         vec3 color = texture2D(gcolor, texcoord).rgb;
 
         #ifdef BLOOM
-            vec3 eBloom = texture2D(colortex7, texcoord * 0.5).rgb;
+            vec3 eBloom = texture2D(colortex2, texcoord * 0.25).rgb;
             color += eBloom;
         #endif
         color = toneA(color);
@@ -35,8 +35,8 @@ INOUT vec2 texcoord;
         gl_FragData[0] = vec4(color, 1); //gcolor
 
         #ifdef BLOOM
-        /* DRAWBUFFERS:07 */
-            gl_FragData[1] = vec4(eBloom, 1); //colortex7
+        /* DRAWBUFFERS:02 */
+            gl_FragData[1] = vec4(eBloom, 1); //colortex2
         #endif
     }
 #endif

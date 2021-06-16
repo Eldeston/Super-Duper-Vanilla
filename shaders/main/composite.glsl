@@ -78,9 +78,11 @@ INOUT vec2 texcoord;
             #endif
         }
 
-    /* DRAWBUFFERS:05 */
+    /* DRAWBUFFERS:025 */
         gl_FragData[0] = vec4(materials.albedo_t, 1); //gcolor
+        // Clear this buffer
+        gl_FragData[1] = vec4(0); //colortex2
         // Apparently I have to transform it to 0-1 range then back to HDR with the reflection buffer due to an annoying bug...
-        gl_FragData[1] = vec4(reflectBuffer / (reflectBuffer + 1.0), 1); //colortex5
+        gl_FragData[2] = vec4(reflectBuffer / (reflectBuffer + 1.0), 1); //colortex5
     }
 #endif

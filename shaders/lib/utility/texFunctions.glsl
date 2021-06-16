@@ -10,20 +10,18 @@ vec4 tex2DBicubic(sampler2D image, vec2 st, vec2 texRes){
 vec4 tex2DBilinear(sampler2D image, vec2 st, vec2 texRes){
     vec2 pixSize = 1.0 / texRes;
 
-    vec4 p0q0 = texture2D(image, st);
-    vec4 p1q0 = texture2D(image, st + vec2(pixSize.x, 0));
+    vec4 downLeft = texture2D(image, st);
+    vec4 downRight = texture2D(image, st + vec2(pixSize.x, 0));
 
-    vec4 p0q1 = texture2D(image, st + vec2(0, pixSize.y));
-    vec4 p1q1 = texture2D(image, st + vec2(pixSize.x , pixSize.y));
+    vec4 upRight = texture2D(image, st + vec2(0, pixSize.y));
+    vec4 upLeft = texture2D(image, st + vec2(pixSize.x , pixSize.y));
 
     float a = fract(st.x * texRes.x);
-
-    vec4 pInterp_q0 = mix(p0q0, p1q0, a);
-    vec4 pInterp_q1 = mix(p0q1, p1q1, a);
-
     float b = fract(st.y * texRes.y);
-    
-    return mix(pInterp_q0, pInterp_q1, b);
+
+    vec4 horizontal = mix(downLeft, downRight, a);
+    vec4 vertical = mix(upRight, upLeft, a);
+    return mix(horizontal, vertical, b);
 }
 
 // Noise texture
