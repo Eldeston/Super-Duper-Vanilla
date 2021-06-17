@@ -15,7 +15,7 @@ vec3 complexShading(matPBR material, positionVectors posVector, vec3 dither){
 	/* -Global illumination- */
 
 	// Cave fix
-	float caveFixShdFactor = mix(smoothstep(0.2, 0.4, material.light_m.y), 1.0, eyeBrightFact);
+	float caveFixShdFactor = smoothstep(0.2, 0.4, material.light_m.y) * (1.0 - eyeBrightFact) + eyeBrightFact;
 	// Get direct light diffuse color
 	float rainDiff = rainStrength * 0.5;
 	vec3 directLight = (getShdMapping(posVector.shdPos, material.normal_m, nLightPos, dither.r, material.ss_m) * (1.0 - rainDiff) + smootherstep(material.light_m.y) * rainDiff) * lightCol * caveFixShdFactor;

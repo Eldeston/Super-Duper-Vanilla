@@ -27,7 +27,6 @@ vec3 getSkyRender(vec3 playerPos, vec3 skyCol, vec3 lightCol, float skyMask, flo
             offSet = 0.25;
         }
         
-        float skyFogGradient = smoothstep(-0.125, 0.125, nPlayerPos.y);
         float voidGradient = smoothstep(-0.1 - offSet, -0.025 + offSet, nPlayerPos.y) * 0.9;
         float lightRange = smootherstep(smootherstep(-nSkyPos.z * 0.56)) * (1.0 - newTwilight);
         float cloudFog = smootherstep(nPlayerPos.y * 2.0);
@@ -39,7 +38,6 @@ vec3 getSkyRender(vec3 playerPos, vec3 skyCol, vec3 lightCol, float skyMask, flo
         vec2 starPos = 0.5 > abs(nSkyPos.y) ? vec2(atan(nSkyPos.x, nSkyPos.z), nSkyPos.y) * 0.25 : nSkyPos.xz * 0.333;
         float star = genStar(starPos * 0.128) * night * voidGradient;
 
-        vec3 fogCol = skyCol * 0.75 * (1.0 - voidGradient) + voidGradient * skyCol;
-        return (star + sunMoon * 5.0) * skyMask + (lightRange * lightCol * skyDiffuseMask) + mix(fogCol, skyCol, skyFogGradient);
+        return (star + sunMoon * 5.0) * skyMask + (lightRange * lightCol * skyDiffuseMask) + mix(skyCol * 0.8, skyCol, voidGradient);
     #endif
 }
