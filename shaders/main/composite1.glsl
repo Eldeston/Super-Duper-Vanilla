@@ -76,7 +76,6 @@ vec3 whitePreservingLumaBasedReinhardToneMapping(vec3 color){
         color *= EXPOSURE;
         // Tonemap and clamp
         color = saturate(whitePreservingLumaBasedReinhardToneMapping(color));
-        // color = saturate(color / (color * 0.25 + 1.0));
 
         float luminance = getLuminance(color);
         float emissive = texture2D(colortex3, texcoord).g;
