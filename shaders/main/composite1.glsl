@@ -14,6 +14,13 @@
 
 INOUT vec2 texcoord;
 
+vec3 whitePreservingLumaBasedReinhardToneMapping(vec3 color){
+	float white = 1.44;
+	float luma = getLuminance(color);
+	float toneMappedLuma = luma * (1.0 + luma / (white * white)) / (1.0 + luma);
+	return color * (toneMappedLuma / luma);
+}
+
 #ifdef VERTEX
     void main(){
         gl_Position = ftransform();
@@ -68,7 +75,8 @@ INOUT vec2 texcoord;
         #endif
         color *= EXPOSURE;
         // Tonemap and clamp
-        color = saturate(color / (color * 0.25 + 1.0));
+        color = saturate(whitePreservingLumaBasedReinhardToneMapping(color));
+        // color = saturate(color / (color * 0.25 + 1.0));
 
         float luminance = getLuminance(color);
         float emissive = texture2D(colortex3, texcoord).g;
