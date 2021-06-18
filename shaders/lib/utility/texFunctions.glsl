@@ -19,9 +19,9 @@ vec4 tex2DBilinear(sampler2D image, vec2 st, vec2 texRes){
     float a = fract(st.x * texRes.x);
     float b = fract(st.y * texRes.y);
 
-    vec4 horizontal = mix(downLeft, downRight, a);
-    vec4 vertical = mix(upRight, upLeft, a);
-    return mix(horizontal, vertical, b);
+    vec4 horizontal0 = mix(downLeft, downRight, a);
+    vec4 horizontal1 = mix(upRight, upLeft, a);
+    return mix(horizontal0, horizontal1, b);
 }
 
 // Noise texture

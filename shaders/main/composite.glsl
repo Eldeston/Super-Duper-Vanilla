@@ -16,6 +16,7 @@
 #include "/lib/utility/texFunctions.glsl"
 #include "/lib/rayTracing/rayTracer.glsl"
 
+#include "/lib/atmospherics/clouds.glsl"
 #include "/lib/atmospherics/fog.glsl"
 #include "/lib/atmospherics/sky.glsl"
 

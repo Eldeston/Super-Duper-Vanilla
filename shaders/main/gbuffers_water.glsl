@@ -73,7 +73,7 @@ INOUT mat3 TBN;
 
         #ifdef DEFAULT_MAT
             float maxCol = maxC(color.rgb); float satCol = rgb2hsv(color).y;
-            materials.metallic_m = (rBlockId >= 10008 && rBlockId <= 10010) || rBlockId == 10015 ? 0.75 : 0.0;
+            materials.metallic_m = (rBlockId >= 10008 && rBlockId <= 10010) || rBlockId == 10015 ? 1.0 : 0.0;
             materials.ss_m = (rBlockId >= 10001 && rBlockId <= 10004) || rBlockId == 10007 || rBlockId == 10011 || rBlockId == 10013 ? sqrt(maxCol) * 0.8 : 0.0;
             materials.emissive_m = rBlockId == 10005 || rBlockId == 10006 ? maxCol
                 : rBlockId == 10014 ? satCol : 0.0;

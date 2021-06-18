@@ -17,6 +17,8 @@ uniform sampler2D depthtex0;
     uniform sampler2D colortex5;
     // Temporal / TAA, Auto Exposure
     uniform sampler2D colortex6;
+    // Clouds
+    uniform sampler2D colortex7;
 #endif
 
 // Noise sample, r for blue noise, g for white noise, and b for cell noise
