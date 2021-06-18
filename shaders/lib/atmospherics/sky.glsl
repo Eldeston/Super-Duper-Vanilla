@@ -30,12 +30,6 @@ vec3 getSkyRender(vec3 playerPos, vec3 skyCol, vec3 lightCol, float skyMask, flo
         float voidGradient = smoothstep(-0.1 - offSet, -0.025 + offSet, nPlayerPos.y) * 0.9;
         float lightRange = smootherstep(smootherstep(-nSkyPos.z * 0.56)) * (1.0 - newTwilight);
 
-        #ifdef SHADER_CLOUDS
-            // Get clouds
-            vec4 clouds = nPlayerPos.y > 0 ? parallaxClouds(nPlayerPos.xz / nPlayerPos.y, CLOUD_STEPS, CLOUD_EDGE_SOFTNESS, CLOUD_THICKNESS) : 0.0;
-            float cloudFog = smootherstep(smootherstep(nPlayerPos.y * 2.0));
-        #endif
-
         // Get sun/moon
         float sunMoon = getSunMoonShape(nSkyPos) * voidGradient;
 
@@ -43,10 +37,20 @@ vec3 getSkyRender(vec3 playerPos, vec3 skyCol, vec3 lightCol, float skyMask, flo
         vec2 starPos = 0.5 > abs(nSkyPos.y) ? vec2(atan(nSkyPos.x, nSkyPos.z), nSkyPos.y) * 0.25 : nSkyPos.xz * 0.333;
         float star = genStar(starPos * 0.128) * night * voidGradient;
 
-        vec3 sky = (star + sunMoon * 5.0) * skyMask + (lightRange * lightCol * skyDiffuseMask) + mix(skyCol * 0.8, skyCol, voidGradient);
+        float celestialBodies = (star + sunMoon * 5.0) * skyMask;
+
+        #ifdef SHADER_CLOUDS
+            // Get clouds
+            vec4 clouds = nPlayerPos.y > 0 ? parallaxClouds(nPlayerPos.xz / nPlayerPos.y, CLOUD_STEPS, CLOUD_EDGE_SOFTNESS, CLOUD_THICKNESS) : 0.0;
+            float cloudFog = smootherstep(smootherstep(nPlayerPos.y * 2.0));
+            clouds.a *= cloudFog * skyMask;
+            celestialBodies *= 1.0 - clouds.a;
+        #endif
+
+        vec3 sky = celestialBodies + (lightRange * lightCol * skyDiffuseMask) + mix(skyCol * 0.8, skyCol, voidGradient);
         
         #ifdef SHADER_CLOUDS
-            return sky + clouds.rgb * clouds.a * cloudFog * skyMask;
+            return sky + clouds.rgb * clouds.a;
         #else
             return sky;
         #endif

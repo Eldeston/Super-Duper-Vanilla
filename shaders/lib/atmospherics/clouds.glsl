@@ -12,7 +12,7 @@ vec4 parallaxClouds(vec2 uv, int steps, float softness, float thickness){
         uv += endPos;
         
         float cloud0 = tex2DBilinear(colortex7, uv / 128.0, vec2(256) * softness).r;
-        float cloud1 = tex2DBilinear(colortex7, (uv - 50.0) / 128.0, vec2(256) * softness).r;
+        float cloud1 = tex2DBilinear(colortex7, -uv / 128.0, vec2(256) * softness).r;
 
         density0 += cloud0;
         density1 += cloud1;
