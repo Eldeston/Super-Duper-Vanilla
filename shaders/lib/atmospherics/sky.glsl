@@ -41,7 +41,7 @@ vec3 getSkyRender(vec3 playerPos, vec3 skyCol, vec3 lightCol, float skyMask, flo
 
         #ifdef SHADER_CLOUDS
             // Get clouds
-            vec4 clouds = nPlayerPos.y > 0 ? parallaxClouds(nPlayerPos.xz / nPlayerPos.y, CLOUD_STEPS, CLOUD_EDGE_SOFTNESS, CLOUD_THICKNESS) : 0.0;
+            vec4 clouds = nPlayerPos.y > 0 ? parallaxClouds(nPlayerPos.xz / nPlayerPos.y, CLOUD_STEPS, CLOUD_EDGE_SOFTNESS, CLOUD_THICKNESS) : vec4(0);
             float cloudFog = smootherstep(smootherstep(nPlayerPos.y * 2.0));
             clouds.a *= cloudFog * skyMask;
             celestialBodies *= 1.0 - clouds.a;
