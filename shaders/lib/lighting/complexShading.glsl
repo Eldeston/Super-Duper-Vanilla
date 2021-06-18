@@ -11,6 +11,8 @@ vec3 complexShading(matPBR material, positionVectors posVector, vec3 dither){
 	float smoothness = 1.0 - material.roughness_m;
 	float sqrtSmoothness = sqrt(smoothness);
 
+	material.albedo_t *= max(0.5, material.alpha_m);
+
 	/* -Global illumination- */
 
 	// Cave fix
