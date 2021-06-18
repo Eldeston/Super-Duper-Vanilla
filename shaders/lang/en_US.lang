@@ -19,6 +19,7 @@ screen.TONEMAP=Tonemap
     option.SATURATION=Saturation
     option.CONTRAST=Contrast
     option.EXPOSURE=Exposure
+    option.WHITE_PRESERVATION=White preservation
     option.GAMMA=Gamma
     screen.TONEMAP.comment=Edit camera's tone settings for saturation, contrast etc.
 
