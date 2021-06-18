@@ -15,11 +15,11 @@ vec3 getFog(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY, float s
     float rainMult = 1.0 + rainStrength;
 
     #ifdef NETHER
-        float c = 0.12; float b = 0.08; float o = 0.4;
+        float c = 0.12; float b = 0.08; float o = 0.6;
     #elif defined END
         float c = 0.08; float b = 0.05; float o = 0.5;
     #else
-        float c = 0.08 * rainMult; float b = 0.07 * rainMult; float o = min(1.0, 0.6 * rainMult);
+        float c = 0.08 * rainMult; float b = 0.07 * rainMult; float o = 0.6 + rainMult * 0.1;
     #endif
 
     if(isEyeInWater >= 1){

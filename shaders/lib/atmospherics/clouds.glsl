@@ -1,8 +1,9 @@
-vec4 parallaxClouds(vec2 uv, int steps, float softness, float thickness){
+vec4 parallaxClouds(vec2 uv, int steps, float softness, float thickness, float seed){
     float stepSize = 1.0 / float(steps);
 
     vec2 endPos = uv * stepSize * thickness;
 
+    uv -= seed;
     uv.x += frameTimeCounter / 32.0;
 
     float density0 = 0.0;

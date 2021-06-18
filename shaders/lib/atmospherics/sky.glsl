@@ -14,7 +14,7 @@ float genStar(vec2 nSkyPos){
 
 vec3 getSkyRender(vec3 playerPos, vec3 skyCol, vec3 lightCol, float skyMask, float skyDiffuseMask, float dither){
     #if defined NETHER || defined END
-        return fogColor;
+        return sqrt(fogColor);
     #else
         // Get positions
         vec3 nPlayerPos = normalize(playerPos);
@@ -41,16 +41,22 @@ vec3 getSkyRender(vec3 playerPos, vec3 skyCol, vec3 lightCol, float skyMask, flo
 
         #ifdef SHADER_CLOUDS
             // Get clouds
-            vec4 clouds = nPlayerPos.y > 0 ? parallaxClouds(nPlayerPos.xz / nPlayerPos.y, CLOUD_STEPS, CLOUD_EDGE_SOFTNESS, CLOUD_THICKNESS) : vec4(0);
-            float cloudFog = smootherstep(smootherstep(nPlayerPos.y * 2.0));
-            clouds.a *= cloudFog * skyMask;
-            celestialBodies *= 1.0 - clouds.a;
+            vec4 clouds0 = nPlayerPos.y > 0 ? parallaxClouds(nPlayerPos.xz / nPlayerPos.y, CLOUD_STEPS, CLOUD_EDGE_SOFTNESS, CLOUD_THICKNESS, 0.0) : vec4(0);
+            clouds0.a *= smootherstep(smootherstep(nPlayerPos.y * 2.0));
+            
+            #ifdef SHADER_CLOUDS2
+                vec4 clouds1 = nPlayerPos.y > 0 ? parallaxClouds((nPlayerPos.xz / nPlayerPos.y) * 4.0, CLOUD_STEPS2, CLOUD_EDGE_SOFTNESS2, CLOUD_THICKNESS2 * 0.25, 50.0) : vec4(0);
+                clouds1.a *= smootherstep(smootherstep((nPlayerPos.y - 0.25) * 4.0));
+                clouds0 = mix(clouds1, clouds0, clouds0.a) * skyMask;
+            #endif
+
+            celestialBodies *= 1.0 - clouds0.a;
         #endif
 
         vec3 sky = celestialBodies + (lightRange * lightCol * skyDiffuseMask) + mix(skyCol * 0.8, skyCol, voidGradient);
         
         #ifdef SHADER_CLOUDS
-            return sky + (clouds.rgb + ambientLighting) * clouds.a;
+            return sky + (clouds0.rgb + ambientLighting) * clouds0.a;
         #else
             return sky;
         #endif
