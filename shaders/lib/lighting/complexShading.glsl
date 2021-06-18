@@ -10,7 +10,6 @@ vec3 complexShading(matPBR material, positionVectors posVector, vec3 dither){
 	vec3 nDither = dither * 2.0 - 1.0;
 	float smoothness = 1.0 - material.roughness_m;
 	float sqrtSmoothness = sqrt(smoothness);
-	float ambientLighting = AMBIENT_LIGHTING + nightVision;
 
 	/* -Global illumination- */
 

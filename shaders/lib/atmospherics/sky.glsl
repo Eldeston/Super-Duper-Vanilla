@@ -50,7 +50,7 @@ vec3 getSkyRender(vec3 playerPos, vec3 skyCol, vec3 lightCol, float skyMask, flo
         vec3 sky = celestialBodies + (lightRange * lightCol * skyDiffuseMask) + mix(skyCol * 0.8, skyCol, voidGradient);
         
         #ifdef SHADER_CLOUDS
-            return sky + clouds.rgb * clouds.a;
+            return sky + (clouds.rgb + ambientLighting) * clouds.a;
         #else
             return sky;
         #endif
