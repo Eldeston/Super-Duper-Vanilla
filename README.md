@@ -2,13 +2,15 @@
 [![Discord](https://img.shields.io/discord/604061216779796492.svg?logo=discord&logoColor=white&logoWidth=20&labelColor=7289DA&label=Discord)](https://discord.gg/4XNhkcd)
 [![Twitter Follow](https://img.shields.io/twitter/follow/eldeston?color=dark&label=Follow&logoColor=dark)](https://twitter.com/eldeston)
 
-   A shader pack for **Minecraft Optifine**, created to convey or mimic the style of the cancelled __Super Duper Graphics Pack__. Developed by @Eldeston, and presented by __FlameRender Studios__.
+   A shader pack for **Minecraft Java Optifine**, created to convey or mimic a certain shading style of the cancelled __Super Duper Graphics Pack__ combined with the shading style of Minecraft Dungeons. Developed by @Eldeston, and presented by __FlameRender Studios__.
+
+![1.0.8img0](https://user-images.githubusercontent.com/59617287/120035677-04f35e00-c010-11eb-92b3-c43f19192b85.png)
 
 # Contribution
-   Will be planned soon, but as of right now, it is closed.
+   Will be planned soon, but as of right now, it is not open.
 
 # Releases
-   See all releases [here](https://github.com/Eldeston/Super-Duper-Vanilla/releases). Pre-releases are expected to be unstable, report any issues or bugs anytime.
+   See all available releases [here](https://github.com/Eldeston/Super-Duper-Vanilla/releases), and get the latest commit here [here](https://github.com/Eldeston/Super-Duper-Vanilla/archive/refs/heads/master.zip). Pre-release versions are expected to be unstable, report any issues or bugs anytime.
 
 # About creator
    Come join my Discord server to talk about other developments made by our studio-community!
