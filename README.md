@@ -1,4 +1,4 @@
-# Super-Duper-Vanilla
+![titleLogo](/shaders/textures/title.png)
 [![Discord](https://img.shields.io/discord/604061216779796492.svg?logo=discord&logoColor=white&logoWidth=20&labelColor=7289DA&label=Discord)](https://discord.gg/4XNhkcd)
 [![Twitter Follow](https://img.shields.io/twitter/follow/eldeston?color=dark&label=Follow&logoColor=dark)](https://twitter.com/eldeston)
 
