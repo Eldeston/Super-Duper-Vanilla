@@ -12,7 +12,7 @@ vec3 getFog(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY, float s
     float waterVoid = smootherstep(nEyePlayerPos.y + (eyeBrightFact - 0.6));
 
     float eyePlayerPosLength = length(eyePlayerPos);
-    float rainMult = 1.0 + rainStrength;
+    float rainMult = 1.0 + rainStrength * eyeBrightFact;
 
     #ifdef NETHER
         float c = 0.12; float b = 0.08; float o = 0.6;

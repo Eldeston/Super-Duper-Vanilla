@@ -1,11 +1,11 @@
 // Material PBR struct
 struct matPBR{
-    // Light map
-    vec2 light_m;
     // Albedo texture
     vec3 albedo_t;
     // Normal map
     vec3 normal_m;
+    // Light map
+    vec2 light_m;
     // Subsurface scattering
     float ss_m;
     // Metalic map
