@@ -53,6 +53,13 @@ screen.WATER_SETTINGS=Water settings
     option.WATER_NORM=Water normals
 
 screen.ATMOSPHERICS=Atmospherics
+    option.VOL_LIGHT_BRIGHTNESS=Volumetric light amount
+    option.VOL_LIGHT=Volumetric lighting
+    option.MIST_GROUND_FOG_BRIGHTNESS=Ground fog amount
+    option.BORDER_FOG=Border fog
+
+screen.CLOUDS=Clouds
+    option.DOUBLE_VANILLA_CLOUDS=Double vanilla clouds
     option.SHADER_CLOUDS=Shader clouds
     option.CLOUD_STEPS=Cloud steps
     option.CLOUD_EDGE_SOFTNESS=Cloud edge softness
@@ -61,10 +68,6 @@ screen.ATMOSPHERICS=Atmospherics
     option.CLOUD_STEPS2=2nd layer cloud steps
     option.CLOUD_EDGE_SOFTNESS2=2nd layer cloud edge softness
     option.CLOUD_THICKNESS2=2nd layer cloud thickness
-    option.VOL_LIGHT_BRIGHTNESS=Volumetric light amount
-    option.VOL_LIGHT=Volumetric lighting
-    option.MIST_GROUND_FOG_BRIGHTNESS=Ground fog amount
-    option.BORDER_FOG=Border fog
 
 screen.ANIMATION=Animation
     option.ANIMATE=Animate

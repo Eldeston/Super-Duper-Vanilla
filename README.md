@@ -15,7 +15,7 @@
    See all available releases [here](https://github.com/Eldeston/Super-Duper-Vanilla/releases), and get the latest build here [here](https://github.com/Eldeston/Super-Duper-Vanilla/archive/refs/heads/master.zip). Pre-release versions are expected to be unstable, please report any issues or bugs anytime. Feedback is much appreciated.
 
 ## About creator
-   Try out my other shader for Minecraft Bedrock, ESTN Shaders on McpeDL!
+   Try out my other shader for Minecraft Bedrock, ESTN Shaders, on McpeDL!
    [![img](https://github.com/Eldeston/ESTN-Shaders/blob/master/textures/ui/title.png)](https://mcpedl.com/estn-shaders/?cookie_check=1)
    
    Come join my Discord server to talk about other developments made by our studio-community!
