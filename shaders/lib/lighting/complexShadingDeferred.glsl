@@ -32,5 +32,5 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
 	// Mask reflections
     vec3 reflectCol = mix(reflectedSkyRender, SSRCol.rgb, SSRCol.a) * fresnel * sqrtSmoothness; // Will change this later...
 
-	return max(vec3(0), sceneCol - reflectedSkyRender * fresnel * sqrtSmoothness) + reflectCol;
+	return sceneCol * (1.0 - material.metallic_m) + reflectCol;
 }

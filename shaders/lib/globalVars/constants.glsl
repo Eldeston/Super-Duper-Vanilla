@@ -1,10 +1,13 @@
-#if defined COMPOSITE || defined DEFERRED || defined COMPOSITE1 || defined COMPOSITE2 || defined COMPOSITE3
+#if defined COMPOSITE1 || defined COMPOSITE2 || defined COMPOSITE3
     const bool gcolorMipmapEnabled = true;
     const bool colortex2MipmapEnabled = true;
     const bool colortex6MipmapEnabled = true;
 
-    const bool colortex5Clear = false;
     const bool colortex6Clear = false;
+#endif
+
+#if defined COMPOSITE || defined DEFERRED
+    const bool colortex5Clear = false;
 #endif
 
 // Default resolution
