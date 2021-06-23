@@ -1,7 +1,7 @@
 // Material PBR struct
 struct matPBR{
     // Albedo texture
-    vec3 albedo_t;
+    vec4 albedo_t;
     // Normal map
     vec3 normal_m;
     // Light map

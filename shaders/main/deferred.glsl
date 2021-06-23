@@ -27,16 +27,17 @@
 #include "/lib/rayTracing/volLight.glsl"
 #include "/lib/post/outline.glsl"
 
-#include "/lib/lighting/complexShading.glsl"
+#include "/lib/lighting/complexShadingDeferred.glsl"
 
-#include "/lib/varAssembler.glsl"
+#include "/lib/assemblers/PBRAssembler.glsl"
+#include "/lib/assemblers/posAssembler.glsl"
 
-INOUT vec2 texcoord;
+INOUT vec2 screenCoord;
 
 #ifdef VERTEX
     void main(){
         gl_Position = ftransform();
-        texcoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        screenCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
     }
 #endif
 
@@ -44,39 +45,38 @@ INOUT vec2 texcoord;
     void main(){
         // Declare and get positions
         positionVectors posVector;
-	    getPosVectors(posVector, texcoord);
+	    getPosVectors(posVector, screenCoord);
 
 	    // Declare and get materials
 	    matPBR materials;
-	    getMaterial(materials, texcoord);
+	    getPBR(materials, screenCoord);
+
+        vec3 sceneCol = texture2D(gcolor, screenCoord).rgb;
 
         // Render lighting
-        vec3 dither = getRand3(texcoord, 8);
+        vec3 dither = getRand3(screenCoord, 8);
         float skyMask = float(posVector.screenPos.z == 1);
-        float cloudMask = texture2D(colortex4, texcoord).g;
+        float cloudMask = texture2D(colortex4, screenCoord).g;
 
         // Get sky color
         vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyCol, lightCol, skyMask, 1.0, dither.r);
 
-        // Apply lighting
-        materials.albedo_t = complexShading(materials, posVector, dither);
+        sceneCol = complexShadingDeferred(materials, posVector, sceneCol, dither);
 
         #ifdef OUTLINES
             /* Outline calculation */
-            materials.albedo_t *= 1.0 + getOutline(depthtex0, texcoord, OUTLINE_PIX_SIZE) * (OUTLINE_BRIGHTNESS - 1.0);
+            sceneCol *= 1.0 + getOutline(depthtex0, screenCoord, OUTLINE_PIX_SIZE) * (OUTLINE_BRIGHTNESS - 1.0);
         #endif
 
         // Fog calculation
-        materials.albedo_t = getFog(posVector.eyePlayerPos, materials.albedo_t, skyRender, posVector.worldPos.y, skyMask, cloudMask);
-        vec3 reflectBuffer = materials.albedo_t; // Assign current scene color WITHOUT the godrays...
+        sceneCol = getFog(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y, skyMask, cloudMask);
 
         #ifdef VOL_LIGHT
-            materials.albedo_t += getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.y) * lightCol;
+            sceneCol += getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.y) * lightCol;
         #endif
 
-    /* DRAWBUFFERS:05 */
-        gl_FragData[0] = vec4(materials.albedo_t, 1); //gcolor
-        // Apparently I have to transform it to 0-1 range then back to HDR with the reflection buffer due to an annoying bug...
-        gl_FragData[1] = vec4(reflectBuffer / (reflectBuffer + 1.0), 1); //colortex5
+    /* DRAWBUFFERS:04 */
+        gl_FragData[0] = vec4(sceneCol, 1); //gcolor
+        gl_FragData[1] = vec4(materials.ambient_m, 0, 1, 1); //colortex4
     }
 #endif
