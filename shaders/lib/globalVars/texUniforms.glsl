@@ -2,7 +2,7 @@
 uniform sampler2D depthtex0;
 
 #ifndef GBUFFERS
-    // Albedo texture color 0
+    // Scene color
     uniform sampler2D gcolor;
     // Normal map buffer(rgb)
     uniform sampler2D colortex1;
@@ -17,7 +17,7 @@ uniform sampler2D depthtex0;
     uniform sampler2D colortex5;
     // Temporal / TAA, Auto Exposure
     uniform sampler2D colortex6;
-    // Clouds
+    // Raw albedo texture color
     uniform sampler2D colortex7;
 #endif
 
