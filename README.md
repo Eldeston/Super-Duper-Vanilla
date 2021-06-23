@@ -5,8 +5,9 @@
 ## Description
    A shader pack for **Minecraft Java Optifine**, created to convey or mimic a certain shading style of the cancelled __Super Duper Graphics Pack__ combined with the shading style of Minecraft Dungeons. Developed by @Eldeston, and presented by __FlameRender Studios__.
 
-![1.0.8previmg0](https://user-images.githubusercontent.com/59617287/120035677-04f35e00-c010-11eb-92b3-c43f19192b85.png)
-![1.0.8previmg1](https://user-images.githubusercontent.com/59617287/120035672-03299a80-c010-11eb-8a35-bba3467b6fb3.png)
+![1.0.9previmg0](https://user-images.githubusercontent.com/59617287/122944387-d7889e80-d388-11eb-94ef-bbb0030ae63e.png)
+![1.0.9previmg1](https://user-images.githubusercontent.com/59617287/123038108-dabf7100-d400-11eb-82f1-61425a06b77e.png)
+![1.0.9previmg2](https://user-images.githubusercontent.com/59617287/123038336-3be74480-d401-11eb-90ce-fdc1728d25ae.png)
 
 ## Contribution
    Will be planned soon, but as of right now, it is not open.
