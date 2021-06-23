@@ -1,24 +1,3 @@
-const int RGBA1 = 1;
-
-const int RGB8 = 1;
-
-const int RGB16 = 1;
-const int RGB16F = 1;
-
-const int RGBA16 = 1;
-const int RGBA16F = 1;
-
-/* Texture buffer  settings */
-#if defined COMPOSITE || defined DEFERRED || defined COMPOSITE1
-    const int gcolorFormat = RGB16F;
-    const int colortex1Format = RGB16;
-    const int colortex2Format = RGB8;
-    const int colortex3Format = RGB8;
-    const int colortex4Format = RGB8;
-    const int colortex5Format = RGB16;
-    const int colortex6Format = RGBA16F;
-#endif
-
 #if defined COMPOSITE || defined DEFERRED || defined COMPOSITE1 || defined COMPOSITE2 || defined COMPOSITE3
     const bool gcolorMipmapEnabled = true;
     const bool colortex2MipmapEnabled = true;

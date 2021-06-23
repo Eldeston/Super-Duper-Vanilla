@@ -15,6 +15,18 @@ INOUT vec2 texcoord;
 #endif
 
 #ifdef FRAGMENT
+    /* Texture buffer  settings */
+
+    /*
+    const int gcolorFormat = RGB16F;
+    const int colortex1Format = RGB16;
+    const int colortex2Format = RGB8;
+    const int colortex3Format = RGB8;
+    const int colortex4Format = RGB8;
+    const int colortex5Format = RGB16;
+    const int colortex6Format = RGBA16F;
+    */
+
     void main(){
         vec3 color = texture2D(BUFFER_VIEW, texcoord).rgb;
 
