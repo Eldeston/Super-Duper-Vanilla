@@ -2,22 +2,22 @@
 uniform sampler2D depthtex0;
 
 #ifndef GBUFFERS
-    // Scene color
+    // Main scene
     uniform sampler2D gcolor;
-    // Normal map buffer(rgb)
+    // Normals
     uniform sampler2D colortex1;
-    // Lightmap coord(rg) and subsurface scattering
+    // Lightmap, subsurface scattering / Bloom
     uniform sampler2D colortex2;
     // Metallic, emissive, roughness
     uniform sampler2D colortex3;
-    // AO, cloud mask, alpha
+    // AO, cloud mask, solid mask
     uniform sampler2D colortex4;
 
     // Reflections
     uniform sampler2D colortex5;
     // Temporal / TAA, Auto Exposure
     uniform sampler2D colortex6;
-    // Raw albedo texture color
+    // Raw albedo
     uniform sampler2D colortex7;
 #endif
 

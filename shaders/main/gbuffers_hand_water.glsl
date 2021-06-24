@@ -15,12 +15,10 @@
 #include "/lib/utility/spaceConvert.glsl"
 #include "/lib/utility/texFunctions.glsl"
 
-#include "/lib/atmospherics/fog.glsl"
 #include "/lib/atmospherics/sky.glsl"
 
 #include "/lib/lighting/shdMapping.glsl"
 #include "/lib/lighting/GGX.glsl"
-#include "/lib/post/outline.glsl"
 
 #include "/lib/lighting/PBR.glsl"
 

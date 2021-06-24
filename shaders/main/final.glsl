@@ -25,7 +25,7 @@ INOUT vec2 texcoord;
     const int colortex4Format = RGB8;
     const int colortex5Format = RGB16;
     const int colortex6Format = RGBA16F;
-    const int colortex7Format = RGBA16;
+    const int colortex7Format = RGB8;
     */
 
     void main(){

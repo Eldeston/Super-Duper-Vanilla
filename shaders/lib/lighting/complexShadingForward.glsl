@@ -5,8 +5,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
     vec3 nEyePlayerPos = normalize(-posVector.eyePlayerPos);
 	vec3 lightVec = normalize(posVector.lightPos - posVector.eyePlayerPos);
 
-	float smoothness = 1.0 - material.roughness_m;
-	float sqrtSmoothness = sqrt(smoothness);
+	float sqrtSmoothness = sqrt(1.0 - material.roughness_m);
 
 	// Cave fix
 	float caveFixShdFactor = smoothstep(0.2, 0.4, material.light_m.y) * (1.0 - eyeBrightFact) + eyeBrightFact;

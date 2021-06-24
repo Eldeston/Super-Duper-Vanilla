@@ -1,12 +1,10 @@
 vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sceneCol, vec3 dither){
 	// Get positions
-	vec3 reflectedEyePlayerPos = reflect(posVector.eyePlayerPos, material.normal_m);
     vec3 nEyePlayerPos = normalize(-posVector.eyePlayerPos);
 
 	vec3 gBMVNorm = mat3(gbufferModelView) * material.normal_m;
 	vec3 nDither = dither * 2.0 - 1.0;
-	float smoothness = 1.0 - material.roughness_m;
-	float sqrtSmoothness = sqrt(smoothness);
+	float sqrtSmoothness = sqrt(1.0 - material.roughness_m);
 
 	#ifdef SSGI
 		// Get SSGI

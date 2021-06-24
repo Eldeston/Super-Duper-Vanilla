@@ -2,14 +2,41 @@ Goal:
 
 -Optimize and effeciently use the available resources while keeping good fps.
 -Keep the codes squeaky clean, understandable, and portable.
--Retain the material system.
+-Retain the material pass system.
 
 Framebuffers:
 
 gcolor - Main scene : RGB16F
 colortex1 - Normals : RGB16
 colortex2 - Lightmap, subsurface scattering / Bloom : RGB8
-colortex3 - Metal, emissive, roughness : RGB8
-colortex4 - AO, cloud mask, solid : RGB8
+colortex3 - Metallic, emissive, roughness : RGB8
+colortex4 - AO, cloud mask, solid mask : RGB8
 colortex5 - Reflections : RGB16
 colortex6 - Temporal / TAA, Auto Exposure : RGB16F
+colortex7 - Raw albedo  : RGB8
+
+Custom defined macros:
+
+SHADOW
+GBUFFERS
+NETHER
+END
+DEFERRED
+DEFERRED(1-15)
+COMPOSITE
+COMPOSITE(1-15)
+FINAL
+    Gbuffer macros:
+
+    BASIC
+    BEACON_BEAM
+    CLOUDS
+    ENTITIES
+    HAND_WATER
+    HAND
+    SKY_BASIC
+    SPIDER_EYES
+    TERRAIN
+    TEXTURED
+    HAND_WATER
+    WEATER
