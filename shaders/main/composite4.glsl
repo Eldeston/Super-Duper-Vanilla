@@ -60,7 +60,7 @@ vec2 jitterPos(vec4 pos) {
                 }
             }
 
-            vec3 prevCol = texture2D(colortex8, prevPos).rgb;
+            vec3 prevCol = texture2D(colortex6, prevPos).rgb;
             prevCol = max(maxCol, min(minCol, prevCol));
 
             vec3 finalCol = mix(currCol, prevCol, exp2(0.1 * -frameTime));

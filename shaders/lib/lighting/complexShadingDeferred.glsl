@@ -25,5 +25,6 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
 		vec4 SSRCol = vec4(0);
 	#endif
 
-	return mix(sceneCol, SSRCol.rgb * fresnel * sqrtSmoothness, material.metallic_m * SSRCol.a);
+	float mask = material.metallic_m * SSRCol.a;
+	return sceneCol * (1.0 - mask) + SSRCol.rgb * fresnel * sqrtSmoothness * SSRCol.a + material.albedo_t.rgb * material.emissive_m * mask;
 }
