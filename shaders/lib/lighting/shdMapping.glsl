@@ -22,31 +22,27 @@ vec3 getShdFilter(vec3 shdPos, float dither, float shdRcp){
 
 // Shadow function
 vec3 getShdMapping(vec4 shdPos, vec3 normal, vec3 nLightPos, float dither, float ss){
-	#if defined NETHER || defined END
-		return vec3(0);
+	#if defined CLOUDS || defined BEACON_BEAM || defined SPIDER_EYES || defined END
+		// Light diffuse
+		float lightDot = dot(normal, nLightPos) * (1.0 - ss) + ss;
+
+		return saturate(lightDot) * (1.0 - newTwilight);
 	#else
-		#if defined CLOUDS || defined BEACON_BEAM || defined SPIDER_EYES
-			// Light diffuse
-			float lightDot = dot(normal, nLightPos) * (1.0 - ss) + ss;
+		vec3 shdCol = vec3(0);
+		float shdRcp = 1.0 / shadowMapResolution;
 
-			return saturate(lightDot) * (1.0 - newTwilight);
-		#else
-			vec3 shdCol = vec3(0);
-			float shdRcp = 1.0 / shadowMapResolution;
+		// Light diffuse
+		float lightDot = dot(normal, nLightPos) * (1.0 - ss) + ss;
+		shdPos.xyz = distort(shdPos.xyz, shdPos.w) * 0.5 + 0.5;
+		shdPos.z -= (shdBias + 0.125 * shdRcp) * squared(shdPos.w) / abs(lightDot);
 
-			// Light diffuse
-			float lightDot = dot(normal, nLightPos) * (1.0 - ss) + ss;
-			shdPos.xyz = distort(shdPos.xyz, shdPos.w) * 0.5 + 0.5;
-			shdPos.z -= (shdBias + 0.125 * shdRcp) * squared(shdPos.w) / abs(lightDot);
+		if(lightDot >= 0)
+			#ifdef SHADOW_FILTER
+				shdCol = getShdFilter(shdPos.xyz, dither, shdRcp);
+			#else
+				shdCol = getShdTex(shdPos.xyz);
+			#endif
 
-			if(lightDot >= 0)
-				#ifdef SHADOW_FILTER
-					shdCol = getShdFilter(shdPos.xyz, dither, shdRcp);
-				#else
-					shdCol = getShdTex(shdPos.xyz);
-				#endif
-
-			return shdCol * saturate(lightDot) * (1.0 - newTwilight);
-		#endif
+		return shdCol * saturate(lightDot) * (1.0 - newTwilight);
 	#endif
 }

@@ -14,7 +14,11 @@ float genStar(vec2 nSkyPos){
 
 vec3 getSkyRender(vec3 playerPos, vec3 skyCol, vec3 lightCol, float skyMask, float skyDiffuseMask, float dither){
     #if defined NETHER || defined END
-        return sqrt(fogColor);
+        #ifdef END
+            return skyCol;
+        #else
+            return fogColor;
+        #endif
     #else
         // Get positions
         vec3 nPlayerPos = normalize(playerPos);

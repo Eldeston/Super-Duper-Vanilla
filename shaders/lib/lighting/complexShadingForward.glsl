@@ -1,4 +1,9 @@
 vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dither){
+	#if defined NETHER || defined END
+		posVector.lightPos = vec3(0, 0.8, 0.8);
+		material.light_m.y = 1.0;
+	#endif
+
 	// Get positions
 	vec3 reflectedEyePlayerPos = reflect(posVector.eyePlayerPos, material.normal_m);
 	vec3 nLightPos = normalize(posVector.lightPos);
@@ -7,11 +12,16 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 
 	float sqrtSmoothness = sqrt(1.0 - material.roughness_m);
 
-	// Cave fix
-	float caveFixShdFactor = smoothstep(0.2, 0.4, material.light_m.y) * (1.0 - eyeBrightFact) + eyeBrightFact;
-	// Get direct light diffuse color
-	float rainDiff = rainStrength * 0.5;
-	vec3 directLight = (getShdMapping(posVector.shdPos, material.normal_m, nLightPos, dither.r, material.ss_m) * (1.0 - rainDiff) + smootherstep(material.light_m.y) * rainDiff) * lightCol * caveFixShdFactor;
+	#if defined NETHER
+		vec3 directLight = vec3(0);
+	#else
+		// Cave fix
+		float caveFixShdFactor = smoothstep(0.2, 0.4, material.light_m.y) * (1.0 - eyeBrightFact) + eyeBrightFact;
+		// Get direct light diffuse color
+		float rainDiff = rainStrength * 0.5;
+		vec3 directLight = (getShdMapping(posVector.shdPos, material.normal_m, nLightPos, dither.r, material.ss_m) * (1.0 - rainDiff) + smootherstep(material.light_m.y) * rainDiff) * lightCol * caveFixShdFactor;
+	#endif
+
 	// Get globally illuminated sky
 	vec3 GISky = ambientLighting + getSkyRender(material.normal_m, skyCol, lightCol, 0.0, 0.0, dither.r) * material.light_m.y * material.light_m.y;
 
