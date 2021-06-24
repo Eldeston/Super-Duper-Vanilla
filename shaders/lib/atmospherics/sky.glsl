@@ -17,7 +17,7 @@ vec3 getSkyRender(vec3 playerPos, vec3 skyCol, vec3 lightCol, float skyMask, flo
         #ifdef END
             return skyCol;
         #else
-            return fogColor;
+            return sqrt(fogColor);
         #endif
     #else
         // Get positions

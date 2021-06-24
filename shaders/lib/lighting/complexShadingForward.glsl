@@ -1,7 +1,11 @@
 vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dither){
 	#if defined NETHER || defined END
 		posVector.lightPos = vec3(0, 0.8, 0.8);
-		material.light_m.y = 1.0;
+		#ifdef NETHER
+			material.light_m.y = 0.25;
+		#else
+			material.light_m.y = 1.0;
+		#endif
 	#endif
 
 	// Get positions
