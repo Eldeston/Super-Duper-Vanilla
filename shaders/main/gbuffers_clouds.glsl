@@ -45,7 +45,7 @@ INOUT vec3 norm;
 
         #ifdef DOUBLE_VANILLA_CLOUDS
             texCoord = instanceId == 1 ? coord : -coord;
-            if(instanceId > 0) vertexPos.y += 64.0 * instanceId;
+            if(instanceId > 0) vertexPos.y += SECOND_CLOUD_HEIGHT * instanceId;
         #else
             texCoord = coord;
         #endif
@@ -61,6 +61,11 @@ INOUT vec3 norm;
 
     void main(){
         vec4 albedo = texture2D(texture, texCoord);
+
+        #ifdef CLOUD_FADE
+            float fade = smootherstep(sin(frameTimeCounter * FADE_SPEED) * 0.5 + 0.5);
+            albedo = mix(albedo, texture2D(texture, -texCoord), fade);
+        #endif
 
         vec3 screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
         vec3 dither = getRand3(screenPos.xy, 8);
