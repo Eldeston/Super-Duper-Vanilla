@@ -43,6 +43,7 @@ screen.RAY_TRACING=Ray tracing settings
     option.SSR_STEPS=SSR steps
     option.SSGI_BISTEPS=SSGI refinement steps
     option.SSR_BISTEPS=SSR refinement steps
+    option.ROUGH_REFLECTIONS=Rough reflections
     option.TEMPORAL_ACCUMULATION=Temporal accumulation
     option.ACCUMILATION_SPEED=Accumulation speed
 

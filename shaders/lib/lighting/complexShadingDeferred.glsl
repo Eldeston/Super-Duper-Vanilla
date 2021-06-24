@@ -4,7 +4,7 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
 
 	vec3 gBMVNorm = mat3(gbufferModelView) * material.normal_m;
 	vec3 nDither = dither * 2.0 - 1.0;
-	float sqrtSmoothness = sqrt(1.0 - material.roughness_m);
+	float smoothness = 1.0 - material.roughness_m;
 
 	#ifdef SSGI
 		// Get SSGI
@@ -18,11 +18,15 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
     vec3 fresnel = getFresnelSchlick(dot(material.normal_m, nEyePlayerPos), F0);
 
 	#ifdef SSR
-		vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.screenPos, gBMVNorm, nDither, material.roughness_m);
+		#ifdef ROUGH_REFLECTIONS
+			vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.screenPos, gBMVNorm, nDither, material.roughness_m);
+		#else
+			vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.screenPos, gBMVNorm, vec3(0), 0.0);
+		#endif
 	#else
 		vec4 SSRCol = vec4(0);
 	#endif
 
 	float mask = material.metallic_m * SSRCol.a;
-	return sceneCol * (1.0 - mask) + SSRCol.rgb * fresnel * sqrtSmoothness * smootherstep(material.ambient_m) * SSRCol.a + material.albedo_t.rgb * material.emissive_m * mask;
+	return sceneCol * (1.0 - mask) + SSRCol.rgb * fresnel * smoothness * SSRCol.a + material.albedo_t.rgb * material.emissive_m * mask;
 }

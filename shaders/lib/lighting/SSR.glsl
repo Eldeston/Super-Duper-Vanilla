@@ -6,9 +6,8 @@ vec4 getSSRCol(vec3 viewPos, vec3 screenPos, vec3 gBMVNorm, vec3 nDither, float 
     // Transform coords to previous frame coords
 	// reflectedScreenPos.xy = toPrevScreenPos(reflectedScreenPos.xy);
 
-	float mask = edgeVisibility(reflectedScreenPos.xy);
 	// Sample reflections
 	vec3 SSRCol = texture2D(gcolor, reflectedScreenPos.xy).rgb;
     // Return color and output SSR mask in the alpha channel
-    return vec4(SSRCol, reflectedScreenPos.z * mask);
+    return vec4(SSRCol, reflectedScreenPos.z * edgeVisibility(reflectedScreenPos.xy));
 }

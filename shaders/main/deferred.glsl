@@ -56,7 +56,6 @@ INOUT vec2 screenCoord;
         // Render lighting
         vec3 dither = getRand3(screenCoord, 8);
         float skyMask = float(posVector.screenPos.z == 1);
-        float cloudMask = texture2D(colortex4, screenCoord).g;
 
         // Get sky color
         vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyCol, lightCol, skyMask, 1.0, 1.0);
@@ -69,7 +68,7 @@ INOUT vec2 screenCoord;
         #endif
 
         // Fog calculation
-        sceneCol = getFog(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y, skyMask, cloudMask);
+        sceneCol = getFog(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y, skyMask, 0.0);
 
         #ifdef VOL_LIGHT
             sceneCol += getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.y) * lightCol;

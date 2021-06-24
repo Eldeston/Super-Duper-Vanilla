@@ -14,7 +14,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
     vec3 nEyePlayerPos = normalize(-posVector.eyePlayerPos);
 	vec3 lightVec = normalize(posVector.lightPos - posVector.eyePlayerPos);
 
-	float sqrtSmoothness = sqrt(1.0 - material.roughness_m);
+	float smoothness = 1.0 - material.roughness_m;
 
 	#if defined NETHER
 		vec3 directLight = vec3(0);
@@ -36,11 +36,11 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	vec3 specCol = getSpecGGX(nEyePlayerPos, nLightPos, lightVec, material.normal_m, fresnel, material.roughness_m) * directLight;
 
 	// Get reflected sky
-	float skyMask = pow(material.light_m.y, 1.0 / 4.0) * sqrtSmoothness;
+	float skyMask = pow(material.light_m.y, 1.0 / 4.0) * smoothness;
     vec3 reflectedSkyRender = ambientLighting + getSkyRender(reflectedEyePlayerPos, skyCol, lightCol, skyMask, skyMask, maxC(directLight)) * material.light_m.y;
 
 	// Mask reflections
-    vec3 reflectCol = reflectedSkyRender * fresnel * sqrtSmoothness * smootherstep(material.ambient_m); // Will change this later...
+    vec3 reflectCol = reflectedSkyRender * fresnel * smoothness * smootherstep(material.ambient_m); // Will change this later...
 
 	vec3 totalDiffuse = (directLight + GISky * material.ambient_m + cubed(material.light_m.x) * BLOCK_LIGHT_COL * pow(material.ambient_m, 1.0 / 4.0)) * (1.0 - material.metallic_m) + material.emissive_m;
 	return vec4(material.albedo_t.rgb * totalDiffuse + specCol + reflectCol, material.albedo_t.a);
