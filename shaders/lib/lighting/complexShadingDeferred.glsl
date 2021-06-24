@@ -25,12 +25,5 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
 		vec4 SSRCol = vec4(0);
 	#endif
 
-	// Get reflected sky
-	float skyMask = pow(material.light_m.y, 1.0 / 4.0) * sqrtSmoothness;
-    vec3 reflectedSkyRender = ambientLighting + getSkyRender(reflectedEyePlayerPos, skyCol, lightCol, skyMask, skyMask, dither.r) * material.light_m.y;
-
-	// Mask reflections
-    vec3 reflectCol = mix(reflectedSkyRender, SSRCol.rgb, SSRCol.a) * fresnel * sqrtSmoothness; // Will change this later...
-
-	return sceneCol * (1.0 - material.metallic_m) + reflectCol;
+	return mix(sceneCol, SSRCol.rgb * fresnel * sqrtSmoothness, material.metallic_m * SSRCol.a);
 }
