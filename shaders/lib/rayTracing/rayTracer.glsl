@@ -13,7 +13,10 @@ vec3 rayTraceScene(vec3 screenPos, vec3 viewPos, vec3 rayDir, int steps, int bin
 	// We'll also use this as a start position
 	vec3 clipPos = screenPos * 2.0 - 1.0;
 
-	if(clipPos.z < MC_HAND_DEPTH) return vec3(0);
+	if(clipPos.z < MC_HAND_DEPTH){
+		screenPos = toScreenSpacePos(toScreen(viewPos + rayDir * far).xy);
+		return vec3(screenPos.xy, screenPos.z != 1);
+	}
 
 	vec3 viewPosWithRayDir = viewPos + rayDir;
 	vec3 clipPosRayDir = toScreen(viewPosWithRayDir) * 2.0 - 1.0; // Put it back to clip space...

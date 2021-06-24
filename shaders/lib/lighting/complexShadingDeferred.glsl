@@ -3,7 +3,6 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
     vec3 nEyePlayerPos = normalize(-posVector.eyePlayerPos);
 
 	vec3 gBMVNorm = mat3(gbufferModelView) * material.normal_m;
-	vec3 nDither = dither * 2.0 - 1.0;
 	float smoothness = 1.0 - material.roughness_m;
 
 	#ifdef SSGI
@@ -19,7 +18,7 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
 
 	#ifdef SSR
 		#ifdef ROUGH_REFLECTIONS
-			vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.screenPos, gBMVNorm, nDither, material.roughness_m);
+			vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.screenPos, gBMVNorm, dither * 2.0 - 1.0, material.roughness_m);
 		#else
 			vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.screenPos, gBMVNorm, vec3(0), 0.0);
 		#endif
