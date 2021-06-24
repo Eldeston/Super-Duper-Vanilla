@@ -14,26 +14,26 @@ vec3 rayTraceScene(vec3 screenPos, vec3 viewPos, vec3 rayDir, int steps, int bin
 	vec3 clipPos = screenPos * 2.0 - 1.0;
 
 	if(clipPos.z < MC_HAND_DEPTH){
-		screenPos = toScreenSpacePos(toScreen(viewPos + rayDir * far).xy);
-		return vec3(screenPos.xy, screenPos.z != 1);
-	}
+		vec3 handScreenPos = toScreenSpacePos(toScreen(viewPos + rayDir * far).xy);
+		return vec3(handScreenPos.xy, handScreenPos.z != 1);
+	} else {
+		vec3 viewPosWithRayDir = viewPos + rayDir;
+		vec3 clipPosRayDir = toScreen(viewPosWithRayDir) * 2.0 - 1.0; // Put it back to clip space...
+		clipPosRayDir = normalize(clipPosRayDir - clipPos) * (2.0 / steps);
 
-	vec3 viewPosWithRayDir = viewPos + rayDir;
-	vec3 clipPosRayDir = toScreen(viewPosWithRayDir) * 2.0 - 1.0; // Put it back to clip space...
-	clipPosRayDir = normalize(clipPosRayDir - clipPos) * (2.0 / steps);
+		// vec3 startPos = clipPos;
+		for(int x = 0; x < steps; x++){
+			clipPos += clipPosRayDir;
+			vec3 newScreenPos = clipPos * 0.5 + 0.5;
+			if(newScreenPos.x < 0 || newScreenPos.y < 0 || newScreenPos.x > 1 || newScreenPos.y > 1) return vec3(0);
+			float depth = texture2D(depthtex0, newScreenPos.xy).x;
 
-	// vec3 startPos = clipPos;
-	for(int x = 0; x < steps; x++){
-		clipPos += clipPosRayDir;
-		vec3 newScreenPos = clipPos * 0.5 + 0.5;
-		if(newScreenPos.x < 0 || newScreenPos.y < 0 || newScreenPos.x > 1 || newScreenPos.y > 1) return vec3(0);
-		float depth = texture2D(depthtex0, newScreenPos.xy).x;
-
-		if(newScreenPos.z > depth && (newScreenPos.z - depth) < MC_HAND_DEPTH){
-			if(binarySearchSteps == 0) return vec3(clipPos.xy * 0.5 + 0.5, depth != 1);
-			else return vec3(binarySearch(clipPosRayDir, clipPos, binarySearchSteps).xy * 0.5 + 0.5, depth != 1);
+			if(newScreenPos.z > depth && (newScreenPos.z - depth) < MC_HAND_DEPTH){
+				if(binarySearchSteps == 0) return vec3(clipPos.xy * 0.5 + 0.5, depth != 1);
+				else return vec3(binarySearch(clipPosRayDir, clipPos, binarySearchSteps).xy * 0.5 + 0.5, depth != 1);
+			}
 		}
-		// if(newScreenPos.z > depth && (newScreenPos.z - depth) < 0.001) // Causes reflections to make stripes...
 	}
+	
 	return vec3(0);
 }

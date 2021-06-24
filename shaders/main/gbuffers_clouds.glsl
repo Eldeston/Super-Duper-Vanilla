@@ -60,11 +60,12 @@ INOUT vec3 norm;
     uniform sampler2D texture;
 
     void main(){
-        vec4 albedo = texture2D(texture, texCoord);
+        float albedoAlpha = texture2D(texture, texCoord).a;
 
         #ifdef CLOUD_FADE
             float fade = smootherstep(sin(frameTimeCounter * FADE_SPEED) * 0.5 + 0.5);
-            albedo = mix(albedo, texture2D(texture, -texCoord), fade);
+            float albedoAlpha2 = texture2D(texture, 0.5 - texCoord).a;
+            albedoAlpha = mix(albedoAlpha, albedoAlpha2, fade * (1.0 - rainStrength) + albedoAlpha2 * rainStrength);
         #endif
 
         vec3 screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
@@ -87,7 +88,7 @@ INOUT vec3 norm;
 
         // Transfor final normals to player space
         materials.normal_m = mat3(gbufferModelViewInverse) * norm;
-        materials.albedo_t = albedo;
+        materials.albedo_t = vec4(albedoAlpha);
         materials.light_m = vec2(0, 1);
 
         vec4 sceneCol = complexShadingGbuffers(materials, posVector, dither);
