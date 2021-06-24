@@ -9,10 +9,8 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	#endif
 
 	// Get positions
-	vec3 reflectedEyePlayerPos = reflect(posVector.eyePlayerPos, material.normal_m);
 	vec3 nLightPos = normalize(posVector.lightPos);
     vec3 nEyePlayerPos = normalize(-posVector.eyePlayerPos);
-	vec3 lightVec = normalize(posVector.lightPos - posVector.eyePlayerPos);
 
 	float smoothness = 1.0 - material.roughness_m;
 
@@ -33,11 +31,11 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
     vec3 F0 = mix(vec3(0.04), material.albedo_t.rgb, material.metallic_m);
     vec3 fresnel = getFresnelSchlick(dot(material.normal_m, nEyePlayerPos), F0);
 	// Get specular GGX
-	vec3 specCol = getSpecGGX(nEyePlayerPos, nLightPos, lightVec, material.normal_m, fresnel, material.roughness_m) * directLight;
+	vec3 specCol = getSpecGGX(nEyePlayerPos, nLightPos, normalize(posVector.lightPos - posVector.eyePlayerPos), material.normal_m, fresnel, material.roughness_m) * directLight;
 
 	// Get reflected sky
 	float skyMask = pow(material.light_m.y, 1.0 / 2.0) * smoothness;
-    vec3 reflectedSkyRender = ambientLighting + getSkyRender(reflectedEyePlayerPos, skyCol, lightCol, skyMask, skyMask, maxC(directLight)) * material.light_m.y;
+    vec3 reflectedSkyRender = ambientLighting + getSkyRender(reflect(posVector.eyePlayerPos, material.normal_m), skyCol, lightCol, skyMask, skyMask, maxC(directLight)) * material.light_m.y;
 
 	// Mask reflections
     vec3 reflectCol = reflectedSkyRender * fresnel * smoothness * smootherstep(material.ambient_m); // Will change this later...

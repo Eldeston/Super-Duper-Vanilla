@@ -82,5 +82,5 @@
 
 #define BLOCK_LIGHT_COL vec3(1, 0.9, 0.8)
 
-#define LIGHT_COL_END vec3(0.8, 0.6, 1)
-#define SKY_COL_END vec3(0.05, 0.0125, 0.1)
+#define LIGHT_COL_END vec3(0.45, 0.4, 0.8)
+#define SKY_COL_END vec3(0.1125, 0.1, 0.2)
