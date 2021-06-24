@@ -40,7 +40,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
     vec3 reflectedSkyRender = ambientLighting + getSkyRender(reflectedEyePlayerPos, skyCol, lightCol, skyMask, skyMask, dither.r) * material.light_m.y;
 
 	// Mask reflections
-    vec3 reflectCol = reflectedSkyRender * fresnel * sqrtSmoothness; // Will change this later...
+    vec3 reflectCol = reflectedSkyRender * fresnel * sqrtSmoothness * smootherstep(material.ambient_m); // Will change this later...
 
 	vec3 totalDiffuse = (directLight + GISky * material.ambient_m + cubed(material.light_m.x) * BLOCK_LIGHT_COL * pow(material.ambient_m, 1.0 / 4.0)) * (1.0 - material.metallic_m) + material.emissive_m;
 	return vec4(material.albedo_t.rgb * totalDiffuse + specCol + reflectCol, material.albedo_t.a);
