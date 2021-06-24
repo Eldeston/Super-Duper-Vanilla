@@ -4,7 +4,7 @@ float atmoFog(float playerPosY, float worldPosY, float playerPosLength, float he
 }
 
 float getBorderFogAmount(float eyePlayerPosLength){
-    return squared(hermiteMix(max(far - 48.0, 0.0), far, eyePlayerPosLength));
+    return squared(hermiteMix(max(far - 48.0, 0.0), max(far, 16.0), eyePlayerPosLength));
 }
 
 vec3 getFog(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY, float skyMask, float cloudMask){

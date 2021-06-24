@@ -27,7 +27,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	#endif
 
 	// Get globally illuminated sky
-	vec3 GISky = ambientLighting + getSkyRender(material.normal_m, skyCol, lightCol, 0.0, 0.0, dither.r) * material.light_m.y * material.light_m.y;
+	vec3 GISky = ambientLighting + getSkyRender(material.normal_m, skyCol, lightCol, 0.0, 0.0, 0.0) * material.light_m.y * material.light_m.y;
 
 	// Get fresnel
     vec3 F0 = mix(vec3(0.04), material.albedo_t.rgb, material.metallic_m);
@@ -37,7 +37,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 
 	// Get reflected sky
 	float skyMask = pow(material.light_m.y, 1.0 / 4.0) * sqrtSmoothness;
-    vec3 reflectedSkyRender = ambientLighting + getSkyRender(reflectedEyePlayerPos, skyCol, lightCol, skyMask, skyMask, dither.r) * material.light_m.y;
+    vec3 reflectedSkyRender = ambientLighting + getSkyRender(reflectedEyePlayerPos, skyCol, lightCol, skyMask, skyMask, maxC(directLight)) * material.light_m.y;
 
 	// Mask reflections
     vec3 reflectCol = reflectedSkyRender * fresnel * sqrtSmoothness * smootherstep(material.ambient_m); // Will change this later...

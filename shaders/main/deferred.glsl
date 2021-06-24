@@ -59,7 +59,7 @@ INOUT vec2 screenCoord;
         float cloudMask = texture2D(colortex4, screenCoord).g;
 
         // Get sky color
-        vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyCol, lightCol, skyMask, 1.0, dither.r);
+        vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyCol, lightCol, skyMask, 1.0, 1.0);
 
         sceneCol = complexShadingDeferred(materials, posVector, sceneCol, dither);
 
