@@ -26,7 +26,7 @@ vec3 getShdMapping(vec4 shdPos, vec3 normal, vec3 nLightPos, float dither, float
 		// Light diffuse
 		float lightDot = dot(normal, nLightPos) * (1.0 - ss) + ss;
 
-		return saturate(lightDot) * (1.0 - newTwilight);
+		return vec3(saturate(lightDot) * (1.0 - newTwilight));
 	#else
 		vec3 shdCol = vec3(0);
 		float shdRcp = 1.0 / shadowMapResolution;
