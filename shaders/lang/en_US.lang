@@ -48,6 +48,7 @@ screen.RAY_TRACING=Ray tracing settings
     option.ACCUMILATION_SPEED=Accumulation speed
 
 screen.WATER_SETTINGS=Water settings
+    option.WATER_BRIGHTNESS=Water brightness
     option.WATER_BLUR_SIZE=Water blur size
     option.WATER_DEPTH_SIZE=Water depth size
     option.WATER_TILE_SIZE=Water tile size
