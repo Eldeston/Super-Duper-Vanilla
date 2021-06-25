@@ -104,18 +104,21 @@ INOUT mat3 TBN;
 
         // If water
         if(rBlockId == 10008){
-            #if defined WATER_NORM && !(defined END || defined NETHER)
-                float normGBMVIy = (mat3(gbufferModelViewInverse) * norm).y;
-                vec2 waterUv = posVector.worldPos.xz * (1.0 - normGBMVIy) + posVector.worldPos.xz * normGBMVIy;
-                vec4 waterData = H2NWater(waterUv);
-                materials.normal_m = normalize(TBN * waterData.xyz);
+            #ifdef WATER_NORM
+                #if !(defined END || defined NETHER)
+                    float normGBMVIy = (mat3(gbufferModelViewInverse) * norm).y;
+                    vec2 waterUv = posVector.worldPos.xz * (1.0 - normGBMVIy) + posVector.worldPos.xz * normGBMVIy;
+                    vec4 waterData = H2NWater(waterUv);
+                    materials.normal_m = normalize(TBN * waterData.xyz);
 
-                albedo.rgb *= mix(1.0, 0.125, smootherstep(waterData.w));
+                    albedo.rgb *= mix(1.0, 0.125, smootherstep(waterData.w));
+                #endif
             #endif
-
+            
             materials.metallic_m = 0.5;
             materials.roughness_m = 0.025;
             materials.ambient_m = 1.0;
+            albedo.rgb *= WATER_BRIGHTNESS;
         }
 
         #ifndef WHITE_MODE
