@@ -1,4 +1,5 @@
 float eyeBrightFact = eyeBrightnessSmooth.y / 240.0;
+float torchBrightFact = eyeBrightnessSmooth.x / 240.0;
 
 float newDawnDusk = smoothstep(0.32, 0.96, dawnDusk);
 float newTwilight = smoothstep(0.64, 0.96, twilight);
