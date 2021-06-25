@@ -3,11 +3,13 @@
 #include "/lib/settings.glsl"
 
 #include "/lib/globalVars/constants.glsl"
+#include "/lib/globalVars/gameUniforms.glsl"
 #include "/lib/globalVars/matUniforms.glsl"
 #include "/lib/globalVars/posUniforms.glsl"
 #include "/lib/globalVars/screenUniforms.glsl"
 #include "/lib/globalVars/texUniforms.glsl"
 #include "/lib/globalVars/timeUniforms.glsl"
+#include "/lib/globalVars/universalVars.glsl"
 
 #include "/lib/lighting/shdDistort.glsl"
 #include "/lib/utility/spaceConvert.glsl"
@@ -71,7 +73,10 @@ vec3 whitePreservingLumaBasedReinhardToneMapping(vec3 color){
             color /= max(accumulatedLumi * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
         #else
             float accumulatedLumi = 1.0;
+            // Apply exposure
+            color /= max(smootherstep(eyeBrightFact) * saturate(1.0 - night - twilight) * AUTO_EXPOSURE_MULT * 1.44, MIN_EXPOSURE_DENOM);
         #endif
+
         color *= EXPOSURE;
         // Tonemap and clamp
         color = saturate(whitePreservingLumaBasedReinhardToneMapping(color));
@@ -79,9 +84,13 @@ vec3 whitePreservingLumaBasedReinhardToneMapping(vec3 color){
         float luminance = getLuminance(color);
         float emissive = texture2D(colortex3, texcoord).g;
         
-    /* DRAWBUFFERS:026 */
+    /* DRAWBUFFERS:02 */
         gl_FragData[0] = vec4(color, 1); //gcolor
         gl_FragData[1] = vec4(color * emissive * luminance, 1); //colortex2
-        gl_FragData[2] = vec4(accumulated, max(0.001, accumulatedLumi)); //colortex6
+        
+        #if defined AUTO_EXPOSURE || defined TEMPORAL_ACCUMULATION
+        /* DRAWBUFFERS:026 */
+            gl_FragData[2] = vec4(accumulated, max(0.001, accumulatedLumi)); //colortex6
+        #endif
     }
 #endif

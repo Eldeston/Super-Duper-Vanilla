@@ -5,9 +5,11 @@
 #if defined COMPOSITE1 || defined COMPOSITE2 || defined COMPOSITE3
     const bool gcolorMipmapEnabled = true;
     const bool colortex2MipmapEnabled = true;
-    const bool colortex6MipmapEnabled = true;
 
-    const bool colortex6Clear = false;
+    #if defined AUTO_EXPOSURE || defined TEMPORAL_ACCUMULATION
+        const bool colortex6MipmapEnabled = true;
+        const bool colortex6Clear = false;
+    #endif
 #endif
 
 #if defined COMPOSITE || defined DEFERRED
