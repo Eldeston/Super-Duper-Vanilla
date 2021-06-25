@@ -108,9 +108,8 @@ INOUT mat3 TBN;
         // If water
         if(rBlockId == 10008){
             materials.metallic_m = 0.5;
-            materials.roughness_m = 0.0;
+            materials.roughness_m = 0.025;
             materials.ambient_m = 1.0;
-            albedo = vec4(albedo.rgb, 0.5);
         }
 
         // If lava
