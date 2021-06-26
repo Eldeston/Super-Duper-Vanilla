@@ -2,18 +2,19 @@
     const bool gcolorMipmapEnabled = true;
 #endif
 
-#if defined COMPOSITE1 || defined COMPOSITE2 || defined COMPOSITE3
+#if defined COMPOSITE2 || defined COMPOSITE3
     const bool gcolorMipmapEnabled = true;
     const bool colortex2MipmapEnabled = true;
-
-    #if defined AUTO_EXPOSURE || defined TEMPORAL_ACCUMULATION
-        const bool colortex6MipmapEnabled = true;
-        const bool colortex6Clear = false;
-    #endif
 #endif
 
-#if defined COMPOSITE || defined DEFERRED
-    const bool colortex5Clear = false;
+#if defined COMPOSITE5 && (defined AUTO_EXPOSURE || defined TEMPORAL_ACCUMULATION)
+    const bool gcolorMipmapEnabled = true;
+    const bool colortex6MipmapEnabled = true;
+    const bool colortex6Clear = false;
+#endif
+
+#ifdef COMPOSITE15
+    const bool gcolorMipmapEnabled = true;
 #endif
 
 // Default resolution

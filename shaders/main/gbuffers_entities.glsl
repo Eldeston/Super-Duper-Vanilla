@@ -140,6 +140,16 @@ INOUT mat3 TBN;
 
         vec4 sceneCol = complexShadingGbuffers(materials, posVector, dither);
 
+        // Lightning
+        if(rBlockId == 10101){
+            materials.metallic_m = 0.0;
+            materials.emissive_m = 1.0;
+            materials.roughness_m = 1.0;
+            materials.ambient_m = 1.0;
+            materials.light_m = vec2(1);
+            sceneCol = vec4(vec3(2), 1);
+        }
+
     /* DRAWBUFFERS:012347 */
         gl_FragData[0] = sceneCol; //gcolor
         gl_FragData[1] = vec4(materials.normal_m * 0.5 + 0.5, 1); //colortex1

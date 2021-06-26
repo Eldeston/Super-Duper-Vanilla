@@ -3,17 +3,7 @@
 #include "/lib/settings.glsl"
 
 #include "/lib/globalVars/constants.glsl"
-#include "/lib/globalVars/matUniforms.glsl"
-#include "/lib/globalVars/posUniforms.glsl"
-#include "/lib/globalVars/screenUniforms.glsl"
 #include "/lib/globalVars/texUniforms.glsl"
-#include "/lib/globalVars/timeUniforms.glsl"
-
-#include "/lib/lighting/shdDistort.glsl"
-#include "/lib/utility/spaceConvert.glsl"
-#include "/lib/utility/texFunctions.glsl"
-
-#include "/lib/post/fxaa.glsl"
 
 INOUT vec2 texcoord;
 
@@ -26,11 +16,20 @@ INOUT vec2 texcoord;
 
 #ifdef FRAGMENT
     void main(){
-        #ifdef FXAA
-            vec3 currCol = textureFXAA(gcolor, texcoord, vec2(viewWidth, viewHeight)).rgb;
+        vec3 color = texture2D(gcolor, texcoord).rgb;
 
-        /* DRAWBUFFERS:0 */
-            gl_FragData[0] = vec4(currCol, 1); //gcolor
+        #ifdef BLOOM
+            // Uncompress the HDR colors
+            vec3 eBloom = (1.0 / (1.0 - texture2D(colortex2, texcoord * 0.25).rgb) - 1.0) * BLOOM_BRIGHTNESS;
+            color += eBloom;
+        #endif
+
+    /* DRAWBUFFERS:0 */
+        gl_FragData[0] = vec4(color, 1); //gcolor
+
+        #ifdef BLOOM
+        /* DRAWBUFFERS:02 */
+            gl_FragData[1] = vec4(eBloom, 1); //colortex2
         #endif
     }
 #endif
