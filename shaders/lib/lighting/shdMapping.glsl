@@ -10,10 +10,11 @@ vec3 getShdTex(vec3 shdPos){
 }
 
 vec3 getShdFilter(vec3 shdPos, float dither, float shdRcp){
+	vec3 shdCol = getShdTex(shdPos);
+
 	dither *= PI2;
 	vec2 randVec = vec2(sin(dither), cos(dither)) * shdRcp;
-
-	vec3 shdCol = getShdTex(shdPos);
+	
 	shdCol += getShdTex(vec3(shdPos.xy + randVec, shdPos.z));
 	shdCol += getShdTex(vec3(shdPos.xy + -randVec, shdPos.z));
 

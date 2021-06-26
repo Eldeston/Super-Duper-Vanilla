@@ -81,12 +81,13 @@ vec3 whitePreservingLumaBasedReinhardToneMapping(vec3 color){
         // Tonemap and clamp
         color = saturate(whitePreservingLumaBasedReinhardToneMapping(color));
 
-        float luminance = getLuminance(color);
-        float emissive = texture2D(colortex3, texcoord).g;
-        
-    /* DRAWBUFFERS:02 */
+    /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(color, 1); //gcolor
-        gl_FragData[1] = vec4(color * emissive * luminance, 1); //colortex2
+
+        #ifdef BLOOM
+        /* DRAWBUFFERS:02 */
+            gl_FragData[1] = vec4(color * texture2D(colortex3, texcoord).g * getLuminance(color), 1); //colortex2
+        #endif
         
         #if defined AUTO_EXPOSURE || defined TEMPORAL_ACCUMULATION
         /* DRAWBUFFERS:026 */

@@ -13,7 +13,7 @@
 #include "/lib/utility/spaceConvert.glsl"
 #include "/lib/utility/texFunctions.glsl"
 
-INOUT float pixSize;
+#include "/lib/post/outline.glsl"
 
 INOUT vec2 texcoord;
 
@@ -34,40 +34,28 @@ vec2 jitterPos(vec4 pos) {
 
 #ifdef VERTEX
     void main(){
-        pixSize = 0.5 / max(viewWidth, viewHeight);
-
         gl_Position = ftransform();
         texcoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
-
-        gl_Position.xy += jitterPos(gl_Position);
     }
 #endif
 
 #ifdef FRAGMENT
     void main(){
         #ifdef TAA
-            vec3 currCol = texture2D(gcolor, texcoord).rgb;
-            vec3 minCol = currCol;
-            vec3 maxCol = currCol;
+            ivec2 newCoords = ivec2(viewWidth, viewHeight);
+            newCoords.x = int(newCoords.x * texcoord.x);
+            newCoords.y = int(newCoords.y * texcoord.y);
+            
+            vec3 sample0 = texelFetch(gcolor, texcoord, 0).rgb;
+            vec3 sample1 = texelFetch(gcolor, texcoord, 1).rgb;
+            vec3 sample2 = texelFetch(gcolor, texcoord, 2).rgb;
+            vec3 sample3 = texelFetch(gcolor, texcoord, 3).rgb;
 
-            vec2 prevPos = toPrevScreenPos(texcoord);
+            float edge = getOutline(depthtex0, screenCoord, OUTLINE_PIX_SIZE);
+            vec3 currCol = mix(sample0, (sample0 + sample1 + sample2 + sample3) / 4.0, edge);
 
-            for(int y = -1; y <= 1; y++){
-                for(int x = -1; x <= 1; x++){
-                    vec3 color = texture2D(gcolor, texcoord + vec2(x, y) * pixSize).rgb;
-                    minCol = min(minCol, color);
-                    maxCol = max(maxCol, color);
-                }
-            }
-
-            vec3 prevCol = texture2D(colortex6, prevPos).rgb;
-            prevCol = max(maxCol, min(minCol, prevCol));
-
-            vec3 finalCol = mix(currCol, prevCol, exp2(0.1 * -frameTime));
-
-        /* DRAWBUFFERS:08 */
-            gl_FragData[0] = vec4(finalCol, 1); //gcolor
-            gl_FragData[1] = vec4(prevCol, 1); //colortex8
+        /* DRAWBUFFERS:0 */
+            gl_FragData[0] = vec4(currCol, 1); //gcolor
         #endif
     }
 #endif
