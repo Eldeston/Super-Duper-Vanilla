@@ -13,24 +13,9 @@
 #include "/lib/utility/spaceConvert.glsl"
 #include "/lib/utility/texFunctions.glsl"
 
-#include "/lib/post/outline.glsl"
+#include "/lib/post/fxaa.glsl"
 
 INOUT vec2 texcoord;
-
-vec2 TAAOffSet[8] = vec2[8](
-	vec2( 0.0625, -0.1875),
-	vec2(-0.0625,  0.1875),
-	vec2( 0.3125,  0.0625),
-	vec2(-0.1875, -0.3125),
-	vec2(-0.3125,  0.3125),
-	vec2(-0.4375, -0.0625),
-	vec2( 0.1875,  0.4375),
-	vec2( 0.4375, -0.4375)
-);
-						   
-vec2 jitterPos(vec4 pos) {
-	return TAAOffSet[int(modFract(frameCounter, 8))] * (pos.w / vec2(viewWidth, viewHeight));
-}
 
 #ifdef VERTEX
     void main(){
@@ -41,22 +26,11 @@ vec2 jitterPos(vec4 pos) {
 
 #ifdef FRAGMENT
     void main(){
-        #ifdef TAA
-            ivec2 newCoords = ivec2(viewWidth, viewHeight);
-            newCoords.x = int(newCoords.x * texcoord.x);
-            newCoords.y = int(newCoords.y * texcoord.y);
-            
-            vec3 sample0 = texture2D(gcolor, texcoord, -1).rgb;
-            vec3 sample1 = texture2D(colortex6, texcoord, 1).rgb;
-            vec3 sample2 = texture2D(colortex6, texcoord, 2).rgb;
-            vec3 sample3 = texture2D(colortex6, texcoord, 3).rgb;
+        #ifdef FXAA
+            vec3 currCol = textureFXAA(gcolor, texcoord, vec2(viewWidth, viewHeight)).rgb;
 
-            float edge = getOutline(depthtex0, texcoord, OUTLINE_PIX_SIZE);
-            vec3 currCol = mix(sample0, (sample0 + sample1 + sample2 + sample3) / 4.0, edge);
-
-        /* DRAWBUFFERS:06 */
+        /* DRAWBUFFERS:0 */
             gl_FragData[0] = vec4(currCol, 1); //gcolor
-            gl_FragData[1] = vec4(currCol, 1); //colortex6
         #endif
     }
 #endif
