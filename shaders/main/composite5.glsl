@@ -18,12 +18,6 @@
 
 INOUT vec2 texcoord;
 
-vec3 whitePreservingLumaBasedReinhardToneMapping(vec3 color){
-	float luma = getLuminance(color);
-	float toneMappedLuma = (luma * (1.0 + luma / squared(WHITE_PRESERVATION))) / (1.0 + luma);
-	return color * (toneMappedLuma / luma);
-}
-
 #ifdef VERTEX
     void main(){
         gl_Position = ftransform();
