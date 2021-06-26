@@ -58,7 +58,7 @@ INOUT vec4 glcolor;
     uniform sampler2D texture;
 
     void main(){
-        vec4 albedo = texture2D(texture, texCoord);
+        vec4 albedo = vec4(glcolor.rgb, 1);
 
         vec3 screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
         vec3 dither = getRand3(screenPos.xy, 8);
@@ -70,14 +70,8 @@ INOUT vec4 glcolor;
 	    // Declare materials
 	    matPBR materials;
 
-        #ifndef WHITE_MODE
-            albedo.rgb *= glcolor.rgb;
-        #else
-            #ifdef WHITE_MODE_F
-                albedo.rgb = glcolor.rgb;
-            #else
-                albedo.rgb = vec3(1);
-            #endif
+        #if defined WHITE_MODE && !defined WHITE_MODE_F
+            albedo.rgb = vec3(1);
         #endif
 
         materials.metallic_m = 0.0;
