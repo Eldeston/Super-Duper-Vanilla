@@ -36,8 +36,8 @@ vec4 textureFXAA(sampler2D aliased, vec2 uv, vec2 resolution){
     // Query the 4 remaining corners lumas.
     float lumaUpRight = getLuminance(texture2D(aliased, uv + rcpResolution).rgb);
     float lumaDownLeft = getLuminance(texture2D(aliased, uv - rcpResolution).rgb);
-    float lumaUpLeft = getLuminance(texture2D(aliased, uv - vec2(-1, 1) * rcpResolution).rgb);
-    float lumaDownRight = getLuminance(texture2D(aliased, uv + vec2(-1, 1) * rcpResolution).rgb);
+    float lumaUpLeft = getLuminance(texture2D(aliased, uv - vec2(1, -1) * rcpResolution).rgb);
+    float lumaDownRight = getLuminance(texture2D(aliased, uv + vec2(1, -1) * rcpResolution).rgb);
 
     // Combine the four edges lumas (using intermediary variables for future computations with the same values).
     float lumaDownUp = lumaDown + lumaUp;
