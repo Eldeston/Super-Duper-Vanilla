@@ -46,16 +46,17 @@ vec2 jitterPos(vec4 pos) {
             newCoords.x = int(newCoords.x * texcoord.x);
             newCoords.y = int(newCoords.y * texcoord.y);
             
-            vec3 sample0 = texelFetch(gcolor, texcoord, 0).rgb;
-            vec3 sample1 = texelFetch(gcolor, texcoord, 1).rgb;
-            vec3 sample2 = texelFetch(gcolor, texcoord, 2).rgb;
-            vec3 sample3 = texelFetch(gcolor, texcoord, 3).rgb;
+            vec3 sample0 = texture2D(gcolor, texcoord, -1).rgb;
+            vec3 sample1 = texture2D(colortex6, texcoord, 1).rgb;
+            vec3 sample2 = texture2D(colortex6, texcoord, 2).rgb;
+            vec3 sample3 = texture2D(colortex6, texcoord, 3).rgb;
 
-            float edge = getOutline(depthtex0, screenCoord, OUTLINE_PIX_SIZE);
+            float edge = getOutline(depthtex0, texcoord, OUTLINE_PIX_SIZE);
             vec3 currCol = mix(sample0, (sample0 + sample1 + sample2 + sample3) / 4.0, edge);
 
-        /* DRAWBUFFERS:0 */
+        /* DRAWBUFFERS:06 */
             gl_FragData[0] = vec4(currCol, 1); //gcolor
+            gl_FragData[1] = vec4(currCol, 1); //colortex6
         #endif
     }
 #endif
