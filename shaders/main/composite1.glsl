@@ -74,7 +74,7 @@ vec3 whitePreservingLumaBasedReinhardToneMapping(vec3 color){
         #else
             float accumulatedLumi = 1.0;
             // Apply exposure
-            color /= max(isEyeInWater + nightVision + torchBrightFact * 0.81 + eyeBrightFact * saturate(1.0 - night - twilight) * AUTO_EXPOSURE_MULT * 1.45, MIN_EXPOSURE_DENOM);
+            color /= max(isEyeInWater + nightVision + torchBrightFact * 1.25 + squared(eyeBrightFact) * saturate(1.0 - night - twilight) * AUTO_EXPOSURE_MULT * 1.5, MIN_EXPOSURE_DENOM);
         #endif
 
         color *= EXPOSURE;
