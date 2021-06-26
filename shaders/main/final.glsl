@@ -3,7 +3,6 @@
 #include "/lib/settings.glsl"
 
 #include "/lib/globalVars/constants.glsl"
-#include "/lib/globalVars/screenUniforms.glsl"
 #include "/lib/globalVars/texUniforms.glsl"
 
 INOUT vec2 texcoord;
@@ -30,12 +29,7 @@ INOUT vec2 texcoord;
     */
 
     void main(){
-        #ifdef FXAA
-            vec2 newTexCoord = floor(texcoord * vec2(viewWidth, viewHeight)) / vec2(viewWidth, viewHeight);
-            vec3 color = texture2D(BUFFER_VIEW, newTexCoord).rgb;
-        #else
-            vec3 color = texture2D(BUFFER_VIEW, texcoord).rgb;
-        #endif
+        vec3 color = texture2D(BUFFER_VIEW, texcoord).rgb;
 
         gl_FragColor = vec4(pow(color, vec3(1.0 / GAMMA)), 1); //final color
     }
