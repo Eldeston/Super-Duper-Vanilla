@@ -35,7 +35,7 @@ screen.LIGHTING=Lighting
     option.AMBIENT_LIGHTING=Ambient lighting
     screen.LIGHTING.comment=Lighting settings for shadow resolution, lightmap etc.
 
-screen.PBR=PBR settings
+screen.PBR=PBR
     option.DEFAULT_MAT=Default PBR materials
 
 screen.RAY_TRACING=Ray tracing settings

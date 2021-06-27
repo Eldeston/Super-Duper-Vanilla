@@ -32,7 +32,7 @@ INOUT vec3 color;
         blockId = mc_Entity.x;
         
         #ifdef ANIMATE
-            getWave(vertexPos.xyz, worldPos, texcoord, mc_midTexCoord, mc_Entity.x);
+            getWave(vertexPos.xyz, worldPos, texcoord, mc_midTexCoord, mc_Entity.x, (gl_TextureMatrix[1] * gl_MultiTexCoord1).y);
         #endif
 
         gl_Position = shadowProjection * (shadowModelView * vertexPos);
@@ -40,7 +40,7 @@ INOUT vec3 color;
         gl_Position.xyz = distort(gl_Position.xyz);
 
         #ifndef RENDER_FOLIAGE_SHD
-            if(mc_Entity.x == 10001.0 || mc_Entity.x == 10002.0 || mc_Entity.x == 10003.0 || mc_Entity.x == 10004.0 || mc_Entity.x == 10007.0 || mc_Entity.x == 10011.0 || mc_Entity.x == 10013.0)
+            if(mc_Entity.x >= 10001 || mc_Entity.x <= 10004 || mc_Entity.x == 10007 || mc_Entity.x == 10008)
                 gl_Position = vec4(10);
         #endif
 

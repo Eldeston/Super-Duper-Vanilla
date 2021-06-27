@@ -22,8 +22,6 @@
 
 #include "/lib/lighting/PBR.glsl"
 
-#include "/lib/vertex/vertexWave.glsl"
-
 #include "/lib/lighting/complexShadingForward.glsl"
 
 #include "/lib/assemblers/posAssembler.glsl"
@@ -40,8 +38,6 @@ INOUT vec4 glcolor;
 INOUT mat3 TBN;
 
 #ifdef VERTEX
-    attribute vec2 mc_midTexCoord;
-
     attribute vec4 mc_Entity;
     attribute vec4 at_tangent;
 
@@ -59,11 +55,6 @@ INOUT mat3 TBN;
 	    norm = normalize(gl_NormalMatrix * gl_Normal);
 
 	    TBN = mat3(tangent, binormal, norm);
-
-        #ifdef ANIMATE
-            vec3 worldPos = vertexPos.xyz + cameraPosition;
-	        getWave(vertexPos.xyz, worldPos, texCoord, mc_midTexCoord, mc_Entity.x);
-        #endif
         
 	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
 
@@ -76,7 +67,6 @@ INOUT mat3 TBN;
 
     void main(){
         vec4 albedo = texture2D(texture, texCoord);
-        albedo.rgb = pow(albedo.rgb, vec3(GAMMA));
 
         vec3 screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
         vec3 dither = getRand3(screenPos.xy, 8);
@@ -92,29 +82,25 @@ INOUT mat3 TBN;
         materials.normal_m = norm;
 
         #ifdef DEFAULT_MAT
-            float maxCol = maxC(albedo.rgb); float satCol = rgb2hsv(albedo).y;
-            materials.metallic_m = (rBlockId >= 10008 && rBlockId <= 10010) || rBlockId == 10015 ? 1.0 : 0.0;
-            materials.ss_m = (rBlockId >= 10001 && rBlockId <= 10004) || rBlockId == 10007 || rBlockId == 10011 || rBlockId == 10013 ? sqrt(maxCol) * 0.8 : 0.0;
-            materials.emissive_m = rBlockId == 10005 || rBlockId == 10006 ? maxCol
-                : rBlockId == 10014 ? satCol : 0.0;
-            materials.roughness_m = (rBlockId >= 10008 && rBlockId <= 10010) || rBlockId == 10015 ? 0.2 * maxCol : 1.0;
-            materials.ambient_m = 1.0;
+            getPBR(materials, albedo, rBlockId);
         #else
             getPBR(materials, TBN, texCoord);
         #endif
+
+        albedo.rgb = pow(albedo.rgb, vec3(GAMMA));
 
         // If player
         if(rBlockId == 0) materials.ambient_m = 1.0;
 
         // If water
-        if(rBlockId == 10008){
+        if(rBlockId == 10014){
             materials.metallic_m = 0.5;
             materials.roughness_m = 0.025;
             materials.ambient_m = 1.0;
         }
 
         // If lava
-        if(rBlockId == 10006){
+        if(rBlockId == 10010){
             materials.emissive_m = 1.0;
             materials.roughness_m = 1.0;
             materials.ambient_m = 1.0;
@@ -141,11 +127,10 @@ INOUT mat3 TBN;
 
         vec4 sceneCol = complexShadingGbuffers(materials, posVector, dither);
 
-    /* DRAWBUFFERS:01234 */
+    /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; //gcolor
         gl_FragData[1] = vec4(materials.normal_m * 0.5 + 0.5, 1); //colortex1
         gl_FragData[2] = materials.albedo_t; //colortex2
         gl_FragData[3] = vec4(materials.metallic_m, materials.emissive_m, materials.roughness_m, 1); //colortex3
-        gl_FragData[4] = vec4(materials.ambient_m, 0, 0, 1); //colortex4
     }
 #endif
