@@ -17,8 +17,7 @@ INOUT vec2 texcoord;
 #ifdef FRAGMENT
     void main(){
         #ifdef BLOOM
-            vec3 color = texture2D(gcolor, texcoord).rgb;
-            color *= texture2D(colortex3, texcoord).g * getLuminance(color);
+            vec3 color = texture2D(gcolor, texcoord).rgb * texture2D(colortex3, texcoord).g;
 
         /* DRAWBUFFERS:2 */
             // Compress the HDR colors
