@@ -15,9 +15,9 @@ float genStar(vec2 nSkyPos){
 vec3 getSkyRender(vec3 playerPos, vec3 skyCol, vec3 lightCol, float skyMask, float skyDiffuseMask, float dirLightMask){
     #if defined NETHER || defined END
         #ifdef END
-            return skyCol;
+            return pow(skyCol, vec3(GAMMA));
         #else
-            return sqrt(fogColor) * 0.75;
+            return pow(sqrt(fogColor) * 0.75, vec3(GAMMA));
         #endif
     #else
         // Get positions
@@ -43,6 +43,6 @@ vec3 getSkyRender(vec3 playerPos, vec3 skyCol, vec3 lightCol, float skyMask, flo
 
         float celestialBodies = (star + sunMoon * 5.0 * dirLightMask) * skyMask;
         
-        return celestialBodies + (lightRange * lightCol * skyDiffuseMask) + mix(skyCol * 0.8, skyCol, voidGradient);
+        return pow(celestialBodies + (lightRange * lightCol * skyDiffuseMask) + mix(skyCol * 0.8, skyCol, voidGradient), vec3(GAMMA));
     #endif
 }

@@ -75,7 +75,7 @@ INOUT vec2 texcoord;
 
         color *= EXPOSURE;
         // Tonemap and clamp
-        color = toneA(saturate(whitePreservingLumaBasedReinhardToneMapping(color)));
+        color = toneA(whitePreservingLumaBasedReinhardToneMapping(color));
 
         #ifdef VIGNETTE
             // Apply vignette

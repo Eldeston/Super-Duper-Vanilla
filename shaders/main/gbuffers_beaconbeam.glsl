@@ -59,6 +59,7 @@ INOUT vec4 glcolor;
 
     void main(){
         vec4 albedo = texture2D(texture, texCoord);
+        albedo.rgb = pow(albedo.rgb, vec3(GAMMA));
 
         vec3 screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
         vec3 dither = getRand3(screenPos.xy, 8);

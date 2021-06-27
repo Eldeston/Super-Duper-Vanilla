@@ -61,6 +61,7 @@ INOUT vec3 norm;
 
     void main(){
         float albedoAlpha = texture2D(texture, texCoord).a;
+        albedoAlpha = pow(albedoAlpha, GAMMA);
 
         #ifdef CLOUD_FADE
             float fade = smootherstep(sin(frameTimeCounter * FADE_SPEED) * 0.5 + 0.5);
