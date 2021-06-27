@@ -112,7 +112,7 @@ INOUT mat3 TBN;
             #endif
             
             materials.metallic_m = 0.5;
-            materials.roughness_m = 0.025;
+            materials.roughness_m = 0.028;
             materials.ambient_m = 1.0;
             albedo.rgb *= WATER_BRIGHTNESS;
         }

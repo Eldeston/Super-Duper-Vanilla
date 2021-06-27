@@ -95,14 +95,7 @@ INOUT mat3 TBN;
         // If water
         if(rBlockId == 10014){
             materials.metallic_m = 0.5;
-            materials.roughness_m = 0.025;
-            materials.ambient_m = 1.0;
-        }
-
-        // If lava
-        if(rBlockId == 10010){
-            materials.emissive_m = 1.0;
-            materials.roughness_m = 1.0;
+            materials.roughness_m = 0.028;
             materials.ambient_m = 1.0;
         }
 

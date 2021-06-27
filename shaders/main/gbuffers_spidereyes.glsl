@@ -79,7 +79,7 @@ INOUT vec4 glcolor;
         materials.metallic_m = 0.0;
         materials.ss_m = 0.0;
         materials.emissive_m = 1.0;
-        materials.roughness_m = 0.0;
+        materials.roughness_m = 0.028;
 
         // Apply vanilla AO
         materials.ambient_m = glcolor.a;

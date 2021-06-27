@@ -36,63 +36,70 @@ void getPBR(inout matPBR material, mat3 TBN, vec2 st){
 
 void getPBR(inout matPBR material, vec4 albedo, int id){
     float maxCol = maxC(albedo.rgb); float satCol = saturate(rgb2hsv(albedo).y);
-    float sumCol = saturate(albedo.r + albedo.g + albedo.b);
+    float sumCol = albedo.r + albedo.g + albedo.b; float sumToneMapped = sumCol / (1.0 + sumCol);
 
     // Default material
     material.metallic_m = 0.0; material.emissive_m = 0.0;
     material.roughness_m = 1.0; material.ss_m = 0.0;
     material.ambient_m = 1.0;
 
+    // Foliage
     if(id >= 10001 && id <= 10008){
         material.roughness_m = cubed(maxCol) * 0.5;
-        material.ss_m = maxCol;
+        material.ss_m = maxCol * 0.75;
     }
 
-    if(id == 10009 || id == 10010){
-        material.emissive_m = smoothstep(0.5, 1.0, maxCol);
-    }
+    // Emissives
+    if(id == 10009 || id == 10010) material.emissive_m = smoothstep(0.5, 1.0, maxCol);
 
+    // Redstone
     if(id == 10011){
         material.emissive_m = cubed(albedo.r) * satCol;
+        material.roughness_m = (1.0 - material.emissive_m);
         material.metallic_m = material.emissive_m;
     }
 
-    if(id == 10012 || id == 10013){
-        material.roughness_m = 0.05;
-    }
+    // Glass
+    if(id == 10012 || id == 10013) material.roughness_m = 0.05;
 
+    // Gem ores and blocks
     if(id == 10015 || id == 10017){
         material.roughness_m = cubed(1.0 - satCol);
         material.metallic_m = satCol * 0.6;
     }
 
-    if(id == 10016){
-        material.roughness_m = 1.0 - max2(albedo.gb);
-    }
+    // Netherack gem ores
+    if(id == 10016) material.roughness_m = 1.0 - max2(albedo.gb);
 
+    // Metal ores
     if(id == 10018){
         material.roughness_m = squared(1.0 - satCol);
         material.metallic_m = smoothstep(0.1, 0.4, satCol);
     }
 
+    // Netherack metal ores
     if(id == 10019){
         material.roughness_m = squared(1.0 - max2(albedo.gb));
         material.metallic_m = smoothstep(0.2, 0.8, max2(albedo.gb));
     }
 
+    // Metal blocks
     if(id == 10020){
         material.metallic_m = maxCol;
         material.roughness_m = 1.0 - maxCol;
     }
 
+    // Netherite block
     if(id == 10021){
-        material.metallic_m = sumCol;
-        material.roughness_m = 1.0 - sumCol;
+        material.metallic_m = saturate(sumCol);
+        material.roughness_m = 1.0 - saturate(sumCol);
     }
 
-    if(id == 10030){
-        material.emissive_m = 1.0;
-    }
+    // Polished blocks
+    if(id == 10022) material.roughness_m = 1.0 - saturate(sumCol);
 
-    material.roughness_m = max(material.roughness_m, 0.025);
+    // End portal
+    if(id == 10030) material.emissive_m = 1.0;
+
+    material.roughness_m = max(material.roughness_m, 0.028);
 }
