@@ -20,12 +20,7 @@
 // Default resolution
 const int noiseTextureResolution = 256;
 
-#ifdef GBUFFERS
-    // Default AO
-    const float ambientOcclusionLevel = 1.0;
-#endif
-
-#if defined COMPOSITE || defined DEFERRED || defined GBUFFERS
+#if defined COMPOSITE || defined GBUFFERS
     // Enable mipmap filtering on shadows
     const bool shadowHardwareFiltering = true;
     const int shadowMapResolution = 512; // Shadow map resolution [512 1024 1536 2048 2560 3072 3584 4096 4608 5120]

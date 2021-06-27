@@ -52,9 +52,10 @@ INOUT vec2 screenCoord;
 
         vec3 sceneCol = texture2D(gcolor, screenCoord).rgb;
 
+        vec3 dither = getRand3(screenCoord, 8);
+
         // If the object is transparent render lighting sperately
         if(materials.alpha_m != 1){
-            vec3 dither = getRand3(screenCoord, 8);
             float skyMask = float(posVector.screenPos.z == 1);
             float cloudMask = texture2D(colortex4, screenCoord).g;
 
@@ -65,11 +66,11 @@ INOUT vec2 screenCoord;
 
             // Fog calculation
             sceneCol = getFog(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y, skyMask, cloudMask);
-
-            #ifdef VOL_LIGHT
-                sceneCol += getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.y) * lightCol;
-            #endif
         }
+
+        #ifdef VOL_LIGHT
+            sceneCol += getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.y) * lightCol;
+        #endif
 
     /* DRAWBUFFERS:02 */
         gl_FragData[0] = vec4(sceneCol, 1); //gcolor

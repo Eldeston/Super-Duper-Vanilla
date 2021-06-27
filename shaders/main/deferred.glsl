@@ -19,11 +19,9 @@
 #include "/lib/atmospherics/fog.glsl"
 #include "/lib/atmospherics/sky.glsl"
 
-#include "/lib/lighting/shdMapping.glsl"
 #include "/lib/lighting/GGX.glsl"
 #include "/lib/lighting/SSR.glsl"
 #include "/lib/lighting/SSGI.glsl"
-#include "/lib/rayTracing/volLight.glsl"
 #include "/lib/post/outline.glsl"
 
 #include "/lib/lighting/complexShadingDeferred.glsl"
@@ -68,10 +66,6 @@ INOUT vec2 screenCoord;
 
         // Fog calculation
         sceneCol = getFog(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y, skyMask, 0.0);
-
-        #ifdef VOL_LIGHT
-            sceneCol += getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.y) * lightCol;
-        #endif
 
     /* DRAWBUFFERS:04 */
         gl_FragData[0] = vec4(sceneCol, 1); //gcolor
