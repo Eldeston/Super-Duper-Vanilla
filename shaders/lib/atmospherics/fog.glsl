@@ -9,7 +9,7 @@ float getBorderFogAmount(float eyePlayerPosLength){
 
 vec3 getFog(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY, float skyMask, float cloudMask){
     vec3 nEyePlayerPos = normalize(eyePlayerPos);
-    float waterVoid = smootherstep(nEyePlayerPos.y + (eyeBrightFact - 0.6));
+    float waterVoid = smootherstep(nEyePlayerPos.y + (eyeBrightFact - 0.72));
 
     float eyePlayerPosLength = length(eyePlayerPos);
     float rainMult = 1.0 + rainStrength * eyeBrightFact;
@@ -23,7 +23,7 @@ vec3 getFog(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY, float s
     #endif
 
     if(isEyeInWater >= 1){
-        c = mix(c * 1.44, c, waterVoid); b = mix(b * 1.44, b, waterVoid); o = mix(o * 1.44, o, waterVoid);
+        c = mix(c * 1.44, c, waterVoid); b = mix(b * 1.44, b, waterVoid); o = mix(1.0, o, waterVoid);
     }
 
     // Mist fog

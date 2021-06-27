@@ -35,18 +35,19 @@ void getPBR(inout matPBR material, mat3 TBN, vec2 st){
 }
 
 void getPBR(inout matPBR material, vec4 albedo, int id){
-    float maxCol = maxC(albedo.rgb); float satCol = saturate(rgb2hsv(albedo).y);
-    float sumCol = albedo.r + albedo.g + albedo.b; float sumToneMapped = sumCol / (1.0 + sumCol);
+    vec3 hsv = saturate(rgb2hsv(albedo));
+    float maxCol = maxC(albedo.rgb);
+    float sumCol = albedo.r + albedo.g + albedo.b;
 
     // Default material
     material.metallic_m = 0.0; material.emissive_m = 0.0;
     material.roughness_m = 1.0; material.ss_m = 0.0;
     material.ambient_m = 1.0;
 
-    // Foliage
-    if(id >= 10001 && id <= 10008){
-        material.roughness_m = cubed(maxCol) * 0.8;
-        material.ss_m = maxCol * 0.75;
+    // Foliage and corals
+    if(id >= 10000 && id <= 10008){
+        material.roughness_m = cubed(maxCol) * 0.9;
+        material.ss_m = maxCol * 0.8;
     }
 
     // Emissives
@@ -54,7 +55,7 @@ void getPBR(inout matPBR material, vec4 albedo, int id){
 
     // Redstone
     if(id == 10011){
-        material.emissive_m = cubed(albedo.r) * satCol;
+        material.emissive_m = cubed(albedo.r) * hsv.y;
         material.roughness_m = (1.0 - material.emissive_m);
         material.metallic_m = material.emissive_m;
     }
@@ -64,23 +65,23 @@ void getPBR(inout matPBR material, vec4 albedo, int id){
 
     // Gem ores and blocks
     if(id == 10015 || id == 10017){
-        material.roughness_m = cubed(1.0 - satCol);
-        material.metallic_m = satCol * 0.6;
+        material.roughness_m = cubed(1.0 - hsv.y);
+        material.metallic_m = hsv.y * 0.6;
     }
 
     // Netherack gem ores
-    if(id == 10016) material.roughness_m = 1.0 - max2(albedo.gb);
+    if(id == 10016) material.roughness_m = albedo.r;
 
     // Metal ores
     if(id == 10018){
-        material.roughness_m = squared(1.0 - satCol);
-        material.metallic_m = smoothstep(0.1, 0.4, satCol);
+        material.roughness_m = squared(1.0 - hsv.y);
+        material.metallic_m = smoothstep(0.1, 0.4, hsv.y);
     }
 
     // Netherack metal ores
     if(id == 10019){
-        material.roughness_m = squared(1.0 - max2(albedo.gb));
-        material.metallic_m = smoothstep(0.2, 0.8, max2(albedo.gb));
+        material.metallic_m = smoothstep(0.5, 0.75, max2(albedo.rg));;
+        material.roughness_m = smoothstep(0.75, 0.5, max2(albedo.rg));;
     }
 
     // Metal blocks

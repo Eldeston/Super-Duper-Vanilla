@@ -58,7 +58,7 @@ INOUT vec3 color;
         #ifdef UNDERWATER_CAUSTICS
             int rBlockId = int(blockId + 0.5);
             float waterData = squared(1.0 - H2NWater(worldPos.xz).w) * 4.0;
-            if(rBlockId == 10008) shdColor = shdColor * (1.0 + waterData);
+            if(rBlockId == 10014) shdColor.rgb = shdColor.rgb * (1.0 + waterData);
         #endif
 
     /* DRAWBUFFERS:0 */

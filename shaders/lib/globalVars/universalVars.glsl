@@ -12,6 +12,6 @@ float newTwilight = smoothstep(0.64, 0.96, twilight);
         vec3 skyCol = SKY_COL_END;
     #else
         vec3 lightCol = mix(mix(LIGHT_COL_NIGHT, LIGHT_COL_DAY, day), LIGHT_COL_DAWN_DUSK, newDawnDusk) * (1.0 - rainStrength * 0.5);
-        vec3 skyCol = toneSaturation(mix(mix(SKY_COL_NIGHT, SKY_COL_DAY, day), SKY_COL_DAWN_DUSK, newDawnDusk), 1.0 - rainStrength);
+        vec3 skyCol = toneSaturation(mix(mix(SKY_COL_NIGHT, SKY_COL_DAY, day), SKY_COL_DAWN_DUSK, newDawnDusk), 1.0 - rainStrength) * (eyeBrightFact * 0.5 + 0.5);
     #endif
 #endif
