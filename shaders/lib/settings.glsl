@@ -47,7 +47,7 @@
 
 // #define SSGI // Enables SSGI, currently experimental and may not be very optimized, may improve the ambience of dark areas despite the noisiness
 #define SSGI_STEPS 16 // SSGI steps, more steps means more quality, and more quality means more performance [16 20 24 28 32]
-#define SSGI_BISTEPS 0 // SSGI binary refinement steps, more steps means more accurate GI, and more quality means more performance [0 4 8 16]
+#define SSGI_BISTEPS 4 // SSGI binary refinement steps, more steps means more accurate GI, and more quality means more performance [0 4 8 16]
 
 #define SSR // Enables SSR, may not look good in certain areas
 #define SSR_STEPS 16 // SSR steps, more steps means more quality, and more quality means more performance [16 20 24 28 32]
