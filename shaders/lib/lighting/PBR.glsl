@@ -53,7 +53,7 @@ void getPBR(inout matPBR material, vec4 albedo, int id){
     }
 
     if(id == 10011){
-        material.emissive_m = albedo.r * satCol;
+        material.emissive_m = cubed(albedo.r) * satCol;
         material.metallic_m = material.emissive_m;
     }
 
@@ -72,7 +72,7 @@ void getPBR(inout matPBR material, vec4 albedo, int id){
 
     if(id == 10018){
         material.roughness_m = squared(1.0 - satCol);
-        material.metallic_m = sqrt(satCol);
+        material.metallic_m = smoothstep(0.1, 0.4, satCol);
     }
 
     if(id == 10019){
