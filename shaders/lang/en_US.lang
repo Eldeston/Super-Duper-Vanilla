@@ -70,7 +70,10 @@ screen.ANIMATION=Animation
 
 screen.DEBUG=Super Duper Vanilla by Eldeston
     option.WHITE_MODE=White mode
-    option.WHITE_MODE_F=White mode foliage
     option.NOISE_SPEED=Noise speed
     option.BUFFER_VIEW=Buffer view
+    value.WHITE_MODE.0=Off
+    value.WHITE_MODE.1=White mode
+    value.WHITE_MODE.2=Black mode
+    value.WHITE_MODE.3=Foliage mode
     screen.DEBUG.comment=Developed by §2Eldeston§f§r, produced by §9FlameRender §9Studios. §eClick me to open shader debug settings!

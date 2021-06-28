@@ -1,8 +1,9 @@
-// Depth textures
+// Depth texture 0
 uniform sampler2D depthtex0;
-uniform sampler2D depthtex1;
 
 #ifndef GBUFFERS
+    // Depth texture 1
+    uniform sampler2D depthtex1;
     // Main scene
     uniform sampler2D gcolor;
     // Normals

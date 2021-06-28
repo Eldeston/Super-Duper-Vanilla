@@ -46,7 +46,7 @@ void getPBR(inout matPBR material, vec4 albedo, int id){
 
     // Foliage and corals
     if(id >= 10000 && id <= 10008){
-        material.roughness_m = cubed(maxCol) * 0.9;
+        material.roughness_m = cubed(maxCol) * 0.96;
         material.ss_m = maxCol * 0.8;
     }
 

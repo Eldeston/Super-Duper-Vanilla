@@ -1,6 +1,6 @@
-vec4 getSSRCol(vec3 viewPos, vec3 screenPos, vec3 gBMVNorm, vec3 nDither, float roughness){
+vec4 getSSRCol(vec3 viewPos, vec3 screenPos, vec3 gBMVNorm){
     // Reflected direction
-	vec3 reflectedRayDir = reflect(normalize(viewPos), gBMVNorm) + nDither * squared(roughness * roughness);
+	vec3 reflectedRayDir = reflect(normalize(viewPos), gBMVNorm);
 	// Get reflected screenpos
 	vec3 reflectedScreenPos = rayTraceScene(screenPos, viewPos, reflectedRayDir, SSR_STEPS, SSR_BISTEPS);
     // Transform coords to previous frame coords

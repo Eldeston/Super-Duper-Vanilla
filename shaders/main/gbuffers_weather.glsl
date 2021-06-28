@@ -66,14 +66,14 @@ INOUT vec4 glcolor;
 	    // Declare materials
 	    matPBR materials;
 
-        #ifndef WHITE_MODE
+        #if WHITE_MODE == 0
             albedo.rgb *= glcolor.rgb;
-        #else
-            #ifdef WHITE_MODE_F
-                albedo.rgb = glcolor.rgb;
-            #else
-                albedo.rgb = vec3(1);
-            #endif
+        #elif WHITE_MODE == 1
+            albedo.rgb = vec3(1);
+        #elif WHITE_MODE == 2
+            albedo.rgb = vec3(0);
+        #elif WHITE_MODE == 3
+            albedo.rgb = glcolor.rgb;
         #endif
 
         materials.metallic_m = 0.0;

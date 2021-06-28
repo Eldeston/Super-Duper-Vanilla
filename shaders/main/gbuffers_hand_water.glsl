@@ -99,14 +99,14 @@ INOUT mat3 TBN;
             materials.ambient_m = 1.0;
         }
 
-        #ifndef WHITE_MODE
+        #if WHITE_MODE == 0
             albedo.rgb *= glcolor.rgb;
-        #else
-            #ifdef WHITE_MODE_F
-                albedo.rgb = glcolor.rgb;
-            #else
-                albedo.rgb = vec3(1);
-            #endif
+        #elif WHITE_MODE == 1
+            albedo.rgb = vec3(1);
+        #elif WHITE_MODE == 2
+            albedo.rgb = vec3(0);
+        #elif WHITE_MODE == 3
+            albedo.rgb = glcolor.rgb;
         #endif
 
         albedo.rgb = mix(albedo.rgb, entityColor.rgb, entityColor.a);

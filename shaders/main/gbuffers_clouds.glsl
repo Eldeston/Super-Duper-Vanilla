@@ -87,7 +87,13 @@ INOUT vec3 norm;
 
         // Transfor final normals to player space
         materials.normal_m = mat3(gbufferModelViewInverse) * norm;
-        materials.albedo_t = vec4(albedoAlpha);
+
+        #if WHITE_MODE == 2
+            materials.albedo_t = vec4(0, 0, 0, albedoAlpha);
+        #else
+            materials.albedo_t = vec4(albedoAlpha);
+        #endif
+
         materials.light_m = vec2(0, 1);
 
         vec4 sceneCol = complexShadingGbuffers(materials, posVector, dither);
