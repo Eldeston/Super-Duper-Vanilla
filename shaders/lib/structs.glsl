@@ -6,8 +6,6 @@ struct matPBR{
     vec3 normal_m;
     // Light map
     vec2 light_m;
-    // Subsurface scattering
-    float ss_m;
     // Metalic map
     float metallic_m;
     // Emissive map
@@ -16,8 +14,8 @@ struct matPBR{
     float roughness_m;
     // Ambient map
     float ambient_m;
-    // Alpha map
-    float alpha_m;
+    // Subsurface scattering
+    float ss_m;
 };
 
 // Position struct

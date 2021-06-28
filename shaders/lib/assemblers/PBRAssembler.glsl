@@ -8,5 +8,5 @@ void getPBR(inout matPBR material, vec2 screenCoord){
 	material.normal_m = texture2D(colortex1, screenCoord).rgb * 2.0 - 1.0;
 	
 	material.metallic_m = matRaw0.x; material.emissive_m = matRaw0.y; material.roughness_m = matRaw0.z;
-	material.ambient_m = matRaw1.x; material.alpha_m = matRaw1.z;
+	material.ambient_m = matRaw1.x;
 }

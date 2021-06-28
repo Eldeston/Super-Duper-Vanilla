@@ -61,7 +61,7 @@ void getPBR(inout matPBR material, vec4 albedo, int id){
     }
 
     // Glass
-    if(id == 10012 || id == 10013) material.roughness_m = 0.05;
+    if(id == 10012 || id == 10013) material.roughness_m = 0.056;
 
     // Gem ores and blocks
     if(id == 10015 || id == 10017){

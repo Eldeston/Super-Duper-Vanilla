@@ -54,8 +54,13 @@ INOUT vec2 screenCoord;
 
         vec3 dither = getRand3(screenCoord, 8);
 
+        // Depth with transparents
+        float depth0 = toView(posVector.screenPos.z);
+        // Depth with no transparents
+        float depth1 = toView(texture2D(depthtex1, screenCoord).r);
+
         // If the object is transparent render lighting sperately
-        if(materials.alpha_m != 1){
+        if(depth0 - depth1 > 0.01){
             float skyMask = float(posVector.screenPos.z == 1);
             float cloudMask = texture2D(colortex4, screenCoord).g;
 

@@ -67,8 +67,7 @@ INOUT vec2 screenCoord;
         // Fog calculation
         sceneCol = getFog(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y, skyMask, 0.0);
 
-    /* DRAWBUFFERS:04 */
+    /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(sceneCol, 1); //gcolor
-        gl_FragData[1] = vec4(materials.ambient_m, 0, 1, 1); //colortex4
     }
 #endif
