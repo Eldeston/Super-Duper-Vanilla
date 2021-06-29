@@ -26,10 +26,6 @@ vec3 getFog(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY, float s
         c = mix(c * 1.44, c, waterVoid); b = mix(b * 1.44, b, waterVoid); o = mix(1.0, o, waterVoid);
     }
 
-    // Mist fog
-    float mistFog = atmoFog(eyePlayerPos.y, worldPosY, eyePlayerPosLength, c, b) * o;
-    color = mix(color, fogCol, mistFog * MIST_GROUND_FOG_BRIGHTNESS);
-
     // Border fog
     #ifdef BORDER_FOG
         float borderFog = getBorderFogAmount(eyePlayerPosLength / (1.0 + cloudMask * 0.6));
@@ -37,6 +33,10 @@ vec3 getFog(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY, float s
     #else
         color = color * (1.0 - skyMask) + fogCol * skyMask;
     #endif
+
+    // Mist fog
+    float mistFog = atmoFog(eyePlayerPos.y, worldPosY, eyePlayerPosLength, c, b) * o;
+    color = mix(color, fogCol, mistFog * MIST_GROUND_FOG_BRIGHTNESS);
 
     // Blindness fog
     float blindNessFog = exp(-eyePlayerPosLength * blindness);

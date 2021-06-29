@@ -73,9 +73,7 @@ INOUT vec2 screenCoord;
             sceneCol = getFog(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y, skyMask, cloudMask);
         }
 
-        #ifdef VOL_LIGHT
-            sceneCol += getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.y) * lightCol;
-        #endif
+        sceneCol += getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.y) * lightCol;
 
     /* DRAWBUFFERS:02 */
         gl_FragData[0] = vec4(sceneCol, 1); //gcolor
