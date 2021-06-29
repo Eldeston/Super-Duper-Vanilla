@@ -70,7 +70,7 @@ INOUT vec2 texcoord;
         #else
             float accumulatedLumi = 1.0;
             // Apply exposure
-            color /= max(isEyeInWater + nightVision + torchBrightFact * 1.25 + squared(eyeBrightFact) * saturate(1.0 - night - newTwilight) * AUTO_EXPOSURE_MULT * 1.5, MIN_EXPOSURE_DENOM);
+            color /= max(isEyeInWater + nightVision + torchBrightFact * 1.25 + squared(eyeBrightFact) * saturate(1.0 - night - newDawnDusk) * AUTO_EXPOSURE_MULT * 1.5, MIN_EXPOSURE_DENOM);
         #endif
 
         color *= EXPOSURE;
