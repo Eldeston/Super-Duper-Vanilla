@@ -45,10 +45,7 @@ void getPBR(inout matPBR material, vec4 albedo, int id){
     material.ambient_m = 1.0;
 
     // Foliage and corals
-    if(id >= 10000 && id <= 10008){
-        material.roughness_m = cubed(maxCol) * 0.96;
-        material.ss_m = maxCol * 0.8;
-    }
+    if(id >= 10000 && id <= 10008) material.ss_m = maxCol * 0.8;
 
     // Emissives
     if(id == 10009 || id == 10010) material.emissive_m = smoothstep(0.5, 1.0, maxCol);
