@@ -4,5 +4,4 @@
 #define ENTITIES
 #define VERTEX
 
-#include "./world.glsl"
 #include "/main/gbuffers_entities.glsl"

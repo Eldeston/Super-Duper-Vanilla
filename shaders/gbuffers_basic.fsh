@@ -4,5 +4,4 @@
 #define BASIC
 #define FRAGMENT
 
-#include "./world.glsl"
 #include "/main/gbuffers_basic.glsl"

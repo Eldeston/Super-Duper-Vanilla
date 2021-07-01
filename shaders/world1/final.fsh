@@ -1,7 +1,7 @@
 #version 120
 
+#define END
 #define FINAL
 #define FRAGMENT
 
-#include "./world.glsl"
 #include "/main/final.glsl"

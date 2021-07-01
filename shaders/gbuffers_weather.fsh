@@ -4,5 +4,4 @@
 #define WEATHER
 #define FRAGMENT
 
-#include "./world.glsl"
 #include "/main/gbuffers_weather.glsl"

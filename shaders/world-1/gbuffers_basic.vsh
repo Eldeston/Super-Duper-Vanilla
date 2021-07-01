@@ -1,8 +1,8 @@
 #version 120
 
+#define NETHER
 #define GBUFFERS
 #define BASIC
 #define VERTEX
 
-#include "./world.glsl"
 #include "/main/gbuffers_basic.glsl"
