@@ -1,8 +1,6 @@
-// Depth texture 0
-uniform sampler2D depthtex0;
-
 #ifndef GBUFFERS
-    // Depth texture 1
+    // Depth textures
+    uniform sampler2D depthtex0;
     uniform sampler2D depthtex1;
     // Main scene
     uniform sampler2D gcolor;
@@ -24,7 +22,7 @@ uniform sampler2D depthtex0;
 // Noise sample, r for blue noise, g for white noise, and b for cell noise
 uniform sampler2D noisetex;
 
-#if defined COMPOSITE || defined DEFERRED || defined GBUFFERS
+#if defined COMPOSITE || defined GBUFFERS
     // Shadow color
     uniform sampler2D shadowcolor0;
 

@@ -4,4 +4,5 @@
 #define WEATHER
 #define VERTEX
 
+#include "./world.glsl"
 #include "/main/gbuffers_weather.glsl"

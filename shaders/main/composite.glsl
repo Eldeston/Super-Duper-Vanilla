@@ -53,7 +53,6 @@ INOUT vec2 screenCoord;
         vec3 sceneCol = texture2D(gcolor, screenCoord).rgb;
 
         vec3 dither = getRand3(screenCoord, 8);
-
         // Depth with transparents
         float depth0 = toView(posVector.screenPos.z);
         // Depth with no transparents
@@ -73,6 +72,7 @@ INOUT vec2 screenCoord;
             sceneCol = getFog(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y, skyMask, cloudMask);
         }
 
+        // Volumetric lighting
         sceneCol += getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.y) * lightCol;
 
     /* DRAWBUFFERS:02 */

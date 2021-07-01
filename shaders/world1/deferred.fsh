@@ -1,7 +1,7 @@
 #version 120
 
-#define END
 #define DEFERRED
 #define FRAGMENT
 
+#include "./world.glsl"
 #include "/main/deferred.glsl"

@@ -3,7 +3,7 @@ vec3 getGodRays(vec3 feetPlayerPos, float worldPosY, float dither){
 		return vec3(0);
 	#else
 		float underWaterMult = float(isEyeInWater + 1);
-		float volMult = VOL_LIGHT_BRIGHTNESS * (1.0 - newTwilight) * (1.0 - blindness * 0.6);
+		float volMult = VOL_LIGHT_BRIGHTNESS * (1.0 - newTwilight) * (1.0 - blindness * 0.6) * eyeBrightFact;
 		#ifndef VOL_LIGHT
 			return vec3(atmoFog(feetPlayerPos.y, worldPosY, length(feetPlayerPos), 0.08 * underWaterMult, 0.07 * underWaterMult) * volMult);
 		#else

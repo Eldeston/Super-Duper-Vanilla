@@ -1,7 +1,7 @@
 #version 120
 
-#define END
 #define COMPOSITE
 #define VERTEX
 
+#include "./world.glsl"
 #include "/main/composite.glsl"
