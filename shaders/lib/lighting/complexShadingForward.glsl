@@ -3,10 +3,10 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 		posVector.lightPos = vec3(0, 0.5, 0.5);
 	#endif
 
-	#ifdef NETHER
-		material.light_m.y = 0.25;
-	#elif defined END
-		material.light_m.y = 1.0;
+	#ifdef USE_SKY_LIGHTMAP
+		material.light_m.y *= SKY_LIGHT_AMOUNT;
+	#else
+		material.light_m.y = SKY_LIGHT_AMOUNT;
 	#endif
 
 	// Get positions
@@ -15,7 +15,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 
 	float smoothness = 1.0 - material.roughness_m;
 
-	#if defined NETHER
+	#ifndef ENABLE_LIGHT
 		vec3 directLight = vec3(0);
 	#else
 		// Cave fix

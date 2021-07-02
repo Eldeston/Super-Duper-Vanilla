@@ -10,7 +10,7 @@
     uniform sampler2D colortex2;
     // Metallic, emissive, roughness
     uniform sampler2D colortex3;
-    // AO, cloud mask, solid mask
+    // Empty, empty, cloud mask
     uniform sampler2D colortex4;
 
     // Reflections

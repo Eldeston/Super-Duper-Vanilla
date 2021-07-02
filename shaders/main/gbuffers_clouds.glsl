@@ -103,6 +103,6 @@ INOUT vec3 norm;
         gl_FragData[1] = vec4(materials.normal_m * 0.5 + 0.5, 1); //colortex1
         gl_FragData[2] = materials.albedo_t; //colortex2
         gl_FragData[3] = vec4(materials.metallic_m, materials.emissive_m, materials.roughness_m, 1); //colortex3
-        gl_FragData[4] = vec4(0, 1, 0, 1); //colortex4
+        gl_FragData[4] = vec4(0, 0, 1, 1); //colortex4
     }
 #endif

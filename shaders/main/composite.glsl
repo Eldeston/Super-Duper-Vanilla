@@ -61,7 +61,7 @@ INOUT vec2 screenCoord;
         // If the object is transparent render lighting sperately
         if(depth0 - depth1 > 0.01){
             float skyMask = float(posVector.screenPos.z == 1);
-            float cloudMask = texture2D(colortex4, screenCoord).g;
+            float cloudMask = texture2D(colortex4, screenCoord).b;
 
             // Get sky color
             vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyCol, lightCol, skyMask, 1.0, 1.0);
