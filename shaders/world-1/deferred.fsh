@@ -1,7 +1,7 @@
 #version 120
 
-#define NETHER
 #define DEFERRED
 #define FRAGMENT
 
+#include "world.glsl"
 #include "/main/deferred.glsl"

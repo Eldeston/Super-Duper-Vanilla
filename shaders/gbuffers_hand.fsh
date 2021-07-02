@@ -4,4 +4,5 @@
 #define HAND
 #define FRAGMENT
 
+#include "world.glsl"
 #include "/main/gbuffers_hand.glsl"

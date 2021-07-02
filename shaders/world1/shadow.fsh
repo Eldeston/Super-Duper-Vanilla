@@ -1,7 +1,7 @@
 #version 120
 
-#define END
 #define SHADOW
 #define FRAGMENT
 
+#include "world.glsl"
 #include "/main/shadow.glsl"
