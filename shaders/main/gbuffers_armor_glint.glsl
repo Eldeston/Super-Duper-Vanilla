@@ -79,8 +79,6 @@ INOUT vec4 glcolor;
 
         vec4 sceneCol = materials.albedo_t + materials.albedo_t * materials.emissive_m;
 
-        if(albedo.a < 0.01) discard;
-        
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; //gcolor
         gl_FragData[1] = vec4(materials.normal_m * 0.5 + 0.5, 1); //colortex1
