@@ -10,7 +10,7 @@ gcolor - Main scene : RGB16F
 colortex1 - Normals : RGB16
 colortex2 - Raw albedo / Bloom : RGB8
 colortex3 - Metallic, emissive, roughness : RGB8
-colortex4 - Empty, empty, cloud mask : RGB8
+colortex4 - Empty, empty, cloud mask : RG8_B2
 colortex5 - Reflections : RGB16
 colortex6 - Temporal / TAA, Auto Exposure : RGB16F
 
