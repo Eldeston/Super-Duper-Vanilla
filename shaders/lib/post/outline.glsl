@@ -23,3 +23,22 @@ float getOutline(sampler2D depthTex, vec2 st, float pixSize){
 
     return smootherstep(dDepth);
 }
+
+float getSpectral(sampler2D mask, vec2 st, float pixSize){
+    float pixOffSet = pixSize / max(viewWidth, viewHeight);
+    float depthOrigin = texture2D(mask, st).y;
+    float totalDepth = 0.0;
+
+    for(int i = 0; i < 4; i++){
+        vec2 offSets = outlineOffsets[i] * pixOffSet;
+        float depth0 = texture2D(mask, st - offSets).y;
+        float depth1 = texture2D(mask, st + offSets).y;
+
+        totalDepth += depth0 + depth1;
+    }
+
+    // Calculate the differences of the offsetted depths...
+    float dDepth = totalDepth - depthOrigin * 8.0;
+
+    return smootherstep(dDepth);
+}
