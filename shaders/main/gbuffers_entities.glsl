@@ -132,8 +132,6 @@ INOUT mat3 TBN;
             materials.metallic_m = 0.0;
             materials.emissive_m = 1.0;
             materials.roughness_m = 1.0;
-            materials.ambient_m = 1.0;
-            materials.light_m = vec2(1);
             sceneCol = vec4(vec3(2), 1);
         }
 

@@ -38,7 +38,5 @@ float getSpectral(sampler2D mask, vec2 st, float pixSize){
     }
 
     // Calculate the differences of the offsetted depths...
-    float dDepth = totalDepth - depthOrigin * 8.0;
-
-    return smootherstep(dDepth);
+    return abs(totalDepth - depthOrigin * 8.0);
 }

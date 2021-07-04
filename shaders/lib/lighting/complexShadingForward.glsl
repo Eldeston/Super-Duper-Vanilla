@@ -3,7 +3,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 		posVector.lightPos = vec3(0, 0.5, 0.5);
 	#endif
 
-	#ifdef USE_SKY_LIGHTMAP
+	#if defined USE_SKY_LIGHTMAP
 		material.light_m.y *= SKY_LIGHT_AMOUNT;
 	#else
 		material.light_m.y = SKY_LIGHT_AMOUNT;
@@ -15,14 +15,20 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 
 	float smoothness = 1.0 - material.roughness_m;
 
-	#ifndef ENABLE_LIGHT
+	#if !defined ENABLE_LIGHT
 		vec3 directLight = vec3(0);
 	#else
-		// Cave fix
-		float caveFixShdFactor = smoothstep(0.2, 0.4, material.light_m.y) * (1.0 - eyeBrightFact) + eyeBrightFact;
-		// Get direct light diffuse color
-		float rainDiff = rainStrength * 0.5;
-		vec3 directLight = (getShdMapping(posVector.shdPos, material.normal_m, nLightPos, dither.r, material.ss_m) * (1.0 - rainDiff) + smootherstep(material.light_m.y) * rainDiff) * lightCol * caveFixShdFactor;
+		#if defined CLOUDS || defined BEACON_BEAM || defined SPIDER_EYES || defined ENTITIES_GLOWING || defined END
+			// Get direct light diffuse color
+			float rainDiff = rainStrength * 0.5;
+			vec3 directLight = (getDiffuse(material.normal_m, nLightPos, material.ss_m) * (1.0 - rainDiff) + smootherstep(material.light_m.y) * rainDiff) * material.light_m.y * lightCol;
+		#else
+			// Cave fix
+			float caveFixShdFactor = smoothstep(0.2, 0.4, material.light_m.y) * (1.0 - eyeBrightFact) + eyeBrightFact;
+			// Get direct light diffuse color
+			float rainDiff = rainStrength * 0.5;
+			vec3 directLight = (getShdMapping(posVector.shdPos, material.normal_m, nLightPos, dither.r, material.ss_m) * (1.0 - rainDiff) + smootherstep(material.light_m.y) * rainDiff) * caveFixShdFactor * lightCol;
+		#endif
 	#endif
 
 	// Get globally illuminated sky

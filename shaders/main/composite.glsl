@@ -75,8 +75,6 @@ INOUT vec2 screenCoord;
         // Volumetric lighting
         sceneCol += getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.y) * lightCol;
 
-        sceneCol = mix(sceneCol, vec3(1), getSpectral(colortex4, screenCoord, 2.0));
-
     /* DRAWBUFFERS:02 */
         gl_FragData[0] = vec4(sceneCol, 1); //gcolor
         // Clear this buffer

@@ -14,6 +14,7 @@
 #include "/lib/lighting/shdDistort.glsl"
 #include "/lib/utility/spaceConvert.glsl"
 
+#include "/lib/post/outline.glsl"
 #include "/lib/post/tonemap.glsl"
 
 INOUT vec2 texcoord;
@@ -81,6 +82,8 @@ INOUT vec2 texcoord;
             // Apply vignette
             color *= pow(max(1.0 - length(texcoord - 0.5), 0.0), VIGNETTE_INTENSITY);
         #endif
+
+        color = mix(color, vec3(1), getSpectral(colortex4, texcoord, 1.0));
 
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(color, 1); //gcolor
