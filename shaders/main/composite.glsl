@@ -44,36 +44,37 @@ INOUT vec2 screenCoord;
     void main(){
         // Declare and get positions
         positionVectors posVector;
-	    getPosVectors(posVector, screenCoord);
+        posVector.screenPos = toScreenSpacePos(screenCoord);
+	    getPosVectors(posVector);
 
 	    // Declare and get materials
-	    matPBR materials;
-	    getPBR(materials, screenCoord);
+	    matPBR material;
+	    getPBR(material, posVector.screenPos.xy);
 
-        vec3 sceneCol = texture2D(gcolor, screenCoord).rgb;
+        vec3 sceneCol = texture2D(gcolor, posVector.screenPos.xy).rgb;
 
-        vec3 dither = getRand3(screenCoord, 8);
+        vec3 dither = getRand3(posVector.screenPos.xy, 8);
         // Depth with transparents
-        float depth0 = toView(posVector.screenPos.z);
+        float depth0 = posVector.viewPos.z;
         // Depth with no transparents
-        float depth1 = toView(texture2D(depthtex1, screenCoord).r);
+        float depth1 = toView(texture2D(depthtex1, posVector.screenPos.xy).r);
 
         // If the object is transparent render lighting sperately
         if(depth0 - depth1 > 0.01){
             float skyMask = float(posVector.screenPos.z == 1);
-            float cloudMask = texture2D(colortex4, screenCoord).b;
+            float cloudMask = texture2D(colortex4, posVector.screenPos.xy).b;
 
             // Get sky color
             vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyCol, lightCol, skyMask, 1.0, 1.0);
 
-            if(cloudMask == 0) sceneCol = complexShadingDeferred(materials, posVector, sceneCol, dither);
+            if(cloudMask == 0) sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
 
             // Fog calculation
-            sceneCol = getFog(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y, skyMask, cloudMask);
+            sceneCol = getFog(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y / 256.0, skyMask, cloudMask);
         }
 
         // Volumetric lighting
-        sceneCol += getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.y) * lightCol;
+        sceneCol += getGodRays(posVector.feetPlayerPos, posVector.worldPos.y / 256.0, dither.y) * lightCol;
 
     /* DRAWBUFFERS:02 */
         gl_FragData[0] = vec4(sceneCol, 1); //gcolor

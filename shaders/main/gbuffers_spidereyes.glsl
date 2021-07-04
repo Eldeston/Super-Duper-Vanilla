@@ -54,8 +54,6 @@ INOUT vec4 glcolor;
 	    // Declare materials
 	    matPBR materials;
 
-        // Transform final normals to eye player space
-        materials.normal_m = mat3(gbufferModelViewInverse) * norm;
         materials.albedo_t = texture2D(texture, texCoord);
 
         #if WHITE_MODE == 0
@@ -73,6 +71,9 @@ INOUT vec4 glcolor;
         materials.roughness_m = 1.0;
 
         materials.albedo_t.rgb = pow(materials.albedo_t.rgb, vec3(GAMMA));
+
+        // Transform final normals to eye player space
+        materials.normal_m = mat3(gbufferModelViewInverse) * norm;
 
         vec4 sceneCol = materials.albedo_t + materials.albedo_t * materials.emissive_m;
 

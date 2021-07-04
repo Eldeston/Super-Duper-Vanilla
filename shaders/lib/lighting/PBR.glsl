@@ -1,3 +1,6 @@
+uniform sampler2D normals;
+uniform sampler2D specular;
+
 void getPBR(inout matPBR material, mat3 TBN, vec2 st){
     // Get raw textures
 	vec4 normalAOH = texture2D(normals, st);
@@ -42,7 +45,7 @@ void getPBR(inout matPBR material, int id){
     material.ambient_m = 1.0;
 
     // Foliage and corals
-    if(id >= 10000 && id <= 10008) material.ss_m = maxCol * 0.8;
+    if(id >= 10000 && id <= 10008) material.ss_m = 0.8;
 
     // Emissives
     if(id == 10009 || id == 10010) material.emissive_m = smoothstep(0.5, 1.0, maxCol);

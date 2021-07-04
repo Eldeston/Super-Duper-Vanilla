@@ -1,31 +1,40 @@
 #ifndef GBUFFERS
-    // Depth textures
+    // Depth texture 0 with transparents
     uniform sampler2D depthtex0;
+    // Depth texture 1 no transparents
     uniform sampler2D depthtex1;
-    // Main scene
-    uniform sampler2D gcolor;
+#endif
+
+#if defined DEFERRED || defined COMPOSITE || defined FINAL
     // Normals
     uniform sampler2D colortex1;
+    // Reflections
+    uniform sampler2D colortex5;
+#endif
+
+#ifndef GBUFFERS
+    // Main scene
+    uniform sampler2D gcolor;
     // Raw albedo / Bloom
     uniform sampler2D colortex2;
     // Metallic, emissive, roughness
     uniform sampler2D colortex3;
     // Empty, glowing entity, cloud mask
     uniform sampler2D colortex4;
+#endif
 
-    // Reflections
-    uniform sampler2D colortex5;
+#if defined COMPOSITE5 || defined FINAL
     // Temporal / TAA, Auto Exposure
     uniform sampler2D colortex6;
 #endif
 
-// Noise sample, r for blue noise, g for white noise, and b for cell noise
-uniform sampler2D noisetex;
+#if !(defined COMPOSITE1 || defined COMPOSITE2 || defined COMPOSITE3 || defined COMPOSITE4)
+    // Noise sample, r for blue noise, g for white noise, and b for cell noise
+    uniform sampler2D noisetex;
+#endif
 
-#ifdef GBUFFERS
+#if defined GBUFFERS && !(defined BEACON_BEAM || defined BASIC)
     uniform sampler2D texture;
-    uniform sampler2D normals;
-    uniform sampler2D specular;
 #endif
 
 #if defined COMPOSITE || defined GBUFFERS

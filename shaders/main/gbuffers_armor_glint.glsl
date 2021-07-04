@@ -51,30 +51,29 @@ INOUT vec4 glcolor;
 
 #ifdef FRAGMENT
     void main(){
-        vec4 albedo = texture2D(texture, texCoord);
-
 	    // Declare materials
 	    matPBR materials;
 
+        materials.albedo_t = texture2D(texture, texCoord);
+
+        #if WHITE_MODE == 0
+            materials.albedo_t.rgb *= glcolor.rgb;
+        #elif WHITE_MODE == 1
+            materials.albedo_t.rgb = vec3(1);
+        #elif WHITE_MODE == 2
+            materials.albedo_t.rgb = vec3(0);
+        #elif WHITE_MODE == 3
+            materials.albedo_t.rgb = glcolor.rgb;
+        #endif
+
         materials.metallic_m = 0.0;
-        materials.emissive_m = maxC(albedo.rgb);
+        materials.emissive_m = maxC(materials.albedo_t.rgb);
         materials.roughness_m = 1.0;
+
+        materials.albedo_t.rgb = pow(materials.albedo_t.rgb, vec3(GAMMA));
 
         // Transform final normals to eye player space
         materials.normal_m = mat3(gbufferModelViewInverse) * norm;
-        materials.albedo_t = albedo;
-
-        #if WHITE_MODE == 0
-            albedo.rgb *= glcolor.rgb;
-        #elif WHITE_MODE == 1
-            albedo.rgb = vec3(1);
-        #elif WHITE_MODE == 2
-            albedo.rgb = vec3(0);
-        #elif WHITE_MODE == 3
-            albedo.rgb = glcolor.rgb;
-        #endif
-
-        albedo.rgb = pow(albedo.rgb, vec3(GAMMA));
 
         vec4 sceneCol = materials.albedo_t + materials.albedo_t * materials.emissive_m;
 

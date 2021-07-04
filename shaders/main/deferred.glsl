@@ -42,30 +42,31 @@ INOUT vec2 screenCoord;
     void main(){
         // Declare and get positions
         positionVectors posVector;
-	    getPosVectors(posVector, screenCoord);
+        posVector.screenPos = toScreenSpacePos(screenCoord);
+	    getPosVectors(posVector);
 
 	    // Declare and get materials
-	    matPBR materials;
-	    getPBR(materials, screenCoord);
+	    matPBR material;
+	    getPBR(material, posVector.screenPos.xy);
 
-        vec3 sceneCol = texture2D(gcolor, screenCoord).rgb;
+        vec3 sceneCol = texture2D(gcolor, posVector.screenPos.xy).rgb;
 
+        vec3 dither = getRand3(posVector.screenPos.xy, 8);
         // Render lighting
-        vec3 dither = getRand3(screenCoord, 8);
         float skyMask = float(posVector.screenPos.z == 1);
 
         // Get sky color
         vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyCol, lightCol, skyMask, 1.0, 1.0);
 
-        sceneCol = complexShadingDeferred(materials, posVector, sceneCol, dither);
+        sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
 
         #ifdef OUTLINES
             /* Outline calculation */
-            sceneCol *= 1.0 + getOutline(depthtex0, screenCoord, OUTLINE_PIX_SIZE) * (OUTLINE_BRIGHTNESS - 1.0);
+            sceneCol *= 1.0 + getOutline(depthtex0, posVector.screenPos.xy, OUTLINE_PIX_SIZE) * (OUTLINE_BRIGHTNESS - 1.0);
         #endif
 
         // Fog calculation
-        sceneCol = getFog(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y, skyMask, 0.0);
+        sceneCol = getFog(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y / 256.0, skyMask, 0.0);
 
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(sceneCol, 1); //gcolor

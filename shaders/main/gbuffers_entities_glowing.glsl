@@ -67,12 +67,11 @@ INOUT mat3 TBN;
 
 #ifdef FRAGMENT
     void main(){
-        vec3 screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
-        vec3 dither = getRand3(screenPos.xy, 8);
-
         // Declare and get positions
         positionVectors posVector;
-	    getPosVectors(posVector, screenPos);
+        posVector.screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
+        vec3 dither = getRand3(posVector.screenPos.xy, 8);
+	    getPosVectors(posVector);
 
 	    // Declare materials
 	    matPBR materials;
