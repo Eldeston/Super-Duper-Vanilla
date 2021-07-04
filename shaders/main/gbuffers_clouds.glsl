@@ -55,18 +55,7 @@ INOUT vec3 norm;
 #endif
 
 #ifdef FRAGMENT
-    uniform sampler2D texture;
-
     void main(){
-        float albedoAlpha = texture2D(texture, texCoord).a;
-        albedoAlpha = pow(albedoAlpha, GAMMA);
-
-        #ifdef CLOUD_FADE
-            float fade = smootherstep(sin(frameTimeCounter * FADE_SPEED) * 0.5 + 0.5);
-            float albedoAlpha2 = texture2D(texture, 0.5 - texCoord).a;
-            albedoAlpha = mix(albedoAlpha, albedoAlpha2, fade * (1.0 - rainStrength) + albedoAlpha2 * rainStrength);
-        #endif
-
         vec3 screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
         vec3 dither = getRand3(screenPos.xy, 8);
 
@@ -76,6 +65,14 @@ INOUT vec3 norm;
 
 	    // Declare materials
 	    matPBR materials;
+
+        float albedoAlpha = texture2D(texture, texCoord).a;
+
+        #ifdef CLOUD_FADE
+            float fade = smootherstep(sin(frameTimeCounter * FADE_SPEED) * 0.5 + 0.5);
+            float albedoAlpha2 = texture2D(texture, 0.5 - texCoord).a;
+            albedoAlpha = mix(albedoAlpha, albedoAlpha2, fade * (1.0 - rainStrength) + albedoAlpha2 * rainStrength);
+        #endif
 
         materials.metallic_m = 0.0;
         materials.ss_m = 0.7;
@@ -91,7 +88,7 @@ INOUT vec3 norm;
         #if WHITE_MODE == 2
             materials.albedo_t = vec4(0, 0, 0, albedoAlpha);
         #else
-            materials.albedo_t = vec4(albedoAlpha);
+            materials.albedo_t = vec4(1, 1, 1, albedoAlpha);
         #endif
 
         materials.light_m = vec2(0, 1);

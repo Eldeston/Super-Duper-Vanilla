@@ -1,6 +1,3 @@
-uniform sampler2D normals;
-uniform sampler2D specular;
-
 void getPBR(inout matPBR material, mat3 TBN, vec2 st){
     // Get raw textures
 	vec4 normalAOH = texture2D(normals, st);
@@ -34,10 +31,10 @@ void getPBR(inout matPBR material, mat3 TBN, vec2 st){
     material.ambient_m = normalAOH.b;
 }
 
-void getPBR(inout matPBR material, vec4 albedo, int id){
-    vec3 hsv = saturate(rgb2hsv(albedo));
-    float maxCol = maxC(albedo.rgb);
-    float sumCol = albedo.r + albedo.g + albedo.b;
+void getPBR(inout matPBR material, int id){
+    vec3 hsv = saturate(rgb2hsv(material.albedo_t));
+    float maxCol = maxC(material.albedo_t.rgb);
+    float sumCol = material.albedo_t.r + material.albedo_t.g + material.albedo_t.b;
 
     // Default material
     material.metallic_m = 0.0; material.emissive_m = 0.0;
@@ -52,7 +49,7 @@ void getPBR(inout matPBR material, vec4 albedo, int id){
 
     // Redstone
     if(id == 10011){
-        material.emissive_m = cubed(albedo.r) * hsv.y;
+        material.emissive_m = cubed(material.albedo_t.r) * hsv.y;
         material.roughness_m = (1.0 - material.emissive_m);
         material.metallic_m = material.emissive_m;
     }
@@ -67,7 +64,7 @@ void getPBR(inout matPBR material, vec4 albedo, int id){
     }
 
     // Netherack gem ores
-    if(id == 10016) material.roughness_m = albedo.r;
+    if(id == 10016) material.roughness_m = material.albedo_t.r;
 
     // Metal ores
     if(id == 10018){
@@ -77,8 +74,8 @@ void getPBR(inout matPBR material, vec4 albedo, int id){
 
     // Netherack metal ores
     if(id == 10019){
-        material.metallic_m = smoothstep(0.5, 0.75, max2(albedo.rg));;
-        material.roughness_m = smoothstep(0.75, 0.5, max2(albedo.rg));;
+        material.metallic_m = smoothstep(0.5, 0.75, max2(material.albedo_t.rg));;
+        material.roughness_m = smoothstep(0.75, 0.5, max2(material.albedo_t.rg));;
     }
 
     // Metal blocks

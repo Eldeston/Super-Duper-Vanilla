@@ -22,6 +22,12 @@
 // Noise sample, r for blue noise, g for white noise, and b for cell noise
 uniform sampler2D noisetex;
 
+#ifdef GBUFFERS
+    uniform sampler2D texture;
+    uniform sampler2D normals;
+    uniform sampler2D specular;
+#endif
+
 #if defined COMPOSITE || defined GBUFFERS
     // Shadow color
     uniform sampler2D shadowcolor0;

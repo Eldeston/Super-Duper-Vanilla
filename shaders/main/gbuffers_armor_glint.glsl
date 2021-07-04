@@ -50,11 +50,8 @@ INOUT vec4 glcolor;
 #endif
 
 #ifdef FRAGMENT
-    uniform sampler2D texture;
-
     void main(){
         vec4 albedo = texture2D(texture, texCoord);
-        albedo.rgb = pow(albedo.rgb, vec3(GAMMA));
 
 	    // Declare materials
 	    matPBR materials;
@@ -76,6 +73,8 @@ INOUT vec4 glcolor;
         #elif WHITE_MODE == 3
             albedo.rgb = glcolor.rgb;
         #endif
+
+        albedo.rgb = pow(albedo.rgb, vec3(GAMMA));
 
         vec4 sceneCol = materials.albedo_t + materials.albedo_t * materials.emissive_m;
 

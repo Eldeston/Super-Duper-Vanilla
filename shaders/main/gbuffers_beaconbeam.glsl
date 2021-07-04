@@ -48,12 +48,7 @@ INOUT vec4 glcolor;
 #endif
 
 #ifdef FRAGMENT
-    uniform sampler2D texture;
-
     void main(){
-        vec4 albedo = vec4(glcolor.rgb, 1);
-        albedo.rgb = pow(albedo.rgb, vec3(GAMMA));
-
         vec3 screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
         vec3 dither = getRand3(screenPos.xy, 8);
 
@@ -64,11 +59,15 @@ INOUT vec4 glcolor;
 	    // Declare materials
 	    matPBR materials;
 
+        materials.albedo_t = vec4(glcolor.rgb, 1);
+
         #if WHITE_MODE == 1
-            albedo.rgb = vec3(1);
+            materials.albedo_t.rgb = vec3(1);
         #elif WHITE_MODE == 2
-            albedo.rgb = vec3(0);
+            materials.albedo_t.rgb = vec3(0);
         #endif
+
+        materials.albedo_t.rgb = pow(materials.albedo_t.rgb, vec3(GAMMA));
 
         materials.metallic_m = 0.0;
         materials.ss_m = 1.0;
@@ -80,7 +79,6 @@ INOUT vec4 glcolor;
 
         // Transfor final normals to player space
         materials.normal_m = mat3(gbufferModelViewInverse) * norm;
-        materials.albedo_t = albedo;
         materials.light_m = lmCoord;
 
         vec4 sceneCol = complexShadingGbuffers(materials, posVector, dither);
