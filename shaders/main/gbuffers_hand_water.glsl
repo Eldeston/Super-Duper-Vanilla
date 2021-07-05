@@ -31,8 +31,6 @@ INOUT float blockId;
 INOUT vec2 lmCoord;
 INOUT vec2 texCoord;
 
-INOUT vec3 norm;
-
 INOUT vec4 glcolor;
 
 INOUT mat3 TBN;
@@ -51,10 +49,9 @@ INOUT mat3 TBN;
 
         vec3 tangent = normalize(gl_NormalMatrix * at_tangent.xyz);
 	    vec3 binormal = normalize(gl_NormalMatrix * cross(at_tangent.xyz, gl_Normal) * sign(at_tangent.w));
+	    vec3 normal = normalize(gl_NormalMatrix * gl_Normal);
 
-	    norm = normalize(gl_NormalMatrix * gl_Normal);
-
-	    TBN = mat3(tangent, binormal, norm);
+	    TBN = mat3(gbufferModelViewInverse) * mat3(tangent, binormal, normal);
         
 	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
 
@@ -74,7 +71,7 @@ INOUT mat3 TBN;
 	    matPBR materials;
 
         int rBlockId = int(blockId + 0.5);
-        materials.normal_m = norm;
+        materials.normal_m = TBN[2];
         materials.albedo_t = texture2D(texture, texCoord);
 
         #if WHITE_MODE == 0
@@ -109,8 +106,6 @@ INOUT mat3 TBN;
 
         // Apply vanilla AO
         materials.ambient_m *= glcolor.a;
-        // Transfor final normals to player space
-        materials.normal_m = mat3(gbufferModelViewInverse) * materials.normal_m;
         materials.light_m = lmCoord;
 
         vec4 sceneCol = complexShadingGbuffers(materials, posVector, dither);

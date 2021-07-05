@@ -48,7 +48,7 @@ INOUT vec3 norm;
             texCoord = coord;
         #endif
 
-	    norm = normalize(gl_NormalMatrix * gl_Normal);
+	    norm = normalize(mat3(gbufferModelViewInverse) * (gl_NormalMatrix * gl_Normal));
         
 	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
     }
@@ -66,11 +66,19 @@ INOUT vec3 norm;
 	    matPBR materials;
 
         float albedoAlpha = texture2D(texture, texCoord).a;
+        // Assign normals
+        materials.normal_m = norm;
 
         #ifdef CLOUD_FADE
             float fade = smootherstep(sin(frameTimeCounter * FADE_SPEED) * 0.5 + 0.5);
             float albedoAlpha2 = texture2D(texture, 0.5 - texCoord).a;
             albedoAlpha = mix(albedoAlpha, albedoAlpha2, fade * (1.0 - rainStrength) + albedoAlpha2 * rainStrength);
+        #endif
+
+        #if WHITE_MODE == 2
+            materials.albedo_t = vec4(0, 0, 0, albedoAlpha);
+        #else
+            materials.albedo_t = vec4(1, 1, 1, albedoAlpha);
         #endif
 
         materials.metallic_m = 0.0;
@@ -80,16 +88,6 @@ INOUT vec3 norm;
 
         // Apply vanilla AO
         materials.ambient_m = 1.0;
-
-        // Transfor final normals to player space
-        materials.normal_m = mat3(gbufferModelViewInverse) * norm;
-
-        #if WHITE_MODE == 2
-            materials.albedo_t = vec4(0, 0, 0, albedoAlpha);
-        #else
-            materials.albedo_t = vec4(1, 1, 1, albedoAlpha);
-        #endif
-
         materials.light_m = vec2(0, 1);
 
         vec4 sceneCol = complexShadingGbuffers(materials, posVector, dither);

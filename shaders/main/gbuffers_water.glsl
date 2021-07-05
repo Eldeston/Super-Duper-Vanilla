@@ -33,8 +33,6 @@ INOUT float blockId;
 INOUT vec2 lmCoord;
 INOUT vec2 texCoord;
 
-INOUT vec3 norm;
-
 INOUT vec4 glcolor;
 
 INOUT mat3 TBN;
@@ -55,10 +53,9 @@ INOUT mat3 TBN;
 
         vec3 tangent = normalize(gl_NormalMatrix * at_tangent.xyz);
 	    vec3 binormal = normalize(gl_NormalMatrix * cross(at_tangent.xyz, gl_Normal) * sign(at_tangent.w));
+	    vec3 normal = normalize(gl_NormalMatrix * gl_Normal);
 
-	    norm = normalize(gl_NormalMatrix * gl_Normal);
-
-	    TBN = mat3(tangent, binormal, norm);
+	    TBN = mat3(gbufferModelViewInverse) * mat3(tangent, binormal, normal);
 
         #ifdef ANIMATE
             vec3 worldPos = vertexPos.xyz + cameraPosition;
@@ -83,7 +80,7 @@ INOUT mat3 TBN;
 	    matPBR material;
 
         int rBlockId = int(blockId + 0.5);
-        material.normal_m = norm;
+        material.normal_m = TBN[2];
         material.albedo_t = texture2D(texture, texCoord);
 
         #if WHITE_MODE == 0
@@ -106,7 +103,7 @@ INOUT mat3 TBN;
         if(rBlockId == 10014){
             #ifdef WATER_NORM
                 #if !(defined END || defined NETHER)
-                    float normGBMVIy = (mat3(gbufferModelViewInverse) * norm).y;
+                    float normGBMVIy = TBN[2].y;
                     vec2 waterUv = posVector.worldPos.xz * (1.0 - normGBMVIy) + posVector.worldPos.xz * normGBMVIy;
                     vec4 waterData = H2NWater(waterUv);
                     material.normal_m = normalize(TBN * waterData.xyz);
@@ -125,8 +122,6 @@ INOUT mat3 TBN;
         
         // Apply vanilla AO
         material.ambient_m *= glcolor.a;
-        // Transfor final normals to player space
-        material.normal_m = mat3(gbufferModelViewInverse) * material.normal_m;
         material.light_m = lmCoord;
 
         vec4 sceneCol = complexShadingGbuffers(material, posVector, dither);

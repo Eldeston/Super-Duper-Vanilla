@@ -41,7 +41,7 @@ INOUT vec4 glcolor;
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         lmCoord  = (gl_TextureMatrix[1] * gl_MultiTexCoord1).xy;
 
-	    norm = normalize(gl_NormalMatrix * gl_Normal);
+	    norm = normalize(mat3(gbufferModelViewInverse) * (gl_NormalMatrix * gl_Normal));
         
 	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
 
@@ -55,6 +55,8 @@ INOUT vec4 glcolor;
 	    matPBR materials;
 
         materials.albedo_t = texture2D(texture, texCoord);
+        // Assign normals
+        materials.normal_m = norm;
 
         #if WHITE_MODE == 0
             materials.albedo_t.rgb *= glcolor.rgb;
@@ -71,9 +73,6 @@ INOUT vec4 glcolor;
         materials.roughness_m = 1.0;
 
         materials.albedo_t.rgb = pow(materials.albedo_t.rgb, vec3(GAMMA));
-
-        // Transform final normals to eye player space
-        materials.normal_m = mat3(gbufferModelViewInverse) * norm;
 
         vec4 sceneCol = materials.albedo_t + materials.albedo_t * materials.emissive_m;
 

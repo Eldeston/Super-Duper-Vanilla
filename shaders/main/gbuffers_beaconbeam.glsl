@@ -39,7 +39,7 @@ INOUT vec4 glcolor;
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         lmCoord  = (gl_TextureMatrix[1] * gl_MultiTexCoord1).xy;
 
-	    norm = normalize(gl_NormalMatrix * gl_Normal);
+	    norm = normalize(mat3(gbufferModelViewInverse) * (gl_NormalMatrix * gl_Normal));
         
 	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
 
@@ -59,6 +59,8 @@ INOUT vec4 glcolor;
 	    matPBR materials;
 
         materials.albedo_t = vec4(glcolor.rgb, 1);
+        // Assign normals
+        materials.normal_m = norm;
 
         #if WHITE_MODE == 1
             materials.albedo_t.rgb = vec3(1);
@@ -66,18 +68,15 @@ INOUT vec4 glcolor;
             materials.albedo_t.rgb = vec3(0);
         #endif
 
-        materials.albedo_t.rgb = pow(materials.albedo_t.rgb, vec3(GAMMA));
-
         materials.metallic_m = 0.0;
         materials.ss_m = 1.0;
         materials.emissive_m = 1.0;
         materials.roughness_m = 1.0;
 
+        materials.albedo_t.rgb = pow(materials.albedo_t.rgb, vec3(GAMMA));
+
         // Apply vanilla AO
         materials.ambient_m = 1.0;
-
-        // Transfor final normals to player space
-        materials.normal_m = mat3(gbufferModelViewInverse) * norm;
         materials.light_m = lmCoord;
 
         vec4 sceneCol = complexShadingGbuffers(materials, posVector, dither);
