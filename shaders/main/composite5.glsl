@@ -47,7 +47,7 @@ INOUT vec2 texcoord;
             vec3 accumulated = vec3(0);
         #endif
 
-        #ifdef AUTO_EXPOSURE
+        #if AUTO_EXPOSURE == 2
             // Get lod
             float lod = int(exp2(min(viewWidth, viewHeight))) - 1.0;
             
@@ -68,10 +68,14 @@ INOUT vec2 texcoord;
 
             // Apply exposure
             color /= max(accumulatedLumi * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
+        #elif AUTO_EXPOSURE == 1
+            float accumulatedLumi = 1.0;
+            // Recreate our lighting model if it were only shading a single pixel
+            // Apply exposure
+            color /= max(getLuminance((ambientLighting + nightVision + torchBrightFact * BLOCK_LIGHT_COL + squared(eyeBrightFact) * (lightCol + skyCol)) * 0.36) * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
         #else
             float accumulatedLumi = 1.0;
-            // Apply exposure
-            color /= max(isEyeInWater + nightVision + torchBrightFact * 1.25 + squared(eyeBrightFact) * saturate(1.0 - night - newDawnDusk) * AUTO_EXPOSURE_MULT * 1.5, MIN_EXPOSURE_DENOM);
+            color /= max(accumulatedLumi * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
         #endif
 
         color *= EXPOSURE;
@@ -88,7 +92,7 @@ INOUT vec2 texcoord;
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(color, 1); //gcolor
 
-        #if defined AUTO_EXPOSURE || defined TEMPORAL_ACCUMULATION
+        #if defined TEMPORAL_ACCUMULATION || AUTO_EXPOSURE == 2
         /* DRAWBUFFERS:06 */
             gl_FragData[1] = vec4(accumulated, max(0.001, accumulatedLumi)); //colortex6
         #endif
