@@ -29,33 +29,8 @@ INOUT vec4 glcolor;
 
 #ifdef FRAGMENT
     #include "/lib/globalVars/constants.glsl"
-    #include "/lib/globalVars/gameUniforms.glsl"
-    #include "/lib/globalVars/posUniforms.glsl"
-    #include "/lib/globalVars/screenUniforms.glsl"
-    #include "/lib/globalVars/texUniforms.glsl"
-    #include "/lib/globalVars/timeUniforms.glsl"
-    #include "/lib/globalVars/universalVars.glsl"
-
-    #include "/lib/lighting/shdDistort.glsl"
-    #include "/lib/utility/spaceConvert.glsl"
-    #include "/lib/utility/texFunctions.glsl"
-
-    #include "/lib/atmospherics/sky.glsl"
-
-    #include "/lib/lighting/shdMapping.glsl"
-    #include "/lib/lighting/GGX.glsl"
-
-    #include "/lib/lighting/complexShadingForward.glsl"
-
-    #include "/lib/assemblers/posAssembler.glsl"
 
     void main(){
-        // Declare and get positions
-        positionVectors posVector;
-        posVector.screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
-        vec3 dither = getRand3(posVector.screenPos.xy, 8);
-	    getPosVectors(posVector);
-
 	    // Declare materials
 	    matPBR materials;
 
@@ -80,7 +55,7 @@ INOUT vec4 glcolor;
         materials.ambient_m = 1.0;
         materials.light_m = lmCoord;
 
-        vec4 sceneCol = complexShadingGbuffers(materials, posVector, dither);
+        vec4 sceneCol = materials.albedo_t + materials.albedo_t * materials.emissive_m;
 
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; //gcolor
