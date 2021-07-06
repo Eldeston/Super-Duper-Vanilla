@@ -1,5 +1,13 @@
-#if (defined COMPOSITE || defined DEFERRED) && defined ROUGH_REFLECTIONS
-    const bool gcolorMipmapEnabled = true;
+#if defined COMPOSITE || defined DEFERRED && defined ROUGH_REFLECTIONS
+    #ifdef PREVIOUS_FRAME
+        const bool colortex5MipmapEnabled = true;
+    #else
+        const bool gcolorMipmapEnabled = true;
+    #endif
+#endif
+
+#if (defined COMPOSITE || defined DEFERRED) && defined PREVIOUS_FRAME
+    const bool colortex5Clear = false;
 #endif
 
 #if defined COMPOSITE2 || defined COMPOSITE3

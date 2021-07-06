@@ -52,7 +52,8 @@
 #define SSR_STEPS 16 // SSR steps, more steps means more quality, and more quality means more performance [16 20 24 28 32]
 #define SSR_BISTEPS 4 // SSR binary refinement steps, more steps means more accurate reflections, and more quality means more performance [0 4 8 16]
 
-// #define ROUGH_REFLECTIONS // Enables rougher objects to have rougher reflections. Impacts performance!
+// #define ROUGH_REFLECTIONS // Enables rougher objects to have rougher reflections. May impact performance!
+// #define PREVIOUS_FRAME // Reads previous frame buffer colors alowing SSR or SSGI to have infinite bounces of light. Impacts performance!
 // #define TEMPORAL_ACCUMULATION // Reduces the amount of noise by temporal acumulation, currently experimental. Turn on FXAA for best results.
 #define ACCUMILATION_SPEED 0.5 // The fade speed of temporal accumulation. The higher the faster. [0.5 1.0 2.0 4.0 8.0 16.0]
 

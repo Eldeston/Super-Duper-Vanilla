@@ -18,9 +18,14 @@ vec3 getSSGICol(vec3 viewPos, vec3 screenPos, vec3 gBMVNorm, vec2 dither){
 	vec3 sampleDir = cosWeightedRandHemisphereDir(gBMVNorm, dither);
     // Raytrace scene...
 	vec3 GIScreenPos = rayTraceScene(screenPos, viewPos, sampleDir, SSGI_STEPS, SSGI_BISTEPS);
-    // Transform coords to previous frame coords
-	// GIScreenPos.xy = toPrevScreenPos(GIScreenPos.xy);
     
-    // Sample color and return
-	return texture2D(gcolor, GIScreenPos.xy).rgb * GIScreenPos.z;
+    #ifdef PREVIOUS_FRAME
+        // Transform coords to previous frame coords
+        GIScreenPos.xy = toPrevScreenPos(GIScreenPos.xy);
+        // Sample color and return
+        return (1.0 / (1.0 - texture2D(colortex5, GIScreenPos.xy, -10).rgb) - 1.0) * GIScreenPos.z;
+    #else
+        // Sample color and return
+        return texture2D(gcolor, GIScreenPos.xy, -10).rgb * GIScreenPos.z;
+    #endif
 }

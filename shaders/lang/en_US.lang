@@ -44,6 +44,7 @@ screen.RAY_TRACING=Ray tracing settings
     option.SSGI_BISTEPS=SSGI refinement steps
     option.SSR_BISTEPS=SSR refinement steps
     option.ROUGH_REFLECTIONS=Rough reflections
+    option.PREVIOUS_FRAME=Previous frame buffer
     option.TEMPORAL_ACCUMULATION=Temporal accumulation
     option.ACCUMILATION_SPEED=Accumulation speed
 

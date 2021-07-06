@@ -8,8 +8,10 @@
 #if defined DEFERRED || defined COMPOSITE || defined FINAL
     // Normals
     uniform sampler2D colortex1;
-    // Reflections
-    uniform sampler2D colortex5;
+    #ifdef PREVIOUS_FRAME
+        // Reflections
+        uniform sampler2D colortex5;
+    #endif
 #endif
 
 #ifndef GBUFFERS

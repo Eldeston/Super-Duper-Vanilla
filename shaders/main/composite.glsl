@@ -59,6 +59,11 @@ INOUT vec2 screenCoord;
         // Depth with no transparents
         float depth1 = toView(texture2D(depthtex1, posVector.screenPos.xy).r);
 
+        #ifdef PREVIOUS_FRAME
+            // Get previous frame buffer
+            vec3 reflectBuffer = 1.0 / (1.0 - texture2D(colortex5, posVector.screenPos.xy).rgb) - 1.0;
+        #endif
+
         // If the object is transparent render lighting sperately
         if(depth0 - depth1 > 0.01){
             float skyMask = float(posVector.screenPos.z == 1);
@@ -71,6 +76,11 @@ INOUT vec2 screenCoord;
 
             // Fog calculation
             sceneCol = getFog(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y / 256.0, skyMask, cloudMask);
+
+            #ifdef PREVIOUS_FRAME
+                // Assign after main lighting calculation
+                reflectBuffer = sceneCol;
+            #endif
         }
 
         // Volumetric lighting
@@ -80,5 +90,10 @@ INOUT vec2 screenCoord;
         gl_FragData[0] = vec4(sceneCol, 1); //gcolor
         // Clear this buffer
         gl_FragData[1] = vec4(0); //colortex2
+
+        #ifdef PREVIOUS_FRAME
+        /* DRAWBUFFERS:025 */
+            gl_FragData[2] = vec4(reflectBuffer / (1.0 + reflectBuffer), 1); //colortex5
+        #endif
     }
 #endif
