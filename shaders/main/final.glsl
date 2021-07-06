@@ -2,9 +2,6 @@
 #include "/lib/structs.glsl"
 #include "/lib/settings.glsl"
 
-#include "/lib/globalVars/constants.glsl"
-#include "/lib/globalVars/texUniforms.glsl"
-
 INOUT vec2 texcoord;
 
 #ifdef VERTEX
@@ -15,6 +12,9 @@ INOUT vec2 texcoord;
 #endif
 
 #ifdef FRAGMENT
+    #include "/lib/globalVars/constants.glsl"
+    #include "/lib/globalVars/texUniforms.glsl"
+
     /* Texture buffer  settings */
 
     /*

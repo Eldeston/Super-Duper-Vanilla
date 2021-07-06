@@ -2,12 +2,6 @@
 #include "/lib/structs.glsl"
 #include "/lib/settings.glsl"
 
-#include "/lib/globalVars/constants.glsl"
-#include "/lib/globalVars/screenUniforms.glsl"
-#include "/lib/globalVars/texUniforms.glsl"
-
-#include "/lib/post/fxaa.glsl"
-
 INOUT vec2 texcoord;
 
 #ifdef VERTEX
@@ -18,6 +12,12 @@ INOUT vec2 texcoord;
 #endif
 
 #ifdef FRAGMENT
+    #include "/lib/globalVars/constants.glsl"
+    #include "/lib/globalVars/screenUniforms.glsl"
+    #include "/lib/globalVars/texUniforms.glsl"
+
+    #include "/lib/post/fxaa.glsl"
+
     void main(){
         #ifdef FXAA
             vec3 currCol = textureFXAA(gcolor, texcoord, vec2(viewWidth, viewHeight)).rgb;

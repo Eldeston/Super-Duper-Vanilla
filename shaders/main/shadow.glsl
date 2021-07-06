@@ -2,16 +2,9 @@
 #include "/lib/structs.glsl"
 #include "/lib/settings.glsl"
 
-#include "/lib/globalVars/constants.glsl"
 #include "/lib/globalVars/matUniforms.glsl"
 #include "/lib/globalVars/posUniforms.glsl"
-#include "/lib/globalVars/texUniforms.glsl"
 #include "/lib/globalVars/timeUniforms.glsl"
-
-#include "/lib/lighting/shdDistort.glsl"
-#include "/lib/utility/texFunctions.glsl"
-
-#include "/lib/vertex/vertexWave.glsl"
 
 INOUT float blockId;
 
@@ -21,6 +14,10 @@ INOUT vec3 worldPos;
 INOUT vec3 color;
 
 #ifdef VERTEX
+    #include "/lib/lighting/shdDistort.glsl"
+
+    #include "/lib/vertex/vertexWave.glsl"
+
     attribute vec2 mc_midTexCoord;
     attribute vec4 mc_Entity;
 
@@ -49,6 +46,11 @@ INOUT vec3 color;
 #endif
 
 #ifdef FRAGMENT
+    #include "/lib/globalVars/constants.glsl"
+    #include "/lib/globalVars/texUniforms.glsl"
+    
+    #include "/lib/utility/texFunctions.glsl"
+
     uniform sampler2D tex;
 
     void main(){

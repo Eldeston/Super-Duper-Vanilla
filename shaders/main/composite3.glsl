@@ -2,10 +2,6 @@
 #include "/lib/structs.glsl"
 #include "/lib/settings.glsl"
 
-#include "/lib/globalVars/constants.glsl"
-#include "/lib/globalVars/texUniforms.glsl"
-#include "/lib/globalVars/screenUniforms.glsl"
-
 INOUT vec2 texcoord;
 
 #ifdef VERTEX
@@ -16,6 +12,10 @@ INOUT vec2 texcoord;
 #endif
 
 #ifdef FRAGMENT
+    #include "/lib/globalVars/constants.glsl"
+    #include "/lib/globalVars/texUniforms.glsl"
+    #include "/lib/globalVars/screenUniforms.glsl"
+
     void main(){
         #ifdef BLOOM
             // Rescale coords for the downscaled previous program

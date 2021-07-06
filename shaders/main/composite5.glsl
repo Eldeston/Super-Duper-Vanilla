@@ -2,21 +2,6 @@
 #include "/lib/structs.glsl"
 #include "/lib/settings.glsl"
 
-#include "/lib/globalVars/constants.glsl"
-#include "/lib/globalVars/gameUniforms.glsl"
-#include "/lib/globalVars/matUniforms.glsl"
-#include "/lib/globalVars/posUniforms.glsl"
-#include "/lib/globalVars/screenUniforms.glsl"
-#include "/lib/globalVars/texUniforms.glsl"
-#include "/lib/globalVars/timeUniforms.glsl"
-#include "/lib/globalVars/universalVars.glsl"
-
-#include "/lib/lighting/shdDistort.glsl"
-#include "/lib/utility/spaceConvert.glsl"
-
-#include "/lib/post/outline.glsl"
-#include "/lib/post/tonemap.glsl"
-
 INOUT vec2 texcoord;
 
 #ifdef VERTEX
@@ -27,6 +12,21 @@ INOUT vec2 texcoord;
 #endif
 
 #ifdef FRAGMENT
+    #include "/lib/globalVars/constants.glsl"
+    #include "/lib/globalVars/gameUniforms.glsl"
+    #include "/lib/globalVars/matUniforms.glsl"
+    #include "/lib/globalVars/posUniforms.glsl"
+    #include "/lib/globalVars/screenUniforms.glsl"
+    #include "/lib/globalVars/texUniforms.glsl"
+    #include "/lib/globalVars/timeUniforms.glsl"
+    #include "/lib/globalVars/universalVars.glsl"
+
+    #include "/lib/lighting/shdDistort.glsl"
+    #include "/lib/utility/spaceConvert.glsl"
+
+    #include "/lib/post/outline.glsl"
+    #include "/lib/post/tonemap.glsl"
+
     void main(){
         // Original scene color
         vec3 color = texture2D(gcolor, texcoord).rgb;
