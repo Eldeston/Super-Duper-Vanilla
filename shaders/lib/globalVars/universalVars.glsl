@@ -2,9 +2,9 @@ float eyeBrightFact = eyeBrightnessSmooth.y / 240.0;
 float torchBrightFact = eyeBrightnessSmooth.x / 240.0;
 
 float newDawnDusk = smoothstep(0.32, 0.96, dawnDusk);
-float newTwilight = sqrt(twilight);
+float newTwilight = cubed(twilight);
 
-#if defined COMPOSITE5 || defined COMPOSITE || defined DEFERRED || defined GBUFFERS
+#if defined COMPOSITE4 || defined COMPOSITE || defined DEFERRED || defined GBUFFERS
     float ambientLighting = AMBIENT_LIGHTING + nightVision;
 
     #ifdef END

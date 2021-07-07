@@ -25,7 +25,7 @@
     uniform sampler2D colortex4;
 #endif
 
-#if defined COMPOSITE5 || defined FINAL
+#if defined COMPOSITE4 || defined FINAL
     // Temporal / TAA, Auto Exposure
     uniform sampler2D colortex6;
 #endif

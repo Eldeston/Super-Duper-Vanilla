@@ -43,11 +43,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	// Get reflected sky
 	float skyMask = pow(material.light_m.y, 1.0 / 2.0) * smoothness;
 	
-	#ifdef ROUGH_REFLECTIONS
-    	vec3 reflectedSkyRender = ambientLighting + getSkyRender(reflect(posVector.eyePlayerPos, material.normal_m + (dither * 2.0 - 1.0) * squared(material.roughness_m * material.roughness_m)), skyCol, lightCol, skyMask, skyMask, maxC(directLight)) * material.light_m.y;
-	#else
-		vec3 reflectedSkyRender = ambientLighting + getSkyRender(reflect(posVector.eyePlayerPos, material.normal_m), skyCol, lightCol, skyMask, skyMask, maxC(directLight)) * material.light_m.y;
-	#endif
+	vec3 reflectedSkyRender = ambientLighting + getSkyRender(reflect(posVector.eyePlayerPos, material.normal_m), skyCol, lightCol, skyMask, skyMask, maxC(directLight)) * material.light_m.y;
 
 	// Mask reflections
     vec3 reflectCol = reflectedSkyRender * fresnel * smoothness * material.ambient_m; // Will change this later...
