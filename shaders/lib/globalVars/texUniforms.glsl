@@ -1,6 +1,9 @@
 #ifndef GBUFFERS
     // Depth texture 0 with transparents
     uniform sampler2D depthtex0;
+#endif
+
+#if defined WATER || defined COMPOSITE
     // Depth texture 1 no transparents
     uniform sampler2D depthtex1;
 #endif

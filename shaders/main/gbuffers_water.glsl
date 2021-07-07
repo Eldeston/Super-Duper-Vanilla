@@ -59,6 +59,7 @@ INOUT mat3 TBN;
     #include "/lib/utility/spaceConvert.glsl"
     #include "/lib/utility/texFunctions.glsl"
 
+    #include "/lib/atmospherics/fog.glsl"
     #include "/lib/atmospherics/sky.glsl"
 
     #include "/lib/lighting/shdMapping.glsl"
@@ -101,6 +102,8 @@ INOUT mat3 TBN;
 
         // If water
         if(rBlockId == 10014){
+            material.albedo_t.rgb *= WATER_BRIGHTNESS;
+
             #ifdef WATER_NORM
                 #if !(defined END || defined NETHER)
                     float normGBMVIy = TBN[2].y;
@@ -111,11 +114,13 @@ INOUT mat3 TBN;
                     material.albedo_t.rgb *= mix(1.0, 0.125, smootherstep(waterData.w));
                 #endif
             #endif
+            // Water fog
+            float waterFog = atmoFog(length(toView(vec3(posVector.screenPos.xy, texture2D(depthtex1, posVector.screenPos.xy).x))), FOG_DENSITY * 1.2);
             
             material.metallic_m = 0.5;
             material.roughness_m = 0.028;
             material.ambient_m = 1.0;
-            material.albedo_t.rgb *= WATER_BRIGHTNESS;
+            material.albedo_t.a = material.albedo_t.a * 0.1 * (1.0 - waterFog) + waterFog;
         }
 
         material.albedo_t.rgb = pow(material.albedo_t.rgb, vec3(GAMMA));
