@@ -9,10 +9,13 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 #define FIXED_LIGHTDIR
 // Enable if your world uses lighting from the sun/moon
 #define ENABLE_LIGHT
-// Enable if your world uses a specific world color that uses the vanilla sky color
-// #define USE_VANILLA_SKYCOL
-// Enable if your world uses a specific world color that uses the vanilla fog color
-// #define USE_VANILLA_FOGCOL
+// Enable if your world uses a light color with an input, overrides light colors
+#define USE_CUSTOM_LIGHTCOL vec3(0.45, 0.4, 0.8)
+
+// Enable if your world uses a specific world color that uses the vanilla fog color, overrides sky colors
+// #define USE_VANILLA_FOGCOL fogColor
+// Enable if your world uses a custom fog color with an input, overrides sky colors
+#define USE_CUSTOM_FOGCOL vec3(0.1125, 0.1, 0.2)
 
 // Enable if your world has a sky lightmap
 // #define USE_SKY_LIGHTMAP

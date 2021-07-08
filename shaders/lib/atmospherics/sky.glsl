@@ -13,12 +13,8 @@ float genStar(vec2 nSkyPos){
 }
 
 vec3 getSkyRender(vec3 playerPos, vec3 skyCol, vec3 lightCol, float skyMask, float skyDiffuseMask, float dirLightMask){
-    #if defined NETHER || defined END
-        #ifdef END
-            return pow(skyCol, vec3(GAMMA));
-        #else
-            return pow(sqrt(fogColor) * 0.75, vec3(GAMMA));
-        #endif
+    #if defined USE_CUSTOM_FOGCOL || defined USE_VANILLA_FOGCOL
+        return pow(skyCol, vec3(GAMMA));
     #else
         // Get positions
         vec3 nEyePlayerPos = normalize(playerPos);
