@@ -10,8 +10,7 @@
     const bool colortex5Clear = false;
 #endif
 
-#if defined COMPOSITE1 || defined COMPOSITE2
-    const bool gcolorMipmapEnabled = true;
+#if defined COMPOSITE2 || defined COMPOSITE3
     const bool colortex2MipmapEnabled = true;
 #endif
 

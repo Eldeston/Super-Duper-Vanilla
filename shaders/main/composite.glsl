@@ -89,21 +89,12 @@ INOUT vec2 screenCoord;
         // Emissive masked scene color
         vec3 sceneEmissives = sceneCol * material.emissive_m;
 
-    /* DRAWBUFFERS:0 */
+    /* DRAWBUFFERS:02 */
         gl_FragData[0] = vec4(sceneCol, 1); //gcolor
-        #ifdef BLOOM
-        /* DRAWBUFFERS:02 */
-            // Clear this buffer
-            gl_FragData[1] = vec4(sceneEmissives / (1.0 + sceneEmissives), 1); //colortex2
-            #ifdef PREVIOUS_FRAME
-            /* DRAWBUFFERS:025 */
-                gl_FragData[2] = vec4(reflectBuffer / (1.0 + reflectBuffer), 1); //colortex5
-            #endif
-        #else
-            #ifdef PREVIOUS_FRAME
-            /* DRAWBUFFERS:05 */
-                gl_FragData[1] = vec4(reflectBuffer / (1.0 + reflectBuffer), 1); //colortex5
-            #endif
+        gl_FragData[1] = vec4(0); //colortex2
+        #ifdef PREVIOUS_FRAME
+        /* DRAWBUFFERS:025 */
+            gl_FragData[2] = vec4(reflectBuffer / (1.0 + reflectBuffer), 1); //colortex5
         #endif
     }
 #endif

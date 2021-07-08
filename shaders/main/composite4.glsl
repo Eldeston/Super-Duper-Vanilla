@@ -31,6 +31,12 @@ INOUT vec2 texcoord;
         // Original scene color
         vec3 color = texture2D(gcolor, texcoord).rgb;
 
+        #ifdef BLOOM
+            // Uncompress the HDR colors
+            vec3 eBloom = (1.0 / (1.0 - texture2D(colortex2, texcoord * 0.25).rgb) - 1.0) * BLOOM_BRIGHTNESS;
+            color += eBloom;
+        #endif
+
         #ifdef TEMPORAL_ACCUMULATION
             vec2 prevScreenPos = toPrevScreenPos(texcoord);
             float prevMotion = max2(toPrevScreenPos(vec2(1)));
@@ -92,9 +98,19 @@ INOUT vec2 texcoord;
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(color, 1); //gcolor
 
-        #if defined TEMPORAL_ACCUMULATION || AUTO_EXPOSURE == 2
-        /* DRAWBUFFERS:06 */
-            gl_FragData[1] = vec4(accumulated, max(0.001, accumulatedLumi)); //colortex6
+        #ifdef BLOOM
+        /* DRAWBUFFERS:02 */
+            gl_FragData[1] = vec4(eBloom, 1); //colortex2
+
+            #if defined TEMPORAL_ACCUMULATION || AUTO_EXPOSURE == 2
+            /* DRAWBUFFERS:026 */
+                gl_FragData[2] = vec4(accumulated, max(0.001, accumulatedLumi)); //colortex6
+            #endif
+        #else
+            #if defined TEMPORAL_ACCUMULATION || AUTO_EXPOSURE == 2
+            /* DRAWBUFFERS:06 */
+                gl_FragData[1] = vec4(accumulated, max(0.001, accumulatedLumi)); //colortex6
+            #endif
         #endif
     }
 #endif
