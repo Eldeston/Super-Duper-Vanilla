@@ -23,6 +23,7 @@ vec3 rayTraceScene(vec3 screenPos, vec3 viewPos, vec3 rayDir, int steps, int bin
 
 		// vec3 startPos = clipPos;
 		for(int x = 0; x < steps; x++){
+			// We raytrace here
 			clipPos += clipPosRayDir;
 			vec3 newScreenPos = clipPos * 0.5 + 0.5;
 			if(newScreenPos.x < 0 || newScreenPos.y < 0 || newScreenPos.x > 1 || newScreenPos.y > 1) return vec3(0);

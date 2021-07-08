@@ -62,7 +62,7 @@ INOUT vec2 screenCoord;
 
         #ifdef OUTLINES
             /* Outline calculation */
-            sceneCol *= 1.0 + getOutline(depthtex0, posVector.screenPos.xy, OUTLINE_PIX_SIZE) * (OUTLINE_BRIGHTNESS - 1.0);
+            sceneCol *= 1.0 + getOutline(depthtex0, posVector.screenPos, OUTLINE_PIX_SIZE) * (OUTLINE_BRIGHTNESS - 1.0);
         #endif
 
         // Fog calculation

@@ -20,7 +20,7 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 #define SKY_LIGHT_AMOUNT 1.00
 
 // Fog height density
-#define HEIGHT_FOG_DENSITY 0.08
+#define HEIGHT_FOG_DENSITY 0.06
 // Fog density
 #define FOG_DENSITY 0.07
 // Fog opacity

@@ -106,9 +106,7 @@ INOUT mat3 TBN;
 
             #ifdef WATER_NORM
                 #if !(defined END || defined NETHER)
-                    float normGBMVIy = TBN[2].y;
-                    vec2 waterUv = posVector.worldPos.xz * (1.0 - normGBMVIy) + posVector.worldPos.xz * normGBMVIy;
-                    vec4 waterData = H2NWater(waterUv);
+                    vec4 waterData = H2NWater(posVector.worldPos.xz * (1.0 - TBN[2].y) + posVector.worldPos.xz * TBN[2].y);
                     material.normal_m = normalize(TBN * waterData.xyz);
 
                     material.albedo_t.rgb *= mix(1.0, 0.125, smootherstep(waterData.w));

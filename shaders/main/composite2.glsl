@@ -19,7 +19,7 @@ INOUT vec2 texcoord;
     void main(){
         #ifdef BLOOM
             // Rescale coords for the downscaled previous program
-            vec2 scaledUv = texcoord * 0.25 - 1.0 / vec2(viewWidth, viewHeight);
+            vec2 scaledUv = texcoord * 0.25;
             float pixelSize = (BLOOM_PIX_SIZE * 0.5) / viewHeight;
             vec3 eBloom = vec3(0);
             #if BLOOM_QUALITY == 0

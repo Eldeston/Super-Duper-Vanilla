@@ -8,7 +8,7 @@ float atmoFog(float playerPosY, float worldPosY, float playerPosLength, float he
 }
 
 float getBorderFogAmount(float eyePlayerPosLength){
-    return squared(hermiteMix(max(far - 40.0, 0.0), max(far - 8.0, 16.0), eyePlayerPosLength));
+    return squared(hermiteMix(max(far - 48.0, 0.0), max(far - 16.0, 16.0), eyePlayerPosLength));
 }
 
 vec3 getFog(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY, float skyMask, float cloudMask){
@@ -29,9 +29,9 @@ vec3 getFog(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY, float s
     #endif
 
     // Mist fog
-    float mistFog = isEyeInWater == 0 ? atmoFog(eyePlayerPos.y, worldPosY, eyePlayerPosLength, c, b) * o :
-        atmoFog(eyePlayerPosLength, b) * o;
-    color = mix(color, fogCol, mistFog * MIST_GROUND_FOG_BRIGHTNESS);
+    float mistFog = (isEyeInWater == 0 ? atmoFog(eyePlayerPos.y, worldPosY, eyePlayerPosLength, c, b) * o :
+        atmoFog(eyePlayerPosLength, b) * o) * MIST_GROUND_FOG_BRIGHTNESS;
+    color = color * (1.0 - mistFog) + skyCol * mistFog;
 
     // Blindness fog
     float blindNessFog = exp(-eyePlayerPosLength * blindness);
