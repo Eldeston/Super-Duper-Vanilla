@@ -70,52 +70,52 @@ INOUT mat3 TBN;
 	    getPosVectors(posVector);
 
 	    // Declare materials
-	    matPBR materials;
+	    matPBR material;
 
         int rBlockId = int(blockId + 0.5);
-        materials.normal_m = TBN[2];
-        materials.albedo_t = texture2D(texture, texCoord);
+        material.normal_m = TBN[2];
+        material.albedo_t = texture2D(texture, texCoord);
 
         #if WHITE_MODE == 0
-            materials.albedo_t.rgb *= glcolor.rgb;
+            material.albedo_t.rgb *= glcolor.rgb;
         #elif WHITE_MODE == 1
-            materials.albedo_t.rgb = vec3(1);
+            material.albedo_t.rgb = vec3(1);
         #elif WHITE_MODE == 2
-            materials.albedo_t.rgb = vec3(0);
+            material.albedo_t.rgb = vec3(0);
         #elif WHITE_MODE == 3
-            materials.albedo_t.rgb = glcolor.rgb;
+            material.albedo_t.rgb = glcolor.rgb;
         #endif
 
         #ifdef DEFAULT_MAT
-            getPBR(materials, rBlockId);
+            getPBR(material, rBlockId);
         #else
-            getPBR(materials, TBN, texCoord);
+            getPBR(material, TBN, texCoord);
         #endif
 
         // If player
-        if(rBlockId == 0) materials.ambient_m = 1.0;
+        if(rBlockId == 0) material.ambient_m = 1.0;
 
         // If lava
         if(rBlockId == 10010){
-            materials.emissive_m = 1.0;
-            materials.roughness_m = 1.0;
-            materials.ambient_m = 1.0;
+            material.emissive_m = 1.0;
+            material.roughness_m = 1.0;
+            material.ambient_m = 1.0;
         }
 
-        materials.albedo_t.rgb = mix(materials.albedo_t.rgb, entityColor.rgb, entityColor.a);
+        material.albedo_t.rgb = mix(material.albedo_t.rgb, entityColor.rgb, entityColor.a);
 
-        materials.albedo_t.rgb = pow(materials.albedo_t.rgb, vec3(GAMMA));
+        material.albedo_t.rgb = pow(material.albedo_t.rgb, vec3(GAMMA));
 
         // Apply vanilla AO
-        materials.ambient_m *= glcolor.a;
-        materials.light_m = lmCoord;
+        material.ambient_m *= glcolor.a;
+        material.light_m = lmCoord;
 
-        vec4 sceneCol = complexShadingGbuffers(materials, posVector, dither);
+        vec4 sceneCol = complexShadingGbuffers(material, posVector, dither);
 
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; //gcolor
-        gl_FragData[1] = vec4(materials.normal_m * 0.5 + 0.5, 1); //colortex1
-        gl_FragData[2] = materials.albedo_t; //colortex2
-        gl_FragData[3] = vec4(materials.metallic_m, materials.emissive_m, materials.roughness_m, 1); //colortex3
+        gl_FragData[1] = vec4(material.normal_m * 0.5 + 0.5, 1); //colortex1
+        gl_FragData[2] = vec4(material.albedo_t.rgb, 1); //colortex2
+        gl_FragData[3] = vec4(material.metallic_m, material.emissive_m, material.roughness_m, 1); //colortex3
     }
 #endif

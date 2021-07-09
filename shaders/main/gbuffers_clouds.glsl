@@ -65,11 +65,11 @@ INOUT vec3 norm;
 	    getPosVectors(posVector);
 
 	    // Declare materials
-	    matPBR materials;
+	    matPBR material;
 
         float albedoAlpha = texture2D(texture, texCoord).a;
         // Assign normals
-        materials.normal_m = norm;
+        material.normal_m = norm;
 
         #ifdef CLOUD_FADE
             float fade = smootherstep(sin(frameTimeCounter * FADE_SPEED) * 0.5 + 0.5);
@@ -78,27 +78,27 @@ INOUT vec3 norm;
         #endif
 
         #if WHITE_MODE == 2
-            materials.albedo_t = vec4(0, 0, 0, albedoAlpha);
+            material.albedo_t = vec4(0, 0, 0, albedoAlpha);
         #else
-            materials.albedo_t = vec4(1, 1, 1, albedoAlpha);
+            material.albedo_t = vec4(1, 1, 1, albedoAlpha);
         #endif
 
-        materials.metallic_m = 0.0;
-        materials.ss_m = 0.7;
-        materials.emissive_m = 0.0;
-        materials.roughness_m = 1.0;
+        material.metallic_m = 0.0;
+        material.ss_m = 0.7;
+        material.emissive_m = 0.0;
+        material.roughness_m = 1.0;
 
         // Apply vanilla AO
-        materials.ambient_m = 1.0;
-        materials.light_m = vec2(0, 1);
+        material.ambient_m = 1.0;
+        material.light_m = vec2(0, 1);
 
-        vec4 sceneCol = complexShadingGbuffers(materials, posVector, dither);
+        vec4 sceneCol = complexShadingGbuffers(material, posVector, dither);
 
     /* DRAWBUFFERS:01234 */
         gl_FragData[0] = sceneCol; //gcolor
-        gl_FragData[1] = vec4(materials.normal_m * 0.5 + 0.5, 1); //colortex1
-        gl_FragData[2] = materials.albedo_t; //colortex2
-        gl_FragData[3] = vec4(materials.metallic_m, materials.emissive_m, materials.roughness_m, 1); //colortex3
+        gl_FragData[1] = vec4(material.normal_m * 0.5 + 0.5, 1); //colortex1
+        gl_FragData[2] = vec4(material.albedo_t.rgb, 1); //colortex2
+        gl_FragData[3] = vec4(material.metallic_m, material.emissive_m, material.roughness_m, 1); //colortex3
         gl_FragData[4] = vec4(0, 0, 1, 1); //colortex4
     }
 #endif

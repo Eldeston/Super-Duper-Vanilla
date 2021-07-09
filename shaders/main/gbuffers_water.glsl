@@ -132,7 +132,7 @@ INOUT mat3 TBN;
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; //gcolor
         gl_FragData[1] = vec4(material.normal_m * 0.5 + 0.5, 1); //colortex1
-        gl_FragData[2] = material.albedo_t; //colortex2
+        gl_FragData[2] = vec4(material.albedo_t.rgb, 1); //colortex2
         gl_FragData[3] = vec4(material.metallic_m, material.emissive_m, material.roughness_m, 1); //colortex3
     }
 #endif
