@@ -118,7 +118,7 @@ INOUT mat3 TBN;
             material.metallic_m = 0.5;
             material.roughness_m = 0.028;
             material.ambient_m = 1.0;
-            material.albedo_t.a *= 1.0 - float(isEyeInWater == 1) * 0.1;
+            material.albedo_t.a *= float(isEyeInWater != 1);
         }
 
         material.albedo_t.rgb = pow(material.albedo_t.rgb, vec3(GAMMA));
