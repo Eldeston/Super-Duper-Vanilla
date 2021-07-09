@@ -36,7 +36,7 @@ vec3 getSkyRender(vec3 playerPos, vec3 skyCol, vec3 lightCol, float skyMask, flo
 
         // Get star
         vec2 starPos = 0.5 > abs(nSkyPos.y) ? vec2(atan(nSkyPos.x, nSkyPos.z), nSkyPos.y) * 0.25 : nSkyPos.xz * 0.333;
-        float star = genStar(starPos * 0.128) * (1.0 - day);
+        float star = genStar(starPos * 0.128) * cubed(1.0 - day);
 
         float celestialBodies = (star + sunMoon * 5.0 * dirLightMask) * skyMask * voidGradient;
         
