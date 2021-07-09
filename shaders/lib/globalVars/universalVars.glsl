@@ -6,6 +6,8 @@ float newTwilight = cubed(twilight);
 
 #if defined COMPOSITE4 || defined COMPOSITE || defined DEFERRED || defined GBUFFERS
     float ambientLighting = AMBIENT_LIGHTING + nightVision;
+    float rainMult = 1.0 + rainStrength * eyeBrightFact;
+    float underWaterMult = float(isEyeInWater + 1);
     
     #if defined USE_CUSTOM_LIGHTCOL
         vec3 lightCol = USE_CUSTOM_LIGHTCOL;

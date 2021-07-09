@@ -114,13 +114,10 @@ INOUT mat3 TBN;
                     material.albedo_t.rgb *= mix(1.0, 0.125, smootherstep(waterData.w));
                 #endif
             #endif
-            // Water fog
-            float waterFog = atmoFog(length(toView(vec3(posVector.screenPos.xy, texture2D(depthtex1, posVector.screenPos.xy).x))), FOG_DENSITY * 1.2);
             
             material.metallic_m = 0.5;
             material.roughness_m = 0.028;
             material.ambient_m = 1.0;
-            material.albedo_t.a = material.albedo_t.a * 0.1 * (1.0 - waterFog) + waterFog;
         }
 
         material.albedo_t.rgb = pow(material.albedo_t.rgb, vec3(GAMMA));

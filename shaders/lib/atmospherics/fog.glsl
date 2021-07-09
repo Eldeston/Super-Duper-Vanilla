@@ -15,9 +15,8 @@ vec3 getFog(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY, float s
     vec3 nEyePlayerPos = normalize(eyePlayerPos);
 
     float eyePlayerPosLength = length(eyePlayerPos);
-    float rainMult = 1.0 + rainStrength * eyeBrightFact;
 
-    float c = HEIGHT_FOG_DENSITY * rainMult; float b = FOG_DENSITY * rainMult;
+    float c = HEIGHT_FOG_DENSITY * rainMult * underWaterMult; float b = FOG_DENSITY * rainMult * underWaterMult;
     float o = FOG_OPACITY + rainMult * 0.1;
 
     // Border fog
@@ -31,7 +30,7 @@ vec3 getFog(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY, float s
     // Mist fog
     float mistFog = (isEyeInWater == 0 ? atmoFog(eyePlayerPos.y, worldPosY, eyePlayerPosLength, c, b) :
         atmoFog(eyePlayerPosLength, b)) * o * MIST_GROUND_FOG_BRIGHTNESS;
-    color = color * (1.0 - mistFog) + skyCol * mistFog;
+    color = color * (1.0 - mistFog) + (isEyeInWater >= 1 ? fogCol : skyCol) * mistFog;
 
     // Blindness fog
     float blindNessFog = exp(-eyePlayerPosLength * blindness * 0.32);
