@@ -12,18 +12,42 @@ INOUT vec2 screenCoord;
 #endif
 
 #ifdef FRAGMENT
-    #include "/lib/globalVars/constants.glsl"
+    #ifdef ROUGH_REFLECTIONS
+        #ifdef PREVIOUS_FRAME
+            const bool colortex5MipmapEnabled = true;
+        #else
+            const bool gcolorMipmapEnabled = true;
+        #endif
+    #endif
+
+    #ifdef PREVIOUS_FRAME
+        const bool colortex5Clear = false;
+    #endif
+
+    uniform sampler2D depthtex0;
+    uniform sampler2D depthtex1;
+    uniform sampler2D gcolor;
+    uniform sampler2D colortex1;
+    uniform sampler2D colortex2;
+    uniform sampler2D colortex3;
+    uniform sampler2D colortex4;
+
+    #ifdef PREVIOUS_FRAME
+        // Reflections
+        uniform sampler2D colortex5;
+    #endif
+
     #include "/lib/globalVars/gameUniforms.glsl"
     #include "/lib/globalVars/matUniforms.glsl"
     #include "/lib/globalVars/posUniforms.glsl"
     #include "/lib/globalVars/screenUniforms.glsl"
-    #include "/lib/globalVars/texUniforms.glsl"
     #include "/lib/globalVars/timeUniforms.glsl"
     #include "/lib/globalVars/universalVars.glsl"
 
     #include "/lib/lighting/shdDistort.glsl"
     #include "/lib/utility/spaceConvert.glsl"
     #include "/lib/utility/texFunctions.glsl"
+    #include "/lib/utility/noiseFunctions.glsl"
     #include "/lib/rayTracing/rayTracer.glsl"
 
     #include "/lib/atmospherics/fog.glsl"

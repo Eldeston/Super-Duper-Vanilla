@@ -2,8 +2,6 @@
 #include "/lib/structs.glsl"
 #include "/lib/settings.glsl"
 
-#include "/lib/globalVars/matUniforms.glsl"
-
 INOUT vec2 lmCoord;
 INOUT vec2 texCoord;
 
@@ -12,6 +10,9 @@ INOUT vec3 norm;
 INOUT vec4 glcolor;
 
 #ifdef VERTEX
+    uniform mat4 gbufferModelView;
+    uniform mat4 gbufferModelViewInverse;
+
     void main(){
         // Feet player pos
         vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
@@ -28,8 +29,7 @@ INOUT vec4 glcolor;
 #endif
 
 #ifdef FRAGMENT
-    #include "/lib/globalVars/constants.glsl"
-    #include "/lib/globalVars/texUniforms.glsl"
+    uniform sampler2D texture;
 
     void main(){
 	    // Declare materials

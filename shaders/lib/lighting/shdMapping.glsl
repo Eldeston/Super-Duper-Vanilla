@@ -1,3 +1,18 @@
+// Enable mipmap filtering on shadows
+const bool shadowHardwareFiltering = true;
+const int shadowMapResolution = 1024; // Shadow map resolution [512 1024 1536 2048 2560 3072 3584 4096 4608 5120]
+
+// Shadow bias
+const float shdBias = 0.025; // Don't go below the default value otherwise it'll mess up lighting
+const float sunPathRotation = 45.0; // Light/sun/moon angle by degrees [-63.0 -54.0 -45.0 -36.0 -27.0 -18.0 -9.0 0.0 9.0 18.0 27.0 36.0 45.0 54.0 63.0]
+
+// Shadow color
+uniform sampler2D shadowcolor0;
+
+// Shadow texture
+uniform sampler2DShadow shadowtex0;
+uniform sampler2DShadow shadowtex1;
+
 vec3 getShdTex(vec3 shdPos){
 	float shd0 = shadow2D(shadowtex0, shdPos).x;
 	float shd1 = shadow2D(shadowtex1, shdPos).x - shd0;

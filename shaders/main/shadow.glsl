@@ -2,18 +2,23 @@
 #include "/lib/structs.glsl"
 #include "/lib/settings.glsl"
 
-#include "/lib/globalVars/matUniforms.glsl"
-#include "/lib/globalVars/posUniforms.glsl"
-#include "/lib/globalVars/timeUniforms.glsl"
+uniform float frameTimeCounter;
 
 INOUT float blockId;
 
 INOUT vec2 texcoord;
 
 INOUT vec3 worldPos;
-INOUT vec3 color;
+INOUT vec3 gcolor;
 
 #ifdef VERTEX
+    uniform mat4 shadowModelView;
+    uniform mat4 shadowModelViewInverse;
+    uniform mat4 shadowProjection;
+    uniform mat4 shadowProjectionInverse;
+    
+    uniform vec3 cameraPosition;
+
     #include "/lib/lighting/shdDistort.glsl"
 
     #include "/lib/vertex/vertexWave.glsl"
@@ -41,21 +46,19 @@ INOUT vec3 color;
                 gl_Position = vec4(10);
         #endif
 
-        color.rgb = gl_Color.rgb;
+        gcolor = gl_Color.rgb;
     }
 #endif
 
 #ifdef FRAGMENT
-    #include "/lib/globalVars/constants.glsl"
-    #include "/lib/globalVars/texUniforms.glsl"
+    uniform sampler2D tex;
     
     #include "/lib/utility/texFunctions.glsl"
-
-    uniform sampler2D tex;
+    #include "/lib/utility/noiseFunctions.glsl"
 
     void main(){
         vec4 shdColor = texture2D(tex, texcoord);
-        shdColor.rgb *= color;
+        shdColor.rgb *= gcolor;
 
         #ifdef UNDERWATER_CAUSTICS
             int rBlockId = int(blockId + 0.5);

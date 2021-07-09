@@ -28,7 +28,6 @@ INOUT vec4 glcolor;
 #endif
 
 #ifdef FRAGMENT
-    #include "/lib/globalVars/constants.glsl"
     #include "/lib/globalVars/gameUniforms.glsl"
     #include "/lib/globalVars/posUniforms.glsl"
     #include "/lib/globalVars/screenUniforms.glsl"
@@ -39,6 +38,7 @@ INOUT vec4 glcolor;
     #include "/lib/lighting/shdDistort.glsl"
     #include "/lib/utility/spaceConvert.glsl"
     #include "/lib/utility/texFunctions.glsl"
+    #include "/lib/utility/noiseFunctions.glsl"
 
     #include "/lib/atmospherics/sky.glsl"
 

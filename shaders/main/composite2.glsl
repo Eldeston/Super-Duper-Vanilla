@@ -12,9 +12,11 @@ INOUT vec2 texcoord;
 #endif
 
 #ifdef FRAGMENT
-    #include "/lib/globalVars/constants.glsl"
-    #include "/lib/globalVars/texUniforms.glsl"
-    #include "/lib/globalVars/screenUniforms.glsl"
+    const bool colortex2MipmapEnabled = true;
+    
+    uniform sampler2D colortex2;
+
+    uniform float viewWidth;
 
     void main(){
         #ifdef BLOOM

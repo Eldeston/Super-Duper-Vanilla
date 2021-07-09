@@ -12,9 +12,12 @@ INOUT vec2 texcoord;
 #endif
 
 #ifdef FRAGMENT
-    #include "/lib/globalVars/constants.glsl"
-    #include "/lib/globalVars/screenUniforms.glsl"
-    #include "/lib/globalVars/texUniforms.glsl"
+    const bool gcolorMipmapEnabled = true;
+    
+    uniform float viewWidth;
+    uniform float viewHeight;
+    
+    uniform sampler2D gcolor;
 
     #include "/lib/post/fxaa.glsl"
 

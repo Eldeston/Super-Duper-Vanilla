@@ -12,8 +12,7 @@ INOUT vec2 texcoord;
 #endif
 
 #ifdef FRAGMENT
-    #include "/lib/globalVars/constants.glsl"
-    #include "/lib/globalVars/texUniforms.glsl"
+    uniform sampler2D BUFFER_VIEW;
 
     /* Texture buffer  settings */
 

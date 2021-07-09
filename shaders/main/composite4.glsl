@@ -12,12 +12,22 @@ INOUT vec2 texcoord;
 #endif
 
 #ifdef FRAGMENT
-    #include "/lib/globalVars/constants.glsl"
+    #if defined AUTO_EXPOSURE || defined TEMPORAL_ACCUMULATION
+        const bool gcolorMipmapEnabled = true;
+        const bool colortex6MipmapEnabled = true;
+        const bool colortex6Clear = false;
+    #endif
+
+    uniform sampler2D depthtex0;
+    uniform sampler2D gcolor;
+    uniform sampler2D colortex2;
+    uniform sampler2D colortex4;
+    uniform sampler2D colortex6;
+    
     #include "/lib/globalVars/gameUniforms.glsl"
     #include "/lib/globalVars/matUniforms.glsl"
     #include "/lib/globalVars/posUniforms.glsl"
     #include "/lib/globalVars/screenUniforms.glsl"
-    #include "/lib/globalVars/texUniforms.glsl"
     #include "/lib/globalVars/timeUniforms.glsl"
     #include "/lib/globalVars/universalVars.glsl"
 

@@ -50,14 +50,16 @@ INOUT mat3 TBN;
 #endif
 
 #ifdef FRAGMENT
-    #include "/lib/globalVars/constants.glsl"
+    uniform sampler2D depthtex1;
+    uniform sampler2D texture;
+
     #include "/lib/globalVars/screenUniforms.glsl"
-    #include "/lib/globalVars/texUniforms.glsl"
     #include "/lib/globalVars/universalVars.glsl"
     
     #include "/lib/lighting/shdDistort.glsl"
     #include "/lib/utility/spaceConvert.glsl"
     #include "/lib/utility/texFunctions.glsl"
+    #include "/lib/utility/noiseFunctions.glsl"
 
     #include "/lib/atmospherics/fog.glsl"
     #include "/lib/atmospherics/sky.glsl"

@@ -18,7 +18,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	#if !defined ENABLE_LIGHT
 		vec3 directLight = vec3(0);
 	#else
-		#if defined CLOUDS || defined BEACON_BEAM || defined SPIDER_EYES || defined ENTITIES_GLOWING || defined END
+		#if defined BEACON_BEAM || defined SPIDER_EYES || defined ENTITIES_GLOWING || defined END
 			// Get direct light diffuse color
 			float rainDiff = rainStrength * 0.5;
 			vec3 directLight = (getDiffuse(material.normal_m, nLightPos, material.ss_m) * (1.0 - rainDiff) + smootherstep(material.light_m.y) * rainDiff) * material.light_m.y * lightCol;
