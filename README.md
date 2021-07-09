@@ -24,7 +24,7 @@
    Will be planned soon, but as of right now, it is not open.
 
 ## Releases
-   See all available releases [here](https://github.com/Eldeston/Super-Duper-Vanilla/releases), and get the latest build here [here](https://github.com/Eldeston/Super-Duper-Vanilla/archive/refs/heads/master.zip). Pre-release versions are expected to be unstable, please report any issues or bugs anytime. Feedback is much appreciated.
+   See all available releases [here](https://github.com/Eldeston/Super-Duper-Vanilla/releases), and get the latest build [here](https://github.com/Eldeston/Super-Duper-Vanilla/archive/refs/heads/master.zip), this build will always be the latest build by default. Latests builds and pre-release versions are expected to be unstable, please report any issues or bugs anytime. Feedback is much appreciated.
 
 # NOTICE
    For expected results, please make sure to extract/unzip the downloaded zipped file, otherwise things may break.
