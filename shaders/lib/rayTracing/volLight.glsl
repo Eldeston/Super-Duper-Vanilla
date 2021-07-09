@@ -2,9 +2,9 @@ vec3 getGodRays(vec3 feetPlayerPos, float worldPosY, float dither){
 	#if defined NETHER || defined END
 		return vec3(0);
 	#else
-		float c = HEIGHT_FOG_DENSITY * rainMult * underWaterMult * 1.2; float b = FOG_DENSITY * rainMult * underWaterMult * 1.2;
+		float c = HEIGHT_FOG_DENSITY * rainMult * underWaterMult * 1.25; float b = FOG_DENSITY * rainMult * underWaterMult * 1.25;
 
-		float volMult = VOL_LIGHT_BRIGHTNESS * (1.0 - newTwilight) * (1.0 - blindness * 0.6) * (0.25 * (1.0 - eyeBrightFact) + eyeBrightFact) * min(1.0, FOG_OPACITY * 1.2 + rainMult * 0.1);
+		float volMult = VOL_LIGHT_BRIGHTNESS * (1.0 - newTwilight) * (1.0 - blindness * 0.6) * (0.25 * (1.0 - eyeBrightFact) + eyeBrightFact) * min(1.0, FOG_OPACITY * 1.25 + rainMult * 0.1);
 
 		#ifndef VOL_LIGHT
 			return (atmoFog(feetPlayerPos.y, worldPosY, length(feetPlayerPos), c, b) * volMult) * lightCol;

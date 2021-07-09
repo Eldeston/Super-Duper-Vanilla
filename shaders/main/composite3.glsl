@@ -22,7 +22,7 @@ INOUT vec2 texcoord;
         #ifdef BLOOM
             // Rescale coords for the downscaled previous program
             vec2 scaledUv = texcoord * 0.25;
-            float pixelSize = (BLOOM_PIX_SIZE * 0.5) / viewHeight;
+            float pixelSize = (BLOOM_PIX_SIZE * 2.0 * 0.25) / viewHeight;
             vec3 eBloom = vec3(0);
             #if BLOOM_QUALITY == 0
                 eBloom += texture2D(colortex2, scaledUv, BLOOM_LOD).rgb;
