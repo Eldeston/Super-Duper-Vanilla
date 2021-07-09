@@ -108,7 +108,7 @@ INOUT vec2 screenCoord;
         }
 
         // Volumetric lighting
-        sceneCol += getGodRays(posVector.feetPlayerPos, posVector.worldPos.y / 256.0, dither.y) * lightCol;
+        sceneCol += getGodRays(posVector.feetPlayerPos, posVector.worldPos.y / 256.0, dither.y);
 
         // Emissive masked scene color
         vec3 sceneEmissives = sceneCol * material.emissive_m;

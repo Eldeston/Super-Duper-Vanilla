@@ -19,16 +19,17 @@ vec3 getSkyRender(vec3 playerPos, vec3 skyCol, vec3 lightCol, float skyMask, flo
         // Get positions
         vec3 nEyePlayerPos = normalize(playerPos);
         vec3 nSkyPos = normalize(mat3(shadowProjection) * (mat3(shadowModelView) * playerPos));
+        float lightRange = smootherstep(-nSkyPos.z * 0.56) * (1.0 - newTwilight);
         float offSet = 0.0;
 
         if(isEyeInWater >= 1){
             float waterVoid = smootherstep(nEyePlayerPos.y + (eyeBrightFact - 0.72));
-            skyCol = mix(fogColor, skyCol, waterVoid);
+            skyCol = mix(toneSaturation(fogColor, 0.5) * (0.25 * (1.0 - eyeBrightFact) + eyeBrightFact), skyCol, waterVoid);
+            lightRange /= (1.0 - eyeBrightFact) + 1.0;
             offSet = 0.25;
         }
-        
+
         float voidGradient = smoothstep(-0.1 - offSet, -0.025 + offSet, nEyePlayerPos.y) * 0.9;
-        float lightRange = smootherstep(smootherstep(-nSkyPos.z * 0.56)) * (1.0 - newTwilight);
 
         // Get sun/moon
         float sunMoon = getSunMoonShape(nSkyPos) * voidGradient;

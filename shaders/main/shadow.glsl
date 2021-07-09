@@ -58,7 +58,7 @@ INOUT vec3 gcolor;
 
     void main(){
         vec4 shdColor = texture2D(tex, texcoord);
-        shdColor.rgb *= gcolor;
+        shdColor.rgb = toneSaturation(shdColor.rgb * gcolor, 0.5);
 
         #ifdef UNDERWATER_CAUSTICS
             int rBlockId = int(blockId + 0.5);
