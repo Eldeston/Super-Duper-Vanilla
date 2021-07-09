@@ -110,9 +110,6 @@ INOUT vec2 screenCoord;
         // Volumetric lighting
         sceneCol += getGodRays(posVector.feetPlayerPos, posVector.worldPos.y / 256.0, dither.y);
 
-        // Emissive masked scene color
-        vec3 sceneEmissives = sceneCol * material.emissive_m;
-
     /* DRAWBUFFERS:02 */
         gl_FragData[0] = vec4(sceneCol, 1); //gcolor
         gl_FragData[1] = vec4(0); //colortex2
