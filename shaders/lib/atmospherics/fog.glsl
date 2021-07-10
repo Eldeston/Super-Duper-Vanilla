@@ -17,7 +17,7 @@ vec3 getFog(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY, float s
     float eyePlayerPosLength = length(eyePlayerPos);
 
     float c = HEIGHT_FOG_DENSITY * rainMult * underWaterMult; float b = FOG_DENSITY * rainMult * underWaterMult;
-    float o = min(1.0, FOG_OPACITY + rainMult * 0.1);
+    float o = min(1.0, FOG_OPACITY + rainMult * underWaterMult * 0.1);
 
     // Border fog
     #ifdef BORDER_FOG

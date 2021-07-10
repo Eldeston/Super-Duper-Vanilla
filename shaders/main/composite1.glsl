@@ -33,7 +33,7 @@ INOUT vec2 texcoord;
         float dither = getRandTex(texcoord, 8).x * PI2;
 	    vec2 randVec = (vec2(sin(dither), cos(dither)) / vec2(viewWidth, viewHeight)) * 2.0;
 
-        float volMult = VOL_LIGHT_BRIGHTNESS * (1.0 - newTwilight) * (1.0 - blindness * 0.6) * (0.25 * (1.0 - eyeBrightFact) + eyeBrightFact) * min(1.0, FOG_OPACITY * 1.25 + rainMult * 0.1);
+        float volMult = VOL_LIGHT_BRIGHTNESS * (1.0 - newTwilight) * (1.0 - blindness * 0.6) * (0.25 * (1.0 - eyeBrightFact) + eyeBrightFact) * min(1.0, FOG_OPACITY * 1.25 + rainMult * underWaterMult * 0.1);
         vec3 volCol = (texture2D(colortex4, texcoord + randVec).gba + texture2D(colortex4, texcoord - randVec).gba) * 0.5;
         sceneCol += (volCol * volMult) * lightCol;
 
