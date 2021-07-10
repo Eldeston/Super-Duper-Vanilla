@@ -4,10 +4,8 @@ vec3 getGodRays(vec3 feetPlayerPos, float worldPosY, float dither){
 	#else
 		float c = HEIGHT_FOG_DENSITY * rainMult * underWaterMult * 1.44; float b = FOG_DENSITY * rainMult * underWaterMult * 1.44;
 
-		float volMult = VOL_LIGHT_BRIGHTNESS * (1.0 - newTwilight) * (1.0 - blindness * 0.6) * (0.25 * (1.0 - eyeBrightFact) + eyeBrightFact) * min(1.0, FOG_OPACITY * 1.25 + rainMult * 0.1);
-
 		#ifndef VOL_LIGHT
-			return (atmoFog(feetPlayerPos.y, worldPosY, length(feetPlayerPos), c, b) * volMult) * lightCol;
+			return vec3(atmoFog(feetPlayerPos.y, worldPosY, length(feetPlayerPos), c, b));
 		#else
 			if(VOL_LIGHT_BRIGHTNESS == 0) return vec3(0);
 			feetPlayerPos *= 1.0 + dither * 0.3333;
@@ -18,7 +16,7 @@ vec3 getGodRays(vec3 feetPlayerPos, float worldPosY, float dither){
 				rayData = mix(rayData, getShdTex(distort(toShadow(feetPlayerPos).xyz) * 0.5 + 0.5), atmoFog(feetPlayerPos.y, worldPosY, length(feetPlayerPos), c, b));
 			}
 			
-			return (rayData * volMult) * lightCol;
+			return rayData;
 		#endif
 	#endif
 }

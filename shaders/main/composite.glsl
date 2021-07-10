@@ -78,6 +78,7 @@ INOUT vec2 screenCoord;
         vec3 sceneCol = texture2D(gcolor, posVector.screenPos.xy).rgb;
 
         vec3 dither = getRand3(posVector.screenPos.xy, 8);
+        vec3 ditherTime = getRand3Animate(dither);
         // Depth with transparents
         float depth0 = posVector.viewPos.z;
         // Depth with no transparents
@@ -88,15 +89,16 @@ INOUT vec2 screenCoord;
             vec3 reflectBuffer = 1.0 / (1.0 - texture2D(colortex5, posVector.screenPos.xy).rgb) - 1.0;
         #endif
 
+        float skyMask = float(posVector.screenPos.z == 1);
+        vec2 masks4 = texture2D(colortex4, posVector.screenPos.xy).xy;
+        float cloudMask = masks4.y;
+
         // If the object is transparent render lighting sperately
         if(depth0 - depth1 > 0.01){
-            float skyMask = float(posVector.screenPos.z == 1);
-            float cloudMask = texture2D(colortex4, posVector.screenPos.xy).b;
-
             // Get sky color
             vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyCol, lightCol, skyMask, 1.0, 1.0);
 
-            if(cloudMask == 0) sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
+            if(cloudMask == 0) sceneCol = complexShadingDeferred(material, posVector, sceneCol, ditherTime);
 
             // Fog calculation
             sceneCol = getFog(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y / 256.0, skyMask, cloudMask);
@@ -107,15 +109,13 @@ INOUT vec2 screenCoord;
             #endif
         }
 
-        // Volumetric lighting
-        sceneCol += getGodRays(posVector.feetPlayerPos, posVector.worldPos.y / 256.0, dither.y);
-
-    /* DRAWBUFFERS:02 */
+    /* DRAWBUFFERS:024 */
         gl_FragData[0] = vec4(sceneCol, 1); //gcolor
         gl_FragData[1] = vec4(0); //colortex2
+        gl_FragData[2] = vec4(masks4.x, getGodRays(posVector.feetPlayerPos, posVector.worldPos.y / 256.0, fract(dither.y * 4.0))); //colortex4
         #ifdef PREVIOUS_FRAME
-        /* DRAWBUFFERS:025 */
-            gl_FragData[2] = vec4(reflectBuffer / (1.0 + reflectBuffer), 1); //colortex5
+        /* DRAWBUFFERS:0245 */
+            gl_FragData[3] = vec4(reflectBuffer / (1.0 + reflectBuffer), 1); //colortex5
         #endif
     }
 #endif

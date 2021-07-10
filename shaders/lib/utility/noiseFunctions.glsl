@@ -11,11 +11,12 @@ vec4 getRandTex(vec2 st, int tile){
 
 vec3 getRand3(vec2 st, int tile){
     st *= tile;
-    float x = texture2D(noisetex, st).x;
-    float y = texture2D(noisetex, vec2(-st.x, st.y)).x;
-    float z = texture2D(noisetex, -st).x;
-    if(NOISE_SPEED == 0) return fract(vec3(x, y, z) * 4.0);
-    return fract(vec3(x, y, z) * 4.0 + frameTimeCounter * NOISE_SPEED);
+    return vec3(texture2D(noisetex, st).x, texture2D(noisetex, vec2(-st.x, st.y)).x, texture2D(noisetex, -st).x);
+}
+
+vec3 getRand3Animate(vec3 rand3){
+    if(NOISE_SPEED == 0) return fract(rand3 * 4.0);
+    return fract(rand3 * 4.0 + frameTimeCounter * NOISE_SPEED);
 }
 
 float getCellNoise(vec2 st){

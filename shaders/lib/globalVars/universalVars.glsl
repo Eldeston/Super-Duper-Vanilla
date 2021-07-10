@@ -4,7 +4,7 @@ float torchBrightFact = eyeBrightnessSmooth.x / 240.0;
 float newDawnDusk = smoothstep(0.32, 0.96, dawnDusk);
 float newTwilight = cubed(twilight);
 
-#if defined COMPOSITE4 || defined COMPOSITE || defined DEFERRED || defined GBUFFERS
+#if defined DEFERRED || defined COMPOSITE || defined COMPOSITE1 || defined COMPOSITE4 || defined GBUFFERS
     float ambientLighting = AMBIENT_LIGHTING + nightVision;
     float rainMult = 1.0 + rainStrength * eyeBrightFact;
     float underWaterMult = isEyeInWater + 1.0;
