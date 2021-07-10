@@ -44,17 +44,3 @@ vec4 H2NWater(vec2 st){
     
     return vec4(normalize(vec3(dx, dy, WATER_DEPTH_SIZE)), d);
 }
-
-//Dithering from Jodie
-float bayer2(vec2 a) {
-    a = floor(a);
-    return fract(dot(a, vec2(0.5, a.y * 0.75)));
-}
-
-#define BAYER4(a) (bayer2(0.5 * (a)) * 0.25 + bayer2(a))
-#define BAYER8(a) (BAYER4(0.5 * (a)) * 0.25 + bayer2(a))
-#define BAYER16(a) (BAYER8(0.5 * (a)) * 0.25 + bayer2(a))
-#define BAYER32(a) (BAYER16(0.5 * (a)) * 0.25 + bayer2(a))
-#define BAYER64(a) (BAYER32(0.5 * (a)) * 0.25 + bayer2(a))
-#define BAYER128(a) (BAYER64(0.5 * (a)) * 0.25 + bayer2(a))
-#define BAYER256(a) (BAYER128(0.5 * (a)) * 0.25 + bayer2(a))
