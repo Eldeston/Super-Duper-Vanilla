@@ -111,6 +111,7 @@ INOUT vec2 screenCoord;
 
     /* DRAWBUFFERS:024 */
         gl_FragData[0] = vec4(sceneCol, 1); //gcolor
+        // Clear buffer before downscaling
         gl_FragData[1] = vec4(0); //colortex2
         gl_FragData[2] = vec4(masks4.x, getGodRays(posVector.feetPlayerPos, posVector.worldPos.y / 256.0, fract(dither.x * 4.0))); //colortex4
         #ifdef PREVIOUS_FRAME

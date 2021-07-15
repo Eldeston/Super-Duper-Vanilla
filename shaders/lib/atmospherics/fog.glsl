@@ -2,13 +2,12 @@ float atmoFog(float playerPosLength, float fogDensity){
     return 1.0 - exp(-playerPosLength * fogDensity);
 }
 
-float atmoFog(float playerPosY, float worldPosY, float playerPosLength, float heightDensity, float fogDensity){
-    float fogAmount = heightDensity * exp(-playerPosY * fogDensity) * (1.0 - exp(-playerPosLength * worldPosY * fogDensity)) / worldPosY;
-    return min(fogAmount, 1.0);
+float atmoFog(float playerPosY, float worldPosY, float playerPosLength, float totalDensity, float verticalFogDensity){
+    return min(1.0, totalDensity * exp(-playerPosY * verticalFogDensity) * (1.0 - exp(-playerPosLength * worldPosY * verticalFogDensity)) / worldPosY);
 }
 
 float getBorderFogAmount(float eyePlayerPosLength){
-    return squared(hermiteMix(max(far - 48.0, 0.0), max(far - 16.0, 16.0), eyePlayerPosLength));
+    return squared(hermiteMix(max(far - 64.0, 0.0), max(far - 16.0, 16.0), eyePlayerPosLength));
 }
 
 vec3 getFog(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY, float skyMask, float cloudMask){
@@ -16,7 +15,7 @@ vec3 getFog(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY, float s
 
     float eyePlayerPosLength = length(eyePlayerPos);
 
-    float c = HEIGHT_FOG_DENSITY * rainMult * underWaterMult; float b = FOG_DENSITY * rainMult * underWaterMult;
+    float c = FOG_TOTAL_DENSITY_FALLOFF * rainMult * underWaterMult; float b = FOG_VERTICAL_DENSITY_FALLOFF * rainMult * underWaterMult;
     float o = min(1.0, FOG_OPACITY + rainMult * underWaterMult * 0.1);
 
     // Border fog
