@@ -12,7 +12,7 @@ float newTwilight = cubed(twilight);
     #if defined USE_CUSTOM_LIGHTCOL
         vec3 lightCol = USE_CUSTOM_LIGHTCOL;
     #else
-        vec3 lightCol = mix(mix(LIGHT_COL_NIGHT, LIGHT_COL_DAY, day), LIGHT_COL_DAWN_DUSK, newDawnDusk) * (1.0 - rainStrength * 0.5);
+        vec3 lightCol = mix(mix(LIGHT_COL_NIGHT, LIGHT_COL_DAY, day), LIGHT_COL_DAWN_DUSK, newDawnDusk) * (1.0 - rainStrength * 0.66);
     #endif
 
     #if defined USE_CUSTOM_FOGCOL
@@ -20,6 +20,6 @@ float newTwilight = cubed(twilight);
     #elif defined USE_VANILLA_FOGCOL
         vec3 skyCol = USE_VANILLA_FOGCOL;
     #else
-        vec3 skyCol = toneSaturation(mix(mix(SKY_COL_NIGHT, SKY_COL_DAY, day), SKY_COL_DAWN_DUSK, newDawnDusk), 1.0 - rainStrength) * (eyeBrightFact * 0.5 + 0.5);
+        vec3 skyCol = toneSaturation(mix(mix(SKY_COL_NIGHT, SKY_COL_DAY, day), SKY_COL_DAWN_DUSK, newDawnDusk), 1.0 - rainStrength) * (eyeBrightFact * 0.5 + 0.5) * (1.0 - rainStrength * 0.66);
     #endif
 #endif
