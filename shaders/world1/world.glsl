@@ -17,14 +17,14 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 // Enable if your world uses a custom fog color with an input, overrides sky colors
 #define USE_CUSTOM_FOGCOL vec3(0.1125, 0.1, 0.2)
 
-// Enable if your world has a sky lightmap
+// Enable if your world has a sky lightmap, or none
 // #define USE_SKY_LIGHTMAP
 // Sky light amount
 #define SKY_LIGHT_AMOUNT 1.00
 
-// Vertical density falloff, larger means less thick fog at high altitudes
+// Vertical density falloff, larger means less thick fog at high altitudes, but thicker fog in lower altitudes
 #define FOG_VERTICAL_DENSITY_FALLOFF 0.05
 // Total density falloff, larger means thicker fog
-#define FOG_TOTAL_DENSITY_FALLOFF 0.075
+#define FOG_TOTAL_DENSITY_FALLOFF 0.1
 // Fog opacity
 #define FOG_OPACITY 0.50

@@ -2,7 +2,8 @@ vec3 getGodRays(vec3 feetPlayerPos, float worldPosY, float dither){
 	#if defined NETHER || defined END
 		return vec3(0);
 	#else
-		float c = FOG_TOTAL_DENSITY_FALLOFF * rainMult * underWaterMult; float b = FOG_VERTICAL_DENSITY_FALLOFF * rainMult * underWaterMult;
+		float c = FOG_TOTAL_DENSITY_FALLOFF * rainMult * underWaterMult;
+		float b = FOG_VERTICAL_DENSITY_FALLOFF * rainMult * underWaterMult;
 
 		#ifndef VOL_LIGHT
 			return vec3(atmoFog(feetPlayerPos.y, worldPosY, length(feetPlayerPos), c, b));
