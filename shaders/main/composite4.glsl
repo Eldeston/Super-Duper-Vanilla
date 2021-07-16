@@ -81,10 +81,10 @@ INOUT vec2 texcoord;
             // Recreate our lighting model if it were only shading a single pixel
             #if defined USE_SKY_LIGHTMAP
                 // Apply exposure
-                color /= max(getLuminance((lightCol * isEyeInWater * (1.0 - eyeBrightFact) * VOL_LIGHT_BRIGHTNESS + ambientLighting + nightVision + torchBrightFact * BLOCK_LIGHT_COL + cubed(eyeBrightFact) * (lightCol + skyCol)) * 0.36) * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
+                color /= max(getLuminance((lightCol * isEyeInWater * (1.0 - eyeBrightFact) * VOL_LIGHT_BRIGHTNESS + ambientLighting + nightVision + torchBrightFact * BLOCK_LIGHT_COL + cubed(eyeBrightFact) * (lightCol * rainMult + skyCol)) * 0.36) * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
             #else
                 // Apply exposure
-                color /= max(getLuminance((lightCol * isEyeInWater * (1.0 - SKY_LIGHT_AMOUNT) * VOL_LIGHT_BRIGHTNESS + ambientLighting + nightVision + torchBrightFact * BLOCK_LIGHT_COL + cubed(SKY_LIGHT_AMOUNT) * (lightCol + skyCol)) * 0.36) * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
+                color /= max(getLuminance((lightCol * isEyeInWater * (1.0 - SKY_LIGHT_AMOUNT) * VOL_LIGHT_BRIGHTNESS + ambientLighting + nightVision + torchBrightFact * BLOCK_LIGHT_COL + cubed(SKY_LIGHT_AMOUNT) * (lightCol * rainMult + skyCol)) * 0.36) * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
             #endif
         #else
             float accumulatedLumi = 1.0;

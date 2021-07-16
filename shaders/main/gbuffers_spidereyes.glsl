@@ -51,7 +51,7 @@ INOUT vec4 glcolor;
 
         material.metallic_m = 0.0;
         material.emissive_m = maxC(material.albedo_t.rgb);
-        material.roughness_m = 1.0;
+        material.roughness_m = 0.0;
 
         material.albedo_t.rgb = pow(material.albedo_t.rgb, vec3(GAMMA));
 

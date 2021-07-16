@@ -117,6 +117,8 @@ INOUT mat3 TBN;
         material.ambient_m *= glcolor.a;
         material.light_m = lmCoord;
 
+        enviroPBR(material, TBN[2]);
+
         vec4 sceneCol = complexShadingGbuffers(material, posVector, dither);
 
         // Lightning

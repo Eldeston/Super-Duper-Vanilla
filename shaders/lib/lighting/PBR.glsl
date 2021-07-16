@@ -37,7 +37,7 @@ void getPBR(inout matPBR material, mat3 TBN, vec2 st){
 void getPBR(inout matPBR material, int id){
     vec3 hsv = saturate(rgb2hsv(material.albedo_t));
     float maxCol = maxC(material.albedo_t.rgb);
-    float sumCol = material.albedo_t.r + material.albedo_t.g + material.albedo_t.b;
+    float sumCol = saturate(material.albedo_t.r + material.albedo_t.g + material.albedo_t.b);
 
     // Default material
     material.metallic_m = 0.0; material.emissive_m = 0.0;
@@ -89,15 +89,21 @@ void getPBR(inout matPBR material, int id){
 
     // Netherite block
     if(id == 10021){
-        material.metallic_m = saturate(sumCol);
-        material.roughness_m = 1.0 - saturate(sumCol);
+        material.metallic_m = sumCol;
+        material.roughness_m = 1.0 - sumCol;
     }
 
     // Polished blocks
-    if(id == 10022) material.roughness_m = 1.0 - saturate(sumCol);
+    if(id == 10022) material.roughness_m = 1.0 - sumCol;
 
     // End portal
     if(id == 10030) material.emissive_m = 1.0;
 
     material.roughness_m = max(material.roughness_m, 0.028);
+}
+
+void enviroPBR(inout matPBR material, in vec3 rawNorm){
+    float rainMatFact = saturate(rainStrength * 0.972 * sqrt(material.normal_m.y) * cubed(material.light_m.y));
+    material.normal_m = mix(material.normal_m, rawNorm, rainMatFact);
+    material.roughness_m = material.roughness_m * (1.0 - rainMatFact);
 }
