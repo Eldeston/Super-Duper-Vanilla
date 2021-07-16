@@ -9,7 +9,6 @@ void getPBR(inout matPBR material, mat3 TBN, vec2 st){
     // Decode and extract the materials
     // Extract normals
     vec3 normalMap = normalAOH.xyz * 2.0 - 1.0;
-    if(length(normalMap.xy) > 1) normalMap.xy = normalize(normalMap.xy);
     normalMap.z = sqrt(1.0 - dot(normalMap.xy, normalMap.xy));
     // Assign normal
     material.normal_m = normalize(TBN * normalize(clamp(normalMap, -1.0, 1.0)));

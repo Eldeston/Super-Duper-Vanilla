@@ -73,14 +73,14 @@ INOUT vec2 screenCoord;
 
         vec3 sceneCol = texture2D(gcolor, posVector.screenPos.xy).rgb;
 
-        vec3 ditherTime = getRand3Animate(getRand3(posVector.screenPos.xy, 8));
+        vec3 dither = getRand3(posVector.screenPos.xy, 8);
         // Render lighting
         bool skyMask = posVector.screenPos.z == 1;
 
         // Get sky color
         vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyCol, lightCol, 1.0, 1.0, skyMask);
 
-        sceneCol = complexShadingDeferred(material, posVector, sceneCol, ditherTime);
+        sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
 
         #ifdef OUTLINES
             /* Outline calculation */
