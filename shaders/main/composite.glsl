@@ -79,35 +79,31 @@ INOUT vec2 screenCoord;
 
         vec3 dither = getRand3(posVector.screenPos.xy, 8);
         vec3 ditherTime = getRand3Animate(dither);
-        // Depth with transparents
-        float depth0 = posVector.viewPos.z;
-        // Depth with no transparents
-        float depth1 = toView(texture2D(depthtex1, posVector.screenPos.xy).r);
 
         #ifdef PREVIOUS_FRAME
             // Get previous frame buffer
             vec3 reflectBuffer = 1.0 / (1.0 - texture2D(colortex5, posVector.screenPos.xy).rgb) - 1.0;
         #endif
 
-        float skyMask = float(posVector.screenPos.z == 1);
         vec2 masks4 = texture2D(colortex4, posVector.screenPos.xy).xy;
-        float cloudMask = masks4.y;
+        bool cloudMask = masks4.y == 0;
+        bool skyMask = posVector.screenPos.z == 1;
 
         // If the object is transparent render lighting sperately
-        if(depth0 - depth1 > 0.01){
+        if(posVector.viewPos.z - toView(texture2D(depthtex1, posVector.screenPos.xy).r) > 0.01){
             // Get sky color
-            vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyCol, lightCol, skyMask, 1.0, 1.0);
+            vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyCol, lightCol, 1.0, 1.0, skyMask);
 
-            if(cloudMask == 0) sceneCol = complexShadingDeferred(material, posVector, sceneCol, ditherTime);
+            if(cloudMask) sceneCol = complexShadingDeferred(material, posVector, sceneCol, ditherTime);
 
             // Fog calculation
-            sceneCol = getFog(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y / 256.0, skyMask, cloudMask);
-
-            #ifdef PREVIOUS_FRAME
-                // Assign after main lighting calculation
-                reflectBuffer = sceneCol;
-            #endif
+            sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y / 256.0, cloudMask, skyMask);
         }
+
+        #ifdef PREVIOUS_FRAME
+            // Assign after main lighting calculation
+            reflectBuffer = sceneCol;
+        #endif
 
     /* DRAWBUFFERS:024 */
         gl_FragData[0] = vec4(sceneCol, 1); //gcolor

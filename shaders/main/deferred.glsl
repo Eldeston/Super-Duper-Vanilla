@@ -73,13 +73,12 @@ INOUT vec2 screenCoord;
 
         vec3 sceneCol = texture2D(gcolor, posVector.screenPos.xy).rgb;
 
-        vec3 dither = getRand3(posVector.screenPos.xy, 8);
-        vec3 ditherTime = getRand3Animate(dither);
+        vec3 ditherTime = getRand3Animate(getRand3(posVector.screenPos.xy, 8));
         // Render lighting
-        float skyMask = float(posVector.screenPos.z == 1);
+        bool skyMask = posVector.screenPos.z == 1;
 
         // Get sky color
-        vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyCol, lightCol, skyMask, 1.0, 1.0);
+        vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyCol, lightCol, 1.0, 1.0, skyMask);
 
         sceneCol = complexShadingDeferred(material, posVector, sceneCol, ditherTime);
 
@@ -89,7 +88,7 @@ INOUT vec2 screenCoord;
         #endif
 
         // Fog calculation
-        sceneCol = getFog(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y / 256.0, skyMask, 0.0);
+        sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y / 256.0, false, skyMask);
 
         #ifdef PREVIOUS_FRAME
             // Get previous frame buffer

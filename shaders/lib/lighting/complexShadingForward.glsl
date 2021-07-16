@@ -4,7 +4,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	#endif
 
 	#if defined USE_SKY_LIGHTMAP
-		material.light_m.y *= SKY_LIGHT_AMOUNT;
+		material.light_m.y = hermiteMix(0.0, 0.95, material.light_m.y * SKY_LIGHT_AMOUNT);
 	#else
 		material.light_m.y = SKY_LIGHT_AMOUNT;
 	#endif
@@ -12,8 +12,6 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	// Get positions
 	vec3 nLightPos = normalize(posVector.lightPos);
     vec3 nEyePlayerPos = normalize(-posVector.eyePlayerPos);
-
-	float smoothness = 1.0 - material.roughness_m;
 
 	#if !defined ENABLE_LIGHT
 		vec3 directLight = vec3(0);
@@ -32,21 +30,18 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	#endif
 
 	// Get globally illuminated sky
-	vec3 GISky = ambientLighting + getSkyRender(material.normal_m, skyCol, lightCol, 0.0, 0.0, 0.0) * material.light_m.y * material.light_m.y;
+	vec3 GISky = ambientLighting + getSkyRender(material.normal_m, skyCol, lightCol, 0.0, 0.0, false) * material.light_m.y * material.light_m.y;
 
 	// Get fresnel
     vec3 F0 = mix(vec3(0.04), material.albedo_t.rgb, material.metallic_m);
     vec3 fresnel = getFresnelSchlick(dot(material.normal_m, nEyePlayerPos), F0);
 	// Get specular GGX
 	vec3 specCol = getSpecGGX(nEyePlayerPos, nLightPos, normalize(posVector.lightPos - posVector.eyePlayerPos), material.normal_m, fresnel, material.roughness_m) * directLight;
-
-	// Get reflected sky
-	float skyMask = pow(material.light_m.y, 1.0 / 2.0) * smoothness;
 	
-	vec3 reflectedSkyRender = ambientLighting + getSkyRender(reflect(posVector.eyePlayerPos, material.normal_m), skyCol, lightCol, skyMask, skyMask, maxC(directLight)) * material.light_m.y;
+	vec3 reflectedSkyRender = ambientLighting + getSkyRender(reflect(posVector.eyePlayerPos, material.normal_m), skyCol, lightCol, 1.0, maxC(directLight), material.light_m.y >= 0.95) * pow(hermiteMix(0.0, 0.8, material.light_m.y), 8.0);
 
 	// Mask reflections
-    vec3 reflectCol = reflectedSkyRender * fresnel * smoothness * material.ambient_m; // Will change this later...
+    vec3 reflectCol = reflectedSkyRender * fresnel * (1.0 - material.roughness_m) * material.ambient_m; // Will change this later...
 
 	vec3 totalDiffuse = (directLight + GISky * material.ambient_m + cubed(material.light_m.x) * BLOCK_LIGHT_COL * pow(material.ambient_m, 1.0 / 4.0)) * (1.0 - material.metallic_m) + material.emissive_m;
 	return vec4(material.albedo_t.rgb * totalDiffuse + specCol + reflectCol, material.albedo_t.a);

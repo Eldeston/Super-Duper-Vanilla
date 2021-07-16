@@ -12,7 +12,7 @@ float genStar(vec2 nSkyPos){
     return getStarShape(starGrid, starRand.r * 0.9 + 0.3);
 }
 
-vec3 getSkyRender(vec3 playerPos, vec3 skyCol, vec3 lightCol, float skyMask, float skyDiffuseMask, float dirLightMask){
+vec3 getSkyRender(vec3 playerPos, vec3 skyCol, vec3 lightCol, float skyDiffuseMask, float dirLightMask, bool skyMask){
     #if defined USE_CUSTOM_FOGCOL || defined USE_VANILLA_FOGCOL
         return pow(skyCol, vec3(GAMMA));
     #else
@@ -30,7 +30,7 @@ vec3 getSkyRender(vec3 playerPos, vec3 skyCol, vec3 lightCol, float skyMask, flo
         // Get star pos
         vec2 starPos = 0.5 > abs(nSkyPos.y) ? vec2(atan(nSkyPos.x, nSkyPos.z), nSkyPos.y) * 0.25 : nSkyPos.xz * 0.333;
 
-        float celestialBodies = (genStar(starPos * 0.128) * squared(1.0 - day) + getSunMoonShape(nSkyPos) * dirLightMask * 8.0) * skyMask;
+        float celestialBodies = skyMask ? genStar(starPos * 0.128) * squared(1.0 - day) + getSunMoonShape(nSkyPos) * dirLightMask * 8.0 : 0.0;
         
         return pow(celestialBodies * sqrt(lightCol) + (lightRange * skyDiffuseMask) * lightCol + skyCol, vec3(GAMMA));
     #endif
