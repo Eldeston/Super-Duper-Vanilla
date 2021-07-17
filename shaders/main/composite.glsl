@@ -85,7 +85,7 @@ INOUT vec2 screenCoord;
         #endif
 
         vec2 masks4 = texture2D(colortex4, posVector.screenPos.xy).xy;
-        bool cloudMask = masks4.y == 0;
+        bool cloudMask = masks4.y != 0;
         bool skyMask = posVector.screenPos.z == 1;
 
         // If the object is transparent render lighting sperately
