@@ -58,12 +58,20 @@ INOUT vec3 gcolor;
 
     void main(){
         vec4 shdColor = texture2D(tex, texcoord);
-        shdColor.rgb = toneSaturation(shdColor.rgb * gcolor, 0.5);
+        shdColor.rgb = shdColor.rgb * gcolor;
 
         #ifdef UNDERWATER_CAUSTICS
             int rBlockId = int(blockId + 0.5);
-            float waterData = squared(1.0 - H2NWater(worldPos.xz).w) * 4.0;
-            if(rBlockId == 10014) shdColor.rgb = shdColor.rgb * (1.0 + waterData);
+            if(rBlockId == 10014){
+                #ifdef INVERSE
+                    float waterData = squared(getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 16.0;
+                #else
+                    float waterData = squared(1.0 - getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 16.0;
+                #endif
+                
+                shdColor.rgb = shdColor.rgb / 2.0;
+                shdColor.rgb = shdColor.rgb * (1.0 + waterData);
+            }
         #endif
 
     /* DRAWBUFFERS:0 */
