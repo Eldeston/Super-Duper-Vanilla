@@ -61,16 +61,14 @@ INOUT vec3 gcolor;
         shdColor.rgb = shdColor.rgb * gcolor;
 
         #ifdef UNDERWATER_CAUSTICS
-            int rBlockId = int(blockId + 0.5);
-            if(rBlockId == 10014){
+            if(int(blockId + 0.5) == 10014){
                 #ifdef INVERSE
                     float waterData = squared(getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 16.0;
                 #else
                     float waterData = squared(1.0 - getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 16.0;
                 #endif
-                
-                shdColor.rgb = shdColor.rgb / 2.0;
-                shdColor.rgb = shdColor.rgb * (1.0 + waterData);
+
+                shdColor.rgb = (shdColor.rgb / 2.0) * waterData;
             }
         #endif
 
