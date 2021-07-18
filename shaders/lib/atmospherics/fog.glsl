@@ -15,7 +15,6 @@ float getBorderFogAmount(float eyePlayerPosLength, float edge){
 
 vec3 getFogRender(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY, bool cloudMask, bool skyMask){
     vec3 nEyePlayerPos = normalize(eyePlayerPos);
-
     float eyePlayerPosLength = length(eyePlayerPos);
 
     float c = FOG_TOTAL_DENSITY_FALLOFF * rainMult * underWaterMult * 1.28;

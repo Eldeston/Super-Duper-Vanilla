@@ -93,7 +93,7 @@ INOUT vec2 screenCoord;
             // Get sky color
             vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyCol, lightCol, 1.0, 1.0, skyMask);
 
-            if(cloudMask) sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
+            if(!cloudMask) sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
 
             // Fog calculation
             sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y / 256.0, cloudMask, skyMask);
