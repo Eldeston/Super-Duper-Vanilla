@@ -2,8 +2,6 @@
 #include "/lib/structs.glsl"
 #include "/lib/settings.glsl"
 
-#include "/lib/globalVars/matUniforms.glsl"
-
 INOUT float blockId;
 
 INOUT vec2 lmCoord;
@@ -14,6 +12,9 @@ INOUT vec4 glcolor;
 INOUT mat3 TBN;
 
 #ifdef VERTEX
+    uniform mat4 gbufferModelView;
+    uniform mat4 gbufferModelViewInverse;
+    
     attribute vec4 mc_Entity;
     attribute vec4 at_tangent;
 
@@ -39,11 +40,12 @@ INOUT mat3 TBN;
 
 #ifdef FRAGMENT
     uniform sampler2D texture;
-
-    #include "/lib/globalVars/gameUniforms.glsl"
+    
+    #include "/lib/globalVars/matUniforms.glsl"
     #include "/lib/globalVars/posUniforms.glsl"
     #include "/lib/globalVars/screenUniforms.glsl"
     #include "/lib/globalVars/timeUniforms.glsl"
+    #include "/lib/globalVars/gameUniforms.glsl"
     #include "/lib/globalVars/universalVars.glsl"
 
     #include "/lib/lighting/shdDistort.glsl"

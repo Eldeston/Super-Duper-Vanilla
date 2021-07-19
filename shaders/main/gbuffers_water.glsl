@@ -3,8 +3,6 @@
 #include "/lib/settings.glsl"
 
 #include "/lib/globalVars/gameUniforms.glsl"
-#include "/lib/globalVars/matUniforms.glsl"
-#include "/lib/globalVars/posUniforms.glsl"
 #include "/lib/globalVars/timeUniforms.glsl"
 
 INOUT float blockId;
@@ -18,6 +16,11 @@ INOUT mat3 TBN;
 
 #ifdef VERTEX
     #include "/lib/vertex/vertexWave.glsl"
+
+    uniform vec3 cameraPosition;
+
+    uniform mat4 gbufferModelView;
+    uniform mat4 gbufferModelViewInverse;
 
     attribute vec2 mc_midTexCoord;
 
@@ -51,7 +54,9 @@ INOUT mat3 TBN;
 
 #ifdef FRAGMENT
     uniform sampler2D texture;
-
+    
+    #include "/lib/globalVars/matUniforms.glsl"
+    #include "/lib/globalVars/posUniforms.glsl"
     #include "/lib/globalVars/screenUniforms.glsl"
     #include "/lib/globalVars/universalVars.glsl"
     
