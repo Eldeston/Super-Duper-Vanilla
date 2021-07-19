@@ -15,13 +15,13 @@ void getWave(inout vec3 vertexPos, in vec3 worldPos, in vec2 texCoord, in vec2 m
 	// Tall grass
 	if((id >= 10000 && id <= 10003) || id == 10006) vertexPos.x += windDisp;
 	// Foliage
-	else if(id == 10005) vertexPos.xz += windDisp * 0.75;
-	// Water and lava
-    else if(id == 10010 || id == 10014) vertexPos.y += waterDisp;
+	if(id == 10005) vertexPos.xz += windDisp * 0.75;
 	// Corals
-	else if(id == 10008) vertexPos.x += waterDisp * 2.0;
+	if(id == 10008) vertexPos.x += waterDisp * 2.0;
 	// Vines
-    else if(id == 10007) vertexPos.x += windDisp * 0.32;
+    if(id == 10007) vertexPos.x += windDisp * 0.32;
 	// Floating plants
-	else if(id == 10004) vertexPos.y += waterDisp;
+	if(id == 10004) vertexPos.y += waterDisp;
+	// Water and lava
+    if(id == 10010 || id == 10014) vertexPos.y += waterDisp;
 }

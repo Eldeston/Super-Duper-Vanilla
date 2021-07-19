@@ -80,12 +80,15 @@ INOUT vec2 screenCoord;
         // Get sky color
         vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyCol, lightCol, 1.0, 1.0, skyMask);
 
-        sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
+        // If not sky, don't calculate lighting
+        if(!skyMask){
+            sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
 
-        #ifdef OUTLINES
-            /* Outline calculation */
-            sceneCol *= 1.0 + getOutline(depthtex0, posVector.screenPos, OUTLINE_PIX_SIZE) * (OUTLINE_BRIGHTNESS - 1.0);
-        #endif
+            #ifdef OUTLINES
+                /* Outline calculation */
+                sceneCol *= 1.0 + getOutline(depthtex0, posVector.screenPos, OUTLINE_PIX_SIZE) * (OUTLINE_BRIGHTNESS - 1.0);
+            #endif
+        }
 
         // Fog calculation
         sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y / 256.0, false, skyMask);

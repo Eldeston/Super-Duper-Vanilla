@@ -88,21 +88,24 @@ INOUT vec2 screenCoord;
         bool cloudMask = masks4.y != 0;
         bool skyMask = posVector.screenPos.z == 1;
 
-        // If the object is transparent render lighting sperately
-        if(posVector.viewPos.z - toView(texture2D(depthtex1, posVector.screenPos.xy).r) > 0.01){
-            // Get sky color
-            vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyCol, lightCol, 1.0, 1.0, skyMask);
+        // If not sky, don't calculate lighting
+        if(!skyMask){
+            // If the object is transparent render lighting sperately
+            if(posVector.viewPos.z - toView(texture2D(depthtex1, posVector.screenPos.xy).r) > 0.01){
+                // Get sky color
+                vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyCol, lightCol, 1.0, 1.0, skyMask);
 
-            if(!cloudMask) sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
+                if(!cloudMask) sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
 
-            // Fog calculation
-            sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y / 256.0, cloudMask, skyMask);
+                // Fog calculation
+                sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y / 256.0, cloudMask, skyMask);
+
+                #ifdef PREVIOUS_FRAME
+                    // Assign after main lighting calculation
+                    reflectBuffer = sceneCol;
+                #endif
+            }
         }
-
-        #ifdef PREVIOUS_FRAME
-            // Assign after main lighting calculation
-            reflectBuffer = sceneCol;
-        #endif
 
     /* DRAWBUFFERS:024 */
         gl_FragData[0] = vec4(sceneCol, 1); //gcolor
