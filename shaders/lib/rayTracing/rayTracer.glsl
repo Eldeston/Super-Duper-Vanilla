@@ -9,30 +9,28 @@ vec3 binarySearch(vec3 clipPosRayDir, vec3 startPos, int binarySearchSteps){
 	return startPos;
 }
 
-vec3 rayTraceScene(vec3 screenPos, vec3 viewPos, vec3 rayDir, int steps, int binarySearchSteps){
-	// We'll also use this as a start position
-	vec3 clipPos = screenPos * 2.0 - 1.0;
-
+vec3 rayTraceScene(vec3 clipPos, vec3 viewPos, vec3 rayDir, int steps, int binarySearchSteps){
+	// If hand, do simple, flipped reflections
 	if(clipPos.z < MC_HAND_DEPTH){
 		vec3 handScreenPos = toScreenSpacePos(toScreen(viewPos + rayDir * far).xy);
 		return vec3(handScreenPos.xy, handScreenPos.z != 1);
-	} else {
-		vec3 viewPosWithRayDir = viewPos + rayDir;
-		vec3 clipPosRayDir = toScreen(viewPosWithRayDir) * 2.0 - 1.0; // Put it back to clip space...
-		clipPosRayDir = normalize(clipPosRayDir - clipPos) * (2.0 / steps);
+	}
 
-		// vec3 startPos = clipPos;
-		for(int x = 0; x < steps; x++){
-			// We raytrace here
-			clipPos += clipPosRayDir;
-			vec3 newScreenPos = clipPos * 0.5 + 0.5;
-			if(newScreenPos.x < 0 || newScreenPos.y < 0 || newScreenPos.x > 1 || newScreenPos.y > 1) return vec3(0);
-			float depth = texture2D(depthtex0, newScreenPos.xy).x;
+	vec3 viewPosWithRayDir = viewPos + rayDir;
+	vec3 clipPosRayDir = toScreen(viewPosWithRayDir) * 2.0 - 1.0; // Put it back to clip space...
+	clipPosRayDir = normalize(clipPosRayDir - clipPos) * (2.0 / steps);
 
-			if(newScreenPos.z > depth && (newScreenPos.z - depth) < MC_HAND_DEPTH){
-				if(binarySearchSteps == 0) return vec3(clipPos.xy * 0.5 + 0.5, depth != 1);
-				else return vec3(binarySearch(clipPosRayDir, clipPos, binarySearchSteps).xy * 0.5 + 0.5, depth != 1);
-			}
+	// vec3 startPos = clipPos;
+	for(int x = 0; x < steps; x++){
+		// We raytrace here
+		clipPos += clipPosRayDir;
+		vec3 newScreenPos = clipPos * 0.5 + 0.5;
+		if(newScreenPos.x < 0 || newScreenPos.y < 0 || newScreenPos.x > 1 || newScreenPos.y > 1) return vec3(0);
+		float depth = texture2D(depthtex0, newScreenPos.xy).x;
+
+		if(newScreenPos.z > depth && (newScreenPos.z - depth) < MC_HAND_DEPTH){
+			if(binarySearchSteps == 0) return vec3(clipPos.xy * 0.5 + 0.5, depth != 1);
+			return vec3(binarySearch(clipPosRayDir, clipPos, binarySearchSteps).xy * 0.5 + 0.5, depth != 1);
 		}
 	}
 	

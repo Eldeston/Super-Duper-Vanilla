@@ -13,11 +13,11 @@ vec3 cosWeightedRandHemisphereDir(vec3 norm, vec2 seed){
     return normalize(rr);
 }
 
-vec3 getSSGICol(vec3 viewPos, vec3 screenPos, vec3 gBMVNorm, vec2 dither){
+vec3 getSSGICol(vec3 viewPos, vec3 clipPos, vec3 gBMVNorm, vec2 dither){
     // Sample normal direction...
 	vec3 sampleDir = cosWeightedRandHemisphereDir(gBMVNorm, dither);
     // Raytrace scene...
-	vec3 GIScreenPos = rayTraceScene(screenPos, viewPos, sampleDir, SSGI_STEPS, SSGI_BISTEPS);
+	vec3 GIScreenPos = rayTraceScene(clipPos, viewPos, sampleDir, SSGI_STEPS, SSGI_BISTEPS);
     
     #ifdef PREVIOUS_FRAME
         // Transform coords to previous frame coords

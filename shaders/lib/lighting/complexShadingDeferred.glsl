@@ -6,7 +6,7 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
 
 	#ifdef SSGI
 		// Get SSGI
-		vec3 GIcol = getSSGICol(posVector.viewPos, posVector.screenPos, gBMVNorm, toRandPerFrame(dither.xy));
+		vec3 GIcol = getSSGICol(posVector.viewPos, posVector.clipPos, gBMVNorm, toRandPerFrame(dither.xy));
 	#else
 		vec3 GIcol = vec3(0);
 	#endif
@@ -17,10 +17,10 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
 
 	#ifdef SSR
 		#ifdef ROUGH_REFLECTIONS
-			vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.screenPos,
+			vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.clipPos,
 				gBMVNorm + (dither * 2.0 - 1.0) * squared(material.roughness_m * material.roughness_m));
 		#else
-			vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.screenPos, gBMVNorm);
+			vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.clipPos, gBMVNorm);
 		#endif
 	#else
 		vec4 SSRCol = vec4(0);
