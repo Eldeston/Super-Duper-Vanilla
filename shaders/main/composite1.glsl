@@ -37,7 +37,7 @@ INOUT vec2 texcoord;
             vec3 bloomCol = sceneCol * smoothstep(1.0, 4.0, getLuminance(sceneCol));
         #endif
 
-        float volMult = VOL_LIGHT_BRIGHTNESS * (1.0 - newTwilight) * (1.0 - blindness * 0.6) * (0.25 * (1.0 - eyeBrightFact) + eyeBrightFact) * min(1.0, FOG_OPACITY + rainMult * underWaterMult * 0.16);
+        float volMult = VOL_LIGHT_BRIGHTNESS * (1.0 - newTwilight) * (1.0 - blindness * 0.6) * (0.25 * (1.0 - eyeBrightFact) + eyeBrightFact) * min(1.0, FOG_OPACITY * underWaterMult * rainMult);
 
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(sceneCol + (texture2D(colortex4, texcoord, 1.6).gba * volMult) * lightCol, 1); //gcolor
