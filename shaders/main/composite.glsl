@@ -58,7 +58,6 @@ INOUT vec2 screenCoord;
     #include "/lib/lighting/SSR.glsl"
     #include "/lib/lighting/SSGI.glsl"
     #include "/lib/rayTracing/volLight.glsl"
-    #include "/lib/post/outline.glsl"
 
     #include "/lib/lighting/complexShadingDeferred.glsl"
 

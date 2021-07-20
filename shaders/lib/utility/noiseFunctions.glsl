@@ -30,8 +30,9 @@ vec3 toRandPerFrame(vec3 rand){
 }
 
 float getCellNoise(vec2 st){
-    float d0 = tex2DBilinear(noisetex, st + frameTimeCounter * 0.0125, vec2(256)).z;
-    float d1 = tex2DBilinear(noisetex, st * 4.0 - frameTimeCounter * 0.05, vec2(256)).z;
+    float animateTime = ANIMATION_SPEED * frameTimeCounter;
+    float d0 = tex2DBilinear(noisetex, st + animateTime * 0.015, vec2(256)).z;
+    float d1 = tex2DBilinear(noisetex, st * 4.0 - animateTime * 0.06, vec2(256)).z;
     #ifdef INVERSE
         return 1.0 - d0 * 0.875 + d1 * 0.125;
     #else
