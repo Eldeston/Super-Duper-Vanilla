@@ -1,4 +1,10 @@
-screen.CAMERA=Camera
+#Profiles
+    profile.LOW=Low
+    profile.MEDIUM=Medium (Default)
+    profile.HIGH=High
+    profile.ULTRA=Ultra
+
+#Camera
     option.VIGNETTE=Vignette
     option.UNDERWATER_BLUR=Underwater blur
     option.VIGNETTE_INTENSITY=Vignette intensity
@@ -21,7 +27,7 @@ screen.CAMERA=Camera
     option.OUTLINE_PIX_SIZE=Outline pixel size
     screen.CAMERA.comment=Camera settings for tonemap, vignette, HDR, postprocessing etc.
 
-screen.TONEMAP=Tonemap
+#Tonemap
     option.SATURATION=Saturation
     option.CONTRAST=Contrast
     option.EXPOSURE=Exposure
@@ -29,7 +35,7 @@ screen.TONEMAP=Tonemap
     option.GAMMA=Gamma
     screen.TONEMAP.comment=Edit camera's tone settings for saturation, contrast etc.
 
-screen.LIGHTING=Lighting
+#Lighting
     option.RENDER_FOLIAGE_SHD=Cutout shadows
     option.SHD_COL=Shadow color
     option.shadowMapResolution=Shadowmap resolution
@@ -41,10 +47,10 @@ screen.LIGHTING=Lighting
     option.AMBIENT_LIGHTING=Ambient lighting
     screen.LIGHTING.comment=Lighting settings for shadow resolution, lightmap etc.
 
-screen.PBR=PBR
+#PBR
     option.DEFAULT_MAT=Default PBR materials
 
-screen.RAY_TRACING=Ray tracing settings
+#Ray tracing settings
     option.SSGI_STEPS=SSGI steps
     option.SSR_STEPS=SSR steps
     option.SSGI_BISTEPS=SSGI refinement steps
@@ -54,14 +60,14 @@ screen.RAY_TRACING=Ray tracing settings
     option.TEMPORAL_ACCUMULATION=Temporal accumulation
     option.ACCUMILATION_SPEED=Accumulation speed
 
-screen.WATER_SETTINGS=Water settings
+#Water settings
     option.WATER_BRIGHTNESS=Water brightness
     option.WATER_BLUR_SIZE=Water blur size
     option.WATER_DEPTH_SIZE=Water depth size
     option.WATER_TILE_SIZE=Water tile size
     option.WATER_NORM=Water normals
 
-screen.ATMOSPHERICS=Atmospherics
+#Atmospherics
     option.VOL_LIGHT_BRIGHTNESS=Volumetric light amount
     option.VOL_LIGHT=Volumetric lighting
     option.MIST_GROUND_FOG_BRIGHTNESS=Ground fog amount
@@ -71,11 +77,11 @@ screen.ATMOSPHERICS=Atmospherics
     option.SECOND_CLOUD_HEIGHT=2nd cloud height
     option.FADE_SPEED=Fade speed
 
-screen.ANIMATION=Animation
+#Animation
     option.ANIMATE=Animate
     option.ANIMATION_SPEED=Animation speed
 
-screen.DEBUG=Super Duper Vanilla by Eldeston
+#Super Duper Vanilla by Eldeston
     option.WHITE_MODE=White mode
     option.NOISE_SPEED=Noise speed
     option.BUFFER_VIEW=Buffer view
