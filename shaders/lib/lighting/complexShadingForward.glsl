@@ -4,14 +4,14 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	#endif
 
 	#if defined USE_SKY_LIGHTMAP
-		material.light_m.y = hermiteMix(0.0, 0.95, material.light_m.y * SKY_LIGHT_AMOUNT);
+		material.light_m.y = (material.light_m.y * SKY_LIGHT_AMOUNT) / 0.95;
 	#else
 		material.light_m.y = SKY_LIGHT_AMOUNT;
 	#endif
 
 	// Get positions
 	vec3 nLightPos = normalize(posVector.lightPos);
-    vec3 nEyePlayerPos = normalize(-posVector.eyePlayerPos);
+    vec3 nNegEyePlayerPos = normalize(-posVector.eyePlayerPos);
 
 	#if !defined ENABLE_LIGHT
 		vec3 directLight = vec3(0);
@@ -33,10 +33,10 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	vec3 GISky = ambientLighting + getSkyRender(material.normal_m, skyCol, lightCol, 0.0, false) * material.light_m.y * material.light_m.y;
 
 	// Get fresnel
-    vec3 fresnel = getFresnelSchlick(dot(material.normal_m, nEyePlayerPos),
+    vec3 fresnel = getFresnelSchlick(dot(material.normal_m, nNegEyePlayerPos),
 		mix(vec3(0.04), material.albedo_t.rgb, material.metallic_m));
 	// Get specular GGX
-	vec3 specCol = getSpecGGX(nEyePlayerPos, nLightPos, normalize(posVector.lightPos - posVector.eyePlayerPos), material.normal_m, fresnel, material.roughness_m) * directLight;
+	vec3 specCol = getSpecGGX(nNegEyePlayerPos, nLightPos, normalize(posVector.lightPos - posVector.eyePlayerPos), material.normal_m, fresnel, material.roughness_m) * directLight;
 	
 	vec3 reflectedSkyRender = ambientLighting + getSkyRender(reflect(posVector.eyePlayerPos, material.normal_m), skyCol, directLight, 1.0, material.light_m.y >= 0.95) * material.light_m.y;
 
