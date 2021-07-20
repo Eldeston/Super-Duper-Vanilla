@@ -53,8 +53,6 @@ INOUT mat3 TBN;
 #endif
 
 #ifdef FRAGMENT
-    uniform sampler2D depthtex1;
-    
     #include "/lib/globalVars/matUniforms.glsl"
     #include "/lib/globalVars/posUniforms.glsl"
     #include "/lib/globalVars/screenUniforms.glsl"
