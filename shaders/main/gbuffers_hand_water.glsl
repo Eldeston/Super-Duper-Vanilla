@@ -39,8 +39,6 @@ INOUT mat3 TBN;
 #endif
 
 #ifdef FRAGMENT
-    uniform sampler2D texture;
-    
     #include "/lib/globalVars/matUniforms.glsl"
     #include "/lib/globalVars/posUniforms.glsl"
     #include "/lib/globalVars/screenUniforms.glsl"
@@ -75,34 +73,11 @@ INOUT mat3 TBN;
 	    matPBR material;
 
         int rBlockId = int(blockId + 0.5);
-        material.normal_m = TBN[2];
-        material.albedo_t = texture2D(texture, texCoord);
 
-        #if WHITE_MODE == 0
-            material.albedo_t.rgb *= glcolor.rgb;
-        #elif WHITE_MODE == 1
-            material.albedo_t.rgb = vec3(1);
-        #elif WHITE_MODE == 2
-            material.albedo_t.rgb = vec3(0);
-        #elif WHITE_MODE == 3
-            material.albedo_t.rgb = glcolor.rgb;
-        #endif
-
-        #ifdef DEFAULT_MAT
-            getPBR(material, rBlockId);
-        #else
-            getPBR(material, TBN, texCoord);
-        #endif
+        getPBR(material, TBN, glcolor.rgb, texCoord, rBlockId);
 
         // If player
         if(rBlockId == 0) material.ambient_m = 1.0;
-
-        // If water
-        if(rBlockId == 10014){
-            material.metallic_m = 0.5;
-            material.roughness_m = 0.028;
-            material.ambient_m = 1.0;
-        }
 
         material.albedo_t.rgb = mix(material.albedo_t.rgb, entityColor.rgb, entityColor.a);
 

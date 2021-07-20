@@ -53,8 +53,6 @@ INOUT mat3 TBN;
 #endif
 
 #ifdef FRAGMENT
-    uniform sampler2D texture;
-    
     #include "/lib/globalVars/matUniforms.glsl"
     #include "/lib/globalVars/posUniforms.glsl"
     #include "/lib/globalVars/screenUniforms.glsl"
@@ -87,31 +85,8 @@ INOUT mat3 TBN;
 	    matPBR material;
 
         int rBlockId = int(blockId + 0.5);
-        material.normal_m = TBN[2];
-        material.albedo_t = texture2D(texture, texCoord);
 
-        #if WHITE_MODE == 0
-            material.albedo_t.rgb *= glcolor.rgb;
-        #elif WHITE_MODE == 1
-            material.albedo_t.rgb = vec3(1);
-        #elif WHITE_MODE == 2
-            material.albedo_t.rgb = vec3(0);
-        #elif WHITE_MODE == 3
-            material.albedo_t.rgb = glcolor.rgb;
-        #endif
-
-        #ifdef DEFAULT_MAT
-            getPBR(material, rBlockId);
-        #else
-            getPBR(material, TBN, texCoord);
-        #endif
-
-        // If lava
-        if(rBlockId == 10010){
-            material.emissive_m = 1.0;
-            material.roughness_m = 1.0;
-            material.ambient_m = 1.0;
-        }
+        getPBR(material, TBN, glcolor.rgb, texCoord, rBlockId);
 
         material.albedo_t.rgb = pow(material.albedo_t.rgb, vec3(GAMMA));
 
