@@ -93,7 +93,7 @@ INOUT vec2 screenCoord;
             // If the object is transparent render lighting sperately
             if(posVector.viewPos.z - toView(texture2D(depthtex1, posVector.screenPos.xy).r) > 0.01){
                 // Get sky color
-                vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyCol, lightCol, 1.0, 1.0, skyMask);
+                vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyCol, lightCol, 1.0, skyMask);
 
                 if(!cloudMask) sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
 
