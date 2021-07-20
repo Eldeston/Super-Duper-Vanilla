@@ -6,7 +6,7 @@ vec3 getGodRays(vec3 feetPlayerPos, float worldPosY, float dither){
 		float b = FOG_VERTICAL_DENSITY_FALLOFF * rainMult * underWaterMult;
 		worldPosY /= (1.0 + rainStrength * 4.0);
 
-		#ifndef VOL_LIGHT
+		#if !(defined VOL_LIGHT && defined SHD_ENABLE)
 			return vec3(atmoFog(feetPlayerPos.y, worldPosY, length(feetPlayerPos), c, b));
 		#else
 			if(VOL_LIGHT_BRIGHTNESS == 0) return vec3(0);

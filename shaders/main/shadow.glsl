@@ -41,11 +41,6 @@ INOUT vec3 gcolor;
 
         gl_Position.xyz = distort(gl_Position.xyz);
 
-        #ifndef RENDER_FOLIAGE_SHD
-            if(mc_Entity.x >= 10001 || mc_Entity.x <= 10004 || mc_Entity.x == 10007 || mc_Entity.x == 10008)
-                gl_Position = vec4(10);
-        #endif
-
         gcolor = gl_Color.rgb;
     }
 #endif

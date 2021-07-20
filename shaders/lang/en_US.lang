@@ -1,4 +1,5 @@
 #Profiles
+    profile.POTATO=Potato
     profile.LOW=Low
     profile.MEDIUM=Medium (Default)
     profile.HIGH=High
@@ -36,10 +37,10 @@
     screen.TONEMAP.comment=Edit camera's tone settings for saturation, contrast etc.
 
 #Lighting
-    option.RENDER_FOLIAGE_SHD=Cutout shadows
     option.SHD_COL=Shadow color
     option.shadowMapResolution=Shadowmap resolution
     option.sunPathRotation=Light rotation
+    option.SHD_ENABLE=Shadowmapping enabled
     option.SHADOW_FILTER=Soft shadow filter
     option.SHADOW_DISTORT_FACTOR=Shadow distortion factor
     option.UNDERWATER_CAUSTICS=Underwater caustics
@@ -50,7 +51,7 @@
 #PBR
     option.DEFAULT_MAT=Default PBR materials
 
-#Ray tracing settings
+screen.RAY_TRACING=Ray tracing settings
     option.SSGI_STEPS=SSGI steps
     option.SSR_STEPS=SSR steps
     option.SSGI_BISTEPS=SSGI refinement steps
@@ -60,7 +61,7 @@
     option.TEMPORAL_ACCUMULATION=Temporal accumulation
     option.ACCUMILATION_SPEED=Accumulation speed
 
-#Water settings
+screen.WATER_SETTINGS=Water settings
     option.WATER_BRIGHTNESS=Water brightness
     option.WATER_BLUR_SIZE=Water blur size
     option.WATER_DEPTH_SIZE=Water depth size
@@ -81,7 +82,7 @@
     option.ANIMATE=Animate
     option.ANIMATION_SPEED=Animation speed
 
-#Super Duper Vanilla by Eldeston
+screen.DEBUG=Super Duper Vanilla by Eldeston
     option.WHITE_MODE=White mode
     option.NOISE_SPEED=Noise speed
     option.BUFFER_VIEW=Buffer view
