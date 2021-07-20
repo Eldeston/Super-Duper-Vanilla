@@ -37,7 +37,9 @@ INOUT vec2 texcoord;
         uniform sampler2D colortex6;
     #endif
 
-    #include "/lib/globalVars/universalVars.glsl"
+    #if AUTO_EXPOSURE == 1
+        #include "/lib/globalVars/universalVars.glsl"
+    #endif
 
     #ifdef TEMPORAL_ACCUMULATION
         #include "/lib/lighting/shdDistort.glsl"
@@ -86,7 +88,7 @@ INOUT vec2 texcoord;
             lumiCurrent += getLuminance(texture2D(gcolor, vec2(1, 0.5), lod).rgb);
 
             // Mix previous and current buffer...
-            float accumulatedLumi = mix(lumiCurrent / 3.0, texture2D(colortex6, vec2(0)).a, exp2(-1.0 * frameTime));
+            float accumulatedLumi = mix(lumiCurrent * 0.333, texture2D(colortex6, vec2(0)).a, exp2(-1.0 * frameTime));
 
             // Apply exposure
             color /= max(accumulatedLumi * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);

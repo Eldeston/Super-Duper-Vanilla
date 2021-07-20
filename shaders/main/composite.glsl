@@ -72,7 +72,11 @@ INOUT vec2 screenCoord;
 
         vec3 sceneCol = texture2D(gcolor, posVector.screenPos.xy).rgb;
 
-        vec3 dither = getRand3(posVector.screenPos.xy, 8);
+        #ifdef TEMPORAL_ACCUMULATION
+            vec3 dither = toRandPerFrame(getRand3(posVector.screenPos.xy, 8));
+        #else
+            vec3 dither = getRand3(posVector.screenPos.xy, 8);
+        #endif
 
         #ifdef PREVIOUS_FRAME
             // Get previous frame buffer

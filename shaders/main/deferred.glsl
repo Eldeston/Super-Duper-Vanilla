@@ -81,7 +81,11 @@ INOUT vec2 screenCoord;
             matPBR material;
             getPBR(material, posVector.screenPos.xy);
 
-            vec3 dither = getRand3(posVector.screenPos.xy, 8);
+            #ifdef TEMPORAL_ACCUMULATION
+                vec3 dither = toRandPerFrame(getRand3(posVector.screenPos.xy, 8));
+            #else
+                vec3 dither = getRand3(posVector.screenPos.xy, 8);
+            #endif
 
             sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
 
