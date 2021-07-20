@@ -30,7 +30,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	#endif
 
 	// Get globally illuminated sky
-	vec3 GISky = ambientLighting + getSkyRender(material.normal_m, skyCol, lightCol, 0.0, false) * material.light_m.y * material.light_m.y;
+	vec3 GISky = ambientLighting + getSkyRender(material.normal_m, lightCol, 0.0, false) * material.light_m.y * material.light_m.y;
 
 	// Get fresnel
     vec3 fresnel = getFresnelSchlick(dot(material.normal_m, nNegEyePlayerPos),
@@ -38,7 +38,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	// Get specular GGX
 	vec3 specCol = getSpecGGX(nNegEyePlayerPos, nLightPos, normalize(posVector.lightPos - posVector.eyePlayerPos), material.normal_m, fresnel, material.roughness_m) * directLight;
 	
-	vec3 reflectedSkyRender = ambientLighting + getSkyRender(reflect(posVector.eyePlayerPos, material.normal_m), skyCol, directLight, 1.0, material.light_m.y >= 0.95) * material.light_m.y;
+	vec3 reflectedSkyRender = ambientLighting + getSkyRender(reflect(posVector.eyePlayerPos, material.normal_m), directLight, 1.0, material.light_m.y >= 0.95) * material.light_m.y;
 
 	// Mask reflections
     vec3 reflectCol = reflectedSkyRender * fresnel * (1.0 - material.roughness_m) * material.ambient_m; // Will change this later...

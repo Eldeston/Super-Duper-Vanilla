@@ -93,7 +93,7 @@ INOUT vec2 screenCoord;
                 getPBR(material, posVector.screenPos.xy);
 
                 // Get sky color
-                vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyCol, lightCol, 1.0, skyMask);
+                vec3 skyRender = getSkyRender(posVector.eyePlayerPos, lightCol, 1.0, skyMask);
 
                 if(!cloudMask) sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
 
