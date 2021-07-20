@@ -71,10 +71,6 @@ INOUT vec2 screenCoord;
         posVector.screenPos = toScreenSpacePos(screenCoord);
 	    getPosVectors(posVector);
 
-	    // Declare and get materials
-	    matPBR material;
-	    getPBR(material, posVector.screenPos.xy);
-
         vec3 sceneCol = texture2D(gcolor, posVector.screenPos.xy).rgb;
 
         vec3 dither = getRand3(posVector.screenPos.xy, 8);
@@ -92,6 +88,10 @@ INOUT vec2 screenCoord;
         if(!skyMask){
             // If the object is transparent render lighting sperately
             if(posVector.viewPos.z - toView(texture2D(depthtex1, posVector.screenPos.xy).r) > 0.01){
+                // Declare and get materials
+                matPBR material;
+                getPBR(material, posVector.screenPos.xy);
+
                 // Get sky color
                 vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyCol, lightCol, 1.0, skyMask);
 

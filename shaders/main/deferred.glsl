@@ -67,13 +67,8 @@ INOUT vec2 screenCoord;
         posVector.screenPos = toScreenSpacePos(screenCoord);
 	    getPosVectors(posVector);
 
-	    // Declare and get materials
-	    matPBR material;
-	    getPBR(material, posVector.screenPos.xy);
-
         vec3 sceneCol = texture2D(gcolor, posVector.screenPos.xy).rgb;
 
-        vec3 dither = getRand3(posVector.screenPos.xy, 8);
         // Render lighting
         bool skyMask = posVector.screenPos.z == 1;
 
@@ -82,6 +77,12 @@ INOUT vec2 screenCoord;
 
         // If not sky, don't calculate lighting
         if(!skyMask){
+            // Declare and get materials
+            matPBR material;
+            getPBR(material, posVector.screenPos.xy);
+
+            vec3 dither = getRand3(posVector.screenPos.xy, 8);
+
             sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
 
             #ifdef OUTLINES
