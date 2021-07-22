@@ -54,8 +54,8 @@ INOUT vec2 texcoord;
         vec3 color = texture2D(gcolor, texcoord).rgb;
 
         #ifdef BLOOM
-            // Uncompress the HDR colors
-            vec3 eBloom = (1.0 / (1.0 - texture2D(colortex2, texcoord * 0.25).rgb) - 1.0) * BLOOM_BRIGHTNESS;
+            // Uncompress the HDR colors and upscale
+            vec3 eBloom = (1.0 / (1.0 - texture2D(colortex2, texcoord * BLOOM_SCALE).rgb) - 1.0) * BLOOM_BRIGHTNESS;
             color += eBloom;
         #endif
 
