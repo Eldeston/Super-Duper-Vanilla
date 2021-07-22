@@ -25,23 +25,23 @@ INOUT vec2 texcoord;
             #if BLOOM_QUALITY == 0
                 eBloom += texture2D(colortex2, texcoord, 0.5).rgb;
             #elif BLOOM_QUALITY == 1
-                eBloom += texture2D(colortex2, texcoord + vec2(pixelSize, 0) * 1.2).rgb * 0.25;
-                eBloom += texture2D(colortex2, texcoord).rgb * 0.5;
-                eBloom += texture2D(colortex2, texcoord - vec2(pixelSize, 0) * 1.2).rgb * 0.25;
+                eBloom += texture2D(colortex2, texcoord + vec2(pixelSize, 0) * 1.2, BLOOM_LOD).rgb * 0.25;
+                eBloom += texture2D(colortex2, texcoord, int(sqrt(BLOOM_LOD))).rgb * 0.5;
+                eBloom += texture2D(colortex2, texcoord - vec2(pixelSize, 0) * 1.2, BLOOM_LOD).rgb * 0.25;
             #elif BLOOM_QUALITY == 2
-                eBloom += texture2D(colortex2, texcoord + vec2(pixelSize, 0) * 2.4).rgb * 0.0625;
-                eBloom += texture2D(colortex2, texcoord + vec2(pixelSize, 0) * 1.2).rgb * 0.25;
-                eBloom += texture2D(colortex2, texcoord).rgb * 0.375;
-                eBloom += texture2D(colortex2, texcoord - vec2(pixelSize, 0) * 1.2).rgb * 0.25;
-                eBloom += texture2D(colortex2, texcoord - vec2(pixelSize, 0) * 2.4).rgb * 0.0625;
+                eBloom += texture2D(colortex2, texcoord + vec2(pixelSize, 0) * 2.4, 2.0 * BLOOM_LOD).rgb * 0.0625;
+                eBloom += texture2D(colortex2, texcoord + vec2(pixelSize, 0) * 1.2, BLOOM_LOD).rgb * 0.25;
+                eBloom += texture2D(colortex2, texcoord, int(sqrt(BLOOM_LOD))).rgb * 0.375;
+                eBloom += texture2D(colortex2, texcoord - vec2(pixelSize, 0) * 1.2, BLOOM_LOD).rgb * 0.25;
+                eBloom += texture2D(colortex2, texcoord - vec2(pixelSize, 0) * 2.4, 2.0 * BLOOM_LOD).rgb * 0.0625;
             #elif BLOOM_QUALITY == 3
-                eBloom += texture2D(colortex2, texcoord + vec2(pixelSize, 0) * 3.6).rgb * 0.015625;
-                eBloom += texture2D(colortex2, texcoord + vec2(pixelSize, 0) * 2.4).rgb * 0.09375;
-                eBloom += texture2D(colortex2, texcoord + vec2(pixelSize, 0) * 1.2).rgb * 0.234375;
-                eBloom += texture2D(colortex2, texcoord).rgb * 0.3125;
-                eBloom += texture2D(colortex2, texcoord - vec2(pixelSize, 0) * 1.2).rgb * 0.234375;
-                eBloom += texture2D(colortex2, texcoord - vec2(pixelSize, 0) * 2.4).rgb * 0.09375;
-                eBloom += texture2D(colortex2, texcoord + vec2(pixelSize, 0) * 3.6).rgb * 0.015625;
+                eBloom += texture2D(colortex2, texcoord + vec2(pixelSize, 0) * 3.6, 3.0 * BLOOM_LOD).rgb * 0.015625;
+                eBloom += texture2D(colortex2, texcoord + vec2(pixelSize, 0) * 2.4, 2.0 * BLOOM_LOD).rgb * 0.09375;
+                eBloom += texture2D(colortex2, texcoord + vec2(pixelSize, 0) * 1.2, BLOOM_LOD).rgb * 0.234375;
+                eBloom += texture2D(colortex2, texcoord, int(sqrt(BLOOM_LOD))).rgb * 0.3125;
+                eBloom += texture2D(colortex2, texcoord - vec2(pixelSize, 0) * 1.2, BLOOM_LOD).rgb * 0.234375;
+                eBloom += texture2D(colortex2, texcoord - vec2(pixelSize, 0) * 2.4, 2.0 * BLOOM_LOD).rgb * 0.09375;
+                eBloom += texture2D(colortex2, texcoord + vec2(pixelSize, 0) * 3.6, 3.0 * BLOOM_LOD).rgb * 0.015625;
             #endif
 
         /* DRAWBUFFERS:2 */
