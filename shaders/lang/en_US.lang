@@ -23,6 +23,7 @@
     option.BLOOM_PIX_SIZE=Bloom pixel size
     option.BLOOM_BRIGHTNESS=Bloom brightness
     option.BLOOM_QUALITY=Bloom quality
+    option.BLOOM_SCALE=Bloom scale
     option.OUTLINES=Outlines
     option.OUTLINE_BRIGHTNESS=Outline brightness
     option.OUTLINE_PIX_SIZE=Outline pixel size
