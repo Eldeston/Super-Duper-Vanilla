@@ -67,21 +67,12 @@ INOUT vec2 texcoord;
         #ifdef BLOOM
             // Uncompress the HDR colors and upscale
             vec3 eBloom = getBloomTile(texcoord, vec2(0), 2.0 * BLOOM_LOD);
-
-            #if BLOOM_QUALITY == 1
-                eBloom += getBloomTile(texcoord, vec2(0, 0.26), 4.0 * BLOOM_LOD);
-                eBloom *= 0.5;
-            #elif BLOOM_QUALITY == 2
-                eBloom += getBloomTile(texcoord, vec2(0, 0.26), 3.0 * BLOOM_LOD);
-                eBloom += getBloomTile(texcoord, vec2(0.135, 0.26), 4.0 * BLOOM_LOD);
-                eBloom *= 0.333;
-            #elif BLOOM_QUALITY == 3
-                eBloom += getBloomTile(texcoord, vec2(0, 0.26), 3.0 * BLOOM_LOD);
-                eBloom += getBloomTile(texcoord, vec2(0.135, 0.26), 4.0 * BLOOM_LOD);
-                eBloom += getBloomTile(texcoord, vec2(0.2075, 0.26), 5.0 * BLOOM_LOD);
-                eBloom += getBloomTile(texcoord, vec2(0.135, 0.3325), 6.0 * BLOOM_LOD);
-                eBloom *= 0.2;
-            #endif
+            eBloom += getBloomTile(texcoord, vec2(0, 0.26), 3.0 * BLOOM_LOD);
+            eBloom += getBloomTile(texcoord, vec2(0.135, 0.26), 4.0 * BLOOM_LOD);
+            eBloom += getBloomTile(texcoord, vec2(0.2075, 0.26), 5.0 * BLOOM_LOD);
+            eBloom += getBloomTile(texcoord, vec2(0.135, 0.3325), 6.0 * BLOOM_LOD);
+            eBloom += getBloomTile(texcoord, vec2(0.160625, 0.3325), 7.0 * BLOOM_LOD);
+            eBloom *= 0.167;
 
             eBloom = (1.0 / (1.0 - eBloom) - 1.0) * BLOOM_BRIGHTNESS;
             color += eBloom;

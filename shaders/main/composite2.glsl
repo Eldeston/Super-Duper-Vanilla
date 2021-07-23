@@ -41,18 +41,11 @@ INOUT vec2 texcoord;
     void main(){
         #ifdef BLOOM
             vec3 eBloom = bloomTile(texcoord, vec2(0), 2.0 * BLOOM_LOD);
-
-            #if BLOOM_QUALITY == 1
-                eBloom += bloomTile(texcoord, vec2(0, 0.26), 4.0 * BLOOM_LOD);
-            #elif BLOOM_QUALITY == 2
-                eBloom += bloomTile(texcoord, vec2(0, 0.26), 3.0 * BLOOM_LOD);
-                eBloom += bloomTile(texcoord, vec2(0.135, 0.26), 4.0 * BLOOM_LOD);
-            #elif BLOOM_QUALITY == 3
-                eBloom += bloomTile(texcoord, vec2(0, 0.26), 3.0 * BLOOM_LOD);
-                eBloom += bloomTile(texcoord, vec2(0.135, 0.26), 4.0 * BLOOM_LOD);
-                eBloom += bloomTile(texcoord, vec2(0.2075, 0.26), 5.0 * BLOOM_LOD);
-                eBloom += bloomTile(texcoord, vec2(0.135, 0.3325), 6.0 * BLOOM_LOD);
-            #endif
+            eBloom += bloomTile(texcoord, vec2(0, 0.26), 3.0 * BLOOM_LOD);
+            eBloom += bloomTile(texcoord, vec2(0.135, 0.26), 4.0 * BLOOM_LOD);
+            eBloom += bloomTile(texcoord, vec2(0.2075, 0.26), 5.0 * BLOOM_LOD);
+            eBloom += bloomTile(texcoord, vec2(0.135, 0.3325), 6.0 * BLOOM_LOD);
+            eBloom += bloomTile(texcoord, vec2(0.160625, 0.3325), 7.0 * BLOOM_LOD);
         #else
             vec3 eBloom = vec3(0);
         #endif
