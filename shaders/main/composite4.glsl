@@ -19,7 +19,11 @@ INOUT vec2 texcoord;
     #endif
 
     uniform sampler2D gcolor;
-    uniform sampler2D colortex2;
+
+    #ifdef BLOOM
+        uniform sampler2D colortex2;
+    #endif
+
     uniform sampler2D colortex4;
     
     #include "/lib/globalVars/screenUniforms.glsl"
@@ -49,13 +53,37 @@ INOUT vec2 texcoord;
     #include "/lib/post/spectral.glsl"
     #include "/lib/post/tonemap.glsl"
 
+    #ifdef BLOOM
+        vec3 getBloomTile(vec2 uv, vec2 coords, float LOD){
+            // Uncompress bloom
+            return texture2D(colortex2, uv / exp2(LOD) + coords).rgb;
+        }
+    #endif
+
     void main(){
         // Original scene color
         vec3 color = texture2D(gcolor, texcoord).rgb;
 
         #ifdef BLOOM
             // Uncompress the HDR colors and upscale
-            vec3 eBloom = (1.0 / (1.0 - texture2D(colortex2, texcoord * BLOOM_SCALE).rgb) - 1.0) * BLOOM_BRIGHTNESS;
+            vec3 eBloom = getBloomTile(texcoord, vec2(0), 2.0 * BLOOM_LOD);
+
+            #if BLOOM_QUALITY == 1
+                eBloom += getBloomTile(texcoord, vec2(0, 0.26), 4.0 * BLOOM_LOD);
+                eBloom *= 0.5;
+            #elif BLOOM_QUALITY == 2
+                eBloom += getBloomTile(texcoord, vec2(0, 0.26), 3.0 * BLOOM_LOD);
+                eBloom += getBloomTile(texcoord, vec2(0.135, 0.26), 4.0 * BLOOM_LOD);
+                eBloom *= 0.333;
+            #elif BLOOM_QUALITY == 3
+                eBloom += getBloomTile(texcoord, vec2(0, 0.26), 3.0 * BLOOM_LOD);
+                eBloom += getBloomTile(texcoord, vec2(0.135, 0.26), 4.0 * BLOOM_LOD);
+                eBloom += getBloomTile(texcoord, vec2(0.2075, 0.26), 5.0 * BLOOM_LOD);
+                eBloom += getBloomTile(texcoord, vec2(0.135, 0.3325), 6.0 * BLOOM_LOD);
+                eBloom *= 0.2;
+            #endif
+
+            eBloom = (1.0 / (1.0 - eBloom) - 1.0) * BLOOM_BRIGHTNESS;
             color += eBloom;
         #endif
 

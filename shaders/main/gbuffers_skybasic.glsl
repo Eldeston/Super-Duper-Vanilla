@@ -15,6 +15,6 @@
 
     void main(){
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(skyCol, 1); //gcolor
+        gl_FragData[0] = vec4(ambientLighting + skyCol, 1); //gcolor
     }
 #endif

@@ -12,45 +12,52 @@ INOUT vec2 texcoord;
 #endif
 
 #ifdef FRAGMENT
-    const bool colortex2MipmapEnabled = true;
-    
-    uniform sampler2D colortex2;
+    #ifdef BLOOM
+        const bool colortex2MipmapEnabled = true;
+        
+        uniform sampler2D colortex2;
 
-    uniform float viewWidth;
+        uniform float viewWidth;
+
+        vec3 bloomTile(vec2 uv, vec2 coords, float LOD){
+            float scale = exp2(LOD);
+            vec2 pixelSize = vec2(scale / viewWidth, 0);
+            vec2 bloomUv = (uv - coords) * scale;
+            float padding = 0.5 + 0.005 * scale;
+
+            vec3 eBloom = vec3(0);
+            if(abs(bloomUv.x - 0.5) < padding && abs(bloomUv.y - 0.5) < padding){
+                eBloom += texture2D(colortex2, bloomUv + pixelSize * 2.0).rgb * 0.0625;
+                eBloom += texture2D(colortex2, bloomUv + pixelSize).rgb * 0.25;
+                eBloom += texture2D(colortex2, bloomUv).rgb * 0.375;
+                eBloom += texture2D(colortex2, bloomUv - pixelSize).rgb * 0.25;
+                eBloom += texture2D(colortex2, bloomUv - pixelSize * 2.0).rgb * 0.0625;
+            }
+            
+            return eBloom;
+        }
+    #endif
 
     void main(){
         #ifdef BLOOM
-            // Downscale coords
-            vec2 bloomUv = texcoord / BLOOM_SCALE;
-            vec2 pixelSize = vec2(BLOOM_PIX_SIZE / viewWidth, 0) / BLOOM_SCALE;
-            int bloomLod = int(sqrt(BLOOM_LOD));
+            vec3 eBloom = bloomTile(texcoord, vec2(0), 2.0 * BLOOM_LOD);
+
+            #if BLOOM_QUALITY == 1
+                eBloom += bloomTile(texcoord, vec2(0, 0.26), 4.0 * BLOOM_LOD);
+            #elif BLOOM_QUALITY == 2
+                eBloom += bloomTile(texcoord, vec2(0, 0.26), 3.0 * BLOOM_LOD);
+                eBloom += bloomTile(texcoord, vec2(0.135, 0.26), 4.0 * BLOOM_LOD);
+            #elif BLOOM_QUALITY == 3
+                eBloom += bloomTile(texcoord, vec2(0, 0.26), 3.0 * BLOOM_LOD);
+                eBloom += bloomTile(texcoord, vec2(0.135, 0.26), 4.0 * BLOOM_LOD);
+                eBloom += bloomTile(texcoord, vec2(0.2075, 0.26), 5.0 * BLOOM_LOD);
+                eBloom += bloomTile(texcoord, vec2(0.135, 0.3325), 6.0 * BLOOM_LOD);
+            #endif
+        #else
             vec3 eBloom = vec3(0);
-            if(bloomUv.x > 0 || bloomUv.y > 0 || bloomUv.x < 1 || bloomUv.y < 1){
-                #if BLOOM_QUALITY == 0
-                    eBloom = texture2D(colortex2, texcoord, 0.5).rgb;
-                #elif BLOOM_QUALITY == 1
-                    eBloom += texture2D(colortex2, texcoord + pixelSize * 1.2, bloomLod).rgb * 0.25;
-                    eBloom += texture2D(colortex2, texcoord, bloomLod).rgb * 0.5;
-                    eBloom += texture2D(colortex2, texcoord - pixelSize * 1.2, bloomLod).rgb * 0.25;
-                #elif BLOOM_QUALITY == 2
-                    eBloom += texture2D(colortex2, texcoord + pixelSize * 2.4, 2.0 * bloomLod).rgb * 0.0625;
-                    eBloom += texture2D(colortex2, texcoord + pixelSize * 1.2, bloomLod).rgb * 0.25;
-                    eBloom += texture2D(colortex2, texcoord, bloomLod).rgb * 0.375;
-                    eBloom += texture2D(colortex2, texcoord - pixelSize * 1.2, bloomLod).rgb * 0.25;
-                    eBloom += texture2D(colortex2, texcoord - pixelSize * 2.4, 2.0 * bloomLod).rgb * 0.0625;
-                #elif BLOOM_QUALITY == 3
-                    eBloom += texture2D(colortex2, texcoord + pixelSize * 3.6, 3.0 * bloomLod).rgb * 0.015625;
-                    eBloom += texture2D(colortex2, texcoord + pixelSize * 2.4, 2.0 * bloomLod).rgb * 0.09375;
-                    eBloom += texture2D(colortex2, texcoord + pixelSize * 1.2, bloomLod).rgb * 0.234375;
-                    eBloom += texture2D(colortex2, texcoord, bloomLod).rgb * 0.3125;
-                    eBloom += texture2D(colortex2, texcoord - pixelSize * 1.2, bloomLod).rgb * 0.234375;
-                    eBloom += texture2D(colortex2, texcoord - pixelSize * 2.4, 2.0 * bloomLod).rgb * 0.09375;
-                    eBloom += texture2D(colortex2, texcoord - pixelSize * 3.6, 3.0 * bloomLod).rgb * 0.015625;
-                #endif
-            }
+        #endif
 
         /* DRAWBUFFERS:2 */
             gl_FragData[0] = vec4(eBloom, 1); //colortex2
-        #endif
     }
 #endif
