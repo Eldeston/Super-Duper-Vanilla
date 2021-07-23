@@ -95,16 +95,13 @@ INOUT vec2 texcoord;
         #endif
 
         #if AUTO_EXPOSURE == 2
-            // Get lod
-            float lod = int(exp2(min(viewWidth, viewHeight))) - 1.0;
-            
             // Get current average scene luminance...
             // Center pixel
-            float lumiCurrent = getLuminance(texture2D(gcolor, vec2(0.5), lod).rgb);
+            float lumiCurrent = getLuminance(texture2D(gcolor, vec2(0.5), 10.0).rgb);
             // Left pixel
-            lumiCurrent += getLuminance(texture2D(gcolor, vec2(0, 0.5), lod).rgb);
+            lumiCurrent += getLuminance(texture2D(gcolor, vec2(0, 0.5), 10.0).rgb);
             // Right pixel
-            lumiCurrent += getLuminance(texture2D(gcolor, vec2(1, 0.5), lod).rgb);
+            lumiCurrent += getLuminance(texture2D(gcolor, vec2(1, 0.5), 10.0).rgb);
 
             // Mix previous and current buffer...
             float accumulatedLumi = mix(lumiCurrent * 0.333, texture2D(colortex6, vec2(0)).a, exp2(-1.0 * frameTime));
@@ -113,12 +110,10 @@ INOUT vec2 texcoord;
             color /= max(accumulatedLumi * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
         #elif AUTO_EXPOSURE == 1
             float accumulatedLumi = 1.0;
-            // Recreate our lighting model if it were only shading a single pixel
+            // Recreate our lighting model if it were only shading a single pixel and apply exposure
             #if defined USE_SKY_LIGHTMAP
-                // Apply exposure
                 color /= max(getLuminance((lightCol * isEyeInWater * (1.0 - eyeBrightFact) * VOL_LIGHT_BRIGHTNESS + (AMBIENT_LIGHTING + nightVision) + nightVision + torchBrightFact * BLOCK_LIGHT_COL + cubed(eyeBrightFact) * (lightCol * rainMult + skyCol)) * 0.36) * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
             #else
-                // Apply exposure
                 color /= max(getLuminance((lightCol * isEyeInWater * (1.0 - SKY_LIGHT_AMOUNT) * VOL_LIGHT_BRIGHTNESS + (AMBIENT_LIGHTING + nightVision) + nightVision + torchBrightFact * BLOCK_LIGHT_COL + cubed(SKY_LIGHT_AMOUNT) * (lightCol * rainMult + skyCol)) * 0.36) * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
             #endif
         #else

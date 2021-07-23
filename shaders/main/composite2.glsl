@@ -21,17 +21,17 @@ INOUT vec2 texcoord;
 
         vec3 bloomTile(vec2 uv, vec2 coords, float LOD){
             float scale = exp2(LOD);
-            vec2 pixelSize = vec2(scale / viewWidth, 0);
+            float pixelSize = scale / viewWidth;
             vec2 bloomUv = (uv - coords) * scale;
             float padding = 0.5 + 0.005 * scale;
 
             vec3 eBloom = vec3(0);
             if(abs(bloomUv.x - 0.5) < padding && abs(bloomUv.y - 0.5) < padding){
-                eBloom += texture2D(colortex2, bloomUv + pixelSize * 2.0).rgb * 0.0625;
-                eBloom += texture2D(colortex2, bloomUv + pixelSize).rgb * 0.25;
+                eBloom += texture2D(colortex2, bloomUv + vec2(pixelSize * 2.0, 0)).rgb * 0.0625;
+                eBloom += texture2D(colortex2, bloomUv + vec2(pixelSize, 0)).rgb * 0.25;
                 eBloom += texture2D(colortex2, bloomUv).rgb * 0.375;
-                eBloom += texture2D(colortex2, bloomUv - pixelSize).rgb * 0.25;
-                eBloom += texture2D(colortex2, bloomUv - pixelSize * 2.0).rgb * 0.0625;
+                eBloom += texture2D(colortex2, bloomUv - vec2(pixelSize, 0)).rgb * 0.25;
+                eBloom += texture2D(colortex2, bloomUv - vec2(pixelSize * 2.0, 0)).rgb * 0.0625;
             }
             
             return eBloom;
