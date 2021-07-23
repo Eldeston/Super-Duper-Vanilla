@@ -32,16 +32,22 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	// Get globally illuminated sky
 	vec3 GISky = ambientLighting + getSkyRender(material.normal_m, lightCol, 0.0, false) * material.light_m.y * material.light_m.y;
 
-	// Get fresnel
-    vec3 fresnel = getFresnelSchlick(dot(material.normal_m, nNegEyePlayerPos),
-		mix(vec3(0.04), material.albedo_t.rgb, material.metallic_m));
-	// Get specular GGX
-	vec3 specCol = getSpecGGX(nNegEyePlayerPos, nLightPos, normalize(posVector.lightPos - posVector.eyePlayerPos), material.normal_m, fresnel, material.roughness_m) * directLight;
-	
-	vec3 reflectedSkyRender = ambientLighting + getSkyRender(reflect(posVector.eyePlayerPos, material.normal_m), directLight, 1.0, material.light_m.y >= 0.95) * material.light_m.y;
+	vec3 specCol = vec3(0);
+	vec3 reflectCol = vec3(0);
 
-	// Mask reflections
-    vec3 reflectCol = reflectedSkyRender * fresnel * (1.0 - material.roughness_m) * material.ambient_m; // Will change this later...
+	// If roughness is 1, don't do reflections
+	if(material.roughness_m != 1){
+		// Get fresnel
+		vec3 fresnel = getFresnelSchlick(dot(material.normal_m, nNegEyePlayerPos),
+			mix(vec3(0.04), material.albedo_t.rgb, material.metallic_m));
+		// Get specular GGX
+		specCol = getSpecGGX(nNegEyePlayerPos, nLightPos, normalize(posVector.lightPos - posVector.eyePlayerPos), material.normal_m, fresnel, material.roughness_m) * directLight;
+		
+		vec3 reflectedSkyRender = ambientLighting + getSkyRender(reflect(posVector.eyePlayerPos, material.normal_m), directLight, 1.0, material.light_m.y >= 0.95) * material.light_m.y;
+
+		// Mask reflections
+		reflectCol = reflectedSkyRender * fresnel * (1.0 - material.roughness_m) * material.ambient_m; // Will change this later...
+	}
 
 	vec3 totalDiffuse = (directLight + GISky * material.ambient_m + cubed(material.light_m.x) * BLOCK_LIGHT_COL * pow(material.ambient_m, 1.0 / 4.0)) * (1.0 - material.metallic_m) + material.emissive_m;
 	return vec4(material.albedo_t.rgb * totalDiffuse + specCol + reflectCol, material.albedo_t.a);
