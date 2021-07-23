@@ -46,6 +46,8 @@ INOUT mat3 TBN;
     #include "/lib/globalVars/gameUniforms.glsl"
     #include "/lib/globalVars/universalVars.glsl"
 
+    uniform vec4 entityColor;
+
     #include "/lib/lighting/shdDistort.glsl"
     #include "/lib/utility/spaceConvert.glsl"
     #include "/lib/utility/texFunctions.glsl"

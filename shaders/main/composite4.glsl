@@ -33,8 +33,16 @@ INOUT vec2 texcoord;
     #ifdef TEMPORAL_ACCUMULATION
         uniform sampler2D depthtex0;
 
-        #include "/lib/globalVars/matUniforms.glsl"
-        #include "/lib/globalVars/posUniforms.glsl"
+        // Previous camera position
+        uniform vec3 previousCameraPosition;
+
+        // View matrix uniforms
+        uniform mat4 gbufferModelViewInverse;
+        uniform mat4 gbufferPreviousModelView;
+
+        // Projection matrix uniforms
+        uniform mat4 gbufferProjectionInverse;
+        uniform mat4 gbufferPreviousProjection;
     #endif
 
     #if defined TEMPORAL_ACCUMULATION || AUTO_EXPOSURE == 2
