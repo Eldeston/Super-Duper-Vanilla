@@ -39,7 +39,7 @@ INOUT vec2 texcoord;
     #endif
 
     void main(){
-        #ifdef BLOOM
+        #if BLOOM != 0
             vec3 eBloom = bloomTile(texcoord, vec2(0), 2.0 * BLOOM_LOD);
             eBloom += bloomTile(texcoord, vec2(0, 0.26), 3.0 * BLOOM_LOD);
             eBloom += bloomTile(texcoord, vec2(0.135, 0.26), 4.0 * BLOOM_LOD);

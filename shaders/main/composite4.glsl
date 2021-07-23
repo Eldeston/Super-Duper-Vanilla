@@ -20,7 +20,7 @@ INOUT vec2 texcoord;
 
     uniform sampler2D gcolor;
 
-    #ifdef BLOOM
+    #if BLOOM != 0
         uniform sampler2D colortex2;
     #endif
 
@@ -53,7 +53,7 @@ INOUT vec2 texcoord;
     #include "/lib/post/spectral.glsl"
     #include "/lib/post/tonemap.glsl"
 
-    #ifdef BLOOM
+    #if BLOOM != 0
         vec3 getBloomTile(vec2 uv, vec2 coords, float LOD){
             // Uncompress bloom
             return texture2D(colortex2, uv / exp2(LOD) + coords).rgb;
@@ -64,7 +64,7 @@ INOUT vec2 texcoord;
         // Original scene color
         vec3 color = texture2D(gcolor, texcoord).rgb;
 
-        #ifdef BLOOM
+        #if BLOOM != 0
             // Uncompress the HDR colors and upscale
             vec3 eBloom = getBloomTile(texcoord, vec2(0), 2.0 * BLOOM_LOD);
             eBloom += getBloomTile(texcoord, vec2(0, 0.26), 3.0 * BLOOM_LOD);
@@ -140,7 +140,7 @@ INOUT vec2 texcoord;
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(color, 1); //gcolor
 
-        #ifdef BLOOM
+        #if BLOOM != 0
         /* DRAWBUFFERS:02 */
             gl_FragData[1] = vec4(eBloom, 1); //colortex2
 

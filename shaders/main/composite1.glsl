@@ -34,7 +34,7 @@ INOUT vec2 texcoord;
         #if BLOOM == 1
             vec3 bloomCol = sceneCol * texture2D(colortex3, texcoord).g;
         #elif BLOOM == 2
-            vec3 bloomCol = sceneCol * smoothstep(1.0, 4.0, getLuminance(sceneCol));
+            vec3 bloomCol = sceneCol * (getLuminance(sceneCol) / 5.0);
         #endif
 
         float volMult = VOL_LIGHT_BRIGHTNESS * (1.0 - newTwilight) * (1.0 - blindness * 0.6) * (0.25 * (1.0 - eyeBrightFact) + eyeBrightFact) * min(1.0, FOG_OPACITY * underWaterMult * rainMult);

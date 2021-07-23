@@ -21,13 +21,12 @@ INOUT vec2 texcoord;
     #endif
 
     void main(){
-        #ifdef BLOOM
-            vec2 pixelSize = vec2(0, 1.0 / viewHeight);
-            vec3 eBloom = texture2D(colortex2, texcoord + pixelSize * 2.0).rgb * 0.0625;
+        #if BLOOM != 0
+            vec2 pixelSize = vec2(0, 2.0 / viewHeight);
+            // Skip the 2nd and 4th samples and instead do 3 samples as mipmaps will cover them for us 
+            vec3 eBloom = texture2D(colortex2, texcoord + pixelSize).rgb * 0.25;
+            eBloom += texture2D(colortex2, texcoord).rgb * 0.5;
             eBloom += texture2D(colortex2, texcoord + pixelSize).rgb * 0.25;
-            eBloom += texture2D(colortex2, texcoord).rgb * 0.375;
-            eBloom += texture2D(colortex2, texcoord + pixelSize).rgb * 0.25;
-            eBloom += texture2D(colortex2, texcoord + pixelSize * 2.0).rgb * 0.0625;
         #else
             vec3 eBloom = vec3(0);
         #endif
