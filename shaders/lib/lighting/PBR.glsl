@@ -43,8 +43,8 @@ uniform sampler2D texture;
 
             // If water
             if(id == 10014){
-                material.metallic_m = 0.5;
-                material.roughness_m = 0.028;
+                material.metallic_m = 0.0;
+                material.roughness_m = 0.03;
                 material.ambient_m = 1.0;
             }
 
@@ -95,10 +95,13 @@ uniform sampler2D texture;
             if(id == 10022) material.roughness_m = 1.0 - sumCol;
 
             // End portal
-            if(id == 10030) material.emissive_m = 1.0;
+            if(id == 10030){
+                material.roughness_m = 0.0;
+                material.emissive_m = 1.0;
+            }
         #endif
 
-        material.roughness_m = max(material.roughness_m, 0.028);
+        material.roughness_m = max(material.roughness_m, 0.03);
     }
 #else
     uniform sampler2D normals;
@@ -161,11 +164,19 @@ uniform sampler2D texture;
 
             // If water
             if(id == 10014){
-                material.metallic_m = 0.5;
-                material.roughness_m = 0.028;
+                material.metallic_m = 0.0;
+                material.roughness_m = 0.03;
                 material.ambient_m = 1.0;
             }
+
+            // End portal
+            if(id == 10030){
+                material.roughness_m = 0.0;
+                material.emissive_m = 1.0;
+            }
         #endif
+
+        material.roughness_m = max(material.roughness_m, 0.03);
     }
 #endif
 
