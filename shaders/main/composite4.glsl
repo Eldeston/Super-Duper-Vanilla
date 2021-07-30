@@ -86,7 +86,7 @@ INOUT vec2 texcoord;
             #if BLOOM == 1
                 color += eBloom;
             #elif BLOOM == 2
-                color = mix(color, eBloom, 0.18);
+                color = mix(color, eBloom, 0.2);
             #endif
         #endif
 

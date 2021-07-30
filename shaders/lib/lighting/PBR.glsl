@@ -32,70 +32,72 @@ uniform sampler2D texture;
             if(id >= 10000 && id <= 10008) material.ss_m = 0.8;
 
             // Emissives
-            if(id == 10009 || id == 10010) material.emissive_m = smoothstep(0.5, 1.0, maxCol);
+            if(id == 10016 || id == 10017){
+                material.emissive_m = smoothstep(0.5, 1.0, maxCol);
+            }
 
             // If lava
-            if(id == 10010){
+            if(id == 10017){
                 material.emissive_m = 1.0;
                 material.roughness_m = 1.0;
                 material.ambient_m = 1.0;
             }
 
             // If water
-            if(id == 10014){
+            if(id == 10034){
                 material.metallic_m = 0.0;
                 material.roughness_m = 0.03;
                 material.ambient_m = 1.0;
             }
 
             // Redstone
-            if(id == 10011){
+            if(id == 10018){
                 material.emissive_m = cubed(material.albedo_t.r) * hsv.y;
                 material.roughness_m = (1.0 - material.emissive_m);
                 material.metallic_m = material.emissive_m;
             }
 
-            // Glass
-            if(id == 10012 || id == 10013) material.roughness_m = 0.056;
+            // Glass and ice
+            if(id == 10032 || id == 10033) material.roughness_m = 0.0;
 
             // Gem ores and blocks
-            if(id == 10015 || id == 10017){
+            if(id == 10048 || id == 10050){
                 material.roughness_m = cubed(1.0 - hsv.y);
                 material.metallic_m = hsv.y * 0.6;
             }
 
             // Netherack gem ores
-            if(id == 10016) material.roughness_m = material.albedo_t.r;
+            if(id == 10049) material.roughness_m = material.albedo_t.r;
 
             // Metal ores
-            if(id == 10018){
+            if(id == 10064){
                 material.roughness_m = squared(1.0 - hsv.y);
                 material.metallic_m = smoothstep(0.1, 0.4, hsv.y);
             }
 
             // Netherack metal ores
-            if(id == 10019){
+            if(id == 10065){
                 material.metallic_m = smoothstep(0.5, 0.75, max2(material.albedo_t.rg));;
                 material.roughness_m = smoothstep(0.75, 0.5, max2(material.albedo_t.rg));;
             }
 
             // Metal blocks
-            if(id == 10020){
+            if(id == 10066){
                 material.metallic_m = maxCol;
                 material.roughness_m = 1.0 - maxCol;
             }
 
-            // Netherite block
-            if(id == 10021){
+            // Dark metals
+            if(id == 10067){
                 material.metallic_m = sumCol;
                 material.roughness_m = 1.0 - sumCol;
             }
 
             // Polished blocks
-            if(id == 10022) material.roughness_m = 1.0 - sumCol;
+            if(id == 10080) material.roughness_m = 1.0 - sumCol;
 
             // End portal
-            if(id == 10030){
+            if(id == 10100){
                 material.roughness_m = 0.0;
                 material.emissive_m = 1.0;
             }
@@ -156,14 +158,14 @@ uniform sampler2D texture;
 
         #if defined TERRAIN || defined WATER
             // If lava
-            if(id == 10010){
+            if(id == 10017){
                 material.emissive_m = 1.0;
                 material.roughness_m = 1.0;
                 material.ambient_m = 1.0;
             }
 
             // If water
-            if(id == 10014){
+            if(id == 10034){
                 material.metallic_m = 0.0;
                 material.roughness_m = 0.03;
                 material.ambient_m = 1.0;

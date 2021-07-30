@@ -89,7 +89,7 @@ INOUT mat3 TBN;
         getPBR(material, TBN, glcolor.rgb, texCoord, rBlockId);
 
         // If water
-        if(rBlockId == 10014){
+        if(rBlockId == 10034){
             material.albedo_t.rgb *= WATER_BRIGHTNESS;
 
             #ifdef WATER_NORM
