@@ -83,7 +83,11 @@ INOUT vec2 texcoord;
             eBloom *= 0.167;
 
             eBloom = (1.0 / (1.0 - eBloom) - 1.0) * BLOOM_BRIGHTNESS;
-            color += eBloom;
+            #if BLOOM == 1
+                color += eBloom;
+            #elif BLOOM == 2
+                color = mix(color, eBloom, 0.18);
+            #endif
         #endif
 
         #ifdef TEMPORAL_ACCUMULATION
