@@ -72,11 +72,11 @@
 
 /*---------------------------------------------------------------------------------------------------------------------------*/
 
-#define LIGHT_COL_DAY vec3(3, 2.8, 2.6)
+#define LIGHT_COL_DAY vec3(2.4, 2, 1.6)
 #define LIGHT_COL_NIGHT vec3(0.1, 0.2, 0.3)
 #define LIGHT_COL_DAWN_DUSK vec3(1.2, 0.9, 0.3)
 
-#define SKY_COL_DAY vec3(1, 1.5, 2)
+#define SKY_COL_DAY vec3(1.2, 1.6, 2)
 #define SKY_COL_NIGHT vec3(0.05, 0.1, 0.2)
 #define SKY_COL_DAWN_DUSK vec3(0.21, 0.15, 0.3)
 
