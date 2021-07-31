@@ -33,11 +33,12 @@ vec3 getSkyRender(vec3 playerPos, vec3 inLightCol, float skyDiffuseMask, bool sk
         finalCol += (lightRange * skyDiffuseMask) * lightCol;
 
         if(skyMask){
-            // Star positions
+            // Stars
             vec2 starPos = 0.5 > abs(nSkyPos.y) ? vec2(atan(nSkyPos.x, nSkyPos.z), nSkyPos.y) * 0.25 : nSkyPos.xz * 0.333;
-
-            // Sun, moon, and stars
-            finalCol += genStar(starPos * 0.128) * squared(1.0 - day) + (getSunMoonShape(nSkyPos) * 8.0) * sqrt(inLightCol);
+            finalCol += genStar(starPos * 0.128) * squared(1.0 - day);
+            
+            // Sun, and moon
+            finalCol += getSunMoonShape(nSkyPos) * 6.4 * sqrt(inLightCol);
         }
         
         return pow(finalCol, vec3(GAMMA));

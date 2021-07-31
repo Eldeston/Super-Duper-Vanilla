@@ -166,7 +166,6 @@ uniform sampler2D texture;
 
             // If water
             if(id == 10034){
-                material.metallic_m = 0.0;
                 material.roughness_m = 0.03;
                 material.ambient_m = 1.0;
             }
