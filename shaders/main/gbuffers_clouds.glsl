@@ -86,7 +86,7 @@ INOUT vec3 norm;
         #endif
 
         material.metallic_m = 0.0;
-        material.ss_m = 0.7;
+        material.ss_m = 0.6;
         material.emissive_m = 0.0;
         material.roughness_m = 1.0;
 
