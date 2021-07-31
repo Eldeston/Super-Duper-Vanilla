@@ -16,7 +16,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	#if !defined ENABLE_LIGHT
 		vec3 directLight = vec3(0);
 	#else
-		#if defined BEACON_BEAM || defined SPIDER_EYES || defined ENTITIES_GLOWING || defined END || !defined SHD_ENABLE
+		#if defined ENTITIES_GLOWING || defined END || !defined SHD_ENABLE
 			// Get direct light diffuse color
 			float rainDiff = isEyeInWater == 1 ? 0.2 : rainStrength * 0.5;
 			vec3 directLight = (getDiffuse(material.normal_m, nLightPos, material.ss_m) * smoothstep(0.98, 0.99, material.light_m.y) * (1.0 - rainDiff) + sqrt(material.light_m.y) * rainDiff) * material.light_m.y * lightCol;
@@ -40,8 +40,11 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 		// Get fresnel
 		vec3 fresnel = getFresnelSchlick(dot(material.normal_m, nNegEyePlayerPos),
 			mix(vec3(0.04), material.albedo_t.rgb, material.metallic_m));
-		// Get specular GGX
-		specCol = getSpecGGX(nNegEyePlayerPos, nLightPos, normalize(posVector.lightPos - posVector.eyePlayerPos), material.normal_m, fresnel, material.roughness_m) * directLight;
+		
+		#ifdef ENABLE_LIGHT
+			// Get specular GGX
+			if(maxC(directLight) > 0) specCol = getSpecGGX(nNegEyePlayerPos, nLightPos, normalize(posVector.lightPos - posVector.eyePlayerPos), material.normal_m, fresnel, material.roughness_m) * directLight;
+		#endif
 		
 		vec3 reflectedSkyRender = ambientLighting + getSkyRender(reflect(posVector.eyePlayerPos, material.normal_m), directLight, 1.0, material.light_m.y >= 0.95) * material.light_m.y;
 
