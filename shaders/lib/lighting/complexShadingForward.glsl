@@ -1,8 +1,4 @@
 vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dither){
-	#ifdef FIXED_LIGHTDIR
-		posVector.lightPos = vec3(0, 0.5, 0.5);
-	#endif
-
 	#if defined USE_SKY_LIGHTMAP
 		material.light_m.y = (material.light_m.y * SKY_LIGHT_AMOUNT) / 0.95;
 	#else
@@ -16,7 +12,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	#if !defined ENABLE_LIGHT
 		vec3 directLight = vec3(0);
 	#else
-		#if defined ENTITIES_GLOWING || defined END || !defined SHD_ENABLE
+		#if defined ENTITIES_GLOWING || !defined SHD_ENABLE
 			// Get direct light diffuse color
 			float rainDiff = isEyeInWater == 1 ? 0.2 : rainStrength * 0.5;
 			vec3 directLight = (getDiffuse(material.normal_m, nLightPos, material.ss_m) * smoothstep(0.98, 0.99, material.light_m.y) * (1.0 - rainDiff) + sqrt(material.light_m.y) * rainDiff) * material.light_m.y * lightCol;

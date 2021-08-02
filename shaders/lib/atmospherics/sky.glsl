@@ -15,32 +15,35 @@ float genStar(vec2 nSkyPos){
 vec3 getSkyRender(vec3 playerPos, vec3 inLightCol, float skyDiffuseMask, bool skyMask){
     if(isEyeInWater == 2) return pow(fogColor, vec3(GAMMA));
 
-    #if defined USE_CUSTOM_FOGCOL || defined USE_VANILLA_FOGCOL
-        return pow(skyCol, vec3(GAMMA));
-    #else
-        // Get positions
-        vec3 nSkyPos = normalize(mat3(shadowProjection) * (mat3(shadowModelView) * playerPos));
-        float lightRange = smoothen(-nSkyPos.z * 0.56) * (1.0 - newTwilight);
+    vec3 nSkyPos = normalize(mat3(shadowProjection) * (mat3(shadowModelView) * playerPos));
+    float lightRange = smoothen(-nSkyPos.z * 0.56) * (1.0 - newTwilight);
+    float nPlayerPosY = normalize(playerPos).y;
 
-        vec3 finalCol = skyCol;
+    vec3 finalCol = skyCol;
 
-        if(isEyeInWater == 1){
-            float waterVoid = smootherstep(normalize(playerPos).y + (eyeBrightFact - 0.64));
-            finalCol = mix(toneSaturation(fogColor, 0.5) * (0.25 * (1.0 - eyeBrightFact) + eyeBrightFact), skyCol, waterVoid);
-            lightRange /= (1.0 - eyeBrightFact) + 2.0;
-        }
+    #ifdef USE_HORIZON
+        finalCol *= 1.0 + 2.0 * cubed(saturate(1.0 - abs(nPlayerPosY)));
+    #endif
 
+    if(isEyeInWater == 1){
+        float waterVoid = smootherstep(normalize(playerPos).y + (eyeBrightFact - 0.64));
+        finalCol = mix(toneSaturation(fogColor, 0.5) * (0.25 * (1.0 - eyeBrightFact) + eyeBrightFact), skyCol, waterVoid);
+        lightRange /= (1.0 - eyeBrightFact) + 2.0;
+    }
+
+    #ifdef USE_SUN_MOON
         finalCol += (lightRange * skyDiffuseMask) * lightCol;
 
+        if(skyMask) finalCol += getSunMoonShape(nSkyPos) * 6.4 * sqrt(inLightCol);
+    #endif
+
+    #ifdef USE_STARS
         if(skyMask){
             // Stars
             vec2 starPos = 0.5 > abs(nSkyPos.y) ? vec2(atan(nSkyPos.x, nSkyPos.z), nSkyPos.y) * 0.25 : nSkyPos.xz * 0.333;
-            finalCol += genStar(starPos * 0.128) * squared(1.0 - day);
-            
-            // Sun, and moon
-            finalCol += getSunMoonShape(nSkyPos) * 6.4 * sqrt(inLightCol);
+            finalCol = max(finalCol, vec3(genStar(starPos * 0.128) * 0.8));
         }
-        
-        return pow(finalCol, vec3(GAMMA));
     #endif
+
+    return pow(finalCol, vec3(GAMMA));
 }

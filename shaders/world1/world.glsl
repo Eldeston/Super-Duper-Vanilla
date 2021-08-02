@@ -5,12 +5,19 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 
 #define END
 
-// Enable if your world uses fixed light direction
-#define FIXED_LIGHTDIR
+// Enable if your world has an undefined lighting environment like The End or the Nether
+#define UNDEF_LIGHT
 // Enable if your world uses lighting from the sun/moon
 #define ENABLE_LIGHT
 // Enable if your world uses a light color with an input, overrides light colors
 #define USE_CUSTOM_LIGHTCOL vec3(0.45, 0.4, 0.8)
+
+// Enable stars in your world
+#define USE_STARS
+// Enable sun/moon in your world
+// #define USE_SUN_MOON
+// Enable stars in your world
+#define USE_HORIZON
 
 // Enable if your world uses a specific world color that uses the vanilla fog color, overrides sky colors
 // #define USE_VANILLA_FOGCOL fogColor

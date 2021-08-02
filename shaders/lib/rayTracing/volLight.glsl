@@ -1,5 +1,5 @@
 vec3 getGodRays(vec3 feetPlayerPos, float worldPosY, float dither){
-	#if defined NETHER || defined END
+	#ifndef ENABLE_LIGHT
 		return vec3(0);
 	#else
 		float c = FOG_TOTAL_DENSITY_FALLOFF * rainMult * underWaterMult;

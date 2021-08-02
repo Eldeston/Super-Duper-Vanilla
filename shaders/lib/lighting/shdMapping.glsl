@@ -2,7 +2,7 @@
 #ifdef SHD_ENABLE
 #endif
 
-#if !(defined BEACON_BEAM || defined SPIDER_EYES || defined ENTITIES_GLOWING || defined END) || defined SHD_ENABLE
+#if !defined ENTITIES_GLOWING || defined SHD_ENABLE
 	// Enable mipmap filtering on shadows
 	const bool shadowHardwareFiltering = true;
 	const int shadowMapResolution = 1024; // Shadow map resolution [512 1024 1536 2048 2560 3072 3584 4096 4608 5120]

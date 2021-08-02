@@ -5,7 +5,12 @@ void getPosVectors(inout positionVectors posVec){
 	posVec.eyePlayerPos = mat3(gbufferModelViewInverse) * posVec.viewPos;
 	posVec.feetPlayerPos = posVec.eyePlayerPos + gbufferModelViewInverse[3].xyz;
 	posVec.worldPos = posVec.feetPlayerPos + cameraPosition;
-	posVec.lightPos = mat3(gbufferModelViewInverse) * shadowLightPosition;
+
+	#ifdef END
+		posVec.lightPos = shadowLightPosition;
+	#else
+		posVec.lightPos = mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz;
+	#endif
 	
 	posVec.shdPos = toShadow(posVec.feetPlayerPos);
 }
