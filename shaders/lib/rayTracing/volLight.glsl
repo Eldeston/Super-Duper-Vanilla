@@ -15,7 +15,7 @@ vec3 getGodRays(vec3 feetPlayerPos, float worldPosY, float dither){
 			vec3 rayData = vec3(0);
 			for(int x = 0; x < 7; x++){
 				feetPlayerPos *= 0.736;
-				rayData = mix(rayData, getShdTex(distort(toShadow(feetPlayerPos).xyz) * 0.5 + 0.5), atmoFog(feetPlayerPos.y, worldPosY, length(feetPlayerPos), c, b));
+				rayData = mix(rayData, getShdTex(distort(toShadow(feetPlayerPos)) * 0.5 + 0.5), atmoFog(feetPlayerPos.y, worldPosY, length(feetPlayerPos), c, b));
 			}
 			
 			return rayData;

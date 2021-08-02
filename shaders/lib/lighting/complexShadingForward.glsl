@@ -14,14 +14,12 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	#else
 		#if defined ENTITIES_GLOWING || !defined SHD_ENABLE
 			// Get direct light diffuse color
-			float rainDiff = isEyeInWater == 1 ? 0.2 : rainStrength * 0.5;
-			vec3 directLight = (getDiffuse(material.normal_m, nLightPos, material.ss_m) * smoothstep(0.98, 0.99, material.light_m.y) * (1.0 - rainDiff) + sqrt(material.light_m.y) * rainDiff) * material.light_m.y * lightCol;
+			vec3 directLight = getDiffuse(material.normal_m, nLightPos, material.ss_m) * smoothstep(0.98, 0.99, material.light_m.y) * material.light_m.y * lightCol;
 		#else
 			// Cave fix
 			float caveFixShdFactor = smoothstep(0.2, 0.4, material.light_m.y) * (1.0 - eyeBrightFact) + eyeBrightFact;
 			// Get direct light diffuse color
-			float rainDiff = isEyeInWater == 1 ? 0.2 : rainStrength * 0.5;
-			vec3 directLight = (getShdMapping(posVector.shdPos, material.normal_m, nLightPos, dither.r, material.ss_m) * (1.0 - rainDiff) + sqrt(material.light_m.y) * rainDiff) * caveFixShdFactor * lightCol;
+			vec3 directLight = getShdMapping(posVector.shdPos, material.normal_m, nLightPos, dither.r, material.ss_m) * caveFixShdFactor * lightCol;
 		#endif
 	#endif
 
@@ -47,6 +45,11 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 		// Mask reflections
 		reflectCol = reflectedSkyRender * fresnel * (1.0 - material.roughness_m) * material.ambient_m; // Will change this later...
 	}
+
+	#ifdef ENABLE_LIGHT
+		float rainDiff = isEyeInWater == 1 ? 0.2 : rainStrength * 0.5;
+		directLight = directLight * (1.0 - rainDiff) + sqrt(material.light_m.y) * rainDiff;
+	#endif
 
 	vec3 totalDiffuse = (directLight + GISky * material.ambient_m + cubed(material.light_m.x) * BLOCK_LIGHT_COL * pow(material.ambient_m, 1.0 / 4.0));
 	return vec4(material.albedo_t.rgb * totalDiffuse * (1.0 - material.metallic_m) + specCol + reflectCol + material.albedo_t.rgb * material.emissive_m, material.albedo_t.a);

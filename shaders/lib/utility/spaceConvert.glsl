@@ -20,11 +20,8 @@ float toView(float depth){
 	return gbufferProjectionInverse[3].z / (gbufferProjectionInverse[2].w * (depth * 2.0 - 1.0) + gbufferProjectionInverse[3].w);
 }
 
-vec4 toShadow(vec3 pos){
-	vec3 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * pos + shadowModelView[3].xyz) + shadowProjection[3].xyz;
-	float distortFactor = getDistortFactor(shdPos.xy);
-
-	return vec4(shdPos.xyz, distortFactor); // Output final result with distort factor
+vec3 toShadow(vec3 pos){
+	return mat3(shadowProjection) * (mat3(shadowModelView) * pos + shadowModelView[3].xyz) + shadowProjection[3].xyz;
 }
 
 #ifndef GBUFFERS

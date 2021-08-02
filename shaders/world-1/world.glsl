@@ -27,10 +27,10 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 // Enable if your world has a sky lightmap, or none
 // #define USE_SKY_LIGHTMAP
 // Sky light amount
-#define SKY_LIGHT_AMOUNT 0.25
+#define SKY_LIGHT_AMOUNT 0.2
 
 // Vertical density falloff, larger means less thick fog at high altitudes, but thicker fog in lower altitudes
-#define FOG_VERTICAL_DENSITY_FALLOFF 0.08
+#define FOG_VERTICAL_DENSITY_FALLOFF 0.04
 // Total density falloff, larger means thicker fog
 #define FOG_TOTAL_DENSITY_FALLOFF 0.16
 // Fog opacity

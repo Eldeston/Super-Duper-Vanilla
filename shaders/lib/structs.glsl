@@ -32,9 +32,8 @@ struct positionVectors{
     vec3 feetPlayerPos;
     // World/scene position
     vec3 worldPos;
+    // Shadow position
+    vec3 shdPos;
     // Light position
     vec3 lightPos;
-
-    // Shadow position
-    vec4 shdPos;
 };

@@ -42,14 +42,16 @@
 	}
 
 	// Shadow function
-	vec3 getShdMapping(vec4 shdPos, vec3 normal, vec3 nLightPos, float dither, float ss){
+	vec3 getShdMapping(vec3 shdPos, vec3 normal, vec3 nLightPos, float dither, float ss){
 		vec3 shdCol = vec3(0);
 		float shdRcp = 1.0 / shadowMapResolution;
 
 		// Light diffuse
 		float lightDot = dot(normal, nLightPos) * (1.0 - ss) + ss;
-		shdPos.xyz = distort(shdPos.xyz, shdPos.w) * 0.5 + 0.5;
-		shdPos.z -= (shdBias + 0.125 * shdRcp) * squared(shdPos.w) / abs(lightDot);
+
+		float distortFactor = getDistortFactor(shdPos.xy);
+		shdPos.xyz = distort(shdPos.xyz, distortFactor) * 0.5 + 0.5;
+		shdPos.z -= (shdBias + 0.125 * shdRcp) * squared(distortFactor) / abs(lightDot);
 
 		if(lightDot >= 0)
 			#ifdef SHADOW_FILTER
