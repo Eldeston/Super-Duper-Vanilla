@@ -95,10 +95,10 @@ INOUT vec2 screenCoord;
                 matPBR material;
                 getPBR(material, posVector.screenPos.xy);
 
+                if(!cloudMask) sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
+
                 // Get sky color
                 vec3 skyRender = getSkyRender(posVector.eyePlayerPos, lightCol, 1.0, skyMask);
-
-                if(!cloudMask) sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
 
                 // Fog calculation
                 sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y / 256.0, cloudMask, skyMask);
