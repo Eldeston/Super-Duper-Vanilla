@@ -181,8 +181,9 @@ uniform sampler2D texture;
     }
 #endif
 
-void enviroPBR(inout matPBR material, in vec3 rawNorm){
-    float rainMatFact = saturate(rainStrength * 0.972 * sqrt(material.normal_m.y) * cubed(material.light_m.y));
+void enviroPBR(inout matPBR material, in vec3 rawNorm, float puddle){
+    float rainMatFact = saturate(rainStrength * sqrt(rawNorm.y) * cubed(material.light_m.y) * smoothstep(0.2, 0.8, puddle));
     material.normal_m = mix(material.normal_m, rawNorm, rainMatFact);
     material.roughness_m = material.roughness_m * (1.0 - rainMatFact);
+    material.albedo_t.rgb = material.albedo_t.rgb * (1.0 - rainMatFact * 0.8);
 }
