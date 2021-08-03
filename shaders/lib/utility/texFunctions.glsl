@@ -33,8 +33,8 @@ vec4 texPix2DBicubic(sampler2D image, vec2 st, vec2 texRes){
     vec4 upRight = texture2D(image, st + vec2(0, pixSize.y));
     vec4 upLeft = texture2D(image, st + vec2(pixSize.x , pixSize.y));
 
-    float a = smoothen(fract(st.x * texRes.x));
-    float b = smoothen(fract(st.y * texRes.y));
+    float a = smootherstep(fract(st.x * texRes.x));
+    float b = smootherstep(fract(st.y * texRes.y));
 
     vec4 horizontal0 = mix(downLeft, downRight, a);
     vec4 horizontal1 = mix(upRight, upLeft, a);
