@@ -78,7 +78,7 @@ INOUT mat3 TBN;
 
         int rBlockId = int(blockId + 0.5);
 
-        getPBR(material, TBN, glcolor.rgb, texCoord, rBlockId);
+        getPBR(material, posVector, TBN, glcolor.rgb, texCoord, rBlockId);
 
         // If player
         if(rBlockId == 0) material.ambient_m = 1.0;
@@ -91,7 +91,7 @@ INOUT mat3 TBN;
         material.ambient_m *= glcolor.a;
         material.light_m = lmCoord;
 
-        enviroPBR(material, TBN[2], texPix2DBilinear(noisetex, posVector.worldPos.xz / 256.0, vec2(256)).x);
+        enviroPBR(material, posVector, TBN[2], dither);
 
         vec4 sceneCol = complexShadingGbuffers(material, posVector, dither);
 

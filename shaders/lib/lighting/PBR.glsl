@@ -1,21 +1,37 @@
 uniform sampler2D texture;
 
+void enviroPBR(inout matPBR material, in positionVectors posVector, in vec3 rawNorm, in vec3 dither){
+    float puddle = texPix2DBicubic(noisetex, posVector.worldPos.xz / 256.0, vec2(256)).x;
+    float rainMatFact = saturate(rainStrength * sqrt(rawNorm.y) * cubed(material.light_m.y) * smoothstep(0.25, 0.75, puddle));
+    
+    material.normal_m = mix(material.normal_m, rawNorm, rainMatFact);
+    material.roughness_m = material.roughness_m * (1.0 - rainMatFact);
+    material.albedo_t.rgb = material.albedo_t.rgb * (1.0 - rainMatFact * 0.8);
+}
+
 #ifdef DEFAULT_MAT
-    void getPBR(inout matPBR material, mat3 TBN, vec3 tint, vec2 st, int id){
+    void getPBR(inout matPBR material, in positionVectors posVector, in mat3 TBN, in vec3 tint, in vec2 st, in int id){
         // Assign default normal map
         material.normal_m = TBN[2];
 
-        // Assign albedo
-        material.albedo_t = texture2D(texture, st);
+        // Generate bumped normals
+        #if defined TERRAIN || defined WATER
+            // Assign albedo
+            material.albedo_t = texture2D(texture, mix(minTexCoord, maxTexCoord, st));
 
-        #if WHITE_MODE == 0
-            material.albedo_t.rgb *= tint;
-        #elif WHITE_MODE == 1
-            material.albedo_t.rgb = vec3(1);
-        #elif WHITE_MODE == 2
-            material.albedo_t.rgb = vec3(0);
-        #elif WHITE_MODE == 3
-            material.albedo_t.rgb = tint;
+            // Square distance to center of the block
+            float distCenter = max2(st - 0.5);
+
+            if(distCenter < 0.5 - 0.0125){
+                float d = getLuminance(material.albedo_t.rgb);
+                float dx = d - getLuminance(texture2D(texture, mix(minTexCoord, maxTexCoord, (st + vec2(0.0125, 0)))).rgb);
+                float dy = d - getLuminance(texture2D(texture, mix(minTexCoord, maxTexCoord, (st + vec2(0, 0.0125)))).rgb);
+
+                material.normal_m = normalize(TBN * normalize(vec3(dx, dy, 0.25)));
+            }
+        #else
+            // Assign albedo
+            material.albedo_t = texture2D(texture, st);
         #endif
 
         // Default material if not specified
@@ -27,7 +43,19 @@ uniform sampler2D texture;
             vec3 hsv = saturate(rgb2hsv(material.albedo_t));
             float maxCol = maxC(material.albedo_t.rgb);
             float sumCol = saturate(material.albedo_t.r + material.albedo_t.g + material.albedo_t.b);
+        #endif
 
+        #if WHITE_MODE == 0
+            material.albedo_t.rgb *= tint;
+        #elif WHITE_MODE == 1
+            material.albedo_t.rgb = vec3(1);
+        #elif WHITE_MODE == 2
+            material.albedo_t.rgb = vec3(0);
+        #elif WHITE_MODE == 3
+            material.albedo_t.rgb = tint;
+        #endif
+
+        #if defined TERRAIN || defined WATER
             // Foliage and corals
             if(id >= 10000 && id <= 10008) material.ss_m = 0.8;
 
@@ -109,7 +137,7 @@ uniform sampler2D texture;
     uniform sampler2D normals;
     uniform sampler2D specular;
 
-    void getPBR(inout matPBR material, mat3 TBN, vec3 tint, vec2 st, int id){
+    void getPBR(inout matPBR material, positionVectors posVector, mat3 TBN, vec3 tint, vec2 st, int id){
         // Assign default normal map
         material.normal_m = TBN[2];
 
@@ -180,10 +208,3 @@ uniform sampler2D texture;
         material.roughness_m = max(material.roughness_m, 0.03);
     }
 #endif
-
-void enviroPBR(inout matPBR material, in vec3 rawNorm, float puddle){
-    float rainMatFact = saturate(rainStrength * sqrt(rawNorm.y) * cubed(material.light_m.y) * smoothstep(0.2, 0.8, puddle));
-    material.normal_m = mix(material.normal_m, rawNorm, rainMatFact);
-    material.roughness_m = material.roughness_m * (1.0 - rainMatFact);
-    material.albedo_t.rgb = material.albedo_t.rgb * (1.0 - rainMatFact * 0.8);
-}

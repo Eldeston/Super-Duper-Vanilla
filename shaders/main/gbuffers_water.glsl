@@ -10,6 +10,9 @@ INOUT float blockId;
 INOUT vec2 lmCoord;
 INOUT vec2 texCoord;
 
+INOUT vec2 minTexCoord;
+INOUT vec2 maxTexCoord;
+
 INOUT vec4 glcolor;
 
 INOUT mat3 TBN;
@@ -45,6 +48,11 @@ INOUT mat3 TBN;
             vec3 worldPos = vertexPos.xyz + cameraPosition;
 	        getWave(vertexPos.xyz, worldPos, texCoord, mc_midTexCoord, mc_Entity.x, lmCoord.y);
         #endif
+
+        vec2 texSize = abs(texCoord - mc_midTexCoord.xy);
+		minTexCoord = mc_midTexCoord.xy - texSize;
+		maxTexCoord = mc_midTexCoord.xy + texSize;
+		texCoord = step(mc_midTexCoord.xy, texCoord);
         
 	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
 
@@ -86,7 +94,7 @@ INOUT mat3 TBN;
 
         int rBlockId = int(blockId + 0.5);
 
-        getPBR(material, TBN, glcolor.rgb, texCoord, rBlockId);
+        getPBR(material, posVector, TBN, glcolor.rgb, texCoord, rBlockId);
 
         // If water
         if(rBlockId == 10034){
@@ -110,7 +118,7 @@ INOUT mat3 TBN;
         material.ambient_m *= glcolor.a;
         material.light_m = lmCoord;
 
-        enviroPBR(material, TBN[2], texPix2DBilinear(noisetex, posVector.worldPos.xz / 256.0, vec2(256)).x);
+        enviroPBR(material, posVector, TBN[2], dither);
 
         vec4 sceneCol = complexShadingGbuffers(material, posVector, dither);
 
