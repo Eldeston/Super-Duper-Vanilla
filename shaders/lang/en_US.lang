@@ -48,6 +48,10 @@
 
 #PBR
     option.DEFAULT_MAT=Default PBR materials
+    option.AUTO_GEN_NORM=Auto generated normals
+    value.DEFAULT_MAT.0=OFF
+    value.DEFAULT_MAT.1=Default PBR
+    value.DEFAULT_MAT.2=Resource PBR
 
 screen.RAY_TRACING=Ray tracing settings
     option.SSGI_STEPS=SSGI steps
@@ -59,7 +63,7 @@ screen.RAY_TRACING=Ray tracing settings
     option.TEMPORAL_ACCUMULATION=Temporal accumulation
     option.ACCUMILATION_SPEED=Accumulation speed
 
-screen.WATER_SETTINGS=Water settings
+screen.WATER_SETTINGS=Water material settings
     option.WATER_BRIGHTNESS=Water brightness
     option.WATER_BLUR_SIZE=Water blur size
     option.WATER_DEPTH_SIZE=Water depth size

@@ -10,7 +10,7 @@ INOUT float blockId;
 INOUT vec2 lmCoord;
 INOUT vec2 texCoord;
 
-#ifdef DEFAULT_MAT
+#if DEFAULT_MAT != 2 && defined AUTO_GEN_NORM
     INOUT vec2 minTexCoord;
     INOUT vec2 maxTexCoord;
 #endif
@@ -51,7 +51,7 @@ INOUT mat3 TBN;
 	        getWave(vertexPos.xyz, worldPos, texCoord, mc_midTexCoord, mc_Entity.x, lmCoord.y);
         #endif
 
-        #ifdef DEFAULT_MAT
+        #if DEFAULT_MAT != 2 && defined AUTO_GEN_NORM
             vec2 texSize = abs(texCoord - mc_midTexCoord.xy);
             minTexCoord = mc_midTexCoord.xy - texSize;
             maxTexCoord = mc_midTexCoord.xy + texSize;
