@@ -47,7 +47,8 @@
     screen.LIGHTING.comment=Lighting settings for shadow resolution, lightmap etc.
 
 #PBR
-    option.DEFAULT_MAT=Default PBR materials
+    option.DEFAULT_MAT=PBR mode
+    option.ENVIRO_MAT=Enviro PBR materials
     option.AUTO_GEN_NORM=Auto generated normals
     value.DEFAULT_MAT.0=OFF
     value.DEFAULT_MAT.1=Default PBR
