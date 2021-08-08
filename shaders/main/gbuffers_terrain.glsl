@@ -10,8 +10,10 @@ INOUT float blockId;
 INOUT vec2 lmCoord;
 INOUT vec2 texCoord;
 
-INOUT vec2 minTexCoord;
-INOUT vec2 maxTexCoord;
+#ifdef DEFAULT_MAT
+    INOUT vec2 minTexCoord;
+    INOUT vec2 maxTexCoord;
+#endif
 
 INOUT vec4 glcolor;
 
@@ -49,10 +51,12 @@ INOUT mat3 TBN;
 	        getWave(vertexPos.xyz, worldPos, texCoord, mc_midTexCoord, mc_Entity.x, lmCoord.y);
         #endif
 
-        vec2 texSize = abs(texCoord - mc_midTexCoord.xy);
-		minTexCoord = mc_midTexCoord.xy - texSize;
-		maxTexCoord = mc_midTexCoord.xy + texSize;
-		texCoord = step(mc_midTexCoord.xy, texCoord);
+        #ifdef DEFAULT_MAT
+            vec2 texSize = abs(texCoord - mc_midTexCoord.xy);
+            minTexCoord = mc_midTexCoord.xy - texSize;
+            maxTexCoord = mc_midTexCoord.xy + texSize;
+            texCoord = step(mc_midTexCoord.xy, texCoord);
+        #endif
         
 	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
 
