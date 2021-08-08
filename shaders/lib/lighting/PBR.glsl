@@ -1,8 +1,13 @@
 uniform sampler2D texture;
 
+uniform float isWarm;
+uniform float isSnowy;
+uniform float isPeaks;
+
 void enviroPBR(inout matPBR material, in positionVectors posVector, in vec3 rawNorm, in vec3 dither){
-    float puddle = texPix2DBicubic(noisetex, posVector.worldPos.xz / 256.0, vec2(256)).x;
+    float puddle = texPix2DCubic(noisetex, posVector.worldPos.xz / 256.0, vec2(256)).x;
     float rainMatFact = saturate(rainStrength * sqrt(rawNorm.y) * cubed(material.light_m.y) * smoothstep(0.25, 0.75, puddle));
+    rainMatFact *= (1.0 - isWarm) * (1.0 - isSnowy) * (1.0 - isPeaks);
     
     material.normal_m = mix(material.normal_m, rawNorm, rainMatFact);
     material.roughness_m = material.roughness_m * (1.0 - rainMatFact);
