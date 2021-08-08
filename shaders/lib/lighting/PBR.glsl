@@ -27,7 +27,7 @@ void enviroPBR(inout matPBR material, in positionVectors posVector, in vec3 rawN
                 float dx = d - getLuminance(texture2D(texture, mix(minTexCoord, maxTexCoord, (st + vec2(0.0125, 0)))).rgb);
                 float dy = d - getLuminance(texture2D(texture, mix(minTexCoord, maxTexCoord, (st + vec2(0, 0.0125)))).rgb);
 
-                material.normal_m = normalize(TBN * normalize(vec3(dx, dy, 0.25)));
+                material.normal_m = normalize(TBN * normalize(vec3(dx, dy, 0.125)));
             }
         #else
             // Assign albedo
