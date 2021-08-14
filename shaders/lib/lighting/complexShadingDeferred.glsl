@@ -12,14 +12,12 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
 	#endif
 
 	vec4 SSRCol = vec4(0);
-	vec3 fresnel = vec3(0);
+	// Get fresnel
+	vec3 fresnel = getFresnelSchlick(dot(material.normal_m, nEyePlayerPos),
+		mix(vec3(0.04), material.albedo_t.rgb, material.metallic_m));
 
 	// If roughness is 1, don't do reflections
 	if(material.roughness_m != 1){
-		// Get fresnel
-		fresnel = getFresnelSchlick(dot(material.normal_m, nEyePlayerPos),
-			mix(vec3(0.04), material.albedo_t.rgb, material.metallic_m));
-		
 		#ifdef SSR
 			#ifdef ROUGH_REFLECTIONS
 				SSRCol = getSSRCol(posVector.viewPos, posVector.clipPos,

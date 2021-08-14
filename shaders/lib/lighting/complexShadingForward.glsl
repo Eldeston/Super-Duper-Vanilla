@@ -28,13 +28,12 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 
 	vec3 specCol = vec3(0);
 	vec3 reflectCol = vec3(0);
+	// Get fresnel
+	vec3 fresnel = getFresnelSchlick(dot(material.normal_m, nNegEyePlayerPos),
+		mix(vec3(0.04), material.albedo_t.rgb, material.metallic_m));
 
 	// If roughness is 1, don't do reflections
 	if(material.roughness_m != 1){
-		// Get fresnel
-		vec3 fresnel = getFresnelSchlick(dot(material.normal_m, nNegEyePlayerPos),
-			mix(vec3(0.04), material.albedo_t.rgb, material.metallic_m));
-		
 		#ifdef ENABLE_LIGHT
 			// Get specular GGX
 			if(maxC(directLight) > 0) specCol = getSpecGGX(nNegEyePlayerPos, nLightPos, normalize(posVector.lightPos - posVector.eyePlayerPos), material.normal_m, fresnel, material.roughness_m) * directLight;

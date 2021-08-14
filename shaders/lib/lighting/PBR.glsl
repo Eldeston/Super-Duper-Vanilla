@@ -1,20 +1,22 @@
 uniform sampler2D texture;
 
-uniform float isWarm;
-uniform float isSnowy;
-uniform float isPeaks;
-
-void enviroPBR(inout matPBR material, in positionVectors posVector, in vec3 rawNorm, in vec3 dither){
-    float puddle = texPix2DCubic(noisetex, posVector.worldPos.xz / 256.0, vec2(256)).x;
-    float rainMatFact = saturate(rainStrength * sqrt(rawNorm.y) * cubed(material.light_m.y) * smoothstep(0.25, 0.75, puddle));
-    rainMatFact *= (1.0 - isWarm) * (1.0 - isSnowy) * (1.0 - isPeaks);
-    
-    material.normal_m = mix(material.normal_m, rawNorm, rainMatFact);
-    material.roughness_m = material.roughness_m * (1.0 - rainMatFact);
-    material.albedo_t.rgb = material.albedo_t.rgb * (1.0 - rainMatFact * 0.8);
-}
-
 #ifdef AUTO_GEN_NORM
+#endif
+
+#ifdef ENVIRO_MAT
+    uniform float isWarm;
+    uniform float isSnowy;
+    uniform float isPeaks;
+
+    void enviroPBR(inout matPBR material, in positionVectors posVector, in vec3 rawNorm, in vec3 dither){
+        float puddle = texPix2DCubic(noisetex, posVector.worldPos.xz / 256.0, vec2(256)).x;
+        float rainMatFact = saturate(rainStrength * sqrt(rawNorm.y) * cubed(material.light_m.y) * smoothstep(0.25, 0.75, puddle));
+        rainMatFact *= (1.0 - isWarm) * (1.0 - isSnowy) * (1.0 - isPeaks);
+        
+        material.normal_m = mix(material.normal_m, rawNorm, rainMatFact);
+        material.roughness_m = material.roughness_m * (1.0 - rainMatFact);
+        material.albedo_t.rgb = material.albedo_t.rgb * (1.0 - rainMatFact * 0.8);
+    }
 #endif
 
 #if DEFAULT_MAT == 2
@@ -55,7 +57,7 @@ void enviroPBR(inout matPBR material, in positionVectors posVector, in vec3 rawN
         // Extract reflectance
         float reflectance = SRPSSE.g * 255.0;
         // Assign metallic
-        material.metallic_m = reflectance <= 229 ? reflectance / 229.0 : 0.99;
+        material.metallic_m = reflectance <= 229 ? reflectance / 229.0 : 1.0;
 
         // Extact SS
         float PSS = SRPSSE.b * 255.0;
@@ -148,7 +150,6 @@ void enviroPBR(inout matPBR material, in positionVectors posVector, in vec3 rawN
 
             // If water
             if(id == 10034){
-                material.metallic_m = 0.0;
                 material.roughness_m = 0.03;
                 material.ambient_m = 1.0;
             }
