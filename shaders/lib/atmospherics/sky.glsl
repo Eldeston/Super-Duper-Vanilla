@@ -17,7 +17,14 @@ vec3 getSkyRender(vec3 playerPos, vec3 inLightCol, float skyDiffuseMask, bool sk
 
     vec3 nSkyPos = normalize(mat3(shadowProjection) * (mat3(shadowModelView) * playerPos));
     float lightRange = smoothen(-nSkyPos.z * 0.56) * (1.0 - newTwilight);
-    float nPlayerPosY = normalize(playerPos).y;
+
+    #if defined USE_HORIZON || defined USE_SUN_MOON || defined USE_STARS
+        float nPlayerPosY = normalize(playerPos).y;
+        
+        #if defined USE_SUN_MOON || defined USE_STARS
+            float horizon = smoothstep(-0.1, 0.1, nPlayerPosY);
+        #endif
+    #endif
 
     vec3 finalCol = skyCol;
 
@@ -32,7 +39,7 @@ vec3 getSkyRender(vec3 playerPos, vec3 inLightCol, float skyDiffuseMask, bool sk
     }
 
     #ifdef USE_SUN_MOON
-        finalCol += (lightRange * skyDiffuseMask) * lightCol;
+        finalCol += (lightRange * skyDiffuseMask * horizon) * lightCol;
 
         if(skyMask) finalCol += getSunMoonShape(nSkyPos) * 6.4 * sqrt(inLightCol);
     #endif
@@ -41,7 +48,7 @@ vec3 getSkyRender(vec3 playerPos, vec3 inLightCol, float skyDiffuseMask, bool sk
         if(skyMask){
             // Stars
             vec2 starPos = 0.5 > abs(nSkyPos.y) ? vec2(atan(nSkyPos.x, nSkyPos.z), nSkyPos.y) * 0.25 : nSkyPos.xz * 0.333;
-            finalCol = max(finalCol, vec3(genStar(starPos * 0.128) * 0.8));
+            finalCol = max(finalCol, vec3(genStar(starPos * 0.128) * horizon * 0.75));
         }
     #endif
 
