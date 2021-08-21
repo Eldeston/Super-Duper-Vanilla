@@ -48,7 +48,7 @@ vec3 getSkyRender(vec3 playerPos, vec3 inLightCol, float skyDiffuseMask, bool sk
         if(skyMask){
             // Stars
             vec2 starPos = 0.5 > abs(nSkyPos.y) ? vec2(atan(nSkyPos.x, nSkyPos.z), nSkyPos.y) * 0.25 : nSkyPos.xz * 0.333;
-            finalCol = max(finalCol, vec3(genStar(starPos * 0.128) * horizon * 0.75));
+            finalCol = max(finalCol, vec3(genStar(starPos * 0.128) * horizon));
         }
     #endif
 

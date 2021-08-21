@@ -112,7 +112,7 @@ uniform sampler2D texture;
                 float dx = d - getLuminance(texture2D(texture, mix(minTexCoord, maxTexCoord, (st + vec2(0.0125, 0)))).rgb);
                 float dy = d - getLuminance(texture2D(texture, mix(minTexCoord, maxTexCoord, (st + vec2(0, 0.0125)))).rgb);
 
-                material.normal_m = normalize(TBN * normalize(vec3(dx, dy, 0.125)));
+                material.normal_m = normalize(TBN * normalize(vec3(dx, dy, 0.128)));
             }
         #else
             // Assign albedo
@@ -142,17 +142,10 @@ uniform sampler2D texture;
 
         #if defined TERRAIN || defined WATER
             // If lava
-            if(id == 10017){
-                material.emissive_m = 1.0;
-                material.roughness_m = 1.0;
-                material.ambient_m = 1.0;
-            }
+            if(id == 10017) material.emissive_m = 1.0;
 
             // If water
-            if(id == 10034){
-                material.roughness_m = 0.03;
-                material.ambient_m = 1.0;
-            }
+            if(id == 10034) material.roughness_m = 0.03;
         #endif
         
         #if (defined TERRAIN || defined WATER) && DEFAULT_MAT == 1
