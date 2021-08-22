@@ -44,7 +44,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 
 	#ifdef ENABLE_LIGHT
 		float rainDiff = isEyeInWater == 1 ? 0.2 : rainStrength * 0.5;
-		directLight = directLight * (1.0 - rainDiff) + sqrt(material.light_m.y) * rainDiff;
+		directLight = directLight * (1.0 - rainDiff) + material.light_m.y * rainDiff;
 	#endif
 
 	#ifdef WATER
