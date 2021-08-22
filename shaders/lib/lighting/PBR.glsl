@@ -15,7 +15,7 @@ uniform sampler2D texture;
         
         material.normal_m = mix(material.normal_m, rawNorm, rainMatFact);
         material.roughness_m = material.roughness_m * (1.0 - rainMatFact);
-        material.albedo_t.rgb = material.albedo_t.rgb * (1.0 - rainMatFact * 0.8);
+        material.metallic_m = material.metallic_m * (1.0 - rainMatFact * 0.5);
     }
 #endif
 
@@ -81,7 +81,7 @@ uniform sampler2D texture;
             // If water
             if(id == 10034){
                 material.roughness_m = 0.03;
-                material.ambient_m = 1.0;
+                material.metallic_m = 0.02;
             }
 
             // End portal
@@ -145,7 +145,10 @@ uniform sampler2D texture;
             if(id == 10017) material.emissive_m = 1.0;
 
             // If water
-            if(id == 10034) material.roughness_m = 0.03;
+            if(id == 10034){
+                material.roughness_m = 0.03;
+                material.metallic_m = 0.02;
+            }
         #endif
         
         #if (defined TERRAIN || defined WATER) && DEFAULT_MAT == 1
@@ -161,7 +164,6 @@ uniform sampler2D texture;
             if(id == 10018){
                 material.emissive_m = cubed(material.albedo_t.r) * hsv.y;
                 material.roughness_m = (1.0 - material.emissive_m);
-                material.metallic_m = material.emissive_m;
             }
 
             // Glass and ice
@@ -170,7 +172,7 @@ uniform sampler2D texture;
             // Gem ores and blocks
             if(id == 10048 || id == 10050){
                 material.roughness_m = cubed(1.0 - hsv.y);
-                material.metallic_m = hsv.y * 0.6;
+                material.metallic_m = hsv.y > 0.6 ? 1.0 : material.metallic_m;
             }
 
             // Netherack gem ores
@@ -179,24 +181,24 @@ uniform sampler2D texture;
             // Metal ores
             if(id == 10064){
                 material.roughness_m = squared(1.0 - hsv.y);
-                material.metallic_m = smoothstep(0.1, 0.4, hsv.y);
+                material.metallic_m = hsv.y > 0.6 ? 1.0 : material.metallic_m;
             }
 
             // Netherack metal ores
             if(id == 10065){
-                material.metallic_m = smoothstep(0.5, 0.75, max2(material.albedo_t.rg));;
-                material.roughness_m = smoothstep(0.75, 0.5, max2(material.albedo_t.rg));;
+                material.metallic_m = max2(material.albedo_t.rg) > 0.6 ? 1.0 : material.metallic_m;
+                material.roughness_m = max2(material.albedo_t.rg) > 0.6 ? 0.0 : material.roughness_m;
             }
 
             // Metal blocks
             if(id == 10066){
-                material.metallic_m = maxCol;
+                material.metallic_m = 1.0;
                 material.roughness_m = 1.0 - maxCol;
             }
 
             // Dark metals
             if(id == 10067){
-                material.metallic_m = sumCol;
+                material.metallic_m = 1.0;
                 material.roughness_m = 1.0 - sumCol;
             }
 

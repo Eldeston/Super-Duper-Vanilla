@@ -85,7 +85,7 @@ INOUT vec3 norm;
             material.albedo_t = vec4(1, 1, 1, albedoAlpha);
         #endif
 
-        material.metallic_m = 0.0;
+        material.metallic_m = 0.04;
         material.ss_m = 0.6;
         material.emissive_m = 0.0;
         material.roughness_m = 1.0;

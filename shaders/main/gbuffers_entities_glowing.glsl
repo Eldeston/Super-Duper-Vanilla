@@ -95,7 +95,7 @@ INOUT mat3 TBN;
 
         // Lightning
         if(rBlockId == 10101){
-            material.metallic_m = 0.0;
+            material.metallic_m = 0.04;
             material.emissive_m = 1.0;
             material.roughness_m = 1.0;
             sceneCol = vec4(vec3(2), 1);

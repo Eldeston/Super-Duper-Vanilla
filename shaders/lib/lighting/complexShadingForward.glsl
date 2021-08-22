@@ -26,30 +26,32 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	// Get globally illuminated sky
 	vec3 GISky = ambientLighting + getSkyRender(material.normal_m, lightCol, 0.0, false) * material.light_m.y * material.light_m.y;
 
-	vec3 specCol = vec3(0);
-	vec3 reflectCol = vec3(0);
 	// Get fresnel
 	vec3 fresnel = getFresnelSchlick(dot(material.normal_m, nNegEyePlayerPos),
-		mix(vec3(0.04), material.albedo_t.rgb, material.metallic_m));
+		material.metallic_m == 1 ? material.albedo_t.rgb : vec3(material.metallic_m));
+	
+	vec3 specCol = vec3(0);
 
-	// If roughness is 1, don't do reflections
-	if(material.roughness_m != 1){
-		#ifdef ENABLE_LIGHT
-			// Get specular GGX
-			if(maxC(directLight) > 0) specCol = getSpecGGX(nNegEyePlayerPos, nLightPos, normalize(posVector.lightPos - posVector.eyePlayerPos), material.normal_m, fresnel, material.roughness_m) * directLight;
-		#endif
+	#ifdef ENABLE_LIGHT
+		// Get specular GGX
+		if(maxC(directLight) > 0) specCol = getSpecGGX(nNegEyePlayerPos, nLightPos, normalize(posVector.lightPos - posVector.eyePlayerPos), material.normal_m, fresnel, material.roughness_m) * directLight;
+	#endif
 		
-		vec3 reflectedSkyRender = ambientLighting + getSkyRender(reflect(posVector.eyePlayerPos, material.normal_m), directLight, 1.0, material.light_m.y >= 0.95) * material.light_m.y;
+	vec3 reflectedSkyRender = ambientLighting + getSkyRender(reflect(posVector.eyePlayerPos, material.normal_m), directLight, 1.0, material.light_m.y >= 0.95) * material.light_m.y;
 
-		// Mask reflections
-		reflectCol = reflectedSkyRender * fresnel * (1.0 - material.roughness_m) * material.ambient_m; // Will change this later...
-	}
+	// Mask reflections
+	vec3 reflectCol = reflectedSkyRender * material.ambient_m; // Will change this later...
 
 	#ifdef ENABLE_LIGHT
 		float rainDiff = isEyeInWater == 1 ? 0.2 : rainStrength * 0.5;
 		directLight = directLight * (1.0 - rainDiff) + sqrt(material.light_m.y) * rainDiff;
 	#endif
 
+	#ifdef WATER
+		float greyFresnel = maxC(fresnel);
+		material.albedo_t.a = material.albedo_t.a * (1.0 - greyFresnel) + greyFresnel;
+	#endif
+ 
 	vec3 totalDiffuse = (directLight + GISky * material.ambient_m + cubed(material.light_m.x) * BLOCK_LIGHT_COL * pow(material.ambient_m, 1.0 / 4.0));
-	return vec4(material.albedo_t.rgb * totalDiffuse * (1.0 - material.metallic_m) + specCol + reflectCol + material.albedo_t.rgb * material.emissive_m, material.albedo_t.a);
+	return vec4(mix(material.albedo_t.rgb * totalDiffuse, reflectCol, fresnel * squared(1.0 - material.roughness_m)) + specCol + material.albedo_t.rgb * material.emissive_m, material.albedo_t.a);
 }

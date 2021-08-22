@@ -70,7 +70,7 @@ INOUT vec4 glcolor;
             material.albedo_t.rgb = vec3(0);
         #endif
 
-        material.metallic_m = 0.0;
+        material.metallic_m = 0.04;
         material.ss_m = 1.0;
         material.emissive_m = 0.0;
         material.roughness_m = 1.0;
