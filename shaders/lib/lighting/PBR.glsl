@@ -163,7 +163,8 @@ uniform sampler2D texture;
             // Redstone
             if(id == 10018){
                 material.emissive_m = cubed(material.albedo_t.r) * hsv.y;
-                material.roughness_m = (1.0 - material.emissive_m);
+                material.roughness_m = (1.0 - material.emissive_m * 0.8);
+                material.metallic_m = step(0.8, material.emissive_m);
             }
 
             // Glass and ice
