@@ -100,33 +100,37 @@ INOUT mat3 TBN;
 
         getPBR(material, posVector, TBN, glcolor.rgb, texCoord, rBlockId);
 
-        // If water
-        if(rBlockId == 10034){
-            material.albedo_t.rgb *= WATER_BRIGHTNESS;
+        vec4 sceneCol = vec4(0);
 
-            #ifdef WATER_NORM
-                #if !(defined END || defined NETHER)
-                    vec4 waterData = H2NWater(posVector.worldPos.xz * (1.0 - TBN[2].y) + posVector.worldPos.xz * TBN[2].y);
-                    material.normal_m = normalize(TBN * waterData.xyz);
+        if(material.albedo_t.a > 0.00001){
+            // If water
+            if(rBlockId == 10034){
+                material.albedo_t.rgb *= WATER_BRIGHTNESS;
 
-                    material.albedo_t.rgb *= squared(1.0 - waterData.w);
+                #ifdef WATER_NORM
+                    #if !(defined END || defined NETHER)
+                        vec4 waterData = H2NWater(posVector.worldPos.xz * (1.0 - TBN[2].y) + posVector.worldPos.xz * TBN[2].y);
+                        material.normal_m = normalize(TBN * waterData.xyz);
+
+                        material.albedo_t.rgb *= squared(1.0 - waterData.w);
+                    #endif
                 #endif
+
+                material.albedo_t.a *= float(isEyeInWater != 1);
+            }
+
+            material.albedo_t.rgb = pow(material.albedo_t.rgb, vec3(GAMMA));
+            
+            // Apply vanilla AO
+            material.ambient_m *= glcolor.a;
+            material.light_m = lmCoord;
+
+            #ifdef ENVIRO_MAT
+                enviroPBR(material, posVector, TBN[2]);
             #endif
 
-            material.albedo_t.a *= float(isEyeInWater != 1);
+            sceneCol = complexShadingGbuffers(material, posVector, dither);
         }
-
-        material.albedo_t.rgb = pow(material.albedo_t.rgb, vec3(GAMMA));
-        
-        // Apply vanilla AO
-        material.ambient_m *= glcolor.a;
-        material.light_m = lmCoord;
-
-        #ifdef ENVIRO_MAT
-            enviroPBR(material, posVector, TBN[2], dither);
-        #endif
-
-        vec4 sceneCol = complexShadingGbuffers(material, posVector, dither);
 
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; //gcolor

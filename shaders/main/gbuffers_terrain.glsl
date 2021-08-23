@@ -96,21 +96,23 @@ INOUT mat3 TBN;
 	    // Declare materials
 	    matPBR material;
 
-        int rBlockId = int(blockId + 0.5);
+        getPBR(material, posVector, TBN, glcolor.rgb, texCoord, int(blockId + 0.5));
 
-        getPBR(material, posVector, TBN, glcolor.rgb, texCoord, rBlockId);
+        vec4 sceneCol = vec4(0);
 
-        material.albedo_t.rgb = pow(material.albedo_t.rgb, vec3(GAMMA));
+        if(material.albedo_t.a > 0.00001){
+            material.albedo_t.rgb = pow(material.albedo_t.rgb, vec3(GAMMA));
 
-        // Apply vanilla AO
-        material.ambient_m *= glcolor.a;
-        material.light_m = lmCoord;
+            // Apply vanilla AO
+            material.ambient_m *= glcolor.a;
+            material.light_m = lmCoord;
 
-        #ifdef ENVIRO_MAT
-            enviroPBR(material, posVector, TBN[2], dither);
-        #endif
+            #ifdef ENVIRO_MAT
+                enviroPBR(material, posVector, TBN[2]);
+            #endif
 
-        vec4 sceneCol = complexShadingGbuffers(material, posVector, dither);
+            sceneCol = complexShadingGbuffers(material, posVector, dither);
+        }
 
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; //gcolor

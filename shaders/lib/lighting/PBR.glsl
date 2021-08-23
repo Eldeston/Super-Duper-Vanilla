@@ -3,19 +3,23 @@ uniform sampler2D texture;
 #ifdef AUTO_GEN_NORM
 #endif
 
-#ifdef ENVIRO_MAT
+#if (defined TERRAIN || defined WATER) && defined ENVIRO_MAT
     uniform float isWarm;
     uniform float isSnowy;
     uniform float isPeaks;
 
-    void enviroPBR(inout matPBR material, in positionVectors posVector, in vec3 rawNorm, in vec3 dither){
-        float puddle = texPix2DCubic(noisetex, posVector.worldPos.xz / 256.0, vec2(256)).x;
-        float rainMatFact = saturate(rainStrength * sqrt(rawNorm.y) * cubed(material.light_m.y) * smoothstep(0.25, 0.75, puddle));
-        rainMatFact *= (1.0 - isWarm) * (1.0 - isSnowy) * (1.0 - isPeaks);
-        
-        material.normal_m = mix(material.normal_m, rawNorm, rainMatFact);
-        material.roughness_m *= 1.0 - rainMatFact;
-        material.metallic_m *= 1.0 - rainMatFact * 0.5;
+    void enviroPBR(inout matPBR material, in positionVectors posVector, in vec3 rawNorm){
+        float rainMatFact = rainStrength * (1.0 - isWarm) * (1.0 - isSnowy) * (1.0 - isPeaks);
+
+        if(rainMatFact != 0){
+            float puddle = texPix2DCubic(noisetex, posVector.worldPos.xz / 256.0, vec2(256)).x;
+            rainMatFact *= saturate(sqrt(rawNorm.y) * cubed(material.light_m.y) * smoothstep(0.25, 0.75, puddle));
+            
+            material.normal_m = mix(material.normal_m, rawNorm, rainMatFact);
+            material.roughness_m *= 1.0 - rainMatFact;
+            material.metallic_m *= 1.0 - rainMatFact * 0.5;
+            material.albedo_t *= 1.0 - rainMatFact * 0.5;
+        }
     }
 #endif
 
@@ -23,7 +27,7 @@ uniform sampler2D texture;
     uniform sampler2D normals;
     uniform sampler2D specular;
 
-    void getPBR(inout matPBR material, positionVectors posVector, mat3 TBN, vec3 tint, vec2 st, int id){
+    void getPBR(inout matPBR material, in positionVectors posVector, in mat3 TBN, in vec3 tint, in vec2 st, in int id){
         // Assign default normal map
         material.normal_m = TBN[2];
 
@@ -86,8 +90,8 @@ uniform sampler2D texture;
             }
 
             // End portal
-            if(id == 10030){
-                material.roughness_m = 0.0;
+            if(id == 10100){
+                material.roughness_m = 0.3;
                 material.emissive_m = 1.0;
             }
         #endif
@@ -150,6 +154,12 @@ uniform sampler2D texture;
                 material.roughness_m = 0.03;
                 material.metallic_m = 0.02;
             }
+
+            // End portal
+            if(id == 10100){
+                material.roughness_m = 0.3;
+                material.emissive_m = 1.0;
+            }
         #endif
         
         #if (defined TERRAIN || defined WATER) && DEFAULT_MAT == 1
@@ -206,12 +216,6 @@ uniform sampler2D texture;
 
             // Polished blocks
             if(id == 10080) material.roughness_m = 1.0 - sumCol;
-
-            // End portal
-            if(id == 10100){
-                material.roughness_m = 0.0;
-                material.emissive_m = 1.0;
-            }
         #endif
 
         material.roughness_m = max(material.roughness_m, 0.03);
