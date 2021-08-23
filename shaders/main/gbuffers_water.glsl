@@ -109,7 +109,7 @@ INOUT mat3 TBN;
                     vec4 waterData = H2NWater(posVector.worldPos.xz * (1.0 - TBN[2].y) + posVector.worldPos.xz * TBN[2].y);
                     material.normal_m = normalize(TBN * waterData.xyz);
 
-                    material.albedo_t.rgb *= mix(1.0, 0.1, smootherstep(waterData.w));
+                    material.albedo_t.rgb *= squared(1.0 - waterData.w);
                 #endif
             #endif
 

@@ -31,13 +31,16 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 		material.metallic_m == 1 ? material.albedo_t.rgb : vec3(material.metallic_m));
 	
 	vec3 specCol = vec3(0);
+	vec3 reflectedSkyRender = vec3(0);
 
-	#ifdef ENABLE_LIGHT
-		// Get specular GGX
-		if(maxC(directLight) > 0) specCol = getSpecGGX(nNegEyePlayerPos, nLightPos, normalize(posVector.lightPos - posVector.eyePlayerPos), material.normal_m, fresnel, material.roughness_m) * directLight;
-	#endif
+	if(material.roughness_m != 1){
+		#ifdef ENABLE_LIGHT
+			// Get specular GGX
+			if(maxC(directLight) > 0 && material.roughness_m != 1) specCol = getSpecGGX(nNegEyePlayerPos, nLightPos, normalize(posVector.lightPos - posVector.eyePlayerPos), material.normal_m, fresnel, material.roughness_m) * directLight;
+		#endif
 		
-	vec3 reflectedSkyRender = ambientLighting + getSkyRender(reflect(posVector.eyePlayerPos, material.normal_m), directLight, 1.0, material.light_m.y >= 0.95) * material.light_m.y;
+		reflectedSkyRender = ambientLighting + getSkyRender(reflect(posVector.eyePlayerPos, material.normal_m), directLight, 1.0, material.light_m.y >= 0.95) * material.light_m.y;
+	}
 
 	// Mask reflections
 	vec3 reflectCol = reflectedSkyRender * material.ambient_m; // Will change this later...

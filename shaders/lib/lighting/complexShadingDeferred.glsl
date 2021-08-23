@@ -17,14 +17,16 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
 
 	// If roughness is 1, don't do reflections
 	vec4 SSRCol = vec4(0);
-	#ifdef SSR
-		#ifdef ROUGH_REFLECTIONS
-			SSRCol = getSSRCol(posVector.viewPos, posVector.clipPos,
-				gBMVNorm + (dither * 2.0 - 1.0) * squared(material.roughness_m * material.roughness_m));
-		#else
-			SSRCol = getSSRCol(posVector.viewPos, posVector.clipPos, gBMVNorm);
+
+	if(material.roughness_m != 1)
+		#ifdef SSR
+			#ifdef ROUGH_REFLECTIONS
+				SSRCol = getSSRCol(posVector.viewPos, posVector.clipPos,
+					gBMVNorm + (dither * 2.0 - 1.0) * squared(material.roughness_m * material.roughness_m));
+			#else
+				SSRCol = getSSRCol(posVector.viewPos, posVector.clipPos, gBMVNorm);
+			#endif
 		#endif
-	#endif
 
 	vec3 mask = fresnel * SSRCol.a * squared(1.0 - material.roughness_m);
 	return mix(sceneCol + material.albedo_t.rgb * GIcol, SSRCol.rgb, mask * (1.0 - material.emissive_m));
