@@ -115,8 +115,6 @@ INOUT mat3 TBN;
                         material.albedo_t.rgb *= squared(1.0 - waterData.w);
                     #endif
                 #endif
-
-                material.albedo_t.a *= float(isEyeInWater != 1);
             }
 
             material.albedo_t.rgb = pow(material.albedo_t.rgb, vec3(GAMMA));

@@ -84,7 +84,6 @@ INOUT vec2 screenCoord;
         #endif
 
         vec2 masks4 = texture2D(colortex4, posVector.screenPos.xy).xy;
-        bool cloudMask = masks4.y != 0;
         bool skyMask = posVector.screenPos.z == 1;
 
         // If not sky, don't calculate lighting
@@ -94,6 +93,9 @@ INOUT vec2 screenCoord;
                 // Declare and get materials
                 matPBR material;
                 getPBR(material, posVector.screenPos.xy);
+
+                // Get cloud mask
+                bool cloudMask = masks4.y != 0;
 
                 if(!cloudMask) sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
 
