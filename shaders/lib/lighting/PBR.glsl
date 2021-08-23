@@ -14,8 +14,8 @@ uniform sampler2D texture;
         rainMatFact *= (1.0 - isWarm) * (1.0 - isSnowy) * (1.0 - isPeaks);
         
         material.normal_m = mix(material.normal_m, rawNorm, rainMatFact);
-        material.roughness_m = material.roughness_m * (1.0 - rainMatFact);
-        material.metallic_m = material.metallic_m * (1.0 - rainMatFact * 0.5);
+        material.roughness_m *= 1.0 - rainMatFact;
+        material.metallic_m *= 1.0 - rainMatFact * 0.5;
     }
 #endif
 
@@ -82,6 +82,7 @@ uniform sampler2D texture;
             if(id == 10034){
                 material.roughness_m = 0.03;
                 material.metallic_m = 0.02;
+                material.ambient_m = 1.0;
             }
 
             // End portal
@@ -157,7 +158,7 @@ uniform sampler2D texture;
 
             // Emissives
             if(id == 10016 || id == 10017){
-                material.emissive_m = smoothstep(0.5, 1.0, maxCol);
+                material.emissive_m = smoothstep(0.6, 0.9, maxCol);
             }
 
             // Redstone
@@ -168,7 +169,7 @@ uniform sampler2D texture;
             }
 
             // Glass and ice
-            if(id == 10032 || id == 10033) material.roughness_m = 0.0;
+            if(id == 10032 || id == 10033) material.roughness_m = 0.03;
 
             // Gem ores and blocks
             if(id == 10048 || id == 10050){
