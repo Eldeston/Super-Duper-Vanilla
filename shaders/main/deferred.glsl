@@ -12,14 +12,6 @@ INOUT vec2 screenCoord;
 #endif
 
 #ifdef FRAGMENT
-    #ifdef ROUGH_REFLECTIONS
-        #ifdef PREVIOUS_FRAME
-            const bool colortex5MipmapEnabled = true;
-        #else
-            const bool gcolorMipmapEnabled = true;
-        #endif
-    #endif
-
     #ifdef PREVIOUS_FRAME
         const bool colortex5Clear = false;
     #endif

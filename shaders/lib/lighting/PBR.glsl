@@ -61,7 +61,7 @@ uniform sampler2D texture;
         // Extract reflectance
         float reflectance = SRPSSE.g * 255.0;
         // Assign metallic
-        material.metallic_m = reflectance <= 229 ? reflectance / 229.0 : 1.0;
+        material.metallic_m = reflectance <= 229 ? SRPSSE.g : 1.0;
 
         // Extact SS
         float PSS = SRPSSE.b * 255.0;
@@ -131,7 +131,6 @@ uniform sampler2D texture;
 
         #if (defined TERRAIN || defined WATER) && DEFAULT_MAT == 1
             vec3 hsv = saturate(rgb2hsv(material.albedo_t));
-            float maxCol = maxC(material.albedo_t.rgb);
             float sumCol = saturate(material.albedo_t.r + material.albedo_t.g + material.albedo_t.b);
         #endif
 
@@ -166,15 +165,22 @@ uniform sampler2D texture;
             // Foliage and corals
             if(id >= 10000 && id <= 10008) material.ss_m = 0.8;
 
+            // Stems
+            if(id == 10009) material.emissive_m = material.albedo_t.r < 0.1 ? hsv.z * 0.72 : material.emissive_m;
+            if(id == 10010) material.emissive_m = material.albedo_t.b < 0.16 && material.albedo_t.r > 0.4 ? hsv.z * 0.72 : material.emissive_m;
+
+            // Fungus
+            if(id == 10011) material.emissive_m = max2(material.albedo_t.rg) > 0.8 ? 0.72 : material.emissive_m;
+
             // Emissives
             if(id == 10016 || id == 10017){
-                material.emissive_m = smoothstep(0.6, 0.9, maxCol);
+                material.emissive_m = smoothstep(0.6, 0.8, hsv.z);
             }
 
             // Redstone
             if(id == 10018 || id == 10068){
                 material.emissive_m = cubed(material.albedo_t.r) * hsv.y;
-                material.roughness_m = (1.0 - material.emissive_m * 0.8);
+                material.roughness_m = (1.0 - material.emissive_m);
                 material.metallic_m = step(0.8, material.emissive_m);
             }
 
@@ -213,7 +219,7 @@ uniform sampler2D texture;
 
             // Metal blocks
             if(id == 10066){
-                material.roughness_m = 1.0 - maxCol;
+                material.roughness_m = 1.0 - hsv.z;
                 material.metallic_m = 1.0;
             }
 
