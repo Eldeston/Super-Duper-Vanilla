@@ -172,7 +172,7 @@ uniform sampler2D texture;
             }
 
             // Redstone
-            if(id == 10018){
+            if(id == 10018 || id == 10068){
                 material.emissive_m = cubed(material.albedo_t.r) * hsv.y;
                 material.roughness_m = (1.0 - material.emissive_m * 0.8);
                 material.metallic_m = step(0.8, material.emissive_m);
@@ -181,37 +181,52 @@ uniform sampler2D texture;
             // Glass and ice
             if(id == 10032 || id == 10033) material.roughness_m = 0.03;
 
-            // Gem ores and blocks
-            if(id == 10048 || id == 10050){
-                material.roughness_m = cubed(1.0 - hsv.y);
-                material.metallic_m = hsv.y > 0.6 ? 1.0 : material.metallic_m;
+            // Gem ores
+            if(id == 10048){
+                material.roughness_m = hsv.y > 0.128 ? 0.06 : material.roughness_m;
+                material.metallic_m = hsv.y > 0.128 ? 0.17 : material.metallic_m;
+            }
+
+            // Gem blocks
+            if(id == 10050){
+                material.roughness_m = 0.03;
+                material.metallic_m = 0.17;
             }
 
             // Netherack gem ores
-            if(id == 10049) material.roughness_m = material.albedo_t.r;
+            if(id == 10049){
+                material.roughness_m = hsv.y < 0.256 ? 0.06 : material.roughness_m;
+                material.metallic_m = hsv.y < 0.256 ? 0.17 : material.roughness_m;
+            }
 
             // Metal ores
             if(id == 10064){
-                material.roughness_m = squared(1.0 - hsv.y);
-                material.metallic_m = hsv.y > 0.6 ? 1.0 : material.metallic_m;
+                material.roughness_m = hsv.y > 0.128 ? 0.06 : material.roughness_m;
+                material.metallic_m = hsv.y > 0.128 ? 1.0 : material.metallic_m;
             }
 
             // Netherack metal ores
             if(id == 10065){
+                material.roughness_m = max2(material.albedo_t.rg) > 0.6 ? 0.06 : material.roughness_m;
                 material.metallic_m = max2(material.albedo_t.rg) > 0.6 ? 1.0 : material.metallic_m;
-                material.roughness_m = max2(material.albedo_t.rg) > 0.6 ? 0.0 : material.roughness_m;
             }
 
             // Metal blocks
             if(id == 10066){
-                material.metallic_m = 1.0;
                 material.roughness_m = 1.0 - maxCol;
+                material.metallic_m = 1.0;
             }
 
             // Dark metals
             if(id == 10067){
-                material.metallic_m = 1.0;
                 material.roughness_m = 1.0 - sumCol;
+                material.metallic_m = 1.0;
+            }
+
+            // Rails
+            if(id == 10068){
+                material.roughness_m = hsv.y < 0.128 ? 0.03 : material.roughness_m;
+                material.metallic_m = hsv.y < 0.128 ? 1.0 : material.metallic_m;
             }
 
             // Polished blocks
