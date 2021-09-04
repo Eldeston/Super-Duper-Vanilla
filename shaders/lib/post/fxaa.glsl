@@ -9,20 +9,20 @@ float quality[12] = float[12](1.0, 1.0, 1.0, 1.0, 1.0, 1.5, 2.0, 2.0, 2.0, 2.0, 
 
 vec4 textureFXAA(sampler2D aliased, vec2 uv, vec2 resolution){
     // Inverse or the reciprocate of resolution
-    vec2 rcpResolution = 1.0 / resolution.xy;
-    float pixSize = min2(rcpResolution);
+    vec2 rcpRes = 1.0 / resolution.xy;
+    float pixSize = min2(rcpRes);
 
     // Aliased texture
-    vec4 colorCenter = texture2D(aliased, uv);
+    vec4 colorCenter = texture2DLod(aliased, uv, 0);
 
     // Luma at the current fragment
     float lumaCenter = getLuminance(colorCenter.rgb);
 
     // Luma at the four direct neighbours of the current fragment.
-    float lumaUp = getLuminance(texture2D(aliased, uv + vec2(0, 1) * rcpResolution).rgb);
-    float lumaDown = getLuminance(texture2D(aliased, uv - vec2(0, 1) * rcpResolution).rgb);
-    float lumaLeft = getLuminance(texture2D(aliased, uv - vec2(1, 0) * rcpResolution).rgb);
-    float lumaRight = getLuminance(texture2D(aliased, uv + vec2(1, 0) * rcpResolution).rgb);
+    float lumaUp = getLuminance(texture2DLod(aliased, uv + vec2(0, 1) * rcpRes, 0).rgb);
+    float lumaDown = getLuminance(texture2DLod(aliased, uv - vec2(0, 1) * rcpRes, 0).rgb);
+    float lumaLeft = getLuminance(texture2DLod(aliased, uv - vec2(1, 0) * rcpRes, 0).rgb);
+    float lumaRight = getLuminance(texture2DLod(aliased, uv + vec2(1, 0) * rcpRes, 0).rgb);
 
     // Find the maximum and minimum luma around the current fragment.
     float lumaMin = min(lumaCenter, min(min(lumaDown, lumaUp), min(lumaLeft, lumaRight)));
@@ -34,10 +34,10 @@ vec4 textureFXAA(sampler2D aliased, vec2 uv, vec2 resolution){
     if(lumaRange < max(EDGE_THRESHOLD_MIN, lumaMax * EDGE_THRESHOLD_MAX)) return colorCenter;
 
     // Query the 4 remaining corners lumas.
-    float lumaUpRight = getLuminance(texture2D(aliased, uv + rcpResolution).rgb);
-    float lumaDownLeft = getLuminance(texture2D(aliased, uv - rcpResolution).rgb);
-    float lumaUpLeft = getLuminance(texture2D(aliased, uv - vec2(1, -1) * rcpResolution).rgb);
-    float lumaDownRight = getLuminance(texture2D(aliased, uv + vec2(1, -1) * rcpResolution).rgb);
+    float lumaUpRight = getLuminance(texture2DLod(aliased, uv + rcpRes, 0).rgb);
+    float lumaDownLeft = getLuminance(texture2DLod(aliased, uv - rcpRes, 0).rgb);
+    float lumaUpLeft = getLuminance(texture2DLod(aliased, uv - vec2(1, -1) * rcpRes, 0).rgb);
+    float lumaDownRight = getLuminance(texture2DLod(aliased, uv + vec2(1, -1) * rcpRes, 0).rgb);
 
     // Combine the four edges lumas (using intermediary variables for future computations with the same values).
     float lumaDownUp = lumaDown + lumaUp;
@@ -70,7 +70,7 @@ vec4 textureFXAA(sampler2D aliased, vec2 uv, vec2 resolution){
     float gradientScaled = 0.25 * max(abs(gradient1), abs(gradient2));
 
     // Choose the step size (one pixel) according to the edge direction.
-    float stepLength = isHorizontal ? rcpResolution.y : rcpResolution.x;
+    float stepLength = isHorizontal ? rcpRes.y : rcpRes.x;
 
     // Average luma in the correct direction.
     float lumaLocalAverage = 0.0;
@@ -89,14 +89,14 @@ vec4 textureFXAA(sampler2D aliased, vec2 uv, vec2 resolution){
     else currentUv.x += stepLength * 0.5;
 
     // Compute offset (for each iteration step) in the right direction.
-    vec2 offset = isHorizontal ? vec2(rcpResolution.x, 0) : vec2(0, rcpResolution.y);
+    vec2 offset = isHorizontal ? vec2(rcpRes.x, 0) : vec2(0, rcpRes.y);
     // Compute UVs to explore on each side of the edge, orthogonally. The QUALITY allows us to step faster.
     vec2 uv1 = currentUv - offset;
     vec2 uv2 = currentUv + offset;
 
     // Read the lumas at both current extremities of the exploration segment, and compute the delta wrt to the local average luma.
-    float lumaEnd1 = getLuminance(texture2D(aliased, uv1).rgb);
-    float lumaEnd2 = getLuminance(texture2D(aliased, uv2).rgb);
+    float lumaEnd1 = getLuminance(texture2DLod(aliased, uv1, 0).rgb);
+    float lumaEnd2 = getLuminance(texture2DLod(aliased, uv2, 0).rgb);
     lumaEnd1 -= lumaLocalAverage;
     lumaEnd2 -= lumaLocalAverage;
 
@@ -118,13 +118,13 @@ vec4 textureFXAA(sampler2D aliased, vec2 uv, vec2 resolution){
         for(int i = 2; i < ITERATIONS; i++){
             // If needed, read luma in 1st direction, compute delta.
             if(!reached1){
-                lumaEnd1 = getLuminance(texture2D(aliased, uv1).rgb);
+                lumaEnd1 = getLuminance(texture2DLod(aliased, uv1, 0).rgb);
                 lumaEnd1 = lumaEnd1 - lumaLocalAverage;
             }
 
             // If needed, read luma in opposite direction, compute delta.
             if(!reached2){
-                lumaEnd2 = getLuminance(texture2D(aliased, uv2).rgb);
+                lumaEnd2 = getLuminance(texture2DLod(aliased, uv2, 0).rgb);
                 lumaEnd2 = lumaEnd2 - lumaLocalAverage;
             }
 
@@ -189,5 +189,5 @@ vec4 textureFXAA(sampler2D aliased, vec2 uv, vec2 resolution){
     else finalUv.x += finalOffset * stepLength;
 
     // Read the color at the new UV coordinates, and use it.
-    return texture2D(aliased, finalUv);
+    return texture2DLod(aliased, finalUv, 0);
 }

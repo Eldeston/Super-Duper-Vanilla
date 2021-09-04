@@ -90,7 +90,7 @@ uniform sampler2D texture;
             }
 
             // End portal
-            if(id == 10100){
+            if(id == 10100 || id == 10101){
                 material.roughness_m = 0.3;
                 material.emissive_m = 1.0;
             }
