@@ -54,3 +54,35 @@ vec3 getSkyRender(vec3 playerPos, vec3 inLightCol, float skyDiffuseMask, bool sk
 
     return pow(finalCol, vec3(GAMMA));
 }
+
+vec3 getLowSkyRender(vec3 playerPos, vec3 inLightCol, float skyDiffuseMask){
+    if(isEyeInWater == 2) return pow(fogColor, vec3(GAMMA));
+
+    float lightRange = smoothen(-normalize(mat3(shadowProjection) * (mat3(shadowModelView) * playerPos)).z * 0.56) * (1.0 - newTwilight);
+
+    #if defined USE_HORIZON || defined USE_SUN_MOON
+        float nPlayerPosY = normalize(playerPos).y;
+        
+        #ifdef USE_SUN_MOON
+            float horizon = smoothstep(-0.1, 0.1, nPlayerPosY);
+        #endif
+    #endif
+
+    vec3 finalCol = skyCol;
+
+    #ifdef USE_HORIZON
+        finalCol *= 1.0 + 2.0 * cubed(saturate(1.0 - abs(nPlayerPosY)));
+    #endif
+
+    if(isEyeInWater == 1){
+        float waterVoid = smootherstep(normalize(playerPos).y + (eyeBrightFact - 0.64));
+        finalCol = mix(toneSaturation(fogColor, 0.5) * (0.25 * (1.0 - eyeBrightFact) + eyeBrightFact), skyCol, waterVoid);
+        lightRange /= (1.0 - eyeBrightFact) + 2.0;
+    }
+
+    #ifdef USE_SUN_MOON
+        finalCol += (lightRange * skyDiffuseMask * horizon) * lightCol;
+    #endif
+
+    return pow(finalCol, vec3(GAMMA));
+}

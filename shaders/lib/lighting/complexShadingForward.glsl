@@ -24,7 +24,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	#endif
 
 	// Get globally illuminated sky
-	vec3 GISky = ambientLighting + getSkyRender(material.normal_m, lightCol, 0.0, false) * material.light_m.y * material.light_m.y;
+	vec3 GISky = ambientLighting + getLowSkyRender(material.normal_m, lightCol, 0.0) * material.light_m.y * material.light_m.y;
 
 	// Get fresnel
 	vec3 fresnel = getFresnelSchlick(dot(material.normal_m, nNegEyePlayerPos),
@@ -39,7 +39,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 			if(maxC(directLight) > 0 && material.roughness_m != 1) specCol = getSpecGGX(nNegEyePlayerPos, nLightPos, normalize(posVector.lightPos - posVector.eyePlayerPos), material.normal_m, fresnel, material.roughness_m) * directLight;
 		#endif
 		
-		reflectedSkyRender = ambientLighting + getSkyRender(reflect(posVector.eyePlayerPos, material.normal_m), directLight, 1.0, material.light_m.y >= 0.95) * material.light_m.y;
+		reflectedSkyRender = ambientLighting + getLowSkyRender(reflect(posVector.eyePlayerPos, material.normal_m), directLight, 1.0) * material.light_m.y;
 	}
 
 	// Mask reflections
@@ -51,8 +51,8 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	#endif
 
 	#ifdef WATER
-		float greyFresnel = maxC(fresnel);
-		material.albedo_t.a = material.albedo_t.a * (1.0 - greyFresnel) + greyFresnel;
+		float greySpec = max(maxC(specCol), maxC(fresnel));
+		material.albedo_t.a = material.albedo_t.a * (1.0 - greySpec) + greySpec;
 	#endif
  
 	vec3 totalDiffuse = (directLight + GISky * material.ambient_m + cubed(material.light_m.x) * BLOCK_LIGHT_COL * pow(material.ambient_m, 1.0 / 4.0));

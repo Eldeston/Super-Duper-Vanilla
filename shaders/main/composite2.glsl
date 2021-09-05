@@ -50,7 +50,7 @@ INOUT vec2 texcoord;
             vec3 eBloom = vec3(0);
         #endif
 
-        /* DRAWBUFFERS:2 */
-            gl_FragData[0] = vec4(eBloom, 1); //colortex2
+    /* DRAWBUFFERS:2 */
+        gl_FragData[0] = vec4(eBloom, 1); //colortex2
     }
 #endif
