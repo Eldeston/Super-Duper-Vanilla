@@ -163,7 +163,13 @@ uniform sampler2D texture;
         
         #if (defined TERRAIN || defined WATER) && DEFAULT_MAT == 1
             // Foliage and corals
-            if(id >= 10000 && id <= 10008) material.ss_m = 0.8;
+            if((id >= 10000 && id <= 10008) || id == 10013) material.ss_m = 0.8;
+
+            // Glow berries
+            if(id == 10012){
+                material.ss_m = 0.8;
+                material.emissive_m = max2(material.albedo_t.rg) > 0.8 ? 0.72 : material.emissive_m;
+            }
 
             // Stems
             if(id == 10009) material.emissive_m = material.albedo_t.r < 0.1 ? hsv.z * 0.72 : material.emissive_m;
