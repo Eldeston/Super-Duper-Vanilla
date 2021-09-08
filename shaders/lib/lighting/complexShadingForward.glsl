@@ -27,8 +27,9 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	vec3 GISky = ambientLighting + getLowSkyRender(material.normal_m, lightCol, 0.0) * material.light_m.y * material.light_m.y;
 
 	// Get fresnel
+	bool isMetal = material.metallic_m == 1;
 	vec3 fresnel = getFresnelSchlick(dot(material.normal_m, nNegEyePlayerPos),
-		material.metallic_m == 1 ? material.albedo_t.rgb : vec3(material.metallic_m));
+		isMetal ? material.albedo_t.rgb : vec3(material.metallic_m));
 	
 	vec3 specCol = vec3(0);
 	vec3 reflectedSkyRender = vec3(0);
@@ -56,5 +57,5 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	#endif
  
 	vec3 totalDiffuse = (directLight + GISky * material.ambient_m + cubed(material.light_m.x) * BLOCK_LIGHT_COL * pow(material.ambient_m, 1.0 / 4.0));
-	return vec4(mix(material.albedo_t.rgb * totalDiffuse, reflectCol, fresnel * squared(1.0 - material.roughness_m)) + specCol + material.albedo_t.rgb * material.emissive_m, material.albedo_t.a);
+	return vec4(mix(material.albedo_t.rgb * totalDiffuse * float(!isMetal), reflectCol, fresnel * squared(1.0 - material.roughness_m)) + specCol + material.albedo_t.rgb * material.emissive_m, material.albedo_t.a);
 }
