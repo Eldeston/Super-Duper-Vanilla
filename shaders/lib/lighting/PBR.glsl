@@ -179,9 +179,7 @@ uniform sampler2D texture;
             if(id == 10011) material.emissive_m = max2(material.albedo_t.rg) > 0.8 ? 0.72 : material.emissive_m;
 
             // Emissives
-            if(id == 10016 || id == 10017){
-                material.emissive_m = smoothstep(0.6, 0.8, hsv.z);
-            }
+            if(id == 10016 || id == 10017) material.emissive_m = smoothstep(0.6, 0.8, hsv.z);
 
             // Redstone
             if(id == 10018 || id == 10068){
