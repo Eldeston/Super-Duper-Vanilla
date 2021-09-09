@@ -9,7 +9,7 @@
 
 	// Shadow bias
 	const float shdBias = 0.025; // Don't go below the default value otherwise it'll mess up lighting
-	const float sunPathRotation = 0.0; // Light angle [-63.0 -54.0 -45.0 -36.0 -27.0 -18.0 -9.0 0.0 9.0 18.0 27.0 36.0 45.0 54.0 63.0]
+	const float sunPathRotation = 0.0; // Light angle [-60.0 -55.0 -50.0 -45.0 -40.0 -35.0 -30.0 -25.0 -20.0 -15.0 -10.0 -5.0 0.0 5.0 10.0 15.0 20.0 25.0 30.0 35.0 40.0 45.0 50.0 55.0 60.0]
 
 	// Shadow color
 	uniform sampler2D shadowcolor0;
