@@ -89,10 +89,10 @@ uniform sampler2D texture;
                 material.ambient_m = 1.0;
             }
 
-            // End portal
+            // Portal
             if(id == 10100 || id == 10101){
                 material.roughness_m = 0.3;
-                material.emissive_m = 1.0;
+                material.emissive_m = maxC(material.albedo_t);
             }
         #endif
 
@@ -154,10 +154,10 @@ uniform sampler2D texture;
                 material.metallic_m = 0.02;
             }
 
-            // End portal
+            // Portal
             if(id == 10100 || id == 10101){
                 material.roughness_m = 0.3;
-                material.emissive_m = 0.72;
+                material.emissive_m = hsv.z;
             }
         #endif
         
