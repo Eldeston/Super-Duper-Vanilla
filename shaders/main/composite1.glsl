@@ -41,9 +41,9 @@ INOUT vec2 texcoord;
 
     /* DRAWBUFFERS:0 */
         #ifndef VOL_LIGHT
-            gl_FragData[0] = vec4(sceneCol + (texture2D(colortex4, texcoord, 1.6).gba * volMult) * lightCol * (isEyeInWater == 1 ? fogColor : vec3(1)), 1); //gcolor
+            gl_FragData[0] = vec4(sceneCol + (texture2D(colortex4, texcoord, 1.6).rgb * volMult) * lightCol * (isEyeInWater == 1 ? fogColor : vec3(1)), 1); //gcolor
         #else
-            gl_FragData[0] = vec4(sceneCol + (texture2D(colortex4, texcoord, 1.6).gba * volMult) * lightCol, 1); //gcolor
+            gl_FragData[0] = vec4(sceneCol + (texture2D(colortex4, texcoord, 1.6).rgb * volMult) * lightCol, 1); //gcolor
         #endif
 
         #if BLOOM == 1

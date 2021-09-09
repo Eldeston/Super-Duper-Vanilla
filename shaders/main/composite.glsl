@@ -106,7 +106,7 @@ INOUT vec2 screenCoord;
 
     /* DRAWBUFFERS:04 */
         gl_FragData[0] = vec4(sceneCol, 1); //gcolor
-        gl_FragData[1] = vec4(masks4.x, getGodRays(posVector.feetPlayerPos, posVector.worldPos.y / 128.0, dither.x)); //colortex4
+        gl_FragData[1] = vec4(getGodRays(posVector.feetPlayerPos, posVector.worldPos.y / 128.0, dither.x), masks4.x); //colortex4
         #ifdef PREVIOUS_FRAME
         /* DRAWBUFFERS:045 */
             gl_FragData[2] = vec4(reflectBuffer / (1.0 + reflectBuffer), 1); //colortex5
