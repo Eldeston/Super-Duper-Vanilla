@@ -17,7 +17,7 @@ INOUT vec2 texcoord;
     /* Texture buffer  settings */
 
     /*
-    const int gcolorFormat = RGB16F;
+    const int gcolorFormat = R11F_G11F_B10F;
     const int colortex1Format = RGB16;
     const int colortex2Format = RGB8;
     const int colortex3Format = RGB8;
