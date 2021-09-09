@@ -57,5 +57,5 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	#endif
  
 	vec3 totalDiffuse = directLight + GISky * material.ambient_m + cubed(material.light_m.x) * BLOCK_LIGHT_COL * pow(material.ambient_m, 1.0 / 4.0);
-	return vec4(mix(material.albedo_t.rgb * totalDiffuse * float(!isMetal), reflectCol, fresnel * squared(1.0 - material.roughness_m)) + specCol + material.albedo_t.rgb * material.emissive_m, material.albedo_t.a);
+	return vec4(mix(material.albedo_t.rgb * totalDiffuse * float(!isMetal), reflectCol, fresnel * cubed(1.0 - material.roughness_m)) + specCol + material.albedo_t.rgb * material.emissive_m, material.albedo_t.a);
 }

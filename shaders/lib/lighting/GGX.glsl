@@ -1,10 +1,10 @@
 float getGGX(vec3 norm, vec3 halfVec, float roughness){
-    float a2 = roughness * roughness;
+    float a = roughness * roughness;
     float NdotH = max(dot(norm, halfVec), 0.0);
     float NdotH2 = NdotH * NdotH;
 	
-    float nom = a2;
-    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+    float nom = a;
+    float denom = (NdotH2 * (a - 1.0) + 1.0);
     denom = PI * denom * denom;
 	
     return nom / denom;
@@ -30,7 +30,8 @@ float getGeometrySmith(vec3 norm, vec3 nPlayerPos, vec3 lightVec, float roughnes
 }
 
 vec3 getFresnelSchlick(float cosTheta, vec3 F0){
-	return F0 + (1.0 - F0) * pow(saturate(1.0 - cosTheta), 5.0);
+	return F0 + (1.0 - F0) * exp2(-9.28 * cosTheta);
+    // F0 + (1.0 - F0) * pow(saturate(1.0 - cosTheta), 5.0);
 }
 
 vec3 getSpecGGX(vec3 nPlayerPos, vec3 nLightPos, vec3 lightVec, vec3 norm, vec3 fresnel, float roughness){
