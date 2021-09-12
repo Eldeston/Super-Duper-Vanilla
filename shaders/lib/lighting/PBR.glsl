@@ -3,7 +3,7 @@ uniform sampler2D texture;
 #ifdef AUTO_GEN_NORM
 #endif
 
-#if (defined TERRAIN || defined WATER) && defined ENVIRO_MAT
+#if (defined TERRAIN || defined WATER || defined BLOCK) && defined ENVIRO_MAT
     uniform float isWarm;
     uniform float isSnowy;
     uniform float isPeaks;
@@ -58,10 +58,8 @@ uniform sampler2D texture;
         // Assign roughness
         material.roughness_m = pow(1.0 - SRPSSE.r, 2.0);
 
-        // Extract reflectance
-        float reflectance = SRPSSE.g * 255.0;
-        // Assign metallic
-        material.metallic_m = reflectance <= 229 ? SRPSSE.g : 1.0;
+        // Assign reflectance
+        material.metallic_m = SRPSSE.g;
 
         // Extact SS
         float PSS = SRPSSE.b * 255.0;
@@ -74,7 +72,7 @@ uniform sampler2D texture;
         // Assign ambient
         material.ambient_m = normalAOH.b;
 
-        #if defined TERRAIN || defined WATER
+        #if defined TERRAIN || defined WATER || defined BLOCK
             // If lava
             if(id == 10017){
                 material.emissive_m = 1.0;
@@ -89,8 +87,15 @@ uniform sampler2D texture;
                 material.ambient_m = 1.0;
             }
 
-            // Portal
-            if(id == 10100 || id == 10101){
+            // End portal
+            if(id == 10100){
+                material.albedo_t = vec4(1);
+                material.roughness_m = 0.3;
+                material.emissive_m = 1.0;
+            }
+            
+            // Nether portal
+            if(id == 10101){
                 material.roughness_m = 0.3;
                 material.emissive_m = maxC(material.albedo_t);
             }
@@ -104,7 +109,7 @@ uniform sampler2D texture;
         material.normal_m = TBN[2];
 
         // Generate bumped normals
-        #if (defined TERRAIN || defined WATER) && defined AUTO_GEN_NORM
+        #if (defined TERRAIN || defined WATER || defined BLOCK) && defined AUTO_GEN_NORM
             // Assign albedo
             material.albedo_t = texture2D(texture, mix(minTexCoord, maxTexCoord, st));
 
@@ -129,7 +134,7 @@ uniform sampler2D texture;
         material.roughness_m = 1.0; material.ss_m = 0.0;
         material.ambient_m = 1.0;
 
-        #if (defined TERRAIN || defined WATER) && DEFAULT_MAT == 1
+        #if (defined TERRAIN || defined WATER || defined BLOCK) && DEFAULT_MAT == 1
             vec3 hsv = saturate(rgb2hsv(material.albedo_t));
             float sumCol = saturate(material.albedo_t.r + material.albedo_t.g + material.albedo_t.b);
         #endif
@@ -144,7 +149,7 @@ uniform sampler2D texture;
             material.albedo_t.rgb = tint;
         #endif
 
-        #if defined TERRAIN || defined WATER
+        #if defined TERRAIN || defined WATER || defined BLOCK
             // If lava
             if(id == 10017) material.emissive_m = 1.0;
 
@@ -154,14 +159,21 @@ uniform sampler2D texture;
                 material.metallic_m = 0.02;
             }
 
-            // Portal
-            if(id == 10100 || id == 10101){
+            // End portal
+            if(id == 10100){
+                material.albedo_t = vec4(1);
+                material.roughness_m = 0.3;
+                material.emissive_m = maxC(material.albedo_t);
+            }
+            
+            // Nether portal
+            if(id == 10101){
                 material.roughness_m = 0.3;
                 material.emissive_m = hsv.z;
             }
         #endif
         
-        #if (defined TERRAIN || defined WATER) && DEFAULT_MAT == 1
+        #if (defined TERRAIN || defined WATER || defined BLOCK) && DEFAULT_MAT == 1
             // Foliage and corals
             if((id >= 10000 && id <= 10008) || id == 10013) material.ss_m = 0.8;
 
@@ -206,7 +218,7 @@ uniform sampler2D texture;
             // Netherack gem ores
             if(id == 10049){
                 material.roughness_m = hsv.y < 0.256 ? 0.06 : material.roughness_m;
-                material.metallic_m = hsv.y < 0.256 ? 0.17 : material.roughness_m;
+                material.metallic_m = hsv.y < 0.256 ? 0.17 : material.metallic_m;
             }
 
             // Metal ores
