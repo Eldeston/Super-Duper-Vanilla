@@ -3,7 +3,7 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
     vec3 nEyePlayerPos = normalize(-posVector.eyePlayerPos);
 
 	vec3 gBMVNorm = mat3(gbufferModelView) * material.normal_m;
-	bool isMetal = material.metallic_m == 1;
+	bool isMetal = material.metallic_m > 0.9;
 
 	vec3 GIcol = vec3(0);
 

@@ -9,7 +9,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	vec3 nLightPos = normalize(posVector.lightPos);
     vec3 nNegEyePlayerPos = normalize(-posVector.eyePlayerPos);
 
-	bool isMetal = material.metallic_m == 1;
+	bool isMetal = material.metallic_m > 0.9;
 
 	vec3 directLight = vec3(0);
 	vec3 GISky = vec3(0);
@@ -48,7 +48,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 
 	#ifdef ENABLE_LIGHT
 		float rainDiff = isEyeInWater == 1 ? 0.2 : rainStrength * 0.5;
-		directLight = directLight * (1.0 - rainDiff) + material.light_m.y * rainDiff;
+		directLight = directLight * (1.0 - rainDiff) + material.light_m.y * lightCol * rainDiff;
 	#endif
 
 	#ifdef WATER

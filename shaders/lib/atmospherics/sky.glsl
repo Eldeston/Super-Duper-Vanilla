@@ -34,7 +34,7 @@ vec3 getSkyRender(vec3 playerPos, vec3 inLightCol, float skyDiffuseMask, bool sk
 
     if(isEyeInWater == 1){
         float waterVoid = smootherstep(normalize(playerPos).y + (eyeBrightFact - 0.64));
-        finalCol = mix(toneSaturation(fogColor, 0.5) * (0.25 * (1.0 - eyeBrightFact) + eyeBrightFact), skyCol, waterVoid);
+        finalCol = mix(fogColor * lightCol, skyCol, waterVoid);
         lightRange /= (1.0 - eyeBrightFact) + 2.0;
     }
 
@@ -76,7 +76,7 @@ vec3 getLowSkyRender(vec3 playerPos, vec3 inLightCol, float skyDiffuseMask){
 
     if(isEyeInWater == 1){
         float waterVoid = smootherstep(normalize(playerPos).y + (eyeBrightFact - 0.64));
-        finalCol = mix(toneSaturation(fogColor, 0.5) * (0.25 * (1.0 - eyeBrightFact) + eyeBrightFact), skyCol, waterVoid);
+        finalCol = mix(fogColor * lightCol, skyCol, waterVoid);
         lightRange /= (1.0 - eyeBrightFact) + 2.0;
     }
 

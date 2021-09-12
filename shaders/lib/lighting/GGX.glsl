@@ -1,10 +1,9 @@
 float getGGX(vec3 norm, vec3 halfVec, float roughness){
     float a = roughness * roughness;
     float NdotH = max(dot(norm, halfVec), 0.0);
-    float NdotH2 = NdotH * NdotH;
 	
     float nom = a;
-    float denom = (NdotH2 * (a - 1.0) + 1.0);
+    float denom = (NdotH * NdotH * (a - 1.0) + 1.0);
     denom = PI * denom * denom;
 	
     return nom / denom;
@@ -20,13 +19,8 @@ float getGeometrySchlickGGX(float NdotV, float roughness){
     return num / denom;
 }
 
-float getGeometrySmith(vec3 norm, vec3 nPlayerPos, vec3 lightVec, float roughness){
-    float NdotV = max(dot(norm, nPlayerPos), 0.0);
-    float NdotL = max(dot(norm, lightVec), 0.0);
-    float GGX2 = getGeometrySchlickGGX(NdotV, roughness);
-    float GGX1 = getGeometrySchlickGGX(NdotL, roughness);
-	
-    return GGX1 * GGX2;
+float getGeometrySmith(float NdotV, float NdotL, float roughness){
+    return getGeometrySchlickGGX(NdotV, roughness) * getGeometrySchlickGGX(NdotL, roughness);
 }
 
 vec3 getFresnelSchlick(float cosTheta, vec3 F0){
@@ -35,12 +29,36 @@ vec3 getFresnelSchlick(float cosTheta, vec3 F0){
 }
 
 vec3 getSpecGGX(vec3 nPlayerPos, vec3 nLightPos, vec3 lightVec, vec3 norm, vec3 fresnel, float roughness){
-    vec3 halfDir = normalize(nLightPos + nPlayerPos);
+    float NdotV = max(dot(norm, nPlayerPos), 0.0);
+    float NdotL = max(dot(norm, lightVec), 0.0);
 
-    float NDF = getGGX(norm, halfDir, roughness);
-    float G = getGeometrySmith(norm, nPlayerPos, lightVec, roughness);
+    float NDF = getGGX(norm, normalize(nLightPos + nPlayerPos), roughness);
+    float G = getGeometrySmith(NdotV, NdotL, roughness);
     vec3 numerator = NDF * G * fresnel;
-    float denominator = 4.0 * max(dot(norm, nPlayerPos), 0.0) * max(dot(norm, lightVec), 0.0);
+    float denominator = 4.0 * NdotV * NdotL;
 
     return numerator / max(denominator, 0.001);
+}
+
+vec3 specularBrdf(vec3 V, vec3 L, vec3 N, vec3 fresnel, float roughness){  
+    // Roughness remapping
+    float alpha = roughness * roughness;
+    float alpha_sqr = alpha * alpha;
+
+    // Halfway vector
+    vec3 H = normalize(L + V);
+    
+    // Dot products
+    float NH = max(dot(N, H), 0.0);    
+    float LH = max(dot(L, H), 0.0);
+    
+    // D
+    float denominator = NH * NH * (alpha - 1.0) + 1.0;
+    float distribution =  alpha / (PI * denominator * denominator);
+
+    // V
+    float visibility = 1.0 / (LH + (1.0 / roughness));
+    
+    // Specular
+    return distribution * fresnel * visibility; //Complete specular
 }
