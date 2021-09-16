@@ -43,7 +43,7 @@ vec3 getSpecGGX(vec3 nPlayerPos, vec3 nLightPos, vec3 lightVec, vec3 norm, vec3 
 vec3 specularBrdf(vec3 V, vec3 L, vec3 N, vec3 fresnel, float roughness){  
     // Roughness remapping
     float alpha = roughness * roughness;
-    float alpha_sqr = alpha * alpha;
+    float alphaSqr = alpha * alpha;
 
     // Halfway vector
     vec3 H = normalize(L + V);
@@ -53,12 +53,12 @@ vec3 specularBrdf(vec3 V, vec3 L, vec3 N, vec3 fresnel, float roughness){
     float LH = max(dot(L, H), 0.0);
     
     // D
-    float denominator = NH * NH * (alpha - 1.0) + 1.0;
-    float distribution =  alpha / (PI * denominator * denominator);
+    float denominator = NH * NH * (alphaSqr - 1.0) + 1.0;
+    float distribution =  alphaSqr / (PI * denominator * denominator);
 
     // V
     float visibility = 1.0 / (LH + (1.0 / roughness));
     
     // Specular
-    return distribution * fresnel * visibility; //Complete specular
+    return distribution * fresnel * visibility;
 }

@@ -22,7 +22,7 @@ vec3 getSkyRender(vec3 playerPos, vec3 inLightCol, float skyDiffuseMask, bool sk
         float nPlayerPosY = normalize(playerPos).y;
         
         #if defined USE_SUN_MOON || defined USE_STARS
-            float horizon = smoothstep(-0.1, 0.1, nPlayerPosY);
+            float horizon = smoothstep(-0.125, 0.125, nPlayerPosY);
         #endif
     #endif
 
@@ -64,7 +64,7 @@ vec3 getLowSkyRender(vec3 playerPos, vec3 inLightCol, float skyDiffuseMask){
         float nPlayerPosY = normalize(playerPos).y;
         
         #ifdef USE_SUN_MOON
-            float horizon = smoothstep(-0.1, 0.1, nPlayerPosY);
+            float horizon = smoothstep(-0.125, 0.125, nPlayerPosY);
         #endif
     #endif
 

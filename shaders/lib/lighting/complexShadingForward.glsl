@@ -9,6 +9,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	vec3 nLightPos = normalize(posVector.lightPos);
     vec3 nNegEyePlayerPos = normalize(-posVector.eyePlayerPos);
 
+	float roughnessSqrt = sqrt(material.roughness_m);
 	bool isMetal = material.metallic_m > 0.9;
 
 	vec3 directLight = vec3(0);
@@ -30,7 +31,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	if(!isMetal) GISky = ambientLighting + getLowSkyRender(material.normal_m, lightCol, 0.0) * material.light_m.y * material.light_m.y;
 
 	// Get fresnel
-	vec3 fresnel = getFresnelSchlick(dot(material.normal_m, nNegEyePlayerPos),
+	vec3 fresnel = getFresnelSchlick(max(dot(material.normal_m, nNegEyePlayerPos), 0.0),
 		isMetal ? material.albedo_t.rgb : vec3(material.metallic_m));
 	
 	vec3 specCol = vec3(0);
@@ -56,6 +57,6 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 		material.albedo_t.a = material.albedo_t.a * (1.0 - greySpec) + greySpec;
 	#endif
  
-	vec3 totalDiffuse = directLight + GISky * material.ambient_m + cubed(material.light_m.x) * BLOCK_LIGHT_COL * pow(material.ambient_m, 1.0 / 4.0);
-	return vec4(mix(material.albedo_t.rgb * totalDiffuse * float(!isMetal), reflectCol, fresnel * cubed(1.0 - material.roughness_m)) + specCol + material.albedo_t.rgb * material.emissive_m, material.albedo_t.a);
+	vec3 totalDiffuse = material.albedo_t.rgb * (directLight + GISky * material.ambient_m + cubed(material.light_m.x) * BLOCK_LIGHT_COL * pow(material.ambient_m, 1.0 / 4.0)) * (isMetal ? roughnessSqrt : 1.0);
+	return vec4(mix(totalDiffuse, reflectCol, fresnel * (1.0 - roughnessSqrt)) + specCol + material.albedo_t.rgb * material.emissive_m, material.albedo_t.a);
 }

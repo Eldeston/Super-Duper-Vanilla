@@ -51,7 +51,7 @@
 
 		float distortFactor = getDistortFactor(shdPos.xy);
 		shdPos.xyz = distort(shdPos.xyz, distortFactor) * 0.5 + 0.5;
-		shdPos.z -= (shdBias + 0.125 * shdRcp) * squared(distortFactor) / abs(lightDot);
+		shdPos.z -= (shdBias + 0.125 * shdRcp) * (distortFactor * distortFactor) / abs(lightDot);
 
 		if(lightDot >= 0)
 			#ifdef SHADOW_FILTER
