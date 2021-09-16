@@ -203,6 +203,9 @@ uniform sampler2D texture;
             // Glass and ice
             if(id == 10032 || id == 10033) material.roughness_m = 0.03;
 
+            // Slime and honey
+            if(id == 10035) material.roughness_m = 0.03;
+
             // Gem ores
             if(id == 10048){
                 material.roughness_m = hsv.y > 0.128 ? 0.06 : material.roughness_m;
