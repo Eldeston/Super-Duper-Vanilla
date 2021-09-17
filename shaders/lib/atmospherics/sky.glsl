@@ -22,7 +22,7 @@ vec3 getSkyRender(vec3 playerPos, vec3 inLightCol, float skyDiffuseMask, bool sk
         float nPlayerPosY = normalize(playerPos).y;
         
         #if defined USE_SUN_MOON || defined USE_STARS
-            float horizon = smoothstep(-0.125, 0.125, nPlayerPosY);
+            float horizon = smoothstep(-0.128, 0.128, nPlayerPosY);
         #endif
     #endif
 
@@ -39,7 +39,7 @@ vec3 getSkyRender(vec3 playerPos, vec3 inLightCol, float skyDiffuseMask, bool sk
     }
 
     #ifdef USE_SUN_MOON
-        finalCol += (lightRange * skyDiffuseMask * horizon) * lightCol;
+        finalCol += lightRange * skyDiffuseMask * lightCol * horizon;
 
         if(skyMask) finalCol += getSunMoonShape(nSkyPos) * 6.4 * sqrt(inLightCol);
     #endif
@@ -55,7 +55,7 @@ vec3 getSkyRender(vec3 playerPos, vec3 inLightCol, float skyDiffuseMask, bool sk
     return pow(finalCol, vec3(GAMMA));
 }
 
-vec3 getLowSkyRender(vec3 playerPos, vec3 inLightCol, float skyDiffuseMask){
+vec3 getLowSkyRender(vec3 playerPos, float skyDiffuseMask){
     if(isEyeInWater == 2) return pow(fogColor, vec3(GAMMA));
 
     float lightRange = smoothen(-normalize(mat3(shadowProjection) * (mat3(shadowModelView) * playerPos)).z * 0.56) * (1.0 - newTwilight);
@@ -64,7 +64,7 @@ vec3 getLowSkyRender(vec3 playerPos, vec3 inLightCol, float skyDiffuseMask){
         float nPlayerPosY = normalize(playerPos).y;
         
         #ifdef USE_SUN_MOON
-            float horizon = smoothstep(-0.125, 0.125, nPlayerPosY);
+            float horizon = smoothstep(-0.128, 0.128, nPlayerPosY);
         #endif
     #endif
 
@@ -81,7 +81,7 @@ vec3 getLowSkyRender(vec3 playerPos, vec3 inLightCol, float skyDiffuseMask){
     }
 
     #ifdef USE_SUN_MOON
-        finalCol += (lightRange * skyDiffuseMask * horizon) * lightCol;
+        finalCol += lightRange * skyDiffuseMask * lightCol * horizon;
     #endif
 
     return pow(finalCol, vec3(GAMMA));
