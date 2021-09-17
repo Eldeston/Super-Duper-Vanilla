@@ -1,5 +1,5 @@
 vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dither){
-	#if defined USE_SKY_LIGHTMAP
+	#ifdef USE_SKY_LIGHTMAP
 		material.light_m.y = (material.light_m.y * SKY_LIGHT_AMOUNT) / 0.95;
 	#else
 		material.light_m.y = SKY_LIGHT_AMOUNT;
@@ -9,54 +9,41 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	vec3 nLightPos = normalize(posVector.lightPos);
     vec3 nNegEyePlayerPos = normalize(-posVector.eyePlayerPos);
 
-	float roughnessSqrt = sqrt(material.roughness_m);
-	bool isMetal = material.metallic_m > 0.9;
+	vec3 totalDiffuse = vec3(0);
+	vec3 dirLight = vec3(0);
 
-	vec3 directLight = vec3(0);
-	vec3 GISky = vec3(0);
+	// Get globally illuminated sky
+	vec3 GISky = ambientLighting + getLowSkyRender(material.normal_m, 0.0) * material.light_m.y * material.light_m.y;
+	totalDiffuse = GISky * material.ambient_m;
 
 	#ifdef ENABLE_LIGHT
 		#if defined ENTITIES_GLOWING || !defined SHD_ENABLE
 			// Get direct light diffuse color
-			directLight = getDiffuse(material.normal_m, nLightPos, material.ss_m) * smoothstep(0.98, 0.99, material.light_m.y) * material.light_m.y * lightCol;
+			dirLight = getDiffuse(material.normal_m, nLightPos, material.ss_m) * smoothstep(0.98, 0.99, material.light_m.y) * material.light_m.y * lightCol;
 		#else
 			// Cave fix
 			float caveFixShdFactor = smoothstep(0.2, 0.4, material.light_m.y) * (1.0 - eyeBrightFact) + eyeBrightFact;
 			// Get direct light diffuse color
-			directLight = getShdMapping(posVector.shdPos, material.normal_m, nLightPos, dither.r, material.ss_m) * caveFixShdFactor * lightCol;
+			dirLight = getShdMapping(posVector.shdPos, material.normal_m, nLightPos, dither.r, material.ss_m) * caveFixShdFactor * lightCol;
 		#endif
+
+		float rainDiff = isEyeInWater == 1 ? 0.2 : rainStrength * 0.5;
+		totalDiffuse += dirLight * (1.0 - rainDiff) + material.light_m.y * material.ambient_m * lightCol * rainDiff;
 	#endif
-
-	// Get globally illuminated sky
-	if(!isMetal) GISky = ambientLighting + getLowSkyRender(material.normal_m, lightCol, 0.0) * material.light_m.y * material.light_m.y;
-
-	// Get fresnel
-	vec3 fresnel = getFresnelSchlick(max(dot(material.normal_m, nNegEyePlayerPos), 0.0),
-		isMetal ? material.albedo_t.rgb : vec3(material.metallic_m));
 	
 	vec3 specCol = vec3(0);
-	vec3 reflectCol = vec3(0);
-
-	if(material.roughness_m != 1){
-		#ifdef ENABLE_LIGHT
-			// Get specular GGX
-			if(maxC(directLight) > 0 && material.roughness_m != 1) specCol = getSpecGGX(nNegEyePlayerPos, nLightPos, normalize(posVector.lightPos - posVector.eyePlayerPos), material.normal_m, fresnel, material.roughness_m) * directLight;
-		#endif
-		
-		reflectCol = ambientLighting + getLowSkyRender(reflect(posVector.eyePlayerPos, material.normal_m), directLight, 1.0) * material.light_m.y;
-		reflectCol *= material.ambient_m; // Will change this later...
-	}
 
 	#ifdef ENABLE_LIGHT
-		float rainDiff = isEyeInWater == 1 ? 0.2 : rainStrength * 0.5;
-		directLight = directLight * (1.0 - rainDiff) + material.light_m.y * lightCol * rainDiff;
-	#endif
+		if(maxC(dirLight) > 0){
+			// Get fresnel
+			vec3 fresnel = getFresnelSchlick(max(dot(material.normal_m, nNegEyePlayerPos), 0.0),
+				material.metallic_m > 0.9 ? material.albedo_t.rgb : vec3(material.metallic_m));
 
-	#ifdef WATER
-		float greySpec = max(maxC(specCol), maxC(fresnel));
-		material.albedo_t.a = material.albedo_t.a * (1.0 - greySpec) + greySpec;
+			// Get specular GGX
+			specCol = getSpecGGX(nNegEyePlayerPos, nLightPos, normalize(posVector.lightPos - posVector.eyePlayerPos), material.normal_m, fresnel, material.roughness_m) * dirLight;
+		}
 	#endif
  
-	vec3 totalDiffuse = material.albedo_t.rgb * (directLight + GISky * material.ambient_m + cubed(material.light_m.x) * BLOCK_LIGHT_COL * pow(material.ambient_m, 1.0 / 4.0)) * (isMetal ? roughnessSqrt : 1.0);
-	return vec4(mix(totalDiffuse, reflectCol, fresnel * (1.0 - roughnessSqrt)) + specCol + material.albedo_t.rgb * material.emissive_m, material.albedo_t.a);
+	totalDiffuse = material.albedo_t.rgb * (totalDiffuse + cubed(material.light_m.x) * BLOCK_LIGHT_COL * pow(material.ambient_m, 1.0 / 4.0));
+	return vec4(totalDiffuse + specCol + material.albedo_t.rgb * material.emissive_m, material.albedo_t.a);
 }
