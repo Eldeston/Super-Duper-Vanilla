@@ -1,4 +1,9 @@
-float eyeBrightFact = eyeBrightnessSmooth.y / 240.0;
+#ifdef USE_SKY_LIGHTMAP
+    float eyeBrightFact = eyeBrightnessSmooth.y / 240.0;
+#else
+    float eyeBrightFact = SKY_LIGHT_AMOUNT;
+#endif
+
 float torchBrightFact = eyeBrightnessSmooth.x / 240.0;
 
 float newDawnDusk = smoothstep(0.32, 0.96, dawnDusk);
