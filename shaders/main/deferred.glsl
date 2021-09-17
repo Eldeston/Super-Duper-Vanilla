@@ -79,9 +79,7 @@ INOUT vec2 screenCoord;
                 vec3 dither = getRand3(posVector.screenPos.xy, 8);
             #endif
 
-            #if defined SSGI || defined SSR
-                sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
-            #endif
+            sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
 
             #ifdef OUTLINES
                 /* Outline calculation */

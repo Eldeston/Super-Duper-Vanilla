@@ -17,7 +17,6 @@ uniform sampler2D texture;
             
             material.normal_m = mix(material.normal_m, rawNorm, rainMatFact);
             material.roughness_m *= 1.0 - rainMatFact;
-            material.metallic_m *= 1.0 - rainMatFact * 0.5;
             material.albedo_t *= 1.0 - rainMatFact * 0.5;
         }
     }
