@@ -71,7 +71,7 @@ INOUT vec3 norm;
 
         float albedoAlpha = texture2D(texture, texCoord).a;
         // Assign normals
-        material.normal_m = norm;
+        material.normal = norm;
 
         #ifdef CLOUD_FADE
             float fade = smootherstep(sin(frameTimeCounter * FADE_SPEED) * 0.5 + 0.5);
@@ -80,27 +80,27 @@ INOUT vec3 norm;
         #endif
 
         #if WHITE_MODE == 2
-            material.albedo_t = vec4(0, 0, 0, albedoAlpha);
+            material.albedo = vec4(0, 0, 0, albedoAlpha);
         #else
-            material.albedo_t = vec4(1, 1, 1, albedoAlpha);
+            material.albedo = vec4(1, 1, 1, albedoAlpha);
         #endif
 
-        material.metallic_m = 0.04;
-        material.ss_m = 0.6;
-        material.emissive_m = 0.0;
-        material.roughness_m = 1.0;
+        material.metallic = 0.04;
+        material.ss = 0.6;
+        material.emissive = 0.0;
+        material.smoothness = 0.0;
 
         // Apply vanilla AO
-        material.ambient_m = 1.0;
-        material.light_m = vec2(0, 1);
+        material.ambient = 1.0;
+        material.light = vec2(0, 1);
 
         vec4 sceneCol = complexShadingGbuffers(material, posVector, dither);
 
     /* DRAWBUFFERS:01234 */
         gl_FragData[0] = sceneCol; //gcolor
-        gl_FragData[1] = vec4(material.normal_m * 0.5 + 0.5, 1); //colortex1
-        gl_FragData[2] = vec4(material.albedo_t.rgb, 1); //colortex2
-        gl_FragData[3] = vec4(material.metallic_m, material.emissive_m, material.roughness_m, 1); //colortex3
+        gl_FragData[1] = vec4(material.normal * 0.5 + 0.5, 1); //colortex1
+        gl_FragData[2] = vec4(material.albedo.rgb, 1); //colortex2
+        gl_FragData[3] = vec4(material.metallic, material.emissive, material.smoothness, 1); //colortex3
         gl_FragData[4] = vec4(0, 1, 0, 1); //colortex4
     }
 #endif

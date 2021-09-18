@@ -1,21 +1,21 @@
 // Material PBR struct
 struct matPBR{
     // Albedo texture
-    vec4 albedo_t;
+    vec4 albedo;
     // Normal map
-    vec3 normal_m;
+    vec3 normal;
     // Light map
-    vec2 light_m;
+    vec2 light;
     // Metalic map
-    float metallic_m;
+    float metallic;
     // Emissive map
-	float emissive_m;
-    // Roughness map
-    float roughness_m;
+	float emissive;
+    // Smoothness map
+    float smoothness;
     // Ambient map
-    float ambient_m;
+    float ambient;
     // Subsurface scattering
-    float ss_m;
+    float ss;
 };
 
 // Position struct

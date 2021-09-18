@@ -27,7 +27,7 @@ INOUT mat3 TBN;
     uniform mat4 gbufferModelView;
     uniform mat4 gbufferModelViewInverse;
 
-    attribute vec2 mc_midTexCoord;
+    attribute vec2 mcidTexCoord;
 
     attribute vec4 mc_Entity;
     attribute vec4 at_tangent;
@@ -48,14 +48,14 @@ INOUT mat3 TBN;
 
         #ifdef ANIMATE
             vec3 worldPos = vertexPos.xyz + cameraPosition;
-	        getWave(vertexPos.xyz, worldPos, texCoord, mc_midTexCoord, mc_Entity.x, lmCoord.y);
+	        getWave(vertexPos.xyz, worldPos, texCoord, mcidTexCoord, mc_Entity.x, lmCoord.y);
         #endif
 
         #if DEFAULT_MAT != 2 && defined AUTO_GEN_NORM
-            vec2 texSize = abs(texCoord - mc_midTexCoord.xy);
-            minTexCoord = mc_midTexCoord.xy - texSize;
-            maxTexCoord = mc_midTexCoord.xy + texSize;
-            texCoord = step(mc_midTexCoord.xy, texCoord);
+            vec2 texSize = abs(texCoord - mcidTexCoord.xy);
+            minTexCoord = mcidTexCoord.xy - texSize;
+            maxTexCoord = mcidTexCoord.xy + texSize;
+            texCoord = step(mcidTexCoord.xy, texCoord);
         #endif
         
 	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
@@ -100,12 +100,12 @@ INOUT mat3 TBN;
 
         vec4 sceneCol = vec4(0);
 
-        if(material.albedo_t.a > 0.00001){
-            material.albedo_t.rgb = pow(material.albedo_t.rgb, vec3(GAMMA));
+        if(material.albedo.a > 0.00001){
+            material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
             // Apply vanilla AO
-            material.ambient_m *= glcolor.a;
-            material.light_m = lmCoord;
+            material.ambient *= glcolor.a;
+            material.light = lmCoord;
 
             #ifdef ENVIRO_MAT
                 enviroPBR(material, posVector, TBN[2]);
@@ -116,8 +116,8 @@ INOUT mat3 TBN;
 
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; //gcolor
-        gl_FragData[1] = vec4(material.normal_m * 0.5 + 0.5, 1); //colortex1
-        gl_FragData[2] = vec4(material.albedo_t.rgb, 1); //colortex2
-        gl_FragData[3] = vec4(material.metallic_m, material.emissive_m, material.roughness_m, 1); //colortex3
+        gl_FragData[1] = vec4(material.normal * 0.5 + 0.5, 1); //colortex1
+        gl_FragData[2] = vec4(material.albedo.rgb, 1); //colortex2
+        gl_FragData[3] = vec4(material.metallic, material.emissive, material.smoothness, 1); //colortex3
     }
 #endif

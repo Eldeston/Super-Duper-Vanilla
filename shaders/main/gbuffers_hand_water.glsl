@@ -79,22 +79,22 @@ INOUT mat3 TBN;
         getPBR(material, posVector, TBN, glcolor.rgb, texCoord, rBlockId);
 
         // If player
-        if(rBlockId == 0) material.ambient_m = 1.0;
+        if(rBlockId == 0) material.ambient = 1.0;
 
-        material.albedo_t.rgb = mix(material.albedo_t.rgb, entityColor.rgb, entityColor.a);
+        material.albedo.rgb = mix(material.albedo.rgb, entityColor.rgb, entityColor.a);
 
-        material.albedo_t.rgb = pow(material.albedo_t.rgb, vec3(GAMMA));
+        material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
         // Apply vanilla AO
-        material.ambient_m *= glcolor.a;
-        material.light_m = lmCoord;
+        material.ambient *= glcolor.a;
+        material.light = lmCoord;
 
         vec4 sceneCol = complexShadingGbuffers(material, posVector, dither);
 
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; //gcolor
-        gl_FragData[1] = vec4(material.normal_m * 0.5 + 0.5, 1); //colortex1
-        gl_FragData[2] = vec4(material.albedo_t.rgb, 1); //colortex2
-        gl_FragData[3] = vec4(material.metallic_m, material.emissive_m, material.roughness_m, 1); //colortex3
+        gl_FragData[1] = vec4(material.normal * 0.5 + 0.5, 1); //colortex1
+        gl_FragData[2] = vec4(material.albedo.rgb, 1); //colortex2
+        gl_FragData[3] = vec4(material.metallic, material.emissive, material.smoothness, 1); //colortex3
     }
 #endif

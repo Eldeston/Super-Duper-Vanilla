@@ -60,33 +60,33 @@ INOUT vec4 glcolor;
 	    // Declare materials
 	    matPBR material;
 
-        material.albedo_t = vec4(glcolor.rgb, 1);
+        material.albedo = vec4(glcolor.rgb, 1);
         // Assign normals
-        material.normal_m = norm;
+        material.normal = norm;
 
         #if WHITE_MODE == 1
-            material.albedo_t.rgb = vec3(1);
+            material.albedo.rgb = vec3(1);
         #elif WHITE_MODE == 2
-            material.albedo_t.rgb = vec3(0);
+            material.albedo.rgb = vec3(0);
         #endif
 
-        material.metallic_m = 0.04;
-        material.ss_m = 1.0;
-        material.emissive_m = 0.0;
-        material.roughness_m = 1.0;
+        material.metallic = 0.04;
+        material.ss = 1.0;
+        material.emissive = 0.0;
+        material.smoothness = 0.0;
 
-        material.albedo_t.rgb = pow(material.albedo_t.rgb, vec3(GAMMA));
+        material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
         // Apply vanilla AO
-        material.ambient_m = glcolor.a;
-        material.light_m = lmCoord;
+        material.ambient = glcolor.a;
+        material.light = lmCoord;
 
         vec4 sceneCol = complexShadingGbuffers(material, posVector, dither);
 
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; //gcolor
-        gl_FragData[1] = vec4(material.normal_m * 0.5 + 0.5, 1); //colortex1
-        gl_FragData[2] = vec4(material.albedo_t.rgb, 1); //colortex2
-        gl_FragData[3] = vec4(material.metallic_m, material.emissive_m, material.roughness_m, 1); //colortex3
+        gl_FragData[1] = vec4(material.normal * 0.5 + 0.5, 1); //colortex1
+        gl_FragData[2] = vec4(material.albedo.rgb, 1); //colortex2
+        gl_FragData[3] = vec4(material.metallic, material.emissive, material.smoothness, 1); //colortex3
     }
 #endif
