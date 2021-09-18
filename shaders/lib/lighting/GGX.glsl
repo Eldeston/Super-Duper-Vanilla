@@ -1,12 +1,11 @@
 float getGGX(vec3 normal, vec3 halfVec, float roughness){
     float a = roughness * roughness;
+    float a2 = a * a;
+    
     float NdotH = max(dot(normal, halfVec), 0.0);
+    float denom = (NdotH * NdotH * (a2 - 1.0) + 1.0);
 	
-    float nom = a;
-    float denom = (NdotH * NdotH * (a - 1.0) + 1.0);
-    denom = PI * denom * denom;
-	
-    return nom / denom;
+    return a2 / (PI * denom * denom);
 }
 
 float getGeometrySchlickGGX(float NdotV, float roughness){
@@ -40,7 +39,7 @@ vec3 getSpecGGX(vec3 nNegPlayerPos, vec3 nLightPos, vec3 lightVec, vec3 normal, 
     return numerator / max(denominator, 0.001);
 }
 
-vec3 specularBrdf(vec3 V, vec3 L, vec3 N, vec3 fresnel, float roughness){  
+vec3 getSpecBRDF(vec3 V, vec3 L, vec3 N, vec3 fresnel, float roughness){  
     // Roughness remapping
     float alpha = roughness * roughness;
     float alphaSqr = alpha * alpha;

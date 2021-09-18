@@ -40,7 +40,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 				material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic));
 
 			// Get specular GGX
-			specCol = getSpecGGX(nNegEyePlayerPos, nLightPos, normalize(posVector.lightPos - posVector.eyePlayerPos), material.normal, fresnel, 1.0 - material.smoothness) * dirLight;
+			specCol = getSpecBRDF(nNegEyePlayerPos, nLightPos, material.normal, fresnel, 1.0 - material.smoothness) * dirLight;
 		}
 	#endif
  
