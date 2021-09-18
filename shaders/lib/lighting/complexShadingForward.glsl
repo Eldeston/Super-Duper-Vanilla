@@ -34,14 +34,8 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	vec3 specCol = vec3(0);
 
 	#ifdef ENABLE_LIGHT
-		if(maxC(dirLight) > 0){
-			// Get fresnel
-			vec3 fresnel = getFresnelSchlick(max(dot(material.normal, nNegEyePlayerPos), 0.0),
-				material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic));
-
-			// Get specular GGX
-			specCol = getSpecBRDF(nNegEyePlayerPos, nLightPos, material.normal, fresnel, 1.0 - material.smoothness) * dirLight;
-		}
+		// Get specular GGX
+		if(maxC(dirLight) > 0) specCol = getSpecBRDF(nNegEyePlayerPos, nLightPos, material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), 1.0 - material.smoothness) * dirLight;
 	#endif
  
 	totalDiffuse = material.albedo.rgb * (totalDiffuse + cubed(material.light.x) * BLOCK_LIGHT_COL * pow(material.ambient, 1.0 / 4.0));

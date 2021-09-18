@@ -81,7 +81,7 @@ uniform sampler2D texture;
 
             // If water
             if(id == 10034){
-                material.smoothness = 0.875;
+                material.smoothness = 0.95;
                 material.metallic = 0.02;
                 material.ambient = 1.0;
             }
@@ -89,18 +89,18 @@ uniform sampler2D texture;
             // End portal
             if(id == 10100){
                 material.albedo = vec4(1);
-                material.smoothness = 0.875;
+                material.smoothness = 0.95;
                 material.emissive = 1.0;
             }
             
             // Nether portal
             if(id == 10101){
-                material.smoothness = 0.875;
-                material.emissive = maxC(material.albedo);
+                material.smoothness = 0.95;
+                material.emissive = maxC(material.albedo.rgb);
             }
         #endif
 
-        material.smoothness = min(material.smoothness, 0.875);
+        material.smoothness = min(material.smoothness, 0.95);
     }
 #else
     void getPBR(inout matPBR material, in positionVectors posVector, in mat3 TBN, in vec3 tint, in vec2 st, in int id){
@@ -154,21 +154,21 @@ uniform sampler2D texture;
 
             // If water
             if(id == 10034){
-                material.smoothness = 0.875;
+                material.smoothness = 0.95;
                 material.metallic = 0.02;
             }
 
             // End portal
             if(id == 10100){
                 material.albedo = vec4(1);
-                material.smoothness = 0.875;
+                material.smoothness = 0.95;
                 material.emissive = maxC(material.albedo);
             }
             
             // Nether portal
             if(id == 10101){
-                material.smoothness = 0.875;
-                material.emissive = hsv.z;
+                material.smoothness = 0.95;
+                material.emissive = maxC(material.albedo.rgb);
             }
         #endif
         
@@ -200,38 +200,38 @@ uniform sampler2D texture;
             }
 
             // Glass and ice
-            if(id == 10032 || id == 10033) material.smoothness = 0.875;
+            if(id == 10032 || id == 10033) material.smoothness = 0.95;
 
             // Slime and honey
-            if(id == 10035) material.smoothness = 0.875;
+            if(id == 10035) material.smoothness = 0.95;
 
             // Gem ores
             if(id == 10048){
-                material.smoothness = hsv.y > 0.128 ? 0.94 : material.smoothness;
+                material.smoothness = hsv.y > 0.128 ? 0.925 : material.smoothness;
                 material.metallic = hsv.y > 0.128 ? 0.17 : material.metallic;
             }
 
             // Gem blocks
             if(id == 10050){
-                material.smoothness = 0.875;
+                material.smoothness = 0.95;
                 material.metallic = 0.17;
             }
 
             // Netherack gem ores
             if(id == 10049){
-                material.smoothness = hsv.y < 0.256 ? 0.94 : material.smoothness;
+                material.smoothness = hsv.y < 0.256 ? 0.925 : material.smoothness;
                 material.metallic = hsv.y < 0.256 ? 0.17 : material.metallic;
             }
 
             // Metal ores
             if(id == 10064){
-                material.smoothness = hsv.y > 0.128 ? 0.94 : material.smoothness;
+                material.smoothness = hsv.y > 0.128 ? 0.925 : material.smoothness;
                 material.metallic = hsv.y > 0.128 ? 1.0 : material.metallic;
             }
 
             // Netherack metal ores
             if(id == 10065){
-                material.smoothness = max2(material.albedo.rg) > 0.6 ? 0.94 : material.smoothness;
+                material.smoothness = max2(material.albedo.rg) > 0.6 ? 0.925 : material.smoothness;
                 material.metallic = max2(material.albedo.rg) > 0.6 ? 1.0 : material.metallic;
             }
 
@@ -249,7 +249,7 @@ uniform sampler2D texture;
 
             // Rails
             if(id == 10068){
-                material.smoothness = hsv.y < 0.128 ? 0.875 : material.smoothness;
+                material.smoothness = hsv.y < 0.128 ? 0.95 : material.smoothness;
                 material.metallic = hsv.y < 0.128 ? 1.0 : material.metallic;
             }
 
@@ -257,6 +257,6 @@ uniform sampler2D texture;
             if(id == 10080) material.smoothness = sumCol;
         #endif
 
-        material.smoothness = min(material.smoothness, 0.875);
+        material.smoothness = min(material.smoothness, 0.95);
     }
 #endif

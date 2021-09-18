@@ -79,7 +79,7 @@ INOUT vec4 glcolor;
         material.metallic = 0.02;
         material.ss = 0.0;
         material.emissive = 0.0;
-        material.smoothness = 1.0;
+        material.smoothness = 0.0;
 
         material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 

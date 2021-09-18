@@ -39,7 +39,43 @@ vec3 getSpecGGX(vec3 nNegPlayerPos, vec3 nLightPos, vec3 lightVec, vec3 normal, 
     return numerator / max(denominator, 0.001);
 }
 
-vec3 getSpecBRDF(vec3 V, vec3 L, vec3 N, vec3 fresnel, float roughness){  
+float getNoHSquared(float radiusTan, float NoL, float NoV, float VoL){
+    // radiusCos can be precalculated if radiusTan is a directional light
+    float radiusCos = 1.0 / sqrt(1.0 + radiusTan * radiusTan);
+    
+    // Early out if R falls within the disc
+    float RoL = 2.0 * NoL * NoV - VoL;
+    if (RoL >= radiusCos) return 1.0;
+
+    float rOverLengthT = radiusCos * radiusTan / sqrt(1.0 - RoL * RoL);
+    float NoTr = rOverLengthT * (NoV - RoL * NoL);
+    float VoTr = rOverLengthT * (2.0 * NoV * NoV - 1.0 - RoL * VoL);
+
+    // Calculate dot(cross(N, L), V). This could already be calculated and available.
+    float triple = sqrt(saturate(1.0 - NoL * NoL - NoV * NoV - VoL * VoL + 2.0 * NoL * NoV * VoL));
+    
+    // Do one Newton iteration to improve the bent light vector
+    float NoBr = rOverLengthT * triple, VoBr = rOverLengthT * (2.0 * triple * NoV);
+    float NoLVTr = NoL * radiusCos + NoV + NoTr, VoLVTr = VoL * radiusCos + 1.0 + VoTr;
+    float p = NoBr * VoLVTr, q = NoLVTr * VoLVTr, s = VoBr * NoLVTr;
+    float xNum = q * (-0.5 * p + 0.25 * VoBr * NoLVTr);
+    float xDenom = p * p + s * ((s - 2.0 * p)) + NoLVTr * ((NoL * radiusCos + NoV) * VoLVTr * VoLVTr + 
+                   q * (-0.5 * (VoLVTr + VoL * radiusCos) - 0.5));
+    float twoX1 = 2.0 * xNum / (xDenom * xDenom + xNum * xNum);
+    float sinTheta = twoX1 * xDenom;
+    float cosTheta = 1.0 - twoX1 * xNum;
+    NoTr = cosTheta * NoTr + sinTheta * NoBr; // use new T to update NoTr
+    VoTr = cosTheta * VoTr + sinTheta * VoBr; // use new T to update VoTr
+    
+    // Calculate (N.H) ^ 2 based on the bent light vector
+    float newNoL = NoL * radiusCos + NoTr;
+    float newVoL = VoL * radiusCos + VoTr;
+    float NoH = NoV + newNoL;
+    float HoH = 2.0 * newVoL + 2.0;
+    return saturate(NoH * NoH / HoH);
+}
+
+vec3 getSpecBRDF(vec3 V, vec3 L, vec3 N, vec3 F0, float roughness){  
     // Roughness remapping
     float alpha = roughness * roughness;
     float alphaSqr = alpha * alpha;
@@ -48,11 +84,16 @@ vec3 getSpecBRDF(vec3 V, vec3 L, vec3 N, vec3 fresnel, float roughness){
     vec3 H = normalize(L + V);
     
     // Dot products
-    float NH = max(dot(N, H), 0.0);    
-    float LH = max(dot(L, H), 0.0);
+    float LH = saturate(dot(L, H));
+    float NL = saturate(dot(N, L));
+    float NV = saturate(dot(N, V));
+
+    // Fresnel
+    vec3 fresnel = F0 + (1.0 - F0) * exp2(-9.28 * NV);
     
     // D
-    float denominator = NH * NH * (alphaSqr - 1.0) + 1.0;
+    float NHSqr = getNoHSquared(0.064, saturate(dot(N, L)), NV, dot(L, V));
+    float denominator = NHSqr * (alphaSqr - 1.0) + 1.0;
     float distribution =  alphaSqr / (PI * denominator * denominator);
 
     // V
