@@ -52,7 +52,7 @@ uniform sampler2D texture;
         vec3 normalMap = normalAOH.xyz * 2.0 - 1.0;
         normalMap.z = sqrt(1.0 - dot(normalMap.xy, normalMap.xy));
         // Assign normal
-        material.normal = normalize(TBN * normalize(normalMap));
+        material.normal = normalize(TBN * normalize(clamp(normalMap, vec3(-1), vec3(1))));
 
         // Assign smoothness
         material.smoothness = SRPSSE.r;
