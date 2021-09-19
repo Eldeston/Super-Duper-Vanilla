@@ -43,23 +43,15 @@ INOUT vec4 glcolor;
             material.albedo.rgb = vec3(0);
         #endif
 
-        material.metallic = 0.04;
-        material.ss = 1.0;
         material.emissive = 1.0;
-        material.smoothness = 0.0;
-
         material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
-        // Apply vanilla AO
-        material.ambient = 1.0;
-        material.light = lmCoord;
-
-        vec4 sceneCol = material.albedo + material.albedo * material.emissive;
+        vec4 sceneCol = vec4(material.albedo.rgb + material.albedo.rgb * material.emissive, material.albedo.a);
 
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; //gcolor
         gl_FragData[1] = vec4(material.normal * 0.5 + 0.5, 1); //colortex1
         gl_FragData[2] = vec4(material.albedo.rgb, 1); //colortex2
-        gl_FragData[3] = vec4(material.metallic, material.emissive, material.smoothness, 1); //colortex3
+        gl_FragData[3] = vec4(0, material.emissive, 0, 1); //colortex3
     }
 #endif

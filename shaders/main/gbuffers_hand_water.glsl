@@ -81,15 +81,19 @@ INOUT mat3 TBN;
         // If player
         if(rBlockId == 0) material.ambient = 1.0;
 
-        material.albedo.rgb = mix(material.albedo.rgb, entityColor.rgb, entityColor.a);
+        vec4 sceneCol = vec4(0);
 
-        material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
+        if(material.albedo.a > 0.00001){
+            material.albedo.rgb = mix(material.albedo.rgb, entityColor.rgb, entityColor.a);
 
-        // Apply vanilla AO
-        material.ambient *= glcolor.a;
-        material.light = lmCoord;
+            material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
-        vec4 sceneCol = complexShadingGbuffers(material, posVector, dither);
+            // Apply vanilla AO
+            material.ambient *= glcolor.a;
+            material.light = lmCoord;
+
+            vec4 sceneCol = complexShadingGbuffers(material, posVector, dither);
+        } else discard;
 
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; //gcolor

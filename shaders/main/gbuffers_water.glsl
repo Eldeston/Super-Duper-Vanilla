@@ -97,7 +97,6 @@ INOUT mat3 TBN;
 	    matPBR material;
 
         int rBlockId = int(blockId + 0.5);
-
         getPBR(material, posVector, TBN, glcolor.rgb, texCoord, rBlockId);
 
         vec4 sceneCol = vec4(0);
@@ -128,7 +127,7 @@ INOUT mat3 TBN;
             #endif
 
             sceneCol = complexShadingGbuffers(material, posVector, dither);
-        }
+        } else discard;
 
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; //gcolor

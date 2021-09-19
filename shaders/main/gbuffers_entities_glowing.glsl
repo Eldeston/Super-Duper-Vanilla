@@ -83,23 +83,27 @@ INOUT mat3 TBN;
         // If player
         if(rBlockId == 0) material.ambient = 1.0;
 
-        material.albedo.rgb = mix(material.albedo.rgb, entityColor.rgb, entityColor.a);
+        vec4 sceneCol = vec4(0);
 
-        material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
+        if(material.albedo.a > 0.00001){
+            material.albedo.rgb = mix(material.albedo.rgb, entityColor.rgb, entityColor.a);
 
-        // Apply vanilla AO
-        material.ambient *= glcolor.a;
-        material.light = lmCoord;
+            material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
-        vec4 sceneCol = complexShadingGbuffers(material, posVector, dither);
+            // Apply vanilla AO
+            material.ambient *= glcolor.a;
+            material.light = lmCoord;
 
-        // Lightning
-        if(rBlockId == 10101){
-            material.metallic = 0.04;
-            material.emissive = 1.0;
-            material.smoothness = 0.0;
-            sceneCol = vec4(vec3(2), 1);
-        }
+            // Lightning
+            if(rBlockId == 10101){
+                material.metallic = 0.04;
+                material.emissive = 1.0;
+                material.smoothness = 0.0;
+                sceneCol = vec4(vec3(2), 1);
+            }
+
+            sceneCol = complexShadingGbuffers(material, posVector, dither);
+        } else discard;
 
     /* DRAWBUFFERS:01234 */
         gl_FragData[0] = sceneCol; //gcolor

@@ -7,7 +7,6 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 
 	// Get positions
 	vec3 nLightPos = normalize(posVector.lightPos);
-    vec3 nNegEyePlayerPos = normalize(-posVector.eyePlayerPos);
 
 	vec3 totalDiffuse = vec3(0);
 	vec3 dirLight = vec3(0);
@@ -35,7 +34,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 
 	#ifdef ENABLE_LIGHT
 		// Get specular GGX
-		if(maxC(dirLight) > 0) specCol = getSpecBRDF(nNegEyePlayerPos, nLightPos, material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), 1.0 - material.smoothness) * dirLight;
+		if(maxC(dirLight) > 0) specCol = getSpecBRDF(normalize(-posVector.eyePlayerPos), nLightPos, material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), 1.0 - material.smoothness) * dirLight;
 	#endif
  
 	totalDiffuse = material.albedo.rgb * (totalDiffuse + cubed(material.light.x) * BLOCK_LIGHT_COL * pow(material.ambient, 1.0 / 4.0) + material.emissive);

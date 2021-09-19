@@ -112,7 +112,7 @@ INOUT mat3 TBN;
             #endif
 
             sceneCol = complexShadingGbuffers(material, posVector, dither);
-        }
+        } else discard;
 
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; //gcolor

@@ -81,18 +81,21 @@ INOUT vec4 glcolor;
         material.emissive = 0.0;
         material.smoothness = 0.0;
 
-        material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
+        vec4 sceneCol = vec4(0);
 
-        // Apply vanilla AO
-        material.ambient = glcolor.a;
-        material.light = lmCoord;
+        if(material.albedo.a > 0.00001){
+            material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
-        vec4 sceneCol = complexShadingGbuffers(material, posVector, dither);
+            // Apply vanilla AO
+            material.ambient = glcolor.a;
+            material.light = lmCoord;
 
-    /* DRAWBUFFERS:0123 */
+            vec4 sceneCol = complexShadingGbuffers(material, posVector, dither);
+        } else discard;
+
+    /* DRAWBUFFERS:012 */
         gl_FragData[0] = sceneCol; //gcolor
         gl_FragData[1] = vec4(material.normal * 0.5 + 0.5, 1); //colortex1
         gl_FragData[2] = vec4(material.albedo.rgb, 1); //colortex2
-        gl_FragData[3] = vec4(material.metallic, material.emissive, material.smoothness, 1); //colortex3
     }
 #endif

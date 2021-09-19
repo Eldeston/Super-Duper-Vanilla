@@ -3,24 +3,24 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
 		// Get positions
 		vec3 gBMVNorm = mat3(gbufferModelView) * material.normal;
 	#endif
-	
-	bool isMetal = material.metallic > 0.9;
 
 	#ifdef SSGI
 		// Get SSGI
-		vec3 GIcol = vec3(0);
-		if(!isMetal) GIcol = getSSGICol(posVector.viewPos, posVector.clipPos, gBMVNorm, toRandPerFrame(dither.xy));
-		sceneCol += material.albedo.rgb * GIcol;
+		sceneCol += material.albedo.rgb * getSSGICol(posVector.viewPos, posVector.clipPos, gBMVNorm, toRandPerFrame(dither.xy));
 	#endif
-
-	// Get fresnel
-	vec3 fresnel = getFresnelSchlick(max(dot(material.normal, normalize(-posVector.eyePlayerPos)), 0.0),
-		isMetal ? material.albedo.rgb : vec3(material.metallic));
 	
 	// If smoothness is 0, don't do reflections
 	vec3 reflectCol = vec3(0);
+	vec3 fresnel = vec3(0);
+
+	bool isMetal = material.metallic > 0.9;
 
 	if(material.smoothness > 0.0){
+		// Get fresnel
+		fresnel = getFresnelSchlick(max(dot(material.normal, normalize(-posVector.eyePlayerPos)), 0.0),
+			isMetal ? material.albedo.rgb : vec3(material.metallic));
+
+		// Get SSR
 		#ifdef SSR
 			#ifdef ROUGH_REFLECTIONS
 				vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.clipPos,
