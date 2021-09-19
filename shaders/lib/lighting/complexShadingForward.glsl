@@ -38,6 +38,6 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 		if(maxC(dirLight) > 0) specCol = getSpecBRDF(nNegEyePlayerPos, nLightPos, material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), 1.0 - material.smoothness) * dirLight;
 	#endif
  
-	totalDiffuse = material.albedo.rgb * (totalDiffuse + cubed(material.light.x) * BLOCK_LIGHT_COL * pow(material.ambient, 1.0 / 4.0));
-	return vec4(totalDiffuse + specCol + material.albedo.rgb * material.emissive, material.albedo.a);
+	totalDiffuse = material.albedo.rgb * (totalDiffuse + cubed(material.light.x) * BLOCK_LIGHT_COL * pow(material.ambient, 1.0 / 4.0) + material.emissive);
+	return vec4(totalDiffuse + specCol, material.albedo.a);
 }

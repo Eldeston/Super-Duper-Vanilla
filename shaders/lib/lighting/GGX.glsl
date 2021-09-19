@@ -84,15 +84,16 @@ vec3 getSpecBRDF(vec3 V, vec3 L, vec3 N, vec3 F0, float roughness){
     vec3 H = normalize(L + V);
     
     // Dot products
-    float LH = saturate(dot(L, H));
     float NL = saturate(dot(N, L));
     float NV = saturate(dot(N, V));
+    float LH = saturate(dot(L, H));
+    float LV = dot(L, V);
 
     // Fresnel
-    vec3 fresnel = F0 + (1.0 - F0) * exp2(-9.28 * NV);
+    vec3 fresnel = F0 + (1.0 - F0) * exp2(-9.28 * LH);
     
     // D
-    float NHSqr = getNoHSquared(0.064, saturate(dot(N, L)), NV, dot(L, V));
+    float NHSqr = getNoHSquared(0.064, NL, NV, LV);
     float denominator = NHSqr * (alphaSqr - 1.0) + 1.0;
     float distribution =  alphaSqr / (PI * denominator * denominator);
 
