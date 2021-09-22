@@ -33,6 +33,30 @@ uniform sampler2D texture;
         // Assign albedo
         material.albedo = texture2D(texture, st);
 
+        #if defined TERRAIN || defined WATER || defined BLOCK
+            // If lava
+            if(id == 10017) material.emissive = 1.0;
+
+            // If water
+            if(id == 10034){
+                material.smoothness = 0.95;
+                material.metallic = 0.02;
+            }
+
+            // End portal
+            if(id == 10100){
+                material.albedo = texture2D(texture, posVector.viewPos.xy);
+                material.smoothness = 0.95;
+                material.emissive = 1.0;
+            }
+            
+            // Nether portal
+            if(id == 10101){
+                material.smoothness = 0.95;
+                material.emissive = maxC(material.albedo.rgb);
+            }
+        #endif
+
         #if WHITE_MODE == 0
             material.albedo.rgb *= tint;
         #elif WHITE_MODE == 1
@@ -70,35 +94,6 @@ uniform sampler2D texture;
 
         // Assign ambient
         material.ambient = normalAOH.b;
-
-        #if defined TERRAIN || defined WATER || defined BLOCK
-            // If lava
-            if(id == 10017){
-                material.emissive = 1.0;
-                material.smoothness = 0.0;
-                material.ambient = 1.0;
-            }
-
-            // If water
-            if(id == 10034){
-                material.smoothness = 0.95;
-                material.metallic = 0.02;
-                material.ambient = 1.0;
-            }
-
-            // End portal
-            if(id == 10100){
-                material.albedo = vec4(1);
-                material.smoothness = 0.95;
-                material.emissive = 1.0;
-            }
-            
-            // Nether portal
-            if(id == 10101){
-                material.smoothness = 0.95;
-                material.emissive = maxC(material.albedo.rgb);
-            }
-        #endif
 
         material.smoothness = min(material.smoothness, 0.95);
     }
@@ -138,16 +133,6 @@ uniform sampler2D texture;
             float sumCol = saturate(material.albedo.r + material.albedo.g + material.albedo.b);
         #endif
 
-        #if WHITE_MODE == 0
-            material.albedo.rgb *= tint;
-        #elif WHITE_MODE == 1
-            material.albedo.rgb = vec3(1);
-        #elif WHITE_MODE == 2
-            material.albedo.rgb = vec3(0);
-        #elif WHITE_MODE == 3
-            material.albedo.rgb = tint;
-        #endif
-
         #if defined TERRAIN || defined WATER || defined BLOCK
             // If lava
             if(id == 10017) material.emissive = 1.0;
@@ -160,9 +145,12 @@ uniform sampler2D texture;
 
             // End portal
             if(id == 10100){
-                material.albedo = vec4(1);
+                vec3 d0 = texture2D(texture, posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.01)).rgb;
+                vec3 d1 = texture2D(texture, posVector.screenPos.yx * 1.25 + vec2(0, frameTimeCounter * 0.01)).rgb;
+                material.albedo = vec4(d0 + d1 + 0.05, 1);
+                material.normal = TBN[2];
                 material.smoothness = 0.95;
-                material.emissive = maxC(material.albedo);
+                material.emissive = 1.0;
             }
             
             // Nether portal
@@ -170,6 +158,16 @@ uniform sampler2D texture;
                 material.smoothness = 0.95;
                 material.emissive = maxC(material.albedo.rgb);
             }
+        #endif
+
+        #if WHITE_MODE == 0
+            material.albedo.rgb *= tint;
+        #elif WHITE_MODE == 1
+            material.albedo.rgb = vec3(1);
+        #elif WHITE_MODE == 2
+            material.albedo.rgb = vec3(0);
+        #elif WHITE_MODE == 3
+            material.albedo.rgb = tint;
         #endif
         
         #if (defined TERRAIN || defined WATER || defined BLOCK) && DEFAULT_MAT == 1

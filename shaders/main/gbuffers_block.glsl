@@ -5,7 +5,7 @@
 #include "/lib/globalVars/gameUniforms.glsl"
 #include "/lib/globalVars/timeUniforms.glsl"
 
-INOUT float blockId;
+uniform int blockEntityId;
 
 INOUT vec2 lmCoord;
 INOUT vec2 texCoord;
@@ -27,9 +27,8 @@ INOUT mat3 TBN;
     uniform mat4 gbufferModelView;
     uniform mat4 gbufferModelViewInverse;
 
-    attribute vec2 mcidTexCoord;
+    attribute vec2 mc_midTexCoord;
 
-    attribute vec4 mc_Entity;
     attribute vec4 at_tangent;
 
     void main(){
@@ -38,7 +37,6 @@ INOUT mat3 TBN;
 
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         lmCoord  = (gl_TextureMatrix[1] * gl_MultiTexCoord1).xy;
-        blockId = mc_Entity.x;
 
         vec3 tangent = normalize(gl_NormalMatrix * at_tangent.xyz);
 	    vec3 binormal = normalize(gl_NormalMatrix * cross(at_tangent.xyz, gl_Normal) * sign(at_tangent.w));
@@ -48,14 +46,14 @@ INOUT mat3 TBN;
 
         #ifdef ANIMATE
             vec3 worldPos = vertexPos.xyz + cameraPosition;
-	        getWave(vertexPos.xyz, worldPos, texCoord, mcidTexCoord, mc_Entity.x, lmCoord.y);
+	        getWave(vertexPos.xyz, worldPos, texCoord, mc_midTexCoord, float(blockEntityId), lmCoord.y);
         #endif
 
         #if DEFAULT_MAT != 2 && defined AUTO_GEN_NORM
-            vec2 texSize = abs(texCoord - mcidTexCoord.xy);
-            minTexCoord = mcidTexCoord.xy - texSize;
-            maxTexCoord = mcidTexCoord.xy + texSize;
-            texCoord = step(mcidTexCoord.xy, texCoord);
+            vec2 texSize = abs(texCoord - mc_midTexCoord.xy);
+            minTexCoord = mc_midTexCoord.xy - texSize;
+            maxTexCoord = mc_midTexCoord.xy + texSize;
+            texCoord = step(mc_midTexCoord.xy, texCoord);
         #endif
         
 	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
@@ -95,8 +93,7 @@ INOUT mat3 TBN;
 
 	    // Declare materials
 	    matPBR material;
-
-        getPBR(material, posVector, TBN, glcolor.rgb, texCoord, int(blockId + 0.5));
+        getPBR(material, posVector, TBN, glcolor.rgb, texCoord, blockEntityId);
 
         vec4 sceneCol = vec4(0);
 

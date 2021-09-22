@@ -95,7 +95,6 @@ INOUT mat3 TBN;
 
 	    // Declare materials
 	    matPBR material;
-
         int rBlockId = int(blockId + 0.5);
         getPBR(material, posVector, TBN, glcolor.rgb, texCoord, rBlockId);
 

@@ -95,7 +95,6 @@ INOUT mat3 TBN;
 
 	    // Declare materials
 	    matPBR material;
-
         getPBR(material, posVector, TBN, glcolor.rgb, texCoord, int(blockId + 0.5));
 
         vec4 sceneCol = vec4(0);
