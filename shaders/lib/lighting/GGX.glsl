@@ -103,5 +103,5 @@ vec3 getSpecBRDF(vec3 V, vec3 L, vec3 N, vec3 F0, float roughness){
     float visibility = 1.0 / (LH + (1.0 / roughness));
     
     // Specular
-    return distribution * fresnel * visibility;
+    return distribution * fresnel * visibility * NL;
 }

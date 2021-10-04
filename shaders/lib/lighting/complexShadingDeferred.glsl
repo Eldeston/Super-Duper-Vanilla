@@ -29,10 +29,10 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
 				vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.clipPos, gBMVNorm);
 			#endif
 
-			reflectCol = ambientLighting + getLowSkyRender(reflect(posVector.eyePlayerPos, material.normal), 1.0) * eyeBrightFact;
+			reflectCol = ambientLighting + getSkyRender(reflect(posVector.eyePlayerPos, material.normal), true, true, false) * eyeBrightFact;
 			reflectCol = mix(reflectCol, SSRCol.rgb, SSRCol.a);
 		#else
-			reflectCol = ambientLighting + getLowSkyRender(reflect(posVector.eyePlayerPos, material.normal), 1.0) * eyeBrightFact;
+			reflectCol = ambientLighting + getSkyRender(reflect(posVector.eyePlayerPos, material.normal), true, true, false) * eyeBrightFact;
 		#endif
 	}
 

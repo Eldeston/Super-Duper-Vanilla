@@ -12,7 +12,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	vec3 dirLight = vec3(0);
 
 	// Get globally illuminated sky
-	vec3 GISky = ambientLighting + getLowSkyRender(material.normal, 0.0) * material.light.y * material.light.y;
+	vec3 GISky = ambientLighting + getSkyRender(material.normal, false) * material.light.y * material.light.y;
 	totalDiffuse = GISky * material.ambient;
 
 	#ifdef ENABLE_LIGHT

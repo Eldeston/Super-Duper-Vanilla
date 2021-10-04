@@ -65,7 +65,7 @@ INOUT vec2 screenCoord;
         bool skyMask = posVector.screenPos.z == 1;
 
         // Get sky color
-        vec3 skyRender = getSkyRender(posVector.eyePlayerPos, lightCol, 1.0, skyMask);
+        vec3 skyRender = getSkyRender(posVector.eyePlayerPos, true, skyMask, skyMask);
 
         // If not sky, don't calculate lighting
         if(!skyMask){
