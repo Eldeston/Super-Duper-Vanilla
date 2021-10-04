@@ -73,7 +73,10 @@ uniform sampler2D texture;
 
             // End portal
             if(id == 10100){
-                material.albedo = texture2D(texture, posVector.viewPos.xy);
+                vec3 d0 = texture2D(texture, posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.01)).rgb;
+                vec3 d1 = texture2D(texture, posVector.screenPos.yx * 1.25 + vec2(0, frameTimeCounter * 0.01)).rgb;
+                material.albedo = vec4(d0 + d1 + 0.05, 1);
+                material.normal = TBN[2];
                 material.smoothness = 0.95;
                 material.emissive = 1.0;
             }

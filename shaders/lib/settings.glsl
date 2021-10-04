@@ -79,7 +79,7 @@
 #define LIGHT_COL_DAWN_DUSK vec3(1.2, 0.9, 0.3)
 
 #define SKY_COL_DAY vec3(1.2, 1.6, 2)
-#define SKY_COL_NIGHT vec3(0.1, 0.15, 0.2)
+#define SKY_COL_NIGHT vec3(0.1, 0.2, 0.3)
 #define SKY_COL_DAWN_DUSK vec3(0.21, 0.15, 0.3)
 
 #define BLOCK_LIGHT_COL vec3(1, 0.95, 0.9)
