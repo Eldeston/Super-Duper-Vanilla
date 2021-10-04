@@ -39,13 +39,14 @@ vec3 getSpecGGX(vec3 nNegPlayerPos, vec3 nLightPos, vec3 lightVec, vec3 normal, 
     return numerator / max(denominator, 0.001);
 }
 
+// Source: https://www.guerrilla-games.com/read/decima-engine-advances-in-lighting-and-aa
 float getNoHSquared(float radiusTan, float NoL, float NoV, float VoL){
     // radiusCos can be precalculated if radiusTan is a directional light
     float radiusCos = 1.0 / sqrt(1.0 + radiusTan * radiusTan);
     
     // Early out if R falls within the disc
     float RoL = 2.0 * NoL * NoV - VoL;
-    if (RoL >= radiusCos) return 1.0;
+    if(RoL >= radiusCos) return 1.0;
 
     float rOverLengthT = radiusCos * radiusTan / sqrt(1.0 - RoL * RoL);
     float NoTr = rOverLengthT * (NoV - RoL * NoL);
@@ -75,6 +76,7 @@ float getNoHSquared(float radiusTan, float NoL, float NoV, float VoL){
     return saturate(NoH * NoH / HoH);
 }
 
+// Thanks for LVutner#5199 for his code!
 vec3 getSpecBRDF(vec3 V, vec3 L, vec3 N, vec3 F0, float roughness){  
     // Roughness remapping
     float alpha = roughness * roughness;
