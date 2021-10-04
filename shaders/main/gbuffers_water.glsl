@@ -122,7 +122,7 @@ INOUT mat3 TBN;
             material.light = lmCoord;
 
             #ifdef ENVIRO_MAT
-                enviroPBR(material, posVector, TBN[2]);
+                if(rBlockId != 10034) enviroPBR(material, posVector, TBN[2]);
             #endif
 
             sceneCol = complexShadingGbuffers(material, posVector, dither);
