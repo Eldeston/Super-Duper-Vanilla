@@ -16,7 +16,7 @@ uniform sampler2D texture;
             rainMatFact *= saturate(sqrt(rawNorm.y) * cubed(material.light.y) * smoothstep(0.25, 0.75, puddle));
             
             material.normal = mix(material.normal, rawNorm, rainMatFact);
-            material.smoothness = mix(material.smoothness, 1.0, rainMatFact);
+            material.smoothness = mix(material.smoothness, 0.95, rainMatFact);
             material.albedo *= 1.0 - rainMatFact * 0.5;
         }
     }
