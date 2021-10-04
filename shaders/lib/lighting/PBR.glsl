@@ -33,6 +33,34 @@ uniform sampler2D texture;
         // Assign albedo
         material.albedo = texture2D(texture, st);
 
+        // Get raw textures
+        vec4 normalAOH = texture2D(normals, st);
+        vec4 SRPSSE = texture2D(specular, st);
+
+        // Decode and extract the materials
+        // Extract normals
+        vec3 normalMap = normalAOH.xyz * 2.0 - 1.0;
+        normalMap.z = sqrt(1.0 - dot(normalMap.xy, normalMap.xy));
+        // Assign normal
+        material.normal = normalize(TBN * normalize(clamp(normalMap, vec3(-1), vec3(1))));
+
+        // Assign smoothness
+        material.smoothness = SRPSSE.r;
+
+        // Assign reflectance
+        material.metallic = SRPSSE.g;
+
+        // Extact SS
+        float PSS = SRPSSE.b * 255.0;
+        // Assign SS
+        material.ss = saturate((PSS - 64.0) / (255.0 - 64.0));
+
+        // Assign emissive
+        material.emissive = SRPSSE.a * float(SRPSSE.a != 1);
+
+        // Assign ambient
+        material.ambient = normalAOH.b;
+
         #if defined TERRAIN || defined WATER || defined BLOCK
             // If lava
             if(id == 10017) material.emissive = 1.0;
@@ -66,34 +94,6 @@ uniform sampler2D texture;
         #elif WHITE_MODE == 3
             material.albedo.rgb = tint;
         #endif
-
-        // Get raw textures
-        vec4 normalAOH = texture2D(normals, st);
-        vec4 SRPSSE = texture2D(specular, st);
-
-        // Decode and extract the materials
-        // Extract normals
-        vec3 normalMap = normalAOH.xyz * 2.0 - 1.0;
-        normalMap.z = sqrt(1.0 - dot(normalMap.xy, normalMap.xy));
-        // Assign normal
-        material.normal = normalize(TBN * normalize(clamp(normalMap, vec3(-1), vec3(1))));
-
-        // Assign smoothness
-        material.smoothness = SRPSSE.r;
-
-        // Assign reflectance
-        material.metallic = SRPSSE.g;
-
-        // Extact SS
-        float PSS = SRPSSE.b * 255.0;
-        // Assign SS
-        material.ss = saturate((PSS - 64.0) / (255.0 - 64.0));
-
-        // Assign emissive
-        material.emissive = SRPSSE.a * float(SRPSSE.a != 1);
-
-        // Assign ambient
-        material.ambient = normalAOH.b;
 
         material.smoothness = min(material.smoothness, 0.95);
     }

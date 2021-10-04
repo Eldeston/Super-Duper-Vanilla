@@ -3,6 +3,9 @@ float atmoFog(float playerPosLength, float fogDensity){
 }
 
 float atmoFog(float playerPosY, float worldPosY, float playerPosLength, float totalDensity, float verticalFogDensity){
+    // Nan fix
+    if(playerPosY == 0) playerPosY = 0.001;
+    if(worldPosY == 0) worldPosY = 0.001;
     return min(1.0, totalDensity * exp(-playerPosY * verticalFogDensity) * (1.0 - exp(-playerPosLength * worldPosY * verticalFogDensity)) / worldPosY);
 }
 
