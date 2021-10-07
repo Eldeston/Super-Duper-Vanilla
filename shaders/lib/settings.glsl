@@ -38,6 +38,8 @@
 #define WATER_BLUR_SIZE 16.0 // Water blur size, the smaller the sharper the waves look, the larger the smoother the waves look [1.0 2.0 4.0 8.0 16.0 32.0 64.0]
 #define WATER_DEPTH_SIZE 32 // The depth amount of the water, the smaller the more deeper it looks [8 16 32 64 128]
 #define WATER_TILE_SIZE 24 // Tile size of the water [8 16 24 32 40 48 56 64 72 80]
+#define STYLIZED_WATER_ABSORPTION // Enable stylized water absorption. Changes water color based on depth.
+#define WATER_FOAM // Enable water foam. Appears on the sides of most solid objects, including entities.
 #define INVERSE // Inverses the heightmap of the water normals which is more realistic
 
 #define SHADOW_FILTER // Enable soft shadow filtering, if enabled shadows will appear softer, this costs performance

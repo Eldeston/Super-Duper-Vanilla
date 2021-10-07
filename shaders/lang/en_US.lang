@@ -70,6 +70,8 @@ screen.WATER_SETTINGS=Water material settings
     option.WATER_DEPTH_SIZE=Water depth size
     option.WATER_TILE_SIZE=Water tile size
     option.WATER_NORM=Water normals
+    option.STYLIZED_WATER_ABSORPTION=Stylized water absorption
+    option.WATER_FOAM=Water foam
 
 #Atmospherics
     option.VOL_LIGHT_BRIGHTNESS=Volumetric light amount

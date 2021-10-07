@@ -124,14 +124,18 @@ INOUT mat3 TBN;
 
                     float waterDepth = distance(toView(posVector.screenPos.z), toView(texture2D(depthtex1, posVector.screenPos.xy).x));
 
-                    vec3 waterColor = exp(-waterDepth * vec3(1, 0.48, 0.24));
-                    material.albedo.rgb = material.albedo.rgb * (1.0 - waterColor) + flatWater * waterColor;
+                    #ifdef STYLIZED_WATER_ABSORPTION
+                        vec3 waterColor = exp(-waterDepth * vec3(1, 0.48, 0.24));
+                        material.albedo.rgb = material.albedo.rgb * (1.0 - waterColor) + flatWater * waterColor;
+                    #endif
 
                     float waterAlpha = exp(-waterDepth * 0.015);
                     material.albedo.a = mix(sqrt(material.albedo.a), material.albedo.a, waterAlpha);
 
-                    float foam = min(1.0, exp(-(waterDepth - 0.128) * 10.0));
-                    material.albedo = material.albedo * (1.0 - foam) + foam;
+                    #ifdef WATER_FOAM
+                        float foam = min(1.0, exp(-(waterDepth - 0.128) * 10.0));
+                        material.albedo = material.albedo * (1.0 - foam) + foam;
+                    #endif
                 #endif
             }
 
