@@ -69,6 +69,8 @@ INOUT mat3 TBN;
     #include "/lib/globalVars/posUniforms.glsl"
     #include "/lib/globalVars/screenUniforms.glsl"
     #include "/lib/globalVars/universalVars.glsl"
+
+    uniform sampler2D depthtex1;
     
     #include "/lib/lighting/shdDistort.glsl"
     #include "/lib/utility/spaceConvert.glsl"
@@ -112,6 +114,25 @@ INOUT mat3 TBN;
 
                         material.albedo.rgb *= squared(1.0 - waterData.w);
                     #endif
+
+                    /* Water color and foam */
+                    vec3 waterAbsorptionCoef = vec3(1, 0.5, 0.25);
+                    float waterDepth = distance(toView(posVector.screenPos.z), toView(texture2D(depthtex1, posVector.screenPos.xy).x));
+
+                    #ifdef AUTO_GEN_NORM
+                        vec3 flatWater = texture2D(texture, mix(minTexCoord, maxTexCoord, texCoord)).rgb;
+                    #else
+                        vec3 flatWater = texture2D(texture, texCoord).rgb;
+                    #endif
+
+                    vec3 waterColor = saturate(exp(-waterDepth * waterAbsorptionCoef));
+                    material.albedo.rgb = material.albedo.rgb * (1.0 - waterColor) + flatWater * waterColor;
+
+                    float waterAlpha = exp(-waterDepth * 0.03125);
+                    material.albedo.a = (1.0 - waterAlpha) + material.albedo.a * waterAlpha;
+
+                    float foam = saturate(exp(-(waterDepth - 0.128) * 10.0));
+                    material.albedo = material.albedo * (1.0 - foam) + foam;
                 #endif
             }
 
