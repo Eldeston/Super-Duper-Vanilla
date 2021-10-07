@@ -40,16 +40,12 @@ INOUT vec2 texcoord;
         float fogMult = FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater * 0.32);
 
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(sceneCol + (texture2D(colortex4, texcoord, 1.6).rgb * fogMult) * lightCol, 1); //gcolor
+        gl_FragData[0] = vec4(sceneCol + (texture2D(colortex4, texcoord, 1.6).rgb * fogMult) * lightCol, 1); // gcolor
 
-        #if BLOOM == 1
+        #if BLOOM != 0
         /* DRAWBUFFERS:02 */
             // Compress the HDR colors
-            gl_FragData[1] = vec4(bloomCol / (1.0 + bloomCol), 1); //colortex2
-        #elif BLOOM == 2
-        /* DRAWBUFFERS:02 */
-            // Compress the HDR colors
-            gl_FragData[1] = vec4(sceneCol / (1.0 + sceneCol), 1); //colortex2
+            gl_FragData[1] = vec4(bloomCol / (1.0 + bloomCol), 1); // colortex2
         #endif
     }
 #endif
