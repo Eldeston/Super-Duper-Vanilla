@@ -66,10 +66,7 @@ uniform sampler2D texture;
             if(id == 10017) material.emissive = 1.0;
 
             // If water
-            if(id == 10034){
-                material.smoothness = 0.95;
-                material.metallic = 0.02;
-            }
+            if(id == 10034) material.smoothness = 0.96;
 
             // End portal
             if(id == 10100){
@@ -141,10 +138,7 @@ uniform sampler2D texture;
             if(id == 10017) material.emissive = 1.0;
 
             // If water
-            if(id == 10034){
-                material.smoothness = 0.95;
-                material.metallic = 0.02;
-            }
+            if(id == 10034) material.smoothness = 0.96;
 
             // End portal
             if(id == 10100){
