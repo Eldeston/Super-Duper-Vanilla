@@ -112,30 +112,36 @@ INOUT mat3 TBN;
                         vec4 waterData = H2NWater(posVector.worldPos.xz * (1.0 - TBN[2].y) + posVector.worldPos.xz * TBN[2].y);
                         material.normal = normalize(TBN * waterData.xyz);
 
-                        material.albedo.rgb *= squared(1.0 - waterData.w);
+                        material.albedo.rgb *= cubed(1.128 - waterData.w);
                     #endif
-
-                    /* Water color and foam */
-                    #if defined AUTO_GEN_NORM && DEFAULT_MAT != 2
-                        vec3 flatWater = texture2D(texture, mix(minTexCoord, maxTexCoord, texCoord)).rgb;
-                    #else
-                        vec3 flatWater = texture2D(texture, texCoord).rgb;
+                #else
+                    #if !(defined END || defined NETHER)
+                        vec2 waterUv = posVector.worldPos.xz * (1.0 - TBN[2].y) + posVector.worldPos.xz * TBN[2].y;
+                        float waterWaves = getCellNoise(waterUv / WATER_TILE_SIZE);
+                        material.albedo.rgb *= cubed(0.128 + waterWaves);
                     #endif
+                #endif
 
-                    float waterDepth = distance(toView(posVector.screenPos.z), toView(texture2D(depthtex1, posVector.screenPos.xy).x));
+                /* Water color and foam */
+                #if defined AUTO_GEN_NORM && DEFAULT_MAT != 2
+                    vec3 flatWater = texture2D(texture, mix(minTexCoord, maxTexCoord, texCoord)).rgb;
+                #else
+                    vec3 flatWater = texture2D(texture, texCoord).rgb;
+                #endif
 
-                    #ifdef STYLIZED_WATER_ABSORPTION
-                        vec3 waterColor = exp(-waterDepth * vec3(1, 0.48, 0.24));
-                        material.albedo.rgb = material.albedo.rgb * (1.0 - waterColor) + flatWater * waterColor;
-                    #endif
+                float waterDepth = distance(toView(posVector.screenPos.z), toView(texture2D(depthtex1, posVector.screenPos.xy).x));
 
-                    float waterAlpha = exp(-waterDepth * 0.015);
-                    material.albedo.a = mix(sqrt(material.albedo.a), material.albedo.a, waterAlpha);
+                #ifdef STYLIZED_WATER_ABSORPTION
+                    vec3 waterColor = exp(-waterDepth * vec3(1, 0.48, 0.24));
+                    material.albedo.rgb = material.albedo.rgb * (1.0 - waterColor) + flatWater * waterColor;
+                #endif
 
-                    #ifdef WATER_FOAM
-                        float foam = min(1.0, exp(-(waterDepth - 0.128) * 10.0));
-                        material.albedo = material.albedo * (1.0 - foam) + foam;
-                    #endif
+                float waterAlpha = exp(-waterDepth * 0.015);
+                material.albedo.a = mix(sqrt(material.albedo.a), material.albedo.a, waterAlpha);
+
+                #ifdef WATER_FOAM
+                    float foam = min(1.0, exp(-(waterDepth - 0.128) * 10.0));
+                    material.albedo = material.albedo * (1.0 - foam) + foam;
                 #endif
             }
 
