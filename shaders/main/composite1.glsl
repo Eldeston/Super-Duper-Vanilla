@@ -37,10 +37,10 @@ INOUT vec2 texcoord;
             vec3 bloomCol = sceneCol;
         #endif
 
-        float volMult = VOL_LIGHT_BRIGHTNESS * (1.0 - newTwilight) * (1.0 - blindness * 0.6) * (0.25 * (1.0 - eyeBrightFact) + eyeBrightFact) * min(1.0, FOG_OPACITY * underWaterMult * rainMult);
+        float fogMult = FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater * 0.32);
 
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(sceneCol + (texture2D(colortex4, texcoord, 1.6).rgb * volMult) * lightCol, 1); //gcolor
+        gl_FragData[0] = vec4(sceneCol + (texture2D(colortex4, texcoord, 1.6).rgb * fogMult) * lightCol, 1); //gcolor
 
         #if BLOOM == 1
         /* DRAWBUFFERS:02 */

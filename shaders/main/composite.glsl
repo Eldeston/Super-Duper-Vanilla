@@ -95,7 +95,7 @@ INOUT vec2 screenCoord;
                 vec3 skyRender = getSkyRender(posVector.eyePlayerPos, true);
 
                 // Fog calculation
-                sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y / 256.0, cloudMask, skyMask);
+                sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y, cloudMask, skyMask);
 
                 #ifdef PREVIOUS_FRAME
                     // Assign after main lighting calculation
@@ -106,7 +106,7 @@ INOUT vec2 screenCoord;
 
     /* DRAWBUFFERS:04 */
         gl_FragData[0] = vec4(sceneCol, 1); //gcolor
-        gl_FragData[1] = vec4(getGodRays(posVector.feetPlayerPos, posVector.worldPos.y / 256.0, dither.x), masks4.x); //colortex4
+        gl_FragData[1] = vec4(getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.x), masks4.x); //colortex4
         #ifdef PREVIOUS_FRAME
         /* DRAWBUFFERS:045 */
             gl_FragData[2] = vec4(reflectBuffer / (1.0 + reflectBuffer), 1); //colortex5
