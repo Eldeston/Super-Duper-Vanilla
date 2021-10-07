@@ -31,13 +31,10 @@ vec3 toRandPerFrame(vec3 rand){
 
 float getCellNoise(vec2 st){
     float animateTime = ANIMATION_SPEED * frameTimeCounter;
-    float d0 = texPix2DBilinear(noisetex, st + animateTime * 0.015, vec2(256)).z;
-    float d1 = texPix2DBilinear(noisetex, st * 4.0 - animateTime * 0.06, vec2(256)).z;
-    #ifdef INVERSE
-        return 1.0 - d0 * 0.875 + d1 * 0.125;
-    #else
-        return d0 * 0.875 + d1 * 0.125;
-    #endif
+    float d0 = texPix2DBilinear(noisetex, st + animateTime * 0.016, vec2(256)).z;
+    float d1 = texPix2DBilinear(noisetex, st * 4.0 - animateTime * 0.064, vec2(256)).z;
+
+    return 1.0 - d0 * 0.875 + d1 * 0.125;
 }
 
 // Convert height map of water to a normal map
@@ -48,10 +45,6 @@ vec4 H2NWater(vec2 st){
 	float d = getCellNoise(waterUv);
 	float dx = (d - getCellNoise(waterUv + vec2(waterPixel, 0))) / waterPixel;
 	float dy = (d - getCellNoise(waterUv + vec2(0, waterPixel))) / waterPixel;
-
-    #ifdef INVERSE
-        d = 1.0 - d;
-    #endif
     
-    return vec4(normalize(vec3(dx, dy, WATER_DEPTH_SIZE)), d);
+    return vec4(normalize(vec3(dx, dy, WATER_DEPTH_SIZE)), 1.0 - d);
 }

@@ -116,7 +116,7 @@ INOUT mat3 TBN;
                     #endif
 
                     /* Water color and foam */
-                    #ifdef AUTO_GEN_NORM
+                    #if defined AUTO_GEN_NORM && DEFAULT_MAT != 2
                         vec3 flatWater = texture2D(texture, mix(minTexCoord, maxTexCoord, texCoord)).rgb;
                     #else
                         vec3 flatWater = texture2D(texture, texCoord).rgb;

@@ -18,7 +18,7 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
 	if(material.smoothness > 0.0){
 		// Get fresnel
 		fresnel = getFresnelSchlick(max(dot(material.normal, normalize(-posVector.eyePlayerPos)), 0.0),
-			isMetal ? material.albedo.rgb : vec3(material.metallic));
+			isMetal ? material.albedo.rgb : vec3(material.metallic)) * material.smoothness;
 
 		// Get SSR
 		#ifdef SSR
@@ -37,6 +37,6 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
 	}
 
 	// Simplified and modified version of BSL's reflection PBR calculation
-	sceneCol *= 1.0 - (isMetal ? vec3(material.smoothness) : fresnel * material.smoothness) * (1.0 - material.emissive);
-	return sceneCol + reflectCol * fresnel * material.smoothness;
+	sceneCol *= 1.0 - (isMetal ? vec3(material.smoothness) : fresnel) * (1.0 - material.emissive);
+	return sceneCol + reflectCol * fresnel;
 }
