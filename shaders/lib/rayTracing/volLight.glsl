@@ -1,3 +1,6 @@
+#ifdef VOL_LIGHT
+#endif
+
 vec3 getGodRays(vec3 feetPlayerPos, float worldPosY, float dither){
 	#ifndef ENABLE_LIGHT
 		return vec3(0);
