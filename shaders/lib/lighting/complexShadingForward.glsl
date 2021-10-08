@@ -9,32 +9,31 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	vec3 nLightPos = normalize(posVector.lightPos);
 
 	vec3 totalDiffuse = vec3(0);
-	vec3 dirLight = vec3(0);
+	vec3 specCol = vec3(0);
 
 	// Get globally illuminated sky
 	vec3 GISky = ambientLighting + getSkyRender(material.normal, false) * material.light.y * material.light.y;
 	totalDiffuse = GISky * material.ambient;
 
 	#ifdef ENABLE_LIGHT
+		float NL = dot(material.normal, nLightPos);
+		float dirLight = getDiffuse(NL, material.ss);
+
 		#if defined ENTITIES_GLOWING || !defined SHD_ENABLE
 			// Get direct light diffuse color
-			dirLight = getDiffuse(material.normal, nLightPos, material.ss) * smoothstep(0.98, 0.99, material.light.y) * material.light.y * lightCol;
+			vec3 shdCol = vec3(smoothstep(0.94, 0.96, material.light.y));
 		#else
 			// Cave fix
 			float caveFixShdFactor = smoothstep(0.2, 0.4, material.light.y) * (1.0 - eyeBrightFact) + eyeBrightFact;
 			// Get direct light diffuse color
-			dirLight = getShdMapping(posVector.shdPos, material.normal, nLightPos, dither.r, material.ss) * caveFixShdFactor * lightCol;
+			vec3 shdCol = getShdMapping(posVector.shdPos, dirLight, dither.r) * caveFixShdFactor;
 		#endif
 
 		float rainDiff = isEyeInWater == 1 ? 0.2 : rainStrength * 0.5;
-		totalDiffuse += dirLight * (1.0 - rainDiff) + material.light.y * material.ambient * lightCol * rainDiff;
-	#endif
-	
-	vec3 specCol = vec3(0);
+		totalDiffuse += (dirLight * shdCol * (1.0 - rainDiff) + material.light.y * material.ambient * rainDiff) * lightCol;
 
-	#ifdef ENABLE_LIGHT
 		// Get specular GGX
-		if(maxC(dirLight) > 0) specCol = getSpecBRDF(normalize(-posVector.eyePlayerPos), nLightPos, material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), 1.0 - material.smoothness) * dirLight;
+		if(dirLight > 0) specCol = getSpecBRDF(normalize(-posVector.eyePlayerPos), nLightPos, material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), 1.0 - material.smoothness) * shdCol;
 	#endif
  
 	totalDiffuse = material.albedo.rgb * (totalDiffuse + cubed(material.light.x) * BLOCK_LIGHT_COL * pow(material.ambient, 1.0 / 4.0) + material.emissive);

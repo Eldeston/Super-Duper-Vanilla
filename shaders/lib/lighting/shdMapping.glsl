@@ -42,31 +42,28 @@
 	}
 
 	// Shadow function
-	vec3 getShdMapping(vec3 shdPos, vec3 normal, vec3 nLightPos, float dither, float ss){
+	vec3 getShdMapping(vec3 shdPos, float dirLight, float dither){
 		vec3 shdCol = vec3(0);
-		float shdRcp = 1.0 / shadowMapResolution;
 
-		// Light diffuse
-		float lightDot = dot(normal, nLightPos) * (1.0 - ss) + ss;
+		if(dirLight > 0){
+			float shdRcp = 1.0 / shadowMapResolution;
+			
+			float distortFactor = getDistortFactor(shdPos.xy);
+			shdPos.xyz = distort(shdPos.xyz, distortFactor) * 0.5 + 0.5;
+			shdPos.z -= (shdBias + 0.125 * shdRcp) * (distortFactor * distortFactor) / max(dirLight, 0.001);
 
-		float distortFactor = getDistortFactor(shdPos.xy);
-		shdPos.xyz = distort(shdPos.xyz, distortFactor) * 0.5 + 0.5;
-		shdPos.z -= (shdBias + 0.125 * shdRcp) * (distortFactor * distortFactor) / abs(lightDot);
-
-		if(lightDot >= 0)
 			#ifdef SHADOW_FILTER
 				shdCol = getShdFilter(shdPos.xyz, dither, shdRcp);
 			#else
 				shdCol = getShdTex(shdPos.xyz);
 			#endif
+		}
 
-		return shdCol * saturate(lightDot) * (1.0 - newTwilight);
+		return shdCol * (1.0 - newTwilight);
 	}
 #endif
 
-float getDiffuse(vec3 normal, vec3 nLightPos, float ss){
-	// Light diffuse
-	float lightDot = dot(normal, nLightPos) * (1.0 - ss) + ss;
-
-	return saturate(lightDot) * (1.0 - newTwilight);
+float getDiffuse(float NL, float ss){
+	// Light diffuse and subsurface scattering
+	return saturate(NL * (1.0 - ss) + ss) * (1.0 - newTwilight);
 }
