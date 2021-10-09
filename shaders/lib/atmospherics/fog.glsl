@@ -35,5 +35,5 @@ vec3 getFogRender(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY, b
     color = color * (1.0 - mistFog) + fogCol * mistFog;
 
     // Blindness fog
-    return color * exp(-eyePlayerPosLength * blindness * 0.32);
+    return color * exp(-eyePlayerPosLength * blindness * 0.375);
 }

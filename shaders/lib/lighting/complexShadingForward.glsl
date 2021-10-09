@@ -13,7 +13,6 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 
 	// Get globally illuminated sky
 	vec3 GISky = ambientLighting + getSkyRender(material.normal, false) * material.light.y * material.light.y;
-	totalDiffuse = GISky * material.ambient;
 
 	#ifdef ENABLE_LIGHT
 		float NL = saturate(dot(material.normal, nLightPos));
@@ -35,7 +34,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 		// Get specular GGX
 		if(dirLight > 0) specCol = getSpecBRDF(normalize(-posVector.eyePlayerPos), nLightPos, material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), NL, 1.0 - material.smoothness) * NL * shdCol;
 	#endif
- 
-	totalDiffuse = material.albedo.rgb * (totalDiffuse + cubed(material.light.x) * BLOCK_LIGHT_COL * pow(material.ambient, 1.0 / 4.0) + material.emissive);
+
+	totalDiffuse = material.albedo.rgb * (totalDiffuse + (GISky + cubed(material.light.x) * BLOCK_LIGHT_COL) * smootherstep(material.ambient) + material.emissive);
 	return vec4(totalDiffuse + specCol, material.albedo.a);
 }
