@@ -16,7 +16,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	totalDiffuse = GISky * material.ambient;
 
 	#ifdef ENABLE_LIGHT
-		float NL = dot(material.normal, nLightPos);
+		float NL = saturate(dot(material.normal, nLightPos));
 		float dirLight = getDiffuse(NL, material.ss);
 
 		#if defined ENTITIES_GLOWING || !defined SHD_ENABLE
@@ -33,7 +33,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 		totalDiffuse += (dirLight * shdCol * (1.0 - rainDiff) + material.light.y * material.ambient * rainDiff) * lightCol;
 
 		// Get specular GGX
-		if(dirLight > 0) specCol = getSpecBRDF(normalize(-posVector.eyePlayerPos), nLightPos, material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), 1.0 - material.smoothness) * shdCol;
+		if(dirLight > 0) specCol = getSpecBRDF(normalize(-posVector.eyePlayerPos), nLightPos, material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), NL, 1.0 - material.smoothness) * NL * shdCol;
 	#endif
  
 	totalDiffuse = material.albedo.rgb * (totalDiffuse + cubed(material.light.x) * BLOCK_LIGHT_COL * pow(material.ambient, 1.0 / 4.0) + material.emissive);

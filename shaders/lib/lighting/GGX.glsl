@@ -41,12 +41,11 @@ float getNoHSquared(float radiusTan, float NoL, float NoV, float VoL){
 }
 
 // Thanks for LVutner#5199 for his code!
-vec3 getSpecBRDF(vec3 V, vec3 L, vec3 N, vec3 F0, float roughness){
+vec3 getSpecBRDF(vec3 V, vec3 L, vec3 N, vec3 F0, float NL, float roughness){
     // Halfway vector
     vec3 H = normalize(L + V);
     
     // Dot products
-    float NL = saturate(dot(N, L));
     float NV = saturate(dot(N, V));
     float LH = saturate(dot(L, H));
     float LV = dot(L, V);

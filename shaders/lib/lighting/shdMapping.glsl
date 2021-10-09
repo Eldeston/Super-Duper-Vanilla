@@ -65,5 +65,5 @@
 
 float getDiffuse(float NL, float ss){
 	// Light diffuse and subsurface scattering
-	return saturate(NL * (1.0 - ss) + ss) * (1.0 - newTwilight);
+	return (NL * (1.0 - ss) + ss) * (1.0 - newTwilight);
 }
