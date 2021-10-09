@@ -30,8 +30,8 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 #define SKY_LIGHT_AMOUNT 1.00
 
 // Vertical density falloff, larger means less thick fog at high altitudes, but thicker fog in lower altitudes
-#define FOG_VERTICAL_DENSITY_FALLOFF 0.04
+#define FOG_VERTICAL_DENSITY_FALLOFF 0.016
 // Total density falloff, larger means thicker fog
-#define FOG_TOTAL_DENSITY_FALLOFF 0.08
+#define FOG_TOTAL_DENSITY_FALLOFF 0.016
 // Fog opacity
-#define FOG_OPACITY 0.50
+#define FOG_OPACITY 0.25

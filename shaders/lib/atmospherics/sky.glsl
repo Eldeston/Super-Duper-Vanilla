@@ -26,7 +26,7 @@ vec3 getSkyColor(vec3 nSkyPos, float nPlayerPosY, bool skyDiffuseMask){
     vec3 finalCol = skyCol;
 
     #ifdef USE_HORIZON
-        finalCol *= 1.0 + 2.0 * cubed(saturate(1.0 - abs(nPlayerPosY)));
+        finalCol *= 1.0 + squared(saturate(1.0 - abs(nPlayerPosY)));
     #endif
 
     if(isEyeInWater == 1){
