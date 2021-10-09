@@ -5,9 +5,6 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 		material.light.y = SKY_LIGHT_AMOUNT;
 	#endif
 
-	// Get positions
-	vec3 nLightPos = normalize(posVector.lightPos);
-
 	vec3 specCol = vec3(0);
 
 	// Get sky global illumination
@@ -16,6 +13,9 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	vec3 totalDiffuse = (skyGI + cubed(material.light.x) * BLOCK_LIGHT_COL) * smootherstep(material.ambient);
 
 	#ifdef ENABLE_LIGHT
+		// Get positions
+		vec3 nLightPos = normalize(posVector.lightPos);
+
 		float NL = saturate(dot(material.normal, nLightPos));
 		float dirLight = getDiffuse(NL, material.ss);
 
