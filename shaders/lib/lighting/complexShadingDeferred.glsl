@@ -24,7 +24,7 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
 		#ifdef SSR
 			#ifdef ROUGH_REFLECTIONS
 				vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.clipPos,
-					gBMVNorm + (dither * 2.0 - 1.0) * cubed(1.0 - material.smoothness));
+					gBMVNorm + (dither * 2.0 - 1.0) * cubed(1.0 - material.smoothness)) * 0.5;
 			#else
 				vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.clipPos, gBMVNorm);
 			#endif
