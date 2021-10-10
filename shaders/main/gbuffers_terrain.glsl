@@ -95,11 +95,19 @@ INOUT mat3 TBN;
 
 	    // Declare materials
 	    matPBR material;
-        getPBR(material, posVector, TBN, glcolor.rgb, texCoord, int(blockId + 0.5));
+        int rBlockId = int(blockId + 0.5);
+        getPBR(material, posVector, TBN, glcolor.rgb, texCoord, rBlockId);
 
         vec4 sceneCol = vec4(0);
 
         if(material.albedo.a > 0.00001){
+            if(rBlockId == 10017){
+                vec2 lavaUv = posVector.worldPos.xz * (1.0 - TBN[2].y) + posVector.worldPos.xz * TBN[2].y;
+                lavaUv = floor(lavaUv * 16.0) / 16.0;
+                float lavaWaves = getCellNoise2(lavaUv / LAVA_TILE_SIZE);
+                material.albedo.rgb = floor(material.albedo.rgb * LAVA_BRIGHTNESS * lavaWaves * lavaWaves * 32.0) / 32.0;
+            }
+
             material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
             // Apply vanilla AO

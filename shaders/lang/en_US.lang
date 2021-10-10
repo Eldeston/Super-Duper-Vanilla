@@ -73,6 +73,10 @@ screen.WATER_SETTINGS=Water material settings
     option.STYLIZED_WATER_ABSORPTION=Stylized water absorption
     option.WATER_FOAM=Water foam
 
+screen.LAVA_SETTINGS=Lava material settings
+    option.LAVA_BRIGHTNESS=Lava brightness
+    option.LAVA_TILE_SIZE=Lava tile size
+
 #Atmospherics
     option.VOL_LIGHT_BRIGHTNESS=Volumetric light amount
     option.VOL_LIGHT=Volumetric lighting

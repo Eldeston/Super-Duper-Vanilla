@@ -37,6 +37,14 @@ float getCellNoise(vec2 st){
     return 1.0 - d0 * 0.875 + d1 * 0.125;
 }
 
+float getCellNoise2(vec2 st){
+    float animateTime = ANIMATION_SPEED * frameTimeCounter;
+    float d0 = texture2D(noisetex, st + animateTime * 0.032).z;
+    float d1 = texPix2DBilinear(noisetex, st / 32.0 - animateTime * 0.001, vec2(256)).y;
+
+    return d0 * 0.64 + d1 * 0.36;
+}
+
 // Convert height map of water to a normal map
 vec4 H2NWater(vec2 st){
     float waterPixel = WATER_BLUR_SIZE / noiseTextureResolution;
