@@ -12,17 +12,17 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 // Enable if your world uses a custom fog color with an input, overrides sky colors
 // #define USE_CUSTOM_LIGHTCOL vec3(0)
 
-// Enable stars in your world
-// #define USE_STARS
 // Enable sun/moon in your world
 // #define USE_SUN_MOON
 // Enable stars in your world
-#define USE_HORIZON
+// #define USE_STARS_COL vec3(1)
+// Enable horizon in your world
+#define USE_HORIZON_COL fogColor
 
 // Enable if your world uses a specific world color that uses the vanilla fog color, overrides sky colors
-#define USE_VANILLA_FOGCOL fogColor
+#define USE_VANILLA_FOGCOL (fogColor * 0.9 + 0.1)
 // Enable if your world uses a custom fog color with an input, overrides sky colors
-// #define USE_CUSTOM_FOGCOL vec3(0)
+// #define USE_CUSTOM_FOGCOL fogColor
 
 // Enable if your world has a sky lightmap, or none
 // #define USE_SKY_LIGHTMAP

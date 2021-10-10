@@ -12,12 +12,12 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 // Enable if your world uses a light color with an input, overrides light colors
 #define USE_CUSTOM_LIGHTCOL vec3(0.45, 0.4, 0.8)
 
-// Enable stars in your world
-#define USE_STARS
 // Enable sun/moon in your world
 // #define USE_SUN_MOON
 // Enable stars in your world
-#define USE_HORIZON
+#define USE_STARS_COL vec3(2, 1, 4)
+// Enable horizon in your world
+#define USE_HORIZON_COL vec3(0.08, 0.04, 0.24)
 
 // Enable if your world uses a specific world color that uses the vanilla fog color, overrides sky colors
 // #define USE_VANILLA_FOGCOL fogColor
@@ -30,8 +30,8 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 #define SKY_LIGHT_AMOUNT 1.00
 
 // Vertical density falloff, larger means less thick fog at high altitudes, but thicker fog in lower altitudes
-#define FOG_VERTICAL_DENSITY_FALLOFF 0.016
+#define FOG_VERTICAL_DENSITY_FALLOFF 0.01
 // Total density falloff, larger means thicker fog
-#define FOG_TOTAL_DENSITY_FALLOFF 0.016
+#define FOG_TOTAL_DENSITY_FALLOFF 0.01
 // Fog opacity
-#define FOG_OPACITY 0.25
+#define FOG_OPACITY 0.5
