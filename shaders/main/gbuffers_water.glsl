@@ -137,8 +137,7 @@ INOUT mat3 TBN;
                     material.albedo.rgb = material.albedo.rgb * (1.0 - waterColor) + flatWater * waterColor;
                 #endif
 
-                float waterAlpha = exp(-waterDepth * 0.04);
-                material.albedo.a = mix(sqrt(material.albedo.a), material.albedo.a * (1.0 - exp(-waterDepth * 0.8)), waterAlpha);
+                if(isEyeInWater != 1) material.albedo.a = mix(1.0, material.albedo.a * (1.0 - exp(-waterDepth * 0.8)), exp(-waterDepth * 0.04));
 
                 #ifdef WATER_FOAM
                     float foam = min(1.0, exp(-(waterDepth - 0.128) * 10.0));
