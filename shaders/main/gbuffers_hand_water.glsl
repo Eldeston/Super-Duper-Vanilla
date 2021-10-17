@@ -90,7 +90,7 @@ INOUT mat3 TBN;
             material.ambient *= glcolor.a;
             material.light = lmCoord;
 
-            vec4 sceneCol = complexShadingGbuffers(material, posVector, dither);
+            sceneCol = complexShadingGbuffers(material, posVector, dither);
         } else discard;
 
     /* DRAWBUFFERS:0123 */
