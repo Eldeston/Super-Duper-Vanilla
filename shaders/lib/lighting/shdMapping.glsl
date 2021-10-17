@@ -46,6 +46,7 @@
 
 	// Shadow function
 	vec3 getShdMapping(vec3 shdPos, float dirLight, float dither){
+		// If the area isn't shaded, apply shadow mapping
 		if(dirLight > 0){
 			float shdRcp = 1.0 / shadowMapResolution;
 			
@@ -60,11 +61,12 @@
 			#endif
 		}
 
+		// Otherwise, return nothing
 		return vec3(0);
 	}
 #endif
 
 float getDiffuse(float NL, float ss){
-	// Light diffuse and subsurface scattering
+	// Light diffuse plus subsurface scattering
 	return (NL * (1.0 - ss) + ss) * (1.0 - newTwilight);
 }

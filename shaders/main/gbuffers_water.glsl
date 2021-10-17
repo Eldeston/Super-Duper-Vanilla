@@ -124,20 +124,22 @@ INOUT mat3 TBN;
                 #endif
 
                 /* Water color and foam */
-                #if defined AUTO_GEN_NORM && DEFAULT_MAT != 2
-                    vec3 flatWater = texture2D(texture, mix(minTexCoord, maxTexCoord, texCoord)).rgb;
-                #else
-                    vec3 flatWater = texture2D(texture, texCoord).rgb;
-                #endif
-
                 float waterDepth = distance(toView(posVector.screenPos.z), toView(texture2D(depthtex1, posVector.screenPos.xy).x));
 
-                #ifdef STYLIZED_WATER_ABSORPTION
-                    vec3 waterColor = exp(-waterDepth * vec3(1, 0.48, 0.24));
-                    material.albedo.rgb = material.albedo.rgb * (1.0 - waterColor) + flatWater * waterColor;
-                #endif
+                if(isEyeInWater != 1){
+                    #if defined AUTO_GEN_NORM && DEFAULT_MAT != 2
+                        vec3 flatWater = texture2D(texture, mix(minTexCoord, maxTexCoord, texCoord)).rgb;
+                    #else
+                        vec3 flatWater = texture2D(texture, texCoord).rgb;
+                    #endif
 
-                if(isEyeInWater != 1) material.albedo.a = mix(1.0, material.albedo.a * (1.0 - exp(-waterDepth * 0.8)), exp(-waterDepth * 0.04));
+                    #ifdef STYLIZED_WATER_ABSORPTION
+                        vec3 waterColor = exp(-waterDepth * vec3(1, 0.48, 0.24));
+                        material.albedo.rgb = material.albedo.rgb * (1.0 - waterColor) + flatWater * waterColor;
+                    #endif
+
+                    material.albedo.a = mix(sqrt(material.albedo.a), material.albedo.a * (1.0 - exp(-waterDepth * 0.8)), exp(-waterDepth * 0.04));
+                }
 
                 #ifdef WATER_FOAM
                     float foam = min(1.0, exp(-(waterDepth - 0.128) * 10.0));
