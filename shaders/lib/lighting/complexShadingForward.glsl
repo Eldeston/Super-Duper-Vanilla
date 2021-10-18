@@ -1,6 +1,6 @@
 vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dither){
 	#ifdef USE_SKY_LIGHTMAP
-		material.light.y = material.light.y * SKY_LIGHT_AMOUNT;
+		material.light.y *= SKY_LIGHT_AMOUNT;
 	#else
 		material.light.y = SKY_LIGHT_AMOUNT;
 	#endif
@@ -8,9 +8,9 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	vec3 specCol = vec3(0);
 
 	// Get sky global illumination
-	vec3 skyGI = ambientLighting + getSkyRender(material.normal, false) * material.light.y * material.light.y;
+	vec3 skyGI = getSkyRender(material.normal, false) * material.light.y * material.light.y;
 	// Get lightmaps and add sky GI
-	vec3 totalDiffuse = (skyGI + cubed(material.light.x) * BLOCK_LIGHT_COL) * smoothen(material.ambient);
+	vec3 totalDiffuse = (skyGI + ambientLighting + cubed(material.light.x) * BLOCK_LIGHT_COL) * smoothen(material.ambient);
 
 	#ifdef ENABLE_LIGHT
 		// Get positions

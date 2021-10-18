@@ -7,9 +7,9 @@ float getSunMoonShape(vec3 pos){
 }
 
 float genStar(vec2 nSkyPos){
-	vec3 starRand = getRandTex(nSkyPos, 1).rgb;
-    vec2 starGrid = 0.5 * sin(starRand.xy * 12.0 + 128.0) - fract(nSkyPos * noiseTextureResolution) + 0.5;
-    return getStarShape(starGrid, starRand.r * 0.9 + 0.3);
+	vec2 starRand = getRandTex(nSkyPos, 1).xy;
+    vec2 starGrid = 0.5 * sin(starRand * 12.0 + 128.0) - fract(nSkyPos * noiseTextureResolution) + 0.5;
+    return getStarShape(starGrid, starRand.x * 0.9 + 0.3);
 }
 
 vec3 getSkyColor(vec3 nSkyPos, float nPlayerPosY, bool skyDiffuseMask){
@@ -32,11 +32,10 @@ vec3 getSkyColor(vec3 nSkyPos, float nPlayerPosY, bool skyDiffuseMask){
     if(isEyeInWater == 1){
         float waterVoid = smootherstep(nPlayerPosY + (eyeBrightFact - 0.64));
         finalCol = mix(fogColor * lightCol, skyCol, waterVoid);
-        lightRange /= (1.0 - eyeBrightFact) + 2.0;
     }
 
     #ifdef USE_SUN_MOON
-        if(skyDiffuseMask) finalCol += lightRange * lightCol * horizon;
+        if(skyDiffuseMask) finalCol += lightCol * (lightRange * horizon);
     #endif
 
     return pow(finalCol, vec3(GAMMA));
@@ -53,7 +52,7 @@ vec3 getSkyRender(vec3 playerPos, bool skyDiffuseMask, bool skyMask, bool sunMoo
     vec3 finalCol = getSkyColor(nSkyPos, nPlayerPos.y, skyDiffuseMask);
 
     #ifdef USE_SUN_MOON
-        if(sunMoonMask) finalCol += getSunMoonShape(nSkyPos) * 6.4 * lightCol;
+        if(sunMoonMask) finalCol += lightCol * (getSunMoonShape(nSkyPos) * 6.4);
     #endif
 
     #ifdef USE_STARS_COL
