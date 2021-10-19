@@ -29,11 +29,58 @@ INOUT vec2 screenCoord;
         uniform sampler2D colortex5;
     #endif
 
-    #include "/lib/globalVars/matUniforms.glsl"
-    #include "/lib/globalVars/posUniforms.glsl"
-    #include "/lib/globalVars/screenUniforms.glsl"
-    #include "/lib/globalVars/timeUniforms.glsl"
-    #include "/lib/globalVars/gameUniforms.glsl"
+    /* Matrix uniforms */
+    // View matrix uniforms
+    uniform mat4 gbufferModelView;
+    uniform mat4 gbufferModelViewInverse;
+    uniform mat4 gbufferPreviousModelView;
+
+    // Projection matrix uniforms
+    uniform mat4 gbufferProjection;
+    uniform mat4 gbufferProjectionInverse;
+    uniform mat4 gbufferPreviousProjection;
+
+    // Shadow view matrix uniforms
+    uniform mat4 shadowModelView;
+    uniform mat4 shadowModelViewInverse;
+
+    // Shadow projection matrix uniforms
+    uniform mat4 shadowProjection;
+    uniform mat4 shadowProjectionInverse;
+
+    /* Position uniforms */
+    uniform vec3 cameraPosition;
+    uniform vec3 previousCameraPosition;
+
+    /* Screen uniforms */
+    uniform float viewWidth;
+    uniform float viewHeight;
+
+    /* Time uniforms */
+    // Get frame time
+    uniform int frameCounter;
+
+    uniform float frameTime;
+    uniform float frameTimeCounter;
+
+    // Get world time
+    uniform float day;
+    uniform float night;
+    uniform float dawnDusk;
+    uniform float twilight;
+
+    /* Game uniforms */
+    uniform int isEyeInWater;
+
+    uniform float nightVision;
+    uniform float blindness;
+    uniform float rainStrength;
+    uniform float far;
+
+    uniform ivec2 eyeBrightnessSmooth;
+
+    uniform vec3 fogColor;
+
     #include "/lib/globalVars/universalVars.glsl"
 
     #include "/lib/lighting/shdDistort.glsl"

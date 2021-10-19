@@ -6,11 +6,15 @@ void getPosVectors(inout positionVectors posVec){
 	posVec.feetPlayerPos = posVec.eyePlayerPos + gbufferModelViewInverse[3].xyz;
 	posVec.worldPos = posVec.feetPlayerPos + cameraPosition;
 
-	#ifdef END
-		posVec.lightPos = shadowLightPosition;
-	#else
-		posVec.lightPos = mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz;
-	#endif
+	#if !defined COMPOSITE && !defined DEFERRED
+		#ifdef END
+			posVec.lightPos = shadowLightPosition;
+		#else
+			posVec.lightPos = mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz;
+		#endif
 	
-	posVec.shdPos = toShadow(posVec.feetPlayerPos);
+		#if defined SHD_ENABLE && !defined ENTITIES_GLOWING
+			posVec.shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * posVec.feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz;
+		#endif
+	#endif
 }

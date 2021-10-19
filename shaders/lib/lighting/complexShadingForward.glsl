@@ -19,14 +19,14 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 		float NL = saturate(dot(material.normal, nLightPos));
 		float dirLight = getDiffuse(NL, material.ss);
 
-		#if defined ENTITIES_GLOWING || !defined SHD_ENABLE
-			// Get direct light diffuse color
-			vec3 shdCol = vec3(smoothstep(0.94, 0.96, material.light.y));
-		#else
+		#if defined SHD_ENABLE && !defined ENTITIES_GLOWING
 			// Cave fix
 			float caveFixShdFactor = smoothstep(0.2, 0.4, material.light.y) * (1.0 - eyeBrightFact) + eyeBrightFact;
 			// Get direct light diffuse color
 			vec3 shdCol = getShdMapping(posVector.shdPos, dirLight, dither.r) * caveFixShdFactor;
+		#else
+			// Get direct light diffuse color
+			vec3 shdCol = vec3(smoothstep(0.94, 0.96, material.light.y));
 		#endif
 
 		float rainDiff = isEyeInWater == 1 ? 0.2 : rainStrength * 0.5;
