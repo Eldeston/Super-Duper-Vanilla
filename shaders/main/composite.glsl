@@ -12,10 +12,6 @@ INOUT vec2 screenCoord;
 #endif
 
 #ifdef FRAGMENT
-    #ifdef PREVIOUS_FRAME
-        const bool colortex5Clear = false;
-    #endif
-
     uniform sampler2D depthtex0;
     uniform sampler2D depthtex1;
     uniform sampler2D gcolor;
@@ -25,8 +21,9 @@ INOUT vec2 screenCoord;
     uniform sampler2D colortex4;
 
     #ifdef PREVIOUS_FRAME
-        // Reflections
+        // Previous reflections
         uniform sampler2D colortex5;
+        const bool colortex5Clear = false;
     #endif
 
     /* Matrix uniforms */
