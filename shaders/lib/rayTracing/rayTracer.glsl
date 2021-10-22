@@ -17,8 +17,7 @@ vec3 rayTraceScene(vec3 clipPos, vec3 viewPos, vec3 rayDir, int steps, int binar
 		return vec3(handScreenPos.xy, handScreenPos.z != 1);
 	}
 
-	vec3 viewPosWithRayDir = viewPos + rayDir;
-	vec3 clipPosRayDir = toScreen(viewPosWithRayDir) * 2.0 - 1.0; // Put it back to clip space...
+	vec3 clipPosRayDir = toScreen(viewPos + rayDir) * 2.0 - 1.0; // Put it back to clip space...
 	clipPosRayDir = normalize(clipPosRayDir - clipPos) * (2.0 / steps);
 
 	// Clip pos is our startPos

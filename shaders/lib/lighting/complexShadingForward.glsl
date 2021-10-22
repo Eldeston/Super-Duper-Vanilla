@@ -15,8 +15,8 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	#ifdef ENABLE_LIGHT
 		// Get positions
 		vec3 nLightPos = normalize(posVector.lightPos);
-
 		float NL = saturate(dot(material.normal, nLightPos));
+		
 		float dirLight = getDiffuse(NL, material.ss);
 
 		#if defined SHD_ENABLE && !defined ENTITIES_GLOWING

@@ -19,10 +19,8 @@ vec4 getSSRCol(vec3 viewPos, vec3 clipPos, vec3 gBMVNorm){
 			// Return color and output SSR mask in the alpha channel
 			return vec4(SSRCol, edgeVisibility(reflectedScreenPos.xy));
 		#else
-			// Sample reflections
-			vec3 SSRCol = texture2D(gcolor, reflectedScreenPos.xy).rgb;
-			// Return color and output SSR mask in the alpha channel
-			return vec4(SSRCol, edgeVisibility(reflectedScreenPos.xy));
+			// Return sample, return color, and output SSR mask in the alpha channel
+			return vec4(texture2D(gcolor, reflectedScreenPos.xy).rgb, edgeVisibility(reflectedScreenPos.xy));
 		#endif
 	}
 	
