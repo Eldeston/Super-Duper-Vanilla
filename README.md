@@ -22,6 +22,9 @@
 ## Releases
    See all available releases [here](https://github.com/Eldeston/Super-Duper-Vanilla/releases), and get the latest build [here](https://github.com/Eldeston/Super-Duper-Vanilla/archive/refs/heads/master.zip), this build will always be the latest build by default. Latests builds and pre-release versions are expected to be unstable, please report any issues or bugs anytime. Feedback is much appreciated.
 
+## Official CurseForge Page
+   Super Duper Vanilla just happen to be on CurseForge too! Stable and latest releases will be available there. Check it out [here](https://www.curseforge.com/minecraft/customization/super-duper-vanilla-shaders) and show your support by clicking on one of the download links there!
+
 # NOTICE
    For expected results, please make sure to extract/unzip the downloaded zipped file, otherwise things may break.
 
