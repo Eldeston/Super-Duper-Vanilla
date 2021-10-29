@@ -5,8 +5,6 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 
 #define OVERWORLD
 
-// Enable if your world has an undefined lighting environment like The End or the Nether
-// #define UNDEF_LIGHT
 // Enable if your world uses default shader lighting from the sun/moon
 #define ENABLE_LIGHT
 // Enable if your world uses a custom fog color with an input, overrides sky colors
@@ -24,7 +22,7 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 // Enable if your world uses a custom fog color with an input, overrides sky colors
 // #define USE_CUSTOM_FOGCOL vec3(0)
 
-// Enable if your world has a sky lightmap, or none
+// Disable if your world has an undefined lighting environment like The End or the Nether
 #define USE_SKY_LIGHTMAP
 // Sky light amount
 #define SKY_LIGHT_AMOUNT 1.00
