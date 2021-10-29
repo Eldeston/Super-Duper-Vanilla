@@ -82,7 +82,7 @@ INOUT vec3 norm;
         #if WHITE_MODE == 2
             material.albedo = vec4(0, 0, 0, albedoAlpha);
         #else
-            material.albedo = vec4(1, 1, 1, albedoAlpha);
+            material.albedo = vec4(albedoAlpha);
         #endif
 
         material.metallic = 0.04;

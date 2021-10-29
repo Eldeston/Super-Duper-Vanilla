@@ -233,7 +233,7 @@ uniform sampler2D texture;
 
             // Metal blocks
             if(id == 10066){
-                material.smoothness = hsv.z;
+                material.smoothness = hsv.z * hsv.z;
                 material.metallic = 1.0;
             }
 

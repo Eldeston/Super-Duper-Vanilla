@@ -65,8 +65,3 @@
 		return vec3(0);
 	}
 #endif
-
-float getDiffuse(float NL, float ss){
-	// Light diffuse plus subsurface scattering
-	return (NL * (1.0 - ss) + ss) * (1.0 - newTwilight);
-}

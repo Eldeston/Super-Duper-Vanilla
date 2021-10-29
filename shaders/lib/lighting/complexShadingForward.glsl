@@ -15,17 +15,17 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 	#ifdef ENABLE_LIGHT
 		// Get positions
 		vec3 nLightPos = normalize(posVector.lightPos);
+		vec3 nNegEyePlayerPos = normalize(-posVector.eyePlayerPos);
 		float NL = saturate(dot(material.normal, nLightPos));
 		
-		float dirLight = getDiffuse(NL, material.ss);
+		// Simple SS approximation
+		float dirLight = mix(material.ss * (dot(nNegEyePlayerPos, -nLightPos) * 0.5 + 0.5), 1.0, NL) * (1.0 - newTwilight);
 
 		#if defined SHD_ENABLE && !defined ENTITIES_GLOWING
 			// Cave fix
 			float caveFixShdFactor = smoothstep(0.2, 0.4, material.light.y) * (1.0 - eyeBrightFact) + eyeBrightFact;
-			// Get direct light diffuse color
 			vec3 shdCol = getShdMapping(posVector.shdPos, dirLight, dither.r) * caveFixShdFactor;
 		#else
-			// Get direct light diffuse color
 			vec3 shdCol = vec3(smoothstep(0.94, 0.96, material.light.y));
 		#endif
 
@@ -33,7 +33,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 		totalDiffuse += (dirLight * shdCol * (1.0 - rainDiff) + material.light.y * material.ambient * rainDiff) * lightCol;
 
 		// Get specular GGX
-		if(dirLight > 0) specCol = getSpecBRDF(normalize(-posVector.eyePlayerPos), nLightPos, material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), NL, 1.0 - material.smoothness) * NL * shdCol;
+		if(NL > 0) specCol = getSpecBRDF(nNegEyePlayerPos, nLightPos, material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), NL, 1.0 - material.smoothness) * NL * shdCol;
 	#endif
 
 	totalDiffuse = material.albedo.rgb * (totalDiffuse + material.emissive);
