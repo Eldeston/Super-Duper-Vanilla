@@ -20,12 +20,12 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 // Enable if your world uses a specific world color that uses the vanilla fog color, overrides sky colors
 #define USE_VANILLA_FOGCOL (fogColor * 0.9 + 0.1)
 // Enable if your world uses a custom fog color with an input, overrides sky colors
-// #define USE_CUSTOM_FOGCOL fogColor
+// #define USE_CUSTOM_FOGCOL vec3(1)
 
 // Disable if your world has an undefined lighting environment like The End or the Nether
 // #define USE_SKY_LIGHTMAP
 // Sky light amount
-#define SKY_LIGHT_AMOUNT 0.5
+#define SKY_LIGHT_AMOUNT 0.6
 
 // Vertical density falloff, larger means less thick fog at high altitudes, but thicker fog in lower altitudes
 #define FOG_VERTICAL_DENSITY_FALLOFF 0.01
