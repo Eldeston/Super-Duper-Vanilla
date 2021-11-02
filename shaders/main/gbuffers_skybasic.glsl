@@ -9,12 +9,8 @@
 #endif
 
 #ifdef FRAGMENT
-    #include "/lib/globalVars/gameUniforms.glsl"
-    #include "/lib/globalVars/timeUniforms.glsl"
-    #include "/lib/globalVars/universalVars.glsl"
-
     void main(){
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(ambientLighting + skyCol, 1); //gcolor
+        gl_FragData[0] = vec4(0); //gcolor
     }
 #endif
