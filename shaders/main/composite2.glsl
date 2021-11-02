@@ -47,7 +47,7 @@ INOUT vec2 texcoord;
             eBloom += bloomTile(texcoord, vec2(0.135, 0.3325), 6.0 * BLOOM_LOD);
             eBloom += bloomTile(texcoord, vec2(0.160625, 0.3325), 7.0 * BLOOM_LOD);
         #else
-            vec3 eBloom = vec3(0);
+            vec3 eBloom = texture2D(colortex2, texcoord).rgb;
         #endif
 
     /* DRAWBUFFERS:2 */
