@@ -29,7 +29,7 @@ INOUT vec2 texcoord;
             eBloom += texture2D(colortex2, texcoord + vec2(0, pixelSize)).rgb * 0.25;
             eBloom += texture2D(colortex2, texcoord + vec2(0, pixelSize * 2.0)).rgb * 0.0625;
         #else
-            vec3 eBloom = texture2D(colortex2, texcoord).rgb;
+            vec3 eBloom = vec3(0);
         #endif
 
     /* DRAWBUFFERS:2 */

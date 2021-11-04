@@ -106,40 +106,33 @@ INOUT mat3 TBN;
         if(material.albedo.a > 0.00001){
             // If water
             if(rBlockId == 10034){
-                material.albedo.rgb *= WATER_BRIGHTNESS;
-
                 #ifdef WATER_NORM
                     #if !(defined END || defined NETHER)
                         vec4 waterData = H2NWater(posVector.worldPos.xz * (1.0 - TBN[2].y) + posVector.worldPos.xz * TBN[2].y);
                         material.normal = normalize(TBN * waterData.xyz);
 
-                        material.albedo.rgb *= cubed(1.128 - waterData.w);
+                        float waterNoise = cubed(1.128 - waterData.w) * WATER_BRIGHTNESS;
                     #endif
                 #else
                     #if !(defined END || defined NETHER)
                         vec2 waterUv = posVector.worldPos.xz * (1.0 - TBN[2].y) + posVector.worldPos.xz * TBN[2].y;
                         float waterWaves = getCellNoise(waterUv / WATER_TILE_SIZE);
-                        material.albedo.rgb *= cubed(0.128 + waterWaves);
+
+                        float waterNoise = cubed(0.128 + waterWaves) * WATER_BRIGHTNESS;
                     #endif
                 #endif
 
-                /* Water color and foam */
-                float waterDepth = distance(toView(posVector.screenPos.z), toView(texture2D(depthtex1, posVector.screenPos.xy).x));
+                // Water color and foam 
+                float waterDepth = toView(posVector.screenPos.z) - toView(texture2D(depthtex1, posVector.screenPos.xy).x);
 
                 if(isEyeInWater != 1){
-                    #if defined AUTO_GEN_NORM && DEFAULT_MAT != 2
-                        vec3 flatWater = texture2D(texture, mix(minTexCoord, maxTexCoord, texCoord)).rgb;
-                    #else
-                        vec3 flatWater = texture2D(texture, texCoord).rgb;
-                    #endif
-
                     #ifdef STYLIZED_WATER_ABSORPTION
-                        vec3 waterColor = exp(-waterDepth * vec3(1, 0.48, 0.24));
-                        material.albedo.rgb = material.albedo.rgb * (1.0 - waterColor) + flatWater * waterColor;
+                        float depthBrightness = exp(-waterDepth * 0.4);
+                        material.albedo.rgb = material.albedo.rgb * waterNoise * (1.0 - depthBrightness) + saturate(toneSaturation(material.albedo.rgb * 2.0, 2.0)) * depthBrightness;
                     #endif
 
-                    material.albedo.a = mix(sqrt(material.albedo.a), material.albedo.a * (1.0 - exp(-waterDepth * 0.8)), exp(-waterDepth * 0.04));
-                }
+                    material.albedo.a = mix(sqrt(material.albedo.a), material.albedo.a * (1.0 - exp(-waterDepth * 0.4)), exp(-waterDepth * 0.1));
+                } else material.albedo.rgb *= waterNoise;
 
                 #ifdef WATER_FOAM
                     float foam = min(1.0, exp(-(waterDepth - 0.128) * 10.0));

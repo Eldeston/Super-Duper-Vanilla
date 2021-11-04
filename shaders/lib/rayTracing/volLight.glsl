@@ -9,7 +9,6 @@ vec3 getGodRays(vec3 feetPlayerPos, float worldPosY, float dither){
 		float b = FOG_VERTICAL_DENSITY_FALLOFF;
 
 		float nPlayerPosY = normalize(feetPlayerPos).y;
-		float dist = length(feetPlayerPos);
 
 		#if !(defined VOL_LIGHT && defined SHD_ENABLE)
 			return vec3(atmoFog(nPlayerPosY, worldPosY, length(feetPlayerPos), c, b));
