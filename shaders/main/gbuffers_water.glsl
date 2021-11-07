@@ -117,19 +117,21 @@ INOUT mat3 TBN;
         if(material.albedo.a > 0.00001){
             // If water
             if(rBlockId == 10034){
+                float waterNoise = WATER_BRIGHTNESS;
+
                 #ifdef WATER_NORM
                     #if !(defined END || defined NETHER)
                         vec4 waterData = H2NWater(posVector.worldPos.xz * (1.0 - TBN[2].y) + posVector.worldPos.xz * TBN[2].y);
                         material.normal = normalize(TBN * waterData.xyz);
 
-                        float waterNoise = squared(0.128 + waterData.w) * WATER_BRIGHTNESS;
+                        waterNoise *= squared(0.128 + waterData.w);
                     #endif
                 #else
                     #if !(defined END || defined NETHER)
                         vec2 waterUv = posVector.worldPos.xz * (1.0 - TBN[2].y) + posVector.worldPos.xz * TBN[2].y;
                         float waterWaves = getCellNoise(waterUv / WATER_TILE_SIZE);
 
-                        float waterNoise = squared(0.128 + waterWaves) * WATER_BRIGHTNESS;
+                        waterNoise *= squared(0.128 + waterWaves);
                     #endif
                 #endif
 
