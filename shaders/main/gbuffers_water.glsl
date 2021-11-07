@@ -95,6 +95,7 @@ INOUT mat3 TBN;
 	    posVector.viewPos = toView(posVector.screenPos);
         posVector.eyePlayerPos = mat3(gbufferModelViewInverse) * posVector.viewPos;
         posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
+        posVector.worldPos = posVector.feetPlayerPos + cameraPosition;
 
         #ifdef END
 			posVector.lightPos = shadowLightPosition;

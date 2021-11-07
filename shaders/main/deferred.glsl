@@ -94,7 +94,6 @@ INOUT vec2 screenCoord;
     #include "/lib/lighting/complexShadingDeferred.glsl"
 
     #include "/lib/assemblers/PBRAssembler.glsl"
-    #include "/lib/assemblers/posAssembler.glsl"
 
     void main(){
         // Declare and get positions
