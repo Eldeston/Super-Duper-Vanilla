@@ -41,9 +41,9 @@ vec3 toRandPerFrame(vec3 rand){
 float getCellNoise(vec2 st){
     float animateTime = ANIMATION_SPEED * frameTimeCounter;
     float d0 = texPix2DBilinear(noisetex, st + animateTime * 0.02, vec2(256)).z;
-    float d1 = texPix2DBilinear(noisetex, st * 4.0 - animateTime * 0.08, vec2(256)).z;
+    float d1 = texPix2DBilinear(noisetex, st * 2.0 - animateTime * 0.08, vec2(256)).z;
 
-    return 1.0 - d0 * 0.9 + d1 * 0.1;
+    return d0 * 0.8 + d1 * 0.2;
 }
 
 float getCellNoise2(vec2 st){
@@ -63,5 +63,5 @@ vec4 H2NWater(vec2 st){
 	float dx = (d - getCellNoise(waterUv + vec2(waterPixel, 0))) / waterPixel;
 	float dy = (d - getCellNoise(waterUv + vec2(0, waterPixel))) / waterPixel;
     
-    return vec4(normalize(vec3(dx, dy, WATER_DEPTH_SIZE)), 1.0 - d);
+    return vec4(normalize(vec3(dx, dy, WATER_DEPTH_SIZE)), d);
 }

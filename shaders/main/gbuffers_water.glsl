@@ -122,14 +122,14 @@ INOUT mat3 TBN;
                         vec4 waterData = H2NWater(posVector.worldPos.xz * (1.0 - TBN[2].y) + posVector.worldPos.xz * TBN[2].y);
                         material.normal = normalize(TBN * waterData.xyz);
 
-                        float waterNoise = cubed(1.128 - waterData.w) * WATER_BRIGHTNESS;
+                        float waterNoise = squared(0.128 + waterData.w) * WATER_BRIGHTNESS;
                     #endif
                 #else
                     #if !(defined END || defined NETHER)
                         vec2 waterUv = posVector.worldPos.xz * (1.0 - TBN[2].y) + posVector.worldPos.xz * TBN[2].y;
                         float waterWaves = getCellNoise(waterUv / WATER_TILE_SIZE);
 
-                        float waterNoise = cubed(0.128 + waterWaves) * WATER_BRIGHTNESS;
+                        float waterNoise = squared(0.128 + waterWaves) * WATER_BRIGHTNESS;
                     #endif
                 #endif
 
@@ -138,11 +138,11 @@ INOUT mat3 TBN;
 
                 if(isEyeInWater != 1){
                     #ifdef STYLIZED_WATER_ABSORPTION
-                        float depthBrightness = exp(-waterDepth * 0.4);
-                        material.albedo.rgb = material.albedo.rgb * waterNoise * (1.0 - depthBrightness) + saturate(toneSaturation(material.albedo.rgb * 2.0, 2.0)) * depthBrightness;
+                        float depthBrightness = exp(-waterDepth * 0.32);
+                        material.albedo.rgb = mix(material.albedo.rgb * waterNoise, saturate(toneSaturation(material.albedo.rgb, 2.0) * 2.0), depthBrightness);
                     #endif
 
-                    material.albedo.a = mix(sqrt(material.albedo.a), material.albedo.a * (1.0 - exp(-waterDepth * 0.4)), exp(-waterDepth * 0.1));
+                    material.albedo.a = mix(sqrt(material.albedo.a), material.albedo.a * (1.0 - exp(-waterDepth * 0.32)), exp(-waterDepth * 0.128));
                 } else material.albedo.rgb *= waterNoise;
 
                 #ifdef WATER_FOAM
