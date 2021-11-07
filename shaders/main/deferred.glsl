@@ -100,7 +100,11 @@ INOUT vec2 screenCoord;
         // Declare and get positions
         positionVectors posVector;
         posVector.screenPos = toScreenSpacePos(screenCoord);
-	    getPosVectors(posVector);
+        posVector.clipPos = posVector.screenPos * 2.0 - 1.0;
+        posVector.viewPos = toView(posVector.screenPos);
+        posVector.eyePlayerPos = mat3(gbufferModelViewInverse) * posVector.viewPos;
+        posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
+        posVector.worldPos = posVector.feetPlayerPos + cameraPosition;
 
         vec3 sceneCol = texture2D(gcolor, posVector.screenPos.xy).rgb;
 
@@ -109,9 +113,10 @@ INOUT vec2 screenCoord;
 
         // Get sky color
         vec3 skyRender = getSkyRender(posVector.eyePlayerPos, true, skyMask, skyMask);
+
         // Vanilla sun and moon texture
         #if defined USE_SUN_MOON && defined VANILLA_SUN_MOON
-            if(skyMask) skyRender += texture2D(colortex2, posVector.screenPos.xy).rgb;
+            if(skyMask) skyRender += texture2D(colortex2, posVector.screenPos.xy).rgb * 2.0;
         #endif
 
         // If not sky, don't calculate lighting

@@ -104,7 +104,11 @@ INOUT vec2 screenCoord;
         // Declare and get positions
         positionVectors posVector;
         posVector.screenPos = toScreenSpacePos(screenCoord);
-	    getPosVectors(posVector);
+	    posVector.clipPos = posVector.screenPos * 2.0 - 1.0;
+        posVector.viewPos = toView(posVector.screenPos);
+        posVector.eyePlayerPos = mat3(gbufferModelViewInverse) * posVector.viewPos;
+        posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
+        posVector.worldPos = posVector.feetPlayerPos + cameraPosition;
 
         vec3 sceneCol = texture2D(gcolor, posVector.screenPos.xy).rgb;
 

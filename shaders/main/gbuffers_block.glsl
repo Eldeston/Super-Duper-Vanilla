@@ -82,14 +82,24 @@ INOUT mat3 TBN;
 
     #include "/lib/lighting/complexShadingForward.glsl"
 
-    #include "/lib/assemblers/posAssembler.glsl"
-
     void main(){
         // Declare and get positions
         positionVectors posVector;
         posVector.screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
-        vec3 dither = getRand3(posVector.screenPos.xy, 8);
-	    getPosVectors(posVector);
+        float dither = getRand1(posVector.screenPos.xy, 8);
+	    posVector.viewPos = toView(posVector.screenPos);
+        posVector.eyePlayerPos = mat3(gbufferModelViewInverse) * posVector.viewPos;
+        posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
+
+        #ifdef END
+			posVector.lightPos = shadowLightPosition;
+		#else
+			posVector.lightPos = mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz;
+		#endif
+	
+		#ifdef SHD_ENABLE
+			posVector.shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * posVector.feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz;
+		#endif
 
 	    // Declare materials
 	    matPBR material;

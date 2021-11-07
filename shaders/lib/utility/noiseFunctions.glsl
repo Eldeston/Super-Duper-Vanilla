@@ -9,6 +9,15 @@ vec4 getRandTex(vec2 st, int tile){
 	return texture2D(noisetex, st * tile);
 }
 
+float getRand1(vec2 st, int tile){
+    return fract(texture2D(noisetex, st * tile).x * 4.0);
+}
+
+vec2 getRand2(vec2 st, int tile){
+    st *= tile;
+    return fract(vec2(texture2D(noisetex, st).x, texture2D(noisetex, vec2(-st.x, st.y)).x) * 4.0);
+}
+
 vec3 getRand3(vec2 st, int tile){
     st *= tile;
     return fract(vec3(texture2D(noisetex, st).x, texture2D(noisetex, vec2(-st.x, st.y)).x, texture2D(noisetex, -st).x) * 4.0);

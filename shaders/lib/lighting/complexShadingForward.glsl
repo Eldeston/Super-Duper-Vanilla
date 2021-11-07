@@ -1,4 +1,4 @@
-vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dither){
+vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, float dither){
 	#ifdef USE_SKY_LIGHTMAP
 		material.light.y *= SKY_LIGHT_AMOUNT;
 	#else
@@ -24,7 +24,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, vec3 dit
 		#if defined SHD_ENABLE && !defined ENTITIES_GLOWING
 			// Cave fix
 			float caveFixShdFactor = smoothstep(0.2, 0.4, material.light.y) * (1.0 - eyeBrightFact) + eyeBrightFact;
-			vec3 shdCol = getShdMapping(posVector.shdPos, dirLight, dither.r) * caveFixShdFactor;
+			vec3 shdCol = getShdMapping(posVector.shdPos, dirLight, dither) * caveFixShdFactor;
 		#else
 			vec3 shdCol = vec3(smoothstep(0.94, 0.96, material.light.y));
 		#endif
