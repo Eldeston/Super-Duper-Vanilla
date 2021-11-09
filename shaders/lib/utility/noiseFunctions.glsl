@@ -56,7 +56,7 @@ float getCellNoise2(vec2 st){
 
 // Convert height map of water to a normal map
 vec4 H2NWater(vec2 st){
-    float waterPixel = WATER_BLUR_SIZE / noiseTextureResolution;
+    float waterPixel = WATER_BLUR_SIZE / 256;
 	vec2 waterUv = st / WATER_TILE_SIZE;
 
 	float d = getCellNoise(waterUv);
