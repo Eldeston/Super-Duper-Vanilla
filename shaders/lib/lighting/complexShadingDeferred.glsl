@@ -10,14 +10,11 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
 	#endif
 	
 	// If smoothness is 0, don't do reflections
-	vec3 reflectCol = vec3(0);
-	vec3 fresnel = vec3(0);
-
-	bool isMetal = material.metallic > 0.9;
-
 	if(material.smoothness > 0.0){
+		bool isMetal = material.metallic > 0.9;
+
 		// Get fresnel
-		fresnel = getFresnelSchlick(max(dot(material.normal, normalize(-posVector.eyePlayerPos)), 0.0),
+		vec3 fresnel = getFresnelSchlick(max(dot(material.normal, normalize(-posVector.eyePlayerPos)), 0.0),
 			isMetal ? material.albedo.rgb : vec3(material.metallic)) * material.smoothness;
 
 		// Get SSR
@@ -29,14 +26,16 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
 				vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.clipPos, gBMVNorm);
 			#endif
 
-			reflectCol = ambientLighting + getSkyRender(reflect(posVector.eyePlayerPos, material.normal), true) * eyeBrightFact;
+			vec3 reflectCol = ambientLighting + getSkyRender(reflect(posVector.eyePlayerPos, material.normal), true) * eyeBrightFact;
 			reflectCol = mix(reflectCol, SSRCol.rgb, SSRCol.a);
 		#else
-			reflectCol = ambientLighting + getSkyRender(reflect(posVector.eyePlayerPos, material.normal), true) * eyeBrightFact;
+			vec3 reflectCol = ambientLighting + getSkyRender(reflect(posVector.eyePlayerPos, material.normal), true) * eyeBrightFact;
 		#endif
+
+		// Simplified and modified version of BSL's reflection PBR calculation
+		sceneCol *= 1.0 - (isMetal ? vec3(material.smoothness) : fresnel) * (1.0 - material.emissive);
+		sceneCol += reflectCol * fresnel;
 	}
 
-	// Simplified and modified version of BSL's reflection PBR calculation
-	sceneCol *= 1.0 - (isMetal ? vec3(material.smoothness) : fresnel) * (1.0 - material.emissive);
-	return sceneCol + reflectCol * fresnel;
+	return sceneCol;
 }

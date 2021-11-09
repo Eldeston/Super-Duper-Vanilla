@@ -66,7 +66,6 @@ INOUT mat3 TBN;
         // Declare and get positions
         positionVectors posVector;
         posVector.screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
-        float dither = getRand1(posVector.screenPos.xy, 8);
 	    posVector.viewPos = toView(posVector.screenPos);
         posVector.eyePlayerPos = mat3(gbufferModelViewInverse) * posVector.viewPos;
         posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
@@ -100,7 +99,7 @@ INOUT mat3 TBN;
             material.ambient *= glcolor.a;
             material.light = lmCoord;
 
-            sceneCol = complexShadingGbuffers(material, posVector, dither);
+            sceneCol = complexShadingGbuffers(material, posVector, getRand1(posVector.screenPos.xy, 8));
         } else discard;
 
     /* DRAWBUFFERS:0123 */

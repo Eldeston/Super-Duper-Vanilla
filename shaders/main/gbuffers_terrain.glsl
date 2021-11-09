@@ -88,7 +88,6 @@ INOUT mat3 TBN;
         // Declare and get positions
         positionVectors posVector;
         posVector.screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
-        float dither = getRand1(posVector.screenPos.xy, 8);
 	    posVector.viewPos = toView(posVector.screenPos);
         posVector.eyePlayerPos = mat3(gbufferModelViewInverse) * posVector.viewPos;
         posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
@@ -116,7 +115,7 @@ INOUT mat3 TBN;
                 vec2 lavaUv = posVector.worldPos.xz * (1.0 - TBN[2].y) + posVector.worldPos.xz * TBN[2].y;
                 lavaUv = floor(lavaUv * 16.0) / 16.0;
                 float lavaWaves = getCellNoise2(lavaUv / LAVA_TILE_SIZE);
-                material.albedo.rgb = floor(material.albedo.rgb * LAVA_BRIGHTNESS * lavaWaves * lavaWaves * 32.0) / 32.0;
+                material.albedo.rgb = floor(material.albedo.rgb * (LAVA_BRIGHTNESS * lavaWaves * lavaWaves * 32.0)) / 32.0;
             }
 
             material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
@@ -129,7 +128,7 @@ INOUT mat3 TBN;
                 enviroPBR(material, posVector, TBN[2]);
             #endif
 
-            sceneCol = complexShadingGbuffers(material, posVector, dither);
+            sceneCol = complexShadingGbuffers(material, posVector, getRand1(posVector.screenPos.xy, 8));
         } else discard;
 
     /* DRAWBUFFERS:0123 */

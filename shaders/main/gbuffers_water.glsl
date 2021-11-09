@@ -77,7 +77,6 @@ INOUT mat3 TBN;
     #include "/lib/utility/texFunctions.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
 
-    #include "/lib/atmospherics/fog.glsl"
     #include "/lib/atmospherics/sky.glsl"
 
     #include "/lib/lighting/shdMapping.glsl"
@@ -91,7 +90,6 @@ INOUT mat3 TBN;
         // Declare and get positions
         positionVectors posVector;
         posVector.screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
-        float dither = getRand1(posVector.screenPos.xy, 8);
 	    posVector.viewPos = toView(posVector.screenPos);
         posVector.eyePlayerPos = mat3(gbufferModelViewInverse) * posVector.viewPos;
         posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
@@ -142,9 +140,8 @@ INOUT mat3 TBN;
                     #ifdef STYLIZED_WATER_ABSORPTION
                         float depthBrightness = exp(-waterDepth * 0.32);
                         material.albedo.rgb = mix(material.albedo.rgb * waterNoise, saturate(toneSaturation(material.albedo.rgb, 2.0) * 2.0), depthBrightness);
+                        material.albedo.a *= 1.0 - depthBrightness;
                     #endif
-
-                    material.albedo.a = mix(sqrt(material.albedo.a), material.albedo.a * (1.0 - exp(-waterDepth * 0.32)), exp(-waterDepth * 0.128));
                 } else material.albedo.rgb *= waterNoise;
 
                 #ifdef WATER_FOAM
@@ -163,7 +160,7 @@ INOUT mat3 TBN;
                 if(rBlockId != 10034) enviroPBR(material, posVector, TBN[2]);
             #endif
 
-            sceneCol = complexShadingGbuffers(material, posVector, dither);
+            sceneCol = complexShadingGbuffers(material, posVector, getRand1(posVector.screenPos.xy, 8));
         } else discard;
 
     /* DRAWBUFFERS:0123 */

@@ -2,6 +2,8 @@
 #ifdef SHD_ENABLE
 #endif
 
+const float sunPathRotation = 0.0; // Light angle [-60.0 -55.0 -50.0 -45.0 -40.0 -35.0 -30.0 -25.0 -20.0 -15.0 -10.0 -5.0 0.0 5.0 10.0 15.0 20.0 25.0 30.0 35.0 40.0 45.0 50.0 55.0 60.0]
+
 #if defined SHD_ENABLE && !defined ENTITIES_GLOWING
 	// Enable mipmap filtering on shadows
 	const bool shadowHardwareFiltering = true;
@@ -9,7 +11,6 @@
 
 	// Shadow bias
 	const float shdBias = 0.025; // Don't go below the default value otherwise it'll mess up lighting
-	const float sunPathRotation = 0.0; // Light angle [-60.0 -55.0 -50.0 -45.0 -40.0 -35.0 -30.0 -25.0 -20.0 -15.0 -10.0 -5.0 0.0 5.0 10.0 15.0 20.0 25.0 30.0 35.0 40.0 45.0 50.0 55.0 60.0]
 
 	// Shadow opaque
 	uniform sampler2DShadow shadowtex0;
