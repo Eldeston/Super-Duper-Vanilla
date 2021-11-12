@@ -68,10 +68,10 @@ uniform sampler2D texture;
                 if(id == 10017) material.emissive = 1.0;
 
                 // If water
-                if(id == 10034) material.smoothness = 0.96;
+                else if(id == 10034) material.smoothness = 0.96;
 
                 // End portal
-                if(id == 10100){
+                else if(id == 10100){
                     vec3 d0 = texture2D(texture, posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.01)).rgb;
                     vec3 d1 = texture2D(texture, posVector.screenPos.yx * 1.25 + vec2(0, frameTimeCounter * 0.01)).rgb;
                     material.albedo = vec4(d0 + d1 + 0.05, 1);
@@ -81,7 +81,7 @@ uniform sampler2D texture;
                 }
                 
                 // Nether portal
-                if(id == 10101){
+                else if(id == 10101){
                     material.smoothness = 0.96;
                     material.emissive = maxC(material.albedo.rgb);
                 }
@@ -110,16 +110,13 @@ uniform sampler2D texture;
             // Assign albedo
             material.albedo = texture2D(texture, mix(minTexCoord, maxTexCoord, st));
 
-            // Square distance to center of the block
-            float distCenter = max2(st - 0.5);
-
             // Don't generate normals if it's on the edge of the texture
-            if(distCenter < 0.5 - 0.0125){
+            if(max2(st - 0.5) < 0.5 - 0.0125 && length(posVector.viewPos) < 16.0){
                 float d = getLuminance(material.albedo.rgb);
                 float dx = d - getLuminance(texture2D(texture, mix(minTexCoord, maxTexCoord, (st + vec2(0.0125, 0)))).rgb);
                 float dy = d - getLuminance(texture2D(texture, mix(minTexCoord, maxTexCoord, (st + vec2(0, 0.0125)))).rgb);
 
-                material.normal = normalize(TBN * normalize(vec3(dx, dy, 0.128)));
+                material.normal = normalize(TBN * normalize(vec3(vec2(dx, dy) / 0.125, 1)));
             }
         #else
             // Assign albedo
@@ -142,10 +139,10 @@ uniform sampler2D texture;
                 if(id == 10017) material.emissive = 1.0;
 
                 // If water
-                if(id == 10034) material.smoothness = 0.96;
+                else if(id == 10034) material.smoothness = 0.96;
 
                 // End portal
-                if(id == 10100){
+                else if(id == 10100){
                     vec3 d0 = texture2D(texture, posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.01)).rgb;
                     vec3 d1 = texture2D(texture, posVector.screenPos.yx * 1.25 + vec2(0, frameTimeCounter * 0.01)).rgb;
                     material.albedo = vec4(d0 + d1 + 0.05, 1);
@@ -155,7 +152,7 @@ uniform sampler2D texture;
                 }
                 
                 // Nether portal
-                if(id == 10101){
+                else if(id == 10101){
                     material.smoothness = 0.96;
                     material.emissive = maxC(material.albedo.rgb);
                 }
@@ -176,84 +173,84 @@ uniform sampler2D texture;
                 if((id >= 10000 && id <= 10008) || id == 10013) material.ss = 0.8;
 
                 // Glow berries
-                if(id == 10012){
+                else if(id == 10012){
                     material.ss = 0.8;
                     material.emissive = max2(material.albedo.rg) > 0.8 ? 0.72 : material.emissive;
                 }
 
                 // Stems
-                if(id == 10009) material.emissive = material.albedo.r < 0.1 ? hsv.z * 0.72 : material.emissive;
-                if(id == 10010) material.emissive = material.albedo.b < 0.16 && material.albedo.r > 0.4 ? hsv.z * 0.72 : material.emissive;
+                else if(id == 10009) material.emissive = material.albedo.r < 0.1 ? hsv.z * 0.72 : material.emissive;
+                else if(id == 10010) material.emissive = material.albedo.b < 0.16 && material.albedo.r > 0.4 ? hsv.z * 0.72 : material.emissive;
 
                 // Fungus
-                if(id == 10011) material.emissive = max2(material.albedo.rg) > 0.8 ? 0.72 : material.emissive;
+                else if(id == 10011) material.emissive = max2(material.albedo.rg) > 0.8 ? 0.72 : material.emissive;
 
                 // Emissives
-                if(id == 10016 || id == 10017) material.emissive = smoothstep(0.6, 0.8, hsv.z);
+                else if(id == 10016 || id == 10017) material.emissive = smoothstep(0.6, 0.8, hsv.z);
 
                 // Redstone
-                if(id == 10018 || id == 10068){
+                else if(id == 10018 || id == 10068){
                     material.emissive = cubed(material.albedo.r) * hsv.y;
                     material.smoothness = material.emissive;
                     material.metallic = step(0.8, material.emissive);
                 }
 
                 // Glass and ice
-                if(id == 10032 || id == 10033) material.smoothness = 0.96;
+                else if(id == 10032 || id == 10033) material.smoothness = 0.96;
 
                 // Slime and honey
-                if(id == 10035) material.smoothness = 0.96;
+                else if(id == 10035) material.smoothness = 0.96;
 
                 // Gem ores
-                if(id == 10048){
+                else if(id == 10048){
                     material.smoothness = hsv.y > 0.128 ? 0.93 : material.smoothness;
                     material.metallic = hsv.y > 0.128 ? 0.17 : material.metallic;
                 }
 
                 // Gem blocks
-                if(id == 10050){
+                else if(id == 10050){
                     material.smoothness = 0.96;
                     material.metallic = 0.17;
                 }
 
                 // Netherack gem ores
-                if(id == 10049){
+                else if(id == 10049){
                     material.smoothness = hsv.y < 0.256 ? 0.93 : material.smoothness;
                     material.metallic = hsv.y < 0.256 ? 0.17 : material.metallic;
                 }
 
                 // Metal ores
-                if(id == 10064){
+                else if(id == 10064){
                     material.smoothness = hsv.y > 0.128 ? 0.93 : material.smoothness;
                     material.metallic = hsv.y > 0.128 ? 1.0 : material.metallic;
                 }
 
                 // Netherack metal ores
-                if(id == 10065){
+                else if(id == 10065){
                     material.smoothness = max2(material.albedo.rg) > 0.6 ? 0.93 : material.smoothness;
                     material.metallic = max2(material.albedo.rg) > 0.6 ? 1.0 : material.metallic;
                 }
 
                 // Metal blocks
-                if(id == 10066){
+                else if(id == 10066){
                     material.smoothness = hsv.z * hsv.z;
                     material.metallic = 1.0;
                 }
 
                 // Dark metals
-                if(id == 10067){
+                else if(id == 10067){
                     material.smoothness = sumCol;
                     material.metallic = 1.0;
                 }
 
                 // Rails
-                if(id == 10068){
+                else if(id == 10068){
                     material.smoothness = hsv.y < 0.128 ? 0.96 : material.smoothness;
                     material.metallic = hsv.y < 0.128 ? 1.0 : material.metallic;
                 }
 
                 // Polished blocks
-                if(id == 10080) material.smoothness = sumCol;
+                else if(id == 10080) material.smoothness = sumCol;
             #endif
 
             material.smoothness = min(material.smoothness, 0.96);
