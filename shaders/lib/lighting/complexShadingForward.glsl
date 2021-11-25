@@ -7,10 +7,8 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, float di
 
 	vec3 specCol = vec3(0);
 
-	// Get sky global illumination
-	vec3 skyGI = getSkyRender(material.normal, false) * material.light.y * material.light.y;
-	// Get lightmaps and add sky GI
-	vec3 totalDiffuse = (skyGI + ambientLighting + cubed(material.light.x) * BLOCK_LIGHT_COL) * smoothen(material.ambient);
+	// Get lightmaps and add simple sky GI
+	vec3 totalDiffuse = (skyCol * material.light.y * material.light.y + ambientLighting + cubed(material.light.x) * BLOCK_LIGHT_COL) * smoothen(material.ambient);
 
 	#ifdef ENABLE_LIGHT
 		// Get positions

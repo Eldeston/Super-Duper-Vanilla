@@ -43,8 +43,6 @@ INOUT vec4 glcolor;
     #include "/lib/utility/texFunctions.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
 
-    #include "/lib/atmospherics/sky.glsl"
-
     #include "/lib/lighting/shdMapping.glsl"
     #include "/lib/lighting/GGX.glsl"
 
