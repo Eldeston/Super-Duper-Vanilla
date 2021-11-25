@@ -47,6 +47,7 @@ INOUT vec4 glcolor;
     #include "/lib/lighting/GGX.glsl"
 
     #include "/lib/lighting/complexShadingForward.glsl"
+    
     void main(){
         // Declare and get positions
         positionVectors posVector;
