@@ -15,12 +15,6 @@ float genStar(vec2 nSkyPos){
 vec3 getSkyColor(vec3 nSkyPos, vec3 nPlayerPos, bool skyDiffuseMask){
     if(isEyeInWater == 2) return pow(fogColor, vec3(GAMMA));
 
-    #if defined USE_HORIZON_COL || defined USE_SUN_MOON
-        #ifdef USE_SUN_MOON
-            float horizon = smoothstep(-0.128, 0.128, nPlayerPos.y);
-        #endif
-    #endif
-
     #ifdef SKY_GROUND_COL
         float c = FOG_TOTAL_DENSITY_FALLOFF * (1.0 + isEyeInWater * 2.5 + rainStrength) * PI2;
         float skyPlaneFog = nPlayerPos.y < 0.0 ? 1.0 - exp(length(nPlayerPos.xz) * c / nPlayerPos.y) : 1.0;
@@ -30,7 +24,7 @@ vec3 getSkyColor(vec3 nSkyPos, vec3 nPlayerPos, bool skyDiffuseMask){
     #endif
 
     #ifdef USE_HORIZON_COL
-        finalCol += USE_HORIZON_COL * squared(saturate(1.0 - abs(nPlayerPos.y)));
+        finalCol += USE_HORIZON_COL * squared(1.0 - abs(nPlayerPos.y));
     #endif
 
     if(isEyeInWater == 1){
@@ -40,8 +34,8 @@ vec3 getSkyColor(vec3 nSkyPos, vec3 nPlayerPos, bool skyDiffuseMask){
 
     #ifdef USE_SUN_MOON
         if(skyDiffuseMask){
-            float lightRange = smoothen(-nSkyPos.z * 0.56) * saturate(1.0 - nPlayerPos.y * nPlayerPos.y) * (1.0 - newTwilight);
-            finalCol += lightCol * (lightRange * horizon);
+            float lightRange = smoothen(-nSkyPos.z * 0.56) * (1.0 - nPlayerPos.y * nPlayerPos.y) * (1.0 - newTwilight);
+            finalCol += lightCol * lightRange;
         }
     #endif
 
