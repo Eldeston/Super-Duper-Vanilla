@@ -21,7 +21,7 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 #define USE_VANILLA_FOGCOL (fogColor * 0.9 + 0.1)
 // Enable if your world uses a custom fog color with an input, overrides sky colors
 // #define USE_CUSTOM_FOGCOL vec3(1)
-// Enable sky ground with adjustable color
+// Enable sky ground with adjustable albedo color
 // #define SKY_GROUND_COL vec3(0.128)
 
 // Disable if your world has an undefined lighting environment like The End or the Nether
