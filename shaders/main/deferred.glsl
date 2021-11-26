@@ -115,7 +115,7 @@ INOUT vec2 screenCoord;
 
         // Vanilla sun and moon texture
         #if defined USE_SUN_MOON && defined VANILLA_SUN_MOON
-            if(skyMask) skyRender += texture2D(colortex2, posVector.screenPos.xy).rgb * PI;
+            if(skyMask) skyRender += texture2D(colortex2, posVector.screenPos.xy).rgb * 2.0;
         #endif
 
         // If not sky, don't calculate lighting

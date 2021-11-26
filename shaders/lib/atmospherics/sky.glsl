@@ -53,7 +53,7 @@ vec3 getSkyRender(vec3 playerPos, bool skyDiffuseMask, bool skyMask, bool sunMoo
     vec3 finalCol = getSkyColor(nSkyPos, nPlayerPos, skyDiffuseMask);
 
     #if defined USE_SUN_MOON && !defined VANILLA_SUN_MOON
-        if(sunMoonMask) finalCol += getSunMoonShape(nSkyPos.xy) * PI;
+        if(sunMoonMask) finalCol += getSunMoonShape(nSkyPos.xy) * 2.0;
     #endif
 
     #ifdef USE_STARS_COL
