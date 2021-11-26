@@ -36,7 +36,6 @@ const float sunPathRotation = 0.0; // Light angle [-60.0 -55.0 -50.0 -45.0 -40.0
 	}
 
 	vec3 getShdFilter(vec3 shdPos, float dither, float shdRcp){
-		dither *= PI2;
 		vec2 randVec = vec2(sin(dither), cos(dither)) * shdRcp;
 		
 		vec3 shdCol = getShdTex(vec3(shdPos.xy + randVec, shdPos.z));
@@ -56,7 +55,7 @@ const float sunPathRotation = 0.0; // Light angle [-60.0 -55.0 -50.0 -45.0 -40.0
 			shdPos.z -= (shdBias + 0.128 * shdRcp) * (distortFactor * distortFactor) / dirLight;
 
 			#ifdef SHADOW_FILTER
-				return getShdFilter(shdPos.xyz, dither, shdRcp);
+				return getShdFilter(shdPos.xyz, dither * PI2, shdRcp);
 			#else
 				return getShdTex(shdPos.xyz);
 			#endif

@@ -96,8 +96,6 @@ INOUT vec2 screenCoord;
     #include "/lib/rayTracing/volLight.glsl"
 
     #include "/lib/lighting/complexShadingDeferred.glsl"
-
-    #include "/lib/assemblers/PBRAssembler.glsl"
     
     void main(){
         // Declare and get positions
@@ -109,29 +107,33 @@ INOUT vec2 screenCoord;
         posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
         posVector.worldPos = posVector.feetPlayerPos + cameraPosition;
 
-        vec3 sceneCol = texture2D(gcolor, posVector.screenPos.xy).rgb;
+        vec3 sceneCol = texture2D(gcolor, screenCoord).rgb;
 
         #ifdef TEMPORAL_ACCUMULATION
-            vec3 dither = toRandPerFrame(getRand3(posVector.screenPos.xy, 8));
+            vec3 dither = toRandPerFrame(getRand3(screenCoord, 8));
         #else
-            vec3 dither = getRand3(posVector.screenPos.xy, 8);
+            vec3 dither = getRand3(screenCoord, 8);
         #endif
 
         #ifdef PREVIOUS_FRAME
             // Get previous frame buffer
-            vec3 reflectBuffer = 1.0 / (1.0 - texture2D(colortex5, posVector.screenPos.xy).rgb) - 1.0;
+            vec3 reflectBuffer = 1.0 / (1.0 - texture2D(colortex5, screenCoord).rgb) - 1.0;
         #endif
 
-        vec2 masks4 = texture2D(colortex4, posVector.screenPos.xy).xy;
+        vec2 masks4 = texture2D(colortex4, screenCoord).xy;
         bool skyMask = posVector.screenPos.z == 1;
 
         // If not sky, don't calculate lighting
         if(!skyMask){
             // If the object is transparent render lighting sperately
-            if(posVector.viewPos.z - toView(texture2D(depthtex1, posVector.screenPos.xy).r) > 0.01){
+            if(posVector.viewPos.z - toView(texture2D(depthtex1, screenCoord).r) > 0.01){
                 // Declare and get materials
                 matPBR material;
-                getPBR(material, posVector.screenPos.xy);
+                material.albedo = texture2D(colortex2, screenCoord);
+                material.normal = texture2D(colortex1, screenCoord).rgb * 2.0 - 1.0;
+
+                vec3 matRaw0 = texture2D(colortex3, screenCoord).xyz;
+                material.metallic = matRaw0.x; material.emissive = matRaw0.y; material.smoothness = matRaw0.z;
 
                 // Get cloud mask
                 bool cloudMask = masks4.y != 0;

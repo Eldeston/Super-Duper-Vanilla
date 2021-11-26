@@ -2,7 +2,6 @@
 #include "/lib/structs.glsl"
 #include "/lib/settings.glsl"
 
-INOUT vec2 lmCoord;
 INOUT vec2 texCoord;
 
 INOUT vec3 norm;
@@ -18,7 +17,6 @@ INOUT vec4 glcolor;
         vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
 
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
-        lmCoord  = (gl_TextureMatrix[1] * gl_MultiTexCoord1).xy;
 
 	    norm = normalize(mat3(gbufferModelViewInverse) * (gl_NormalMatrix * gl_Normal));
         
