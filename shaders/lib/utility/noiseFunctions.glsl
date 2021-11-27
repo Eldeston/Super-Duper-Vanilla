@@ -40,8 +40,8 @@ vec3 toRandPerFrame(vec3 rand){
 
 float getCellNoise(vec2 st){
     float animateTime = ANIMATION_SPEED * frameTimeCounter;
-    float d0 = texPix2DBilinear(noisetex, st + animateTime * 0.03, vec2(noiseTextureResolution)).z;
-    float d1 = texPix2DBilinear(noisetex, st - animateTime * 0.06, vec2(noiseTextureResolution)).z;
+    float d0 = texPix2DBilinear(noisetex, st + animateTime * 0.032, vec2(noiseTextureResolution)).z;
+    float d1 = texPix2DBilinear(noisetex, st - animateTime * 0.064, vec2(noiseTextureResolution)).z;
 
     return (d0 + d1) * 0.5;
 }
