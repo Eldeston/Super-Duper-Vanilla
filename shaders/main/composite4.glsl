@@ -26,9 +26,19 @@ INOUT vec2 texcoord;
 
     uniform sampler2D colortex4;
     
-    #include "/lib/globalVars/screenUniforms.glsl"
-    #include "/lib/globalVars/timeUniforms.glsl"
-    #include "/lib/globalVars/gameUniforms.glsl"
+    /* Screen resolutions */
+    uniform float viewWidth;
+    uniform float viewHeight;
+
+    // Get frame time
+    uniform float frameTime;
+
+    uniform int isEyeInWater;
+
+    uniform float nightVision;
+    uniform float rainStrength;
+
+    uniform ivec2 eyeBrightnessSmooth;
 
     #ifdef TEMPORAL_ACCUMULATION
         uniform sampler2D depthtex0;
@@ -53,6 +63,12 @@ INOUT vec2 texcoord;
     #endif
 
     #if AUTO_EXPOSURE == 1
+        // Get world time
+        uniform float day;
+        uniform float night;
+        uniform float dawnDusk;
+        uniform float twilight;
+
         #include "/lib/globalVars/universalVars.glsl"
     #endif
 

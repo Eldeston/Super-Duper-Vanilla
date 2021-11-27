@@ -28,11 +28,13 @@ INOUT vec2 texcoord;
 
     uniform ivec2 eyeBrightnessSmooth;
 
-    #include "/lib/globalVars/timeUniforms.glsl"
+    uniform float day;
+    uniform float dawnDusk;
+    uniform float twilight;
+
     #include "/lib/globalVars/universalVars.glsl"
 
     #include "/lib/utility/texFunctions.glsl"
-    #include "/lib/utility/noiseFunctions.glsl"
 
     void main(){
         vec3 sceneCol = texture2D(gcolor, texcoord).rgb;
