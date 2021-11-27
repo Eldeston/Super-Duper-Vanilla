@@ -17,11 +17,17 @@ INOUT vec2 texcoord;
     uniform sampler2D gcolor;
     uniform sampler2D colortex4;
 
-    #if BLOOM == 1
+    #if BLOOM != 0
         uniform sampler2D colortex3;
     #endif
 
-    #include "/lib/globalVars/gameUniforms.glsl"
+    uniform int isEyeInWater;
+
+    uniform float nightVision;
+    uniform float rainStrength;
+
+    uniform ivec2 eyeBrightnessSmooth;
+
     #include "/lib/globalVars/timeUniforms.glsl"
     #include "/lib/globalVars/universalVars.glsl"
 
@@ -34,7 +40,7 @@ INOUT vec2 texcoord;
         #if BLOOM == 1
             vec3 bloomCol = sceneCol * texture2D(colortex3, texcoord).g;
         #elif BLOOM == 2
-            vec3 bloomCol = sceneCol;
+            vec3 bloomCol = sceneCol * (1.0 + texture2D(colortex3, texcoord).g * 4.0);
         #endif
 
         float fogMult = min(1.0, FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater * 0.32 + rainStrength)) * (1.0 - newTwilight);
