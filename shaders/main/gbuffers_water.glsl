@@ -100,6 +100,8 @@ INOUT mat3 TBN;
     uniform float viewWidth;
     uniform float viewHeight;
 
+    uniform vec3 fogColor;
+
     #include "/lib/universalVars.glsl"
 
     uniform sampler2D depthtex1;

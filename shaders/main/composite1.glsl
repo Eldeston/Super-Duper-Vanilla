@@ -32,6 +32,8 @@ INOUT vec2 texcoord;
     uniform float dawnDusk;
     uniform float twilight;
 
+    uniform vec3 fogColor;
+
     #include "/lib/universalVars.glsl"
 
     #include "/lib/utility/texFunctions.glsl"

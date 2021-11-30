@@ -67,6 +67,8 @@ INOUT vec4 glcolor;
 
     uniform ivec2 eyeBrightnessSmooth;
 
+    uniform vec3 fogColor;
+
     #include "/lib/universalVars.glsl"
 
     #include "/lib/lighting/shdDistort.glsl"

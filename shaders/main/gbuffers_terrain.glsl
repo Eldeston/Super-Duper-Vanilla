@@ -99,6 +99,8 @@ INOUT mat3 TBN;
     /* Screen resolutions */
     uniform float viewWidth;
     uniform float viewHeight;
+    
+    uniform vec3 fogColor;
 
     #include "/lib/universalVars.glsl"
 

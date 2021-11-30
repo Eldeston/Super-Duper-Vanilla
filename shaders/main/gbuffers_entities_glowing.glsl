@@ -79,6 +79,8 @@ INOUT mat3 TBN;
 
     uniform ivec2 eyeBrightnessSmooth;
 
+    uniform vec3 fogColor;
+
     #include "/lib/universalVars.glsl"
 
     uniform vec4 entityColor;
