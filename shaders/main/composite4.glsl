@@ -65,11 +65,10 @@ INOUT vec2 texcoord;
     #if AUTO_EXPOSURE == 1
         // Get world time
         uniform float day;
-        uniform float night;
         uniform float dawnDusk;
         uniform float twilight;
 
-        #include "/lib/globalVars/universalVars.glsl"
+        #include "/lib/universalVars.glsl"
     #endif
 
     #ifdef TEMPORAL_ACCUMULATION

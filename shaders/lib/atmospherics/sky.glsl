@@ -60,7 +60,7 @@ vec3 getSkyRender(vec3 playerPos, bool skyDiffuseMask, bool skyMask, bool sunMoo
         if(skyMask){
             // Stars
             vec2 starPos = 0.5 > abs(nSkyPos.y) ? vec2(atan(nSkyPos.x, nSkyPos.z), nSkyPos.y) * 0.25 : nSkyPos.xz * 0.333;
-            finalCol = max(finalCol, USE_STARS_COL * genStar(starPos * 0.128));
+            finalCol += USE_STARS_COL * (genStar(starPos * 0.128) * (1.0 - day));
         }
     #endif
 

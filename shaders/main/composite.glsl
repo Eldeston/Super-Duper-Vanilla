@@ -78,7 +78,7 @@ INOUT vec2 screenCoord;
 
     uniform vec3 fogColor;
 
-    #include "/lib/globalVars/universalVars.glsl"
+    #include "/lib/universalVars.glsl"
 
     #include "/lib/lighting/shdDistort.glsl"
     #include "/lib/utility/spaceConvert.glsl"

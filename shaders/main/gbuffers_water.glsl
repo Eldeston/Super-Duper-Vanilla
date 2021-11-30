@@ -2,8 +2,20 @@
 #include "/lib/structs.glsl"
 #include "/lib/settings.glsl"
 
-#include "/lib/globalVars/gameUniforms.glsl"
-#include "/lib/globalVars/timeUniforms.glsl"
+uniform int isEyeInWater;
+
+uniform float nightVision;
+uniform float rainStrength;
+
+uniform ivec2 eyeBrightnessSmooth;
+
+// Get frame time
+uniform float frameTimeCounter;
+
+// Get world time
+uniform float day;
+uniform float dawnDusk;
+uniform float twilight;
 
 INOUT float blockId;
 
@@ -65,10 +77,30 @@ INOUT mat3 TBN;
 #endif
 
 #ifdef FRAGMENT
-    #include "/lib/globalVars/matUniforms.glsl"
-    #include "/lib/globalVars/posUniforms.glsl"
-    #include "/lib/globalVars/screenUniforms.glsl"
-    #include "/lib/globalVars/universalVars.glsl"
+    // View matrix uniforms
+    uniform mat4 gbufferModelView;
+    uniform mat4 gbufferModelViewInverse;
+
+    // Projection matrix uniforms
+    uniform mat4 gbufferProjection;
+    uniform mat4 gbufferProjectionInverse;
+
+    // Shadow view matrix uniforms
+    uniform mat4 shadowModelView;
+
+    // Shadow projection matrix uniforms
+    uniform mat4 shadowProjection;
+
+    /* Position uniforms */
+    uniform vec3 cameraPosition;
+
+    uniform vec3 shadowLightPosition;
+
+    /* Screen resolutions */
+    uniform float viewWidth;
+    uniform float viewHeight;
+
+    #include "/lib/universalVars.glsl"
 
     uniform sampler2D depthtex1;
     

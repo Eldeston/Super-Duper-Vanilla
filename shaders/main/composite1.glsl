@@ -32,7 +32,7 @@ INOUT vec2 texcoord;
     uniform float dawnDusk;
     uniform float twilight;
 
-    #include "/lib/globalVars/universalVars.glsl"
+    #include "/lib/universalVars.glsl"
 
     #include "/lib/utility/texFunctions.glsl"
 

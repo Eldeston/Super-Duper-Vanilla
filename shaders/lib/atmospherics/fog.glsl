@@ -3,10 +3,7 @@ float atmoFog(float playerPosLength, float fogDensity){
 }
 
 float atmoFog(float nPlayerPosY, float worldPosY, float playerPosLength, float totalDensity, float verticalFogDensity){
-    // Nan fix
-    if(nPlayerPosY == 0) nPlayerPosY = 0.001;
-    if(worldPosY == 0) worldPosY = 0.001;
-    return min(1.0, (totalDensity / verticalFogDensity) * exp(-worldPosY * verticalFogDensity) * (1.0 - exp(-playerPosLength * nPlayerPosY * verticalFogDensity)) / nPlayerPosY);
+    return min(1.0, (totalDensity / verticalFogDensity) * exp(-max(worldPosY, 0.0) * verticalFogDensity) * (1.0 - exp(-playerPosLength * nPlayerPosY * verticalFogDensity)) / nPlayerPosY);
 }
 
 float getBorderFogAmount(float eyePlayerPosLength, float edge){
