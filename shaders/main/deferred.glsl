@@ -17,6 +17,7 @@ INOUT vec2 screenCoord;
     uniform sampler2D colortex1;
     uniform sampler2D colortex2;
     uniform sampler2D colortex3;
+    uniform sampler2D colortex7;
 
     #ifdef PREVIOUS_FRAME
         // Previous reflections

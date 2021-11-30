@@ -12,6 +12,22 @@ float genStar(vec2 nSkyPos){
     return getStarShape(starGrid, starRand.x * 0.9 + 0.3);
 }
 
+float cloudParallax(vec2 pos, float time, int steps){
+	vec2 uv = pos / 64.0;
+	float invSteps = 1.0 / steps;
+
+	vec2 start = uv;
+	vec2 end = start * invSteps * 0.16;
+
+	float tex = 0.0;
+	for(int i = 0; i < steps; i++){
+		start -= end;
+		tex += texture2D(colortex7, start + vec2(0, time * 0.001)).r;
+	}
+	
+	return tex * invSteps;
+}
+
 vec3 getSkyColor(vec3 nSkyPos, vec3 nPlayerPos, bool skyDiffuseMask){
     if(isEyeInWater == 2) return pow(fogColor, vec3(GAMMA));
 
@@ -38,6 +54,12 @@ vec3 getSkyColor(vec3 nSkyPos, vec3 nPlayerPos, bool skyDiffuseMask){
             finalCol += lightCol * lightRange;
         }
     #endif
+
+    /*
+    vec2 plane = nPlayerPos.xz / nPlayerPos.y;
+    float clouds = cloudParallax(plane, frameTimeCounter, 16) * smoothen(nPlayerPos.y);
+    finalCol = mix(finalCol, skyCol + lightCol + ambientLighting, clouds);
+    */
 
     return pow(finalCol, vec3(GAMMA));
 }
