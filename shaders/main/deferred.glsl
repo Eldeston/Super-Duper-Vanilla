@@ -129,7 +129,7 @@ INOUT vec2 screenCoord;
             material.metallic = matRaw0.x; material.emissive = matRaw0.y; material.smoothness = matRaw0.z;
 
             #ifdef TEMPORAL_ACCUMULATION
-                vec3 dither = toRandPerFrame(getRand3(screenCoord, 8));
+                vec3 dither = toRandPerFrame(getRand3(screenCoord, 8), frameTimeCounter);
             #else
                 vec3 dither = getRand3(screenCoord, 8);
             #endif

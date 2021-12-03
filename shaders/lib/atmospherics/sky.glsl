@@ -50,17 +50,17 @@ vec3 getSkyColor(vec3 nSkyPos, vec3 nPlayerPos, bool skyDiffuseMask){
 
     #ifdef USE_SUN_MOON
         if(skyDiffuseMask){
-            float lightRange = pow(saturate(-nSkyPos.z * 0.5), abs(nPlayerPos.y) + 1.0) * (1.0 - newTwilight);
+            float lightRange = pow(max(-nSkyPos.z * 0.5, 0.0), abs(nPlayerPos.y) + 1.0) * (1.0 - newTwilight);
             finalCol += lightCol * lightRange;
         }
     #endif
 
     /*
     vec2 plane = nPlayerPos.xz / nPlayerPos.y;
-    float clouds = cloudParallax(plane, frameTimeCounter, 16) * smoothen(nPlayerPos.y);
-    finalCol = mix(finalCol, skyCol + lightCol + ambientLighting, clouds);
+    float clouds = cloudParallax(plane, frameTimeCounter, 16);
+    finalCol = mix(finalCol, ambientLighting + skyCol + lightCol * (1.0 - clouds), clouds * smootherstep(nPlayerPos.y * 2.0));
     */
-
+    
     return pow(finalCol, vec3(GAMMA));
 }
 

@@ -52,6 +52,7 @@ INOUT vec3 gcolor;
     
     #include "/lib/utility/texFunctions.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
+    #include "/lib/surface/water.glsl"
 
     void main(){
         vec4 shdColor = texture2D(tex, texcoord);

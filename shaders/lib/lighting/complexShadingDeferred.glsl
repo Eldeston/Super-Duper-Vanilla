@@ -6,7 +6,7 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
 
 	#ifdef SSGI
 		// Get SSGI
-		sceneCol += material.albedo.rgb * getSSGICol(posVector.viewPos, posVector.clipPos, gBMVNorm, toRandPerFrame(dither.xy));
+		sceneCol += material.albedo.rgb * getSSGICol(posVector.viewPos, posVector.clipPos, gBMVNorm, toRandPerFrame(dither.xy, frameTimeCounter));
 	#endif
 	
 	// If smoothness is 0, don't do reflections

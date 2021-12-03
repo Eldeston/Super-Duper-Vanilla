@@ -54,9 +54,6 @@ INOUT vec4 glcolor;
     uniform float viewWidth;
     uniform float viewHeight;
 
-    // Get frame time
-    uniform float frameTimeCounter;
-
     // Get world time
     uniform float day;
     uniform float dawnDusk;
