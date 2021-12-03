@@ -50,7 +50,7 @@ vec3 getSkyColor(vec3 nSkyPos, vec3 nPlayerPos, bool skyDiffuseMask){
 
     #ifdef USE_SUN_MOON
         if(skyDiffuseMask){
-            float lightRange = smoothen(-nSkyPos.z * 0.56) * (1.0 - abs(nPlayerPos.y)) * (1.0 - newTwilight);
+            float lightRange = pow(saturate(-nSkyPos.z * 0.5), abs(nPlayerPos.y) + 1.0) * (1.0 - newTwilight);
             finalCol += lightCol * lightRange;
         }
     #endif
