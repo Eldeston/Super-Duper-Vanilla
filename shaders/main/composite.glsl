@@ -40,11 +40,9 @@ INOUT vec2 screenCoord;
 
     // Shadow view matrix uniforms
     uniform mat4 shadowModelView;
-    uniform mat4 shadowModelViewInverse;
 
     // Shadow projection matrix uniforms
     uniform mat4 shadowProjection;
-    uniform mat4 shadowProjectionInverse;
 
     /* Position uniforms */
     uniform vec3 cameraPosition;

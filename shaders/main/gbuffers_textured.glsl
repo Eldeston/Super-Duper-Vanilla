@@ -32,11 +32,9 @@ INOUT vec4 glcolor;
     uniform sampler2D texture;
     
     // View matrix uniforms
-    uniform mat4 gbufferModelView;
     uniform mat4 gbufferModelViewInverse;
 
     // Projection matrix uniforms
-    uniform mat4 gbufferProjection;
     uniform mat4 gbufferProjectionInverse;
 
     // Shadow view matrix uniforms

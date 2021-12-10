@@ -13,6 +13,7 @@ colortex3 - Metallic, emissive, roughness : RGB8
 colortex4 - Glowing entity, cloud mask, empty / Volumetric light  : RGB8_A2
 colortex5 - Reflections : RGB16
 colortex6 - Temporal / TAA, Auto Exposure : RGB16F
+colortex7 - Clouds : RGBA8
 
 Custom defined macros:
 
@@ -38,4 +39,4 @@ FINAL
     TERRAIN
     TEXTURED
     HAND_WATER
-    WEATER
+    WEATHER
