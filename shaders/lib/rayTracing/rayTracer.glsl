@@ -12,7 +12,7 @@ vec3 binarySearch(vec3 clipPosRayDir, vec3 startPos, int binarySearchSteps){
 
 vec3 rayTraceScene(vec3 clipPos, vec3 viewPos, vec3 rayDir, int steps, int binarySearchSteps){
 	// If hand, do simple, flipped reflections
-	if(clipPos.z < MC_HAND_DEPTH){
+	if(clipPos.z < 0.056){
 		vec3 handScreenPos = toScreenSpacePos(toScreen(viewPos + rayDir * 128.0).xy);
 		return vec3(handScreenPos.xy, handScreenPos.z != 1);
 	}
@@ -28,7 +28,7 @@ vec3 rayTraceScene(vec3 clipPos, vec3 viewPos, vec3 rayDir, int steps, int binar
 		if(newScreenPos.x < 0 || newScreenPos.y < 0 || newScreenPos.x > 1 || newScreenPos.y > 1) return vec3(0);
 		float currDepth = texture2D(depthtex0, newScreenPos.xy).x;
 
-		if(newScreenPos.z > currDepth && (newScreenPos.z - currDepth) < MC_HAND_DEPTH){
+		if(newScreenPos.z > currDepth && (newScreenPos.z - currDepth) < 0.056){
 			if(binarySearchSteps == 0) return vec3(newScreenPos.xy, currDepth != 1);
 			return vec3(binarySearch(clipPosRayDir, clipPos, binarySearchSteps).xy * 0.5 + 0.5, currDepth != 1);
 		}
