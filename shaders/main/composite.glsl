@@ -19,7 +19,10 @@ INOUT vec2 screenCoord;
     uniform sampler2D colortex2;
     uniform sampler2D colortex3;
     uniform sampler2D colortex4;
-    uniform sampler2D colortex7;
+    
+    #ifdef STORY_MODE_CLOUDS
+        uniform sampler2D colortex7;
+    #endif
 
     #ifdef PREVIOUS_FRAME
         // Previous reflections
@@ -140,7 +143,7 @@ INOUT vec2 screenCoord;
                 if(!cloudMask) sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
 
                 // Get sky color
-                vec3 skyRender = getSkyRender(posVector.eyePlayerPos, true);
+                vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyMask);
 
                 // Fog calculation
                 sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y, cloudMask, skyMask);

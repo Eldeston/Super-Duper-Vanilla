@@ -20,8 +20,12 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
 		// Get SSR
 		#ifdef SSR
 			#ifdef ROUGH_REFLECTIONS
-				vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.clipPos,
-					normalize(gBMVNorm + (dither * 0.5 - 0.25) * squared(1.0 - material.smoothness)));
+				// Rough the normals with noise
+				gBMVNorm = normalize(gBMVNorm + (dither * 0.5 - 0.25) * squared(1.0 - material.smoothness));
+				vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.clipPos, gBMVNorm);
+
+				// Assign new rough normals
+				material.normal = mat3(gbufferModelViewInverse) * gBMVNorm;
 			#else
 				vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.clipPos, gBMVNorm);
 			#endif

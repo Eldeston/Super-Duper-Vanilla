@@ -126,7 +126,7 @@ INOUT vec3 norm;
         #endif
 
         material.metallic = 0.04;
-        material.ss = 0.0;
+        material.ss = 0.5;
         material.emissive = 0.0;
         material.smoothness = 0.0;
 

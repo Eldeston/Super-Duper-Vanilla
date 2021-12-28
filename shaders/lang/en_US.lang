@@ -82,6 +82,7 @@ screen.LAVA_SETTINGS=Lava material settings
     option.VOL_LIGHT=Volumetric lighting
     option.MIST_GROUND_FOG_BRIGHTNESS=Ground fog amount
     option.BORDER_FOG=Border fog
+    option.STORY_MODE_CLOUDS=Story mode clouds
     option.DOUBLE_VANILLA_CLOUDS=Double vanilla clouds
     option.CLOUD_FADE=Cloud fade
     option.SECOND_CLOUD_HEIGHT=2nd cloud height

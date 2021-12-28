@@ -17,7 +17,10 @@ INOUT vec2 screenCoord;
     uniform sampler2D colortex1;
     uniform sampler2D colortex2;
     uniform sampler2D colortex3;
-    uniform sampler2D colortex7;
+    
+    #ifdef STORY_MODE_CLOUDS
+        uniform sampler2D colortex7;
+    #endif
 
     #ifdef PREVIOUS_FRAME
         // Previous reflections
@@ -108,7 +111,7 @@ INOUT vec2 screenCoord;
         bool skyMask = posVector.screenPos.z == 1;
 
         // Get sky color
-        vec3 skyRender = getSkyRender(posVector.eyePlayerPos, true, skyMask, skyMask);
+        vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyMask, skyMask);
         vec4 albedoSunMoon = texture2D(colortex2, screenCoord);
 
         // Vanilla sun and moon texture
