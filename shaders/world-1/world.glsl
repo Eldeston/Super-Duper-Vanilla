@@ -16,6 +16,8 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 // #define USE_STARS_COL vec3(1)
 // Enable horizon in your world
 // #define USE_HORIZON_COL fogColor
+// Force disable any clouds
+#define FORCE_DISABLE_CLOUDS
 
 // Enable if your world uses a specific world color that uses the vanilla fog color, overrides sky colors
 #define USE_VANILLA_FOGCOL (fogColor * 0.9 + 0.1)

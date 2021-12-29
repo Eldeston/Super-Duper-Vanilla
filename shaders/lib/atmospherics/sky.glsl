@@ -56,16 +56,18 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
     #endif
 
     #ifdef STORY_MODE_CLOUDS
-        if(skyMask){
-            #ifdef CLOUD_FADE
-                float fade = smootherstep(sin(frameTimeCounter * FADE_SPEED) * 0.5 + 0.5);
-                vec2 clouds = mix(cloudParallax(planeUv, frameTimeCounter, 8), cloudParallax(-planeUv, 1250.0 - frameTimeCounter, 8), fade);
-            #else
-                vec2 clouds = cloudParallax(planeUv, frameTimeCounter, 8);
-            #endif
+        #ifndef FORCE_DISABLE_CLOUDS
+            if(skyMask){
+                #ifdef CLOUD_FADE
+                    float fade = smootherstep(sin(frameTimeCounter * FADE_SPEED) * 0.5 + 0.5);
+                    vec2 clouds = mix(cloudParallax(planeUv, frameTimeCounter, 8), cloudParallax(-planeUv, 1250.0 - frameTimeCounter, 8), fade);
+                #else
+                    vec2 clouds = cloudParallax(planeUv, frameTimeCounter, 8);
+                #endif
 
-            finalCol = mix(finalCol, ambientLighting + skyCol + (0.5 * (-nSkyPosZ * 0.5 + 0.5), 1.0, clouds.x) * lightCol, clouds.y * smootherstep(nPlayerPos.y * 2.0 - 0.125));
-        }
+                finalCol = mix(finalCol, ambientLighting + skyCol + (0.5 * (-nSkyPosZ * 0.5 + 0.5), 1.0, clouds.x) * lightCol, clouds.y * smootherstep(nPlayerPos.y * 2.0 - 0.125));
+            }
+        #endif
     #endif
     
     return pow(finalCol, vec3(GAMMA));
