@@ -144,9 +144,8 @@ INOUT mat3 TBN;
         if(material.albedo.a > 0.00001){
             if(rBlockId == 10017){
                 vec2 lavaUv = posVector.worldPos.xz * (1.0 - TBN[2].y) + posVector.worldPos.xz * TBN[2].y;
-                lavaUv = floor(lavaUv * 16.0) / 16.0;
-                float lavaWaves = getCellNoise2(lavaUv / LAVA_TILE_SIZE);
-                material.albedo.rgb = floor(material.albedo.rgb * (LAVA_BRIGHTNESS * lavaWaves * lavaWaves * 32.0)) / 32.0;
+                float lavaWaves = max(getLuminance(material.albedo.rgb), LAVA_BRIGHTNESS * getCellNoise2(floor(lavaUv * 16.0) / (LAVA_TILE_SIZE * 16.0)));
+                material.albedo.rgb = floor(material.albedo.rgb * (lavaWaves * lavaWaves * 32.0)) / 32.0;
             }
 
             material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
