@@ -28,7 +28,7 @@ vec2 cloudParallax(vec2 pos, float time, int steps){
 	return vec2(0);
 }
 
-vec3 getSkyColor(vec3 nSkyPos, vec3 nPlayerPos, bool skyMask){
+vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
     if(isEyeInWater == 2) return pow(fogColor, vec3(GAMMA));
 
     vec2 planeUv = nPlayerPos.xz / nPlayerPos.y;
@@ -51,7 +51,7 @@ vec3 getSkyColor(vec3 nSkyPos, vec3 nPlayerPos, bool skyMask){
     }
 
     #ifdef USE_SUN_MOON
-        float lightRange = pow(max(-nSkyPos.z * 0.5, 0.0), abs(nPlayerPos.y) + 1.0) * (1.0 - newTwilight);
+        float lightRange = pow(max(-nSkyPosZ * 0.5, 0.0), abs(nPlayerPos.y) + 1.0) * (1.0 - newTwilight);
         finalCol += lightCol * lightRange;
     #endif
 
@@ -64,7 +64,7 @@ vec3 getSkyColor(vec3 nSkyPos, vec3 nPlayerPos, bool skyMask){
                 vec2 clouds = cloudParallax(planeUv, frameTimeCounter, 8);
             #endif
 
-            finalCol = mix(finalCol, ambientLighting + skyCol + (0.5 * (-nSkyPos.z * 0.5 + 0.5), 1.0, clouds.x) * lightCol, clouds.y * smootherstep(nPlayerPos.y * 2.0 - 0.125));
+            finalCol = mix(finalCol, ambientLighting + skyCol + (0.5 * (-nSkyPosZ * 0.5 + 0.5), 1.0, clouds.x) * lightCol, clouds.y * smootherstep(nPlayerPos.y * 2.0 - 0.125));
         }
     #endif
     
@@ -72,14 +72,14 @@ vec3 getSkyColor(vec3 nSkyPos, vec3 nPlayerPos, bool skyMask){
 }
 
 vec3 getSkyRender(vec3 playerPos, bool skyMask){
-    return getSkyColor(normalize(mat3(shadowProjection) * (mat3(shadowModelView) * playerPos)), normalize(playerPos), skyMask);
+    return getSkyColor(normalize(playerPos), normalize(mat3(shadowProjection) * (mat3(shadowModelView) * playerPos)).z, skyMask);
 }
 
 vec3 getSkyRender(vec3 playerPos, bool skyMask, bool sunMoonMask){
     vec3 nPlayerPos = normalize(playerPos);
     vec3 nSkyPos = normalize(mat3(shadowProjection) * (mat3(shadowModelView) * playerPos));
 
-    vec3 finalCol = getSkyColor(nSkyPos, nPlayerPos, skyMask);
+    vec3 finalCol = getSkyColor(nPlayerPos, nSkyPos.z, skyMask);
 
     #if defined USE_SUN_MOON && !defined VANILLA_SUN_MOON
         if(sunMoonMask) finalCol += getSunMoonShape(nSkyPos.xy) * 2.0;

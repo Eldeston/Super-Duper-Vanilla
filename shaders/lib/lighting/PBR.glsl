@@ -17,6 +17,7 @@ uniform sampler2D texture;
             rainMatFact *= saturate(sqrt(rawNorm.y) * smoothstep(0.8, 0.9, material.light.y) * smoothstep(0.4, 0.8, puddle));
             
             material.normal = mix(material.normal, rawNorm, rainMatFact);
+            material.metallic = max(0.02 * rainMatFact, material.metallic);
             material.smoothness = mix(material.smoothness, 0.96, rainMatFact);
             material.albedo.rgb *= 1.0 - sqrt(rainMatFact) * 0.5;
         }
@@ -68,7 +69,10 @@ uniform sampler2D texture;
                 if(id == 10017) material.emissive = 1.0;
 
                 // If water
-                else if(id == 10034) material.smoothness = 0.96;
+                else if(id == 10034){
+                    material.smoothness = 0.96;
+                    material.metallic = 0.04;
+                }
 
                 // End portal
                 else if(id == 10100){
@@ -77,12 +81,14 @@ uniform sampler2D texture;
                     material.albedo = vec4(d0 + d1 + 0.05, 1);
                     material.normal = TBN[2];
                     material.smoothness = 0.96;
+                    material.metallic = 0.04;
                     material.emissive = 1.0;
                 }
                 
                 // Nether portal
                 else if(id == 10101){
                     material.smoothness = 0.96;
+                    material.metallic = 0.04;
                     material.emissive = maxC(material.albedo.rgb);
                 }
             #endif
@@ -125,7 +131,7 @@ uniform sampler2D texture;
 
         if(material.albedo.a > 0.00001){
             // Default material if not specified
-            material.metallic = 0.0; material.emissive = 0.0;
+            material.metallic = 0.04; material.emissive = 0.0;
             material.smoothness = 0.0; material.ss = 0.0;
             material.ambient = 1.0;
 
@@ -139,7 +145,9 @@ uniform sampler2D texture;
                 if(id == 10017) material.emissive = 1.0;
 
                 // If water
-                else if(id == 10034) material.smoothness = 0.96;
+                else if(id == 10034){
+                    material.smoothness = 0.96;
+                }
 
                 // End portal
                 else if(id == 10100){
