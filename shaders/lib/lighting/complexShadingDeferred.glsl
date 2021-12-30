@@ -6,7 +6,7 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
 
 	#ifdef SSGI
 		// Get SSGI
-		sceneCol += material.albedo.rgb * getSSGICol(posVector.viewPos, posVector.clipPos, gBMVNorm, toRandPerFrame(dither.xy, frameTimeCounter));
+		sceneCol += material.albedo.rgb * getSSGICol(posVector.viewPos, posVector.screenPos, gBMVNorm, toRandPerFrame(dither.xy, frameTimeCounter));
 	#endif
 	
 	// If smoothness is 0, don't do reflections
@@ -22,12 +22,12 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
 			#ifdef ROUGH_REFLECTIONS
 				// Rough the normals with noise
 				gBMVNorm = normalize(gBMVNorm + (dither * 0.5 - 0.25) * squared(1.0 - material.smoothness));
-				vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.clipPos, gBMVNorm);
+				vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.screenPos, gBMVNorm);
 
 				// Assign new rough normals
 				material.normal = mat3(gbufferModelViewInverse) * gBMVNorm;
 			#else
-				vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.clipPos, gBMVNorm);
+				vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.screenPos, gBMVNorm);
 			#endif
 
 			vec3 reflectCol = ambientLighting + getSkyRender(reflect(posVector.eyePlayerPos, material.normal), true) * eyeBrightFact;
