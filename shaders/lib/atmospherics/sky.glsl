@@ -65,7 +65,7 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
                     vec2 clouds = cloudParallax(planeUv, frameTimeCounter, 8);
                 #endif
 
-                finalCol = mix(finalCol, ambientLighting + skyCol + (0.5 * (-nSkyPosZ * 0.5 + 0.5), 1.0, clouds.x) * lightCol, clouds.y * smootherstep(nPlayerPos.y * 2.0 - 0.125));
+                finalCol = mix(finalCol, ambientLighting + skyCol + clouds.x * lightCol, clouds.y * smootherstep(nPlayerPos.y * 2.0 - 0.125));
             }
         #endif
     #endif

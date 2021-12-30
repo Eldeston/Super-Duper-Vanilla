@@ -95,10 +95,8 @@ vec4 textureFXAA(sampler2D aliased, vec2 uv, vec2 resolution){
     vec2 uv2 = currentUv + offset;
 
     // Read the lumas at both current extremities of the exploration segment, and compute the delta wrt to the local average luma.
-    float lumaEnd1 = getLuminance(texture2DLod(aliased, uv1, 0).rgb);
-    float lumaEnd2 = getLuminance(texture2DLod(aliased, uv2, 0).rgb);
-    lumaEnd1 -= lumaLocalAverage;
-    lumaEnd2 -= lumaLocalAverage;
+    float lumaEnd1 = getLuminance(texture2DLod(aliased, uv1, 0).rgb) - lumaLocalAverage;
+    float lumaEnd2 = getLuminance(texture2DLod(aliased, uv2, 0).rgb) - lumaLocalAverage;
 
     // If the luma deltas at the current extremities are larger than the local gradient, we have reached the side of the edge.
     bool reached1 = abs(lumaEnd1) >= gradientScaled;
@@ -106,12 +104,8 @@ vec4 textureFXAA(sampler2D aliased, vec2 uv, vec2 resolution){
     bool reachedBoth = reached1 && reached2;
 
     // If the side is not reached, we continue to explore in this direction.
-    if(!reached1){
-        uv1 -= offset;
-    }
-    if(!reached2){
-        uv2 += offset;
-    }
+    if(!reached1) uv1 -= offset;
+    if(!reached2) uv2 += offset;
 
     // If both sides have not been reached, continue to explore.
     if(!reachedBoth){
@@ -134,12 +128,8 @@ vec4 textureFXAA(sampler2D aliased, vec2 uv, vec2 resolution){
             reachedBoth = reached1 && reached2;
 
             // If the side is not reached, we continue to explore in this direction, with a variable quality.
-            if(!reached1){
-                uv1 -= offset * quality[i];
-            }
-            if(!reached2){
-                uv2 += offset * quality[i];
-            }
+            if(!reached1) uv1 -= offset * quality[i];
+            if(!reached2) uv2 += offset * quality[i];
 
             // If both sides have been reached, stop the exploration.
             if(reachedBoth) break;
