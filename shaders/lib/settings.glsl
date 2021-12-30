@@ -48,11 +48,11 @@
 #define SHD_COL // Enable shadow color from colored transparent objects
 
 // #define SSGI // Enables SSGI, currently experimental and may not be very optimized, may improve the ambience of dark areas despite the noisiness. Turn on temporal acumulation and FXAA for best results.
-#define SSGI_STEPS 16 // SSGI steps, more steps means more quality, and more quality means more performance [16 20 24 28 32]
+#define SSGI_STEPS 20 // SSGI steps, more steps means more quality, and more quality means more performance [16 20 24 28 32]
 #define SSGI_BISTEPS 4 // SSGI binary refinement steps, more steps means more accurate GI, and more quality means more performance [0 4 8 16]
 
 #define SSR // Enables SSR, may not look good in certain areas
-#define SSR_STEPS 16 // SSR steps, more steps means more quality, and more quality means more performance [16 20 24 28 32]
+#define SSR_STEPS 20 // SSR steps, more steps means more quality, and more quality means more performance [16 20 24 28 32]
 #define SSR_BISTEPS 4 // SSR binary refinement steps, more steps means more accurate reflections, and more quality means more performance [0 4 8 16]
 
 // #define ROUGH_REFLECTIONS // Enables rougher objects to have rougher reflections. May show artifacts, but some AA might fix it

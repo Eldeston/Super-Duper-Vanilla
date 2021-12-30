@@ -22,8 +22,6 @@ struct matPBR{
 struct positionVectors{
     // Screen pos
     vec3 screenPos;
-    // Clip pos
-    vec3 clipPos;
     // View position
     vec3 viewPos;
     // Player pos from the eye

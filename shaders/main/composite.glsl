@@ -103,7 +103,6 @@ INOUT vec2 screenCoord;
         // Declare and get positions
         positionVectors posVector;
         posVector.screenPos = toScreenSpacePos(screenCoord);
-	    posVector.clipPos = posVector.screenPos * 2.0 - 1.0;
         posVector.viewPos = toView(posVector.screenPos);
         posVector.eyePlayerPos = mat3(gbufferModelViewInverse) * posVector.viewPos;
         posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
