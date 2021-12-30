@@ -145,7 +145,7 @@ INOUT mat3 TBN;
             if(rBlockId == 10017){
                 vec2 lavaUv = posVector.worldPos.xz * (1.0 - TBN[2].y) + posVector.worldPos.xz * TBN[2].y;
                 float lavaWaves = max(getLuminance(material.albedo.rgb), LAVA_BRIGHTNESS * getCellNoise2(floor(lavaUv * 16.0) / (LAVA_TILE_SIZE * 16.0)));
-                material.albedo.rgb = floor(material.albedo.rgb * (lavaWaves * lavaWaves * 32.0)) / 32.0;
+                material.albedo.rgb = floor(material.albedo.rgb * (smootherstep(lavaWaves) * 32.0)) / 32.0;
             }
 
             material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
