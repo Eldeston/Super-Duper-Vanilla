@@ -1,6 +1,6 @@
 vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sceneCol, vec3 dither){
 	#if defined SSGI || defined SSR
-		// Get positions
+		// Get model view normal
 		vec3 gBMVNorm = mat3(gbufferModelView) * material.normal;
 	#endif
 
@@ -10,7 +10,7 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
 	#endif
 	
 	// If smoothness is 0, don't do reflections
-	if(material.smoothness > 0.0){
+	if(material.smoothness > 0){
 		bool isMetal = material.metallic > 0.9;
 
 		// Get fresnel

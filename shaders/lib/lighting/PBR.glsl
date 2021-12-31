@@ -12,14 +12,14 @@ uniform sampler2D texture;
         float rainMatFact = rainStrength * (1.0 - isWarm) * (1.0 - isSnowy) * (1.0 - isPeaks);
 
         if(rainMatFact != 0){
-            vec3 noiseData = texPix2DCubic(noisetex, posVector.worldPos.xz / 256.0, vec2(256)).xyz;
-            float puddle = mix(noiseData.y, noiseData.x, noiseData.z);
+            vec3 noiseData = texPix2DCubic(noisetex, posVector.worldPos.xz / 512.0, vec2(256)).xyz;
+            float puddle = (mix(noiseData.y, noiseData.x, noiseData.z) + noiseData.y) * 0.5;
             rainMatFact *= saturate(sqrt(rawNorm.y) * smoothstep(0.8, 0.9, material.light.y) * smoothstep(0.4, 0.8, puddle));
             
             material.normal = mix(material.normal, rawNorm, rainMatFact);
-            material.metallic = max(0.02 * rainMatFact, material.metallic);
+            material.metallic = max(0.04 * rainMatFact, material.metallic);
             material.smoothness = mix(material.smoothness, 0.96, rainMatFact);
-            material.albedo.rgb *= 1.0 - sqrt(rainMatFact) * 0.5;
+            material.albedo.rgb *= 1.0 - sqrt(rainMatFact) * 0.25;
         }
     }
 #endif

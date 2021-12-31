@@ -1,6 +1,6 @@
 vec3 binarySearch(vec3 screenPosRayDir, vec3 startPos, int binarySearchSteps){
 	for(int y = 0; y < binarySearchSteps; y++){
-		if(startPos.x < 0 || startPos.y < 0 || startPos.x > 1 || startPos.y > 1) break;
+		if(startPos.x < 0 || startPos.y < 0 || startPos.x > 1 || startPos.y > 1) return vec3(0);
 
 		screenPosRayDir *= 0.5;
 		startPos += texture2D(depthtex0, startPos.xy).x < startPos.z ? -screenPosRayDir : screenPosRayDir;
@@ -20,7 +20,7 @@ vec3 rayTraceScene(vec3 screenPos, vec3 viewPos, vec3 rayDir, int steps, int bin
 	}
 
 	// Get screenspace rayDir
-	vec3 screenPosRayDir = normalize(toScreen(viewPos + rayDir) - screenPos) * (1.0 / steps);
+	vec3 screenPosRayDir = normalize(toScreen(viewPos + rayDir) - screenPos) / steps;
 
 	// Screen pos is our startPos
 	for(int x = 0; x < steps; x++){
