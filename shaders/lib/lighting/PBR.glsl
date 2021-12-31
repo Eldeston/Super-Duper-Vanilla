@@ -9,12 +9,11 @@ uniform sampler2D texture;
     uniform float isPeaks;
 
     void enviroPBR(inout matPBR material, in positionVectors posVector, in vec3 rawNorm){
-        float rainMatFact = rainStrength * (1.0 - isWarm) * (1.0 - isSnowy) * (1.0 - isPeaks);
+        float rainMatFact = sqrt(max(0.0, rawNorm.y)) * smoothstep(0.8, 0.9, material.light.y) * rainStrength * (1.0 - isWarm) * (1.0 - isSnowy) * (1.0 - isPeaks);
 
         if(rainMatFact != 0){
             vec3 noiseData = texPix2DCubic(noisetex, posVector.worldPos.xz / 512.0, vec2(256)).xyz;
-            float puddle = (mix(noiseData.y, noiseData.x, noiseData.z) + noiseData.y) * 0.5;
-            rainMatFact *= saturate(sqrt(rawNorm.y) * smoothstep(0.8, 0.9, material.light.y) * smoothstep(0.4, 0.8, puddle));
+            rainMatFact *= smoothstep(0.4, 0.8, (mix(noiseData.y, noiseData.x, noiseData.z) + noiseData.y) * 0.5);
             
             material.normal = mix(material.normal, rawNorm, rainMatFact);
             material.metallic = max(0.04 * rainMatFact, material.metallic);
@@ -117,7 +116,7 @@ uniform sampler2D texture;
             material.albedo = texture2D(texture, mix(minTexCoord, maxTexCoord, st));
 
             // Don't generate normals if it's on the edge of the texture
-            if(max2(st - 0.5) < 0.5 - 0.0125 && length(posVector.viewPos) < 16.0){
+            if(max2(st - 0.5) < 0.5 - 0.0125){
                 float d = getLuminance(material.albedo.rgb);
                 float dx = d - getLuminance(texture2D(texture, mix(minTexCoord, maxTexCoord, (st + vec2(0.0125, 0)))).rgb);
                 float dy = d - getLuminance(texture2D(texture, mix(minTexCoord, maxTexCoord, (st + vec2(0, 0.0125)))).rgb);
