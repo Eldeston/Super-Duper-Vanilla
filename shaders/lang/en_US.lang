@@ -93,6 +93,39 @@ screen.LAVA_SETTINGS=Lava material settings
     option.ANIMATE=Animate
     option.ANIMATION_SPEED=Animation speed
 
+screen.CONFIGURE_COLORS=Configure colors
+
+screen.DIRECT_LIGHT_COLOR=Direct light color
+    option.LIGHT_COL_DAY_R=Day red
+    option.LIGHT_COL_DAY_G=Day green
+    option.LIGHT_COL_DAY_B=Day blue
+
+    option.LIGHT_COL_NIGHT_R=Night red
+    option.LIGHT_COL_NIGHT_G=Night green
+    option.LIGHT_COL_NIGHT_B=Night blue
+
+    option.LIGHT_COL_DAWN_DUSK_R=Dawn/dusk red
+    option.LIGHT_COL_DAWN_DUSK_G=Dawn/dusk green
+    option.LIGHT_COL_DAWN_DUSK_B=Dawn/dusk blue
+
+screen.SKY_COLOR=Sky color
+    option.SKY_COL_DAY_R=Day red
+    option.SKY_COL_DAY_G=Day green
+    option.SKY_COL_DAY_B=Day blue
+
+    option.SKY_COL_NIGHT_R=Night red
+    option.SKY_COL_NIGHT_G=Night green
+    option.SKY_COL_NIGHT_B=Night blue
+
+    option.SKY_COL_DAWN_DUSK_R=Dawn/dusk red
+    option.SKY_COL_DAWN_DUSK_G=Dawn/dusk green
+    option.SKY_COL_DAWN_DUSK_B=Dawn/dusk blue
+
+screen.BLOCK_LIGHT_COLOR=Block light color
+    option.BLOCK_LIGHT_COL_R=Red
+    option.BLOCK_LIGHT_COL_G=Green
+    option.BLOCK_LIGHT_COL_B=Blue
+
 screen.DEBUG=Super Duper Vanilla by Eldeston
     option.WHITE_MODE=White mode
     option.NOISE_SPEED=Noise speed
