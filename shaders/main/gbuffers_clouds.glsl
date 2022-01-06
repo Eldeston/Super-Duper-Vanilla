@@ -138,10 +138,9 @@ INOUT vec3 norm;
         if(material.albedo.a > 0.00001) sceneCol = complexShadingGbuffers(material, posVector, getRand1(posVector.screenPos.xy, 8));
         else discard;
 
-    /* DRAWBUFFERS:0124 */
+    /* DRAWBUFFERS:012 */
         gl_FragData[0] = sceneCol; //gcolor
         gl_FragData[1] = vec4(material.normal * 0.5 + 0.5, 1); //colortex1
         gl_FragData[2] = vec4(material.albedo.rgb, 1); //colortex2
-        gl_FragData[3] = vec4(0, 1, 0, 1); //colortex4
     }
 #endif

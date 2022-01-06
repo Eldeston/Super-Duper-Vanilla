@@ -143,7 +143,7 @@ INOUT vec2 screenCoord;
         }
 
         // Fog calculation
-        sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y, false, skyMask);
+        sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y, skyMask);
 
         #ifdef PREVIOUS_FRAME
             // Get previous frame buffer

@@ -11,12 +11,12 @@ float getBorderFogAmount(float eyePlayerPosLength, float edge){
     return 1.0 - exp(-0.1 * pow(eyePlayerPosLength / edge * 1.5, 10.0));
 }
 
-vec3 getFogRender(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY, bool cloudMask, bool skyMask){
+vec3 getFogRender(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY, bool skyMask){
     float eyePlayerPosLength = length(eyePlayerPos);
 
     // Border fog
     #ifdef BORDER_FOG
-        float borderFog = getBorderFogAmount(eyePlayerPosLength, cloudMask ? far * 2.0 : far);
+        float borderFog = getBorderFogAmount(eyePlayerPosLength, far);
         color = color * (1.0 - borderFog) + fogCol * borderFog;
     #else
         color = skyMask ? fogCol : color;

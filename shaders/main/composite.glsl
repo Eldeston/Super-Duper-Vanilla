@@ -121,7 +121,6 @@ INOUT vec2 screenCoord;
             vec3 reflectBuffer = 1.0 / (1.0 - texture2D(colortex5, screenCoord).rgb) - 1.0;
         #endif
 
-        vec2 masks4 = texture2D(colortex4, screenCoord).xy;
         bool skyMask = posVector.screenPos.z == 1;
 
         // If not sky, don't calculate lighting
@@ -136,16 +135,13 @@ INOUT vec2 screenCoord;
                 vec3 matRaw0 = texture2D(colortex3, screenCoord).xyz;
                 material.metallic = matRaw0.x; material.emissive = matRaw0.y; material.smoothness = matRaw0.z;
 
-                // Get cloud mask
-                bool cloudMask = masks4.y != 0;
-
-                if(!cloudMask) sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
+                sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
 
                 // Get sky color
                 vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyMask);
 
                 // Fog calculation
-                sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y, cloudMask, skyMask);
+                sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y, skyMask);
 
                 #ifdef PREVIOUS_FRAME
                     // Assign after main lighting calculation
@@ -156,7 +152,7 @@ INOUT vec2 screenCoord;
 
     /* DRAWBUFFERS:04 */
         gl_FragData[0] = vec4(sceneCol, 1); //gcolor
-        gl_FragData[1] = vec4(getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.x), masks4.x); //colortex4
+        gl_FragData[1] = vec4(getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.x), texture2D(colortex4, screenCoord).x); //colortex4
         #ifdef PREVIOUS_FRAME
         /* DRAWBUFFERS:045 */
             gl_FragData[2] = vec4(reflectBuffer / (1.0 + reflectBuffer), 1); //colortex5
