@@ -6,15 +6,16 @@
    A shader pack for **Minecraft Java Optifine**, created to convey or mimic a certain shading style of the cancelled __Super Duper Graphics Pack__ combined with the shading style of Minecraft Dungeons. Developed by @Eldeston, and presented by __FlameRender Studios__.
 
 ## Screenshots
-![2021-10-07_23 21 39](https://user-images.githubusercontent.com/59617287/136449992-01e23a37-a803-4ee7-90d2-dcf64212f1e3.png)
-![2021-10-07_23 22 11](https://user-images.githubusercontent.com/59617287/136450005-cd418ab2-b9b2-4d57-b941-bf0d2d537e4f.png)
-![2021-10-07_23 22 51](https://user-images.githubusercontent.com/59617287/136450010-80385ef0-311c-4630-b981-cc8ffc44fb9a.png)
-![2021-10-07_23 23 05](https://user-images.githubusercontent.com/59617287/136450019-69d2b1e5-62e1-4d23-bf11-55c3cb2ff299.png)
-![2021-10-07_23 24 30](https://user-images.githubusercontent.com/59617287/136450023-984b2904-8c0d-4723-86d6-7230d00803ac.png)
-![2021-10-07_23 24 55](https://user-images.githubusercontent.com/59617287/136450029-16f99de8-bd25-4939-a461-2893eb06845f.png)
-![2021-10-07_23 26 09](https://user-images.githubusercontent.com/59617287/136450035-70d37807-0f5d-4b18-97a5-6e0503fda41b.png)
-![2021-10-07_23 27 24](https://user-images.githubusercontent.com/59617287/136450040-00f7e3f2-c8d4-4a1e-8cb6-fbd021d204e4.png)
-![2021-10-07_23 27 51](https://user-images.githubusercontent.com/59617287/136450041-15d31346-d19b-49ba-b31a-ffe5e41e742e.png)
+![2021-12-29_15 51 13](https://user-images.githubusercontent.com/59617287/148426077-f6b04fca-ffaa-4e38-b4f2-20fdc3ca36e2.png)
+![2022-01-06_20 49 20](https://user-images.githubusercontent.com/59617287/148426103-1a97ecfc-bc39-4bb0-b349-a8cc32cc48eb.png)
+![2022-01-06_20 51 29](https://user-images.githubusercontent.com/59617287/148426111-031e2906-7285-4521-b064-f355c5d7b36e.png)
+![2022-01-06_20 52 28](https://user-images.githubusercontent.com/59617287/148426121-044649ad-fdcd-45e7-bdbb-7b41f9dc02e8.png)
+![2022-01-06_20 56 11](https://user-images.githubusercontent.com/59617287/148426123-3733564f-fa1e-424b-a995-e48adfc6357a.png)
+![2022-01-06_20 56 26](https://user-images.githubusercontent.com/59617287/148426129-93c6f425-8215-465d-9fad-b1ce2d463fd1.png)
+![2021-12-29_15 19 02](https://user-images.githubusercontent.com/59617287/148426133-1d1ae77c-b860-4212-be22-f0cffca93c36.png)
+![2021-12-29_15 22 59](https://user-images.githubusercontent.com/59617287/148426151-f73ec7c7-18ba-4d32-a6b0-06ed3d0046ba.png)
+![2021-12-29_15 23 10](https://user-images.githubusercontent.com/59617287/148426195-441c9b0d-1907-4988-a2ab-73326191406d.png)
+![2021-12-29_15 46 48](https://user-images.githubusercontent.com/59617287/148426242-5a739d72-5439-475b-8dc9-928886df5df0.png)
 
 ## Contribution
    Will be planned soon, but as of right now, it is not open.
