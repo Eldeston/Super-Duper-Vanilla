@@ -7,7 +7,6 @@
 
 ## Screenshots
 ![2021-12-29_15 51 13](https://user-images.githubusercontent.com/59617287/148426077-f6b04fca-ffaa-4e38-b4f2-20fdc3ca36e2.png)
-![2022-01-06_20 49 20](https://user-images.githubusercontent.com/59617287/148426103-1a97ecfc-bc39-4bb0-b349-a8cc32cc48eb.png)
 ![2022-01-06_20 51 29](https://user-images.githubusercontent.com/59617287/148426111-031e2906-7285-4521-b064-f355c5d7b36e.png)
 ![2022-01-06_20 52 28](https://user-images.githubusercontent.com/59617287/148426121-044649ad-fdcd-45e7-bdbb-7b41f9dc02e8.png)
 ![2022-01-06_20 56 11](https://user-images.githubusercontent.com/59617287/148426123-3733564f-fa1e-424b-a995-e48adfc6357a.png)
