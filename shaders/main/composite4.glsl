@@ -155,9 +155,9 @@ INOUT vec2 texcoord;
             float accumulatedLumi = 1.0;
             // Recreate our lighting model if it were only shading a single pixel and apply exposure
             #if defined USE_SKY_LIGHTMAP
-                color /= max(getLuminance(lightCol * isEyeInWater * (1.0 - eyeBrightFact) * VOL_LIGHT_BRIGHTNESS + (AMBIENT_LIGHTING + nightVision + torchBrightFact * BLOCK_LIGHT_COL + cubed(eyeBrightFact) * (lightCol * rainMult + skyCol)) * 0.36) * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
+                color /= max(getLuminance(lightCol * isEyeInWater * (1.0 - eyeBrightFact) * VOL_LIGHT_BRIGHTNESS + (AMBIENT_LIGHTING + nightVision + torchBrightFact * vec3(BLOCK_LIGHT_COL_R, BLOCK_LIGHT_COL_G, BLOCK_LIGHT_COL_B) + cubed(eyeBrightFact) * (lightCol * rainMult + skyCol)) * 0.36) * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
             #else
-                color /= max(getLuminance(lightCol * isEyeInWater * (1.0 - SKY_LIGHT_AMOUNT) * VOL_LIGHT_BRIGHTNESS + (AMBIENT_LIGHTING + nightVision + torchBrightFact * BLOCK_LIGHT_COL + cubed(SKY_LIGHT_AMOUNT) * (lightCol * rainMult + skyCol)) * 0.36) * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
+                color /= max(getLuminance(lightCol * isEyeInWater * (1.0 - SKY_LIGHT_AMOUNT) * VOL_LIGHT_BRIGHTNESS + (AMBIENT_LIGHTING + nightVision + torchBrightFact * vec3(BLOCK_LIGHT_COL_R, BLOCK_LIGHT_COL_G, BLOCK_LIGHT_COL_B) + cubed(SKY_LIGHT_AMOUNT) * (lightCol * rainMult + skyCol)) * 0.36) * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
             #endif
         #else
             float accumulatedLumi = 1.0;

@@ -17,7 +17,7 @@ float ambientLighting = AMBIENT_LIGHTING + nightVision;
 #if defined USE_CUSTOM_LIGHTCOL
     vec3 lightCol = USE_CUSTOM_LIGHTCOL;
 #else
-    vec3 lightCol = toneSaturation(mix(mix(LIGHT_COL_NIGHT, LIGHT_COL_DAY, day), LIGHT_COL_DAWN_DUSK, newDawnDusk), 1.0 - rainStrength * 0.5);
+    vec3 lightCol = toneSaturation(mix(mix(vec3(LIGHT_COL_NIGHT_R, LIGHT_COL_NIGHT_G, LIGHT_COL_NIGHT_B), vec3(LIGHT_COL_DAY_R, LIGHT_COL_DAY_G, LIGHT_COL_DAY_B), day), vec3(LIGHT_COL_DAWN_DUSK_R, LIGHT_COL_DAWN_DUSK_G, LIGHT_COL_DAWN_DUSK_B), newDawnDusk), 1.0 - rainStrength * 0.5);
 #endif
 
 #if defined USE_CUSTOM_FOGCOL
@@ -25,5 +25,5 @@ float ambientLighting = AMBIENT_LIGHTING + nightVision;
 #elif defined USE_VANILLA_FOGCOL
     vec3 skyCol = USE_VANILLA_FOGCOL;
 #else
-    vec3 skyCol = toneSaturation(mix(mix(SKY_COL_NIGHT, SKY_COL_DAY, day), SKY_COL_DAWN_DUSK, newDawnDusk), 1.0 - rainStrength * 0.5) * rainMult * (eyeBrightFact * 0.5 + 0.5);
+    vec3 skyCol = toneSaturation(mix(mix(vec3(SKY_COL_NIGHT_R, SKY_COL_NIGHT_G, SKY_COL_NIGHT_B), vec3(SKY_COL_DAY_R, SKY_COL_DAY_G, SKY_COL_DAY_B), day), vec3(SKY_COL_DAWN_DUSK_R, SKY_COL_DAWN_DUSK_G, SKY_COL_DAWN_DUSK_B), newDawnDusk), 1.0 - rainStrength * 0.5) * rainMult * (eyeBrightFact * 0.5 + 0.5);
 #endif
