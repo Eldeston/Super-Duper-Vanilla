@@ -5,7 +5,7 @@ vec3 getGodRays(vec3 feetPlayerPos, float worldPosY, float dither){
 	#ifndef ENABLE_LIGHT
 		return vec3(0);
 	#else
-		float c = FOG_TOTAL_DENSITY_FALLOFF * (1.0 + isEyeInWater * 2.5 + rainStrength);
+		float c = FOG_TOTAL_DENSITY_FALLOFF * (1.0 + isEyeInWater * 2.5 + newRainStrength);
 		float b = FOG_VERTICAL_DENSITY_FALLOFF;
 
 		float nPlayerPosY = normalize(feetPlayerPos).y;

@@ -30,10 +30,10 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
 				vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.screenPos, gBMVNorm);
 			#endif
 
-			vec3 reflectCol = ambientLighting + getSkyRender(reflect(posVector.eyePlayerPos, material.normal), true) * eyeBrightFact;
+			vec3 reflectCol = getSkyRender(reflect(posVector.eyePlayerPos, material.normal), true);
 			reflectCol = mix(reflectCol, SSRCol.rgb, SSRCol.a);
 		#else
-			vec3 reflectCol = ambientLighting + getSkyRender(reflect(posVector.eyePlayerPos, material.normal), true) * eyeBrightFact;
+			vec3 reflectCol = getSkyRender(reflect(posVector.eyePlayerPos, material.normal), true);
 		#endif
 
 		// Simplified and modified version of BSL's reflection PBR calculation

@@ -34,7 +34,7 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
     vec2 planeUv = nPlayerPos.xz / nPlayerPos.y;
 
     #ifdef SKY_GROUND_COL
-        float c = FOG_TOTAL_DENSITY_FALLOFF * (1.0 + isEyeInWater * 2.5 + rainStrength) * 8.0;
+        float c = FOG_TOTAL_DENSITY_FALLOFF * (1.0 + isEyeInWater * 2.5 + newRainStrength) * 8.0;
         float skyPlaneFog = nPlayerPos.y < 0.0 ? exp(-length(planeUv) * c) : 0.0;
         vec3 finalCol = mix(skyCol, SKY_GROUND_COL * (skyCol + lightCol + ambientLighting), skyPlaneFog);
     #else
@@ -65,12 +65,12 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
                     vec2 clouds = cloudParallax(planeUv, frameTimeCounter, 8);
                 #endif
 
-                finalCol = mix(finalCol, ambientLighting + skyCol + clouds.x * lightCol, clouds.y * smootherstep(nPlayerPos.y * 2.0 - 0.125));
+                finalCol = mix(finalCol, skyCol + clouds.x * lightCol, clouds.y * smootherstep(nPlayerPos.y * 2.0 - 0.125));
             }
         #endif
     #endif
     
-    return pow(finalCol, vec3(GAMMA));
+    return pow(finalCol * eyeBrightFact * float(isEyeInWater != 1) + ambientLighting, vec3(GAMMA));
 }
 
 vec3 getSkyRender(vec3 playerPos, bool skyMask){

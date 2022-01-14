@@ -9,10 +9,11 @@ float torchBrightFact = eyeBrightnessSmooth.x / 240.0;
 float newDawnDusk = smoothstep(0.32, 0.96, dawnDusk);
 float newTwilight = cubed(twilight);
 
-float rainMult = 1.0 + rainStrength * eyeBrightFact * max(0.0, 1.0 - isEyeInWater);
+float newRainStrength = saturate(rainStrength * eyeBrightFact * float(isEyeInWater != 1));
+float rainMult = newRainStrength + 1.0;
 float underWaterMult = isEyeInWater + 1.0;
 
-float ambientLighting = AMBIENT_LIGHTING + nightVision;
+float ambientLighting = AMBIENT_LIGHTING + nightVision * 0.5;
 
 #if defined USE_CUSTOM_LIGHTCOL
     vec3 lightCol = USE_CUSTOM_LIGHTCOL;

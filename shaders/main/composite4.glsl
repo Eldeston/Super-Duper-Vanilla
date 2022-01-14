@@ -123,10 +123,9 @@ INOUT vec2 texcoord;
 
         #ifdef TEMPORAL_ACCUMULATION
             vec2 prevScreenPos = toPrevScreenPos(texcoord);
-            float prevMotion = max2(toPrevScreenPos(vec2(1)));
-            float velocity = abs(1.0 - prevMotion);
+            float velocity = 1.0 - abs(1.0 - max2(toPrevScreenPos(vec2(1))));
             
-            float blendFact = edgeVisibility(prevScreenPos * 0.8 + 0.1) * smoothstep(0.99999, 1.0, 1.0 - velocity);
+            float blendFact = edgeVisibility(prevScreenPos * 0.8 + 0.1) * smoothstep(0.99999, 1.0, velocity);
             float decay = exp2(-ACCUMILATION_SPEED * frameTime);
             blendFact = clamp(blendFact, decay * 0.5, decay);
             
@@ -155,9 +154,9 @@ INOUT vec2 texcoord;
             float accumulatedLumi = 1.0;
             // Recreate our lighting model if it were only shading a single pixel and apply exposure
             #if defined USE_SKY_LIGHTMAP
-                color /= max(getLuminance(lightCol * isEyeInWater * (1.0 - eyeBrightFact) * VOL_LIGHT_BRIGHTNESS + (AMBIENT_LIGHTING + nightVision + torchBrightFact * vec3(BLOCK_LIGHT_COL_R, BLOCK_LIGHT_COL_G, BLOCK_LIGHT_COL_B) + cubed(eyeBrightFact) * (lightCol * rainMult + skyCol)) * 0.36) * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
+                color /= max(getLuminance((torchBrightFact * vec3(BLOCK_LIGHT_COL_R, BLOCK_LIGHT_COL_G, BLOCK_LIGHT_COL_B) + eyeBrightFact * float(isEyeInWater != 1) * (lightCol * rainMult + skyCol) + ambientLighting) * 0.36) * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
             #else
-                color /= max(getLuminance(lightCol * isEyeInWater * (1.0 - SKY_LIGHT_AMOUNT) * VOL_LIGHT_BRIGHTNESS + (AMBIENT_LIGHTING + nightVision + torchBrightFact * vec3(BLOCK_LIGHT_COL_R, BLOCK_LIGHT_COL_G, BLOCK_LIGHT_COL_B) + cubed(SKY_LIGHT_AMOUNT) * (lightCol * rainMult + skyCol)) * 0.36) * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
+                color /= max(getLuminance((torchBrightFact * vec3(BLOCK_LIGHT_COL_R, BLOCK_LIGHT_COL_G, BLOCK_LIGHT_COL_B) + SKY_LIGHT_AMOUNT * float(isEyeInWater != 1) * (lightCol * rainMult + skyCol) + ambientLighting) * 0.36) * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
             #endif
         #else
             float accumulatedLumi = 1.0;
