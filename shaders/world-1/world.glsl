@@ -29,11 +29,11 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 // Disable if your world has an undefined lighting environment like The End or the Nether
 // #define USE_SKY_LIGHTMAP
 // Sky light amount
-#define SKY_LIGHT_AMOUNT 0.75
+#define SKY_LIGHT_AMOUNT 0.72
 
 // Vertical density falloff, larger means less thick fog at high altitudes, but thicker fog in lower altitudes
-#define FOG_VERTICAL_DENSITY_FALLOFF 0.025
+#define FOG_VERTICAL_DENSITY_FALLOFF 0.0125
 // Total density falloff, larger means thicker fog
-#define FOG_TOTAL_DENSITY_FALLOFF 0.1
+#define FOG_TOTAL_DENSITY_FALLOFF 0.05
 // Fog opacity
-#define FOG_OPACITY 0.75
+#define FOG_OPACITY 0.8

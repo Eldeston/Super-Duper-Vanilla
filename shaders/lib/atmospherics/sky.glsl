@@ -34,7 +34,7 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
     vec2 planeUv = nPlayerPos.xz / nPlayerPos.y;
 
     #ifdef SKY_GROUND_COL
-        float c = FOG_TOTAL_DENSITY_FALLOFF * (1.0 + isEyeInWater * 2.5 + newRainStrength) * 8.0;
+        float c = FOG_TOTAL_DENSITY_FALLOFF * (isEyeInWater * 2.5 + rainMult) * 8.0;
         float skyPlaneFog = nPlayerPos.y < 0.0 ? exp(-length(planeUv) * c) : 0.0;
         vec3 finalCol = mix(skyCol, SKY_GROUND_COL * (skyCol + lightCol + ambientLighting), skyPlaneFog);
     #else
@@ -45,7 +45,7 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
         finalCol += USE_HORIZON_COL * squared(1.0 - abs(nPlayerPos.y));
     #endif
 
-    float voidGradient = smootherstep((nPlayerPos.y + eyeBrightFact - 0.666) * 2.0);
+    float voidGradient = smootherstep((nPlayerPos.y + eyeBrightFact - 0.8) * PI);
     if(isEyeInWater == 1) finalCol = mix(fogColor * lightCol * 0.1, skyCol, voidGradient);
 
     #ifdef USE_SUN_MOON
