@@ -24,7 +24,7 @@ vec3 getFogRender(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY, b
 
     float c = FOG_TOTAL_DENSITY_FALLOFF * (1.0 + isEyeInWater * 2.5 + newRainStrength) * 2.0;
     float b = FOG_VERTICAL_DENSITY_FALLOFF * 2.0;
-    float fogMult = min(1.0, FOG_OPACITY * MIST_GROUND_FOG_BRIGHTNESS * (1.0 + isEyeInWater * 0.32 + newRainStrength) * 2.0);
+    float fogMult = min(1.0, FOG_OPACITY * MIST_GROUND_FOG_BRIGHTNESS * (1.0 + newRainStrength) * 2.0);
 
     // Mist fog
     float mistFog = atmoFog(normalize(eyePlayerPos).y, worldPosY, eyePlayerPosLength, c, b) * fogMult;
