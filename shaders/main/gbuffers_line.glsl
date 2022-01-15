@@ -26,11 +26,11 @@ INOUT vec4 glcolor;
 
         vec2 ScreenSize = vec2(viewWidth, viewHeight);
         vec2 lineScreenDirection = normalize((ndc2.xy - ndc1.xy) * ScreenSize);
-        vec2 lineOffset = vec2(-lineScreenDirection.y, lineScreenDirection.x) * 1.0 / ScreenSize;
+        vec2 lineOffset = vec2(-lineScreenDirection.y, lineScreenDirection.x) / ScreenSize;
 
         if(lineOffset.x < 0.0) lineOffset *= -1.0;
 
-        if (gl_VertexID % 2 == 0) gl_Position = vec4((ndc1 + vec3(lineOffset, 0.0)) * linePosStart.w, linePosStart.w);
+        if(gl_VertexID % 2 == 0) gl_Position = vec4((ndc1 + vec3(lineOffset, 0.0)) * linePosStart.w, linePosStart.w);
         else gl_Position = vec4((ndc1 - vec3(lineOffset, 0.0)) * linePosStart.w, linePosStart.w);
 
         glcolor = gl_Color;

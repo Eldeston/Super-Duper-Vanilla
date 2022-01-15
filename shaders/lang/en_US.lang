@@ -69,8 +69,9 @@ screen.RAY_TRACING=Ray tracing settings
 
 screen.WATER_SETTINGS=Water material settings
     option.WATER_BRIGHTNESS=Water brightness
-    option.WATER_BLUR_SIZE=Water blur size
-    option.WATER_DEPTH_SIZE=Water depth size
+    option.WATER_NOISE=Water noise
+    option.WATER_BLUR_SIZE=Water normal map blur size
+    option.WATER_DEPTH_SIZE=Water normal map depth size
     option.WATER_TILE_SIZE=Water tile size
     option.WATER_NORM=Water normals
     option.STYLIZED_WATER_ABSORPTION=Stylized water absorption
@@ -78,6 +79,7 @@ screen.WATER_SETTINGS=Water material settings
 
 screen.LAVA_SETTINGS=Lava material settings
     option.LAVA_BRIGHTNESS=Lava brightness
+    option.LAVA_NOISE=Lava noise
     option.LAVA_TILE_SIZE=Lava tile size
 
 #Atmospherics
