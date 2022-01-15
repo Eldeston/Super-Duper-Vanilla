@@ -153,14 +153,18 @@ INOUT mat3 TBN;
                         vec4 waterData = H2NWater(posVector.worldPos.xz * (1.0 - TBN[2].y) + posVector.worldPos.xz * TBN[2].y);
                         material.normal = normalize(TBN * waterData.xyz);
 
-                        waterNoise *= squared(0.128 + waterData.w);
+                        #ifdef WATER_NOISE
+                            waterNoise *= squared(0.128 + waterData.w);
+                        #endif
                     #endif
                 #else
                     #if !(defined END || defined NETHER)
                         vec2 waterUv = posVector.worldPos.xz * (1.0 - TBN[2].y) + posVector.worldPos.xz * TBN[2].y;
-                        float waterWaves = getCellNoise(waterUv / WATER_TILE_SIZE);
+                        float waterData = getCellNoise(waterUv / WATER_TILE_SIZE);
 
-                        waterNoise *= squared(0.128 + waterWaves);
+                        #ifdef WATER_NOISE
+                            waterNoise *= squared(0.128 + waterData);
+                        #endif
                     #endif
                 #endif
 
