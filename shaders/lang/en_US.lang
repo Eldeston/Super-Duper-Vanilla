@@ -32,6 +32,9 @@
     option.EXPOSURE=Exposure
     option.WHITE_PRESERVATION=White preservation
     option.GAMMA=Gamma
+    option.TINT_R=Red tint
+    option.TINT_G=Green tint
+    option.TINT_B=Blue tint
     screen.TONEMAP.comment=Edit camera's tone settings for saturation, contrast etc.
 
 #Lighting
