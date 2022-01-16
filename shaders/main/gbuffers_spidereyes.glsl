@@ -47,13 +47,9 @@ INOUT vec4 glcolor;
             material.albedo.rgb = glcolor.rgb;
         #endif
 
-        material.metallic = 0.04;
-        material.emissive = maxC(material.albedo.rgb);
-        material.smoothness = 1.0;
-
         material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
-        vec4 sceneCol = material.albedo + material.albedo * material.emissive;
+        vec4 sceneCol = vec4(material.albedo.rgb * 2.0, material.albedo.a);
 
         if(material.albedo.a < 0.01) discard;
         
@@ -61,6 +57,6 @@ INOUT vec4 glcolor;
         gl_FragData[0] = sceneCol; //gcolor
         gl_FragData[1] = vec4(material.normal * 0.5 + 0.5, 1); //colortex1
         gl_FragData[2] = vec4(material.albedo.rgb, 1); //colortex2
-        gl_FragData[3] = vec4(material.metallic, material.emissive, material.smoothness, 1); //colortex3
+        gl_FragData[3] = vec4(0.04, 1, 0.96, 1); //colortex3
     }
 #endif

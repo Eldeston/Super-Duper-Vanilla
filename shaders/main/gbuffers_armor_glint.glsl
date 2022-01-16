@@ -47,7 +47,7 @@ INOUT vec4 glcolor;
             material.albedo.rgb = glcolor.rgb;
         #endif
 
-        material.emissive = maxC(material.albedo.rgb);
+        material.emissive = getLuminance(material.albedo.rgb);
         material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
         vec4 sceneCol = vec4(material.albedo.rgb * (1.0 + material.emissive), material.albedo.a);

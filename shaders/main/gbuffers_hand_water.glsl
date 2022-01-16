@@ -123,8 +123,6 @@ INOUT mat3 TBN;
 
             material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
-            // Apply vanilla AO
-            material.ambient *= glcolor.a;
             material.light = lmCoord;
 
             sceneCol = complexShadingGbuffers(material, posVector, getRand1(posVector.screenPos.xy, 8));

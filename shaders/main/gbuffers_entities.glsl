@@ -123,13 +123,11 @@ INOUT mat3 TBN;
 
             material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
-            // Apply vanilla AO
-            material.ambient *= glcolor.a;
             material.light = lmCoord;
 
             // Lightning
             if(rBlockId == 10101){
-                material.metallic = 0.04;
+                material.metallic = 0.0;
                 material.emissive = 1.0;
                 material.smoothness = 0.0;
                 sceneCol = vec4(vec3(2), 1);

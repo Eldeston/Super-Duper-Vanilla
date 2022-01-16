@@ -108,18 +108,18 @@ INOUT vec4 glcolor;
             material.albedo.rgb = vec3(0);
         #endif
 
-        material.metallic = 0.0;
-        material.ss = 1.0;
-        material.emissive = 0.0;
-        material.smoothness = 0.0;
-
         vec4 sceneCol = vec4(0);
 
         if(material.albedo.a > 0.00001){
             material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
+            material.metallic = 0.0;
+            material.ss = 1.0;
+            material.emissive = 0.0;
+            material.smoothness = 0.0;
+
             // Apply vanilla AO
-            material.ambient = glcolor.a;
+            material.ambient = 1.0;
             material.light = lmCoord;
 
             sceneCol = complexShadingGbuffers(material, posVector, dither);

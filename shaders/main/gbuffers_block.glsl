@@ -139,8 +139,6 @@ INOUT mat3 TBN;
         if(material.albedo.a > 0.00001){
             material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
-            // Apply vanilla AO
-            material.ambient *= glcolor.a;
             material.light = lmCoord;
 
             #ifdef ENVIRO_MAT

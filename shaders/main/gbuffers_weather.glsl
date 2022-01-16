@@ -112,27 +112,28 @@ INOUT vec4 glcolor;
         #elif WHITE_MODE == 3
             material.albedo.rgb = glcolor.rgb;
         #endif
-
-        material.metallic = 0.02;
-        material.ss = 0.0;
-        material.emissive = 0.0;
-        material.smoothness = 0.0;
         
         vec4 sceneCol = vec4(0);
 
         if(material.albedo.a > 0.00001){
             material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
+            material.metallic = 0.0;
+            material.ss = 0.0;
+            material.emissive = 0.0;
+            material.smoothness = 0.0;
+
             // Apply vanilla AO
-            material.ambient = glcolor.a;
+            material.ambient = 1.0;
             material.light = lmCoord;
 
             sceneCol = complexShadingGbuffers(material, posVector, getRand1(posVector.screenPos.xy, 8));
         } else discard;
 
-    /* DRAWBUFFERS:012 */
+    /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; //gcolor
         gl_FragData[1] = vec4(material.normal * 0.5 + 0.5, 1); //colortex1
         gl_FragData[2] = vec4(material.albedo.rgb, 1); //colortex2
+        gl_FragData[3] = vec4(0.04, 0, 0.96, 1); //colortex3
     }
 #endif

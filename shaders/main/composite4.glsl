@@ -74,8 +74,6 @@ INOUT vec2 texcoord;
     #endif
 
     #ifdef TEMPORAL_ACCUMULATION
-        #include "/lib/lighting/shdDistort.glsl"
-
         vec2 toPrevScreenPos(vec2 currentPos){
             // Previous frame reprojection from Chocapic13
             vec4 viewPosPrev = gbufferProjectionInverse * vec4(vec3(currentPos.xy, texture2D(depthtex0, currentPos.xy).x) * 2.0 - 1.0, 1);
