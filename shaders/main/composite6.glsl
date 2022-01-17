@@ -126,12 +126,13 @@ INOUT vec2 texcoord;
         #endif
 
         color *= EXPOSURE;
+
         // Tonemap and clamp
         color = toneA(whitePreservingLumaBasedReinhardToneMapping(color)) * vec3(TINT_R, TINT_G, TINT_B);
 
         #ifdef VIGNETTE
-            // Apply vignette
-            color *= pow(max(1.0 - length(texcoord - 0.5), 0.0), VIGNETTE_INTENSITY);
+            // BSL's vignette, modified to control intensity
+            color *= max(0.0, 1.0 - length(texcoord - 0.5) * VIGNETTE_INTENSITY * (1.0 - getLuminance(color)));
         #endif
 
     /* DRAWBUFFERS:0 */
