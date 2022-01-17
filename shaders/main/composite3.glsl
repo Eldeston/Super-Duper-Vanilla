@@ -13,8 +13,6 @@ INOUT vec2 texcoord;
 
 #ifdef FRAGMENT
     #ifdef BLOOM
-        const bool colortex2MipmapEnabled = true;
-        
         uniform sampler2D colortex2;
 
         uniform float viewHeight;
@@ -28,11 +26,11 @@ INOUT vec2 texcoord;
             eBloom += texture2D(colortex2, texcoord).rgb * 0.375;
             eBloom += texture2D(colortex2, texcoord + vec2(0, pixelSize)).rgb * 0.25;
             eBloom += texture2D(colortex2, texcoord + vec2(0, pixelSize * 2.0)).rgb * 0.0625;
+        /* DRAWBUFFERS:2 */
+            gl_FragData[0] = vec4(eBloom, 1); //colortex2
         #else
-            vec3 eBloom = vec3(0);
+        /* DRAWBUFFERS:2 */
+            gl_FragData[0] = vec4(0, 0, 0, 1); //colortex2
         #endif
-
-    /* DRAWBUFFERS:2 */
-        gl_FragData[0] = vec4(eBloom, 1); //colortex2
     }
 #endif

@@ -13,8 +13,6 @@ INOUT vec2 texcoord;
 
 #ifdef FRAGMENT
     #ifdef BLOOM
-        const bool colortex2MipmapEnabled = true;
-        
         uniform sampler2D colortex2;
 
         uniform float viewWidth;
@@ -25,27 +23,29 @@ INOUT vec2 texcoord;
             vec2 bloomUv = (uv - coords) * scale;
             float padding = 0.5 + 0.005 * scale;
 
-            vec3 eBloom = vec3(0);
             if(abs(bloomUv.x - 0.5) < padding && abs(bloomUv.y - 0.5) < padding){
-                eBloom += texture2D(colortex2, bloomUv + vec2(pixelSize * 2.0, 0)).rgb * 0.0625;
+                vec3 eBloom = texture2D(colortex2, bloomUv + vec2(pixelSize * 2.0, 0)).rgb * 0.0625;
                 eBloom += texture2D(colortex2, bloomUv + vec2(pixelSize, 0)).rgb * 0.25;
                 eBloom += texture2D(colortex2, bloomUv).rgb * 0.375;
                 eBloom += texture2D(colortex2, bloomUv - vec2(pixelSize, 0)).rgb * 0.25;
-                eBloom += texture2D(colortex2, bloomUv - vec2(pixelSize * 2.0, 0)).rgb * 0.0625;
+                return eBloom + texture2D(colortex2, bloomUv - vec2(pixelSize * 2.0, 0)).rgb * 0.0625;
             }
             
-            return eBloom;
+            return vec3(0);
         }
     #endif
 
+    // 1 6 15 20 15 6 1 = 64
+    //
+
     void main(){
         #if BLOOM != 0
-            vec3 eBloom = bloomTile(texcoord, vec2(0), 2.0 * BLOOM_LOD);
-            eBloom += bloomTile(texcoord, vec2(0, 0.26), 3.0 * BLOOM_LOD);
-            eBloom += bloomTile(texcoord, vec2(0.135, 0.26), 4.0 * BLOOM_LOD);
-            eBloom += bloomTile(texcoord, vec2(0.2075, 0.26), 5.0 * BLOOM_LOD);
-            eBloom += bloomTile(texcoord, vec2(0.135, 0.3325), 6.0 * BLOOM_LOD);
-            eBloom += bloomTile(texcoord, vec2(0.160625, 0.3325), 7.0 * BLOOM_LOD);
+            vec3 eBloom = bloomTile(texcoord, vec2(0), 2.0);
+            eBloom += bloomTile(texcoord, vec2(0, 0.26), 3.0);
+            eBloom += bloomTile(texcoord, vec2(0.135, 0.26), 4.0);
+            eBloom += bloomTile(texcoord, vec2(0.2075, 0.26), 5.0);
+            eBloom += bloomTile(texcoord, vec2(0.135, 0.3325), 6.0);
+            eBloom += bloomTile(texcoord, vec2(0.160625, 0.3325), 7.0);
         #else
             vec3 eBloom = vec3(0);
         #endif

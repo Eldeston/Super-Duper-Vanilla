@@ -22,7 +22,6 @@
     value.BLOOM.0=OFF
     value.BLOOM.1=Emission
     value.BLOOM.2=Luminance
-    option.BLOOM_LOD=Bloom LOD
     option.BLOOM_BRIGHTNESS=Bloom brightness
     option.OUTLINES=Outlines
     option.OUTLINE_BRIGHTNESS=Outline brightness
