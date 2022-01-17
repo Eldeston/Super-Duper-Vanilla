@@ -50,6 +50,11 @@ INOUT vec4 glcolor;
     uniform float viewWidth;
     uniform float viewHeight;
 
+    #ifdef TEMPORAL_ACCUMULATION
+        // Get frame time
+        uniform float frameTimeCounter;
+    #endif
+    
     // Get world time
     uniform float day;
     uniform float dawnDusk;
@@ -80,7 +85,6 @@ INOUT vec4 glcolor;
         // Declare and get positions
         positionVectors posVector;
         posVector.screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
-        float dither = getRand1(posVector.screenPos.xy, 8);
         posVector.viewPos = toView(posVector.screenPos);
         posVector.eyePlayerPos = mat3(gbufferModelViewInverse) * posVector.viewPos;
         posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
@@ -122,7 +126,11 @@ INOUT vec4 glcolor;
             material.ambient = 1.0;
             material.light = lmCoord;
 
-            sceneCol = complexShadingGbuffers(material, posVector, dither);
+            #ifdef TEMPORAL_ACCUMULATION
+                sceneCol = complexShadingGbuffers(material, posVector, toRandPerFrame(getRand1(posVector.screenPos.xy, 8), frameTimeCounter));
+            #else
+                sceneCol = complexShadingGbuffers(material, posVector, getRand1(posVector.screenPos.xy, 8));
+            #endif
         } else discard;
 
     /* DRAWBUFFERS:012 */

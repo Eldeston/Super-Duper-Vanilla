@@ -60,6 +60,11 @@ INOUT mat3 TBN;
     uniform float viewWidth;
     uniform float viewHeight;
 
+    #ifdef TEMPORAL_ACCUMULATION
+        // Get frame time
+        uniform float frameTimeCounter;
+    #endif
+    
     // Get world time
     uniform float day;
     uniform float dawnDusk;
@@ -113,19 +118,23 @@ INOUT mat3 TBN;
         int rBlockId = int(blockId + 0.5);
         getPBR(material, posVector, TBN, glcolor.rgb, texCoord, rBlockId);
 
-        // If player
-        if(rBlockId == 0) material.ambient = 1.0;
-
         vec4 sceneCol = vec4(0);
 
         if(material.albedo.a > 0.00001){
             material.albedo.rgb = mix(material.albedo.rgb, entityColor.rgb, entityColor.a);
 
+            // If player
+            if(rBlockId == 0) material.ambient = 1.0;
+
             material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
             material.light = lmCoord;
 
-            sceneCol = complexShadingGbuffers(material, posVector, getRand1(posVector.screenPos.xy, 8));
+            #ifdef TEMPORAL_ACCUMULATION
+                sceneCol = complexShadingGbuffers(material, posVector, toRandPerFrame(getRand1(posVector.screenPos.xy, 8), frameTimeCounter));
+            #else
+                sceneCol = complexShadingGbuffers(material, posVector, getRand1(posVector.screenPos.xy, 8));
+            #endif
         } else discard;
 
     /* DRAWBUFFERS:0123 */

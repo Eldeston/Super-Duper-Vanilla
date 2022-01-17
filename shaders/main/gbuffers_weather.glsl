@@ -52,6 +52,11 @@ INOUT vec4 glcolor;
     uniform float viewWidth;
     uniform float viewHeight;
 
+    #ifdef TEMPORAL_ACCUMULATION
+        // Get frame time
+        uniform float frameTimeCounter;
+    #endif
+
     // Get world time
     uniform float day;
     uniform float dawnDusk;
@@ -127,7 +132,11 @@ INOUT vec4 glcolor;
             material.ambient = 1.0;
             material.light = lmCoord;
 
-            sceneCol = complexShadingGbuffers(material, posVector, getRand1(posVector.screenPos.xy, 8));
+            #ifdef TEMPORAL_ACCUMULATION
+                sceneCol = complexShadingGbuffers(material, posVector, toRandPerFrame(getRand1(posVector.screenPos.xy, 8), frameTimeCounter));
+            #else
+                sceneCol = complexShadingGbuffers(material, posVector, getRand1(posVector.screenPos.xy, 8));
+            #endif
         } else discard;
 
     /* DRAWBUFFERS:0123 */

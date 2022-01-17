@@ -59,8 +59,10 @@ INOUT vec3 norm;
     uniform float viewWidth;
     uniform float viewHeight;
 
-    // Get frame time
-    uniform float frameTimeCounter;
+    #if defined CLOUD_FADE || defined TEMPORAL_ACCUMULATION
+        // Get frame time
+        uniform float frameTimeCounter;
+    #endif
 
     // Get world time
     uniform float day;
@@ -125,18 +127,24 @@ INOUT vec3 norm;
             material.albedo = vec4(albedoAlpha);
         #endif
 
-        material.metallic = 0.04;
-        material.ss = 0.5;
-        material.emissive = 0.0;
-        material.smoothness = 0.0;
-
-        // Apply vanilla AO
-        material.ambient = 1.0;
-        material.light = vec2(0, 1);
-
         vec4 sceneCol = vec4(0);
-        if(material.albedo.a > 0.00001) sceneCol = complexShadingGbuffers(material, posVector, getRand1(posVector.screenPos.xy, 8));
-        else discard;
+
+        if(material.albedo.a > 0.00001){
+            material.metallic = 0.04;
+            material.ss = 0.5;
+            material.emissive = 0.0;
+            material.smoothness = 0.0;
+
+            // Apply vanilla AO
+            material.ambient = 1.0;
+            material.light = vec2(0, 1);
+
+            #ifdef TEMPORAL_ACCUMULATION
+                sceneCol = complexShadingGbuffers(material, posVector, toRandPerFrame(getRand1(posVector.screenPos.xy, 8), frameTimeCounter));
+            #else
+                sceneCol = complexShadingGbuffers(material, posVector, getRand1(posVector.screenPos.xy, 8));
+            #endif
+        } else discard;
 
     /* DRAWBUFFERS:012 */
         gl_FragData[0] = sceneCol; //gcolor

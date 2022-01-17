@@ -195,7 +195,11 @@ INOUT mat3 TBN;
                 if(rBlockId != 10034) enviroPBR(material, posVector, TBN[2]);
             #endif
 
-            sceneCol = complexShadingGbuffers(material, posVector, getRand1(posVector.screenPos.xy, 8));
+            #ifdef TEMPORAL_ACCUMULATION
+                sceneCol = complexShadingGbuffers(material, posVector, toRandPerFrame(getRand1(posVector.screenPos.xy, 8), frameTimeCounter));
+            #else
+                sceneCol = complexShadingGbuffers(material, posVector, getRand1(posVector.screenPos.xy, 8));
+            #endif
         } else discard;
 
     /* DRAWBUFFERS:0123 */

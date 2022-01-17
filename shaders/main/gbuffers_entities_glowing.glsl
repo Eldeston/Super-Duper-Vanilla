@@ -109,13 +109,13 @@ INOUT mat3 TBN;
         int rBlockId = int(blockId + 0.5);
         getPBR(material, posVector, TBN, glcolor.rgb, texCoord, rBlockId);
 
-        // If player
-        if(rBlockId == 0) material.ambient = 1.0;
-
         vec4 sceneCol = vec4(0);
 
         if(material.albedo.a > 0.00001){
             material.albedo.rgb = mix(material.albedo.rgb, entityColor.rgb, entityColor.a);
+
+            // If player
+            if(rBlockId == 0) material.ambient = 1.0;
 
             material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 

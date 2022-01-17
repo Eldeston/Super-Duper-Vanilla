@@ -2,21 +2,6 @@
 #include "/lib/structs.glsl"
 #include "/lib/settings.glsl"
 
-uniform int isEyeInWater;
-
-uniform float nightVision;
-uniform float rainStrength;
-
-uniform ivec2 eyeBrightnessSmooth;
-
-// Get frame time
-uniform float frameTimeCounter;
-
-// Get world time
-uniform float day;
-uniform float dawnDusk;
-uniform float twilight;
-
 uniform int blockEntityId;
 
 INOUT vec2 lmCoord;
@@ -32,10 +17,6 @@ INOUT vec4 glcolor;
 INOUT mat3 TBN;
 
 #ifdef VERTEX
-    #include "/lib/vertex/vertexWave.glsl"
-
-    uniform vec3 cameraPosition;
-
     uniform mat4 gbufferModelView;
     uniform mat4 gbufferModelViewInverse;
 
@@ -55,11 +36,6 @@ INOUT mat3 TBN;
 	    vec3 normal = normalize(gl_NormalMatrix * gl_Normal);
 
 	    TBN = mat3(gbufferModelViewInverse) * mat3(tangent, binormal, normal);
-
-        #ifdef ANIMATE
-            vec3 worldPos = vertexPos.xyz + cameraPosition;
-	        getWave(vertexPos.xyz, worldPos, texCoord, mc_midTexCoord, float(blockEntityId), lmCoord.y);
-        #endif
 
         #if DEFAULT_MAT != 2 && defined AUTO_GEN_NORM
             vec2 texSize = abs(texCoord - mc_midTexCoord.xy);
@@ -95,6 +71,21 @@ INOUT mat3 TBN;
     /* Screen resolutions */
     uniform float viewWidth;
     uniform float viewHeight;
+
+    // Get frame time
+    uniform float frameTimeCounter;
+    
+    // Get world time
+    uniform float day;
+    uniform float dawnDusk;
+    uniform float twilight;
+
+    uniform int isEyeInWater;
+
+    uniform float nightVision;
+    uniform float rainStrength;
+
+    uniform ivec2 eyeBrightnessSmooth;
 
     uniform vec3 fogColor;
 
@@ -145,7 +136,11 @@ INOUT mat3 TBN;
                 enviroPBR(material, posVector, TBN[2]);
             #endif
 
-            sceneCol = complexShadingGbuffers(material, posVector, getRand1(posVector.screenPos.xy, 8));
+            #ifdef TEMPORAL_ACCUMULATION
+                sceneCol = complexShadingGbuffers(material, posVector, toRandPerFrame(getRand1(posVector.screenPos.xy, 8), frameTimeCounter));
+            #else
+                sceneCol = complexShadingGbuffers(material, posVector, getRand1(posVector.screenPos.xy, 8));
+            #endif
         } else discard;
 
     /* DRAWBUFFERS:0123 */
