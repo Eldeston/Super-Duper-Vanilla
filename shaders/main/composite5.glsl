@@ -17,8 +17,6 @@ INOUT vec2 texcoord;
     #ifdef DOF
         const bool gcolorMipmapEnabled = true;
 
-        const float centerDepthHalflife = 1.0;
-
         uniform sampler2D depthtex1;
 
         uniform mat4 gbufferProjectionInverse;
