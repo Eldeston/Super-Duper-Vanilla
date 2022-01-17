@@ -23,14 +23,18 @@ INOUT vec2 texcoord;
 
     uniform int isEyeInWater;
 
+    /* Screen resolutions */
+    uniform float viewWidth;
+    uniform float viewHeight;
+
     uniform float nightVision;
     uniform float rainStrength;
-
-    uniform ivec2 eyeBrightnessSmooth;
 
     uniform float day;
     uniform float dawnDusk;
     uniform float twilight;
+
+    uniform ivec2 eyeBrightnessSmooth;
 
     uniform vec3 fogColor;
 
@@ -38,13 +42,17 @@ INOUT vec2 texcoord;
 
     #include "/lib/utility/texFunctions.glsl"
 
+    #include "/lib/post/spectral.glsl"
+
     void main(){
-        vec3 sceneCol = texture2D(gcolor, texcoord).rgb;
+        // Spectral
+        float spectralOutline = getSpectral(colortex4, texcoord, 2.0);
+        vec3 sceneCol = texture2D(gcolor, texcoord).rgb * (1.0 - spectralOutline) + spectralOutline * 2.0;
 
         #if BLOOM == 1
-            vec3 bloomCol = sceneCol * texture2D(colortex3, texcoord).g;
+            vec3 bloomCol = sceneCol * (texture2D(colortex3, texcoord).g + spectralOutline);
         #elif BLOOM == 2
-            vec3 bloomCol = sceneCol * (1.0 + texture2D(colortex3, texcoord).g * 4.0);
+            vec3 bloomCol = sceneCol * (1.0 + (texture2D(colortex3, texcoord).g + spectralOutline) * 4.0);
         #endif
 
         float fogMult = min(1.0, FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (rainMult + isEyeInWater * 0.256)) * (1.0 - newTwilight);

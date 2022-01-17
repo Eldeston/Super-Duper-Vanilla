@@ -117,11 +117,11 @@ uniform sampler2D texture;
 
             // Don't generate normals if it's on the edge of the texture
             if(max2(st - 0.5) < 0.5 - 0.0125){
-                float d = getLuminance(material.albedo.rgb);
-                float dx = d - getLuminance(texture2D(texture, mix(minTexCoord, maxTexCoord, (st + vec2(0.0125, 0)))).rgb);
-                float dy = d - getLuminance(texture2D(texture, mix(minTexCoord, maxTexCoord, (st + vec2(0, 0.0125)))).rgb);
+                float d = length(material.albedo.rgb);
+                float dx = d - length(texture2D(texture, mix(minTexCoord, maxTexCoord, (st + vec2(0.0125, 0)))).rgb);
+                float dy = d - length(texture2D(texture, mix(minTexCoord, maxTexCoord, (st + vec2(0, 0.0125)))).rgb);
 
-                material.normal = normalize(TBN * normalize(vec3(vec2(dx, dy) / 0.125, 1)));
+                material.normal = normalize(TBN * normalize(vec3(vec2(dx, dy) / 0.125, 2)));
             }
         #else
             // Assign albedo

@@ -6,6 +6,9 @@
     profile.ULTRA=Ultra
 
 #Camera
+    option.DOF=Depth of field
+    option.FOCAL_RANGE=Focal range
+    option.DOF_LOD=Depth of field LOD
     option.VIGNETTE=Vignette
     option.UNDERWATER_BLUR=Underwater blur
     option.VIGNETTE_INTENSITY=Vignette intensity

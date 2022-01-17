@@ -116,6 +116,7 @@ INOUT mat3 TBN;
 
         if(material.albedo.a > 0.00001){
             material.albedo.rgb = mix(material.albedo.rgb, entityColor.rgb, entityColor.a);
+            material.emissive = float(entityColor.a > 0.05) * 0.125;
 
             material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
