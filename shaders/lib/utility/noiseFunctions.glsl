@@ -24,16 +24,13 @@ vec3 getRand3(vec2 st, int tile){
 }
 
 float toRandPerFrame(float rand, float time){
-    if(NOISE_SPEED == 0) return rand;
     return fract(rand + time * NOISE_SPEED);
 }
 
 vec2 toRandPerFrame(vec2 rand, float time){
-    if(NOISE_SPEED == 0) return rand;
     return fract(rand + time * NOISE_SPEED);
 }
 
 vec3 toRandPerFrame(vec3 rand, float time){
-    if(NOISE_SPEED == 0) return rand;
     return fract(rand + time * NOISE_SPEED);
 }

@@ -25,6 +25,10 @@ INOUT vec2 texcoord;
         uniform float viewWidth;
         uniform float viewHeight;
 
+        #if ANTI_ALIASING == 2
+            uniform float frameTimeCounter;
+        #endif
+
         float toView(float depth){
             return gbufferProjectionInverse[3].z / (gbufferProjectionInverse[2].w * (depth * 2.0 - 1.0) + gbufferProjectionInverse[3].w);
         }
@@ -35,7 +39,13 @@ INOUT vec2 texcoord;
     void main(){
         #ifdef DOF
             float depth = min(1.0, abs(toView(texture2D(depthtex1, texcoord).r) - toView(centerDepthSmooth)) / FOCAL_RANGE);
-            float dither = getRand1(texcoord, 8) * PI2;
+
+            #if ANTI_ALIASING == 2
+                float dither = toRandPerFrame(getRand1(texcoord, 8), frameTimeCounter) * PI2;
+            #else
+                float dither = getRand1(texcoord, 8) * PI2;
+            #endif
+
             vec2 randVec = (vec2(sin(dither), cos(dither)) * depth) / (vec2(viewWidth, viewHeight) / exp2(DOF_LOD));
             
             vec3 color = texture2D(gcolor, texcoord + randVec).rgb;
