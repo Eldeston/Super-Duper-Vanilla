@@ -15,6 +15,14 @@ INOUT mat3 TBN;
 uniform mat4 gbufferModelViewInverse;
 
 #ifdef VERTEX
+    #if ANTI_ALIASING == 2
+        /* Screen resolutions */
+        uniform float viewWidth;
+        uniform float viewHeight;
+
+        #include "/lib/utility/taaJitter.glsl"
+    #endif
+    
     attribute vec4 mc_Entity;
     attribute vec4 at_tangent;
 
@@ -32,6 +40,10 @@ uniform mat4 gbufferModelViewInverse;
         gl_Position = ftransform();
 
         gl_Position.z *= 0.01;
+
+        #if ANTI_ALIASING == 2
+            gl_Position.xy += jitterPos(gl_Position.w);
+        #endif
 
         glcolor = gl_Color;
     }

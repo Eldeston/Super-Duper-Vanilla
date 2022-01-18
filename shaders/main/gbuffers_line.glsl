@@ -9,6 +9,10 @@ INOUT vec4 glcolor;
     uniform float viewWidth;
     uniform float viewHeight;
 
+    #if ANTI_ALIASING == 2
+        #include "/lib/utility/taaJitter.glsl"
+    #endif
+
     const float VIEW_SHRINK = 1.0 - (1.0 / 256.0);
     const mat4 VIEW_SCALE = mat4(
         VIEW_SHRINK, 0.0, 0.0, 0.0,
@@ -32,6 +36,10 @@ INOUT vec4 glcolor;
 
         if(gl_VertexID % 2 == 0) gl_Position = vec4((ndc1 + vec3(lineOffset, 0.0)) * linePosStart.w, linePosStart.w);
         else gl_Position = vec4((ndc1 - vec3(lineOffset, 0.0)) * linePosStart.w, linePosStart.w);
+
+        #if ANTI_ALIASING == 2
+            gl_Position.xy += jitterPos(gl_Position.w);
+        #endif
 
         glcolor = gl_Color;
     }

@@ -32,6 +32,14 @@ INOUT vec4 glcolor;
 INOUT mat3 TBN;
 
 #ifdef VERTEX
+    #if ANTI_ALIASING == 2
+        /* Screen resolutions */
+        uniform float viewWidth;
+        uniform float viewHeight;
+
+        #include "/lib/utility/taaJitter.glsl"
+    #endif
+    
     #include "/lib/vertex/vertexWave.glsl"
 
     uniform vec3 cameraPosition;
@@ -71,6 +79,10 @@ INOUT mat3 TBN;
         #endif
         
 	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
+
+        #if ANTI_ALIASING == 2
+            gl_Position.xy += jitterPos(gl_Position.w);
+        #endif
 
         glcolor = gl_Color;
     }

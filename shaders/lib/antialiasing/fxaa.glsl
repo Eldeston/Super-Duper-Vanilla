@@ -7,16 +7,16 @@
 
 float quality[12] = float[12](1.0, 1.0, 1.0, 1.0, 1.0, 1.5, 2.0, 2.0, 2.0, 2.0, 4.0, 8.0);
 
-vec4 textureFXAA(sampler2D aliased, vec2 uv, vec2 resolution){
+vec3 textureFXAA(sampler2D aliased, vec2 uv, vec2 resolution){
     // Inverse or the reciprocate of resolution
     vec2 rcpRes = 1.0 / resolution.xy;
     float pixSize = min2(rcpRes);
 
     // Aliased texture
-    vec4 colorCenter = texture2DLod(aliased, uv, 0);
+    vec3 colorCenter = texture2DLod(aliased, uv, 0).rgb;
 
     // Luma at the current fragment
-    float lumaCenter = getLuminance(colorCenter.rgb);
+    float lumaCenter = getLuminance(colorCenter);
 
     // Luma at the four direct neighbours of the current fragment.
     float lumaUp = getLuminance(texture2DLod(aliased, uv + vec2(0, 1) * rcpRes, 0).rgb);
@@ -179,5 +179,5 @@ vec4 textureFXAA(sampler2D aliased, vec2 uv, vec2 resolution){
     else finalUv.x += finalOffset * stepLength;
 
     // Read the color at the new UV coordinates, and use it.
-    return texture2DLod(aliased, finalUv, 0);
+    return texture2DLod(aliased, finalUv, 0).rgb;
 }

@@ -13,6 +13,14 @@ INOUT vec4 glcolor;
 uniform mat4 gbufferModelViewInverse;
 
 #ifdef VERTEX
+    #if ANTI_ALIASING == 2
+        /* Screen resolutions */
+        uniform float viewWidth;
+        uniform float viewHeight;
+
+        #include "/lib/utility/taaJitter.glsl"
+    #endif
+    
     void main(){
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         lmCoord  = (gl_TextureMatrix[1] * gl_MultiTexCoord1).xy;
@@ -20,6 +28,10 @@ uniform mat4 gbufferModelViewInverse;
 	    norm = normalize(mat3(gbufferModelViewInverse) * (gl_NormalMatrix * gl_Normal));
         
 	    gl_Position = ftransform();
+
+        #if ANTI_ALIASING == 2
+            gl_Position.xy += jitterPos(gl_Position.w);
+        #endif
 
         glcolor = gl_Color;
     }

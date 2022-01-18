@@ -10,6 +10,14 @@ INOUT vec3 norm;
 uniform mat4 gbufferModelViewInverse;
 
 #ifdef VERTEX
+    #if ANTI_ALIASING == 2
+        /* Screen resolutions */
+        uniform float viewWidth;
+        uniform float viewHeight;
+
+        #include "/lib/utility/taaJitter.glsl"
+    #endif
+    
     uniform mat4 gbufferModelView;
 
     #if defined DOUBLE_VANILLA_CLOUDS
@@ -34,6 +42,10 @@ uniform mat4 gbufferModelViewInverse;
 	    norm = normalize(mat3(gbufferModelViewInverse) * (gl_NormalMatrix * gl_Normal));
         
 	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
+
+        #if ANTI_ALIASING == 2
+            gl_Position.xy += jitterPos(gl_Position.w);
+        #endif
     }
 #endif
 

@@ -13,26 +13,66 @@ INOUT vec2 texcoord;
 
 #ifdef FRAGMENT
     #if ANTI_ALIASING != 0
-        const bool gcolorMipmapEnabled = true;
-        
         uniform float viewWidth;
         uniform float viewHeight;
     #endif
-    
-    uniform sampler2D gcolor;
 
-    #include "/lib/post/fxaa.glsl"
+    #if ANTI_ALIASING == 1
+        const bool gcolorMipmapEnabled = true;
+
+        #include "/lib/antialiasing/fxaa.glsl"
+    #elif ANTI_ALIASING == 2
+        const bool colortex6MipmapEnabled = true;
+        const bool colortex6Clear = false;
+
+        uniform sampler2D depthtex0;
+        uniform sampler2D colortex6;
+
+        /* Matrix uniforms */
+        // View matrix uniforms
+        uniform mat4 gbufferModelViewInverse;
+        uniform mat4 gbufferPreviousModelView;
+
+        // Projection matrix uniforms
+        uniform mat4 gbufferProjectionInverse;
+        uniform mat4 gbufferPreviousProjection;
+
+        /* Position uniforms */
+        uniform vec3 cameraPosition;
+        uniform vec3 previousCameraPosition;
+
+        vec2 toPrevScreenPos(vec2 currentPos){
+            // Previous frame reprojection from Chocapic13
+            vec4 viewPosPrev = gbufferProjectionInverse * vec4(vec3(currentPos.xy, texture2D(depthtex0, currentPos.xy).x) * 2.0 - 1.0, 1);
+            viewPosPrev /= viewPosPrev.w;
+            viewPosPrev = gbufferModelViewInverse * viewPosPrev;
+
+            vec4 prevPosition = viewPosPrev + vec4(cameraPosition - previousCameraPosition, 0);
+            prevPosition = gbufferPreviousModelView * prevPosition;
+            prevPosition = gbufferPreviousProjection * prevPosition;
+            return prevPosition.xy / prevPosition.w * 0.5 + 0.5;
+        }
+
+        #include "/lib/antialiasing/taa.glsl"
+    #endif
+
+    uniform sampler2D gcolor;
 
     void main(){
         #if ANTI_ALIASING == 1
-            vec3 color = textureFXAA(gcolor, texcoord, vec2(viewWidth, viewHeight)).rgb;
+            vec3 color = textureFXAA(gcolor, texcoord, vec2(viewWidth, viewHeight));
         #elif ANTI_ALIASING == 2
-            vec3 color = textureFXAA(gcolor, texcoord, vec2(viewWidth, viewHeight)).rgb;
+            vec3 color = textureTAA(gcolor, colortex6, texcoord, vec2(viewWidth, viewHeight));
         #else
             vec3 color = texture2D(gcolor, texcoord).rgb;
         #endif
         
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(color, 1); //gcolor
+
+        #if ANTI_ALIASING == 2
+        /* DRAWBUFFERS:06 */
+            gl_FragData[1] = vec4(color, 1); //colortex6
+        #endif
     }
 #endif
