@@ -20,5 +20,5 @@ vec3 textureTAA(sampler2D aliased, sampler2D temporal, vec2 screenPos, vec2 reso
     
     prevColor = clamp(prevColor, boxMin, boxMax);
 
-    return mix(currColor, prevColor, 0.96);
+    return mix(currColor, prevColor, 0.9);
 }
