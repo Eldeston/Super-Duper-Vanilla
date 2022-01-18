@@ -57,6 +57,8 @@ INOUT vec2 screenCoord;
     #if ANTI_ALIASING == 2
         // Get frame time
         uniform float frameTimeCounter;
+
+        #include "/lib/utility/taaJitter.glsl"
     #endif
 
     // Get world time
@@ -98,15 +100,21 @@ INOUT vec2 screenCoord;
         // Declare and get positions
         positionVectors posVector;
         posVector.screenPos = vec3(screenCoord, texture2D(depthtex0, screenCoord).x);
+        
+        // Get sky mask
+        bool skyMask = posVector.screenPos.z == 1;
+
+        // Jitter the sky only
+        #if ANTI_ALIASING == 2
+            if(skyMask) posVector.screenPos.xy += jitterPos(-0.5);
+        #endif
+        
         posVector.viewPos = toView(posVector.screenPos);
         posVector.eyePlayerPos = mat3(gbufferModelViewInverse) * posVector.viewPos;
         posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
         posVector.worldPos = posVector.feetPlayerPos + cameraPosition;
 
         vec3 sceneCol = texture2D(gcolor, screenCoord).rgb;
-
-        // Render lighting
-        bool skyMask = posVector.screenPos.z == 1;
 
         // Get sky color
         vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyMask, skyMask);

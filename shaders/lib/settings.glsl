@@ -55,7 +55,7 @@
 #define LAVA_TILE_SIZE 32 // Tile size of the lava [4 8 16 24 32 40 48 56 64]
 #define LAVA_NOISE // Enable lava noise. Varies the lava brightness by noise similar to Minecraft Dungeons.
 
-// #define SSGI // Enables SSGI, currently experimental and may not be very optimized, may improve the ambience of dark areas despite the noisiness. Turn on temporal acumulation and FXAA for best results.
+// #define SSGI // Enables SSGI, currently experimental and may not be very optimized, may improve the ambience of dark areas despite the noisiness. Turn on TAA for best results.
 #define SSGI_STEPS 20 // SSGI steps, more steps means more quality, and more quality means more performance [16 20 24 28 32]
 #define SSGI_BISTEPS 4 // SSGI binary refinement steps, more steps means more accurate GI, and more quality means more performance [0 4 8 16]
 
