@@ -128,7 +128,7 @@ INOUT vec2 screenCoord;
             vec3 matRaw0 = texture2D(colortex3, screenCoord).xyz;
             material.metallic = matRaw0.x; material.emissive = matRaw0.y; material.smoothness = matRaw0.z;
 
-            #ifdef TEMPORAL_ACCUMULATION
+            #if ANTI_ALIASING == 2
                 vec3 dither = toRandPerFrame(getRand3(screenCoord, 8), frameTimeCounter);
             #else
                 vec3 dither = getRand3(screenCoord, 8);

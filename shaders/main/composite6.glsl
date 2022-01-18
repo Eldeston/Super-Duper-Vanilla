@@ -12,7 +12,7 @@ INOUT vec2 texcoord;
 #endif
 
 #ifdef FRAGMENT
-    #if defined AUTO_EXPOSURE || defined TEMPORAL_ACCUMULATION
+    #ifdef AUTO_EXPOSURE
         const bool gcolorMipmapEnabled = true;
         const bool colortex6MipmapEnabled = true;
         const bool colortex6Clear = false;
@@ -30,25 +30,7 @@ INOUT vec2 texcoord;
 
     uniform ivec2 eyeBrightnessSmooth;
 
-    #ifdef TEMPORAL_ACCUMULATION
-        uniform sampler2D depthtex0;
-
-        // Previous camera position
-        uniform vec3 cameraPosition;
-
-        // Previous camera position
-        uniform vec3 previousCameraPosition;
-
-        // View matrix uniforms
-        uniform mat4 gbufferModelViewInverse;
-        uniform mat4 gbufferPreviousModelView;
-
-        // Projection matrix uniforms
-        uniform mat4 gbufferProjectionInverse;
-        uniform mat4 gbufferPreviousProjection;
-    #endif
-
-    #if defined TEMPORAL_ACCUMULATION || AUTO_EXPOSURE == 2
+    #if AUTO_EXPOSURE == 2
         uniform sampler2D colortex6;
     #endif
 
@@ -63,40 +45,11 @@ INOUT vec2 texcoord;
         #include "/lib/universalVars.glsl"
     #endif
 
-    #ifdef TEMPORAL_ACCUMULATION
-        vec2 toPrevScreenPos(vec2 currentPos){
-            // Previous frame reprojection from Chocapic13
-            vec4 viewPosPrev = gbufferProjectionInverse * vec4(vec3(currentPos.xy, texture2D(depthtex0, currentPos.xy).x) * 2.0 - 1.0, 1);
-            viewPosPrev /= viewPosPrev.w;
-            viewPosPrev = gbufferModelViewInverse * viewPosPrev;
-
-            vec4 prevPosition = viewPosPrev + vec4(cameraPosition - previousCameraPosition, 0);
-            prevPosition = gbufferPreviousModelView * prevPosition;
-            prevPosition = gbufferPreviousProjection * prevPosition;
-            return prevPosition.xy / prevPosition.w * 0.5 + 0.5;
-        }
-    #endif
-
     #include "/lib/post/tonemap.glsl"
 
     void main(){
         // Original scene color
         vec3 color = texture2D(gcolor, texcoord).rgb;
-
-        #ifdef TEMPORAL_ACCUMULATION
-            vec2 prevScreenPos = toPrevScreenPos(texcoord);
-            float velocity = 1.0 - abs(1.0 - max2(toPrevScreenPos(vec2(1))));
-            
-            float blendFact = edgeVisibility(prevScreenPos * 0.8 + 0.1) * smoothstep(0.99999, 1.0, velocity);
-            float decay = exp2(-ACCUMILATION_SPEED * frameTime);
-            blendFact = clamp(blendFact, decay * 0.5, decay);
-            
-            vec3 prevCol = texture2D(colortex6, texcoord).rgb;
-            vec3 accumulated = mix(color, prevCol, blendFact);
-            color = accumulated;
-        #else
-            vec3 accumulated = vec3(0);
-        #endif
 
         #if AUTO_EXPOSURE == 2
             // Get current average scene luminance...
@@ -138,9 +91,9 @@ INOUT vec2 texcoord;
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(color, 1); //gcolor
 
-        #if defined TEMPORAL_ACCUMULATION || AUTO_EXPOSURE == 2
+        #if AUTO_EXPOSURE == 2
         /* DRAWBUFFERS:06 */
-            gl_FragData[1] = vec4(accumulated, max(0.001, accumulatedLumi)); //colortex6
+            gl_FragData[1] = vec4(0, 0, 0, max(0.001, accumulatedLumi)); //colortex6
         #endif
     }
 #endif

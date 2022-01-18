@@ -130,7 +130,7 @@ uniform mat4 gbufferModelViewInverse;
                 enviroPBR(material, posVector.worldPos, TBN[2]);
             #endif
 
-            #ifdef TEMPORAL_ACCUMULATION
+            #if ANTI_ALIASING == 2
                 sceneCol = complexShadingGbuffers(material, posVector, toRandPerFrame(getRand1(posVector.screenPos.xy, 8), frameTimeCounter));
             #else
                 sceneCol = complexShadingGbuffers(material, posVector, getRand1(posVector.screenPos.xy, 8));

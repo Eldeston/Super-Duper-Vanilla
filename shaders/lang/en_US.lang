@@ -26,6 +26,10 @@
     option.OUTLINES=Outlines
     option.OUTLINE_BRIGHTNESS=Outline brightness
     option.OUTLINE_PIX_SIZE=Outline pixel size
+    option.ANTI_ALIASING=Anti aliasing
+    value.ANTI_ALIASING.0=OFF
+    value.ANTI_ALIASING.1=FXAA
+    value.ANTI_ALIASING.2=TAA
     screen.CAMERA.comment=Camera settings for tonemap, vignette, HDR, postprocessing etc.
 
 #Tonemap
@@ -66,8 +70,6 @@ screen.RAY_TRACING=Ray tracing settings
     option.SSR_BISTEPS=SSR refinement steps
     option.ROUGH_REFLECTIONS=Rough reflections
     option.PREVIOUS_FRAME=Previous frame buffer
-    option.TEMPORAL_ACCUMULATION=Temporal accumulation
-    option.ACCUMILATION_SPEED=Accumulation speed
 
 screen.WATER_SETTINGS=Water material settings
     option.WATER_BRIGHTNESS=Water brightness

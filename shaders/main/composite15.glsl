@@ -12,21 +12,27 @@ INOUT vec2 texcoord;
 #endif
 
 #ifdef FRAGMENT
-    const bool gcolorMipmapEnabled = true;
-    
-    uniform float viewWidth;
-    uniform float viewHeight;
+    #if ANTI_ALIASING != 0
+        const bool gcolorMipmapEnabled = true;
+        
+        uniform float viewWidth;
+        uniform float viewHeight;
+    #endif
     
     uniform sampler2D gcolor;
 
     #include "/lib/post/fxaa.glsl"
 
     void main(){
-        #ifdef FXAA
-            vec3 currCol = textureFXAA(gcolor, texcoord, vec2(viewWidth, viewHeight)).rgb;
-
-        /* DRAWBUFFERS:0 */
-            gl_FragData[0] = vec4(currCol, 1); //gcolor
+        #if ANTI_ALIASING == 1
+            vec3 color = textureFXAA(gcolor, texcoord, vec2(viewWidth, viewHeight)).rgb;
+        #elif ANTI_ALIASING == 2
+            vec3 color = textureFXAA(gcolor, texcoord, vec2(viewWidth, viewHeight)).rgb;
+        #else
+            vec3 color = texture2D(gcolor, texcoord).rgb;
         #endif
+        
+    /* DRAWBUFFERS:0 */
+        gl_FragData[0] = vec4(color, 1); //gcolor
     }
 #endif
