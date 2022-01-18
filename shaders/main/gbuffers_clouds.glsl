@@ -6,9 +6,11 @@ INOUT vec2 texCoord;
 
 INOUT vec3 norm;
 
+// View matrix uniforms
+uniform mat4 gbufferModelViewInverse;
+
 #ifdef VERTEX
     uniform mat4 gbufferModelView;
-    uniform mat4 gbufferModelViewInverse;
 
     #if defined DOUBLE_VANILLA_CLOUDS
         uniform int instanceId;
@@ -37,9 +39,6 @@ INOUT vec3 norm;
 
 #ifdef FRAGMENT
     uniform sampler2D texture;
-    
-    // View matrix uniforms
-    uniform mat4 gbufferModelViewInverse;
 
     // Projection matrix uniforms
     uniform mat4 gbufferProjectionInverse;

@@ -9,29 +9,23 @@ INOUT vec3 norm;
 
 INOUT vec4 glcolor;
 
+// View matrix uniforms
+uniform mat4 gbufferModelViewInverse;
+
 #ifdef VERTEX
-    uniform mat4 gbufferModelView;
-    uniform mat4 gbufferModelViewInverse;
-
     void main(){
-        // Feet player pos
-        vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
-
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         lmCoord  = (gl_TextureMatrix[1] * gl_MultiTexCoord1).xy;
 
 	    norm = normalize(mat3(gbufferModelViewInverse) * (gl_NormalMatrix * gl_Normal));
         
-	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
+	    gl_Position = ftransform();
 
         glcolor = gl_Color;
     }
 #endif
 
 #ifdef FRAGMENT
-    // View matrix uniforms
-    uniform mat4 gbufferModelViewInverse;
-
     // Projection matrix uniforms
     uniform mat4 gbufferProjectionInverse;
 

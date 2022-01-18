@@ -159,7 +159,7 @@ INOUT mat3 TBN;
             material.light = lmCoord;
 
             #ifdef ENVIRO_MAT
-                enviroPBR(material, posVector, TBN[2]);
+                enviroPBR(material, posVector.worldPos, TBN[2]);
             #endif
 
             #ifdef TEMPORAL_ACCUMULATION

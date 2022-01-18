@@ -16,18 +16,15 @@ INOUT vec4 glcolor;
 
 INOUT mat3 TBN;
 
-#ifdef VERTEX
-    uniform mat4 gbufferModelView;
-    uniform mat4 gbufferModelViewInverse;
+// View matrix uniforms
+uniform mat4 gbufferModelViewInverse;
 
+#ifdef VERTEX
     attribute vec2 mc_midTexCoord;
 
     attribute vec4 at_tangent;
 
     void main(){
-        // Feet player pos
-        vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
-
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         lmCoord  = (gl_TextureMatrix[1] * gl_MultiTexCoord1).xy;
 
@@ -44,16 +41,13 @@ INOUT mat3 TBN;
             texCoord = step(mc_midTexCoord.xy, texCoord);
         #endif
         
-	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
+	    gl_Position = ftransform();
 
         glcolor = gl_Color;
     }
 #endif
 
 #ifdef FRAGMENT
-    // View matrix uniforms
-    uniform mat4 gbufferModelViewInverse;
-
     // Projection matrix uniforms
     uniform mat4 gbufferProjectionInverse;
 
@@ -133,7 +127,7 @@ INOUT mat3 TBN;
             material.light = lmCoord;
 
             #ifdef ENVIRO_MAT
-                enviroPBR(material, posVector, TBN[2]);
+                enviroPBR(material, posVector.worldPos, TBN[2]);
             #endif
 
             #ifdef TEMPORAL_ACCUMULATION

@@ -11,17 +11,14 @@ INOUT vec4 glcolor;
 
 INOUT mat3 TBN;
 
-#ifdef VERTEX
-    uniform mat4 gbufferModelView;
-    uniform mat4 gbufferModelViewInverse;
+// View matrix uniforms
+uniform mat4 gbufferModelViewInverse;
 
+#ifdef VERTEX
     attribute vec4 mc_Entity;
     attribute vec4 at_tangent;
 
     void main(){
-        // Feet player pos
-        vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
-
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         lmCoord  = (gl_TextureMatrix[1] * gl_MultiTexCoord1).xy;
         blockId = mc_Entity.x;
@@ -31,8 +28,8 @@ INOUT mat3 TBN;
 	    vec3 normal = normalize(gl_NormalMatrix * gl_Normal);
 
 	    TBN = mat3(gbufferModelViewInverse) * mat3(tangent, binormal, normal);
-        
-	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
+
+        gl_Position = ftransform();
 
         gl_Position.z *= 0.01;
 
@@ -41,8 +38,6 @@ INOUT mat3 TBN;
 #endif
 
 #ifdef FRAGMENT
-    // View matrix uniforms
-    uniform mat4 gbufferModelViewInverse;
 
     // Projection matrix uniforms
     uniform mat4 gbufferProjectionInverse;
