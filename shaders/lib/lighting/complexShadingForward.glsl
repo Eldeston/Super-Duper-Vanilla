@@ -15,9 +15,9 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, float di
 		vec3 nLightPos = normalize(posVector.lightPos);
 		vec3 nNegEyePlayerPos = normalize(-posVector.eyePlayerPos);
 		float NL = saturate(dot(material.normal, nLightPos));
-		
+
 		// Diffuse with simple SS approximation
-		float dirLight = mix(material.ss * (dot(nNegEyePlayerPos, -nLightPos) * 0.5 + 0.5), 1.0, NL) * (1.0 - newTwilight);
+		float dirLight = (NL * (1.0 - material.ss) + material.ss) * (1.0 - newTwilight);
 
 		#if defined SHD_ENABLE && !defined ENTITIES_GLOWING
 			// Cave fix

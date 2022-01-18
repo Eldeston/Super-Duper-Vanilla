@@ -54,11 +54,10 @@ INOUT vec2 screenCoord;
     uniform float viewHeight;
 
     /* Time uniforms */
-    // Get frame time
-    uniform int frameCounter;
-
-    uniform float frameTime;
-    uniform float frameTimeCounter;
+    #if ANTI_ALIASING == 2
+        // Get frame time
+        uniform float frameTimeCounter;
+    #endif
 
     // Get world time
     uniform float day;
