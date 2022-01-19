@@ -18,7 +18,7 @@ INOUT vec2 screenCoord;
     uniform sampler2D colortex2;
     uniform sampler2D colortex3;
     
-    #ifdef STORY_MODE_CLOUDS
+    #if defined STORY_MODE_CLOUDS && !defined FORCE_DISABLE_CLOUDS
         uniform sampler2D colortex7;
     #endif
 
@@ -53,13 +53,13 @@ INOUT vec2 screenCoord;
     uniform float viewWidth;
     uniform float viewHeight;
 
-    /* Time uniforms */
     #if ANTI_ALIASING == 2
-        // Get frame time
-        uniform float frameTimeCounter;
-
         #include "/lib/utility/taaJitter.glsl"
     #endif
+
+    /* Time uniforms */
+    // Get frame time
+    uniform float frameTimeCounter;
 
     // Get world time
     uniform float day;

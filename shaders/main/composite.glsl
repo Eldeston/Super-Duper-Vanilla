@@ -20,7 +20,7 @@ INOUT vec2 screenCoord;
     uniform sampler2D colortex3;
     uniform sampler2D colortex4;
     
-    #ifdef STORY_MODE_CLOUDS
+    #if defined STORY_MODE_CLOUDS && !defined FORCE_DISABLE_CLOUDS
         uniform sampler2D colortex7;
     #endif
 
@@ -56,10 +56,8 @@ INOUT vec2 screenCoord;
     uniform float viewHeight;
 
     /* Time uniforms */
-    #if ANTI_ALIASING == 2
-        // Get frame time
-        uniform float frameTimeCounter;
-    #endif
+    // Get frame time
+    uniform float frameTimeCounter;
 
     // Get world time
     uniform float day;
@@ -137,7 +135,7 @@ INOUT vec2 screenCoord;
                 sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
 
                 // Get sky color
-                vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyMask);
+                vec3 skyRender = getSkyRender(posVector.eyePlayerPos, false);
 
                 // Fog calculation
                 sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y, skyMask);
