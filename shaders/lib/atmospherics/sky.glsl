@@ -46,20 +46,7 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
     #ifdef USE_HORIZON_COL
         finalCol += USE_HORIZON_COL * squared(1.0 - abs(nPlayerPos.y));
     #endif
-
-    float voidGradient = smootherstep((nPlayerPos.y + eyeBrightFact - 0.8) * PI);
     
-    #ifdef ENABLE_LIGHT
-        if(isEyeInWater == 1) finalCol = mix(fogColor * lightCol * 0.1, skyCol, voidGradient);
-    #else
-        if(isEyeInWater == 1) finalCol = mix(fogColor * 0.1, skyCol, voidGradient);
-    #endif
-
-    #if defined USE_SUN_MOON && defined ENABLE_LIGHT
-        float lightRange = pow(max(-nSkyPosZ * 0.5, 0.0), abs(nPlayerPos.y) + 1.0) * (1.0 - newTwilight);
-        finalCol += lightCol * lightRange;
-    #endif
-
     #ifdef STORY_MODE_CLOUDS
         #ifndef FORCE_DISABLE_CLOUDS
             if(skyMask){
@@ -77,6 +64,19 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
                 #endif
             }
         #endif
+    #endif
+
+    float voidGradient = smootherstep((nPlayerPos.y + eyeBrightFact - 0.8) * PI);
+    
+    #ifdef ENABLE_LIGHT
+        if(isEyeInWater == 1) finalCol = mix(fogColor * lightCol * 0.1, finalCol, voidGradient);
+    #else
+        if(isEyeInWater == 1) finalCol = mix(fogColor * 0.1, finalCol, voidGradient);
+    #endif
+
+    #if defined USE_SUN_MOON && defined ENABLE_LIGHT
+        float lightRange = pow(max(-nSkyPosZ * 0.5, 0.0), abs(nPlayerPos.y) + 1.0) * (1.0 - newTwilight);
+        finalCol += lightCol * lightRange;
     #endif
     
     return pow(finalCol * (isEyeInWater == 0 ? voidGradient * (1.0 - eyeBrightFact) + eyeBrightFact : 1.0) + ambientLighting, vec3(GAMMA));

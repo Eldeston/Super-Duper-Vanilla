@@ -69,17 +69,9 @@ INOUT vec2 texcoord;
             float accumulatedLumi = 1.0;
             // Recreate our lighting model if it were only shading a single pixel and apply exposure
             #if defined ENABLE_LIGHT
-                #ifdef USE_SKY_LIGHTMAP
-                    color /= max(getLuminance((torchBrightFact * vec3(BLOCK_LIGHT_COL_R, BLOCK_LIGHT_COL_G, BLOCK_LIGHT_COL_B) + eyeBrightFact * float(isEyeInWater != 1) * (lightCol * rainMult + skyCol) + ambientLighting) * 0.36) * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
-                #else
-                    color /= max(getLuminance((torchBrightFact * vec3(BLOCK_LIGHT_COL_R, BLOCK_LIGHT_COL_G, BLOCK_LIGHT_COL_B) + SKY_LIGHT_AMOUNT * float(isEyeInWater != 1) * (lightCol * rainMult + skyCol) + ambientLighting) * 0.36) * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
-                #endif
+                color /= max(getLuminance((torchBrightFact * vec3(BLOCK_LIGHT_COL_R, BLOCK_LIGHT_COL_G, BLOCK_LIGHT_COL_B) + eyeBrightFact * float(isEyeInWater != 1) * (lightCol * rainMult + skyCol) + ambientLighting) * 0.36) * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
             #else
-                #ifdef USE_SKY_LIGHTMAP
-                    color /= max(getLuminance((torchBrightFact * vec3(BLOCK_LIGHT_COL_R, BLOCK_LIGHT_COL_G, BLOCK_LIGHT_COL_B) + eyeBrightFact * float(isEyeInWater != 1) * skyCol + ambientLighting) * 0.36) * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
-                #else
-                    color /= max(getLuminance((torchBrightFact * vec3(BLOCK_LIGHT_COL_R, BLOCK_LIGHT_COL_G, BLOCK_LIGHT_COL_B) + SKY_LIGHT_AMOUNT * float(isEyeInWater != 1) * skyCol + ambientLighting) * 0.36) * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
-                #endif
+                color /= max(getLuminance((torchBrightFact * vec3(BLOCK_LIGHT_COL_R, BLOCK_LIGHT_COL_G, BLOCK_LIGHT_COL_B) + eyeBrightFact * float(isEyeInWater != 1) * skyCol + ambientLighting) * 0.36) * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
             #endif
         #else
             float accumulatedLumi = 1.0;

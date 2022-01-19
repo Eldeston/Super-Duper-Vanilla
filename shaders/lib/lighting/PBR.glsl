@@ -64,6 +64,9 @@ uniform sampler2D texture;
             material.ambient = normalAOH.b;
 
             #if defined TERRAIN || defined WATER || defined BLOCK
+                // Foliage and corals
+                if((id >= 10000 && id <= 10008) || (id >= 10011 && id <= 10013)) material.ss = 0.8;
+                
                 // If lava
                 if(id == 10017) material.emissive = 1.0;
 
@@ -75,8 +78,8 @@ uniform sampler2D texture;
 
                 // End portal
                 else if(id == 10100){
-                    vec3 d0 = texture2D(texture, posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.01)).rgb;
-                    vec3 d1 = texture2D(texture, posVector.screenPos.yx * 1.25 + vec2(0, frameTimeCounter * 0.01)).rgb;
+                    vec3 d0 = texture2D(texture, (posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.02)) * 0.5).rgb;
+                    vec3 d1 = texture2D(texture, (posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.01))).rgb;
                     material.albedo = vec4(d0 + d1 + 0.05, 1);
                     material.normal = TBN[2];
                     material.smoothness = 0.96;
@@ -140,6 +143,9 @@ uniform sampler2D texture;
             #endif
 
             #if defined TERRAIN || defined WATER || defined BLOCK
+                // Foliage and corals
+                if((id >= 10000 && id <= 10008) || (id >= 10011 && id <= 10013)) material.ss = 0.8;
+
                 // If lava
                 if(id == 10017) material.emissive = 1.0;
 
@@ -176,12 +182,8 @@ uniform sampler2D texture;
             #endif
             
             #if (defined TERRAIN || defined WATER || defined BLOCK) && DEFAULT_MAT == 1
-                // Foliage and corals
-                if((id >= 10000 && id <= 10008) || id == 10013) material.ss = 0.8;
-
                 // Glow berries
                 else if(id == 10012){
-                    material.ss = 0.8;
                     material.emissive = max2(material.albedo.rg) > 0.8 ? 0.72 : material.emissive;
                 }
 
