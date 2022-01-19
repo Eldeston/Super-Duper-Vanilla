@@ -68,7 +68,7 @@ uniform sampler2D texture;
                 if((id >= 10000 && id <= 10008) || (id >= 10011 && id <= 10013)) material.ss = 0.8;
                 
                 // If lava
-                if(id == 10017) material.emissive = 1.0;
+                else if(id == 10017) material.emissive = 1.0;
 
                 // If water
                 else if(id == 10034){
@@ -147,7 +147,7 @@ uniform sampler2D texture;
                 if((id >= 10000 && id <= 10008) || (id >= 10011 && id <= 10013)) material.ss = 0.8;
 
                 // If lava
-                if(id == 10017) material.emissive = 1.0;
+                else if(id == 10017) material.emissive = 1.0;
 
                 // If water
                 else if(id == 10034){
@@ -183,7 +183,7 @@ uniform sampler2D texture;
             
             #if (defined TERRAIN || defined WATER || defined BLOCK) && DEFAULT_MAT == 1
                 // Glow berries
-                else if(id == 10012){
+                if(id == 10012){
                     material.emissive = max2(material.albedo.rg) > 0.8 ? 0.72 : material.emissive;
                 }
 
