@@ -48,9 +48,14 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
     #endif
 
     float voidGradient = smootherstep((nPlayerPos.y + eyeBrightFact - 0.8) * PI);
-    if(isEyeInWater == 1) finalCol = mix(fogColor * lightCol * 0.1, skyCol, voidGradient);
+    
+    #ifdef ENABLE_LIGHT
+        if(isEyeInWater == 1) finalCol = mix(fogColor * lightCol * 0.1, skyCol, voidGradient);
+    #else
+        if(isEyeInWater == 1) finalCol = mix(fogColor * 0.1, skyCol, voidGradient);
+    #endif
 
-    #ifdef USE_SUN_MOON
+    #if defined USE_SUN_MOON && defined ENABLE_LIGHT
         float lightRange = pow(max(-nSkyPosZ * 0.5, 0.0), abs(nPlayerPos.y) + 1.0) * (1.0 - newTwilight);
         finalCol += lightCol * lightRange;
     #endif
@@ -65,7 +70,11 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
                     vec2 clouds = cloudParallax(planeUv, frameTimeCounter, 8);
                 #endif
 
-                finalCol = mix(finalCol, skyCol + clouds.x * lightCol, clouds.y * smootherstep(nPlayerPos.y * 2.0 - 0.125));
+                #ifdef ENABLE_LIGHT
+                    finalCol = mix(finalCol, skyCol + clouds.x * lightCol, clouds.y * smootherstep(nPlayerPos.y * 2.0 - 0.125));
+                #else
+                    finalCol = mix(finalCol, skyCol + clouds.x, clouds.y * smootherstep(nPlayerPos.y * 2.0 - 0.125));
+                #endif
             }
         #endif
     #endif

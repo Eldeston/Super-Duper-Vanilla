@@ -55,10 +55,15 @@ INOUT vec2 texcoord;
             vec3 bloomCol = sceneCol * (1.0 + (texture2D(colortex3, texcoord).g + spectralOutline) * 4.0);
         #endif
 
-        float fogMult = min(1.0, FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (rainMult + isEyeInWater * 0.256)) * (1.0 - newTwilight);
-
-    /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(sceneCol + (texture2D(colortex4, texcoord, 1.5).rgb * fogMult) * lightCol, 1); // gcolor
+        #ifdef ENABLE_LIGHT
+            float fogMult = min(1.0, FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (rainMult + isEyeInWater * 0.256)) * (1.0 - newTwilight);
+        
+        /* DRAWBUFFERS:0 */
+            gl_FragData[0] = vec4(sceneCol + (texture2D(colortex4, texcoord, 1.5).rgb * fogMult) * lightCol, 1); // gcolor
+        #else
+        /* DRAWBUFFERS:0 */
+            gl_FragData[0] = vec4(sceneCol, 1); // gcolor
+        #endif
 
         #if BLOOM != 0
         /* DRAWBUFFERS:02 */
