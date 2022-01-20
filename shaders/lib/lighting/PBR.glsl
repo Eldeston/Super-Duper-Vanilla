@@ -65,7 +65,7 @@ uniform sampler2D texture;
 
             #if defined TERRAIN || defined WATER || defined BLOCK
                 // Foliage and corals
-                if((id >= 10000 && id <= 10008) || (id >= 10011 && id <= 10013)) material.ss = 0.8;
+                if((id >= 10000 && id <= 10008) || (id >= 10011 && id <= 10013)) material.ss = 1.0;
                 
                 // If lava
                 else if(id == 10017) material.emissive = 1.0;
@@ -144,7 +144,7 @@ uniform sampler2D texture;
 
             #if defined TERRAIN || defined WATER || defined BLOCK
                 // Foliage and corals
-                if((id >= 10000 && id <= 10008) || (id >= 10011 && id <= 10013)) material.ss = 0.8;
+                if((id >= 10000 && id <= 10008) || (id >= 10011 && id <= 10013)) material.ss = 1.0;
 
                 // If lava
                 else if(id == 10017) material.emissive = 1.0;

@@ -63,7 +63,7 @@
 #define SSR_STEPS 20 // SSR steps, more steps means more quality, and more quality means more performance [16 20 24 28 32]
 #define SSR_BISTEPS 4 // SSR binary refinement steps, more steps means more accurate reflections, and more quality means more performance [0 4 8 16]
 
-// #define ROUGH_REFLECTIONS // Enables rougher objects to have rougher reflections. May show artifacts, but some AA might fix it
+// #define ROUGH_REFLECTIONS // Enables rougher objects to have rougher reflections. May show weird artifacts, but some AA might fix it.
 // #define PREVIOUS_FRAME // Reads previous frame buffer colors alowing SSR or SSGI to have infinite bounces of light. Impacts performance!
 
 #define DEFAULT_MAT 1 // Enable PBR. Default PBR depends on the vanilla albedo textures to map out the materials. Resource PBR uses your resource packs' PBR, if available. Resource PBR requires latest LabPBR version! [0 1 2]

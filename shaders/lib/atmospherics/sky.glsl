@@ -13,7 +13,7 @@ float genStar(vec2 nSkyPos){
 }
 
 #if defined STORY_MODE_CLOUDS && !defined FORCE_DISABLE_CLOUDS
-    vec2 cloudParallax(vec2 pos, float time, int steps){
+    float cloudParallax(vec2 pos, float time, int steps){
         vec2 uv = pos / 48.0;
         float invSteps = 1.0 / steps;
 
@@ -23,10 +23,10 @@ float genStar(vec2 nSkyPos){
 
         for(int i = 0; i < steps; i++){
             start += end;
-            if(texture2D(colortex7, start + vec2(cloudSpeed, 0)).a > 0.05) return vec2(1.0 - i * invSteps, 1);
+            if(texture2D(colortex7, start + vec2(cloudSpeed, 0)).a > 0.05) return 1.0 - i * invSteps;
         }
         
-        return vec2(0);
+        return 0;
     }
 #endif
 
@@ -38,7 +38,7 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
     #ifdef SKY_GROUND_COL
         float c = FOG_TOTAL_DENSITY_FALLOFF * (isEyeInWater * 2.56 + rainMult) * 8.0;
         float skyPlaneFog = nPlayerPos.y < 0.0 ? exp(-length(planeUv) * c) : 0.0;
-        vec3 finalCol = mix(skyCol, SKY_GROUND_COL * (skyCol + lightCol + ambientLighting), skyPlaneFog);
+        vec3 finalCol = mix(skyCol, pow(SKY_GROUND_COL, vec3(GAMMA)) * (skyCol + lightCol + ambientLighting), skyPlaneFog);
     #else
         vec3 finalCol = skyCol;
     #endif
@@ -52,15 +52,15 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
             if(skyMask){
                 #ifdef CLOUD_FADE
                     float fade = smootherstep(sin(frameTimeCounter * FADE_SPEED) * 0.5 + 0.5);
-                    vec2 clouds = mix(cloudParallax(planeUv, frameTimeCounter, 8), cloudParallax(-planeUv, 1250.0 - frameTimeCounter, 8), fade);
+                    float clouds = mix(cloudParallax(planeUv, frameTimeCounter, 8), cloudParallax(-planeUv, 1250.0 - frameTimeCounter, 8), fade);
                 #else
-                    vec2 clouds = cloudParallax(planeUv, frameTimeCounter, 8);
+                    float clouds = cloudParallax(planeUv, frameTimeCounter, 8);
                 #endif
 
                 #ifdef ENABLE_LIGHT
-                    finalCol = mix(finalCol, skyCol + clouds.x * lightCol, clouds.y * smootherstep(nPlayerPos.y * 2.0 - 0.125));
+                    finalCol += lightCol * (clouds * smootherstep(nPlayerPos.y * 2.0 - 0.125));
                 #else
-                    finalCol = mix(finalCol, skyCol + clouds.x, clouds.y * smootherstep(nPlayerPos.y * 2.0 - 0.125));
+                    finalCol += clouds * smootherstep(nPlayerPos.y * 2.0 - 0.125);
                 #endif
             }
         #endif
@@ -75,7 +75,7 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
     #endif
 
     #if defined USE_SUN_MOON && defined ENABLE_LIGHT
-        float lightRange = pow(max(-nSkyPosZ * 0.5, 0.0), abs(nPlayerPos.y) + 1.0) * (1.0 - newTwilight);
+        float lightRange = pow(max(-nSkyPosZ * 0.5, 0.0), abs(nPlayerPos.y) + 1.0);
         finalCol += lightCol * lightRange;
     #endif
     

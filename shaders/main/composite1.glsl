@@ -40,8 +40,6 @@ INOUT vec2 texcoord;
 
     #include "/lib/universalVars.glsl"
 
-    #include "/lib/utility/texFunctions.glsl"
-
     #include "/lib/post/spectral.glsl"
 
     void main(){
@@ -56,8 +54,11 @@ INOUT vec2 texcoord;
         #endif
 
         #ifdef ENABLE_LIGHT
-            float fogMult = min(1.0, FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (rainMult + isEyeInWater * 0.256)) * (1.0 - newTwilight);
-        
+            #ifdef SHD_ENABLE
+                float fogMult = min(1.0, FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (rainMult + isEyeInWater * 0.256));
+            #else
+                float fogMult = min(1.0, FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (rainMult + isEyeInWater * 0.256)) * eyeBrightFact;
+            #endif
         /* DRAWBUFFERS:0 */
             gl_FragData[0] = vec4(sceneCol + (texture2D(colortex4, texcoord, 1.5).rgb * fogMult) * lightCol, 1); // gcolor
         #else

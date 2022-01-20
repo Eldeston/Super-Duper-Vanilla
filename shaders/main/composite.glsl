@@ -150,7 +150,7 @@ INOUT vec2 screenCoord;
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(sceneCol, 1); //gcolor
 
-        #if defined ENABLE_LIGHT && defined SHD_ENABLE
+        #ifdef ENABLE_LIGHT
         /* DRAWBUFFERS:04 */
             gl_FragData[1] = vec4(getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.x), texture2D(colortex4, screenCoord).x); //colortex4
             
