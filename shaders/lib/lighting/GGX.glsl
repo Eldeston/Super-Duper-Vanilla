@@ -1,7 +1,6 @@
 vec3 getFresnelSchlick(float cosTheta, vec3 F0){
     // Spherical gaussian fresnel
 	return F0 + (1.0 - F0) * exp2(((-5.55473 * cosTheta) - 6.98316) * cosTheta);
-    // F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
 // Source: https://www.guerrilla-games.com/read/decima-engine-advances-in-lighting-and-aa

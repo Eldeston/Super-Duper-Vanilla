@@ -28,8 +28,6 @@ INOUT vec2 texcoord;
     */
 
     void main(){
-        vec3 color = texture2D(BUFFER_VIEW, texcoord).rgb;
-
-        gl_FragColor = vec4(pow(color, vec3(1.0 / GAMMA)), 1); //final color
+        gl_FragColor = vec4(texture2D(BUFFER_VIEW, texcoord).rgb, 1); //final color
     }
 #endif

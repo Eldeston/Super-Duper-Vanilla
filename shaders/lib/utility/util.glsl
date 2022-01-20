@@ -3,8 +3,8 @@
 
 #define INOUT varying
 
-#define PI 3.14159265359
-#define PI2 6.28318530718
+#define PI 3.141592653589793
+#define PI2 6.283185307179586
 
 // Saturate / clamp functions
 float saturate(float x) { return clamp(x, 0.0, 1.0); }

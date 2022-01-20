@@ -52,7 +52,7 @@ const float sunPathRotation = 0.0; // Light angle [-60.0 -55.0 -50.0 -45.0 -40.0
 			
 			float distortFactor = getDistortFactor(shdPos.xy);
 			shdPos.xyz = distort(shdPos.xyz, distortFactor) * 0.5 + 0.5;
-			shdPos.z -= ((shdBias + 2.0 * shdRcp) * distortFactor * distortFactor) / sqrt(dirLight);
+			shdPos.z -= (shdBias + 2.0 * shdRcp) * distortFactor * distortFactor * inversesqrt(dirLight);
 
 			#ifdef SHADOW_FILTER
 				return getShdFilter(shdPos.xyz, dither * PI2, shdRcp);

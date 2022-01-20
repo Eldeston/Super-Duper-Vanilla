@@ -69,9 +69,9 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
     float voidGradient = smootherstep((nPlayerPos.y + eyeBrightFact - 0.8) * PI);
     
     #ifdef ENABLE_LIGHT
-        if(isEyeInWater == 1) finalCol = mix(fogColor * lightCol * 0.1, finalCol, voidGradient);
+        if(isEyeInWater == 1) finalCol = mix(pow(fogColor, vec3(GAMMA)) * lightCol * 0.1, finalCol, voidGradient);
     #else
-        if(isEyeInWater == 1) finalCol = mix(fogColor * 0.1, finalCol, voidGradient);
+        if(isEyeInWater == 1) finalCol = mix(pow(fogColor, vec3(GAMMA)) * 0.1, finalCol, voidGradient);
     #endif
 
     #if defined USE_SUN_MOON && defined ENABLE_LIGHT
@@ -79,7 +79,7 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
         finalCol += lightCol * lightRange;
     #endif
     
-    return pow(finalCol * (isEyeInWater == 0 ? voidGradient * (1.0 - eyeBrightFact) + eyeBrightFact : 1.0) + ambientLighting, vec3(GAMMA));
+    return finalCol * (isEyeInWater == 0 ? voidGradient * (1.0 - eyeBrightFact) + eyeBrightFact : 1.0) + ambientLighting;
 }
 
 vec3 getSkyRender(vec3 playerPos, bool skyMask){

@@ -78,15 +78,19 @@ INOUT vec2 texcoord;
             color /= max(accumulatedLumi * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
         #endif
 
-        color *= EXPOSURE;
-
-        // Tonemap and clamp
-        color = toneA(whitePreservingLumaBasedReinhardToneMapping(color)) * vec3(TINT_R, TINT_G, TINT_B);
+        // Exposeure, tint, and tonemap
+        color = whitePreservingLumaBasedReinhardToneMapping(color * vec3(TINT_R, TINT_G, TINT_B) * EXPOSURE);
 
         #ifdef VIGNETTE
             // BSL's vignette, modified to control intensity
             color *= max(0.0, 1.0 - length(texcoord - 0.5) * VIGNETTE_INTENSITY * (1.0 - getLuminance(color)));
         #endif
+
+        // Gamma correction
+        color = pow(color, vec3(1.0 / GAMMA));
+        
+        // Color saturation, contrast, etc.
+        color = toneA(color);
 
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(color, 1); //gcolor

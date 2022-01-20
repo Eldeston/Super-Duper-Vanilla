@@ -17,20 +17,20 @@ float ambientLighting = AMBIENT_LIGHTING + nightVision * 0.5;
 
 #ifdef ENABLE_LIGHT
     #ifdef USE_CUSTOM_LIGHTCOL
-        vec3 lightCol = USE_CUSTOM_LIGHTCOL;
+        vec3 lightCol = pow(USE_CUSTOM_LIGHTCOL, vec3(GAMMA));
     #else
-        vec3 lightCol = toneSaturation(mix(mix(vec3(LIGHT_COL_NIGHT_R, LIGHT_COL_NIGHT_G, LIGHT_COL_NIGHT_B), vec3(LIGHT_COL_DAY_R, LIGHT_COL_DAY_G, LIGHT_COL_DAY_B), day), vec3(LIGHT_COL_DAWN_DUSK_R, LIGHT_COL_DAWN_DUSK_G, LIGHT_COL_DAWN_DUSK_B), newDawnDusk), 1.0 - rainStrength * 0.5);
+        vec3 lightCol = pow(toneSaturation(mix(mix(vec3(LIGHT_COL_NIGHT_R, LIGHT_COL_NIGHT_G, LIGHT_COL_NIGHT_B), vec3(LIGHT_COL_DAY_R, LIGHT_COL_DAY_G, LIGHT_COL_DAY_B), day), vec3(LIGHT_COL_DAWN_DUSK_R, LIGHT_COL_DAWN_DUSK_G, LIGHT_COL_DAWN_DUSK_B), newDawnDusk), 1.0 - rainStrength * 0.5), vec3(GAMMA));
     #endif
 #endif
 
 #if defined USE_CUSTOM_FOGCOL
-    vec3 skyCol = USE_CUSTOM_FOGCOL;
+    vec3 skyCol = pow(USE_CUSTOM_FOGCOL, vec3(GAMMA));
 #elif defined USE_VANILLA_FOGCOL
-    vec3 skyCol = USE_VANILLA_FOGCOL;
+    vec3 skyCol = pow(USE_VANILLA_FOGCOL, vec3(GAMMA));
 #else
     #ifdef USE_SKY_LIGHTMAP
-        vec3 skyCol = toneSaturation(mix(mix(vec3(SKY_COL_NIGHT_R, SKY_COL_NIGHT_G, SKY_COL_NIGHT_B), vec3(SKY_COL_DAY_R, SKY_COL_DAY_G, SKY_COL_DAY_B), day), vec3(SKY_COL_DAWN_DUSK_R, SKY_COL_DAWN_DUSK_G, SKY_COL_DAWN_DUSK_B), newDawnDusk), 1.0 - rainStrength * 0.5) * rainMult * (eyeBrightFact * 0.5 + 0.5);
+        vec3 skyCol = pow(toneSaturation(mix(mix(vec3(SKY_COL_NIGHT_R, SKY_COL_NIGHT_G, SKY_COL_NIGHT_B), vec3(SKY_COL_DAY_R, SKY_COL_DAY_G, SKY_COL_DAY_B), day), vec3(SKY_COL_DAWN_DUSK_R, SKY_COL_DAWN_DUSK_G, SKY_COL_DAWN_DUSK_B), newDawnDusk), 1.0 - rainStrength * 0.5) * rainMult, vec3(GAMMA));
     #else
-        vec3 skyCol = toneSaturation(mix(mix(vec3(SKY_COL_NIGHT_R, SKY_COL_NIGHT_G, SKY_COL_NIGHT_B), vec3(SKY_COL_DAY_R, SKY_COL_DAY_G, SKY_COL_DAY_B), day), vec3(SKY_COL_DAWN_DUSK_R, SKY_COL_DAWN_DUSK_G, SKY_COL_DAWN_DUSK_B), newDawnDusk), 1.0 - rainStrength * 0.5) * rainMult * (SKY_LIGHT_AMOUNT * 0.5 + 0.5);
+        vec3 skyCol = pow(toneSaturation(mix(mix(vec3(SKY_COL_NIGHT_R, SKY_COL_NIGHT_G, SKY_COL_NIGHT_B), vec3(SKY_COL_DAY_R, SKY_COL_DAY_G, SKY_COL_DAY_B), day), vec3(SKY_COL_DAWN_DUSK_R, SKY_COL_DAWN_DUSK_G, SKY_COL_DAWN_DUSK_B), newDawnDusk), 1.0 - rainStrength * 0.5) * rainMult, vec3(GAMMA));
     #endif
 #endif

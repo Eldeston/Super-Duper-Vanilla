@@ -147,12 +147,22 @@ INOUT vec2 screenCoord;
             }
         }
 
-    /* DRAWBUFFERS:04 */
+    /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(sceneCol, 1); //gcolor
-        gl_FragData[1] = vec4(getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.x), texture2D(colortex4, screenCoord).x); //colortex4
-        #ifdef PREVIOUS_FRAME
-        /* DRAWBUFFERS:045 */
-            gl_FragData[2] = vec4(reflectBuffer / (1.0 + reflectBuffer), 1); //colortex5
+
+        #if defined ENABLE_LIGHT && defined SHD_ENABLE
+        /* DRAWBUFFERS:04 */
+            gl_FragData[1] = vec4(getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.x), texture2D(colortex4, screenCoord).x); //colortex4
+            
+            #ifdef PREVIOUS_FRAME
+            /* DRAWBUFFERS:045 */
+                gl_FragData[2] = vec4(reflectBuffer / (1.0 + reflectBuffer), 1); //colortex5
+            #endif
+        #else
+            #ifdef PREVIOUS_FRAME
+            /* DRAWBUFFERS:05 */
+                gl_FragData[1] = vec4(reflectBuffer / (1.0 + reflectBuffer), 1); //colortex5
+            #endif
         #endif
     }
 #endif

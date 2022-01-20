@@ -46,11 +46,12 @@ INOUT vec2 texcoord;
             eBloom += bloomTile(texcoord, vec2(0.2075, 0.26), 5.0);
             eBloom += bloomTile(texcoord, vec2(0.135, 0.3325), 6.0);
             eBloom += bloomTile(texcoord, vec2(0.160625, 0.3325), 7.0);
+        
+        /* DRAWBUFFERS:2 */
+            gl_FragData[0] = vec4(eBloom, 1); //colortex2
         #else
-            vec3 eBloom = vec3(0);
+        /* DRAWBUFFERS:2 */
+            gl_FragData[0] = vec4(0, 0, 0, 1); //colortex2
         #endif
-
-    /* DRAWBUFFERS:2 */
-        gl_FragData[0] = vec4(eBloom, 1); //colortex2
     }
 #endif
