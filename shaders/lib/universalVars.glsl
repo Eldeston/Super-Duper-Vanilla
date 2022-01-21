@@ -19,7 +19,7 @@ float ambientLighting = pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
     #ifdef USE_CUSTOM_LIGHTCOL
         vec3 lightCol = pow(USE_CUSTOM_LIGHTCOL, vec3(GAMMA)) * (1.0 - newTwilight);
     #else
-        vec3 lightCol = pow(toneSaturation(mix(mix(vec3(LIGHT_COL_NIGHT_R, LIGHT_COL_NIGHT_G, LIGHT_COL_NIGHT_B), vec3(LIGHT_COL_DAY_R, LIGHT_COL_DAY_G, LIGHT_COL_DAY_B), day), vec3(LIGHT_COL_DAWN_DUSK_R, LIGHT_COL_DAWN_DUSK_G, LIGHT_COL_DAWN_DUSK_B), newDawnDusk), 1.0 - rainStrength * 0.5), vec3(GAMMA)) * (1.0 - newTwilight);
+        vec3 lightCol = pow(toneSaturation(mix(mix(vec3(LIGHT_NR, LIGHT_NG, LIGHT_NB) * LIGHT_NI, vec3(LIGHT_DR, LIGHT_DG, LIGHT_DB) * LIGHT_DI, day), vec3(LIGHT_DDR, LIGHT_DDG, LIGHT_DDB) * LIGHT_DDI, newDawnDusk) / 255.0, 1.0 - rainStrength * 0.5), vec3(GAMMA)) * (1.0 - newTwilight);
     #endif
 #endif
 
@@ -29,8 +29,8 @@ float ambientLighting = pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
     vec3 skyCol = pow(USE_VANILLA_FOGCOL, vec3(GAMMA));
 #else
     #ifdef USE_SKY_LIGHTMAP
-        vec3 skyCol = pow(toneSaturation(mix(mix(vec3(SKY_COL_NIGHT_R, SKY_COL_NIGHT_G, SKY_COL_NIGHT_B), vec3(SKY_COL_DAY_R, SKY_COL_DAY_G, SKY_COL_DAY_B), day), vec3(SKY_COL_DAWN_DUSK_R, SKY_COL_DAWN_DUSK_G, SKY_COL_DAWN_DUSK_B), newDawnDusk), 1.0 - rainStrength * 0.5), vec3(GAMMA));
+        vec3 skyCol = pow(toneSaturation(mix(mix(vec3(SKY_NR, SKY_NG, SKY_NB) * SKY_NI, vec3(SKY_DR, SKY_DG, SKY_DB) * SKY_DI, day), vec3(SKY_DDR, SKY_DDG, SKY_DDB) * SKY_DDI, newDawnDusk) / 255.0, 1.0 - rainStrength * 0.5), vec3(GAMMA));
     #else
-        vec3 skyCol = pow(toneSaturation(mix(mix(vec3(SKY_COL_NIGHT_R, SKY_COL_NIGHT_G, SKY_COL_NIGHT_B), vec3(SKY_COL_DAY_R, SKY_COL_DAY_G, SKY_COL_DAY_B), day), vec3(SKY_COL_DAWN_DUSK_R, SKY_COL_DAWN_DUSK_G, SKY_COL_DAWN_DUSK_B), newDawnDusk), 1.0 - rainStrength * 0.5), vec3(GAMMA));
+        vec3 skyCol = pow(toneSaturation(mix(mix(vec3(SKY_NR, SKY_NG, SKY_NB) * SKY_NI, vec3(SKY_DR, SKY_DG, SKY_DB) * SKY_DI, day), vec3(SKY_DDR, SKY_DDG, SKY_DDB) * SKY_DDI, newDawnDusk) / 255.0, 1.0 - rainStrength * 0.5), vec3(GAMMA));
     #endif
 #endif

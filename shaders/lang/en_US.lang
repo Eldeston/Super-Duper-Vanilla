@@ -105,35 +105,42 @@ screen.LAVA_SETTINGS=Lava material settings
 screen.CONFIGURE_COLORS=Configure colors
 
 screen.DIRECT_LIGHT_COLOR=Direct light color
-    option.LIGHT_COL_DAY_R=Day red
-    option.LIGHT_COL_DAY_G=Day green
-    option.LIGHT_COL_DAY_B=Day blue
+    option.LIGHT_DR=Day red
+    option.LIGHT_DG=Day green
+    option.LIGHT_DB=Day blue
+    option.LIGHT_DI=Day intensity
 
-    option.LIGHT_COL_NIGHT_R=Night red
-    option.LIGHT_COL_NIGHT_G=Night green
-    option.LIGHT_COL_NIGHT_B=Night blue
+    option.LIGHT_NR=Night red
+    option.LIGHT_NG=Night green
+    option.LIGHT_NB=Night blue
+    option.LIGHT_NI=Night intensity
 
-    option.LIGHT_COL_DAWN_DUSK_R=Dawn/dusk red
-    option.LIGHT_COL_DAWN_DUSK_G=Dawn/dusk green
-    option.LIGHT_COL_DAWN_DUSK_B=Dawn/dusk blue
+    option.LIGHT_DDR=Dawn/dusk red
+    option.LIGHT_DDG=Dawn/dusk green
+    option.LIGHT_DDB=Dawn/dusk blue
+    option.LIGHT_DDI=Dawn/dusk intensity
 
 screen.SKY_COLOR=Sky color
-    option.SKY_COL_DAY_R=Day red
-    option.SKY_COL_DAY_G=Day green
-    option.SKY_COL_DAY_B=Day blue
+    option.SKY_DR=Day red
+    option.SKY_DG=Day green
+    option.SKY_DB=Day blue
+    option.SKY_DI=Day intensity
 
-    option.SKY_COL_NIGHT_R=Night red
-    option.SKY_COL_NIGHT_G=Night green
-    option.SKY_COL_NIGHT_B=Night blue
+    option.SKY_NR=Night red
+    option.SKY_NG=Night green
+    option.SKY_NB=Night blue
+    option.SKY_NI=Night intensity
 
-    option.SKY_COL_DAWN_DUSK_R=Dawn/dusk red
-    option.SKY_COL_DAWN_DUSK_G=Dawn/dusk green
-    option.SKY_COL_DAWN_DUSK_B=Dawn/dusk blue
+    option.SKY_DDR=Dawn/dusk red
+    option.SKY_DDG=Dawn/dusk green
+    option.SKY_DDB=Dawn/dusk blue
+    option.SKY_DDI=Dawn/dusk intensity
 
 screen.BLOCK_LIGHT_COLOR=Block light color
-    option.BLOCK_LIGHT_COL_R=Red
-    option.BLOCK_LIGHT_COL_G=Green
-    option.BLOCK_LIGHT_COL_B=Blue
+    option.BLOCKLIGHT_R=Red
+    option.BLOCKLIGHT_G=Green
+    option.BLOCKLIGHT_B=Blue
+    option.BLOCKLIGHT_I=Intensity
 
 screen.DEBUG=Super Duper Vanilla by Eldeston
     option.WHITE_MODE=White mode
