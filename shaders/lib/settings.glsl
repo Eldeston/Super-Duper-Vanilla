@@ -7,7 +7,8 @@
 #define SHD_COL // Enable shadow color from colored transparent objects.
 #define SHADOW_DISTORT // Enable shadow distortion. Use this if you're using a low shadow resolution or turn it off for no distortion if you're using a really high shadow resolution.
 #define SHADOW_DISTORT_FACTOR 0.10 // Lower values means higher quality shadows near the player, and lower quality shadows far from the player. Anything below 0.05 will often cause spots! [0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00]
-#define RENDER_FOLIAGE_SHD // Enable cutout objects shadow render
+#define RENDER_FOLIAGE_SHD // Enable cutout objects shadows.
+#define ENABLE_SS // Enable subsurface scattering. 
 #define UNDERWATER_CAUSTICS // Enable underwater caustics. Shadow color must be enabled!
 #define AMBIENT_LIGHTING 0.10 // Overall ambient lighting value. Increase if you dislike the pitch black darkness of caves, higher values may make lighting unrealistic. Set it to zero for a more realistic approach if you have SSGI enabled. Set it to 0.50 for nightvision. [0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50]
 #define ANIMATE // Enable foliage animations, water animations etc.

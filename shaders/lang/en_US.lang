@@ -53,7 +53,8 @@
     option.UNDERWATER_CAUSTICS=Underwater caustics
     option.SHADOW_DISTORT=Shadow distortion
     option.AMBIENT_LIGHTING=Ambient lighting
-    screen.LIGHTING.comment=Lighting settings for shadow resolution, lightmap etc.
+    option.ENABLE_SS=Subsurface scattering
+    screen.Lighting.comment=Lighting settings for shadow resolution, lightmap etc.
 
 #PBR
     option.DEFAULT_MAT=PBR mode
