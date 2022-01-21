@@ -13,7 +13,7 @@ float newRainStrength = saturate(rainStrength * eyeBrightFact * float(isEyeInWat
 float rainMult = newRainStrength + 1.0;
 float underWaterMult = isEyeInWater + 1.0;
 
-float ambientLighting = pow(AMBIENT_LIGHTING + nightVision * 0.25, GAMMA);
+float ambientLighting = pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
 
 #ifdef ENABLE_LIGHT
     #ifdef USE_CUSTOM_LIGHTCOL
