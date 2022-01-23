@@ -50,8 +50,6 @@ uniform mat4 gbufferModelViewInverse;
     /* Position uniforms */
     uniform vec3 cameraPosition;
 
-    uniform vec3 shadowLightPosition;
-
     /* Screen resolutions */
     uniform float viewWidth;
     uniform float viewHeight;
@@ -94,12 +92,12 @@ uniform mat4 gbufferModelViewInverse;
         posVector.viewPos = toView(posVector.screenPos);
         posVector.eyePlayerPos = mat3(gbufferModelViewInverse) * posVector.viewPos;
         posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
-
-        #ifdef END
-			posVector.lightPos = shadowLightPosition;
-		#else
-			posVector.lightPos = mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz;
-		#endif
+        posVector.lightPos = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
+        // vec3(0, 0, 1) * mat3(shadowModelView)
+        // shadowLightPosition is broken in the End
+        // mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz        // vec3(0, 0, 1) * mat3(shadowModelView)
+        // shadowLightPosition is broken in the End
+        // mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz
 	
 		#ifdef SHD_ENABLE
 			posVector.shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * posVector.feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz;
@@ -121,7 +119,7 @@ uniform mat4 gbufferModelViewInverse;
         vec4 sceneCol = vec4(0);
 
         if(material.albedo.a > 0.00001){
-            material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
+            material.albedo.rgb = pow(material.albedo.rgb, vec3(2.2));
 
             material.metallic = 0.0;
             material.ss = 1.0;

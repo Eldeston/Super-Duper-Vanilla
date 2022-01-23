@@ -55,7 +55,7 @@ INOUT vec4 glcolor;
             material.albedo.rgb = glcolor.rgb;
         #endif
 
-        material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
+        material.albedo.rgb = pow(material.albedo.rgb, vec3(2.2));
 
         vec4 sceneCol = vec4(material.albedo.rgb * 2.0, material.albedo.a);
 
