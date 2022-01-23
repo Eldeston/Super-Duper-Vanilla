@@ -41,7 +41,7 @@
 #define OUTLINE_PIX_SIZE 2 // Outline pixel size. Adjust to change the thickness of the outlines [1 2 4 8 16 32 64]
 
 #define WATER_NORM // Enables water normals
-#define WATER_BRIGHTNESS 0.80 // Water brightness, lower values mean deeper colors [0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00]
+#define WATER_BRIGHTNESS 1.00 // Water brightness, lower values mean deeper colors [0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00]
 #define WATER_BLUR_SIZE 8.0 // Water normal map blur size, smaller means more defined waves, larger means smoother waves [1.0 2.0 4.0 8.0 16.0 32.0 64.0]
 #define WATER_DEPTH_SIZE 64 // The normal map depth of the waves, the smaller the more depth it has [16 32 64 128 256]
 #define WATER_TILE_SIZE 16 // Tile size of the water [4 8 16 24 32 40 48 56 64]
@@ -76,9 +76,9 @@
 #define SECOND_CLOUD_HEIGHT 64.0 // 2nd layer cloud height, if double vanilla clouds is on [16.0 32.0 48.0 64.0 80.0 96.0 112.0 128.0]
 #define FADE_SPEED 0.20 // Cloud fade speed [0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.05 1.10 1.15 1.20 1.25 1.30 1.35 1.40 1.45 1.50 1.55 1.60 1.65 1.70 1.75 1.80 1.85 1.90 1.95 2.00 2.05 2.10 2.15 2.20 2.25 2.30 2.35 2.40 2.45 2.50 2.55 2.60 2.65 2.70 2.75 2.80 2.85 2.90 2.95 3.00 3.05 3.10 3.15 3.20 3.25 3.30 3.35 3.40 3.45 3.50 3.55 3.60 3.65 3.70 3.75 3.80 3.85 3.90 3.95 4.00]
 
-#define VOL_LIGHT_BRIGHTNESS 1.00 // The brightness/value of volumetric lighting, set it to zero to disable it [0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00]
+#define VOL_LIGHT_BRIGHTNESS 0.50 // The brightness/value of volumetric lighting, set it to zero to disable it [0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00]
 #define VOL_LIGHT // Enables volumetric lighting.
-#define MIST_GROUND_FOG_BRIGHTNESS 1.00 // The brightness/value of mist/ground fog. [0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00]
+#define MIST_GROUND_FOG_BRIGHTNESS 0.50 // The brightness/value of mist/ground fog. [0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00]
 #define BORDER_FOG // Enables border fog to cover world edges
 // #define VANILLA_SUN_MOON // Enables vanilla or resource pack's sun and moon texture
 
