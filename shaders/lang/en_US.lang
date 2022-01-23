@@ -19,9 +19,6 @@
     option.AUTO_EXPOSURE_MULT=Auto exposure multiplier
     option.MIN_EXPOSURE_DENOM=Min exposure denominator
     option.BLOOM=Bloom
-    value.BLOOM.0=OFF
-    value.BLOOM.1=Emission
-    value.BLOOM.2=Luminance
     option.BLOOM_BRIGHTNESS=Bloom brightness
     option.OUTLINES=Outlines
     option.OUTLINE_BRIGHTNESS=Outline brightness
@@ -36,8 +33,6 @@
     option.SATURATION=Saturation
     option.CONTRAST=Contrast
     option.EXPOSURE=Exposure
-    option.WHITE_PRESERVATION=White preservation
-    option.GAMMA=Gamma
     option.TINT_R=Red tint
     option.TINT_G=Green tint
     option.TINT_B=Blue tint

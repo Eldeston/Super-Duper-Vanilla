@@ -20,7 +20,7 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 // #define FORCE_DISABLE_CLOUDS
 
 // Enable if your world uses a specific world color that uses the vanilla fog color, overrides sky colors
-// #define USE_VANILLA_FOGCOL
+// #define USE_VANILLA_FOGCOL fogColor
 // Enable if your world uses a custom fog color with an input, overrides sky colors
 // #define USE_CUSTOM_FOGCOL vec3(0)
 // Enable sky ground with adjustable albedo color
@@ -36,4 +36,4 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 // Total density falloff, larger means thicker fog
 #define FOG_TOTAL_DENSITY_FALLOFF 0.008
 // Fog opacity
-#define FOG_OPACITY 0.512
+#define FOG_OPACITY 0.5

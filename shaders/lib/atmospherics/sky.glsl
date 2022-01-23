@@ -3,7 +3,7 @@ float getStarShape(vec2 st, float size){
 }
 
 float getSunMoonShape(vec2 pos){
-    return exp2(-(sqrt(sqrt(pos.x * pos.x * pos.x * pos.x + pos.y * pos.y * pos.y * pos.y)) - 0.064) * 128.0);
+    return exp2(-(pow(abs(pos.x * pos.x * pos.x) + abs(pos.y * pos.y * pos.y), 0.333) - 0.075) * 128.0);
 }
 
 float genStar(vec2 nSkyPos){
@@ -31,14 +31,14 @@ float genStar(vec2 nSkyPos){
 #endif
 
 vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
-    if(isEyeInWater == 2) return pow(fogColor, vec3(GAMMA));
+    if(isEyeInWater == 2) return pow(fogColor, vec3(2.2));
 
     vec2 planeUv = nPlayerPos.xz / nPlayerPos.y;
 
     #ifdef SKY_GROUND_COL
         float c = FOG_TOTAL_DENSITY_FALLOFF * (isEyeInWater * 2.56 + rainMult) * 8.0;
         float skyPlaneFog = nPlayerPos.y < 0.0 ? exp(-length(planeUv) * c) : 0.0;
-        vec3 finalCol = mix(skyCol, pow(SKY_GROUND_COL, vec3(GAMMA)) * (skyCol + lightCol + ambientLighting), skyPlaneFog);
+        vec3 finalCol = mix(skyCol, pow(SKY_GROUND_COL, vec3(2.2)) * (skyCol + lightCol + ambientLighting), skyPlaneFog);
     #else
         vec3 finalCol = skyCol;
     #endif
@@ -69,9 +69,9 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
     float voidGradient = smootherstep((nPlayerPos.y + eyeBrightFact - 0.8) * PI);
     
     #ifdef ENABLE_LIGHT
-        if(isEyeInWater == 1) finalCol = mix(pow(fogColor, vec3(GAMMA)) * lightCol * 0.1, finalCol, voidGradient);
+        if(isEyeInWater == 1) finalCol = mix(pow(fogColor, vec3(2.2)) * lightCol * 0.1, finalCol, voidGradient);
     #else
-        if(isEyeInWater == 1) finalCol = mix(pow(fogColor, vec3(GAMMA)) * 0.1, finalCol, voidGradient);
+        if(isEyeInWater == 1) finalCol = mix(pow(fogColor, vec3(2.2)) * 0.1, finalCol, voidGradient);
     #endif
 
     #if defined USE_SUN_MOON && defined ENABLE_LIGHT

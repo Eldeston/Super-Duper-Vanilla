@@ -69,9 +69,9 @@ INOUT vec2 texcoord;
             float accumulatedLumi = 1.0;
             // Recreate our lighting model if it were only shading a single pixel and apply exposure
             #if defined ENABLE_LIGHT
-                color /= max(getLuminance(((torchBrightFact * (BLOCKLIGHT_I / 255.0)) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B) + eyeBrightFact * float(isEyeInWater != 1) * (lightCol * rainMult + skyCol) + ambientLighting) * 0.36) * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
+                color /= max(getLuminance(((torchBrightFact * (BLOCKLIGHT_I * 0.00392156863)) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B) + eyeBrightFact * float(isEyeInWater != 1) * (lightCol * rainMult + skyCol) + ambientLighting) * 0.32) * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
             #else
-                color /= max(getLuminance(((torchBrightFact * (BLOCKLIGHT_I / 255.0)) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B) + eyeBrightFact * float(isEyeInWater != 1) * skyCol + ambientLighting) * 0.36) * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
+                color /= max(getLuminance(((torchBrightFact * (BLOCKLIGHT_I * 0.00392156863)) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B) + eyeBrightFact * float(isEyeInWater != 1) * skyCol + ambientLighting) * 0.32) * AUTO_EXPOSURE_MULT, MIN_EXPOSURE_DENOM);
             #endif
         #else
             float accumulatedLumi = 1.0;
@@ -87,7 +87,7 @@ INOUT vec2 texcoord;
         #endif
 
         // Gamma correction
-        color = pow(color, vec3(1.0 / GAMMA));
+        color = pow(color, vec3(1.0 / 2.2));
         
         // Color saturation, contrast, etc.
         color = toneA(color);

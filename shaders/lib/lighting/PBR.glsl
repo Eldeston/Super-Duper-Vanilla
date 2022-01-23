@@ -44,7 +44,7 @@ uniform sampler2D texture;
             vec3 normalMap = normalAOH.xyz * 2.0 - 1.0;
             normalMap.z = sqrt(1.0 - dot(normalMap.xy, normalMap.xy));
             // Assign normal
-            material.normal = normalize(TBN * normalize(clamp(normalMap, vec3(-1), vec3(1))));
+            material.normal = normalize(TBN * normalMap);
 
             // Assign smoothness
             material.smoothness = SRPSSE.r;
@@ -150,9 +150,7 @@ uniform sampler2D texture;
                 else if(id == 10017) material.emissive = 1.0;
 
                 // If water
-                else if(id == 10034){
-                    material.smoothness = 0.96;
-                }
+                else if(id == 10034) material.smoothness = 0.96;
 
                 // End portal
                 else if(id == 10100){

@@ -57,7 +57,7 @@ vec3 getSpecBRDF(vec3 V, vec3 L, vec3 N, vec3 F0, float NL, float roughness){
     float alphaSqr = squared(roughness * roughness);
     
     // D
-    float NHSqr = getNoHSquared(0.064, NL, NV, LV);
+    float NHSqr = getNoHSquared(0.1, NL, NV, LV);
     float denominator = NHSqr * (alphaSqr - 1.0) + 1.0;
     float distribution =  alphaSqr / (PI * denominator * denominator);
 
