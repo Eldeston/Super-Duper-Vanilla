@@ -13,7 +13,7 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 // Enable sun/moon in your world
 #define USE_SUN_MOON
 // Enable stars in your world
-#define USE_STARS_COL vec3(1)
+#define USE_STARS_COL vec3(pow(0.5, 2.2))
 // Enable horizon in your world
 // #define USE_HORIZON_COL vec3(1)
 // Force disable any clouds
@@ -24,7 +24,7 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 // Enable if your world uses a custom fog color with an input, overrides sky colors
 // #define USE_CUSTOM_FOGCOL vec3(0)
 // Enable sky ground with adjustable albedo color
-#define SKY_GROUND_COL vec3(0, 0.064, 0.256)
+#define SKY_GROUND_COL pow(vec3(0, 0.064, 0.256), vec3(2.2))
 
 // Disable if your world has an undefined lighting environment like The End or the Nether
 #define USE_SKY_LIGHTMAP
@@ -32,8 +32,8 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 #define SKY_LIGHT_AMOUNT 1.00
 
 // Vertical density falloff, larger means less thick fog at high altitudes, but thicker fog in lower altitudes
-#define FOG_VERTICAL_DENSITY_FALLOFF 0.008
+#define FOG_VERTICAL_DENSITY_FALLOFF 0.005
 // Total density falloff, larger means thicker fog
-#define FOG_TOTAL_DENSITY_FALLOFF 0.008
+#define FOG_TOTAL_DENSITY_FALLOFF 0.005
 // Fog opacity
 #define FOG_OPACITY 0.5
