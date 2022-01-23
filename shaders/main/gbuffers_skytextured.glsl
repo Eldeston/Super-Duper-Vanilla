@@ -4,9 +4,22 @@
 INOUT vec2 texcoord;
 
 #ifdef VERTEX
-    void main() {
-        gl_Position = ftransform();
+    #if ANTI_ALIASING == 2
+        /* Screen resolutions */
+        uniform float viewWidth;
+        uniform float viewHeight;
+
+        #include "/lib/utility/taaJitter.glsl"
+    #endif
+
+    void main(){
         texcoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+
+        gl_Position = ftransform();
+
+        #if ANTI_ALIASING == 2
+            gl_Position.xy += jitterPos(gl_Position.w);
+        #endif
     }
 #endif
 
@@ -17,10 +30,8 @@ INOUT vec2 texcoord;
     
     void main(){
         #ifdef VANILLA_SUN_MOON
-            vec4 color = texture2D(texture, texcoord);
-
         /* DRAWBUFFERS:2 */
-            gl_FragData[0] = color; //colortex2
+            gl_FragData[0] = vec4(pow(texture2D(texture, texcoord).rgb, vec3(2.2)), 1); //colortex2
         #else
         /* DRAWBUFFERS:2 */
             gl_FragData[0] = vec4(0); //colortex2
