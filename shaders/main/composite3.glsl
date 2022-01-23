@@ -19,7 +19,7 @@ INOUT vec2 texcoord;
     #endif
 
     void main(){
-        #if BLOOM != 0
+        #ifdef BLOOM
             float pixelSize = 1.0 / viewHeight;
             vec3 eBloom = texture2D(colortex2, texcoord + vec2(0, pixelSize * 2.0)).rgb * 0.0625;
             eBloom += texture2D(colortex2, texcoord + vec2(0, pixelSize)).rgb * 0.25;
