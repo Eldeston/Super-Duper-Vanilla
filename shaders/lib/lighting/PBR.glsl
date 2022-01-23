@@ -16,7 +16,7 @@ uniform sampler2D texture;
             rainMatFact *= smoothstep(0.4, 0.8, (mix(noiseData.y, noiseData.x, noiseData.z) + noiseData.y) * 0.5);
             
             material.normal = mix(material.normal, rawNorm, rainMatFact);
-            material.metallic = max(0.04 * rainMatFact, material.metallic);
+            material.metallic = max(0.02 * rainMatFact, material.metallic);
             material.smoothness = mix(material.smoothness, 0.96, rainMatFact);
             material.albedo.rgb *= 1.0 - sqrt(rainMatFact) * 0.25;
         }

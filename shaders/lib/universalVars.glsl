@@ -1,7 +1,7 @@
 #ifdef USE_SKY_LIGHTMAP
     float eyeBrightFact = eyeBrightnessSmooth.y / 240.0;
 #else
-    float eyeBrightFact = SKY_LIGHT_AMOUNT;
+    const float eyeBrightFact = SKY_LIGHT_AMOUNT;
 #endif
 
 float torchBrightFact = eyeBrightnessSmooth.x / 240.0;

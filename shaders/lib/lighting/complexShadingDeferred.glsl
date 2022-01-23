@@ -21,7 +21,7 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
 		#ifdef SSR
 			#ifdef ROUGH_REFLECTIONS
 				// Rough the normals with noise
-				gBMVNorm = normalize(gBMVNorm + (dither * 0.5 - 0.25) * squared(1.0 - material.smoothness));
+				gBMVNorm = normalize(gBMVNorm + (dither * 0.8 - 0.4) * squared(1.0 - material.smoothness));
 
 				// Assign new rough normals
 				material.normal = mat3(gbufferModelViewInverse) * gBMVNorm;

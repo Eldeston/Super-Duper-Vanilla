@@ -38,7 +38,7 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
     #ifdef SKY_GROUND_COL
         float c = FOG_TOTAL_DENSITY_FALLOFF * (isEyeInWater * 2.56 + rainMult) * 8.0;
         float skyPlaneFog = nPlayerPos.y < 0.0 ? exp(-length(planeUv) * c) : 0.0;
-        vec3 finalCol = mix(skyCol, pow(SKY_GROUND_COL, vec3(2.2)) * (skyCol + lightCol + ambientLighting), skyPlaneFog);
+        vec3 finalCol = mix(skyCol, SKY_GROUND_COL * (skyCol + lightCol + ambientLighting), skyPlaneFog);
     #else
         vec3 finalCol = skyCol;
     #endif
