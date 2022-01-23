@@ -59,7 +59,7 @@ INOUT vec3 gcolor;
         shdColor.rgb = shdColor.rgb * gcolor;
 
         #ifdef UNDERWATER_CAUSTICS
-            if(isEyeInWater == 1 && int(blockId + 0.5) == 10034) shdColor.rgb *= cubed(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 8.0;
+            if(isEyeInWater == 1 && int(blockId + 0.5) == 10034) shdColor.rgb *= cubed(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 4.0;
         #endif
 
     /* DRAWBUFFERS:0 */
