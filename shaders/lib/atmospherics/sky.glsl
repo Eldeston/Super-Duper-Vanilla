@@ -36,9 +36,8 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
     vec2 planeUv = nPlayerPos.xz / nPlayerPos.y;
 
     #ifdef SKY_GROUND_COL
-        float c = FOG_TOTAL_DENSITY_FALLOFF * (isEyeInWater * 2.56 + rainMult) * 8.0;
-        float skyPlaneFog = nPlayerPos.y < 0.0 ? exp(-length(planeUv) * c) : 0.0;
-        vec3 finalCol = mix(skyCol, SKY_GROUND_COL * (skyCol + lightCol + ambientLighting), skyPlaneFog);
+        float c = 8.0 / (isEyeInWater * 2.56 + rainMult);
+        vec3 finalCol = mix(skyCol, SKY_GROUND_COL * (skyCol + lightCol + ambientLighting), smoothen((-nPlayerPos.y) * c));
     #else
         vec3 finalCol = skyCol;
     #endif
@@ -58,15 +57,15 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
                 #endif
 
                 #ifdef ENABLE_LIGHT
-                    finalCol += lightCol * (clouds * smootherstep(nPlayerPos.y * 2.0 - 0.125));
+                    finalCol += lightCol * (clouds * clouds * smootherstep(nPlayerPos.y * 2.0 - 0.125));
                 #else
-                    finalCol += clouds * smootherstep(nPlayerPos.y * 2.0 - 0.125);
+                    finalCol += clouds * clouds * smootherstep(nPlayerPos.y * 2.0 - 0.125);
                 #endif
             }
         #endif
     #endif
 
-    float voidGradient = smootherstep((nPlayerPos.y + eyeBrightFact - 0.8) * PI);
+    float voidGradient = smootherstep((nPlayerPos.y + eyeBrightFact - 0.9) * PI);
     if(isEyeInWater == 1) finalCol *= voidGradient;
 
     #if defined USE_SUN_MOON && defined ENABLE_LIGHT
@@ -87,7 +86,7 @@ vec3 getSkyRender(vec3 playerPos, bool skyMask, bool sunMoonMask){
     vec3 finalCol = getSkyColor(nPlayerPos, nSkyPos.z, skyMask);
 
     #if defined USE_SUN_MOON && !defined VANILLA_SUN_MOON
-        if(sunMoonMask) finalCol += getSunMoonShape(nSkyPos.xy) * 2.0;
+        if(sunMoonMask) finalCol += getSunMoonShape(nSkyPos.xy) * 4.0;
     #endif
 
     #ifdef USE_STARS_COL
