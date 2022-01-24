@@ -8,7 +8,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, float di
 	vec3 specCol = vec3(0);
 
 	// Get lightmaps and add simple sky GI
-	vec3 totalDiffuse = (skyCol * material.light.y * material.light.y + ambientLighting + pow((material.light.x * material.light.x * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B), vec3(2.2))) * material.ambient;
+	vec3 totalDiffuse = (skyCol * material.light.y * material.light.y + ambientLighting + material.light.x * material.light.x * pow((BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B), vec3(2.2))) * material.ambient;
 
 	#ifdef ENABLE_LIGHT
 		// Get positions
@@ -38,6 +38,6 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, float di
 		if(NL > 0) specCol = getSpecBRDF(nNegEyePlayerPos, nLightPos, material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), NL, 1.0 - material.smoothness) * NL * shdCol;
 	#endif
 
-	totalDiffuse = material.albedo.rgb * (totalDiffuse + material.emissive);
+	totalDiffuse = material.albedo.rgb * (totalDiffuse + material.emissive * 4.0);
 	return vec4(totalDiffuse + specCol, material.albedo.a);
 }
