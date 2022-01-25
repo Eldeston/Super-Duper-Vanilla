@@ -193,7 +193,7 @@ INOUT mat3 TBN;
                 #endif
             }
 
-            material.albedo.rgb = pow(material.albedo.rgb, vec3(2.2));
+            material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
             
             // Apply vanilla AO
             material.ambient *= glcolor.a;

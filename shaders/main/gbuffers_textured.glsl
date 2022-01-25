@@ -123,7 +123,7 @@ uniform mat4 gbufferModelViewInverse;
         vec4 sceneCol = vec4(0);
 
         if(material.albedo.a > 0.00001){
-            material.albedo.rgb = pow(material.albedo.rgb, vec3(2.2));
+            material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
             material.metallic = 0.0;
             material.ss = 1.0;

@@ -31,7 +31,7 @@ INOUT vec2 texcoord;
     void main(){
         #ifdef VANILLA_SUN_MOON
         /* DRAWBUFFERS:2 */
-            gl_FragData[0] = vec4(pow(texture2D(texture, texcoord).rgb, vec3(2.2)), 1); //colortex2
+            gl_FragData[0] = vec4(pow(texture2D(texture, texcoord).rgb, vec3(GAMMA)), 1); //colortex2
         #else
         /* DRAWBUFFERS:2 */
             gl_FragData[0] = vec4(0); //colortex2

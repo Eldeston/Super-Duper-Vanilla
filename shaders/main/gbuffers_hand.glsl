@@ -128,7 +128,7 @@ uniform mat4 gbufferModelViewInverse;
             // If player
             if(rBlockId == 0) material.ambient = 1.0;
 
-            material.albedo.rgb = pow(material.albedo.rgb, vec3(2.2));
+            material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
             material.light = lmCoord;
 

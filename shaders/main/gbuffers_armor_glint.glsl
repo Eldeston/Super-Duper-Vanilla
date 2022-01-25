@@ -56,7 +56,7 @@ INOUT vec4 glcolor;
         #endif
 
         material.emissive = getLuminance(material.albedo.rgb);
-        material.albedo.rgb = pow(material.albedo.rgb, vec3(2.2));
+        material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
         vec4 sceneCol = vec4(material.albedo.rgb * (1.0 + material.emissive), material.albedo.a);
 

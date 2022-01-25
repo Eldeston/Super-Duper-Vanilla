@@ -31,13 +31,13 @@ float genStar(vec2 nSkyPos){
 #endif
 
 vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
-    if(isEyeInWater == 2) return pow(fogColor, vec3(2.2));
+    if(isEyeInWater == 2) return pow(fogColor, vec3(GAMMA));
 
     vec2 planeUv = nPlayerPos.xz / nPlayerPos.y;
 
     #ifdef SKY_GROUND_COL
-        float c = 8.0 / (isEyeInWater * 2.56 + rainMult);
-        vec3 finalCol = mix(skyCol, SKY_GROUND_COL * (skyCol + lightCol + ambientLighting), smoothen((-nPlayerPos.y) * c));
+        float c = 4.0 / (isEyeInWater * 2.56 + rainMult);
+        vec3 finalCol = mix(skyCol, SKY_GROUND_COL, smoothen((-nPlayerPos.y) * c));
     #else
         vec3 finalCol = skyCol;
     #endif
@@ -65,7 +65,7 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
         #endif
     #endif
 
-    float voidGradient = smootherstep((nPlayerPos.y + eyeBrightFact - 0.9) * PI);
+    float voidGradient = smootherstep((nPlayerPos.y + eyeBrightFact - 0.81) * PI);
     if(isEyeInWater == 1) finalCol *= voidGradient;
 
     #if defined USE_SUN_MOON && defined ENABLE_LIGHT

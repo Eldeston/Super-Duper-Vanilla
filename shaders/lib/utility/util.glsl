@@ -6,6 +6,9 @@
 #define PI 3.141592653589793
 #define PI2 6.283185307179586
 
+#define GAMMA 2.2
+#define RCPGAMMA 0.4545454545454545
+
 // Saturate / clamp functions
 float saturate(float x) { return clamp(x, 0.0, 1.0); }
 vec2 saturate(vec2 x) { return clamp(x, vec2(0.0), vec2(1.0)); }

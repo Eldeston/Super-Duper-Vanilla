@@ -39,7 +39,7 @@ INOUT vec2 texcoord;
         #endif
 
         // Gamma correction
-        color = pow(color, vec3(1.0 / 2.2));
+        color = pow(color, vec3(RCPGAMMA));
         
         // Color saturation, contrast, etc.
         color = toneA(color);
