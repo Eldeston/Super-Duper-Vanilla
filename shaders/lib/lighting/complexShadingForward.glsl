@@ -10,7 +10,10 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, float di
 
 	#ifdef ENABLE_LIGHT
 		// Get positions
-		vec3 nLightPos = normalize(posVector.lightPos);
+		vec3 nLightPos = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
+		// vec3(0, 0, 1) * mat3(shadowModelView) = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)
+    	// shadowLightPosition is broken in other dimensions. The current is equivalent to:
+    	// normalize(mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz)
 		vec3 nNegEyePlayerPos = normalize(-posVector.eyePlayerPos);
 		float NL = saturate(dot(material.normal, nLightPos));
 

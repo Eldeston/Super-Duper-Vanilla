@@ -114,13 +114,7 @@ uniform mat4 gbufferModelViewInverse;
 	    posVector.viewPos = toView(posVector.screenPos);
         posVector.eyePlayerPos = mat3(gbufferModelViewInverse) * posVector.viewPos;
         posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
-        posVector.lightPos = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
-        // vec3(0, 0, 1) * mat3(shadowModelView)
-        // shadowLightPosition is broken in the End
-        // mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz        // vec3(0, 0, 1) * mat3(shadowModelView)
-        // shadowLightPosition is broken in the End
-        // mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz
-	
+        
 		#ifdef SHD_ENABLE
 			posVector.shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * posVector.feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz;
 		#endif

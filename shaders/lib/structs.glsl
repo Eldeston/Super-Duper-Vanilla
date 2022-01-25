@@ -32,6 +32,4 @@ struct positionVectors{
     vec3 worldPos;
     // Shadow position
     vec3 shdPos;
-    // Light position
-    vec3 lightPos;
 };
