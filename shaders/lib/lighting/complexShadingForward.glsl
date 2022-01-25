@@ -1,8 +1,6 @@
 vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, float dither){
-	#ifdef USE_SKY_LIGHTMAP
-		material.light.y *= SKY_LIGHT_AMOUNT;
-	#else
-		material.light.y = SKY_LIGHT_AMOUNT;
+	#ifdef USE_SKY_LIGHT_AMOUNT
+		material.light.y = USE_SKY_LIGHT_AMOUNT;
 	#endif
 
 	vec3 specCol = vec3(0);

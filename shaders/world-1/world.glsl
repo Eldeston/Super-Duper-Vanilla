@@ -26,10 +26,8 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 // Enable sky ground with adjustable albedo color
 // #define SKY_GROUND_COL vec3(0, 0.064, 0.256)
 
-// Disable if your world has an undefined lighting environment like The End or the Nether
-// #define USE_SKY_LIGHTMAP
-// Sky light amount
-#define SKY_LIGHT_AMOUNT 1.0
+// Use a sky light amount if your world has an undefined sky lighting environment like The End or the Nether
+#define USE_SKY_LIGHT_AMOUNT 1.00
 
 // Vertical density falloff, larger means less thick fog at high altitudes, but thicker fog in lower altitudes
 #define FOG_VERTICAL_DENSITY_FALLOFF 0.0125

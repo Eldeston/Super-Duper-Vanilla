@@ -1,7 +1,7 @@
-#ifdef USE_SKY_LIGHTMAP
-    float eyeBrightFact = eyeBrightnessSmooth.y / 240.0;
+#ifdef USE_SKY_LIGHT_AMOUNT
+    const float eyeBrightFact = USE_SKY_LIGHT_AMOUNT;
 #else
-    const float eyeBrightFact = SKY_LIGHT_AMOUNT;
+    float eyeBrightFact = eyeBrightnessSmooth.y / 240.0;
 #endif
 
 float torchBrightFact = eyeBrightnessSmooth.x / 240.0;
@@ -28,7 +28,7 @@ float ambientLighting = pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
 #elif defined USE_VANILLA_FOGCOL
     vec3 skyCol = pow(USE_VANILLA_FOGCOL, vec3(GAMMA));
 #else
-    #ifdef USE_SKY_LIGHTMAP
+    #ifdef USE_SKY_LIGHT_AMOUNT
         vec3 skyCol = pow(toneSaturation(mix(mix(vec3(SKY_NR, SKY_NG, SKY_NB) * SKY_NI, vec3(SKY_DR, SKY_DG, SKY_DB) * SKY_DI, day), vec3(SKY_DDR, SKY_DDG, SKY_DDB) * SKY_DDI, newDawnDusk) * 0.00392156863, 1.0 - rainStrength * 0.5), vec3(GAMMA));
     #else
         vec3 skyCol = pow(toneSaturation(mix(mix(vec3(SKY_NR, SKY_NG, SKY_NB) * SKY_NI, vec3(SKY_DR, SKY_DG, SKY_DB) * SKY_DI, day), vec3(SKY_DDR, SKY_DDG, SKY_DDB) * SKY_DDI, newDawnDusk) * 0.00392156863, 1.0 - rainStrength * 0.5), vec3(GAMMA));
