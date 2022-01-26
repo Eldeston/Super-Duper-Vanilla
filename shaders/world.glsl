@@ -11,7 +11,7 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 // #define USE_CUSTOM_LIGHTCOL vec3(0)
 
 // Enable sun/moon in your world
-#define USE_SUN_MOON
+#define USE_SUN_MOON 1
 // Enable stars in your world
 #define USE_STARS_COL vec3(pow((1.0 - day) * 2.0, GAMMA))
 // Enable horizon in your world

@@ -10,12 +10,12 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 // Enable if your world uses a light color with an input, overrides light colors
 #define USE_CUSTOM_LIGHTCOL vec3(0.70, 0.60, 0.80)
 
-// Enable sun/moon in your world
-// #define USE_SUN_MOON
+// Enable sun/moon in your world. 1 for the standard sun and moon. 2 for the black hole.
+#define USE_SUN_MOON 2
 // Enable stars in your world
 #define USE_STARS_COL vec3(2)
 // Enable horizon in your world
-#define USE_HORIZON_COL pow(vec3(0.40, 0.20, 0.60), vec3(GAMMA))
+#define USE_HORIZON_COL pow(vec3(0.50, 0.25, 0.75), vec3(GAMMA))
 // Force disable any clouds
 #define FORCE_DISABLE_CLOUDS
 

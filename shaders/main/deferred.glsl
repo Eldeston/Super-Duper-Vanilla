@@ -121,7 +121,7 @@ INOUT vec2 screenCoord;
         vec4 albedoSunMoon = texture2D(colortex2, screenCoord);
 
         // Vanilla sun and moon texture
-        #if defined USE_SUN_MOON && defined VANILLA_SUN_MOON
+        #if USE_SUN_MOON == 1 && defined VANILLA_SUN_MOON
             if(skyMask) skyRender += albedoSunMoon.rgb * 4.0;
         #endif
 
