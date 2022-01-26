@@ -10,7 +10,7 @@ const float sunPathRotation = 0.0; // Light angle [-60.0 -55.0 -50.0 -45.0 -40.0
 	const int shadowMapResolution = 1024; // Shadow map resolution [512 1024 1536 2048 2560 3072 3584 4096 4608 5120]
 
 	// Shadow bias
-	const float shdBias = 0.0128; // Don't go below the default value otherwise it'll mess up lighting
+	const float shdBias = 0.02; // Don't go below the default value otherwise it'll mess up lighting
 
 	// Shadow opaque
 	uniform sampler2DShadow shadowtex0;
