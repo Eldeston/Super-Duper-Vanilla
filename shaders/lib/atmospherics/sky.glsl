@@ -68,7 +68,7 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
     float voidGradient = smootherstep((nPlayerPos.y + eyeBrightFact - 0.81) * PI);
     if(isEyeInWater == 1) finalCol *= voidGradient;
 
-    #if defined USE_SUN_MOON && defined ENABLE_LIGHT
+    #if USE_SUN_MOON == 1 && defined ENABLE_LIGHT
         finalCol += lightCol * pow(max(-nSkyPosZ * 0.5, 0.0), abs(nPlayerPos.y) + 1.0);
     #endif
     
@@ -81,13 +81,23 @@ vec3 getSkyRender(vec3 playerPos, bool skyMask){
 
 vec3 getSkyRender(vec3 playerPos, bool skyMask, bool sunMoonMask){
     vec3 nPlayerPos = normalize(playerPos);
-    vec3 nSkyPos = normalize(mat3(shadowProjection) * (mat3(shadowModelView) * playerPos));
+    vec3 nSkyPos = normalize(mat3(shadowModelView) * playerPos);
 
-    vec3 finalCol = getSkyColor(nPlayerPos, nSkyPos.z, skyMask);
+    vec3 finalCol = vec3(0);
 
-    #if defined USE_SUN_MOON && !defined VANILLA_SUN_MOON
+    #if USE_SUN_MOON == 1 && !defined VANILLA_SUN_MOON
         if(sunMoonMask) finalCol += getSunMoonShape(nSkyPos.xy) * 4.0;
+    #elif USE_SUN_MOON == 2
+        if(sunMoonMask){
+            float blackHole = 0.125 / ((nSkyPos.z + 1.0) * 32.0 - 0.075);
+            vec3 blackHolePos = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
+            nPlayerPos = mix(nPlayerPos, blackHolePos, blackHole);
+            nSkyPos = mix(nSkyPos, blackHolePos, blackHole);
+            finalCol += blackHole * lightCol;
+        }
     #endif
+
+    finalCol += getSkyColor(nPlayerPos, nSkyPos.z, skyMask);
 
     #ifdef USE_STARS_COL
         if(skyMask){
@@ -97,5 +107,6 @@ vec3 getSkyRender(vec3 playerPos, bool skyMask, bool sunMoonMask){
         }
     #endif
 
-    return finalCol;
+    // return vec3(nSkyPos.z + 1.0);
+    return max(vec3(0), finalCol);
 }
