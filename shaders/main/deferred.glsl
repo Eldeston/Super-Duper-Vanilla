@@ -19,7 +19,7 @@ INOUT vec2 screenCoord;
     uniform sampler2D colortex3;
     
     #if defined STORY_MODE_CLOUDS && !defined FORCE_DISABLE_CLOUDS
-        uniform sampler2D colortex7;
+        uniform sampler2D colortex4;
     #endif
 
     #ifdef PREVIOUS_FRAME
@@ -133,7 +133,7 @@ INOUT vec2 screenCoord;
             material.normal = texture2D(colortex1, screenCoord).rgb * 2.0 - 1.0;
 
             vec3 matRaw0 = texture2D(colortex3, screenCoord).xyz;
-            material.metallic = matRaw0.x; material.emissive = matRaw0.y; material.smoothness = matRaw0.z;
+            material.metallic = matRaw0.x; material.smoothness = matRaw0.y;
 
             #if ANTI_ALIASING == 2
                 vec3 dither = toRandPerFrame(getRand3(screenCoord, 8), frameTimeCounter);

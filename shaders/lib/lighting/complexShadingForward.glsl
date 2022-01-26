@@ -26,7 +26,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, float di
 
 		#if defined SHD_ENABLE && !defined ENTITIES_GLOWING
 			// Cave fix
-			float caveFixShdFactor = smoothstep(0.2, 0.4, material.light.y) * (1.0 - eyeBrightFact) + eyeBrightFact;
+			float caveFixShdFactor = smoothstep(0.25, 0.5, material.light.y) * (1.0 - eyeBrightFact) + eyeBrightFact;
 			vec3 shdCol = getShdMapping(posVector.shdPos, dirLight, dither) * (isEyeInWater == 1 ? 1.0 : caveFixShdFactor);
 		#else
 			vec3 shdCol = vec3(smoothstep(0.94, 0.96, material.light.y));

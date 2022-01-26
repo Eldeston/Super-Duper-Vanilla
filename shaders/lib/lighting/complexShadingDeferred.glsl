@@ -37,7 +37,7 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
 		#endif
 
 		// Simplified and modified version of BSL's reflection PBR calculation
-		sceneCol *= 1.0 - (isMetal ? vec3(material.smoothness) : fresnel) * (1.0 - material.emissive);
+		sceneCol *= 1.0 - (isMetal ? vec3(material.smoothness) : fresnel);
 		sceneCol += reflectCol * fresnel;
 	}
 

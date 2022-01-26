@@ -23,7 +23,7 @@ float genStar(vec2 nSkyPos){
 
         for(int i = 0; i < steps; i++){
             start += end;
-            if(texture2D(colortex7, start + vec2(cloudSpeed, 0)).a > 0.05) return 1.0 - i * invSteps;
+            if(texture2D(colortex4, start + vec2(cloudSpeed, 0)).a > 0.05) return 1.0 - i * invSteps;
         }
         
         return 0;

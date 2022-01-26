@@ -15,11 +15,8 @@ INOUT vec2 texcoord;
     const bool colortex4MipmapEnabled = true;
 
     uniform sampler2D gcolor;
+    uniform sampler2D colortex3;
     uniform sampler2D colortex4;
-
-    #ifdef BLOOM
-        uniform sampler2D colortex3;
-    #endif
 
     uniform int isEyeInWater;
 
@@ -44,7 +41,7 @@ INOUT vec2 texcoord;
 
     void main(){
         // Spectral
-        float spectralOutline = getSpectral(colortex4, texcoord, 2.0);
+        float spectralOutline = getSpectral(colortex3, texcoord, 2.0);
         vec3 sceneCol = texture2D(gcolor, texcoord).rgb * (1.0 - spectralOutline) + spectralOutline * 2.0;
 
         #ifdef ENABLE_LIGHT

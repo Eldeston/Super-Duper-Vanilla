@@ -177,6 +177,6 @@ INOUT mat3 TBN;
         gl_FragData[0] = sceneCol; //gcolor
         gl_FragData[1] = vec4(material.normal * 0.5 + 0.5, 1); //colortex1
         gl_FragData[2] = vec4(material.albedo.rgb, 1); //colortex2
-        gl_FragData[3] = vec4(material.metallic, material.emissive, material.smoothness, 1); //colortex3
+        gl_FragData[3] = vec4(material.metallic, material.smoothness, 0, 1); //colortex3
     }
 #endif

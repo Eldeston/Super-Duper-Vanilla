@@ -9,10 +9,10 @@ Framebuffers:
 gcolor - Main scene : RGB16F
 colortex1 - Normals : RGB16
 colortex2 - Raw albedo / Bloom : RGB8
-colortex3 - Metallic, emissive, roughness : RGB8
-colortex4 - Glowing entity, empty / Volumetric light  : RGB8_A2
+colortex3 - Metallic, roughness, glowing entity : RGB8
+colortex4 - Clouds / Volumetric light : RGB8
 colortex5 - Reflections : RGB16
-colortex6 - Temporal / TAA, Auto Exposure : RGBA16F
+colortex6 - Temporal / TAA, Auto exposure : RGBA16F
 colortex7 - Clouds : RGBA8
 
 Custom defined macros:
