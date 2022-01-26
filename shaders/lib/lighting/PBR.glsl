@@ -7,9 +7,10 @@ uniform sampler2D texture;
     uniform float isWarm;
     uniform float isSnowy;
     uniform float isPeaks;
+    uniform float wetness;
 
     void enviroPBR(inout matPBR material, in vec3 worldPos, in vec3 rawNorm){
-        float rainMatFact = sqrt(max(0.0, rawNorm.y)) * smoothstep(0.8, 0.9, material.light.y) * rainStrength * (1.0 - isWarm) * (1.0 - isSnowy) * (1.0 - isPeaks);
+        float rainMatFact = sqrt(max(0.0, rawNorm.y)) * smoothstep(0.8, 0.9, material.light.y) * wetness * (1.0 - isWarm) * (1.0 - isSnowy) * (1.0 - isPeaks);
 
         if(rainMatFact != 0){
             vec3 noiseData = texPix2DCubic(noisetex, worldPos.xz / 512.0, vec2(256)).xyz;
