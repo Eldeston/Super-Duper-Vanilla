@@ -14,7 +14,7 @@ INOUT vec2 texcoord;
 #ifdef FRAGMENT
     uniform sampler2D BUFFER_VIEW;
 
-    /* Texture buffer  settings */
+    /* Texture buffer settings */
 
     /*
     const int gcolorFormat = R11F_G11F_B10F;

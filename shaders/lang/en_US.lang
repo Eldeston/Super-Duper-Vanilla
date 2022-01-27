@@ -90,7 +90,8 @@ screen.LAVA_SETTINGS=Lava material settings
 
 #Animation
     option.ANIMATE=Animate
-    option.ANIMATION_SPEED=Animation speed
+    option.CURRENT_SPEED=Current speed
+    option.WIND_SPEED=Wind speed
 
 screen.CONFIGURE_COLORS=Configure colors
 

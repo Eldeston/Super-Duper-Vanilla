@@ -1,6 +1,5 @@
 // Wave calculation function
 void getWave(inout vec3 vertexPos, in vec3 worldPos, in vec2 texCoord, in vec2 midTexCoord, in float id, in float outSide){
-	float animateTime = ANIMATION_SPEED * frameTimeCounter;
 	float plantWeight = 0.128; float waterWeight = 0.072;
 
 	if((id >= 10000 && id <= 10003) || id == 10008){
@@ -10,8 +9,8 @@ void getWave(inout vec3 vertexPos, in vec3 worldPos, in vec2 texCoord, in vec2 m
 		waterWeight *= offSet;
 	}
 
-    float windDisp = sin(worldPos.x + worldPos.z * 2.0 + animateTime * 1.32) * plantWeight * outSide;
-	float waterDisp = sin(worldPos.x + worldPos.z + animateTime * 1.64) * waterWeight;
+    float windDisp = sin(worldPos.x + worldPos.z * 2.0 + frameTimeCounter * 1.32 * WIND_SPEED) * plantWeight * outSide;
+	float waterDisp = sin(worldPos.x + worldPos.z + frameTimeCounter * 1.64 * CURRENT_SPEED) * waterWeight;
 	
 	#if defined TERRAIN || defined SHADOW
 		// Tall grass
