@@ -1,16 +1,20 @@
-float getStarShape(vec2 st, float size){
-    return smoothstep(0.032, 0.016, max2(abs(st)) / size);
-}
+#if USE_SUN_MOON != 0
+    float getSunMoonShape(vec2 pos){
+        return exp2(-(pow(abs(pos.x * pos.x * pos.x) + abs(pos.y * pos.y * pos.y), 0.333) - 0.075) * 128.0);
+    }
+#endif
 
-float getSunMoonShape(vec2 pos){
-    return exp2(-(pow(abs(pos.x * pos.x * pos.x) + abs(pos.y * pos.y * pos.y), 0.333) - 0.075) * 128.0);
-}
+#ifdef USE_STARS_COL
+    float getStarShape(vec2 st, float size){
+        return smoothstep(0.032, 0.016, max2(abs(st)) / size);
+    }
 
-float genStar(vec2 nSkyPos){
-	vec2 starRand = getRandTex(nSkyPos, 1).xy;
-    vec2 starGrid = 0.5 * sin(starRand * 12.0 + 128.0) - fract(nSkyPos * noiseTextureResolution) + 0.5;
-    return getStarShape(starGrid, starRand.x * 0.9 + 0.3);
-}
+    float genStar(vec2 nSkyPos){
+        vec2 starRand = getRandTex(nSkyPos, 1).xy;
+        vec2 starGrid = 0.5 * sin(starRand * 12.0 + 128.0) - fract(nSkyPos * noiseTextureResolution) + 0.5;
+        return getStarShape(starGrid, starRand.x * 0.9 + 0.3);
+    }
+#endif
 
 #if defined STORY_MODE_CLOUDS && !defined FORCE_DISABLE_CLOUDS
     float cloudParallax(vec2 pos, float time, int steps){
@@ -35,9 +39,9 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
 
     vec2 planeUv = nPlayerPos.xz / nPlayerPos.y;
 
-    #ifdef SKY_GROUND_COL
+    #ifdef WORLD_GROUND_COL
         float c = 4.0 / (isEyeInWater * 2.56 + rainMult);
-        vec3 finalCol = mix(skyCol, SKY_GROUND_COL, smoothen((-nPlayerPos.y) * c));
+        vec3 finalCol = mix(skyCol, WORLD_GROUND_COL, smoothen((-nPlayerPos.y) * c));
     #else
         vec3 finalCol = skyCol;
     #endif
@@ -56,7 +60,7 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
                     float clouds = cloudParallax(planeUv, frameTimeCounter, 8);
                 #endif
 
-                #ifdef ENABLE_LIGHT
+                #ifdef WORLD_LIGHT
                     finalCol += lightCol * (clouds * clouds * smootherstep(nPlayerPos.y * 2.0 - 0.125));
                 #else
                     finalCol += clouds * clouds * smootherstep(nPlayerPos.y * 2.0 - 0.125);
@@ -68,7 +72,7 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
     float voidGradient = smootherstep((nPlayerPos.y + eyeBrightFact - 0.81) * PI);
     if(isEyeInWater == 1) finalCol *= voidGradient;
 
-    #if USE_SUN_MOON == 1 && defined ENABLE_LIGHT
+    #if USE_SUN_MOON == 1 && defined WORLD_LIGHT
         finalCol += lightCol * pow(max(-nSkyPosZ * 0.5, 0.0), abs(nPlayerPos.y) + 1.0);
     #endif
     
@@ -89,10 +93,9 @@ vec3 getSkyRender(vec3 playerPos, bool skyMask, bool sunMoonMask){
         if(sunMoonMask) finalCol += getSunMoonShape(nSkyPos.xy) * 4.0;
     #elif USE_SUN_MOON == 2
         if(sunMoonMask){
-            float blackHole = 0.125 / ((nSkyPos.z + 1.0) * 32.0 - 0.075);
-            vec3 blackHolePos = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
-            nPlayerPos = mix(nPlayerPos, blackHolePos, blackHole);
-            nSkyPos = mix(nSkyPos, blackHolePos, blackHole);
+            float blackHole = 0.25 / ((nSkyPos.z + 1.0) * 32.0 - 0.075);
+            nPlayerPos = mix(nPlayerPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), blackHole);
+            nSkyPos = mix(nSkyPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), blackHole);
             finalCol += blackHole * lightCol;
         }
     #endif

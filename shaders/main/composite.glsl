@@ -149,7 +149,7 @@ INOUT vec2 screenCoord;
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(sceneCol, 1); //gcolor
 
-        #ifdef ENABLE_LIGHT
+        #ifdef WORLD_LIGHT
         /* DRAWBUFFERS:04 */
             gl_FragData[1] = vec4(getGodRays(posVector.feetPlayerPos, posVector.worldPos.y, dither.x), 1); //colortex4
             

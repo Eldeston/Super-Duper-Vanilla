@@ -44,11 +44,11 @@ INOUT vec2 texcoord;
         float spectralOutline = getSpectral(colortex3, texcoord, 2.0);
         vec3 sceneCol = texture2D(gcolor, texcoord).rgb * (1.0 - spectralOutline) + spectralOutline * 2.0;
 
-        #ifdef ENABLE_LIGHT
+        #ifdef WORLD_LIGHT
             #ifdef SHD_ENABLE
-                float fogMult = min(1.0, FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (rainMult + isEyeInWater * 0.5));
+                float fogMult = min(1.0, WORLD_FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (rainMult + isEyeInWater * 0.5));
             #else
-                float fogMult = min(1.0, FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (rainMult + isEyeInWater * 0.5)) * eyeBrightFact;
+                float fogMult = min(1.0, WORLD_FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (rainMult + isEyeInWater * 0.5)) * eyeBrightFact;
             #endif
 
             sceneCol += texture2D(colortex4, texcoord, 1.5).rgb * (lightCol * fogMult);
