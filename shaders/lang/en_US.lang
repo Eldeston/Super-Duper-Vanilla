@@ -132,10 +132,17 @@ screen.CONFIGURE_COLORS=Configure colors
     option.WORLDn1_VANILLA_FOGCOLI=Fog color intensity
 
 #End
-    option.WORLD1_CUSTOM_FOGCOLR=Fog color red
-    option.WORLD1_CUSTOM_FOGCOLG=Fog color green
-    option.WORLD1_CUSTOM_FOGCOLB=Fog color blue
-    option.WORLD1_CUSTOM_FOGCOLI=Fog color intensity
+    screen.DIRECT_LIGHT_COLOR1=Direct light color
+        option.WORLD1_CUSTOM_LIGHTCOLR=Light color red
+        option.WORLD1_CUSTOM_LIGHTCOLG=Light color green
+        option.WORLD1_CUSTOM_LIGHTCOLB=Light color blue
+        option.WORLD1_CUSTOM_LIGHTCOLI=Light color intensity
+
+    screen.SKY_COLOR1=Sky color
+        option.WORLD1_CUSTOM_FOGCOLR=Fog color red
+        option.WORLD1_CUSTOM_FOGCOLG=Fog color green
+        option.WORLD1_CUSTOM_FOGCOLB=Fog color blue
+        option.WORLD1_CUSTOM_FOGCOLI=Fog color intensity
 
 screen.BLOCK_LIGHT_COLOR=Block light color
     option.BLOCKLIGHT_R=Block light red
