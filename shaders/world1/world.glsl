@@ -46,4 +46,4 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 // Total density falloff, larger means thicker fog
 #define WORLD_FOG_TOTAL_DENSITY 0.008
 // Base fog opacity
-#define WORLD_FOG_OPACITY 0.25
+#define WORLD_FOG_OPACITY 0.50
