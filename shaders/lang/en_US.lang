@@ -95,43 +95,53 @@ screen.LAVA_SETTINGS=Lava material settings
 
 screen.CONFIGURE_COLORS=Configure colors
 
-screen.DIRECT_LIGHT_COLOR=Direct light color
-    option.LIGHT_DR=Day red
-    option.LIGHT_DG=Day green
-    option.LIGHT_DB=Day blue
-    option.LIGHT_DI=Day intensity
+#Overworld
+    screen.DIRECT_LIGHT_COLOR0=Direct light color
+        option.LIGHT0_DR=Day red
+        option.LIGHT0_DG=Day green
+        option.LIGHT0_DB=Day blue
+        option.LIGHT0_DI=Day intensity
 
-    option.LIGHT_NR=Night red
-    option.LIGHT_NG=Night green
-    option.LIGHT_NB=Night blue
-    option.LIGHT_NI=Night intensity
+        option.LIGHT0_NR=Night red
+        option.LIGHT0_NG=Night green
+        option.LIGHT0_NB=Night blue
+        option.LIGHT0_NI=Night intensity
 
-    option.LIGHT_DDR=Dawn/dusk red
-    option.LIGHT_DDG=Dawn/dusk green
-    option.LIGHT_DDB=Dawn/dusk blue
-    option.LIGHT_DDI=Dawn/dusk intensity
+        option.LIGHT0_DDR=Dawn/dusk red
+        option.LIGHT0_DDG=Dawn/dusk green
+        option.LIGHT0_DDB=Dawn/dusk blue
+        option.LIGHT0_DDI=Dawn/dusk intensity
 
-screen.SKY_COLOR=Sky color
-    option.SKY_DR=Day red
-    option.SKY_DG=Day green
-    option.SKY_DB=Day blue
-    option.SKY_DI=Day intensity
+    screen.SKY_COLOR0=Sky color
+        option.SKY0_DR=Day red
+        option.SKY0_DG=Day green
+        option.SKY0_DB=Day blue
+        option.SKY0_DI=Day intensity
 
-    option.SKY_NR=Night red
-    option.SKY_NG=Night green
-    option.SKY_NB=Night blue
-    option.SKY_NI=Night intensity
+        option.SKY0_NR=Night red
+        option.SKY0_NG=Night green
+        option.SKY0_NB=Night blue
+        option.SKY0_NI=Night intensity
 
-    option.SKY_DDR=Dawn/dusk red
-    option.SKY_DDG=Dawn/dusk green
-    option.SKY_DDB=Dawn/dusk blue
-    option.SKY_DDI=Dawn/dusk intensity
+        option.SKY0_DDR=Dawn/dusk red
+        option.SKY0_DDG=Dawn/dusk green
+        option.SKY0_DDB=Dawn/dusk blue
+        option.SKY0_DDI=Dawn/dusk intensity
+
+#Nether
+    option.WORLDn1_VANILLA_FOGCOLI=Fog color intensity
+
+#End
+    option.WORLD1_CUSTOM_FOGCOLR=Fog color red
+    option.WORLD1_CUSTOM_FOGCOLG=Fog color green
+    option.WORLD1_CUSTOM_FOGCOLB=Fog color blue
+    option.WORLD1_CUSTOM_FOGCOLI=Fog color intensity
 
 screen.BLOCK_LIGHT_COLOR=Block light color
-    option.BLOCKLIGHT_R=Red
-    option.BLOCKLIGHT_G=Green
-    option.BLOCKLIGHT_B=Blue
-    option.BLOCKLIGHT_I=Intensity
+    option.BLOCKLIGHT_R=Block light red
+    option.BLOCKLIGHT_G=Block light green
+    option.BLOCKLIGHT_B=Block light blue
+    option.BLOCKLIGHT_I=Block light intensity
 
 screen.DEBUG=Super Duper Vanilla by Eldeston
     option.WHITE_MODE=White mode
