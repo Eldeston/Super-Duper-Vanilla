@@ -35,9 +35,6 @@ INOUT vec2 texcoord;
         }
     #endif
 
-    // 1 6 15 20 15 6 1 = 64
-    //
-
     void main(){
         #ifdef BLOOM
             vec3 eBloom = bloomTile(texcoord, vec2(0), 2.0);

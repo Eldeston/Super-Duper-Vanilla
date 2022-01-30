@@ -47,11 +47,11 @@ INOUT vec2 texcoord;
         #ifdef WORLD_LIGHT
             #ifdef SHD_ENABLE
                 float fogMult = min(1.0, WORLD_FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (rainMult + isEyeInWater * 0.5));
+                sceneCol += texture2D(colortex4, texcoord, 1.5).rgb * (lightCol * fogMult);
             #else
                 float fogMult = min(1.0, WORLD_FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (rainMult + isEyeInWater * 0.5)) * eyeBrightFact;
+                sceneCol += texture2D(colortex4, texcoord, 1.5).rgb * (lightCol * fogMult) * (isEyeInWater == 1 ? fogColor : vec3(1));
             #endif
-
-            sceneCol += texture2D(colortex4, texcoord, 1.5).rgb * (lightCol * fogMult);
 
         /* DRAWBUFFERS:0 */
             gl_FragData[0] = vec4(sceneCol, 1); // gcolor

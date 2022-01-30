@@ -14,6 +14,16 @@ INOUT vec2 texcoord;
 #ifdef FRAGMENT
     uniform sampler2D gcolor;
 
+    // Get frame time
+    uniform float frameTime;
+
+    uniform int isEyeInWater;
+
+    uniform float nightVision;
+    uniform float rainStrength;
+
+    uniform ivec2 eyeBrightnessSmooth;
+
     #ifdef BLOOM
         uniform sampler2D colortex2;
 
@@ -22,6 +32,8 @@ INOUT vec2 texcoord;
             return texture2D(colortex2, uv / exp2(LOD) + coords).rgb;
         }
     #endif
+
+    #include "/lib/post/tonemap.glsl"
 
     void main(){
         // Original scene color
@@ -39,6 +51,20 @@ INOUT vec2 texcoord;
 
             color = mix(color, eBloom, 0.2 * BLOOM_BRIGHTNESS);
         #endif
+
+        // Exposeure, tint, and tonemap
+        color = whitePreservingLumaBasedReinhardToneMapping(color * vec3(TINT_R, TINT_G, TINT_B) * (0.00392156863 * EXPOSURE));
+
+        #ifdef VIGNETTE
+            // BSL's vignette, modified to control intensity
+            color *= max(0.0, 1.0 - length(texcoord - 0.5) * VIGNETTE_INTENSITY * (1.0 - getLuminance(color)));
+        #endif
+
+        // Gamma correction
+        color = pow(color, vec3(RCPGAMMA));
+        
+        // Color saturation, contrast, etc.
+        color = toneA(color);
 
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(color, 1); //gcolor
