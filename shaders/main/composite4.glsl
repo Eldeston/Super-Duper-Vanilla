@@ -12,40 +12,25 @@ INOUT vec2 texcoord;
 #endif
 
 #ifdef FRAGMENT
-    uniform sampler2D gcolor;
-
     #ifdef BLOOM
         uniform sampler2D colortex2;
 
-        vec3 getBloomTile(vec2 uv, vec2 coords, float LOD){
-            // Uncompress bloom
-            return texture2D(colortex2, uv / exp2(LOD) + coords).rgb;
-        }
+        uniform float viewHeight;
     #endif
 
     void main(){
-        // Original scene color
-        vec3 color = texture2D(gcolor, texcoord).rgb;
-
         #ifdef BLOOM
-            // Uncompress the HDR colors and upscale
-            vec3 eBloom = getBloomTile(texcoord, vec2(0), 2.0);
-            eBloom += getBloomTile(texcoord, vec2(0, 0.26), 3.0);
-            eBloom += getBloomTile(texcoord, vec2(0.135, 0.26), 4.0);
-            eBloom += getBloomTile(texcoord, vec2(0.2075, 0.26), 5.0);
-            eBloom += getBloomTile(texcoord, vec2(0.135, 0.3325), 6.0);
-            eBloom += getBloomTile(texcoord, vec2(0.160625, 0.3325), 7.0);
-            eBloom = 1.0 / (1.0 - eBloom * 0.167) - 1.0;
-
-            color = mix(color, eBloom, 0.2 * BLOOM_BRIGHTNESS);
-        #endif
-
-    /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(color, 1); //gcolor
-
-        #ifdef BLOOM
-            /* DRAWBUFFERS:02 */
-                gl_FragData[1] = vec4(eBloom, 1); //colortex2
+            float pixelSize = 1.0 / viewHeight;
+            vec3 eBloom = texture2D(colortex2, texcoord + vec2(0, pixelSize * 2.0)).rgb * 0.0625;
+            eBloom += texture2D(colortex2, texcoord + vec2(0, pixelSize)).rgb * 0.25;
+            eBloom += texture2D(colortex2, texcoord).rgb * 0.375;
+            eBloom += texture2D(colortex2, texcoord + vec2(0, pixelSize)).rgb * 0.25;
+            eBloom += texture2D(colortex2, texcoord + vec2(0, pixelSize * 2.0)).rgb * 0.0625;
+        /* DRAWBUFFERS:2 */
+            gl_FragData[0] = vec4(eBloom, 1); //colortex2
+        #else
+        /* DRAWBUFFERS:2 */
+            gl_FragData[0] = vec4(0, 0, 0, 1); //colortex2
         #endif
     }
 #endif

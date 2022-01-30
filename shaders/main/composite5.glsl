@@ -14,47 +14,38 @@ INOUT vec2 texcoord;
 #ifdef FRAGMENT
     uniform sampler2D gcolor;
 
-    #ifdef DOF
-        const bool gcolorMipmapEnabled = true;
+    #ifdef BLOOM
+        uniform sampler2D colortex2;
 
-        uniform sampler2D depthtex1;
-
-        uniform mat4 gbufferProjectionInverse;
-        
-        uniform float centerDepthSmooth;
-        uniform float viewWidth;
-        uniform float viewHeight;
-
-        #if ANTI_ALIASING == 2
-            uniform float frameTimeCounter;
-        #endif
-
-        float toView(float depth){
-            return gbufferProjectionInverse[3].z / (gbufferProjectionInverse[2].w * (depth * 2.0 - 1.0) + gbufferProjectionInverse[3].w);
+        vec3 getBloomTile(vec2 uv, vec2 coords, float LOD){
+            // Uncompress bloom
+            return texture2D(colortex2, uv / exp2(LOD) + coords).rgb;
         }
-
-        #include "/lib/utility/noiseFunctions.glsl"
     #endif
 
     void main(){
-        #ifdef DOF
-            float depth = min(1.0, abs(toView(texture2D(depthtex1, texcoord).r) - toView(centerDepthSmooth)) / FOCAL_RANGE);
+        // Original scene color
+        vec3 color = texture2D(gcolor, texcoord).rgb;
 
-            #if ANTI_ALIASING == 2
-                float dither = toRandPerFrame(getRand1(texcoord, 8), frameTimeCounter) * PI2;
-            #else
-                float dither = getRand1(texcoord, 8) * PI2;
-            #endif
+        #ifdef BLOOM
+            // Uncompress the HDR colors and upscale
+            vec3 eBloom = getBloomTile(texcoord, vec2(0), 2.0);
+            eBloom += getBloomTile(texcoord, vec2(0, 0.26), 3.0);
+            eBloom += getBloomTile(texcoord, vec2(0.135, 0.26), 4.0);
+            eBloom += getBloomTile(texcoord, vec2(0.2075, 0.26), 5.0);
+            eBloom += getBloomTile(texcoord, vec2(0.135, 0.3325), 6.0);
+            eBloom += getBloomTile(texcoord, vec2(0.160625, 0.3325), 7.0);
+            eBloom = 1.0 / (1.0 - eBloom * 0.167) - 1.0;
 
-            vec2 randVec = (vec2(sin(dither), cos(dither)) * depth) / (vec2(viewWidth, viewHeight) / exp2(DOF_LOD));
-            
-            vec3 color = texture2D(gcolor, texcoord + randVec).rgb;
-            color = (color + texture2D(gcolor, texcoord - randVec).rgb) * 0.5;
-        #else
-            vec3 color = texture2D(gcolor, texcoord).rgb;
+            color = mix(color, eBloom, 0.2 * BLOOM_BRIGHTNESS);
         #endif
 
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(color, 1); //gcolor
+
+        #ifdef BLOOM
+            /* DRAWBUFFERS:02 */
+                gl_FragData[1] = vec4(eBloom, 1); //colortex2
+        #endif
     }
 #endif

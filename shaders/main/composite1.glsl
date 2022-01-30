@@ -59,11 +59,5 @@ INOUT vec2 texcoord;
         /* DRAWBUFFERS:0 */
             gl_FragData[0] = vec4(sceneCol, 1); // gcolor
         #endif
-
-        #ifdef BLOOM
-        /* DRAWBUFFERS:02 */
-            // Compress the HDR colors
-            gl_FragData[1] = vec4(sceneCol / (sceneCol + 1.0), 1); // colortex2
-        #endif
     }
 #endif

@@ -15,17 +15,38 @@ INOUT vec2 texcoord;
     #ifdef BLOOM
         uniform sampler2D colortex2;
 
-        uniform float viewHeight;
+        uniform float viewWidth;
+
+        vec3 bloomTile(vec2 uv, vec2 coords, float LOD){
+            float scale = exp2(LOD);
+            float pixelSize = scale / viewWidth;
+            vec2 bloomUv = (uv - coords) * scale;
+            float padding = 0.5 + 0.005 * scale;
+
+            if(abs(bloomUv.x - 0.5) < padding && abs(bloomUv.y - 0.5) < padding){
+                vec3 eBloom = texture2D(colortex2, bloomUv + vec2(pixelSize * 2.0, 0)).rgb * 0.0625;
+                eBloom += texture2D(colortex2, bloomUv + vec2(pixelSize, 0)).rgb * 0.25;
+                eBloom += texture2D(colortex2, bloomUv).rgb * 0.375;
+                eBloom += texture2D(colortex2, bloomUv - vec2(pixelSize, 0)).rgb * 0.25;
+                return eBloom + texture2D(colortex2, bloomUv - vec2(pixelSize * 2.0, 0)).rgb * 0.0625;
+            }
+            
+            return vec3(0);
+        }
     #endif
+
+    // 1 6 15 20 15 6 1 = 64
+    //
 
     void main(){
         #ifdef BLOOM
-            float pixelSize = 1.0 / viewHeight;
-            vec3 eBloom = texture2D(colortex2, texcoord + vec2(0, pixelSize * 2.0)).rgb * 0.0625;
-            eBloom += texture2D(colortex2, texcoord + vec2(0, pixelSize)).rgb * 0.25;
-            eBloom += texture2D(colortex2, texcoord).rgb * 0.375;
-            eBloom += texture2D(colortex2, texcoord + vec2(0, pixelSize)).rgb * 0.25;
-            eBloom += texture2D(colortex2, texcoord + vec2(0, pixelSize * 2.0)).rgb * 0.0625;
+            vec3 eBloom = bloomTile(texcoord, vec2(0), 2.0);
+            eBloom += bloomTile(texcoord, vec2(0, 0.26), 3.0);
+            eBloom += bloomTile(texcoord, vec2(0.135, 0.26), 4.0);
+            eBloom += bloomTile(texcoord, vec2(0.2075, 0.26), 5.0);
+            eBloom += bloomTile(texcoord, vec2(0.135, 0.3325), 6.0);
+            eBloom += bloomTile(texcoord, vec2(0.160625, 0.3325), 7.0);
+        
         /* DRAWBUFFERS:2 */
             gl_FragData[0] = vec4(eBloom, 1); //colortex2
         #else

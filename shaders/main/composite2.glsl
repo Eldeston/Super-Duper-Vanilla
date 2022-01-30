@@ -12,46 +12,55 @@ INOUT vec2 texcoord;
 #endif
 
 #ifdef FRAGMENT
-    #ifdef BLOOM
-        uniform sampler2D colortex2;
+    uniform sampler2D gcolor;
 
+    #ifdef DOF
+        const bool gcolorMipmapEnabled = true;
+
+        uniform sampler2D depthtex1;
+
+        uniform mat4 gbufferProjectionInverse;
+        
+        uniform float centerDepthSmooth;
         uniform float viewWidth;
+        uniform float viewHeight;
 
-        vec3 bloomTile(vec2 uv, vec2 coords, float LOD){
-            float scale = exp2(LOD);
-            float pixelSize = scale / viewWidth;
-            vec2 bloomUv = (uv - coords) * scale;
-            float padding = 0.5 + 0.005 * scale;
+        #if ANTI_ALIASING == 2
+            uniform float frameTimeCounter;
+        #endif
 
-            if(abs(bloomUv.x - 0.5) < padding && abs(bloomUv.y - 0.5) < padding){
-                vec3 eBloom = texture2D(colortex2, bloomUv + vec2(pixelSize * 2.0, 0)).rgb * 0.0625;
-                eBloom += texture2D(colortex2, bloomUv + vec2(pixelSize, 0)).rgb * 0.25;
-                eBloom += texture2D(colortex2, bloomUv).rgb * 0.375;
-                eBloom += texture2D(colortex2, bloomUv - vec2(pixelSize, 0)).rgb * 0.25;
-                return eBloom + texture2D(colortex2, bloomUv - vec2(pixelSize * 2.0, 0)).rgb * 0.0625;
-            }
-            
-            return vec3(0);
+        float toView(float depth){
+            return gbufferProjectionInverse[3].z / (gbufferProjectionInverse[2].w * (depth * 2.0 - 1.0) + gbufferProjectionInverse[3].w);
         }
+
+        #include "/lib/utility/noiseFunctions.glsl"
     #endif
 
-    // 1 6 15 20 15 6 1 = 64
-    //
-
     void main(){
-        #ifdef BLOOM
-            vec3 eBloom = bloomTile(texcoord, vec2(0), 2.0);
-            eBloom += bloomTile(texcoord, vec2(0, 0.26), 3.0);
-            eBloom += bloomTile(texcoord, vec2(0.135, 0.26), 4.0);
-            eBloom += bloomTile(texcoord, vec2(0.2075, 0.26), 5.0);
-            eBloom += bloomTile(texcoord, vec2(0.135, 0.3325), 6.0);
-            eBloom += bloomTile(texcoord, vec2(0.160625, 0.3325), 7.0);
-        
-        /* DRAWBUFFERS:2 */
-            gl_FragData[0] = vec4(eBloom, 1); //colortex2
+        #ifdef DOF
+            float depth = min(1.0, abs(toView(texture2D(depthtex1, texcoord).r) - toView(centerDepthSmooth)) / FOCAL_RANGE);
+
+            #if ANTI_ALIASING == 2
+                float dither = toRandPerFrame(getRand1(texcoord, 8), frameTimeCounter) * PI2;
+            #else
+                float dither = getRand1(texcoord, 8) * PI2;
+            #endif
+
+            vec2 randVec = (vec2(sin(dither), cos(dither)) * depth) / (vec2(viewWidth, viewHeight) / exp2(DOF_LOD));
+            
+            vec3 color = texture2D(gcolor, texcoord + randVec).rgb;
+            color = (color + texture2D(gcolor, texcoord - randVec).rgb) * 0.5;
         #else
-        /* DRAWBUFFERS:2 */
-            gl_FragData[0] = vec4(0, 0, 0, 1); //colortex2
+            vec3 color = texture2D(gcolor, texcoord).rgb;
+        #endif
+
+    /* DRAWBUFFERS:0 */
+        gl_FragData[0] = vec4(color, 1); //gcolor
+
+        #ifdef BLOOM
+        /* DRAWBUFFERS:02 */
+            // Compress the HDR colors
+            gl_FragData[1] = vec4(color / (color + 1.0), 1); // colortex2
         #endif
     }
 #endif
