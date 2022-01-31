@@ -38,9 +38,7 @@
     option.sunPathRotation=Light rotation
     option.SHD_ENABLE=Shadowmapping enabled
     option.SHADOW_FILTER=Soft shadow filter
-    option.SHADOW_DISTORT_FACTOR=Shadow distortion factor
     option.UNDERWATER_CAUSTICS=Underwater caustics
-    option.SHADOW_DISTORT=Shadow distortion
     option.AMBIENT_LIGHTING=Ambient lighting
     option.ENABLE_SS=Subsurface scattering
     screen.Lighting.comment=Lighting settings for shadow resolution, lightmap etc.

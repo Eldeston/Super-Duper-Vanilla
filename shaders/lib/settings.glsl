@@ -2,8 +2,6 @@
 #define SHD_ENABLE // Enables shadows. Disable to use only fake shadows that uses lightmap
 #define SHADOW_FILTER // Enables soft shadow filtering, if enabled shadows will appear softer by using noise. May impact performance.
 #define SHD_COL // Enables shadow color from colored transparent objects.
-#define SHADOW_DISTORT // Enables shadow distortion. Use this if you're using a low shadow resolution or turn it off for no distortion if you're using a really high shadow resolution.
-#define SHADOW_DISTORT_FACTOR 0.10 // Lower values means higher quality shadows near the player, and lower quality shadows far from the player. Anything below 0.05 will often cause spots! [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00]
 #define RENDER_FOLIAGE_SHD // Enables cutout objects shadows.
 #define ENABLE_SS // Enables subsurface scattering. 
 #define UNDERWATER_CAUSTICS // Enables underwater caustics. Shadow color must be enabled!
