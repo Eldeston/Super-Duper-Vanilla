@@ -127,7 +127,7 @@ uniform mat4 gbufferModelViewInverse;
                 sceneCol = vec4(vec3(2), 1);
             }
 
-            sceneCol = complexShadingGbuffers(material, posVector, getRand1(posVector.screenPos.xy, 8));
+            sceneCol = complexShadingGbuffers(material, posVector, getRand1(gl_FragCoord.xy * 0.03125));
         } else discard;
 
     /* DRAWBUFFERS:0123 */

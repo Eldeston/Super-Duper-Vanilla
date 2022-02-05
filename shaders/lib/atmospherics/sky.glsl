@@ -10,7 +10,7 @@
     }
 
     float genStar(vec2 nSkyPos){
-        vec2 starRand = getRandTex(nSkyPos, 1).xy;
+        vec2 starRand = getRandTex(nSkyPos).xy;
         vec2 starGrid = 0.5 * sin(starRand * 12.0 + 128.0) - fract(nSkyPos * noiseTextureResolution) + 0.5;
         return getStarShape(starGrid, starRand.x * 0.9 + 0.3);
     }
@@ -61,9 +61,9 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
                 #endif
 
                 #ifdef WORLD_LIGHT
-                    finalCol += lightCol * (clouds * clouds * smootherstep(nPlayerPos.y * 2.0 - 0.125));
+                    finalCol += lightCol * (clouds * smootherstep(nPlayerPos.y * 2.0 - 0.125));
                 #else
-                    finalCol += clouds * clouds * smootherstep(nPlayerPos.y * 2.0 - 0.125);
+                    finalCol += clouds * smootherstep(nPlayerPos.y * 2.0 - 0.125);
                 #endif
             }
         #endif

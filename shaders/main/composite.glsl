@@ -107,9 +107,9 @@ INOUT vec2 screenCoord;
         vec3 sceneCol = texture2D(gcolor, screenCoord).rgb;
 
         #if ANTI_ALIASING == 2
-            vec3 dither = toRandPerFrame(getRand3(screenCoord, 8), frameTimeCounter);
+            vec3 dither = toRandPerFrame(getRand3(gl_FragCoord.xy * 0.03125), frameTimeCounter);
         #else
-            vec3 dither = getRand3(screenCoord, 8);
+            vec3 dither = getRand3(gl_FragCoord.xy * 0.03125);
         #endif
 
         #ifdef PREVIOUS_FRAME

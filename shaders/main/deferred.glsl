@@ -136,9 +136,9 @@ INOUT vec2 screenCoord;
             material.metallic = matRaw0.x; material.smoothness = matRaw0.y;
 
             #if ANTI_ALIASING == 2
-                vec3 dither = toRandPerFrame(getRand3(screenCoord, 8), frameTimeCounter);
+                vec3 dither = toRandPerFrame(getRand3(gl_FragCoord.xy * 0.03125), frameTimeCounter);
             #else
-                vec3 dither = getRand3(screenCoord, 8);
+                vec3 dither = getRand3(gl_FragCoord.xy * 0.03125);
             #endif
 
             sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);

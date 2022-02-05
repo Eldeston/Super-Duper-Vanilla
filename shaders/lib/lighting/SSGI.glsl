@@ -1,6 +1,6 @@
 // Written by xirreal#0281 on ShaderLabs
 vec3 cosWeightedRandHemisphereDir(vec3 norm, vec2 seed){
-    vec2 r = getRand3(seed, 8).xy;
+    vec2 r = getRand2(seed * 8.0);
     vec3 uu = normalize(cross(norm, vec3(0, 1, 1)));
     vec3 vv = cross(uu, norm);
 
