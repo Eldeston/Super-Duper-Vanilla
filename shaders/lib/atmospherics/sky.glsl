@@ -40,8 +40,8 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
     vec2 planeUv = nPlayerPos.xz / nPlayerPos.y;
 
     #ifdef WORLD_SKY_GROUND
-        float c = 4.0 / (isEyeInWater * 2.56 + rainMult);
-        vec3 finalCol = skyCol * (1.0 - smoothen((-nPlayerPos.y) * c) * 0.8);
+        float fogGround = smoothen((-nPlayerPos.y * 4.0) / (isEyeInWater * 2.56 + rainMult));
+        vec3 finalCol = skyCol * vec3(1.0 - fogGround, 1.0 - fogGround, 1);
     #else
         vec3 finalCol = skyCol;
     #endif

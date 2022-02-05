@@ -16,7 +16,7 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 // #define FORCE_DISABLE_CLOUDS
 
 // Enable stars in your world
-#define USE_STARS_COL vec3(pow((1.0 - day) * 2.0, GAMMA))
+#define USE_STARS_COL vec3(pow((1.0 - day) * 4.0, GAMMA))
 // Enable horizon in your world
 // #define USE_HORIZON_COL vec3(1)
 
