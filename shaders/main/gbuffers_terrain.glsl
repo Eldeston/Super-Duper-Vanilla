@@ -113,7 +113,7 @@ INOUT mat3 TBN;
     #include "/lib/universalVars.glsl"
 
     #include "/lib/lighting/shdDistort.glsl"
-    #include "/lib/utility/spaceConvert.glsl"
+    #include "/lib/utility/convertViewSpace.glsl"
     #include "/lib/utility/texFunctions.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
     #include "/lib/surface/lava.glsl"

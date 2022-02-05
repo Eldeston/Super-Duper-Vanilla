@@ -29,9 +29,7 @@ INOUT vec2 texcoord;
             uniform float frameTimeCounter;
         #endif
 
-        float toView(float depth){
-            return gbufferProjectionInverse[3].z / (gbufferProjectionInverse[2].w * (depth * 2.0 - 1.0) + gbufferProjectionInverse[3].w);
-        }
+        #include "/lib/utility/convertViewSpace.glsl"
 
         #include "/lib/utility/noiseFunctions.glsl"
     #endif

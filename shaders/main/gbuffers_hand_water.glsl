@@ -88,7 +88,7 @@ uniform mat4 gbufferModelViewInverse;
     uniform vec4 entityColor;
 
     #include "/lib/lighting/shdDistort.glsl"
-    #include "/lib/utility/spaceConvert.glsl"
+    #include "/lib/utility/convertViewSpace.glsl"
     #include "/lib/utility/texFunctions.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
 

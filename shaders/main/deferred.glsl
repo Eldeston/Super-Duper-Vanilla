@@ -22,22 +22,14 @@ INOUT vec2 screenCoord;
         uniform sampler2D colortex4;
     #endif
 
-    #ifdef PREVIOUS_FRAME
-        // Previous reflections
-        uniform sampler2D colortex5;
-        const bool colortex5Clear = false;
-    #endif
-
     /* Matrix uniforms */
     // View matrix uniforms
     uniform mat4 gbufferModelView;
     uniform mat4 gbufferModelViewInverse;
-    uniform mat4 gbufferPreviousModelView;
 
     // Projection matrix uniforms
     uniform mat4 gbufferProjection;
     uniform mat4 gbufferProjectionInverse;
-    uniform mat4 gbufferPreviousProjection;
 
     // Shadow view matrix uniforms
     uniform mat4 shadowModelView;
@@ -47,7 +39,19 @@ INOUT vec2 screenCoord;
 
     /* Position uniforms */
     uniform vec3 cameraPosition;
-    uniform vec3 previousCameraPosition;
+
+    #ifdef PREVIOUS_FRAME
+        // Previous reflections
+        uniform sampler2D colortex5;
+        const bool colortex5Clear = false;
+
+        uniform mat4 gbufferPreviousModelView;
+        uniform mat4 gbufferPreviousProjection;
+
+        uniform vec3 previousCameraPosition;
+
+        #include "/lib/utility/convertPrevScreenSpace.glsl"
+    #endif
 
     /* Screen uniforms */
     uniform float viewWidth;
@@ -81,7 +85,8 @@ INOUT vec2 screenCoord;
     
     #include "/lib/universalVars.glsl"
 
-    #include "/lib/utility/spaceConvert.glsl"
+    #include "/lib/utility/convertViewSpace.glsl"
+    #include "/lib/utility/convertScreenSpace.glsl"
     #include "/lib/utility/texFunctions.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
     #include "/lib/rayTracing/rayTracer.glsl"
