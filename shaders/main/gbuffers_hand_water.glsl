@@ -32,7 +32,7 @@ uniform mat4 gbufferModelViewInverse;
         blockId = mc_Entity.x;
 
         vec3 tangent = normalize(gl_NormalMatrix * at_tangent.xyz);
-	    vec3 binormal = normalize(gl_NormalMatrix * cross(at_tangent.xyz, gl_Normal) * sign(at_tangent.w));
+	    vec3 binormal = normalize(gl_NormalMatrix * cross(at_tangent.xyz, gl_Normal) * at_tangent.w);
 	    vec3 normal = normalize(gl_NormalMatrix * gl_Normal);
 
 	    TBN = mat3(gbufferModelViewInverse) * mat3(tangent, binormal, normal);

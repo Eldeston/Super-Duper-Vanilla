@@ -47,3 +47,7 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 #define WORLD_FOG_TOTAL_DENSITY 0.008
 // Base fog opacity
 #define WORLD_FOG_OPACITY 0.50
+
+// Holds the data on how the light will change according to multiple environmental factors
+#define LIGHT_COL_DATA_BLOCK vec3 lightCol = pow(WORLD_CUSTOM_LIGHTCOL * 0.00392156863, vec3(GAMMA)) * (1.0 - cubed(twilight));
+#define SKY_COL_DATA_BLOCK const vec3 skyCol = pow(WORLD_CUSTOM_FOGCOL * 0.00392156863, vec3(GAMMA));

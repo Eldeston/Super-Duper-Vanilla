@@ -7,7 +7,7 @@ uniform int blockEntityId;
 INOUT vec2 lmCoord;
 INOUT vec2 texCoord;
 
-#if DEFAULT_MAT != 2 && defined AUTO_GEN_NORM
+#if defined AUTO_GEN_NORM && defined PARALLAX_OCCLUSION
     INOUT vec2 minTexCoord;
     INOUT vec2 maxTexCoord;
 #endif
@@ -37,12 +37,12 @@ uniform mat4 gbufferModelViewInverse;
         lmCoord  = (gl_TextureMatrix[1] * gl_MultiTexCoord1).xy;
 
         vec3 tangent = normalize(gl_NormalMatrix * at_tangent.xyz);
-	    vec3 binormal = normalize(gl_NormalMatrix * cross(at_tangent.xyz, gl_Normal) * sign(at_tangent.w));
+	    vec3 binormal = normalize(gl_NormalMatrix * cross(at_tangent.xyz, gl_Normal) * at_tangent.w);
 	    vec3 normal = normalize(gl_NormalMatrix * gl_Normal);
 
 	    TBN = mat3(gbufferModelViewInverse) * mat3(tangent, binormal, normal);
 
-        #if DEFAULT_MAT != 2 && defined AUTO_GEN_NORM
+        #if defined AUTO_GEN_NORM && defined PARALLAX_OCCLUSION
             vec2 texSize = abs(texCoord - mc_midTexCoord.xy);
             minTexCoord = mc_midTexCoord.xy - texSize;
             maxTexCoord = mc_midTexCoord.xy + texSize;

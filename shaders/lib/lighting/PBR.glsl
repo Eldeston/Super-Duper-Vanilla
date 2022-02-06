@@ -28,9 +28,36 @@ uniform sampler2D texture;
     uniform sampler2D normals;
     uniform sampler2D specular;
 
+    // This is for Optifine to detect the option...
+    #ifdef PARALLAX_OCCLUSION
+    #endif
+
+    #if (defined TERRAIN || defined WATER || defined BLOCK) && defined PARALLAX_OCCLUSION
+        vec2 parallaxUv(sampler2D heightMap, vec2 startUv, vec2 endUv){
+            float currDepth = texture2D(heightMap, mix(minTexCoord, maxTexCoord, fract(startUv))).a;
+            float depth = 1.0;
+
+            const float stepSize = 1.0 / PARALLAX_STEPS;
+            endUv *= stepSize * PARALLAX_DEPTH;
+
+            while(depth >= currDepth){
+                startUv += endUv;
+                currDepth = texture2D(heightMap, mix(minTexCoord, maxTexCoord, fract(startUv))).a;
+                depth -= stepSize;
+            }
+
+            return mix(minTexCoord, maxTexCoord, fract(startUv));
+        }
+    #endif
+
     void getPBR(inout matPBR material, in positionVectors posVector, in mat3 TBN, in vec3 tint, in vec2 st, in int id){
         // Assign default normal map
         material.normal = TBN[2];
+
+        #if (defined TERRAIN || defined WATER || defined BLOCK) && defined PARALLAX_OCCLUSION
+            vec3 viewTBN = TBN * posVector.eyePlayerPos;
+            st = parallaxUv(normals, st, viewTBN.xy / -viewTBN.z);
+        #endif
 
         // Assign albedo
         material.albedo = texture2D(texture, st);
@@ -38,6 +65,7 @@ uniform sampler2D texture;
         if(material.albedo.a > 0.00001){
             // Get raw textures
             vec4 normalAOH = texture2D(normals, st);
+
             vec4 SRPSSE = texture2D(specular, st);
 
             // Decode and extract the materials
@@ -125,7 +153,7 @@ uniform sampler2D texture;
                 float dx = d - length(texture2D(texture, mix(minTexCoord, maxTexCoord, (st + vec2(0.0125, 0)))).rgb);
                 float dy = d - length(texture2D(texture, mix(minTexCoord, maxTexCoord, (st + vec2(0, 0.0125)))).rgb);
 
-                material.normal = normalize(TBN * normalize(vec3(vec2(dx, dy) / 0.125, 2)));
+                material.normal = normalize(TBN * normalize(vec3(dx, dy, 0.125)));
             }
         #else
             // Assign albedo
