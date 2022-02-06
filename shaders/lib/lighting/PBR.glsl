@@ -170,7 +170,7 @@ uniform sampler2D texture;
         #endif
 
         // Generate bumped normals
-        #if defined TERRAIN || defined WATER || defined BLOCK
+        #if (defined TERRAIN || defined WATER || defined BLOCK) && (defined PARALLAX_OCCLUSION || defined AUTO_GEN_NORM)
             // Assign albedo
             material.albedo = texture2DGradARB(texture, mix(minTexCoord, maxTexCoord, fract(st)), dcdx, dcdy);
 
