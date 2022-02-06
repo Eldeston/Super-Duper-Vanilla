@@ -47,6 +47,9 @@
     option.DEFAULT_MAT=PBR mode
     option.ENVIRO_MAT=Enviro PBR materials
     option.AUTO_GEN_NORM=Auto generated normals
+    option.PARALLAX_OCCLUSION=Parallax occlusion
+    option.PARALLAX_DEPTH=Parallax depth
+    option.PARALLAX_STEPS=Parallax steps
     value.DEFAULT_MAT.0=OFF
     value.DEFAULT_MAT.1=Default PBR
     value.DEFAULT_MAT.2=Lab PBR 1.3

@@ -7,7 +7,7 @@ uniform int blockEntityId;
 INOUT vec2 lmCoord;
 INOUT vec2 texCoord;
 
-#if defined AUTO_GEN_NORM && defined PARALLAX_OCCLUSION
+#if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
     INOUT vec2 minTexCoord;
     INOUT vec2 maxTexCoord;
 #endif
@@ -52,7 +52,7 @@ uniform mat4 gbufferModelViewInverse;
 						  tangent.z, binormal.z, normal.z) * (gl_ModelViewMatrix * gl_Vertex).xyz;
         #endif
 
-        #if defined AUTO_GEN_NORM && defined PARALLAX_OCCLUSION
+        #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
             vec2 texSize = abs(texCoord - mc_midTexCoord.xy);
             minTexCoord = mc_midTexCoord.xy - texSize;
             maxTexCoord = mc_midTexCoord.xy + texSize;

@@ -1,3 +1,9 @@
+#extension GL_ARB_shader_texture_lod : enable
+
+// Derivatives
+vec2 dcdx = dFdx(texCoord);
+vec2 dcdy = dFdy(texCoord);
+
 uniform sampler2D texture;
 
 #ifdef AUTO_GEN_NORM
@@ -34,7 +40,7 @@ uniform sampler2D texture;
 
     #if (defined TERRAIN || defined WATER || defined BLOCK) && defined PARALLAX_OCCLUSION
         vec2 parallaxUv(sampler2D heightMap, vec2 startUv, vec2 endUv){
-            float currDepth = texture2D(heightMap, mix(minTexCoord, maxTexCoord, fract(startUv))).a;
+            float currDepth = texture2DGradARB(heightMap, mix(minTexCoord, maxTexCoord, fract(startUv)), dcdx, dcdy).a;
             float depth = 1.0;
 
             const float stepSize = 1.0 / PARALLAX_STEPS;
@@ -42,7 +48,7 @@ uniform sampler2D texture;
 
             while(depth >= currDepth){
                 startUv += endUv;
-                currDepth = texture2D(heightMap, mix(minTexCoord, maxTexCoord, fract(startUv))).a;
+                currDepth = texture2DGradARB(heightMap, mix(minTexCoord, maxTexCoord, fract(startUv)), dcdx, dcdy).a;
                 depth -= stepSize;
             }
 
@@ -59,13 +65,13 @@ uniform sampler2D texture;
         #endif
 
         // Assign albedo
-        material.albedo = texture2D(texture, st);
+        material.albedo = texture2DGradARB(texture, st, dcdx, dcdy);
 
         if(material.albedo.a > 0.00001){
             // Get raw textures
-            vec4 normalAOH = texture2D(normals, st);
+            vec4 normalAOH = texture2DGradARB(normals, st, dcdx, dcdy);
 
-            vec4 SRPSSE = texture2D(specular, st);
+            vec4 SRPSSE = texture2DGradARB(specular, st, dcdx, dcdy);
 
             // Decode and extract the materials
             // Extract normals
@@ -106,8 +112,8 @@ uniform sampler2D texture;
 
                 // End portal
                 else if(id == 10100){
-                    vec3 d0 = texture2D(texture, (posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.02)) * 0.5).rgb;
-                    vec3 d1 = texture2D(texture, (posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.01))).rgb;
+                    vec3 d0 = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.02)) * 0.5, dcdx, dcdy).rgb;
+                    vec3 d1 = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.01)), dcdx, dcdy).rgb;
                     material.albedo = vec4(d0 + d1 + 0.05, 1);
                     material.normal = TBN[2];
                     material.smoothness = 0.96;
@@ -137,26 +143,48 @@ uniform sampler2D texture;
         }
     }
 #else
+    #if (defined TERRAIN || defined WATER || defined BLOCK) && defined PARALLAX_OCCLUSION
+        vec2 parallaxUv(sampler2D heightMap, vec2 startUv, vec2 endUv){
+            float currDepth = length(texture2DGradARB(heightMap, mix(minTexCoord, maxTexCoord, fract(startUv)), dcdx, dcdy).rgb);
+            float depth = 1.0;
+
+            const float stepSize = 1.0 / PARALLAX_STEPS;
+            endUv *= stepSize * PARALLAX_DEPTH;
+
+            while(depth >= currDepth){
+                startUv += endUv;
+                currDepth = length(texture2DGradARB(heightMap, mix(minTexCoord, maxTexCoord, fract(startUv)), dcdx, dcdy).rgb);
+                depth -= stepSize;
+            }
+
+            return startUv;
+        }
+    #endif
+
     void getPBR(inout matPBR material, in positionVectors posVector, in mat3 TBN, in vec3 tint, in vec2 st, in int id){
         // Assign default normal map
         material.normal = TBN[2];
 
-        // Generate bumped normals
-        #if (defined TERRAIN || defined WATER || defined BLOCK) && defined AUTO_GEN_NORM
-            // Assign albedo
-            material.albedo = texture2D(texture, mix(minTexCoord, maxTexCoord, st));
+        #if (defined TERRAIN || defined WATER || defined BLOCK) && defined PARALLAX_OCCLUSION
+            st = parallaxUv(texture, st, viewTBN.xy / -viewTBN.z);
+        #endif
 
-            // Don't generate normals if it's on the edge of the texture
-            if(max2(st - 0.5) < 0.5 - 0.0125){
+        // Generate bumped normals
+        #if defined TERRAIN || defined WATER || defined BLOCK
+            // Assign albedo
+            material.albedo = texture2DGradARB(texture, mix(minTexCoord, maxTexCoord, fract(st)), dcdx, dcdy);
+
+            #ifdef AUTO_GEN_NORM
+                // Don't generate normals if it's on the edge of the texture
                 float d = length(material.albedo.rgb);
-                float dx = d - length(texture2D(texture, mix(minTexCoord, maxTexCoord, (st + vec2(0.0125, 0)))).rgb);
-                float dy = d - length(texture2D(texture, mix(minTexCoord, maxTexCoord, (st + vec2(0, 0.0125)))).rgb);
+                float dx = d - length(texture2DGradARB(texture, mix(minTexCoord, maxTexCoord, fract(st + vec2(0.0125, 0))), dcdx, dcdy).rgb);
+                float dy = d - length(texture2DGradARB(texture, mix(minTexCoord, maxTexCoord, fract(st + vec2(0, 0.0125))), dcdx, dcdy).rgb);
 
                 material.normal = normalize(TBN * normalize(vec3(dx, dy, 0.125)));
-            }
+            #endif
         #else
             // Assign albedo
-            material.albedo = texture2D(texture, st);
+            material.albedo = texture2DGradARB(texture, st, dcdx, dcdy);
         #endif
 
         if(material.albedo.a > 0.00001){
@@ -187,8 +215,8 @@ uniform sampler2D texture;
 
                 // End portal
                 else if(id == 10100){
-                    vec3 d0 = texture2D(texture, posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.01)).rgb;
-                    vec3 d1 = texture2D(texture, posVector.screenPos.yx * 1.25 + vec2(0, frameTimeCounter * 0.01)).rgb;
+                    vec3 d0 = texture2DGradARB(texture, posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.01), dcdx, dcdy).rgb;
+                    vec3 d1 = texture2DGradARB(texture, posVector.screenPos.yx * 1.25 + vec2(0, frameTimeCounter * 0.01), dcdx, dcdy).rgb;
                     material.albedo = vec4(d0 + d1 + 0.05, 1);
                     material.normal = TBN[2];
                     material.smoothness = 0.96;

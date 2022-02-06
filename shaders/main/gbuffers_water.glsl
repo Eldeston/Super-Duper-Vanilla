@@ -22,7 +22,7 @@ INOUT float blockId;
 INOUT vec2 lmCoord;
 INOUT vec2 texCoord;
 
-#if defined AUTO_GEN_NORM && defined PARALLAX_OCCLUSION
+#if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
     INOUT vec2 minTexCoord;
     INOUT vec2 maxTexCoord;
 #endif
@@ -81,7 +81,7 @@ INOUT mat3 TBN;
 						  tangent.z, binormal.z, normal.z) * (gl_ModelViewMatrix * gl_Vertex).xyz;
         #endif
 
-        #if defined AUTO_GEN_NORM && defined PARALLAX_OCCLUSION
+        #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
             vec2 texSize = abs(texCoord - mcidTexCoord.xy);
             minTexCoord = mcidTexCoord.xy - texSize;
             maxTexCoord = mcidTexCoord.xy + texSize;
