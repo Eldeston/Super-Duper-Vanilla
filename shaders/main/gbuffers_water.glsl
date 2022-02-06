@@ -51,7 +51,7 @@ INOUT mat3 TBN;
     uniform mat4 gbufferModelView;
     uniform mat4 gbufferModelViewInverse;
 
-    attribute vec2 mcidTexCoord;
+    attribute vec2 mc_midTexCoord;
 
     attribute vec4 mc_Entity;
     attribute vec4 at_tangent;
@@ -72,7 +72,7 @@ INOUT mat3 TBN;
 
         #ifdef ANIMATE
             vec3 worldPos = vertexPos.xyz + cameraPosition;
-	        getWave(vertexPos.xyz, worldPos, texCoord, mcidTexCoord, mc_Entity.x, lmCoord.y);
+	        getWave(vertexPos.xyz, worldPos, texCoord, mc_midTexCoord, mc_Entity.x, lmCoord.y);
         #endif
 
         #ifdef PARALLAX_OCCLUSION
@@ -82,10 +82,10 @@ INOUT mat3 TBN;
         #endif
 
         #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
-            vec2 texSize = abs(texCoord - mcidTexCoord.xy);
-            minTexCoord = mcidTexCoord.xy - texSize;
-            maxTexCoord = mcidTexCoord.xy + texSize;
-            texCoord = step(mcidTexCoord.xy, texCoord);
+            vec2 texSize = abs(texCoord - mc_midTexCoord.xy);
+            minTexCoord = mc_midTexCoord.xy - texSize;
+            maxTexCoord = mc_midTexCoord.xy + texSize;
+            texCoord = step(mc_midTexCoord.xy, texCoord);
         #endif
         
 	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
