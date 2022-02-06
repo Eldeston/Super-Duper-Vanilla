@@ -55,7 +55,6 @@ uniform sampler2D texture;
         material.normal = TBN[2];
 
         #if (defined TERRAIN || defined WATER || defined BLOCK) && defined PARALLAX_OCCLUSION
-            vec3 viewTBN = TBN * posVector.eyePlayerPos;
             st = parallaxUv(normals, st, viewTBN.xy / -viewTBN.z);
         #endif
 

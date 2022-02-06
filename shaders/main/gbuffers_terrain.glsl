@@ -27,6 +27,10 @@ INOUT vec2 texCoord;
     INOUT vec2 maxTexCoord;
 #endif
 
+#ifdef PARALLAX_OCCLUSION
+    INOUT vec3 viewTBN;
+#endif
+
 INOUT vec4 glcolor;
 
 INOUT mat3 TBN;
@@ -69,6 +73,12 @@ INOUT mat3 TBN;
         #ifdef ANIMATE
             vec3 worldPos = vertexPos.xyz + cameraPosition;
 	        getWave(vertexPos.xyz, worldPos, texCoord, mcidTexCoord, mc_Entity.x, lmCoord.y);
+        #endif
+
+        #ifdef PARALLAX_OCCLUSION
+            viewTBN = mat3(tangent.x, binormal.x, normal.x,
+						  tangent.y, binormal.y, normal.y,
+						  tangent.z, binormal.z, normal.z) * (gl_ModelViewMatrix * gl_Vertex).xyz;
         #endif
 
         #if defined AUTO_GEN_NORM && defined PARALLAX_OCCLUSION
