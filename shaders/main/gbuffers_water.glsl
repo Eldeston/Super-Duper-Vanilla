@@ -155,7 +155,7 @@ INOUT mat3 TBN;
 	    // Declare materials
 	    matPBR material;
         int rBlockId = int(blockId + 0.5);
-        getPBR(material, posVector, TBN, glcolor.rgb, texCoord, rBlockId);
+        getPBR(material, posVector, glcolor.rgb, texCoord, rBlockId);
 
         vec4 sceneCol = vec4(0);
 
@@ -207,7 +207,7 @@ INOUT mat3 TBN;
             material.light = lmCoord;
 
             #ifdef ENVIRO_MAT
-                if(rBlockId != 10034) enviroPBR(material, posVector.worldPos, TBN[2]);
+                if(rBlockId != 10034) enviroPBR(material, posVector.worldPos);
             #endif
 
             #if ANTI_ALIASING == 2

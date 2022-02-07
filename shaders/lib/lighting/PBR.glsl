@@ -15,14 +15,14 @@ uniform sampler2D texture;
     uniform float isPeaks;
     uniform float wetness;
 
-    void enviroPBR(inout matPBR material, in vec3 worldPos, in vec3 rawNorm){
-        float rainMatFact = sqrt(max(0.0, rawNorm.y)) * smoothstep(0.8, 0.9, material.light.y) * wetness * (1.0 - isWarm) * (1.0 - isSnowy) * (1.0 - isPeaks);
+    void enviroPBR(inout matPBR material, in vec3 worldPos){
+        float rainMatFact = sqrt(max(0.0, TBN[2].y)) * smoothstep(0.8, 0.9, material.light.y) * wetness * (1.0 - isWarm) * (1.0 - isSnowy) * (1.0 - isPeaks);
 
         if(rainMatFact != 0){
             vec3 noiseData = texPix2DCubic(noisetex, worldPos.xz / 512.0, vec2(256)).xyz;
             rainMatFact *= smoothstep(0.4, 0.8, (mix(noiseData.y, noiseData.x, noiseData.z) + noiseData.y) * 0.5);
             
-            material.normal = mix(material.normal, rawNorm, rainMatFact);
+            material.normal = mix(material.normal, TBN[2], rainMatFact);
             material.metallic = max(0.02 * rainMatFact, material.metallic);
             material.smoothness = mix(material.smoothness, 0.96, rainMatFact);
             material.albedo.rgb *= 1.0 - sqrt(rainMatFact) * 0.25;
@@ -59,7 +59,7 @@ uniform sampler2D texture;
         }
     #endif
 
-    void getPBR(inout matPBR material, in positionVectors posVector, in mat3 TBN, in vec3 tint, in vec2 st, in int id){
+    void getPBR(inout matPBR material, in positionVectors posVector, in vec3 tint, in vec2 st, in int id){
         // Assign default normal map
         material.normal = TBN[2];
 
@@ -164,7 +164,7 @@ uniform sampler2D texture;
         }
     #endif
 
-    void getPBR(inout matPBR material, in positionVectors posVector, in mat3 TBN, in vec3 tint, in vec2 st, in int id){
+    void getPBR(inout matPBR material, in positionVectors posVector, in vec3 tint, in vec2 st, in int id){
         // Assign default normal map
         material.normal = TBN[2];
 

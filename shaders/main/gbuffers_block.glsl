@@ -133,7 +133,7 @@ uniform mat4 gbufferModelViewInverse;
 
 	    // Declare materials
 	    matPBR material;
-        getPBR(material, posVector, TBN, glcolor.rgb, texCoord, blockEntityId);
+        getPBR(material, posVector, glcolor.rgb, texCoord, blockEntityId);
 
         vec4 sceneCol = vec4(0);
 
@@ -143,7 +143,7 @@ uniform mat4 gbufferModelViewInverse;
             material.light = lmCoord;
 
             #ifdef ENVIRO_MAT
-                enviroPBR(material, posVector.worldPos, TBN[2]);
+                enviroPBR(material, posVector.worldPos);
             #endif
 
             #if ANTI_ALIASING == 2
