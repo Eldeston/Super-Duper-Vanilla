@@ -55,7 +55,7 @@ uniform sampler2D texture;
                 depth -= stepSize;
             }
 
-            return GET_TEXCOORD(startUv);
+            return startUv;
         }
     #endif
 
@@ -64,7 +64,7 @@ uniform sampler2D texture;
         material.normal = TBN[2];
 
         #if (defined TERRAIN || defined WATER || defined BLOCK) && defined PARALLAX_OCCLUSION
-            st = parallaxUv(normals, st, viewTBN.xy / -viewTBN.z);
+            st = GET_TEXCOORD(parallaxUv(normals, st, viewTBN.xy / -viewTBN.z));
         #endif
 
         // Assign albedo
