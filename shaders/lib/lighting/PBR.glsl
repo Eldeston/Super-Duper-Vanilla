@@ -30,6 +30,9 @@ uniform sampler2D texture;
     }
 #endif
 
+// Gets the actual texCoord
+#define GET_TEXCOORD(TEXCOORD) fract(TEXCOORD) * texCoordScale + texCoordPos
+
 #if DEFAULT_MAT == 2
     uniform sampler2D normals;
     uniform sampler2D specular;
@@ -40,7 +43,7 @@ uniform sampler2D texture;
 
     #if (defined TERRAIN || defined WATER || defined BLOCK) && defined PARALLAX_OCCLUSION
         vec2 parallaxUv(sampler2D heightMap, vec2 startUv, vec2 endUv){
-            float currDepth = texture2DGradARB(heightMap, mix(minTexCoord, maxTexCoord, fract(startUv)), dcdx, dcdy).a;
+            float currDepth = texture2DGradARB(heightMap, GET_TEXCOORD(startUv), dcdx, dcdy).a;
             float depth = 1.0;
 
             const float stepSize = 1.0 / PARALLAX_STEPS;
@@ -48,11 +51,11 @@ uniform sampler2D texture;
 
             while(depth > currDepth){
                 startUv += endUv;
-                currDepth = texture2DGradARB(heightMap, mix(minTexCoord, maxTexCoord, fract(startUv)), dcdx, dcdy).a;
+                currDepth = texture2DGradARB(heightMap, GET_TEXCOORD(startUv), dcdx, dcdy).a;
                 depth -= stepSize;
             }
 
-            return mix(minTexCoord, maxTexCoord, fract(startUv));
+            return GET_TEXCOORD(startUv);
         }
     #endif
 
@@ -145,7 +148,7 @@ uniform sampler2D texture;
 #else
     #if (defined TERRAIN || defined WATER || defined BLOCK) && defined PARALLAX_OCCLUSION
         vec2 parallaxUv(sampler2D heightMap, vec2 startUv, vec2 endUv){
-            float currDepth = length(texture2DGradARB(heightMap, mix(minTexCoord, maxTexCoord, fract(startUv)), dcdx, dcdy).rgb);
+            float currDepth = length(texture2DGradARB(heightMap, GET_TEXCOORD(startUv), dcdx, dcdy).rgb);
             float depth = 1.0;
 
             const float stepSize = 1.0 / PARALLAX_STEPS;
@@ -153,7 +156,7 @@ uniform sampler2D texture;
 
             while(depth >= currDepth){
                 startUv += endUv;
-                currDepth = length(texture2DGradARB(heightMap, mix(minTexCoord, maxTexCoord, fract(startUv)), dcdx, dcdy).rgb);
+                currDepth = length(texture2DGradARB(heightMap, GET_TEXCOORD(startUv), dcdx, dcdy).rgb);
                 depth -= stepSize;
             }
 
@@ -172,13 +175,13 @@ uniform sampler2D texture;
         // Generate bumped normals
         #if (defined TERRAIN || defined WATER || defined BLOCK) && (defined PARALLAX_OCCLUSION || defined AUTO_GEN_NORM)
             // Assign albedo
-            material.albedo = texture2DGradARB(texture, mix(minTexCoord, maxTexCoord, fract(st)), dcdx, dcdy);
+            material.albedo = texture2DGradARB(texture, GET_TEXCOORD(st), dcdx, dcdy);
 
             #ifdef AUTO_GEN_NORM
                 // Don't generate normals if it's on the edge of the texture
                 float d = length(material.albedo.rgb);
-                float dx = d - length(texture2DGradARB(texture, mix(minTexCoord, maxTexCoord, fract(st + vec2(0.0125, 0))), dcdx, dcdy).rgb);
-                float dy = d - length(texture2DGradARB(texture, mix(minTexCoord, maxTexCoord, fract(st + vec2(0, 0.0125))), dcdx, dcdy).rgb);
+                float dx = d - length(texture2DGradARB(texture, GET_TEXCOORD(st + vec2(0.0125, 0)), dcdx, dcdy).rgb);
+                float dy = d - length(texture2DGradARB(texture, GET_TEXCOORD(st + vec2(0, 0.0125)), dcdx, dcdy).rgb);
 
                 material.normal = normalize(TBN * normalize(vec3(dx, dy, 0.125)));
             #endif

@@ -23,8 +23,8 @@ INOUT vec2 lmCoord;
 INOUT vec2 texCoord;
 
 #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
-    INOUT vec2 minTexCoord;
-    INOUT vec2 maxTexCoord;
+    INOUT vec2 texCoordScale;
+    INOUT vec2 texCoordPos;
 #endif
 
 #ifdef PARALLAX_OCCLUSION
@@ -81,10 +81,13 @@ INOUT mat3 TBN;
         #endif
 
         #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
-            vec2 texSize = abs(texCoord - mc_midTexCoord.xy);
-            minTexCoord = mc_midTexCoord.xy - texSize;
-            maxTexCoord = mc_midTexCoord.xy + texSize;
-            texCoord = step(mc_midTexCoord.xy, texCoord);
+            vec2 midCoord = (gl_TextureMatrix[0] * mc_midTexCoord).xy;
+            vec2 texMinMidCoord = texCoord - midCoord;
+
+            texCoordScale = abs(texMinMidCoord) * 2;
+            texCoordPos = min(texCoord, midCoord - texMinMidCoord);
+            
+            texCoord = sign(texMinMidCoord) * 0.5 + 0.5;
         #endif
         
 	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
