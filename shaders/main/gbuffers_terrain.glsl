@@ -51,8 +51,7 @@ INOUT mat3 TBN;
     uniform mat4 gbufferModelView;
     uniform mat4 gbufferModelViewInverse;
 
-    attribute vec2 mc_midTexCoord;
-
+    attribute vec4 mc_midTexCoord;
     attribute vec4 mc_Entity;
     attribute vec4 at_tangent;
 
@@ -72,7 +71,7 @@ INOUT mat3 TBN;
 
         #ifdef ANIMATE
             vec3 worldPos = vertexPos.xyz + cameraPosition;
-	        getWave(vertexPos.xyz, worldPos, texCoord, mc_midTexCoord, mc_Entity.x, lmCoord.y);
+	        getWave(vertexPos.xyz, worldPos, texCoord, mc_midTexCoord.xy, mc_Entity.x, lmCoord.y);
         #endif
 
         #ifdef PARALLAX_OCCLUSION

@@ -32,8 +32,7 @@ uniform mat4 gbufferModelViewInverse;
         #include "/lib/utility/taaJitter.glsl"
     #endif
     
-    attribute vec2 mc_midTexCoord;
-
+    attribute vec4 mc_midTexCoord;
     attribute vec4 at_tangent;
 
     void main(){

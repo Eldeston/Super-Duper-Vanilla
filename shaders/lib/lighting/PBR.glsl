@@ -46,7 +46,7 @@ uniform sampler2D texture;
             const float stepSize = 1.0 / PARALLAX_STEPS;
             endUv *= stepSize * PARALLAX_DEPTH;
 
-            while(depth >= currDepth){
+            while(depth > currDepth){
                 startUv += endUv;
                 currDepth = texture2DGradARB(heightMap, mix(minTexCoord, maxTexCoord, fract(startUv)), dcdx, dcdy).a;
                 depth -= stepSize;
