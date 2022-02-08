@@ -64,6 +64,7 @@ uniform sampler2D texture;
         material.normal = TBN[2];
 
         #if (defined TERRAIN || defined WATER || defined BLOCK) && defined PARALLAX_OCCLUSION
+            // Exclude signs, due to a missing text bug
             vec2 st = id == 10102 ? texCoord : GET_TEXCOORD(parallaxUv(normals, vTexCoord, viewTBN.xy / -viewTBN.z));
         #else
             vec2 st = texCoord;
@@ -100,7 +101,13 @@ uniform sampler2D texture;
             material.emissive = SRPSSE.a * float(SRPSSE.a != 1);
 
             // Assign ambient
-            material.ambient = glcolor.a * normalAOH.b;
+            #ifdef TERRAIN
+                // Apply vanilla AO with it in terrain
+                material.ambient = glcolor.a * normalAOH.b;
+            #else
+                // For others, don't use vanilla AO
+                material.ambient = normalAOH.b;
+            #endif
 
             #if defined TERRAIN || defined WATER || defined BLOCK
                 // Foliage and corals
@@ -171,6 +178,7 @@ uniform sampler2D texture;
         material.normal = TBN[2];
 
         #if (defined TERRAIN || defined WATER || defined BLOCK) && defined PARALLAX_OCCLUSION
+            // Exclude signs, due to a missing text bug
             vec2 st = id == 10102 ? texCoord : GET_TEXCOORD(parallaxUv(texture, vTexCoord, viewTBN.xy / -viewTBN.z));
         #else
             vec2 st = texCoord;

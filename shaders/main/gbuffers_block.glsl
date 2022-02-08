@@ -56,7 +56,7 @@ uniform mat4 gbufferModelViewInverse;
             vec2 midCoord = (gl_TextureMatrix[0] * mc_midTexCoord).xy;
             vec2 texMinMidCoord = texCoord - midCoord;
 
-            vTexCoordScale = abs(texMinMidCoord) * 2;
+            vTexCoordScale = abs(texMinMidCoord) * 2.0;
             vTexCoordPos = min(texCoord, midCoord - texMinMidCoord);
             vTexCoord = sign(texMinMidCoord) * 0.5 + 0.5;
         #endif

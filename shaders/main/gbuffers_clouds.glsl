@@ -68,7 +68,7 @@ uniform mat4 gbufferModelViewInverse;
     uniform float viewWidth;
     uniform float viewHeight;
 
-    #if defined CLOUD_FADE || defined TEMPORAL_ACCUMULATION
+    #if defined CLOUD_FADE || ANTI_ALIASING == 2
         // Get frame time
         uniform float frameTimeCounter;
     #endif
