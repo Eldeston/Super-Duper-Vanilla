@@ -62,7 +62,7 @@ INOUT vec2 texcoord;
 
         #if ANTI_ALIASING == 2
         /* DRAWBUFFERS:06 */
-            gl_FragData[1] = vec4(color, 1); //colortex6
+            gl_FragData[1] = vec4(color, texture2D(colortex6, texcoord).a); //colortex6
         #endif
     }
 #endif

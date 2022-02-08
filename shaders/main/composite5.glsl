@@ -24,6 +24,8 @@ INOUT vec2 texcoord;
 
     uniform ivec2 eyeBrightnessSmooth;
 
+    uniform sampler2D colortex6;
+
     #ifdef BLOOM
         uniform sampler2D colortex2;
 
@@ -52,6 +54,17 @@ INOUT vec2 texcoord;
             color = mix(color, eBloom, 0.2 * BLOOM_BRIGHTNESS);
         #endif
 
+        #ifdef AUTO_EXPOSURE
+            // Get current average scene luminance...
+            // Center pixel
+            float lumiCurrent = length(texture2D(gcolor, vec2(0.5), 10.0).rgb);
+
+            // Mix previous and current buffer and apply exposure...
+            color /= mix(sqrt(lumiCurrent), texture2D(colortex6, vec2(0)).a, exp2(-1.0 * frameTime));
+        #else
+            float tempPixelLuminance = 0.0;
+        #endif
+
         // Exposeure, tint, and tonemap
         color = whitePreservingLumaBasedReinhardToneMapping(color * vec3(TINT_R, TINT_G, TINT_B) * (0.00392156863 * EXPOSURE));
 
@@ -70,8 +83,18 @@ INOUT vec2 texcoord;
         gl_FragData[0] = vec4(color, 1); //gcolor
 
         #ifdef BLOOM
-            /* DRAWBUFFERS:02 */
-                gl_FragData[1] = vec4(eBloom, 1); //colortex2
+        /* DRAWBUFFERS:02 */
+            gl_FragData[1] = vec4(eBloom, 1); //colortex2
+
+            #if ANTI_ALIASING == 2
+            /* DRAWBUFFERS:026 */
+                gl_FragData[2] = vec4(texture2D(colortex6, texcoord).rgb, tempPixelLuminance); //colortex6
+            #endif
+        #else
+            #if ANTI_ALIASING == 2
+            /* DRAWBUFFERS:06 */
+                gl_FragData[1] = vec4(texture2D(colortex6, texcoord).rgb, tempPixelLuminance); //colortex6
+            #endif
         #endif
     }
 #endif
