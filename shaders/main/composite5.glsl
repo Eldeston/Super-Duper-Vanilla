@@ -25,6 +25,8 @@ INOUT vec2 texcoord;
     uniform ivec2 eyeBrightnessSmooth;
 
     #if ANTI_ALIASING == 2 || defined AUTO_EXPOSURE
+        // Needs to be true whenever auto exposure or TAA is on
+        const bool colortex6MipmapEnabled = true;
         // Needs to be false whenever auto exposure or TAA is on
         const bool colortex6Clear = false;
 
@@ -62,13 +64,13 @@ INOUT vec2 texcoord;
         #ifdef AUTO_EXPOSURE
             // Get current average scene luminance...
             // Center pixel
-            float lumiCurrent = length(texture2D(gcolor, vec2(0.5), 10.0).rgb);
+            float lumiCurrent = max(length(texture2D(gcolor, vec2(0.5), 10.0).rgb), 0.001);
 
             // Mix previous and current buffer...
-            float tempPixelLuminance = mix(sqrt(max(lumiCurrent, 0.0001)), texture2D(colortex6, vec2(0)).a, exp2(-1.0 * frameTime));
+            float tempPixelLuminance = mix(sqrt(lumiCurrent), texture2D(colortex6, vec2(0)).a, exp2(-AUTO_EXPOSURE_SPEED * frameTime));
 
             // Apply auto exposure
-            color /= max(tempPixelLuminance, 0.0001);
+            color /= max(tempPixelLuminance, 0.001);
         #else
             float tempPixelLuminance = 0.0;
         #endif

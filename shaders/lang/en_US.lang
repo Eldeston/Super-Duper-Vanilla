@@ -28,6 +28,7 @@
     option.CONTRAST=Contrast
     option.EXPOSURE=Exposure
     option.AUTO_EXPOSURE=Auto exposure
+    option.AUTO_EXPOSURE_SPEED=Auto exposure speed
     option.TINT_R=Red tint
     option.TINT_G=Green tint
     option.TINT_B=Blue tint

@@ -22,8 +22,6 @@ INOUT vec2 texcoord;
 
         #include "/lib/antialiasing/fxaa.glsl"
     #elif ANTI_ALIASING == 2
-        const bool colortex6MipmapEnabled = true;
-
         uniform sampler2D depthtex0;
         uniform sampler2D colortex6;
 
