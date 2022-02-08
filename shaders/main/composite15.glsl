@@ -53,13 +53,19 @@ INOUT vec2 texcoord;
         #else
             vec3 color = texture2D(gcolor, texcoord).rgb;
         #endif
+
+        #ifdef AUTO_EXPOSURE
+            #define TEMP_EXPOSURE_DATA texture2D(colortex6, texcoord).a
+        #else
+            #define TEMP_EXPOSURE_DATA vec3(0)
+        #endif
         
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(color, 1); //gcolor
 
         #if ANTI_ALIASING == 2
         /* DRAWBUFFERS:06 */
-            gl_FragData[1] = vec4(color, texture2D(colortex6, texcoord).a); //colortex6
+            gl_FragData[1] = vec4(color, TEMP_EXPOSURE_DATA); //colortex6
         #endif
     }
 #endif

@@ -12,8 +12,8 @@ colortex2 - Raw albedo / Bloom : RGB8
 colortex3 - Metallic, roughness, glowing entity : RGB8
 colortex4 - Clouds / Volumetric light : RGB8
 colortex5 - Reflections : RGB16
-colortex6 - TAA : RGBA16F
-colortex7 - Auto exposure : RGBA8
+colortex6 - TAA, auto exposure : RGBA16F
+colortex7 - Sky box : RGBA8
 
 Custom defined macros:
 

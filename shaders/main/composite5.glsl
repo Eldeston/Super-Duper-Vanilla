@@ -64,15 +64,21 @@ INOUT vec2 texcoord;
         #ifdef AUTO_EXPOSURE
             // Get current average scene luminance...
             // Center pixel
-            float lumiCurrent = max(length(texture2D(gcolor, vec2(0.5), 10.0).rgb), 0.001);
+            float lumiCurrent = max(sqrt(length(texture2D(gcolor, vec2(0.5), 10.0).rgb)), 0.01);
 
             // Mix previous and current buffer...
-            float tempPixelLuminance = mix(sqrt(lumiCurrent), texture2D(colortex6, vec2(0)).a, exp2(-AUTO_EXPOSURE_SPEED * frameTime));
+            float tempPixelLuminance = mix(lumiCurrent, texture2D(colortex6, vec2(0)).a, exp2(-AUTO_EXPOSURE_SPEED * frameTime));
 
             // Apply auto exposure
-            color /= max(tempPixelLuminance, 0.001);
+            color /= max(tempPixelLuminance, 0.01);
         #else
             float tempPixelLuminance = 0.0;
+        #endif
+
+        #if ANTI_ALIASING == 2
+            #define TAA_DATA texture2D(colortex6, texcoord).rgb
+        #else
+            #define TAA_DATA vec3(0)
         #endif
 
         // Exposeure, tint, and tonemap
@@ -98,12 +104,12 @@ INOUT vec2 texcoord;
 
             #if ANTI_ALIASING == 2 || defined AUTO_EXPOSURE
             /* DRAWBUFFERS:026 */
-                gl_FragData[2] = vec4(texture2D(colortex6, texcoord).rgb, tempPixelLuminance); //colortex6
+                gl_FragData[2] = vec4(TAA_DATA, tempPixelLuminance); //colortex6
             #endif
         #else
             #if ANTI_ALIASING == 2 || defined AUTO_EXPOSURE
             /* DRAWBUFFERS:06 */
-                gl_FragData[1] = vec4(texture2D(colortex6, texcoord).rgb, tempPixelLuminance); //colortex6
+                gl_FragData[1] = vec4(TAA_DATA, tempPixelLuminance); //colortex6
             #endif
         #endif
     }
