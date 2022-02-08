@@ -23,8 +23,9 @@ INOUT vec2 lmCoord;
 INOUT vec2 texCoord;
 
 #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
-    INOUT vec2 texCoordScale;
-    INOUT vec2 texCoordPos;
+    INOUT vec2 vTexCoordScale;
+    INOUT vec2 vTexCoordPos;
+    INOUT vec2 vTexCoord;
 #endif
 
 #ifdef PARALLAX_OCCLUSION
@@ -84,10 +85,9 @@ INOUT mat3 TBN;
             vec2 midCoord = (gl_TextureMatrix[0] * mc_midTexCoord).xy;
             vec2 texMinMidCoord = texCoord - midCoord;
 
-            texCoordScale = abs(texMinMidCoord) * 2;
-            texCoordPos = min(texCoord, midCoord - texMinMidCoord);
-            
-            texCoord = sign(texMinMidCoord) * 0.5 + 0.5;
+            vTexCoordScale = abs(texMinMidCoord) * 2;
+            vTexCoordPos = min(texCoord, midCoord - texMinMidCoord);
+            vTexCoord = sign(texMinMidCoord) * 0.5 + 0.5;
         #endif
         
 	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
@@ -153,7 +153,7 @@ INOUT mat3 TBN;
 	    // Declare materials
 	    matPBR material;
         int rBlockId = int(blockId + 0.5);
-        getPBR(material, posVector, glcolor.rgb, texCoord, rBlockId);
+        getPBR(material, posVector, rBlockId);
 
         vec4 sceneCol = vec4(0);
 
@@ -170,8 +170,6 @@ INOUT mat3 TBN;
 
             material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
-            // Apply vanilla AO
-            material.ambient *= glcolor.a;
             material.light = lmCoord;
 
             #ifdef ENVIRO_MAT

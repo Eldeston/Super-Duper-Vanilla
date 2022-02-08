@@ -114,7 +114,7 @@ uniform mat4 gbufferModelViewInverse;
 	    // Declare materials
 	    matPBR material;
         int rBlockId = int(blockId + 0.5);
-        getPBR(material, posVector, glcolor.rgb, texCoord, rBlockId);
+        getPBR(material, posVector, rBlockId);
 
         vec4 sceneCol = vec4(0);
 

@@ -31,7 +31,7 @@ uniform sampler2D texture;
 #endif
 
 // Gets the actual texCoord
-#define GET_TEXCOORD(TEXCOORD) fract(TEXCOORD) * texCoordScale + texCoordPos
+#define GET_TEXCOORD(TEXCOORD) fract(TEXCOORD) * vTexCoordScale + vTexCoordPos
 
 #if DEFAULT_MAT == 2
     uniform sampler2D normals;
@@ -59,12 +59,14 @@ uniform sampler2D texture;
         }
     #endif
 
-    void getPBR(inout matPBR material, in positionVectors posVector, in vec3 tint, in vec2 st, in int id){
+    void getPBR(inout matPBR material, in positionVectors posVector, in int id){
         // Assign default normal map
         material.normal = TBN[2];
 
         #if (defined TERRAIN || defined WATER || defined BLOCK) && defined PARALLAX_OCCLUSION
-            st = GET_TEXCOORD(parallaxUv(normals, st, viewTBN.xy / -viewTBN.z));
+            vec2 st = id == 10102 ? texCoord : GET_TEXCOORD(parallaxUv(normals, vTexCoord, viewTBN.xy / -viewTBN.z));
+        #else
+            vec2 st = texCoord;
         #endif
 
         // Assign albedo
@@ -98,7 +100,7 @@ uniform sampler2D texture;
             material.emissive = SRPSSE.a * float(SRPSSE.a != 1);
 
             // Assign ambient
-            material.ambient = normalAOH.b;
+            material.ambient = glcolor.a * normalAOH.b;
 
             #if defined TERRAIN || defined WATER || defined BLOCK
                 // Foliage and corals
@@ -133,17 +135,17 @@ uniform sampler2D texture;
             #endif
 
             #if WHITE_MODE == 0
-                material.albedo.rgb *= tint;
+                material.albedo.rgb *= glcolor.rgb;
             #elif WHITE_MODE == 1
                 material.albedo.rgb = vec3(1);
             #elif WHITE_MODE == 2
                 material.albedo.rgb = vec3(0);
             #elif WHITE_MODE == 3
-                material.albedo.rgb = tint;
+                material.albedo.rgb = glcolor.rgb;
             #endif
 
             material.smoothness = min(material.smoothness, 0.96);
-        }
+        } else return;
     }
 #else
     #if (defined TERRAIN || defined WATER || defined BLOCK) && defined PARALLAX_OCCLUSION
@@ -164,24 +166,26 @@ uniform sampler2D texture;
         }
     #endif
 
-    void getPBR(inout matPBR material, in positionVectors posVector, in vec3 tint, in vec2 st, in int id){
+    void getPBR(inout matPBR material, in positionVectors posVector, in int id){
         // Assign default normal map
         material.normal = TBN[2];
 
         #if (defined TERRAIN || defined WATER || defined BLOCK) && defined PARALLAX_OCCLUSION
-            st = parallaxUv(texture, st, viewTBN.xy / -viewTBN.z);
+            vec2 st = id == 10102 ? texCoord : GET_TEXCOORD(parallaxUv(texture, vTexCoord, viewTBN.xy / -viewTBN.z));
+        #else
+            vec2 st = texCoord;
         #endif
 
         // Generate bumped normals
         #if (defined TERRAIN || defined WATER || defined BLOCK) && (defined PARALLAX_OCCLUSION || defined AUTO_GEN_NORM)
             // Assign albedo
-            material.albedo = texture2DGradARB(texture, GET_TEXCOORD(st), dcdx, dcdy);
+            material.albedo = texture2DGradARB(texture, st, dcdx, dcdy);
 
             #ifdef AUTO_GEN_NORM
                 // Don't generate normals if it's on the edge of the texture
                 float d = length(material.albedo.rgb);
-                float dx = d - length(texture2DGradARB(texture, GET_TEXCOORD(st + vec2(0.0125, 0)), dcdx, dcdy).rgb);
-                float dy = d - length(texture2DGradARB(texture, GET_TEXCOORD(st + vec2(0, 0.0125)), dcdx, dcdy).rgb);
+                float dx = d - length(texture2DGradARB(texture, GET_TEXCOORD(vTexCoord + vec2(0.0125, 0)), dcdx, dcdy).rgb);
+                float dy = d - length(texture2DGradARB(texture, GET_TEXCOORD(vTexCoord + vec2(0, 0.0125)), dcdx, dcdy).rgb);
 
                 material.normal = normalize(TBN * normalize(vec3(dx, dy, 0.125)));
             #endif
@@ -194,7 +198,7 @@ uniform sampler2D texture;
             // Default material if not specified
             material.metallic = 0.04; material.emissive = 0.0;
             material.smoothness = 0.0; material.ss = 0.0;
-            material.ambient = 1.0;
+            material.ambient = glcolor.a;
 
             #if (defined TERRAIN || defined WATER || defined BLOCK) && DEFAULT_MAT == 1
                 vec3 hsv = saturate(rgb2hsv(material.albedo));
@@ -234,13 +238,13 @@ uniform sampler2D texture;
             #endif
 
             #if WHITE_MODE == 0
-                material.albedo.rgb *= tint;
+                material.albedo.rgb *= glcolor.rgb;
             #elif WHITE_MODE == 1
                 material.albedo.rgb = vec3(1);
             #elif WHITE_MODE == 2
                 material.albedo.rgb = vec3(0);
             #elif WHITE_MODE == 3
-                material.albedo.rgb = tint;
+                material.albedo.rgb = glcolor.rgb;
             #endif
             
             #if DEFAULT_MAT == 1
@@ -327,6 +331,6 @@ uniform sampler2D texture;
             #endif
 
             material.smoothness = min(material.smoothness, 0.96);
-        }
+        } else return;
     }
 #endif
