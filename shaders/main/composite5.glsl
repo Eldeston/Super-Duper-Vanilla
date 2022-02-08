@@ -59,8 +59,11 @@ INOUT vec2 texcoord;
             // Center pixel
             float lumiCurrent = length(texture2D(gcolor, vec2(0.5), 10.0).rgb);
 
-            // Mix previous and current buffer and apply exposure...
-            color /= mix(sqrt(lumiCurrent), texture2D(colortex6, vec2(0)).a, exp2(-1.0 * frameTime));
+            // Mix previous and current buffer...
+            float tempPixelLuminance = mix(sqrt(lumiCurrent), texture2D(colortex6, vec2(0)).a, exp2(-1.0 * frameTime));
+
+            // Apply auto exposure
+            color /= tempPixelLuminance;
         #else
             float tempPixelLuminance = 0.0;
         #endif
