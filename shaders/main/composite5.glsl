@@ -24,7 +24,12 @@ INOUT vec2 texcoord;
 
     uniform ivec2 eyeBrightnessSmooth;
 
-    uniform sampler2D colortex6;
+    #if ANTI_ALIASING == 2 || defined AUTO_EXPOSURE
+        // Needs to be false whenever auto exposure or TAA is on
+        const bool colortex6Clear = false;
+
+        uniform sampler2D colortex6;
+    #endif
 
     #ifdef BLOOM
         uniform sampler2D colortex2;
@@ -60,10 +65,10 @@ INOUT vec2 texcoord;
             float lumiCurrent = length(texture2D(gcolor, vec2(0.5), 10.0).rgb);
 
             // Mix previous and current buffer...
-            float tempPixelLuminance = mix(sqrt(lumiCurrent), texture2D(colortex6, vec2(0)).a, exp2(-1.0 * frameTime));
+            float tempPixelLuminance = mix(sqrt(max(lumiCurrent, 0.0001)), texture2D(colortex6, vec2(0)).a, exp2(-1.0 * frameTime));
 
             // Apply auto exposure
-            color /= tempPixelLuminance;
+            color /= max(tempPixelLuminance, 0.0001);
         #else
             float tempPixelLuminance = 0.0;
         #endif
@@ -89,12 +94,12 @@ INOUT vec2 texcoord;
         /* DRAWBUFFERS:02 */
             gl_FragData[1] = vec4(eBloom, 1); //colortex2
 
-            #if ANTI_ALIASING == 2
+            #if ANTI_ALIASING == 2 || defined AUTO_EXPOSURE
             /* DRAWBUFFERS:026 */
                 gl_FragData[2] = vec4(texture2D(colortex6, texcoord).rgb, tempPixelLuminance); //colortex6
             #endif
         #else
-            #if ANTI_ALIASING == 2
+            #if ANTI_ALIASING == 2 || defined AUTO_EXPOSURE
             /* DRAWBUFFERS:06 */
                 gl_FragData[1] = vec4(texture2D(colortex6, texcoord).rgb, tempPixelLuminance); //colortex6
             #endif
