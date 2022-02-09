@@ -10,7 +10,7 @@
     }
 
     float genStar(vec2 nSkyPos){
-        vec2 starRand = getRandTex(nSkyPos).xy;
+        vec2 starRand = getRand2(nSkyPos);
         vec2 starGrid = 0.5 * sin(starRand * 12.0 + 128.0) - fract(nSkyPos * noiseTextureResolution) + 0.5;
         return getStarShape(starGrid, starRand.x * 0.9 + 0.3);
     }

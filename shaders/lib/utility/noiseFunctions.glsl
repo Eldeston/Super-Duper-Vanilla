@@ -4,21 +4,16 @@ const int noiseTextureResolution = 256;
 // Noise sample, r for blue noise, g for white noise, and b for cell noise
 uniform sampler2D noisetex;
 
-// Noise texture
-vec4 getRandTex(vec2 st){
-	return texture2D(noisetex, st);
-}
-
 float getRand1(vec2 st){
-    return fract(texture2D(noisetex, st).x * 4.0);
+    return texture2D(noisetex, st).x;
 }
 
 vec2 getRand2(vec2 st){
-    return fract(vec2(texture2D(noisetex, st).x, texture2D(noisetex, vec2(-st.x, st.y)).x) * 4.0);
+    return vec2(texture2D(noisetex, st).x, texture2D(noisetex, vec2(-st.x, st.y)).x);
 }
 
 vec3 getRand3(vec2 st){
-    return fract(vec3(texture2D(noisetex, st).x, texture2D(noisetex, vec2(-st.x, st.y)).x, texture2D(noisetex, -st).x) * 4.0);
+    return vec3(texture2D(noisetex, st).x, texture2D(noisetex, vec2(-st.x, st.y)).x, texture2D(noisetex, -st).x);
 }
 
 float toRandPerFrame(float rand, float time){
