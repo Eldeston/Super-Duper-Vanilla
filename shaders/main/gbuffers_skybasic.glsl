@@ -26,7 +26,7 @@
     #include "/lib/universalVars.glsl"
 
     void main(){
-    /* DRAWBUFFERS:0 */
+    /* DRAWBUFFERS:07 */
         gl_FragData[0] = vec4(skyCol, 1); //gcolor
     }
 #endif

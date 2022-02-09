@@ -13,9 +13,7 @@ vec3 getGodRays(vec3 feetPlayerPos, float worldPosY, float dither){
 
 		float nPlayerPosY = normalize(feetPlayerPos).y;
 
-		#if !(defined VOL_LIGHT && defined SHD_ENABLE)
-			return vec3(atmoFog(nPlayerPosY, worldPosY, length(feetPlayerPos), c, b));
-		#else
+		#if defined VOL_LIGHT && defined SHD_ENABLE
 			feetPlayerPos *= 1.0 + dither * 0.3333;
 
 			vec3 rayData = vec3(0);
@@ -28,6 +26,8 @@ vec3 getGodRays(vec3 feetPlayerPos, float worldPosY, float dither){
 			}
 			
 			return rayData;
+		#else
+			return vec3(atmoFog(nPlayerPosY, worldPosY, length(feetPlayerPos), c, b));
 		#endif
 	#endif
 }

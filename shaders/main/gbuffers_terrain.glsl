@@ -36,6 +36,9 @@ INOUT vec4 glcolor;
 
 INOUT mat3 TBN;
 
+// View matrix uniforms
+uniform mat4 gbufferModelViewInverse;
+
 #ifdef VERTEX
     #if ANTI_ALIASING == 2
         /* Screen resolutions */
@@ -50,7 +53,6 @@ INOUT mat3 TBN;
     uniform vec3 cameraPosition;
 
     uniform mat4 gbufferModelView;
-    uniform mat4 gbufferModelViewInverse;
 
     attribute vec4 mc_midTexCoord;
     attribute vec4 mc_Entity;
@@ -101,17 +103,16 @@ INOUT mat3 TBN;
 #endif
 
 #ifdef FRAGMENT
-    // View matrix uniforms
-    uniform mat4 gbufferModelViewInverse;
-
     // Projection matrix uniforms
     uniform mat4 gbufferProjectionInverse;
 
-    // Shadow view matrix uniforms
-    uniform mat4 shadowModelView;
+    #if defined SHD_ENABLE && defined WORLD_LIGHT
+        // Shadow view matrix uniforms
+        uniform mat4 shadowModelView;
 
-    // Shadow projection matrix uniforms
-    uniform mat4 shadowProjection;
+        // Shadow projection matrix uniforms
+        uniform mat4 shadowProjection;
+    #endif
 
     /* Position uniforms */
     uniform vec3 cameraPosition;
@@ -146,7 +147,7 @@ INOUT mat3 TBN;
         posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
         posVector.worldPos = posVector.feetPlayerPos + cameraPosition;
 		
-		#ifdef SHD_ENABLE
+		#if defined SHD_ENABLE && defined WORLD_LIGHT
 			posVector.shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * posVector.feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz;
 		#endif
 

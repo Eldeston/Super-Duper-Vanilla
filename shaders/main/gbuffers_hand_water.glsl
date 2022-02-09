@@ -51,11 +51,13 @@ uniform mat4 gbufferModelViewInverse;
     // Projection matrix uniforms
     uniform mat4 gbufferProjectionInverse;
 
-    // Shadow view matrix uniforms
-    uniform mat4 shadowModelView;
+    #if defined SHD_ENABLE && defined WORLD_LIGHT
+        // Shadow view matrix uniforms
+        uniform mat4 shadowModelView;
 
-    // Shadow projection matrix uniforms
-    uniform mat4 shadowProjection;
+        // Shadow projection matrix uniforms
+        uniform mat4 shadowProjection;
+    #endif
 
     /* Position uniforms */
     uniform vec3 cameraPosition;
@@ -107,7 +109,7 @@ uniform mat4 gbufferModelViewInverse;
         posVector.eyePlayerPos = mat3(gbufferModelViewInverse) * posVector.viewPos;
         posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
         
-		#ifdef SHD_ENABLE
+		#if defined SHD_ENABLE && defined WORLD_LIGHT
 			posVector.shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * posVector.feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz;
 		#endif
 
