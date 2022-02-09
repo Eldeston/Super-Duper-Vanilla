@@ -30,7 +30,9 @@ INOUT vec2 texcoord;
         // Needs to be false whenever auto exposure or TAA is on
         const bool colortex6Clear = false;
 
-        uniform sampler2D colortex6;
+        #ifdef AUTO_EXPOSURE
+            uniform sampler2D colortex6;
+        #endif
     #endif
 
     #ifdef BLOOM
@@ -41,6 +43,8 @@ INOUT vec2 texcoord;
             return texture2D(colortex2, uv / exp2(LOD) + coords).rgb;
         }
     #endif
+
+    #include "/lib/utility/noiseFunctions.glsl"
 
     #include "/lib/post/tonemap.glsl"
 
@@ -62,23 +66,23 @@ INOUT vec2 texcoord;
         #endif
 
         #ifdef AUTO_EXPOSURE
-            // Get current average scene luminance...
-            // Center pixel
-            float lumiCurrent = max(sqrt(length(texture2D(gcolor, vec2(0.5), 10.0).rgb)), 0.01);
+            // Get center pixel current average scene luminance...
+            float lumiCurrent = max(sqrt(length(texture2D(gcolor, vec2(0.5), 10.0).rgb)), 0.05);
 
             // Mix previous and current buffer...
             float tempPixelLuminance = mix(lumiCurrent, texture2D(colortex6, vec2(0)).a, exp2(-AUTO_EXPOSURE_SPEED * frameTime));
 
             // Apply auto exposure
-            color /= max(tempPixelLuminance, 0.01);
+            color /= max(tempPixelLuminance, 0.05);
+
+            #if ANTI_ALIASING == 2
+                #define TAA_DATA texture2D(colortex6, texcoord).rgb
+            #else
+                // vec4(0, 0, 0, tempPixelLuminance)
+                #define TAA_DATA 0, 0, 0
+            #endif
         #else
             float tempPixelLuminance = 0.0;
-        #endif
-
-        #if ANTI_ALIASING == 2
-            #define TAA_DATA texture2D(colortex6, texcoord).rgb
-        #else
-            #define TAA_DATA vec3(0)
         #endif
 
         // Exposeure, tint, and tonemap
@@ -92,8 +96,8 @@ INOUT vec2 texcoord;
         // Gamma correction
         color = pow(color, vec3(RCPGAMMA));
         
-        // Color saturation, contrast, etc.
-        color = toneA(color);
+        // Color saturation, contrast, etc. and film grain
+        color = toneA(color) + (getRand1(gl_FragCoord.xy * 0.03125) - 0.5) * 0.00392156863;
 
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(color, 1); //gcolor
@@ -102,12 +106,12 @@ INOUT vec2 texcoord;
         /* DRAWBUFFERS:02 */
             gl_FragData[1] = vec4(eBloom, 1); //colortex2
 
-            #if ANTI_ALIASING == 2 || defined AUTO_EXPOSURE
+            #ifdef AUTO_EXPOSURE
             /* DRAWBUFFERS:026 */
                 gl_FragData[2] = vec4(TAA_DATA, tempPixelLuminance); //colortex6
             #endif
         #else
-            #if ANTI_ALIASING == 2 || defined AUTO_EXPOSURE
+            #ifdef AUTO_EXPOSURE
             /* DRAWBUFFERS:06 */
                 gl_FragData[1] = vec4(TAA_DATA, tempPixelLuminance); //colortex6
             #endif
