@@ -1,5 +1,9 @@
 #extension GL_ARB_shader_texture_lod : enable
 
+#define slopeNormalStrength 0.024
+#define softShadowStrength 60.0
+#define pomSamplesMin 4
+
 // Derivatives
 vec2 dcdx = dFdx(texCoord);
 vec2 dcdy = dFdy(texCoord);
@@ -42,155 +46,223 @@ uniform sampler2D texture;
     #endif
 
     #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined PARALLAX_OCCLUSION
-        vec2 parallaxUv(sampler2D heightMap, vec2 startUv, vec2 endUv){
-            float currDepth = texture2DGradARB(heightMap, fract(startUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
-            float depth = 1.0;
+        float lengthSq(vec3 vec) {return dot(vec, vec);}
+        float pow2(float val) {return val*val;}
+        
+        vec2 getParallaxOffset(in vec3 dirT)
+        {
+            float length = sqrt(lengthSq(dirT) - pow2(dirT.z)) / dirT.z;
+            return length * normalize(dirT.xy);
+        }
 
-            const float stepSize = 1.0 / PARALLAX_STEPS;
+        vec2 parallaxUv(vec2 startUv, vec2 endUv, float NoV, out vec3 tracePos, out float texDepth) {
+            float stepSize = 1.0 / PARALLAX_STEPS;
             endUv *= stepSize * PARALLAX_DEPTH;
 
-            for(int i = 0; i < PARALLAX_STEPS; i++){
+            texDepth = texture2DGradARB(normals, fract(startUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
+            float traceDepth = 1.0;
+
+            for (int step = 0; step < PARALLAX_STEPS; step++) {
                 startUv += endUv;
-                currDepth = texture2DGradARB(heightMap, fract(startUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
-                depth -= stepSize;
-                if(depth <= currDepth) break;
+                traceDepth -= stepSize;
+                texDepth = texture2DGradARB(normals, fract(startUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
+
+                if (texDepth - traceDepth > 0.00001) break;
             }
 
+            tracePos = vec3(startUv - endUv, traceDepth + stepSize);
             return startUv;
         }
 
-        #ifdef PARALLAX_SHADOWS
-            float parallaxShd(sampler2D heightMap, vec3 endPos, vec2 startUv){
-                float currDepth = texture2DGradARB(heightMap, fract(startUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
-                float depth = currDepth;
+        float parallaxShadow(in vec3 tracePos, in vec2 lightOffset) {
+            float stepSize = 1.0 / PARALLAX_STEPS;
+            vec2 stepOffset = stepSize * lightOffset;
+            
+            float traceDepth = tracePos.z;
+            vec2 trace_tex = tracePos.xy;
 
-                float stepSize = 1.0 / PARALLAX_SHD_STEPS;
-                endPos *= stepSize * PARALLAX_DEPTH * 0.5;
+            float result = 0.0;
+            for (int step = int(traceDepth * PARALLAX_STEPS); step < PARALLAX_STEPS; ++step) {
+                trace_tex += stepOffset;
+                traceDepth += stepSize;
 
-                for(int i = 0; i < PARALLAX_SHD_STEPS; i++){
-                    startUv += endPos.xy;
-                    currDepth = texture2DGradARB(heightMap, fract(startUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
-                    depth += endPos.z;
+                float texDepth = texture2DGradARB(normals, fract(trace_tex) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
+                float h = texDepth - traceDepth;
+                
+                if (h > 0.0) {
+                    float dist = 1.0 + lengthSq(vec3(trace_tex, traceDepth) - vec3(tracePos.xy, 1.0)) * 20.0;
 
-                    #ifdef PARALLAX_SOFT_SHD
-                        if(currDepth > depth) return squared(i * stepSize);
-                    #else
-                        if(currDepth > depth) return 0.0;
-                    #endif
+                    float sampleResult = saturate(h * softShadowStrength * (1.0 / dist));
+                    result = max(result, sampleResult);
+                    if (1.0 - result < 0.00001) break;
                 }
-
-                return 1.0;
             }
-        #endif
+
+            return 1.0 - result;
+        }
+
+        vec3 apply_slope_normal(in vec3 viewT, in vec2 tex, in float trace_depth) {
+            vec2 tex_size = textureSize(normals, 0);
+            vec2 pixel_size = 1.0 / tex_size;
+
+            vec2 tex_snapped = floor(tex * tex_size) * pixel_size;
+            vec2 tex_offset = tex - tex_snapped - 0.5 * pixel_size;
+            vec2 step_sign = sign(-viewT.xy);
+
+            vec2 tex_x = tex_snapped + vec2(pixel_size.x * step_sign.x, 0.0);
+            float height_x = texture2DGradARB(normals, tex_x, dcdx, dcdy).a;
+            bool has_x = trace_depth > height_x && sign(tex_offset.x) == step_sign.x;
+
+            vec2 tex_y = tex_snapped + vec2(0.0, pixel_size.y * step_sign.y);
+            float height_y = texture2DGradARB(normals, tex_y, dcdx, dcdy).a;
+            bool has_y = trace_depth > height_y && sign(tex_offset.y) == step_sign.y;
+
+            if (abs(tex_offset.x) < abs(tex_offset.y)) {
+                if (has_y) return vec3(0.0, step_sign.y, 0.0);
+                if (has_x) return vec3(step_sign.x, 0.0, 0.0);
+            }
+            else {
+                if (has_x) return vec3(step_sign.x, 0.0, 0.0);
+                if (has_y) return vec3(0.0, step_sign.y, 0.0);
+            }
+
+            float s = step(abs(viewT.y), abs(viewT.x));
+            return vec3(vec2(1.0 - s, s) * step_sign, 0.0);
+        }
     #endif
 
     void getPBR(inout matPBR material, in positionVectors posVector, in int id){
         // Assign default normal map
         material.normal = TBN[2];
 
+        vec3 viewDir = normalize(-posVector.eyePlayerPos);
         vec2 st = texCoord;
+        float texDepth;
+        vec3 tracePos;
+        vec2 puv;
 
         #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined PARALLAX_OCCLUSION
             // Exclude signs, due to a missing text bug
-            if(id != 10102){
-                vec3 endPos = mat3(TBN[0].x, TBN[1].x, TBN[2].x, TBN[0].y, TBN[1].y, TBN[2].y, TBN[0].z, TBN[1].z, TBN[2].z) * posVector.eyePlayerPos;
-                st = fract(parallaxUv(normals, vTexCoord, endPos.xy / -endPos.z)) * vTexCoordScale + vTexCoordPos;
+            if (id != 10102) {
+                float NoV = saturate(dot(material.normal, viewDir));
+
+                vec3 endPos = viewDir * TBN;
+                puv = parallaxUv(vTexCoord, endPos.xy / -endPos.z, NoV, tracePos, texDepth);
+                st = fract(puv) * vTexCoordScale + vTexCoordPos;
             }
         #endif
 
         // Assign albedo
         material.albedo = texture2DGradARB(texture, st, dcdx, dcdy);
+        if (material.albedo.a <= 0.00001) return;
 
-        if(material.albedo.a > 0.00001){
-            // Get parallax shadows
-            material.parallaxShd = 1.0;
+        // Get raw textures
+        vec4 normalAOH = texture2DGradARB(normals, st, dcdx, dcdy);
 
-            #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined PARALLAX_OCCLUSION && defined PARALLAX_SHADOWS && defined WORLD_LIGHT
-                if(dot(TBN[2], vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) > 0.005)
-                    material.parallaxShd = parallaxShd(normals, mat3(TBN[0].x, TBN[1].x, TBN[2].x, TBN[0].y, TBN[1].y, TBN[2].y, TBN[0].z, TBN[1].z, TBN[2].z) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), (st - vTexCoordPos) / vTexCoordScale);
-            #endif
+        vec4 SRPSSE = texture2DGradARB(specular, st, dcdx, dcdy);
 
-            // Get raw textures
-            vec4 normalAOH = texture2DGradARB(normals, st, dcdx, dcdy);
+        // Decode and extract the materials
+        // Extract normals
+        vec3 normalMap;
+        normalMap.xy = normalAOH.xy * 2.0 - 1.0;
+        normalMap.z = sqrt(1.0 - min(dot(normalMap.xy, normalMap.xy), 1.0));
 
-            vec4 SRPSSE = texture2DGradARB(specular, st, dcdx, dcdy);
+        // Get parallax shadows
+        material.parallaxShd = 1.0;
 
-            // Decode and extract the materials
-            // Extract normals
-            vec3 normalMap = normalAOH.xyz * 2.0 - 1.0;
-            normalMap.z = sqrt(1.0 - dot(normalMap.xy, normalMap.xy));
-            // Assign normal
-            material.normal = normalize(TBN * normalMap);
+        #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined PARALLAX_OCCLUSION
+            float depth = max(texDepth - tracePos.z, 0.0);
+            if (depth >= slopeNormalStrength) {
+                vec3 viewT = -viewDir * TBN;
+                normalMap = apply_slope_normal(viewT, st, tracePos.z);
+            }
 
-            // Assign smoothness
-            material.smoothness = SRPSSE.r;
+            #if defined PARALLAX_SHADOWS && defined WORLD_LIGHT
+                vec3 lightDir = normalize(vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z));
+                float NoL = saturate(dot(material.normal, lightDir));
 
-            // Assign reflectance
-            material.metallic = SRPSSE.g;
-
-            // Extact SS
-            float PSS = SRPSSE.b * 255.0;
-            // Assign SS
-            material.ss = saturate((PSS - 64.0) / (255.0 - 64.0));
-
-            // Assign emissive
-            material.emissive = SRPSSE.a * float(SRPSSE.a != 1);
-
-            // Assign ambient
-            #ifdef TERRAIN
-                // Apply vanilla AO with it in terrain
-                material.ambient = glcolor.a * normalAOH.b;
-            #else
-                // For others, don't use vanilla AO
-                material.ambient = normalAOH.b;
-            #endif
-
-            #if defined TERRAIN || defined BLOCK
-                // Foliage and corals
-                if((id >= 10000 && id <= 10008) || (id >= 10011 && id <= 10013)) material.ss = 1.0;
-
-                // If lava
-                else if(id == 10017) material.emissive = 1.0;
-            #endif
-
-            #if defined WATER || defined BLOCK
-                // If water
-                if(id == 10034){
-                    material.smoothness = 0.96;
-                    material.metallic = 0.02;
+                if (NoL > 0.000001) {
+                    vec3 lightDirT = lightDir * TBN;
+                    vec2 lightOffset = getParallaxOffset(lightDirT) * PARALLAX_DEPTH;
+                    material.parallaxShd = parallaxShadow(tracePos, lightOffset);
                 }
-
-                // End portal
-                else if(id == 10100){
-                    vec3 d0 = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.02)) * 0.5, dcdx, dcdy).rgb;
-                    vec3 d1 = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.01)), dcdx, dcdy).rgb;
-                    material.albedo = vec4(d0 + d1 + 0.05, 1);
-                    material.normal = TBN[2];
-                    material.smoothness = 0.96;
-                    material.metallic = 0.04;
-                    material.emissive = 1.0;
-                }
-                
-                // Nether portal
-                else if(id == 10101){
-                    material.smoothness = 0.96;
-                    material.metallic = 0.04;
-                    material.emissive = maxC(material.albedo.rgb);
+                else {
+                    material.parallaxShd = 0.0;
                 }
             #endif
+        #endif
 
-            #if WHITE_MODE == 0
-                material.albedo.rgb *= glcolor.rgb;
-            #elif WHITE_MODE == 1
-                material.albedo.rgb = vec3(1);
-            #elif WHITE_MODE == 2
-                material.albedo.rgb = vec3(0);
-            #elif WHITE_MODE == 3
-                material.albedo.rgb = glcolor.rgb;
-            #endif
+        // Assign normal
+        material.normal = normalize(TBN * normalMap);
 
-            material.smoothness = min(material.smoothness, 0.96);
-        } else return;
+        // Assign smoothness
+        material.smoothness = SRPSSE.r;
+
+        // Assign reflectance
+        material.metallic = SRPSSE.g;
+
+        // Extact SS
+        float PSS = SRPSSE.b * 255.0;
+        // Assign SS
+        material.ss = saturate((PSS - 64.0) / (255.0 - 64.0));
+
+        // Assign emissive
+        material.emissive = SRPSSE.a * float(SRPSSE.a != 1);
+
+        // Assign ambient
+        #ifdef TERRAIN
+            // Apply vanilla AO with it in terrain
+            material.ambient = glcolor.a * normalAOH.b;
+        #else
+            // For others, don't use vanilla AO
+            material.ambient = normalAOH.b;
+        #endif
+
+        #if defined TERRAIN || defined BLOCK
+            // Foliage and corals
+            if((id >= 10000 && id <= 10008) || (id >= 10011 && id <= 10013)) material.ss = 1.0;
+
+            // If lava
+            else if(id == 10017) material.emissive = 1.0;
+        #endif
+
+        #if defined WATER || defined BLOCK
+            // If water
+            if(id == 10034){
+                material.smoothness = 0.96;
+                material.metallic = 0.02;
+            }
+
+            // End portal
+            else if(id == 10100){
+                vec3 d0 = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.02)) * 0.5, dcdx, dcdy).rgb;
+                vec3 d1 = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.01)), dcdx, dcdy).rgb;
+                material.albedo = vec4(d0 + d1 + 0.05, 1);
+                material.normal = TBN[2];
+                material.smoothness = 0.96;
+                material.metallic = 0.04;
+                material.emissive = 1.0;
+            }
+            
+            // Nether portal
+            else if(id == 10101){
+                material.smoothness = 0.96;
+                material.metallic = 0.04;
+                material.emissive = maxC(material.albedo.rgb);
+            }
+        #endif
+
+        #if WHITE_MODE == 0
+            material.albedo.rgb *= glcolor.rgb;
+        #elif WHITE_MODE == 1
+            material.albedo.rgb = vec3(1);
+        #elif WHITE_MODE == 2
+            material.albedo.rgb = vec3(0);
+        #elif WHITE_MODE == 3
+            material.albedo.rgb = glcolor.rgb;
+        #endif
+
+        material.smoothness = min(material.smoothness, 0.96);
     }
 #else
     void getPBR(inout matPBR material, in positionVectors posVector, in int id){
