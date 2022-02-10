@@ -41,7 +41,7 @@ uniform sampler2D texture;
     #ifdef PARALLAX_OCCLUSION
     #endif
 
-    #if (defined TERRAIN || defined WATER || defined BLOCK) && defined PARALLAX_OCCLUSION
+    #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined PARALLAX_OCCLUSION
         vec2 parallaxUv(sampler2D heightMap, vec2 startUv, vec2 endUv){
             float currDepth = texture2DGradARB(heightMap, fract(startUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
             float depth = 1.0;
@@ -90,7 +90,7 @@ uniform sampler2D texture;
 
         vec2 st = texCoord;
 
-        #if (defined TERRAIN || defined WATER || defined BLOCK) && defined PARALLAX_OCCLUSION
+        #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined PARALLAX_OCCLUSION
             // Exclude signs, due to a missing text bug
             if(id != 10102){
                 vec3 endPos = mat3(TBN[0].x, TBN[1].x, TBN[2].x, TBN[0].y, TBN[1].y, TBN[2].y, TBN[0].z, TBN[1].z, TBN[2].z) * posVector.eyePlayerPos;
@@ -105,7 +105,7 @@ uniform sampler2D texture;
             // Get parallax shadows
             material.parallaxShd = 1.0;
 
-            #if (defined TERRAIN || defined WATER || defined BLOCK) && defined PARALLAX_OCCLUSION && defined PARALLAX_SHADOWS && defined WORLD_LIGHT
+            #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined PARALLAX_OCCLUSION && defined PARALLAX_SHADOWS && defined WORLD_LIGHT
                 if(dot(TBN[2], vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) > 0.005)
                     material.parallaxShd = parallaxShd(normals, mat3(TBN[0].x, TBN[1].x, TBN[2].x, TBN[0].y, TBN[1].y, TBN[2].y, TBN[0].z, TBN[1].z, TBN[2].z) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), (st - vTexCoordPos) / vTexCoordScale);
             #endif
@@ -145,15 +145,17 @@ uniform sampler2D texture;
                 material.ambient = normalAOH.b;
             #endif
 
-            #if defined TERRAIN || defined WATER || defined BLOCK
+            #if defined TERRAIN || defined BLOCK
                 // Foliage and corals
                 if((id >= 10000 && id <= 10008) || (id >= 10011 && id <= 10013)) material.ss = 1.0;
-                
+
                 // If lava
                 else if(id == 10017) material.emissive = 1.0;
+            #endif
 
+            #if defined WATER || defined BLOCK
                 // If water
-                else if(id == 10034){
+                if(id == 10034){
                     material.smoothness = 0.96;
                     material.metallic = 0.02;
                 }
@@ -202,7 +204,7 @@ uniform sampler2D texture;
 
         if(material.albedo.a > 0.00001){
             // Generate bumped normals
-            #if (defined TERRAIN || defined WATER || defined BLOCK) && defined AUTO_GEN_NORM
+            #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined AUTO_GEN_NORM
                 float d = length(material.albedo.rgb);
                 float dx = d - length(texture2DGradARB(texture, fract(vTexCoord + vec2(0.0125, 0)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
                 float dy = d - length(texture2DGradARB(texture, fract(vTexCoord + vec2(0, 0.0125)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
@@ -213,7 +215,7 @@ uniform sampler2D texture;
             // Default material if not specified
             material.metallic = 0.04; material.emissive = 0.0;
             material.smoothness = 0.0; material.ss = 0.0;
-            material.ambient = glcolor.a;
+            material.ambient = glcolor.a; material.parallaxShd = 1.0;
 
             #if (defined TERRAIN || defined WATER || defined BLOCK) && DEFAULT_MAT == 1
                 vec3 hsv = saturate(rgb2hsv(material.albedo));
@@ -237,17 +239,19 @@ uniform sampler2D texture;
 
                 // End portal
                 else if(id == 10100){
-                    vec3 d0 = texture2DGradARB(texture, posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.01), dcdx, dcdy).rgb;
-                    vec3 d1 = texture2DGradARB(texture, posVector.screenPos.yx * 1.25 + vec2(0, frameTimeCounter * 0.01), dcdx, dcdy).rgb;
+                    vec3 d0 = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.02)) * 0.5, dcdx, dcdy).rgb;
+                    vec3 d1 = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.01)), dcdx, dcdy).rgb;
                     material.albedo = vec4(d0 + d1 + 0.05, 1);
                     material.normal = TBN[2];
                     material.smoothness = 0.96;
+                    material.metallic = 0.04;
                     material.emissive = 1.0;
                 }
                 
                 // Nether portal
                 else if(id == 10101){
                     material.smoothness = 0.96;
+                    material.metallic = 0.04;
                     material.emissive = maxC(material.albedo.rgb);
                 }
             #endif

@@ -7,6 +7,12 @@ INOUT float blockId;
 INOUT vec2 lmCoord;
 INOUT vec2 texCoord;
 
+#if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
+    INOUT vec2 vTexCoordScale;
+    INOUT vec2 vTexCoordPos;
+    INOUT vec2 vTexCoord;
+#endif
+
 INOUT vec4 glcolor;
 
 INOUT mat3 TBN;
@@ -23,6 +29,7 @@ uniform mat4 gbufferModelViewInverse;
         #include "/lib/utility/taaJitter.glsl"
     #endif
     
+    attribute vec4 mc_midTexCoord;
     attribute vec4 mc_Entity;
     attribute vec4 at_tangent;
 
@@ -36,6 +43,15 @@ uniform mat4 gbufferModelViewInverse;
 	    vec3 normal = normalize(gl_NormalMatrix * gl_Normal);
 
 	    TBN = mat3(gbufferModelViewInverse) * mat3(tangent, binormal, normal);
+
+        #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
+            vec2 midCoord = (gl_TextureMatrix[0] * mc_midTexCoord).xy;
+            vec2 texMinMidCoord = texCoord - midCoord;
+
+            vTexCoordScale = abs(texMinMidCoord) * 2.0;
+            vTexCoordPos = min(texCoord, midCoord - texMinMidCoord);
+            vTexCoord = sign(texMinMidCoord) * 0.5 + 0.5;
+        #endif
 
         gl_Position = ftransform();
 
@@ -122,9 +138,6 @@ uniform mat4 gbufferModelViewInverse;
 
         if(material.albedo.a > 0.00001){
             material.albedo.rgb = mix(material.albedo.rgb, entityColor.rgb, entityColor.a);
-
-            // If player
-            if(rBlockId == 0) material.ambient = 1.0;
 
             material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
