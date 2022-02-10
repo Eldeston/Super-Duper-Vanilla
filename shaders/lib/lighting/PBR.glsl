@@ -1,5 +1,10 @@
 #extension GL_ARB_shader_texture_lod : enable
 
+#define enableSlopeNormals
+#define slopeNormalStrength 0.024
+#define softShadowStrength 60.0
+#define pomSamplesMin 4
+
 // Derivatives
 vec2 dcdx = dFdx(texCoord);
 vec2 dcdy = dFdy(texCoord);
@@ -119,8 +124,37 @@ uniform sampler2D texture;
 
         // Decode and extract the materials
         // Extract normals
-        vec3 normalMap = normalAOH.xyz * 2.0 - 1.0;
-        normalMap.z = sqrt(1.0 - dot(normalMap.xy, normalMap.xy));
+        vec3 normalMap;
+        normalMap.xy = normalAOH.xy * 2.0 - 1.0;
+        normalMap.z = sqrt(1.0 - min(dot(normalMap.xy, normalMap.xy), 1.0));
+
+        // Get parallax shadows
+        material.parallaxShd = 1.0;
+
+        #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined PARALLAX_OCCLUSION
+            #if defined enableSlopeNormals
+                float depth = max(texDepth - tracePos.z, 0.0);
+                if (depth >= slopeNormalStrength) {
+                    vec3 viewT = -viewDir * TBN;
+                    normalMap = apply_slope_normal(viewT, st, tracePos.z);
+                }
+            #endif
+
+            #if defined PARALLAX_SHADOWS && defined WORLD_LIGHT
+                vec3 lightDir = normalize(vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z));
+                float NoL = saturate(dot(material.normal, lightDir));
+
+                if (NoL > 0.000001) {
+                    vec3 lightDirT = lightDir * TBN;
+                    vec2 lightOffset = getParallaxOffset(lightDirT) * PARALLAX_DEPTH;
+                    material.parallaxShd = parallaxShadow(tracePos, lightOffset);
+                }
+                else {
+                    material.parallaxShd = 0.0;
+                }
+            #endif
+        #endif
+
         // Assign normal
         material.normal = normalize(TBN * normalMap);
 
