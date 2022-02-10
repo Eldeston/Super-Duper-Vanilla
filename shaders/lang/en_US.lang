@@ -49,13 +49,18 @@
     option.DEFAULT_MAT=PBR mode
     option.ENVIRO_MAT=Enviro PBR materials
     option.AUTO_GEN_NORM=Auto generated normals
+    value.DEFAULT_MAT.0=OFF
+    value.DEFAULT_MAT.1=Default PBR
+    value.DEFAULT_MAT.2=Lab PBR 1.3
+
+screen.POM_SETTINGS=Parallax occlusion settings
     option.PARALLAX_OCCLUSION=Parallax occlusion
     option.PARALLAX_DEPTH=Parallax depth
     option.PARALLAX_STEPS=Parallax steps
     option.PARALLAX_SHADOWS=Parallax shadows
-    value.DEFAULT_MAT.0=OFF
-    value.DEFAULT_MAT.1=Default PBR
-    value.DEFAULT_MAT.2=Lab PBR 1.3
+    option.PARALLAX_SOFT_SHD=Parallax soft shadows
+    option.PARALLAX_SHD_STEPS=Parallax shadow steps
+
 
 screen.RAY_TRACING=Ray tracing settings
     option.SSGI_STEPS=SSGI steps

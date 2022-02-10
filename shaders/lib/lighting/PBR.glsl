@@ -66,14 +66,19 @@ uniform sampler2D texture;
                 float currDepth = texture2DGradARB(heightMap, fract(startUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
                 float depth = currDepth;
 
-                float stepSize = 1.0 / 8.0;
+                float stepSize = 1.0 / PARALLAX_SHD_STEPS;
                 endPos *= stepSize * PARALLAX_DEPTH * 0.5;
 
-                for(int i = 0; i < 8; i++){
+                for(int i = 0; i < PARALLAX_SHD_STEPS; i++){
                     startUv += endPos.xy;
                     currDepth = texture2DGradARB(heightMap, fract(startUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
                     depth += endPos.z;
-                    if(currDepth > depth) return 0.0;
+
+                    #ifdef PARALLAX_SOFT_SHD
+                        if(currDepth > depth) return cubed(i * stepSize);
+                    #else
+                        if(currDepth > depth) return 0.0;
+                    #endif
                 }
 
                 return 1.0;
@@ -97,7 +102,7 @@ uniform sampler2D texture;
                 #ifdef PARALLAX_SHADOWS
                     vec3 lightPos = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
                     
-                    if(dot(TBN[2], lightPos) > 0){
+                    if(dot(TBN[2], lightPos) > 0.01){
                         vec3 lightPosTBN = viewTBN * (mat3(gbufferModelView) * lightPos);
                         material.parallaxShd = parallaxShd(normals, lightPosTBN, (st - vTexCoordPos) / vTexCoordScale);
                     }
