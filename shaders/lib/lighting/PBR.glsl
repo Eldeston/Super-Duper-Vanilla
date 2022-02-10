@@ -75,7 +75,7 @@ uniform sampler2D texture;
                     depth += endPos.z;
 
                     #ifdef PARALLAX_SOFT_SHD
-                        if(currDepth > depth) return cubed(i * stepSize);
+                        if(currDepth > depth) return squared(i * stepSize);
                     #else
                         if(currDepth > depth) return 0.0;
                     #endif
@@ -96,16 +96,17 @@ uniform sampler2D texture;
         #if (defined TERRAIN || defined WATER || defined BLOCK) && defined PARALLAX_OCCLUSION
             // Exclude signs, due to a missing text bug
             if(id != 10102){
-                vec3 endPos = viewTBN * posVector.viewPos;
+                // Inverse TBN
+                mat3 inverseTBN = mat3(TBN[0].x, TBN[1].x, TBN[2].x, TBN[0].y, TBN[1].y, TBN[2].y, TBN[0].z, TBN[1].z, TBN[2].z);
+                // Equivalent to : mat3 inverseTBN = transpose(TBN);
+
+                vec3 endPos = inverseTBN * posVector.eyePlayerPos;
                 st = fract(parallaxUv(normals, vTexCoord, endPos.xy / -endPos.z)) * vTexCoordScale + vTexCoordPos;
 
                 #ifdef PARALLAX_SHADOWS
                     vec3 lightPos = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
                     
-                    if(dot(TBN[2], lightPos) > 0.01){
-                        vec3 lightPosTBN = viewTBN * (mat3(gbufferModelView) * lightPos);
-                        material.parallaxShd = parallaxShd(normals, lightPosTBN, (st - vTexCoordPos) / vTexCoordScale);
-                    }
+                    if(dot(TBN[2], lightPos) > 0.01) material.parallaxShd = parallaxShd(normals, inverseTBN * lightPos, (st - vTexCoordPos) / vTexCoordScale);
                 #endif
             }
         #endif

@@ -28,10 +28,6 @@ INOUT vec2 texCoord;
     INOUT vec2 vTexCoord;
 #endif
 
-#if defined PARALLAX_OCCLUSION && DEFAULT_MAT == 2
-    INOUT mat3 viewTBN;
-#endif
-
 INOUT vec4 glcolor;
 
 INOUT mat3 TBN;
@@ -75,12 +71,6 @@ uniform mat4 gbufferModelViewInverse;
         #ifdef ANIMATE
             vec3 worldPos = vertexPos.xyz + cameraPosition;
 	        getWave(vertexPos.xyz, worldPos, texCoord, mc_midTexCoord.xy, mc_Entity.x, lmCoord.y);
-        #endif
-
-        #if defined PARALLAX_OCCLUSION && DEFAULT_MAT == 2
-            viewTBN = mat3(tangent.x, binormal.x, normal.x,
-						  tangent.y, binormal.y, normal.y,
-						  tangent.z, binormal.z, normal.z);
         #endif
 
         #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION

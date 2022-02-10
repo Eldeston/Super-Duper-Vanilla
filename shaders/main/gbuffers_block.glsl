@@ -13,10 +13,6 @@ INOUT vec2 texCoord;
     INOUT vec2 vTexCoord;
 #endif
 
-#if defined PARALLAX_OCCLUSION && DEFAULT_MAT == 2
-    INOUT mat3 viewTBN;
-#endif
-
 INOUT vec4 glcolor;
 
 INOUT mat3 TBN;
@@ -45,12 +41,6 @@ uniform mat4 gbufferModelViewInverse;
 	    vec3 normal = normalize(gl_NormalMatrix * gl_Normal);
 
 	    TBN = mat3(gbufferModelViewInverse) * mat3(tangent, binormal, normal);
-
-        #if defined PARALLAX_OCCLUSION && DEFAULT_MAT == 2
-            viewTBN = mat3(tangent.x, binormal.x, normal.x,
-						  tangent.y, binormal.y, normal.y,
-						  tangent.z, binormal.z, normal.z);
-        #endif
 
         #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
             vec2 midCoord = (gl_TextureMatrix[0] * mc_midTexCoord).xy;
