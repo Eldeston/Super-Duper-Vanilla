@@ -16,33 +16,38 @@ colortex6 - TAA, auto exposure : RGBA16F
 colortex7 - Sky box : RGBA8
 
 Custom defined macros:
-
-SHADOW
-GBUFFERS
-NETHER
-END
-DEFERRED
-DEFERRED(1-15)
-COMPOSITE
-COMPOSITE(1-15)
-FINAL
+    World macros:
+        OVERWORLD
+        NETHER
+        END
+    SHADOW
+    GBUFFERS
     Gbuffer macros:
+        PBR enabled programs:
+            TERRAIN
+            WATER
+            BLOCK
+            ENTITIES_GLOWING
+            ENTITIES
+            HAND
+            HAND_WATER
 
-    ARMOR_GLINT
-    BASIC
-    BEACON_BEAM
-    BLOCK
-    CLOUDS
-    ENTITIES_GLOWING
-    ENTITIES
-    HAND_WATER
-    HAND
-    LINE
-    SKY_BASIC
-    SKY_TEXTURED
-    SPIDER_EYES
-    TERRAIN
-    TEXTURED
-    HAND_WATER
-    WATER
-    WEATHER
+        Basic programs:
+            BASIC
+            CLOUDS
+            TEXTURED
+            WEATHER
+            
+            ARMOR_GLINT
+            BEACON_BEAM
+            SPIDER_EYES
+            DAMAGED_BLOCK
+
+            LINE
+            SKY_BASIC
+            SKY_TEXTURED
+    DEFERRED
+    DEFERRED(1-15)
+    COMPOSITE
+    COMPOSITE(1-15)
+    FINAL
