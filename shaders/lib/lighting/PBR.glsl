@@ -42,8 +42,6 @@ uniform sampler2D texture;
     #endif
 
     #if (defined TERRAIN || defined WATER || defined BLOCK) && defined PARALLAX_OCCLUSION
-        uniform mat4 gbufferModelView;
-
         vec2 parallaxUv(sampler2D heightMap, vec2 startUv, vec2 endUv){
             float currDepth = texture2DGradARB(heightMap, fract(startUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
             float depth = 1.0;
@@ -91,23 +89,12 @@ uniform sampler2D texture;
         material.normal = TBN[2];
 
         vec2 st = texCoord;
-        material.parallaxShd = 1.0;
 
         #if (defined TERRAIN || defined WATER || defined BLOCK) && defined PARALLAX_OCCLUSION
             // Exclude signs, due to a missing text bug
             if(id != 10102){
-                // Inverse TBN
-                mat3 inverseTBN = mat3(TBN[0].x, TBN[1].x, TBN[2].x, TBN[0].y, TBN[1].y, TBN[2].y, TBN[0].z, TBN[1].z, TBN[2].z);
-                // Equivalent to : mat3 inverseTBN = transpose(TBN);
-
-                vec3 endPos = inverseTBN * posVector.eyePlayerPos;
+                vec3 endPos = mat3(TBN[0].x, TBN[1].x, TBN[2].x, TBN[0].y, TBN[1].y, TBN[2].y, TBN[0].z, TBN[1].z, TBN[2].z) * posVector.eyePlayerPos;
                 st = fract(parallaxUv(normals, vTexCoord, endPos.xy / -endPos.z)) * vTexCoordScale + vTexCoordPos;
-
-                #ifdef PARALLAX_SHADOWS
-                    vec3 lightPos = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
-                    
-                    if(dot(TBN[2], lightPos) > 0.01) material.parallaxShd = parallaxShd(normals, inverseTBN * lightPos, (st - vTexCoordPos) / vTexCoordScale);
-                #endif
             }
         #endif
 
@@ -115,6 +102,14 @@ uniform sampler2D texture;
         material.albedo = texture2DGradARB(texture, st, dcdx, dcdy);
 
         if(material.albedo.a > 0.00001){
+            // Get parallax shadows
+            material.parallaxShd = 1.0;
+
+            #if (defined TERRAIN || defined WATER || defined BLOCK) && defined PARALLAX_OCCLUSION && defined PARALLAX_SHADOWS && defined WORLD_LIGHT
+                if(dot(TBN[2], vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) > 0.005)
+                    material.parallaxShd = parallaxShd(normals, mat3(TBN[0].x, TBN[1].x, TBN[2].x, TBN[0].y, TBN[1].y, TBN[2].y, TBN[0].z, TBN[1].z, TBN[2].z) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), (st - vTexCoordPos) / vTexCoordScale);
+            #endif
+
             // Get raw textures
             vec4 normalAOH = texture2DGradARB(normals, st, dcdx, dcdy);
 
