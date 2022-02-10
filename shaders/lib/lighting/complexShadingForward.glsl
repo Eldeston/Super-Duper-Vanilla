@@ -33,10 +33,10 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, float di
 		#endif
 
 		float rainDiff = rainStrength * 0.5;
-		totalDiffuse += (dirLight * shdCol * (1.0 - rainDiff) + material.light.y * material.light.y * material.ambient * rainDiff) * lightCol;
+		totalDiffuse += (dirLight * shdCol * material.parallaxShd * (1.0 - rainDiff) + material.light.y * material.light.y * material.ambient * rainDiff) * lightCol;
 
 		// Get specular GGX
-		if(NL > 0) specCol = getSpecBRDF(nNegEyePlayerPos, nLightPos, material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), NL, 1.0 - material.smoothness) * NL * shdCol;
+		if(NL > 0) specCol = getSpecBRDF(nNegEyePlayerPos, nLightPos, material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), NL, 1.0 - material.smoothness) * shdCol * (NL * material.parallaxShd);
 	#endif
 
 	totalDiffuse = material.albedo.rgb * (totalDiffuse + material.emissive * 4.0);

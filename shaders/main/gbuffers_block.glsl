@@ -13,8 +13,8 @@ INOUT vec2 texCoord;
     INOUT vec2 vTexCoord;
 #endif
 
-#ifdef PARALLAX_OCCLUSION
-    INOUT vec3 viewTBN;
+#if defined PARALLAX_OCCLUSION && DEFAULT_MAT == 2
+    INOUT mat3 viewTBN;
 #endif
 
 INOUT vec4 glcolor;
@@ -46,10 +46,10 @@ uniform mat4 gbufferModelViewInverse;
 
 	    TBN = mat3(gbufferModelViewInverse) * mat3(tangent, binormal, normal);
 
-        #ifdef PARALLAX_OCCLUSION
+        #if defined PARALLAX_OCCLUSION && DEFAULT_MAT == 2
             viewTBN = mat3(tangent.x, binormal.x, normal.x,
 						  tangent.y, binormal.y, normal.y,
-						  tangent.z, binormal.z, normal.z) * (gl_ModelViewMatrix * gl_Vertex).xyz;
+						  tangent.z, binormal.z, normal.z);
         #endif
 
         #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION

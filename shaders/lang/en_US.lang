@@ -52,6 +52,7 @@
     option.PARALLAX_OCCLUSION=Parallax occlusion
     option.PARALLAX_DEPTH=Parallax depth
     option.PARALLAX_STEPS=Parallax steps
+    option.PARALLAX_SHADOWS=Parallax shadows
     value.DEFAULT_MAT.0=OFF
     value.DEFAULT_MAT.1=Default PBR
     value.DEFAULT_MAT.2=Lab PBR 1.3

@@ -42,6 +42,8 @@ uniform sampler2D texture;
     #endif
 
     #if (defined TERRAIN || defined WATER || defined BLOCK) && defined PARALLAX_OCCLUSION
+        uniform mat4 gbufferModelView;
+
         vec2 parallaxUv(sampler2D heightMap, vec2 startUv, vec2 endUv){
             float currDepth = texture2DGradARB(heightMap, fract(startUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
             float depth = 1.0;
@@ -49,25 +51,58 @@ uniform sampler2D texture;
             const float stepSize = 1.0 / PARALLAX_STEPS;
             endUv *= stepSize * PARALLAX_DEPTH;
 
-            while(depth > currDepth){
+            for(int i = 0; i < PARALLAX_STEPS; i++){
                 startUv += endUv;
                 currDepth = texture2DGradARB(heightMap, fract(startUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
                 depth -= stepSize;
+                if(depth <= currDepth) break;
             }
 
             return startUv;
         }
+
+        #ifdef PARALLAX_SHADOWS
+            float parallaxShd(sampler2D heightMap, vec3 endPos, vec2 startUv){
+                float currDepth = texture2DGradARB(heightMap, fract(startUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
+                float depth = currDepth;
+
+                float stepSize = 1.0 / 8.0;
+                endPos *= stepSize * PARALLAX_DEPTH * 0.5;
+
+                for(int i = 0; i < 8; i++){
+                    startUv += endPos.xy;
+                    currDepth = texture2DGradARB(heightMap, fract(startUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
+                    depth += endPos.z;
+                    if(currDepth > depth) return 0.0;
+                }
+
+                return 1.0;
+            }
+        #endif
     #endif
 
     void getPBR(inout matPBR material, in positionVectors posVector, in int id){
         // Assign default normal map
         material.normal = TBN[2];
 
+        vec2 st = texCoord;
+        material.parallaxShd = 1.0;
+
         #if (defined TERRAIN || defined WATER || defined BLOCK) && defined PARALLAX_OCCLUSION
             // Exclude signs, due to a missing text bug
-            vec2 st = id == 10102 ? texCoord : fract(parallaxUv(normals, vTexCoord, viewTBN.xy / -viewTBN.z)) * vTexCoordScale + vTexCoordPos;
-        #else
-            vec2 st = texCoord;
+            if(id != 10102){
+                vec3 endPos = viewTBN * posVector.viewPos;
+                st = fract(parallaxUv(normals, vTexCoord, endPos.xy / -endPos.z)) * vTexCoordScale + vTexCoordPos;
+
+                #ifdef PARALLAX_SHADOWS
+                    vec3 lightPos = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
+                    
+                    if(dot(TBN[2], lightPos) > 0){
+                        vec3 lightPosTBN = viewTBN * (mat3(gbufferModelView) * lightPos);
+                        material.parallaxShd = parallaxShd(normals, lightPosTBN, (st - vTexCoordPos) / vTexCoordScale);
+                    }
+                #endif
+            }
         #endif
 
         // Assign albedo

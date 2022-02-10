@@ -16,6 +16,8 @@ struct matPBR{
     float ambient;
     // Subsurface scattering
     float ss;
+    // POM self shadows
+    float parallaxShd;
 };
 
 // Position struct
