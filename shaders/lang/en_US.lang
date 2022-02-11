@@ -58,8 +58,8 @@ screen.POM_SETTINGS=Parallax occlusion settings
     option.PARALLAX_DEPTH=Parallax depth
     option.PARALLAX_STEPS=Parallax steps
     option.PARALLAX_SHADOWS=Parallax shadows
-    option.PARALLAX_SOFT_SHD=Parallax soft shadows
     option.PARALLAX_SHD_STEPS=Parallax shadow steps
+    option.SLOPE_NORMALS=Slope normals
 
 
 screen.RAY_TRACING=Ray tracing settings

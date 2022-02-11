@@ -74,8 +74,9 @@
 #define PARALLAX_STEPS 128 // Parallax occlusion step ammount. Increase for improved POM quality. [16 32 64 128 256 512]
 
 #define PARALLAX_SHADOWS // Enables parallax self shadowing.
-#define PARALLAX_SOFT_SHD // Enables softer parallax shadows.
-#define PARALLAX_SHD_STEPS 8 // Parallax self shadowing step ammount. Increase for improved self shadowing quality. [8 16 32 64]
+#define PARALLAX_SHD_STEPS 32 // Parallax self shadowing step ammount. Increase for improved self shadowing quality. [16 32 64 128 256 512]
+
+#define SLOPE_NORMALS // Enables slope normals. Disable this feature if you're using a high resolution pack with normal maps. Thanks @Null!
 
 #define STORY_MODE_CLOUDS // Uses procedurally generated clouds (a.k.a. aerogel clouds) instead of vanilla clouds. Disable vanilla clouds for proper results.
 // #define DOUBLE_VANILLA_CLOUDS // Adds another layer of vanilla clouds (does not apply to story mode clouds), may use up performance.
