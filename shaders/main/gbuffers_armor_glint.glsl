@@ -42,6 +42,10 @@ INOUT vec4 glcolor;
 	    matPBR material;
 
         material.albedo = texture2D(texture, texCoord);
+
+        // Alpha test, discard immediately
+        if(material.albedo.a <= 0.005) discard;
+        
         // Assign normals
         material.normal = norm;
 

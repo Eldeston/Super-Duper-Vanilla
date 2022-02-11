@@ -126,24 +126,20 @@ uniform mat4 gbufferModelViewInverse;
 	    // Declare materials
 	    matPBR material;
         getPBR(material, posVector, blockEntityId);
+        
+        material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
-        vec4 sceneCol = vec4(0);
+        material.light = lmCoord;
 
-        if(material.albedo.a > 0.00001){
-            material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
+        #ifdef ENVIRO_MAT
+            enviroPBR(material, posVector.worldPos);
+        #endif
 
-            material.light = lmCoord;
-
-            #ifdef ENVIRO_MAT
-                enviroPBR(material, posVector.worldPos);
-            #endif
-
-            #if ANTI_ALIASING == 2
-                sceneCol = complexShadingGbuffers(material, posVector, toRandPerFrame(getRand1(gl_FragCoord.xy * 0.03125), frameTimeCounter));
-            #else
-                sceneCol = complexShadingGbuffers(material, posVector, getRand1(gl_FragCoord.xy * 0.03125));
-            #endif
-        } else discard;
+        #if ANTI_ALIASING == 2
+            vec4 sceneCol = complexShadingGbuffers(material, posVector, toRandPerFrame(getRand1(gl_FragCoord.xy * 0.03125), frameTimeCounter));
+        #else
+            vec4 sceneCol = complexShadingGbuffers(material, posVector, getRand1(gl_FragCoord.xy * 0.03125));
+        #endif
 
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; //gcolor

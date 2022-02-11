@@ -82,6 +82,11 @@ uniform mat4 gbufferModelViewInverse;
     uniform float viewWidth;
     uniform float viewHeight;
 
+    #if ANTI_ALIASING == 2
+        // Get frame time
+        uniform float frameTimeCounter;
+    #endif
+
     // Get world time
     uniform float day;
     uniform float dawnDusk;
@@ -123,25 +128,24 @@ uniform mat4 gbufferModelViewInverse;
         int rBlockId = int(blockId + 0.5);
         getPBR(material, posVector, rBlockId);
 
-        vec4 sceneCol = vec4(0);
+        material.albedo.rgb = mix(material.albedo.rgb, entityColor.rgb, entityColor.a);
 
-        if(material.albedo.a > 0.00001){
-            material.albedo.rgb = mix(material.albedo.rgb, entityColor.rgb, entityColor.a);
+        material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
-            material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
+        material.light = lmCoord;
 
-            material.light = lmCoord;
+        // Lightning
+        if(rBlockId == 10101){
+            material.metallic = 0.04;
+            material.emissive = 1.0;
+            material.smoothness = 0.0;
+        }
 
-            // Lightning
-            if(rBlockId == 10101){
-                material.metallic = 0.04;
-                material.emissive = 1.0;
-                material.smoothness = 0.0;
-                sceneCol = vec4(vec3(2), 1);
-            }
-
-            sceneCol = complexShadingGbuffers(material, posVector, getRand1(gl_FragCoord.xy * 0.03125));
-        } else discard;
+        #if ANTI_ALIASING == 2
+            vec4 sceneCol = complexShadingGbuffers(material, posVector, toRandPerFrame(getRand1(gl_FragCoord.xy * 0.03125), frameTimeCounter));
+        #else
+            vec4 sceneCol = complexShadingGbuffers(material, posVector, getRand1(gl_FragCoord.xy * 0.03125));
+        #endif
 
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; //gcolor

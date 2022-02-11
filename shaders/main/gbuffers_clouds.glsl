@@ -132,24 +132,23 @@ uniform mat4 gbufferModelViewInverse;
             material.albedo = vec4(albedoAlpha);
         #endif
 
-        vec4 sceneCol = vec4(0);
+        // Alpha test, discard immediately
+        if(material.albedo.a <= 0.005) discard;
 
-        if(material.albedo.a > 0.00001){
-            material.metallic = 0.04;
-            material.ss = 0.5;
-            material.emissive = 0.0;
-            material.smoothness = 0.0;
+        material.metallic = 0.04;
+        material.ss = 0.5;
+        material.emissive = 0.0;
+        material.smoothness = 0.0;
 
-            // Apply vanilla AO
-            material.ambient = 1.0;
-            material.light = vec2(0, 1);
+        // Apply vanilla AO
+        material.ambient = 1.0;
+        material.light = vec2(0, 1);
 
-            #if ANTI_ALIASING == 2
-                sceneCol = complexShadingGbuffers(material, posVector, toRandPerFrame(getRand1(gl_FragCoord.xy * 0.03125), frameTimeCounter));
-            #else
-                sceneCol = complexShadingGbuffers(material, posVector, getRand1(gl_FragCoord.xy * 0.03125));
-            #endif
-        } else discard;
+        #if ANTI_ALIASING == 2
+            vec4 sceneCol = complexShadingGbuffers(material, posVector, toRandPerFrame(getRand1(gl_FragCoord.xy * 0.03125), frameTimeCounter));
+        #else
+            vec4 sceneCol = complexShadingGbuffers(material, posVector, getRand1(gl_FragCoord.xy * 0.03125));
+        #endif
 
     /* DRAWBUFFERS:012 */
         gl_FragData[0] = sceneCol; //gcolor

@@ -146,33 +146,29 @@ uniform mat4 gbufferModelViewInverse;
         int rBlockId = int(blockId + 0.5);
         getPBR(material, posVector, rBlockId);
 
-        vec4 sceneCol = vec4(0);
-
-        if(material.albedo.a > 0.00001){
-            if(rBlockId == 10017){
-                #ifdef LAVA_NOISE
-                    vec2 lavaUv = posVector.worldPos.xz * (1.0 - TBN[2].y) + posVector.worldPos.xz * TBN[2].y;
-                    float lavaWaves = max(getLuminance(material.albedo.rgb), getCellNoise2(floor(lavaUv * 16.0) / (LAVA_TILE_SIZE * 16.0)));
-                    material.albedo.rgb = floor(material.albedo.rgb * (LAVA_BRIGHTNESS * smootherstep(lavaWaves) * 32.0)) / 32.0;
-                #else
-                    material.albedo.rgb = material.albedo.rgb * LAVA_BRIGHTNESS;
-                #endif
-            }
-
-            material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
-
-            material.light = lmCoord;
-
-            #ifdef ENVIRO_MAT
-                enviroPBR(material, posVector.worldPos);
-            #endif
-
-            #if ANTI_ALIASING == 2
-                sceneCol = complexShadingGbuffers(material, posVector, toRandPerFrame(getRand1(gl_FragCoord.xy * 0.03125), frameTimeCounter));
+        if(rBlockId == 10017){
+            #ifdef LAVA_NOISE
+                vec2 lavaUv = posVector.worldPos.xz * (1.0 - TBN[2].y) + posVector.worldPos.xz * TBN[2].y;
+                float lavaWaves = max(getLuminance(material.albedo.rgb), getCellNoise2(floor(lavaUv * 16.0) / (LAVA_TILE_SIZE * 16.0)));
+                material.albedo.rgb = floor(material.albedo.rgb * (LAVA_BRIGHTNESS * smootherstep(lavaWaves) * 32.0)) / 32.0;
             #else
-                sceneCol = complexShadingGbuffers(material, posVector, getRand1(gl_FragCoord.xy * 0.03125));
+                material.albedo.rgb = material.albedo.rgb * LAVA_BRIGHTNESS;
             #endif
-        } else discard;
+        }
+
+        material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
+
+        material.light = lmCoord;
+
+        #ifdef ENVIRO_MAT
+            enviroPBR(material, posVector.worldPos);
+        #endif
+
+        #if ANTI_ALIASING == 2
+            vec4 sceneCol = complexShadingGbuffers(material, posVector, toRandPerFrame(getRand1(gl_FragCoord.xy * 0.03125), frameTimeCounter));
+        #else
+            vec4 sceneCol = complexShadingGbuffers(material, posVector, getRand1(gl_FragCoord.xy * 0.03125));
+        #endif
 
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; //gcolor

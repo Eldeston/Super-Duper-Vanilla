@@ -147,64 +147,60 @@ uniform mat4 gbufferModelViewInverse;
 	    matPBR material;
         int rBlockId = int(blockId + 0.5);
         getPBR(material, posVector, rBlockId);
+        
+        // If water
+        if(rBlockId == 10034){
+            float waterNoise = WATER_BRIGHTNESS;
 
-        vec4 sceneCol = vec4(0);
+            #if !(defined END || defined NETHER)
+                vec2 waterUv = posVector.worldPos.xz * (1.0 - TBN[2].y) + posVector.worldPos.xz * TBN[2].y;
 
-        if(material.albedo.a > 0.00001){
-            // If water
-            if(rBlockId == 10034){
-                float waterNoise = WATER_BRIGHTNESS;
+                #ifdef WATER_NORM
+                    vec4 waterData = H2NWater(waterUv);
+                    material.normal = normalize(TBN * waterData.xyz);
 
-                #if !(defined END || defined NETHER)
-                    vec2 waterUv = posVector.worldPos.xz * (1.0 - TBN[2].y) + posVector.worldPos.xz * TBN[2].y;
-                    
-                    #ifdef WATER_NORM
-                        vec4 waterData = H2NWater(waterUv);
-                        material.normal = normalize(TBN * waterData.xyz);
+                    #ifdef WATER_NOISE
+                        waterNoise *= squared(0.128 + waterData.w);
+                    #endif
+                #else
+                    float waterData = getCellNoise(waterUv / WATER_TILE_SIZE);
 
-                        #ifdef WATER_NOISE
-                            waterNoise *= squared(0.128 + waterData.w);
-                        #endif
-                    #else
-                        float waterData = getCellNoise(waterUv / WATER_TILE_SIZE);
-
-                        #ifdef WATER_NOISE
-                            waterNoise *= squared(0.128 + waterData);
-                        #endif
+                    #ifdef WATER_NOISE
+                        waterNoise *= squared(0.128 + waterData);
                     #endif
                 #endif
+            #endif
 
-                // Water color and foam 
-                float waterDepth = toView(posVector.screenPos.z) - toView(texture2D(depthtex1, posVector.screenPos.xy).x);
+            // Water color and foam 
+            float waterDepth = toView(posVector.screenPos.z) - toView(texture2D(depthtex1, posVector.screenPos.xy).x);
 
-                if(isEyeInWater != 1){
-                    #ifdef STYLIZED_WATER_ABSORPTION
-                        float depthBrightness = exp(-waterDepth * 0.32);
-                        material.albedo.rgb = mix(material.albedo.rgb * waterNoise, saturate(toneSaturation(material.albedo.rgb, 2.0) * 2.0), depthBrightness);
-                        material.albedo.a = sqrt(material.albedo.a) * (1.0 - depthBrightness);
-                    #endif
-                } else material.albedo.rgb *= waterNoise;
-
-                #ifdef WATER_FOAM
-                    float foam = min(1.0, exp(-(waterDepth - 0.128) * 10.0));
-                    material.albedo = material.albedo * (1.0 - foam) + foam;
+            if(isEyeInWater != 1){
+                #ifdef STYLIZED_WATER_ABSORPTION
+                    float depthBrightness = exp(-waterDepth * 0.32);
+                    material.albedo.rgb = mix(material.albedo.rgb * waterNoise, saturate(toneSaturation(material.albedo.rgb, 2.0) * 2.0), depthBrightness);
+                    material.albedo.a = sqrt(material.albedo.a) * (1.0 - depthBrightness);
                 #endif
-            }
+            } else material.albedo.rgb *= waterNoise;
 
-            material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
-            
-            material.light = lmCoord;
-
-            #ifdef ENVIRO_MAT
-                if(rBlockId != 10034) enviroPBR(material, posVector.worldPos);
+            #ifdef WATER_FOAM
+                float foam = min(1.0, exp(-(waterDepth - 0.128) * 10.0));
+                material.albedo = material.albedo * (1.0 - foam) + foam;
             #endif
+        }
 
-            #if ANTI_ALIASING == 2
-                sceneCol = complexShadingGbuffers(material, posVector, toRandPerFrame(getRand1(gl_FragCoord.xy * 0.03125), frameTimeCounter));
-            #else
-                sceneCol = complexShadingGbuffers(material, posVector, getRand1(gl_FragCoord.xy * 0.03125));
-            #endif
-        } else discard;
+        material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
+
+        material.light = lmCoord;
+
+        #ifdef ENVIRO_MAT
+            if(rBlockId != 10034) enviroPBR(material, posVector.worldPos);
+        #endif
+
+        #if ANTI_ALIASING == 2
+            vec4 sceneCol = complexShadingGbuffers(material, posVector, toRandPerFrame(getRand1(gl_FragCoord.xy * 0.03125), frameTimeCounter));
+        #else
+            vec4 sceneCol = complexShadingGbuffers(material, posVector, getRand1(gl_FragCoord.xy * 0.03125));
+        #endif
 
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; //gcolor
