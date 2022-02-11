@@ -17,7 +17,10 @@
 ![2021-12-29_15 46 48](https://user-images.githubusercontent.com/59617287/148426242-5a739d72-5439-475b-8dc9-928886df5df0.png)
 
 ## Contribution
-   Will be planned soon, but as of right now, it is not open.
+   If you plan to contribute to this project, see CONTRIBUTION.md for more info.
+
+## License 
+   This shader uses the GNU GPL 3.0 license. See LICENSE for more info.
 
 ## Releases
    See all available releases [here](https://github.com/Eldeston/Super-Duper-Vanilla/releases), and get the latest build [here](https://github.com/Eldeston/Super-Duper-Vanilla/archive/refs/heads/master.zip), this build will always be the latest build by default. Latests builds and pre-release versions are expected to be unstable, please report any issues or bugs anytime. Feedback is much appreciated.
