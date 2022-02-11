@@ -12,4 +12,4 @@
    * Use `SCREAMING_CASE` for defined macros only.
 
 ## Other notes
-   You may add your name in the CONTRIBUTORS.md with your PR.
+   You may add your name in [**CONTRIBUTORS**](CONTRIBUTORS.md) with your PR.
