@@ -1,8 +1,7 @@
 #extension GL_ARB_shader_texture_lod : enable
 
-#define ENABLE_SLOPE_NORMALS
-#define slopeNormalStrength 0.024
-#define softShadowStrength 60.0
+#define SLOPE_NORMAL_STRENGTH 0.024
+#define SOFT_SHD_STRENGTH 60.0
 
 // Derivatives
 vec2 dcdx = dFdx(texCoord);
@@ -45,90 +44,93 @@ uniform sampler2D texture;
     #ifdef PARALLAX_OCCLUSION
     #endif
 
+    #ifdef PARALLAX_SHADOWS
+    #endif
+
     #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined PARALLAX_OCCLUSION
-        float lengthSq(vec3 vec) {return dot(vec, vec);}
-        float pow2(float val) {return val*val;}
+        float lengthSquared(vec3 vec){ return dot(vec, vec); }
         
-        vec2 getParallaxOffset(in vec3 dirT)
-        {
-            float length = sqrt(lengthSq(dirT) - pow2(dirT.z)) / dirT.z;
-            return length * normalize(dirT.xy);
+        vec2 getParallaxOffset(vec3 dirT){
+            return normalize(dirT.xy) * (sqrt(lengthSquared(dirT) - squared(dirT.z)) * PARALLAX_DEPTH / dirT.z);
         }
 
-        vec2 parallaxUv(vec2 startUv, vec2 endUv, float NoV, out vec3 tracePos, out float texDepth) {
+        vec2 parallaxUv(vec2 startUv, vec2 endUv, out vec3 tracePos, out float texDepth) {
             float stepSize = 1.0 / PARALLAX_STEPS;
             endUv *= stepSize * PARALLAX_DEPTH;
 
             texDepth = texture2DGradARB(normals, fract(startUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
             float traceDepth = 1.0;
 
-            for (int step = 0; step < PARALLAX_STEPS; step++) {
+            for(int i = 0; i < PARALLAX_STEPS; i++){
                 startUv += endUv;
                 traceDepth -= stepSize;
                 texDepth = texture2DGradARB(normals, fract(startUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
 
-                if (texDepth - traceDepth > 0.00001) break;
+                if(texDepth > traceDepth) break;
             }
 
             tracePos = vec3(startUv - endUv, traceDepth + stepSize);
             return startUv;
         }
 
-        float parallaxShadow(in vec3 tracePos, in vec2 lightOffset) {
-            float stepSize = 1.0 / PARALLAX_STEPS;
-            vec2 stepOffset = stepSize * lightOffset;
-            
-            float traceDepth = tracePos.z;
-            vec2 trace_tex = tracePos.xy;
-
-            float result = 0.0;
-            for (int step = int(traceDepth * PARALLAX_STEPS); step < PARALLAX_STEPS; ++step) {
-                trace_tex += stepOffset;
-                traceDepth += stepSize;
-
-                float texDepth = texture2DGradARB(normals, fract(trace_tex) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
-                float h = texDepth - traceDepth;
+        #if defined PARALLAX_SHADOWS && defined WORLD_LIGHT
+            float parallaxShadow(in vec3 tracePos, in vec2 lightOffset) {
+                float stepSize = 1.0 / PARALLAX_SHD_STEPS;
+                vec2 stepOffset = stepSize * lightOffset;
                 
-                if (h > 0.0) {
-                    float dist = 1.0 + lengthSq(vec3(trace_tex, traceDepth) - vec3(tracePos.xy, 1.0)) * 20.0;
+                float traceDepth = tracePos.z;
+                vec2 traceUv = tracePos.xy;
 
-                    float sampleResult = saturate(h * softShadowStrength * (1.0 / dist));
-                    result = max(result, sampleResult);
-                    if (1.0 - result < 0.00001) break;
+                float result = 0.0;
+                for(int i = int(traceDepth * PARALLAX_SHD_STEPS); i < PARALLAX_SHD_STEPS; ++i){
+                    traceUv += stepOffset;
+                    traceDepth += stepSize;
+
+                    float texDepth = texture2DGradARB(normals, fract(traceUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
+                    float h = texDepth - traceDepth;
+                    
+                    if(h > 0){
+                        float dist = 1.0 / (1.0 + lengthSquared(vec3(traceUv, traceDepth) - vec3(tracePos.xy, 1)) * 20.0);
+
+                        float sampleResult = saturate(h * SOFT_SHD_STRENGTH * dist);
+                        result = max(result, sampleResult);
+                        if(1 < result) break;
+                    }
                 }
+
+                return 1.0 - result;
             }
+        #endif
 
-            return 1.0 - result;
-        }
+        #ifdef SLOPE_NORMALS
+            vec3 apply_slope_normal(in vec3 viewT, in vec2 tex, in float trace_depth) {
+                vec2 tex_size = textureSize(normals, 0);
+                vec2 pixel_size = 1.0 / tex_size;
 
-        vec3 apply_slope_normal(in vec3 viewT, in vec2 tex, in float trace_depth) {
-            vec2 tex_size = textureSize(normals, 0);
-            vec2 pixel_size = 1.0 / tex_size;
+                vec2 tex_snapped = floor(tex * tex_size) * pixel_size;
+                vec2 tex_offset = tex - tex_snapped - 0.5 * pixel_size;
+                vec2 step_sign = sign(-viewT.xy);
 
-            vec2 tex_snapped = floor(tex * tex_size) * pixel_size;
-            vec2 tex_offset = tex - tex_snapped - 0.5 * pixel_size;
-            vec2 step_sign = sign(-viewT.xy);
+                vec2 tex_x = tex_snapped + vec2(pixel_size.x * step_sign.x, 0);
+                float height_x = texture2DGradARB(normals, tex_x, dcdx, dcdy).a;
+                bool has_x = trace_depth > height_x && sign(tex_offset.x) == step_sign.x;
 
-            vec2 tex_x = tex_snapped + vec2(pixel_size.x * step_sign.x, 0.0);
-            float height_x = texture2DGradARB(normals, tex_x, dcdx, dcdy).a;
-            bool has_x = trace_depth > height_x && sign(tex_offset.x) == step_sign.x;
+                vec2 tex_y = tex_snapped + vec2(0, pixel_size.y * step_sign.y);
+                float height_y = texture2DGradARB(normals, tex_y, dcdx, dcdy).a;
+                bool has_y = trace_depth > height_y && sign(tex_offset.y) == step_sign.y;
 
-            vec2 tex_y = tex_snapped + vec2(0.0, pixel_size.y * step_sign.y);
-            float height_y = texture2DGradARB(normals, tex_y, dcdx, dcdy).a;
-            bool has_y = trace_depth > height_y && sign(tex_offset.y) == step_sign.y;
+                if (abs(tex_offset.x) < abs(tex_offset.y)){
+                    if(has_y) return vec3(0, step_sign.y, 0);
+                    if(has_x) return vec3(step_sign.x, 0, 0);
+                } else {
+                    if(has_x) return vec3(step_sign.x, 0, 0);
+                    if(has_y) return vec3(0, step_sign.y, 0);
+                }
 
-            if (abs(tex_offset.x) < abs(tex_offset.y)) {
-                if (has_y) return vec3(0.0, step_sign.y, 0.0);
-                if (has_x) return vec3(step_sign.x, 0.0, 0.0);
+                float s = step(abs(viewT.y), abs(viewT.x));
+                return vec3(vec2(1.0 - s, s) * step_sign, 0);
             }
-            else {
-                if (has_x) return vec3(step_sign.x, 0.0, 0.0);
-                if (has_y) return vec3(0.0, step_sign.y, 0.0);
-            }
-
-            float s = step(abs(viewT.y), abs(viewT.x));
-            return vec3(vec2(1.0 - s, s) * step_sign, 0.0);
-        }
+        #endif
     #endif
 
     void getPBR(inout matPBR material, in positionVectors posVector, in int id){
@@ -139,22 +141,20 @@ uniform sampler2D texture;
         vec2 st = texCoord;
         float texDepth;
         vec3 tracePos;
-        vec2 puv;
 
         #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined PARALLAX_OCCLUSION
             // Exclude signs, due to a missing text bug
-            if (id != 10102) {
-                float NoV = saturate(dot(material.normal, viewDir));
-
+            if(id != 10102){
                 vec3 endPos = viewDir * TBN;
-                puv = parallaxUv(vTexCoord, endPos.xy / -endPos.z, NoV, tracePos, texDepth);
-                st = fract(puv) * vTexCoordScale + vTexCoordPos;
+                st = fract(parallaxUv(vTexCoord, endPos.xy / -endPos.z, tracePos, texDepth)) * vTexCoordScale + vTexCoordPos;
             }
         #endif
 
         // Assign albedo
         material.albedo = texture2DGradARB(texture, st, dcdx, dcdy);
-        if (material.albedo.a <= 0.00001) return;
+
+        // Alpha test, discard immediately
+        if(material.albedo.a <= 0.005) discard;
 
         // Get raw textures
         vec4 normalAOH = texture2DGradARB(normals, st, dcdx, dcdy);
@@ -163,34 +163,21 @@ uniform sampler2D texture;
 
         // Decode and extract the materials
         // Extract normals
-        vec3 normalMap;
-        normalMap.xy = normalAOH.xy * 2.0 - 1.0;
-        normalMap.z = sqrt(1.0 - min(dot(normalMap.xy, normalMap.xy), 1.0));
+        vec3 normalMap = vec3(normalAOH.xy * 2.0 - 1.0, 0);
+        normalMap.z = sqrt(1.0 - dot(normalMap.xy, normalMap.xy));
 
         // Get parallax shadows
         material.parallaxShd = 1.0;
 
         #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined PARALLAX_OCCLUSION
-            #if defined ENABLE_SLOPE_NORMALS
-                float depth = max(texDepth - tracePos.z, 0.0);
-                if (depth >= slopeNormalStrength) {
-                    vec3 viewT = -viewDir * TBN;
-                    normalMap = apply_slope_normal(viewT, st, tracePos.z);
-                }
+            #ifdef SLOPE_NORMALS
+                if(texDepth - tracePos.z >= SLOPE_NORMAL_STRENGTH) normalMap = apply_slope_normal(-viewDir * TBN, st, tracePos.z);
             #endif
 
             #if defined PARALLAX_SHADOWS && defined WORLD_LIGHT
-                vec3 lightDir = normalize(vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z));
-                float NoL = saturate(dot(material.normal, lightDir));
-
-                if (NoL > 0.000001) {
-                    vec3 lightDirT = lightDir * TBN;
-                    vec2 lightOffset = getParallaxOffset(lightDirT) * PARALLAX_DEPTH;
-                    material.parallaxShd = parallaxShadow(tracePos, lightOffset);
-                }
-                else {
-                    material.parallaxShd = 0.0;
-                }
+                if(dot(material.normal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) > 0.000001){
+                    material.parallaxShd = parallaxShadow(tracePos, getParallaxOffset(vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z) * TBN));
+                } else material.parallaxShd = 0.0;
             #endif
         #endif
 
@@ -275,7 +262,9 @@ uniform sampler2D texture;
 
         // Assign albedo
         material.albedo = texture2DGradARB(texture, st, dcdx, dcdy);
-        if (material.albedo.a < 0.00001) return;
+
+        // Alpha test, discard immediately
+        if(material.albedo.a <= 0.005) discard;
 
         // Generate bumped normals
         #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined AUTO_GEN_NORM
