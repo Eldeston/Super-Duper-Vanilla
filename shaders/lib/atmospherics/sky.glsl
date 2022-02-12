@@ -27,7 +27,7 @@
 
         for(int i = 0; i < steps; i++){
             start += end;
-            if(texture2D(colortex4, start + vec2(cloudSpeed, 0)).a > 0.05) return 1.0 - i * invSteps;
+            if(texture2D(colortex4, start + vec2(cloudSpeed, 0)).a > ALPHA_THRESHOLD) return 1.0 - i * invSteps;
         }
         
         return 0;
@@ -37,11 +37,8 @@
 vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
     if(isEyeInWater == 2) return pow(fogColor, vec3(GAMMA));
 
-    vec2 planeUv = nPlayerPos.xz / nPlayerPos.y;
-
     #ifdef WORLD_SKY_GROUND
-        float fogGround = smoothen((-nPlayerPos.y * 4.0) / (isEyeInWater * 2.56 + rainMult));
-        vec3 finalCol = skyCol * vec3(1.0 - fogGround, 1.0 - fogGround, 1);
+        vec3 finalCol = skyCol * vec2(1.0 - smoothen((-nPlayerPos.y * 4.0) / (isEyeInWater * 2.56 + rainMult)), 1).xxy;
     #else
         vec3 finalCol = skyCol;
     #endif
@@ -53,6 +50,8 @@ vec3 getSkyColor(vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
     #ifdef STORY_MODE_CLOUDS
         #ifndef FORCE_DISABLE_CLOUDS
             if(skyMask){
+                vec2 planeUv = nPlayerPos.xz / nPlayerPos.y;
+
                 #ifdef CLOUD_FADE
                     float fade = smootherstep(sin(frameTimeCounter * FADE_SPEED) * 0.5 + 0.5);
                     float clouds = mix(cloudParallax(planeUv, frameTimeCounter, 8), cloudParallax(-planeUv, 1250.0 - frameTimeCounter, 8), fade);

@@ -133,7 +133,7 @@ uniform mat4 gbufferModelViewInverse;
         #endif
 
         // Alpha test, discard immediately
-        if(material.albedo.a <= 0.005) discard;
+        if(material.albedo.a <= ALPHA_THRESHOLD) discard;
 
         material.metallic = 0.04;
         material.ss = 0.5;

@@ -48,8 +48,6 @@ uniform sampler2D texture;
     #endif
 
     #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined PARALLAX_OCCLUSION
-        float lengthSquared(vec3 vec){ return dot(vec, vec); }
-        
         vec2 getParallaxOffset(vec3 dirT){
             return normalize(dirT.xy) * (sqrt(lengthSquared(dirT) - squared(dirT.z)) * PARALLAX_DEPTH / dirT.z);
         }
@@ -154,7 +152,7 @@ uniform sampler2D texture;
         material.albedo = texture2DGradARB(texture, st, dcdx, dcdy);
 
         // Alpha test, discard immediately
-        if(material.albedo.a <= 0.005) discard;
+        if(material.albedo.a <= ALPHA_THRESHOLD) discard;
 
         // Get raw textures
         vec4 normalAOH = texture2DGradARB(normals, st, dcdx, dcdy);
@@ -264,7 +262,7 @@ uniform sampler2D texture;
         material.albedo = texture2DGradARB(texture, st, dcdx, dcdy);
 
         // Alpha test, discard immediately
-        if(material.albedo.a <= 0.005) discard;
+        if(material.albedo.a <= ALPHA_THRESHOLD) discard;
 
         // Generate bumped normals
         #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined AUTO_GEN_NORM

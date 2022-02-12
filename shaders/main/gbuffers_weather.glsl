@@ -107,7 +107,7 @@ uniform mat4 gbufferModelViewInverse;
         material.albedo = texture2D(texture, texCoord);
 
         // Alpha test, discard immediately
-        if(material.albedo.a <= 0.005) discard;
+        if(material.albedo.a <= ALPHA_THRESHOLD) discard;
         
         // Assign normals
         material.normal = norm;
