@@ -81,8 +81,6 @@ INOUT vec2 texcoord;
                 // vec4(0, 0, 0, tempPixelLuminance)
                 #define TAA_DATA 0, 0, 0
             #endif
-        #else
-            float tempPixelLuminance = 0.0;
         #endif
 
         // Exposeure, tint, and tonemap

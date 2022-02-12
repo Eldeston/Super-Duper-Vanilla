@@ -67,7 +67,6 @@ INOUT vec2 screenCoord;
 
     // Get world time
     uniform float day;
-    uniform float night;
     uniform float dawnDusk;
     uniform float twilight;
 

@@ -25,16 +25,18 @@ INOUT vec2 texcoord;
 
 #ifdef FRAGMENT
     #ifdef VANILLA_SUN_MOON
+    #endif
+    
+    #if USE_SUN_MOON == 1 && defined VANILLA_SUN_MOON
         uniform sampler2D texture;
     #endif
     
     void main(){
-        #ifdef VANILLA_SUN_MOON
+        #if USE_SUN_MOON == 1 && defined VANILLA_SUN_MOON
         /* DRAWBUFFERS:2 */
-            gl_FragData[0] = vec4(pow(texture2D(texture, texcoord).rgb, vec3(GAMMA)), 1); //colortex2
+            gl_FragData[0] = vec4(pow(texture2D(texture, texcoord).rgb, vec3(GAMMA)), 1); //gcolor
         #else
-        /* DRAWBUFFERS:2 */
-            gl_FragData[0] = vec4(0); //colortex2
+            discard;
         #endif
     }
 #endif

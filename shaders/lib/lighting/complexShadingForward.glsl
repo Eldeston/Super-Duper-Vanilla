@@ -27,16 +27,16 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, float di
 		#if defined SHD_ENABLE && !defined ENTITIES_GLOWING
 			// Cave fix
 			float caveFixShdFactor = smoothstep(0.25, 0.5, material.light.y) * (1.0 - eyeBrightFact) + eyeBrightFact;
-			vec3 shdCol = getShdMapping(posVector.shdPos, dirLight, dither) * (isEyeInWater == 1 ? 1.0 : caveFixShdFactor);
+			vec3 shadow = getShdMapping(posVector.shdPos, dirLight, dither) * (isEyeInWater == 1 ? 1.0 : caveFixShdFactor) * material.parallaxShd;
 		#else
-			vec3 shdCol = vec3(smoothstep(0.94, 0.96, material.light.y));
+			float shadow = smoothstep(0.94, 0.96, material.light.y) * material.parallaxShd;
 		#endif
 
 		float rainDiff = rainStrength * 0.5;
-		totalDiffuse += (dirLight * shdCol * material.parallaxShd * (1.0 - rainDiff) + material.light.y * material.light.y * material.ambient * rainDiff) * lightCol;
+		totalDiffuse += (dirLight * shadow * (1.0 - rainDiff) + material.light.y * material.light.y * material.ambient * rainDiff) * lightCol;
 
 		// Get specular GGX
-		if(NL > 0) specCol = getSpecBRDF(nNegEyePlayerPos, nLightPos, material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), NL, 1.0 - material.smoothness) * shdCol * (NL * material.parallaxShd);
+		if(NL > 0) specCol = getSpecBRDF(nNegEyePlayerPos, nLightPos, material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), NL, 1.0 - material.smoothness) * shadow * NL;
 	#endif
 
 	totalDiffuse = material.albedo.rgb * (totalDiffuse + material.emissive * 4.0);
