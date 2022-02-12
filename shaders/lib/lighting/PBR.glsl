@@ -101,21 +101,21 @@ uniform sampler2D texture;
         #endif
 
         #ifdef SLOPE_NORMALS
-            vec3 apply_slope_normal(in vec3 viewT, in vec2 tex, in float trace_depth) {
-                vec2 tex_size = textureSize(normals, 0);
-                vec2 pixel_size = 1.0 / tex_size;
+            vec3 apply_slope_normal(in vec3 viewT, in vec2 texUv, in float traceDepth) {
+                vec2 texRes = textureSize(normals, 0);
+                vec2 texPixSize = 1.0 / texRes;
 
-                vec2 tex_snapped = floor(tex * tex_size) * pixel_size;
-                vec2 tex_offset = tex - tex_snapped - 0.5 * pixel_size;
+                vec2 texSnapped = floor(texUv * texRes) * texPixSize;
+                vec2 tex_offset = texUv - texSnapped - 0.5 * texPixSize;
                 vec2 step_sign = sign(-viewT.xy);
 
-                vec2 tex_x = tex_snapped + vec2(pixel_size.x * step_sign.x, 0);
+                vec2 tex_x = texSnapped + vec2(texPixSize.x * step_sign.x, 0);
                 float height_x = texture2DGradARB(normals, tex_x, dcdx, dcdy).a;
-                bool has_x = trace_depth > height_x && sign(tex_offset.x) == step_sign.x;
+                bool has_x = traceDepth > height_x && sign(tex_offset.x) == step_sign.x;
 
-                vec2 tex_y = tex_snapped + vec2(0, pixel_size.y * step_sign.y);
+                vec2 tex_y = texSnapped + vec2(0, texPixSize.y * step_sign.y);
                 float height_y = texture2DGradARB(normals, tex_y, dcdx, dcdy).a;
-                bool has_y = trace_depth > height_y && sign(tex_offset.y) == step_sign.y;
+                bool has_y = traceDepth > height_y && sign(tex_offset.y) == step_sign.y;
 
                 if (abs(tex_offset.x) < abs(tex_offset.y)){
                     if(has_y) return vec3(0, step_sign.y, 0);
@@ -135,29 +135,28 @@ uniform sampler2D texture;
         // Assign default normal map
         material.normal = TBN[2];
 
-        vec3 viewDir = normalize(-posVector.eyePlayerPos);
-        vec2 st = texCoord;
-        float texDepth;
-        vec3 tracePos;
+        vec2 texUv = texCoord;
 
         #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined PARALLAX_OCCLUSION
+            vec3 viewDir = -posVector.eyePlayerPos * TBN;
+
+            float texDepth;
+            vec3 tracePos;
+            
             // Exclude signs, due to a missing text bug
-            if(id != 10102){
-                vec3 endPos = viewDir * TBN;
-                st = fract(parallaxUv(vTexCoord, endPos.xy / -endPos.z, tracePos, texDepth)) * vTexCoordScale + vTexCoordPos;
-            }
+            if(id != 10102) texUv = fract(parallaxUv(vTexCoord, viewDir.xy / -viewDir.z, tracePos, texDepth)) * vTexCoordScale + vTexCoordPos;
         #endif
 
         // Assign albedo
-        material.albedo = texture2DGradARB(texture, st, dcdx, dcdy);
+        material.albedo = texture2DGradARB(texture, texUv, dcdx, dcdy);
 
         // Alpha test, discard immediately
         if(material.albedo.a <= ALPHA_THRESHOLD) discard;
 
         // Get raw textures
-        vec4 normalAOH = texture2DGradARB(normals, st, dcdx, dcdy);
+        vec4 normalAOH = texture2DGradARB(normals, texUv, dcdx, dcdy);
 
-        vec4 SRPSSE = texture2DGradARB(specular, st, dcdx, dcdy);
+        vec4 SRPSSE = texture2DGradARB(specular, texUv, dcdx, dcdy);
 
         // Decode and extract the materials
         // Extract normals
@@ -168,15 +167,17 @@ uniform sampler2D texture;
         material.parallaxShd = 1.0;
 
         #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined PARALLAX_OCCLUSION
-            #ifdef SLOPE_NORMALS
-                if(texDepth - tracePos.z >= SLOPE_NORMAL_STRENGTH) normalMap = apply_slope_normal(-viewDir * TBN, st, tracePos.z);
-            #endif
+            if(id != 10102){
+                #ifdef SLOPE_NORMALS
+                    if(texDepth - tracePos.z >= SLOPE_NORMAL_STRENGTH) normalMap = apply_slope_normal(-viewDir, texUv, tracePos.z);
+                #endif
 
-            #if defined PARALLAX_SHADOWS && defined WORLD_LIGHT
-                if(dot(material.normal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) > 0.000001){
-                    material.parallaxShd = parallaxShadow(tracePos, getParallaxOffset(vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z) * TBN));
-                } else material.parallaxShd = 0.0;
-            #endif
+                #if defined PARALLAX_SHADOWS && defined WORLD_LIGHT
+                    if(dot(material.normal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) > 0.000001){
+                        material.parallaxShd = parallaxShadow(tracePos, getParallaxOffset(vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z) * TBN));
+                    } else material.parallaxShd = 0.0;
+                #endif
+            }
         #endif
 
         // Assign normal
@@ -256,10 +257,10 @@ uniform sampler2D texture;
         // Assign default normal map
         material.normal = TBN[2];
 
-        vec2 st = texCoord;
+        vec2 texUv = texCoord;
 
         // Assign albedo
-        material.albedo = texture2DGradARB(texture, st, dcdx, dcdy);
+        material.albedo = texture2DGradARB(texture, texUv, dcdx, dcdy);
 
         // Alpha test, discard immediately
         if(material.albedo.a <= ALPHA_THRESHOLD) discard;
