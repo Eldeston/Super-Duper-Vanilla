@@ -89,7 +89,7 @@ vec3 getSkyRender(vec3 playerPos, bool skyMask, bool sunMoonMask){
     vec3 finalCol = vec3(0);
 
     #if USE_SUN_MOON == 1 && !defined VANILLA_SUN_MOON
-        if(sunMoonMask) finalCol += getSunMoonShape(nSkyPos.xy) * 8.0 * sqrt(lightCol);
+        if(sunMoonMask) finalCol += getSunMoonShape(nSkyPos.xy) * 16.0 * sqrt(lightCol);
     #elif USE_SUN_MOON == 2
         if(sunMoonMask){
             float blackHole = 0.25 / ((nSkyPos.z + 1.0) * 32.0 - 0.075);
