@@ -2,7 +2,7 @@
 #include "/lib/structs.glsl"
 #include "/lib/settings.glsl"
 
-INOUT vec2 screenCoord;
+varying vec2 screenCoord;
 
 #ifdef VERTEX
     void main(){

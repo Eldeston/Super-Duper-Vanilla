@@ -1,7 +1,7 @@
 #include "/lib/utility/util.glsl"
 #include "/lib/settings.glsl"
 
-INOUT vec2 texcoord;
+varying vec2 texCoord;
 
 #ifdef VERTEX
     #if ANTI_ALIASING == 2
@@ -13,7 +13,7 @@ INOUT vec2 texcoord;
     #endif
 
     void main(){
-        texcoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
 
         gl_Position = ftransform();
 
@@ -34,7 +34,7 @@ INOUT vec2 texcoord;
     void main(){
         #if USE_SUN_MOON == 1 && defined VANILLA_SUN_MOON
         /* DRAWBUFFERS:2 */
-            gl_FragData[0] = vec4(pow(texture2D(texture, texcoord).rgb, vec3(GAMMA)), 1); //gcolor
+            gl_FragData[0] = vec4(pow(texture2D(texture, texCoord).rgb, vec3(GAMMA)), 1); //gcolor
         #else
             discard;
         #endif

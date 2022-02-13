@@ -2,7 +2,7 @@
 #include "/lib/structs.glsl"
 #include "/lib/settings.glsl"
 
-INOUT vec4 glcolor;
+varying vec4 glcolor;
 
 #ifdef VERTEX
     /* Screen resolutions */

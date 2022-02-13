@@ -2,12 +2,12 @@
 #include "/lib/structs.glsl"
 #include "/lib/settings.glsl"
 
-INOUT vec2 texcoord;
+varying vec2 texCoord;
 
 #ifdef VERTEX
     void main(){
         gl_Position = ftransform();
-        texcoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
     }
 #endif
 
@@ -38,9 +38,11 @@ INOUT vec2 texcoord;
     #ifdef BLOOM
         uniform sampler2D colortex2;
 
+        #include "/lib/utility/texFunctions.glsl"
+
         vec3 getBloomTile(vec2 uv, vec2 coords, float LOD){
             // Uncompress bloom
-            return texture2D(colortex2, uv / exp2(LOD) + coords).rgb;
+            return textureBicubic(colortex2, uv / exp2(LOD) + coords).rgb;
         }
     #endif
 
@@ -50,17 +52,17 @@ INOUT vec2 texcoord;
 
     void main(){
         // Original scene color
-        vec3 color = texture2D(gcolor, texcoord).rgb;
+        vec3 color = texture2D(gcolor, texCoord).rgb;
 
         #ifdef BLOOM
             // Uncompress the HDR colors and upscale
-            vec3 eBloom = getBloomTile(texcoord, vec2(0), 2.0);
-            eBloom += getBloomTile(texcoord, vec2(0, 0.26), 3.0);
-            eBloom += getBloomTile(texcoord, vec2(0.135, 0.26), 4.0);
-            eBloom += getBloomTile(texcoord, vec2(0.2075, 0.26), 5.0);
-            eBloom += getBloomTile(texcoord, vec2(0.135, 0.3325), 6.0);
-            eBloom += getBloomTile(texcoord, vec2(0.160625, 0.3325), 7.0);
-            eBloom = 1.0 / (1.0 - eBloom * 0.167) - 1.0;
+            vec3 eBloom = getBloomTile(texCoord, vec2(0), 2.0);
+            eBloom += getBloomTile(texCoord, vec2(0, 0.26), 3.0);
+            eBloom += getBloomTile(texCoord, vec2(0.135, 0.26), 4.0);
+            eBloom += getBloomTile(texCoord, vec2(0.2075, 0.26), 5.0);
+            eBloom += getBloomTile(texCoord, vec2(0.135, 0.3325), 6.0);
+            eBloom += getBloomTile(texCoord, vec2(0.160625, 0.3325), 7.0);
+            eBloom = eBloom * 0.16666667;
 
             color = mix(color, eBloom, 0.2 * BLOOM_BRIGHTNESS);
         #endif
@@ -76,7 +78,7 @@ INOUT vec2 texcoord;
             color /= max(tempPixelLuminance, 0.05);
 
             #if ANTI_ALIASING == 2
-                #define TAA_DATA texture2D(colortex6, texcoord).rgb
+                #define TAA_DATA texture2D(colortex6, texCoord).rgb
             #else
                 // vec4(0, 0, 0, tempPixelLuminance)
                 #define TAA_DATA 0, 0, 0
@@ -88,7 +90,7 @@ INOUT vec2 texcoord;
 
         #ifdef VIGNETTE
             // BSL's vignette, modified to control intensity
-            color *= max(0.0, 1.0 - length(texcoord - 0.5) * VIGNETTE_INTENSITY * (1.0 - getLuminance(color)));
+            color *= max(0.0, 1.0 - length(texCoord - 0.5) * VIGNETTE_INTENSITY * (1.0 - getLuminance(color)));
         #endif
 
         // Gamma correction

@@ -2,7 +2,7 @@
 #include "/lib/structs.glsl"
 #include "/lib/settings.glsl"
 
-INOUT vec2 screenCoord;
+varying vec2 screenCoord;
 
 #ifdef VERTEX
     void main(){
@@ -126,7 +126,7 @@ INOUT vec2 screenCoord;
 
         // Vanilla sun and moon texture
         #if USE_SUN_MOON == 1 && defined VANILLA_SUN_MOON
-            if(skyMask) skyRender += albedoSunMoon.rgb * 4.0;
+            if(skyMask) skyRender += albedoSunMoon.rgb * 8.0 * sqrt(lightCol);
         #endif
 
         // If not sky, don't calculate lighting

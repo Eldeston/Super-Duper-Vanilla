@@ -2,12 +2,12 @@
 #include "/lib/structs.glsl"
 #include "/lib/settings.glsl"
 
-INOUT vec2 texcoord;
+varying vec2 texCoord;
 
 #ifdef VERTEX
     void main(){
         gl_Position = ftransform();
-        texcoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
     }
 #endif
 
@@ -41,16 +41,16 @@ INOUT vec2 texcoord;
 
     void main(){
         // Spectral
-        float spectralOutline = getSpectral(colortex3, texcoord, 2.0);
-        vec3 sceneCol = texture2D(gcolor, texcoord).rgb * (1.0 - spectralOutline) + spectralOutline * 2.0;
+        float spectralOutline = getSpectral(colortex3, texCoord, 2.0);
+        vec3 sceneCol = texture2D(gcolor, texCoord).rgb * (1.0 - spectralOutline) + spectralOutline * 2.0;
 
         #ifdef WORLD_LIGHT
             #ifdef SHD_ENABLE
                 float fogMult = min(1.0, WORLD_FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (rainMult + isEyeInWater * 0.5));
-                sceneCol += texture2D(colortex4, texcoord, 1.5).rgb * (lightCol * fogMult);
+                sceneCol += texture2D(colortex4, texCoord, 1.5).rgb * (lightCol * fogMult);
             #else
                 float fogMult = min(1.0, WORLD_FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (rainMult + isEyeInWater * 0.5)) * eyeBrightFact;
-                sceneCol += texture2D(colortex4, texcoord, 1.5).rgb * (lightCol * fogMult) * (isEyeInWater == 1 ? fogColor : vec3(1));
+                sceneCol += texture2D(colortex4, texCoord, 1.5).rgb * (lightCol * fogMult) * (isEyeInWater == 1 ? fogColor : vec3(1));
             #endif
 
         /* DRAWBUFFERS:0 */

@@ -2,12 +2,12 @@
 #include "/lib/structs.glsl"
 #include "/lib/settings.glsl"
 
-INOUT vec2 texcoord;
+varying vec2 texCoord;
 
 #ifdef VERTEX
     void main(){
         gl_Position = ftransform();
-        texcoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
     }
 #endif
 
@@ -47,15 +47,15 @@ INOUT vec2 texcoord;
 
     void main(){
         #if ANTI_ALIASING == 1
-            vec3 color = textureFXAA(gcolor, texcoord, vec2(viewWidth, viewHeight));
+            vec3 color = textureFXAA(gcolor, texCoord, vec2(viewWidth, viewHeight));
         #elif ANTI_ALIASING == 2
-            vec3 color = textureTAA(gcolor, colortex6, texcoord, vec2(viewWidth, viewHeight));
+            vec3 color = textureTAA(gcolor, colortex6, texCoord, vec2(viewWidth, viewHeight));
         #else
-            vec3 color = texture2D(gcolor, texcoord).rgb;
+            vec3 color = texture2D(gcolor, texCoord).rgb;
         #endif
 
         #ifdef AUTO_EXPOSURE
-            #define TEMP_EXPOSURE_DATA texture2D(colortex6, texcoord).a
+            #define TEMP_EXPOSURE_DATA texture2D(colortex6, texCoord).a
         #else
             #define TEMP_EXPOSURE_DATA vec3(0)
         #endif

@@ -2,9 +2,9 @@
 #include "/lib/structs.glsl"
 #include "/lib/settings.glsl"
 
-INOUT vec2 texCoord;
+varying vec2 texCoord;
 
-INOUT vec3 norm;
+varying vec3 norm;
 
 // View matrix uniforms
 uniform mat4 gbufferModelViewInverse;

@@ -4,18 +4,18 @@
 
 uniform int blockEntityId;
 
-INOUT vec2 lmCoord;
-INOUT vec2 texCoord;
+varying vec2 lmCoord;
+varying vec2 texCoord;
 
 #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
-    INOUT vec2 vTexCoordScale;
-    INOUT vec2 vTexCoordPos;
-    INOUT vec2 vTexCoord;
+    varying vec2 vTexCoordScale;
+    varying vec2 vTexCoordPos;
+    varying vec2 vTexCoord;
 #endif
 
-INOUT vec4 glcolor;
+varying vec4 glcolor;
 
-INOUT mat3 TBN;
+varying mat3 TBN;
 
 // View matrix uniforms
 uniform mat4 gbufferModelViewInverse;

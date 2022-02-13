@@ -2,11 +2,11 @@
 #include "/lib/structs.glsl"
 #include "/lib/settings.glsl"
 
-INOUT vec2 texCoord;
+varying vec2 texCoord;
 
-INOUT vec3 norm;
+varying vec3 norm;
 
-INOUT vec4 glcolor;
+varying vec4 glcolor;
 
 #ifdef VERTEX
     #if ANTI_ALIASING == 2

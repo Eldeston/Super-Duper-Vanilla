@@ -4,12 +4,12 @@
 
 uniform float frameTimeCounter;
 
-INOUT float blockId;
+varying float blockId;
 
-INOUT vec2 texcoord;
+varying vec2 texCoord;
 
-INOUT vec3 worldPos;
-INOUT vec3 gcolor;
+varying vec3 worldPos;
+varying vec3 gcolor;
 
 #ifdef VERTEX
     uniform mat4 shadowModelView;
@@ -30,11 +30,11 @@ INOUT vec3 gcolor;
         vec4 vertexPos = shadowModelViewInverse * (shadowProjectionInverse * ftransform());
         worldPos = vertexPos.xyz + cameraPosition;
 
-        texcoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         blockId = mc_Entity.x;
         
         #ifdef ANIMATE
-            getWave(vertexPos.xyz, worldPos, texcoord, mc_midTexCoord, mc_Entity.x, (gl_TextureMatrix[1] * gl_MultiTexCoord1).y);
+            getWave(vertexPos.xyz, worldPos, texCoord, mc_midTexCoord, mc_Entity.x, (gl_TextureMatrix[1] * gl_MultiTexCoord1).y);
         #endif
 
         gl_Position = shadowProjection * (shadowModelView * vertexPos);
@@ -55,7 +55,7 @@ INOUT vec3 gcolor;
     #include "/lib/surface/water.glsl"
 
     void main(){
-        vec4 shdColor = texture2D(tex, texcoord);
+        vec4 shdColor = texture2D(tex, texCoord);
         shdColor.rgb = shdColor.rgb * gcolor;
 
         #ifdef UNDERWATER_CAUSTICS
