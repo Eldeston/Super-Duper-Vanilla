@@ -1,6 +1,6 @@
 #if USE_SUN_MOON != 0
     float getSunMoonShape(vec2 pos){
-        return exp2(-(pow(abs(pos.x * pos.x * pos.x) + abs(pos.y * pos.y * pos.y), 0.333) - 0.075) * 128.0);
+        return min(1.0, exp2(-(pow(abs(pos.x * pos.x * pos.x) + abs(pos.y * pos.y * pos.y), 0.333) - 0.075) * 256.0));
     }
 #endif
 
@@ -11,7 +11,7 @@
 
     float genStar(vec2 nSkyPos){
         vec2 starRand = getRand2(nSkyPos);
-        vec2 starGrid = 0.5 * sin(starRand * 12.0 + 128.0) - fract(nSkyPos * noiseTextureResolution) + 0.5;
+        vec2 starGrid = 0.5 * sin(starRand * 12.0 + 256.0) - fract(nSkyPos * noiseTextureResolution) + 0.5;
         return getStarShape(starGrid, starRand.x * 0.9 + 0.3);
     }
 #endif
@@ -89,7 +89,7 @@ vec3 getSkyRender(vec3 playerPos, bool skyMask, bool sunMoonMask){
     vec3 finalCol = vec3(0);
 
     #if USE_SUN_MOON == 1 && !defined VANILLA_SUN_MOON
-        if(sunMoonMask) finalCol += getSunMoonShape(nSkyPos.xy) * 4.0;
+        if(sunMoonMask) finalCol += getSunMoonShape(nSkyPos.xy) * 8.0 * sqrt(lightCol);
     #elif USE_SUN_MOON == 2
         if(sunMoonMask){
             float blackHole = 0.25 / ((nSkyPos.z + 1.0) * 32.0 - 0.075);
