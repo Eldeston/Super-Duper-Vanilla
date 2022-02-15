@@ -171,9 +171,8 @@ uniform sampler2D texture;
                 #endif
 
                 #if defined PARALLAX_SHADOWS && defined WORLD_LIGHT
-                    if(dot(material.normal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) > 0.000001){
+                    if(dot(material.normal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) > 0.000001)
                         material.parallaxShd = parallaxShadow(tracePos, getParallaxOffset(vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z) * TBN));
-                    } else material.parallaxShd = 0.0;
                 #endif
             }
         #endif
