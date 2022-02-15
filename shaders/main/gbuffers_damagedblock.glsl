@@ -1,6 +1,5 @@
 #include "/lib/utility/util.glsl"
 #include "/lib/settings.glsl"
-#include "/lib/structs.glsl"
 
 varying vec2 texCoord;
 
@@ -38,34 +37,26 @@ varying vec4 glcolor;
     uniform sampler2D texture;
 
     void main(){
-	    // Declare materials
-	    matPBR material;
-
-        material.albedo = texture2D(texture, texCoord);
+        vec4 albedo = texture2D(texture, texCoord);
 
         // Alpha test, discard immediately
-        if(material.albedo.a <= ALPHA_THRESHOLD) discard;
-        
-        // Assign normals
-        material.normal = norm;
+        if(albedo.a <= ALPHA_THRESHOLD) discard;
 
         #if WHITE_MODE == 0
-            material.albedo.rgb *= glcolor.rgb;
+            albedo.rgb *= glcolor.rgb;
         #elif WHITE_MODE == 1
-            material.albedo.rgb = vec3(1);
+            albedo.rgb = vec3(1);
         #elif WHITE_MODE == 2
-            material.albedo.rgb = vec3(0);
+            albedo.rgb = vec3(0);
         #elif WHITE_MODE == 3
-            material.albedo.rgb = glcolor.rgb;
+            albedo.rgb = glcolor.rgb;
         #endif
 
-        material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
-
-        vec4 sceneCol = material.albedo;
+        albedo.rgb = pow(albedo.rgb, vec3(GAMMA));
 
     /* DRAWBUFFERS:012 */
-        gl_FragData[0] = sceneCol; //gcolor
-        gl_FragData[1] = vec4(material.normal * 0.5 + 0.5, 1); //colortex1
-        gl_FragData[2] = vec4(material.albedo.rgb, 1); //colortex2
+        gl_FragData[0] = albedo; //gcolor
+        gl_FragData[1] = vec4(norm * 0.5 + 0.5, 1); //colortex1
+        gl_FragData[2] = vec4(albedo.rgb, 1); //colortex2
     }
 #endif
