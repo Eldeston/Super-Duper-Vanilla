@@ -30,7 +30,7 @@
             if(texture2D(colortex4, start + vec2(cloudSpeed, 0)).a > ALPHA_THRESHOLD) return 1.0 - i * invSteps;
         }
         
-        return 0;
+        return 0.0;
     }
 #endif
 

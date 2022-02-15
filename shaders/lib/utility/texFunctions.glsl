@@ -1,12 +1,7 @@
 // Filter by iq
-vec4 tex2DCubic(sampler2D image, vec2 st, vec2 texRes){
-    vec2 uv = st * texRes + 0.5;
-    vec2 iuv = floor(uv); vec2 fuv = fract(uv);
-    return texture2D(image, (iuv + smoothen(fuv) - 0.5) / texRes);
-}
-
-vec4 texPix2DBilinear(sampler2D image, vec2 st, vec2 texRes){
-    vec2 pixSize = 1.0 / texRes;
+vec4 texPix2DBilinear(sampler2D image, vec2 st){
+    vec2 texSize = textureSize(image, 0);
+    vec2 pixSize = 1.0 / texSize;
 
     vec4 downLeft = texture2D(image, st);
     vec4 downRight = texture2D(image, st + vec2(pixSize.x, 0));
@@ -14,16 +9,17 @@ vec4 texPix2DBilinear(sampler2D image, vec2 st, vec2 texRes){
     vec4 upRight = texture2D(image, st + vec2(0, pixSize.y));
     vec4 upLeft = texture2D(image, st + vec2(pixSize.x , pixSize.y));
 
-    float a = fract(st.x * texRes.x);
-    float b = fract(st.y * texRes.y);
+    float a = fract(st.x * texSize.x);
+    float b = fract(st.y * texSize.y);
 
     vec4 horizontal0 = mix(downLeft, downRight, a);
     vec4 horizontal1 = mix(upRight, upLeft, a);
     return mix(horizontal0, horizontal1, b);
 }
 
-vec4 texPix2DCubic(sampler2D image, vec2 st, vec2 texRes){
-    vec2 pixSize = 1.0 / texRes;
+vec4 texPix2DCubic(sampler2D image, vec2 st){
+    vec2 texSize = textureSize(image, 0);
+    vec2 pixSize = 1.0 / texSize;
 
     vec4 downLeft = texture2D(image, st);
     vec4 downRight = texture2D(image, st + vec2(pixSize.x, 0));
@@ -31,8 +27,8 @@ vec4 texPix2DCubic(sampler2D image, vec2 st, vec2 texRes){
     vec4 upRight = texture2D(image, st + vec2(0, pixSize.y));
     vec4 upLeft = texture2D(image, st + vec2(pixSize.x , pixSize.y));
 
-    float a = smoothen(fract(st.x * texRes.x));
-    float b = smoothen(fract(st.y * texRes.y));
+    float a = smoothen(fract(st.x * texSize.x));
+    float b = smoothen(fract(st.y * texSize.y));
 
     vec4 horizontal0 = mix(downLeft, downRight, a);
     vec4 horizontal1 = mix(upRight, upLeft, a);
@@ -49,8 +45,8 @@ vec4 cubic(float v){
     return vec4(x, y, z, w) * (1.0/6.0);
 }
  
-vec4 textureBicubic(sampler2D sampler, vec2 texCoords){
-    vec2 texSize = textureSize(sampler, 0);
+vec4 textureBicubic(sampler2D image, vec2 texCoords){
+    vec2 texSize = textureSize(image, 0);
     vec2 invTexSize = 1.0 / texSize;
 
     texCoords = texCoords * texSize - 0.5;
@@ -68,10 +64,10 @@ vec4 textureBicubic(sampler2D sampler, vec2 texCoords){
  
     offset *= invTexSize.xxyy;
  
-    vec4 sample0 = texture(sampler, offset.xz);
-    vec4 sample1 = texture(sampler, offset.yz);
-    vec4 sample2 = texture(sampler, offset.xw);
-    vec4 sample3 = texture(sampler, offset.yw);
+    vec4 sample0 = texture(image, offset.xz);
+    vec4 sample1 = texture(image, offset.yz);
+    vec4 sample2 = texture(image, offset.xw);
+    vec4 sample3 = texture(image, offset.yw);
  
     float sx = s.x / (s.x + s.y);
     float sy = s.z / (s.z + s.w);
