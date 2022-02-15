@@ -1,10 +1,6 @@
-// Had to put this so Optifine can detect the option...
-#ifdef SHD_ENABLE
-#endif
-
 const float sunPathRotation = 0.0; // Light angle [-60.0 -55.0 -50.0 -45.0 -40.0 -35.0 -30.0 -25.0 -20.0 -15.0 -10.0 -5.0 0.0 5.0 10.0 15.0 20.0 25.0 30.0 35.0 40.0 45.0 50.0 55.0 60.0]
 
-#if defined SHD_ENABLE && !defined ENTITIES_GLOWING
+#ifdef SHD_ENABLE
 	// Enable filtering on shadows
 	const bool shadowHardwareFiltering = true;
 	const int shadowMapResolution = 1024; // Shadow map resolution [512 1024 1536 2048 2560 3072 3584 4096 4608 5120]

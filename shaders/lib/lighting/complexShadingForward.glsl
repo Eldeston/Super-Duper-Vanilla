@@ -9,13 +9,10 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, float di
 	vec3 totalDiffuse = (skyCol * material.light.y * material.light.y + ambientLighting + material.light.x * material.light.x * pow((BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B), vec3(GAMMA))) * material.ambient;
 
 	#ifdef WORLD_LIGHT
-		// Get positions
-		vec3 nLightPos = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
+		float NL = saturate(dot(material.normal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)));
 		// vec3(0, 0, 1) * mat3(shadowModelView) = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)
     	// shadowLightPosition is broken in other dimensions. The current is equivalent to:
     	// normalize(mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz)
-		vec3 nNegEyePlayerPos = normalize(-posVector.eyePlayerPos);
-		float NL = saturate(dot(material.normal, nLightPos));
 
 		#ifdef ENABLE_SS
 			// Diffuse with simple SS approximation
@@ -36,7 +33,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, float di
 		totalDiffuse += (dirLight * shadow * (1.0 - rainDiff) + material.light.y * material.light.y * material.ambient * rainDiff) * lightCol;
 
 		// Get specular GGX
-		if(NL > 0) specCol = getSpecBRDF(nNegEyePlayerPos, nLightPos, material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), NL, 1.0 - material.smoothness) * shadow * NL;
+		if(NL > 0) specCol = getSpecBRDF(normalize(-posVector.eyePlayerPos), vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), NL, 1.0 - material.smoothness) * shadow * NL;
 	#endif
 
 	totalDiffuse = material.albedo.rgb * (totalDiffuse + material.emissive * 8.0);

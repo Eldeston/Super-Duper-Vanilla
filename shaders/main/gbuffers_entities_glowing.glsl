@@ -77,20 +77,12 @@ uniform mat4 gbufferModelViewInverse;
     // Shadow view matrix uniforms
     uniform mat4 shadowModelView;
 
-    // Shadow projection matrix uniforms
-    uniform mat4 shadowProjection;
-
     /* Position uniforms */
     uniform vec3 cameraPosition;
 
     /* Screen resolutions */
     uniform float viewWidth;
     uniform float viewHeight;
-
-    #if ANTI_ALIASING == 2
-        // Get frame time
-        uniform float frameTimeCounter;
-    #endif
 
     // Get world time
     uniform float day;
@@ -112,7 +104,6 @@ uniform mat4 gbufferModelViewInverse;
 
     #include "/lib/utility/convertViewSpace.glsl"
     #include "/lib/utility/texFunctions.glsl"
-    #include "/lib/utility/noiseFunctions.glsl"
 
     #include "/lib/lighting/GGX.glsl"
 
@@ -146,11 +137,8 @@ uniform mat4 gbufferModelViewInverse;
             material.smoothness = 0.0;
         }
 
-        #if ANTI_ALIASING == 2
-            vec4 sceneCol = complexShadingGbuffers(material, posVector, toRandPerFrame(getRand1(gl_FragCoord.xy * 0.03125), frameTimeCounter));
-        #else
-            vec4 sceneCol = complexShadingGbuffers(material, posVector, getRand1(gl_FragCoord.xy * 0.03125));
-        #endif
+        // Doesn't use any dithering
+        vec4 sceneCol = complexShadingGbuffers(material, posVector, 0.0);
 
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; //gcolor

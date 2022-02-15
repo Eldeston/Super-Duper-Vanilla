@@ -128,6 +128,7 @@ uniform mat4 gbufferModelViewInverse;
         material.ss = 0.0;
         material.emissive = 0.0;
         material.smoothness = 0.0;
+        material.parallaxShd = 1.0;
 
         // Apply vanilla AO
         material.ambient = 1.0;

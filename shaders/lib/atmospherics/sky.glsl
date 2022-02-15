@@ -109,6 +109,5 @@ vec3 getSkyRender(vec3 playerPos, bool skyMask, bool sunMoonMask){
         }
     #endif
 
-    // return vec3(nSkyPos.z + 1.0);
     return max(vec3(0), finalCol);
 }
