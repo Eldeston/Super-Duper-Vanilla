@@ -49,6 +49,7 @@
     option.DEFAULT_MAT=PBR mode
     option.ENVIRO_MAT=Enviro PBR materials
     option.AUTO_GEN_NORM=Auto generated normals
+    option.EMISSIVE_INTENSITY=Emissive intensity
     value.DEFAULT_MAT.0=OFF
     value.DEFAULT_MAT.1=Default PBR
     value.DEFAULT_MAT.2=Lab PBR 1.3

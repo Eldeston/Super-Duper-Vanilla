@@ -41,7 +41,7 @@ varying vec2 texCoord;
     void main(){
         // Spectral
         float spectralOutline = getSpectral(colortex3, texCoord, 2.0);
-        vec3 sceneCol = texture2D(gcolor, texCoord).rgb * (1.0 - spectralOutline) + spectralOutline * 2.0;
+        vec3 sceneCol = texture2D(gcolor, texCoord).rgb * (1.0 - spectralOutline) + spectralOutline * EMISSIVE_INTENSITY * 0.5;
 
         #ifdef WORLD_LIGHT
             #ifdef SHD_ENABLE
