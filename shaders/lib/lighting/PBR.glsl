@@ -1,5 +1,3 @@
-#extension GL_ARB_shader_texture_lod : enable
-
 #define SLOPE_NORMAL_STRENGTH 0.024
 #define SOFT_SHD_STRENGTH 60.0
 
