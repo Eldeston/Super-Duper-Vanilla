@@ -126,7 +126,7 @@ varying vec2 screenCoord;
 
         // Vanilla sun and moon texture
         #if USE_SUN_MOON == 1 && defined VANILLA_SUN_MOON
-            if(skyMask) skyRender += albedoSunMoon.rgb * 16.0 * sqrt(lightCol);
+            if(skyMask) skyRender += albedoSunMoon.rgb * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * sqrt(lightCol);
         #endif
 
         // If not sky, don't calculate lighting

@@ -59,11 +59,11 @@ varying vec2 texCoord;
         #ifdef BLOOM
             // Uncompress the HDR colors and upscale
             vec3 eBloom = getBloomTile(texCoord, vec2(0), 2.0);
-            eBloom += getBloomTile(texCoord, vec2(0, 0.26), 3.0);
-            eBloom += getBloomTile(texCoord, vec2(0.135, 0.26), 4.0);
-            eBloom += getBloomTile(texCoord, vec2(0.2075, 0.26), 5.0);
-            eBloom += getBloomTile(texCoord, vec2(0.135, 0.3325), 6.0);
-            eBloom += getBloomTile(texCoord, vec2(0.160625, 0.3325), 7.0);
+            eBloom += getBloomTile(texCoord, vec2(0, 0.275), 3.0);
+            eBloom += getBloomTile(texCoord, vec2(0.135, 0.275), 4.0);
+            eBloom += getBloomTile(texCoord, vec2(0.2075, 0.275), 5.0);
+            eBloom += getBloomTile(texCoord, vec2(0.135, 0.3625), 6.0);
+            eBloom += getBloomTile(texCoord, vec2(0.160625, 0.3625), 7.0);
             eBloom = eBloom * 0.16666667;
 
             color = mix(color, eBloom, 0.2 * BLOOM_BRIGHTNESS);

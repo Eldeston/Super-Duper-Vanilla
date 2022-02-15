@@ -39,11 +39,12 @@ varying vec2 texCoord;
     void main(){
         #ifdef BLOOM
             vec3 eBloom = bloomTile(texCoord, vec2(0), 2.0);
-            eBloom += bloomTile(texCoord, vec2(0, 0.26), 3.0);
-            eBloom += bloomTile(texCoord, vec2(0.135, 0.26), 4.0);
-            eBloom += bloomTile(texCoord, vec2(0.2075, 0.26), 5.0);
-            eBloom += bloomTile(texCoord, vec2(0.135, 0.3325), 6.0);
-            eBloom += bloomTile(texCoord, vec2(0.160625, 0.3325), 7.0);
+            eBloom += bloomTile(texCoord, vec2(0, 0.275), 3.0);
+            eBloom += bloomTile(texCoord, vec2(0.135, 0.275), 4.0);
+            eBloom += bloomTile(texCoord, vec2(0.2075, 0.275), 5.0);
+            eBloom += bloomTile(texCoord, vec2(0.135, 0.3625), 6.0);
+            eBloom += bloomTile(texCoord, vec2(0.160625, 0.3625), 7.0);
+            // 0.03125
         
         /* DRAWBUFFERS:2 */
             gl_FragData[0] = vec4(eBloom, 1); //colortex2

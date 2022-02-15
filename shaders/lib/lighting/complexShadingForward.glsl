@@ -41,5 +41,5 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, float di
 
 	totalDiffuse = material.albedo.rgb * (totalDiffuse + material.emissive * 8.0);
 
-	return vec4(totalDiffuse + min(vec3(1), specCol) * 16.0 * sqrt(lightCol), material.albedo.a);
+	return vec4(totalDiffuse + min(vec3(SUN_MOON_INTENSITY * SUN_MOON_INTENSITY), specCol) * sqrt(lightCol), material.albedo.a);
 }
