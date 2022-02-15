@@ -20,7 +20,7 @@ uniform sampler2D texture;
         float rainMatFact = sqrt(max(0.0, TBN[2].y)) * smoothstep(0.8, 0.9, material.light.y) * wetness * (1.0 - isWarm) * (1.0 - isSnowy) * (1.0 - isPeaks);
 
         if(rainMatFact != 0){
-            vec3 noiseData = texPix2DCubic(noisetex, worldPos.xz / 512.0).xyz;
+            vec3 noiseData = texPix2DCubic(noisetex, worldPos.xz / 512.0, vec2(noiseTextureResolution)).xyz;
             rainMatFact *= smoothstep(0.4, 0.8, (mix(noiseData.y, noiseData.x, noiseData.z) + noiseData.y) * 0.5);
             
             material.normal = mix(material.normal, TBN[2], rainMatFact);
@@ -70,7 +70,7 @@ uniform sampler2D texture;
         }
 
         #if defined PARALLAX_SHADOWS && defined WORLD_LIGHT
-            float parallaxShadow(in vec3 tracePos, in vec2 lightOffset) {
+            float parallaxShadow(vec3 tracePos, vec2 lightOffset) {
                 float stepSize = 1.0 / PARALLAX_SHD_STEPS;
                 vec2 stepOffset = stepSize * lightOffset;
                 
@@ -99,28 +99,28 @@ uniform sampler2D texture;
         #endif
 
         #ifdef SLOPE_NORMALS
-            vec3 apply_slope_normal(in vec3 viewT, in vec2 texUv, in float traceDepth) {
+            vec3 getSlopeNormals(vec3 viewT, vec2 texUv, float traceDepth){
                 vec2 texRes = textureSize(normals, 0);
                 vec2 texPixSize = 1.0 / texRes;
 
                 vec2 texSnapped = floor(texUv * texRes) * texPixSize;
-                vec2 tex_offset = texUv - texSnapped - 0.5 * texPixSize;
+                vec2 texOffset = texUv - texSnapped - 0.5 * texPixSize;
                 vec2 step_sign = sign(-viewT.xy);
 
-                vec2 tex_x = texSnapped + vec2(texPixSize.x * step_sign.x, 0);
-                float height_x = texture2DGradARB(normals, tex_x, dcdx, dcdy).a;
-                bool has_x = traceDepth > height_x && sign(tex_offset.x) == step_sign.x;
+                vec2 texX = texSnapped + vec2(texPixSize.x * step_sign.x, 0);
+                float heightX = texture2DGradARB(normals, texX, dcdx, dcdy).a;
+                bool hasX = traceDepth > heightX && sign(texOffset.x) == step_sign.x;
 
-                vec2 tex_y = texSnapped + vec2(0, texPixSize.y * step_sign.y);
-                float height_y = texture2DGradARB(normals, tex_y, dcdx, dcdy).a;
-                bool has_y = traceDepth > height_y && sign(tex_offset.y) == step_sign.y;
+                vec2 texY = texSnapped + vec2(0, texPixSize.y * step_sign.y);
+                float heightY = texture2DGradARB(normals, texY, dcdx, dcdy).a;
+                bool hasY = traceDepth > heightY && sign(texOffset.y) == step_sign.y;
 
-                if (abs(tex_offset.x) < abs(tex_offset.y)){
-                    if(has_y) return vec3(0, step_sign.y, 0);
-                    if(has_x) return vec3(step_sign.x, 0, 0);
+                if(abs(texOffset.x) < abs(texOffset.y)){
+                    if(hasY) return vec3(0, step_sign.y, 0);
+                    if(hasX) return vec3(step_sign.x, 0, 0);
                 } else {
-                    if(has_x) return vec3(step_sign.x, 0, 0);
-                    if(has_y) return vec3(0, step_sign.y, 0);
+                    if(hasX) return vec3(step_sign.x, 0, 0);
+                    if(hasY) return vec3(0, step_sign.y, 0);
                 }
 
                 float s = step(abs(viewT.y), abs(viewT.x));
@@ -167,7 +167,7 @@ uniform sampler2D texture;
         #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined PARALLAX_OCCLUSION
             if(id != 10102){
                 #ifdef SLOPE_NORMALS
-                    if(texDepth - tracePos.z >= SLOPE_NORMAL_STRENGTH) normalMap = apply_slope_normal(-viewDir, texUv, tracePos.z);
+                    if(texDepth - tracePos.z >= SLOPE_NORMAL_STRENGTH) normalMap = getSlopeNormals(-viewDir, texUv, tracePos.z);
                 #endif
 
                 #if defined PARALLAX_SHADOWS && defined WORLD_LIGHT

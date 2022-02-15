@@ -38,11 +38,14 @@ varying vec2 texCoord;
     #ifdef BLOOM
         uniform sampler2D colortex2;
 
+        uniform float viewWidth;
+        uniform float viewHeight;
+
         #include "/lib/utility/texFunctions.glsl"
 
         vec3 getBloomTile(vec2 uv, vec2 coords, float LOD){
             // Uncompress bloom
-            return textureBicubic(colortex2, uv / exp2(LOD) + coords).rgb;
+            return texture2DBicubic(colortex2, uv / exp2(LOD) + coords, vec2(viewWidth, viewHeight)).rgb;
         }
     #endif
 
