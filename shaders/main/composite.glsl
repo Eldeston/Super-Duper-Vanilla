@@ -116,11 +116,6 @@ varying vec2 screenCoord;
             vec3 dither = getRand3(gl_FragCoord.xy * 0.03125);
         #endif
 
-        #ifdef PREVIOUS_FRAME
-            // Get previous frame buffer
-            vec3 reflectBuffer = 1.0 / (1.0 - texture2D(colortex5, screenCoord).rgb) - 1.0;
-        #endif
-
         bool skyMask = posVector.screenPos.z == 1;
 
         // If not sky, don't calculate lighting
@@ -142,11 +137,6 @@ varying vec2 screenCoord;
 
                 // Fog calculation
                 sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y, skyMask);
-
-                #ifdef PREVIOUS_FRAME
-                    // Assign after main lighting calculation
-                    reflectBuffer = sceneCol;
-                #endif
             }
         }
 
@@ -159,12 +149,12 @@ varying vec2 screenCoord;
             
             #ifdef PREVIOUS_FRAME
             /* DRAWBUFFERS:045 */
-                gl_FragData[2] = vec4(reflectBuffer / (1.0 + reflectBuffer), 1); //colortex5
+                gl_FragData[2] = vec4(sceneCol, 1); //colortex5
             #endif
         #else
             #ifdef PREVIOUS_FRAME
             /* DRAWBUFFERS:05 */
-                gl_FragData[1] = vec4(reflectBuffer / (1.0 + reflectBuffer), 1); //colortex5
+                gl_FragData[1] = vec4(sceneCol, 1); //colortex5
             #endif
         #endif
     }

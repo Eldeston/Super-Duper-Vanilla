@@ -156,17 +156,12 @@ varying vec2 screenCoord;
         // Fog calculation
         sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y, skyMask);
 
-        #ifdef PREVIOUS_FRAME
-            // Get previous frame buffer
-            vec3 reflectBuffer = sceneCol;
-        #endif
-
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(sceneCol, 1); //gcolor
 
         #ifdef PREVIOUS_FRAME
         /* DRAWBUFFERS:05 */
-            gl_FragData[1] = vec4(reflectBuffer / (1.0 + reflectBuffer), 1); //colortex5
+            gl_FragData[1] = vec4(sceneCol, 1); //colortex5
         #endif
     }
 #endif

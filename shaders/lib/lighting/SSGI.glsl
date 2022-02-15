@@ -24,10 +24,10 @@ vec3 getSSGICol(vec3 viewPos, vec3 screenPos, vec3 gBMVNorm, vec2 dither){
             // Transform coords to previous frame coords
             GIScreenPos.xy = toPrevScreenPos(GIScreenPos.xy);
             // Sample color and return
-            return (1.0 / (1.0 - texture2D(colortex5, GIScreenPos.xy, -10).rgb) - 1.0);
+            return texture2D(colortex5, GIScreenPos.xy).rgb;
         #else
             // Sample color and return
-            return texture2D(gcolor, GIScreenPos.xy, -10).rgb;
+            return texture2D(gcolor, GIScreenPos.xy).rgb;
         #endif
     }
 
