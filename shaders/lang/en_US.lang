@@ -96,6 +96,7 @@ screen.LAVA_SETTINGS=Lava material settings
     option.SECOND_CLOUD_HEIGHT=2nd cloud height
     option.FADE_SPEED=Fade speed
     option.VANILLA_SUN_MOON=Vanilla sun and moon
+    option.SUN_MOON_INTENSITY=Sun and moon intensity
 
 #Animation
     option.ANIMATE=Animate
