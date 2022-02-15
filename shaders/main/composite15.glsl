@@ -4,7 +4,6 @@
 #endif
 
 #include "/lib/utility/util.glsl"
-#include "/lib/structs.glsl"
 #include "/lib/settings.glsl"
 
 varying vec2 texCoord;
@@ -55,14 +54,14 @@ varying vec2 texCoord;
             vec3 color = textureFXAA(gcolor, texCoord, vec2(viewWidth, viewHeight));
         #elif ANTI_ALIASING == 2
             vec3 color = textureTAA(gcolor, colortex6, texCoord, vec2(viewWidth, viewHeight));
+
+            #ifdef AUTO_EXPOSURE
+                #define TEMP_EXPOSURE_DATA texture2D(colortex6, texCoord).a
+            #else
+                #define TEMP_EXPOSURE_DATA 0
+            #endif
         #else
             vec3 color = texture2D(gcolor, texCoord).rgb;
-        #endif
-
-        #ifdef AUTO_EXPOSURE
-            #define TEMP_EXPOSURE_DATA texture2D(colortex6, texCoord).a
-        #else
-            #define TEMP_EXPOSURE_DATA vec3(0)
         #endif
         
     /* DRAWBUFFERS:0 */

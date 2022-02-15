@@ -1,6 +1,6 @@
 #include "/lib/utility/util.glsl"
-#include "/lib/structs.glsl"
 #include "/lib/settings.glsl"
+#include "/lib/structs.glsl"
 
 #ifdef VERTEX
     void main(){

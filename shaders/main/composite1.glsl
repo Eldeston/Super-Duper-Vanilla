@@ -1,5 +1,4 @@
 #include "/lib/utility/util.glsl"
-#include "/lib/structs.glsl"
 #include "/lib/settings.glsl"
 
 varying vec2 texCoord;
