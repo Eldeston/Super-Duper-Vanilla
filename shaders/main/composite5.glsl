@@ -41,6 +41,9 @@ varying vec2 texCoord;
         }
     #endif
 
+    #ifdef LENS_FLARE
+    #endif
+    
     #if defined LENS_FLARE && defined WORLD_LIGHT
         uniform sampler2D depthtex0;
 

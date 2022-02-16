@@ -22,7 +22,12 @@ vec3 getLensFlare(vec2 centerCoord, vec2 lightDir){
     float lens0 = lensFlareSimple(centerCoord, lightDir, 0.2, 0.75) * 0.125;
     float lens1 = lensFlareSimple(centerCoord, lightDir, 0.1, 0.5) * 0.125;
     float lens2 = lensFlareSimple(centerCoord, lightDir, 0.05, 0.25) * 0.125;
-    float rays = lensFlareRays(centerCoord, lightDir, 8.0, 0.2, -1.0);
     vec3 chromaLens = chromaLens(centerCoord, lightDir, 0.05, 0.05, -0.5);
-    return (lens0 + lens1 + lens2 + rays + chromaLens) * LENS_FLARE_BRIGHTNESS * sqrt(lightCol);
+
+    #if USE_SUN_MOON == 2
+        return (lens0 + lens1 + lens2 + chromaLens) * LENS_FLARE_BRIGHTNESS * sqrt(lightCol);
+    #else
+        float rays = lensFlareRays(centerCoord, lightDir, 8.0, 0.2, -1.0);
+        return (lens0 + lens1 + lens2 + rays + chromaLens) * LENS_FLARE_BRIGHTNESS * sqrt(lightCol);
+    #endif
 }
