@@ -16,13 +16,6 @@ varying vec2 texCoord;
     // Get frame time
     uniform float frameTime;
 
-    uniform int isEyeInWater;
-
-    uniform float nightVision;
-    uniform float rainStrength;
-
-    uniform ivec2 eyeBrightnessSmooth;
-
     #if ANTI_ALIASING == 2 || defined AUTO_EXPOSURE
         // Needs to be true whenever auto exposure or TAA is on
         const bool colortex6MipmapEnabled = true;
@@ -48,6 +41,37 @@ varying vec2 texCoord;
         }
     #endif
 
+    #if defined LENS_FLARE && defined WORLD_LIGHT
+        uniform sampler2D depthtex0;
+
+        uniform mat4 gbufferProjection;
+        uniform mat4 gbufferModelView;
+
+        uniform mat4 shadowModelView;
+
+        uniform int isEyeInWater;
+
+        uniform float blindness;
+        uniform float nightVision;
+        uniform float rainStrength;
+
+        uniform float day;
+        uniform float dawnDusk;
+        uniform float twilight;
+
+        uniform float aspectRatio;
+
+        uniform ivec2 eyeBrightnessSmooth;
+
+        uniform vec3 fogColor;
+
+        #include "/lib/universalVars.glsl"
+
+        #include "/lib/utility/convertScreenSpace.glsl"
+        
+        #include "/lib/post/lensFlare.glsl"
+    #endif
+
     #include "/lib/utility/noiseFunctions.glsl"
 
     #include "/lib/post/tonemap.glsl"
@@ -67,6 +91,13 @@ varying vec2 texCoord;
             eBloom = eBloom * 0.16666667;
 
             color = mix(color, eBloom, 0.2 * BLOOM_BRIGHTNESS);
+        #endif
+
+        #if defined LENS_FLARE && defined WORLD_LIGHT
+            vec2 lightDir = toScreen(mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)).xy;
+            
+            if(texture2D(depthtex0, lightDir).x == 1 && isEyeInWater == 0)
+                color += getLensFlare(texCoord - 0.5, lightDir - 0.5) * (1.0 - max(newRainStrength, blindness) * 0.9);
         #endif
 
         #ifdef AUTO_EXPOSURE
