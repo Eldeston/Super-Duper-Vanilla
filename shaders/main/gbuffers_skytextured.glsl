@@ -24,15 +24,13 @@ varying vec2 texCoord;
 #endif
 
 #ifdef FRAGMENT
-    #ifdef VANILLA_SUN_MOON
-    #endif
-    
-    #if USE_SUN_MOON == 1 && defined VANILLA_SUN_MOON
+
+    #if USE_SUN_MOON == 1 && SUN_MOON_TYPE == 2
         uniform sampler2D texture;
     #endif
     
     void main(){
-        #if USE_SUN_MOON == 1 && defined VANILLA_SUN_MOON
+        #if USE_SUN_MOON == 1 && SUN_MOON_TYPE == 2
         /* DRAWBUFFERS:2 */
             gl_FragData[0] = vec4(pow(texture2D(texture, texCoord).rgb, vec3(GAMMA)), 1); //gcolor
         #else

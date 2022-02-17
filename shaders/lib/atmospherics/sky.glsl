@@ -1,6 +1,12 @@
 #if USE_SUN_MOON != 0
     float getSunMoonShape(vec2 pos){
-        return min(1.0, exp2(-(pow(abs(pos.x * pos.x * pos.x) + abs(pos.y * pos.y * pos.y), 0.333) - 0.075) * 256.0));
+        #if SUN_MOON_TYPE == 1
+            // Round sun and moon
+            return min(1.0, exp2(-(length(pos) - 0.075) * 256.0));
+        #else
+            // Default sun and moon
+            return min(1.0, exp2(-(pow(abs(pos.x * pos.x * pos.x) + abs(pos.y * pos.y * pos.y), 0.333) - 0.075) * 256.0));
+        #endif
     }
 #endif
 
@@ -88,7 +94,7 @@ vec3 getSkyRender(vec3 playerPos, bool skyMask, bool sunMoonMask){
 
     vec3 finalCol = vec3(0);
 
-    #if USE_SUN_MOON == 1 && !defined VANILLA_SUN_MOON
+    #if USE_SUN_MOON == 1 && SUN_MOON_TYPE != 2
         if(sunMoonMask) finalCol += getSunMoonShape(nSkyPos.xy) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * sqrt(lightCol);
     #elif USE_SUN_MOON == 2
         if(sunMoonMask){
