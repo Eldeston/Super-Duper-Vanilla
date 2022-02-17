@@ -1,6 +1,3 @@
-#define SLOPE_NORMAL_STRENGTH 0.024
-#define SOFT_SHD_STRENGTH 60.0
-
 // Derivatives
 vec2 dcdx = dFdx(texCoord);
 vec2 dcdy = dFdy(texCoord);
@@ -50,11 +47,11 @@ uniform sampler2D texture;
             return normalize(dirT.xy) * (sqrt(lengthSquared(dirT) - squared(dirT.z)) * PARALLAX_DEPTH / dirT.z);
         }
 
-        vec2 parallaxUv(vec2 startUv, vec2 endUv, out vec3 tracePos, out float texDepth) {
+        vec2 parallaxUv(vec2 startUv, vec2 endUv, out vec3 currPos) {
             float stepSize = 1.0 / PARALLAX_STEPS;
             endUv *= stepSize * PARALLAX_DEPTH;
 
-            texDepth = texture2DGradARB(normals, fract(startUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
+            float texDepth = texture2DGradARB(normals, fract(startUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
             float traceDepth = 1.0;
 
             for(int i = 0; i < PARALLAX_STEPS; i++){
@@ -65,66 +62,59 @@ uniform sampler2D texture;
                 if(texDepth > traceDepth) break;
             }
 
-            tracePos = vec3(startUv - endUv, traceDepth + stepSize);
+            currPos = vec3(startUv - endUv, traceDepth + stepSize);
             return startUv;
         }
 
         #if defined PARALLAX_SHADOWS && defined WORLD_LIGHT
-            float parallaxShadow(vec3 tracePos, vec2 lightOffset) {
+            float parallaxShadow(vec3 currPos, vec2 lightDir) {
                 float stepSize = 1.0 / PARALLAX_SHD_STEPS;
-                vec2 stepOffset = stepSize * lightOffset;
+                vec2 stepOffset = stepSize * lightDir;
                 
-                float traceDepth = tracePos.z;
-                vec2 traceUv = tracePos.xy;
+                float traceDepth = currPos.z;
+                vec2 traceUv = currPos.xy;
 
-                float result = 0.0;
                 for(int i = int(traceDepth * PARALLAX_SHD_STEPS); i < PARALLAX_SHD_STEPS; ++i){
                     traceUv += stepOffset;
                     traceDepth += stepSize;
-
                     float texDepth = texture2DGradARB(normals, fract(traceUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
-                    float h = texDepth - traceDepth;
                     
-                    if(h > 0){
-                        float dist = 1.0 / (1.0 + lengthSquared(vec3(traceUv, traceDepth) - vec3(tracePos.xy, 1)) * 20.0);
-
-                        float sampleResult = saturate(h * SOFT_SHD_STRENGTH * dist);
-                        result = max(result, sampleResult);
-                        if(1 < result) break;
-                    }
+                    // if(texDepth > traceDepth) return 0.0;
+                    
+                    if(texDepth > traceDepth) return pow(i * stepSize, 16.0);
                 }
 
-                return 1.0 - result;
+                return 1.0;
             }
         #endif
 
         #ifdef SLOPE_NORMALS
-            vec3 getSlopeNormals(vec3 viewT, vec2 texUv, float traceDepth){
+            vec2 getSlopeNormals(vec3 viewT, vec2 texUv, float traceDepth){
                 vec2 texRes = textureSize(normals, 0);
                 vec2 texPixSize = 1.0 / texRes;
 
                 vec2 texSnapped = floor(texUv * texRes) * texPixSize;
                 vec2 texOffset = texUv - texSnapped - 0.5 * texPixSize;
-                vec2 step_sign = sign(-viewT.xy);
+                vec2 stepSign = sign(-viewT.xy);
 
-                vec2 texX = texSnapped + vec2(texPixSize.x * step_sign.x, 0);
+                vec2 texX = texSnapped + vec2(texPixSize.x * stepSign.x, 0);
                 float heightX = texture2DGradARB(normals, texX, dcdx, dcdy).a;
-                bool hasX = traceDepth > heightX && sign(texOffset.x) == step_sign.x;
+                bool hasX = traceDepth > heightX && sign(texOffset.x) == stepSign.x;
 
-                vec2 texY = texSnapped + vec2(0, texPixSize.y * step_sign.y);
+                vec2 texY = texSnapped + vec2(0, texPixSize.y * stepSign.y);
                 float heightY = texture2DGradARB(normals, texY, dcdx, dcdy).a;
-                bool hasY = traceDepth > heightY && sign(texOffset.y) == step_sign.y;
+                bool hasY = traceDepth > heightY && sign(texOffset.y) == stepSign.y;
 
                 if(abs(texOffset.x) < abs(texOffset.y)){
-                    if(hasY) return vec3(0, step_sign.y, 0);
-                    if(hasX) return vec3(step_sign.x, 0, 0);
+                    if(hasY) return vec2(0, stepSign.y);
+                    if(hasX) return vec2(stepSign.x, 0);
                 } else {
-                    if(hasX) return vec3(step_sign.x, 0, 0);
-                    if(hasY) return vec3(0, step_sign.y, 0);
+                    if(hasX) return vec2(stepSign.x, 0);
+                    if(hasY) return vec2(0, stepSign.y);
                 }
 
                 float s = step(abs(viewT.y), abs(viewT.x));
-                return vec3(vec2(1.0 - s, s) * step_sign, 0);
+                return vec2(1.0 - s, s) * stepSign;
             }
         #endif
     #endif
@@ -138,11 +128,10 @@ uniform sampler2D texture;
         #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined PARALLAX_OCCLUSION
             vec3 viewDir = -posVector.eyePlayerPos * TBN;
 
-            float texDepth;
-            vec3 tracePos;
+            vec3 currPos;
             
             // Exclude signs, due to a missing text bug
-            if(id != 10102) texUv = fract(parallaxUv(vTexCoord, viewDir.xy / -viewDir.z, tracePos, texDepth)) * vTexCoordScale + vTexCoordPos;
+            if(id != 10102) texUv = fract(parallaxUv(vTexCoord, viewDir.xy / -viewDir.z, currPos)) * vTexCoordScale + vTexCoordPos;
         #endif
 
         // Assign albedo
@@ -161,18 +150,30 @@ uniform sampler2D texture;
         vec3 normalMap = vec3(normalAOH.xy * 2.0 - 1.0, 0);
         normalMap.z = sqrt(1.0 - dot(normalMap.xy, normalMap.xy));
 
+        // Assign SS
+        material.ss = saturate((SRPSSE.b * 255.0 - 64.0) / (255.0 - 64.0));
+
+        #if defined TERRAIN || defined BLOCK
+            // Foliage and corals
+            if((id >= 10000 && id <= 10008) || (id >= 10011 && id <= 10013)) material.ss = 1.0;
+
+            // If lava
+            else if(id == 10017) material.emissive = 1.0;
+        #endif
+
         // Get parallax shadows
         material.parallaxShd = 1.0;
 
         #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined PARALLAX_OCCLUSION
             if(id != 10102){
                 #ifdef SLOPE_NORMALS
-                    if(texDepth - tracePos.z >= SLOPE_NORMAL_STRENGTH) normalMap = getSlopeNormals(-viewDir, texUv, tracePos.z);
+                    if(texture2DGradARB(normals, texUv, dcdx, dcdy).a > currPos.z) normalMap.xy = getSlopeNormals(-viewDir, texUv, currPos.z);
                 #endif
 
                 #if defined PARALLAX_SHADOWS && defined WORLD_LIGHT
                     if(dot(material.normal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) > 0.000001)
-                        material.parallaxShd = parallaxShadow(tracePos, getParallaxOffset(vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z) * TBN));
+                        material.parallaxShd = parallaxShadow(currPos, getParallaxOffset(vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z) * TBN));
+                    else material.parallaxShd = material.ss;
                 #endif
             }
         #endif
@@ -186,11 +187,6 @@ uniform sampler2D texture;
         // Assign reflectance
         material.metallic = SRPSSE.g;
 
-        // Extact SS
-        float PSS = SRPSSE.b * 255.0;
-        // Assign SS
-        material.ss = saturate((PSS - 64.0) / (255.0 - 64.0));
-
         // Assign emissive
         material.emissive = SRPSSE.a * float(SRPSSE.a != 1);
 
@@ -201,14 +197,6 @@ uniform sampler2D texture;
         #else
             // For others, don't use vanilla AO
             material.ambient = normalAOH.b;
-        #endif
-
-        #if defined TERRAIN || defined BLOCK
-            // Foliage and corals
-            if((id >= 10000 && id <= 10008) || (id >= 10011 && id <= 10013)) material.ss = 1.0;
-
-            // If lava
-            else if(id == 10017) material.emissive = 1.0;
         #endif
 
         #if defined WATER || defined BLOCK
