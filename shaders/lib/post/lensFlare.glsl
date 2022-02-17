@@ -19,15 +19,18 @@ vec3 chromaLens(vec2 centerCoord, vec2 lightDir, float chromaDist, float size, f
 }
 
 vec3 getLensFlare(vec2 centerCoord, vec2 lightDir){
-    float lens0 = lensFlareSimple(centerCoord, lightDir, 0.2, 0.75) * 0.125;
-    float lens1 = lensFlareSimple(centerCoord, lightDir, 0.1, 0.5) * 0.125;
-    float lens2 = lensFlareSimple(centerCoord, lightDir, 0.05, 0.25) * 0.125;
+    float lens0 = lensFlareSimple(centerCoord, lightDir, 0.2, 0.75);
+    float lens1 = lensFlareSimple(centerCoord, lightDir, 0.1, 0.5);
+    float lens2 = lensFlareSimple(centerCoord, lightDir, 0.05, 0.25);
     vec3 chromaLens = chromaLens(centerCoord, lightDir, 0.05, 0.05, -0.5);
 
     #if USE_SUN_MOON == 2
-        return (lens0 + lens1 + lens2 + chromaLens) * LENS_FLARE_BRIGHTNESS * sqrt(lightCol);
+        return (lens1 + (lens0 + lens2) * 0.125 + chromaLens) * LENS_FLARE_BRIGHTNESS * sqrt(lightCol);
+    #elif SUN_MOON_TYPE == 2
+        float rays = lensFlareRays(centerCoord, lightDir, 8.0, 0.1, -1.0);
+        return (lens1 + (lens0 + lens2) * 0.125 + rays + chromaLens) * LENS_FLARE_BRIGHTNESS * sqrt(lightCol);
     #else
         float rays = lensFlareRays(centerCoord, lightDir, 8.0, 0.2, -1.0);
-        return (lens0 + lens1 + lens2 + rays + chromaLens) * LENS_FLARE_BRIGHTNESS * sqrt(lightCol);
+        return (lens1 + (lens0 + lens2) * 0.125 + rays + chromaLens) * LENS_FLARE_BRIGHTNESS * sqrt(lightCol);
     #endif
 }
