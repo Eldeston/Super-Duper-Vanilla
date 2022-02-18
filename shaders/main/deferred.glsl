@@ -120,20 +120,14 @@ varying vec2 screenCoord;
 
         vec3 sceneCol = texture2D(gcolor, screenCoord).rgb;
 
-        // Get sky color
-        vec3 skyRender = getSkyRender(posVector.eyePlayerPos, skyMask, skyMask);
-        vec4 albedoSunMoon = texture2D(colortex2, screenCoord);
-
-        // Vanilla sun and moon texture
-        #if USE_SUN_MOON == 1 && SUN_MOON_TYPE == 2
-            if(skyMask) skyRender += albedoSunMoon.rgb * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * sqrt(lightCol);
-        #endif
+        // Get sky color and do skyCol with vanilla sun and moon and skybox blend and input as new skyCol
+        vec3 skyRender = getSkyRender(skyMask ? skyCol * max(vec3(0), 1.0 - sceneCol) + sceneCol : skyCol, posVector.eyePlayerPos, skyMask, skyMask);
 
         // If not sky, don't calculate lighting
         if(!skyMask){
             // Declare and get materials
             matPBR material;
-            material.albedo = albedoSunMoon;
+            material.albedo = texture2D(colortex2, screenCoord);
             material.normal = texture2D(colortex1, screenCoord).rgb * 2.0 - 1.0;
 
             vec3 matRaw0 = texture2D(colortex3, screenCoord).xyz;

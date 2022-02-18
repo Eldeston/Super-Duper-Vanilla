@@ -3,6 +3,8 @@
 
 varying vec2 texCoord;
 
+varying vec4 glcolor;
+
 #ifdef VERTEX
     #if ANTI_ALIASING == 2
         /* Screen resolutions */
@@ -20,21 +22,51 @@ varying vec2 texCoord;
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
+
+        glcolor = gl_Color;
     }
 #endif
 
 #ifdef FRAGMENT
+    uniform sampler2D texture;
+
+    uniform int renderStage;
 
     #if USE_SUN_MOON == 1 && SUN_MOON_TYPE == 2
-        uniform sampler2D texture;
+        // Get world time
+        uniform float day;
+        uniform float dawnDusk;
+        uniform float twilight;
+
+        uniform int isEyeInWater;
+
+        uniform float nightVision;
+        uniform float rainStrength;
+
+        uniform ivec2 eyeBrightnessSmooth;
+
+        uniform vec3 fogColor;
+
+        #include "/lib/universalVars.glsl"
     #endif
     
     void main(){
-        #if USE_SUN_MOON == 1 && SUN_MOON_TYPE == 2
-        /* DRAWBUFFERS:2 */
-            gl_FragData[0] = vec4(pow(texture2D(texture, texCoord).rgb, vec3(GAMMA)), 1); //gcolor
-        #else
-            discard;
-        #endif
+        vec4 albedo = texture2D(texture, texCoord);
+
+        // Alpha test, discard immediately
+        if(albedo.a <= ALPHA_THRESHOLD) discard;
+
+        // Detect and calculate the sun and moon
+        if(renderStage == MC_RENDER_STAGE_SUN || renderStage == MC_RENDER_STAGE_MOON)
+            #if USE_SUN_MOON == 1 && SUN_MOON_TYPE == 2
+                albedo = vec4(pow(albedo.rgb, vec3(GAMMA)) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * sqrt(lightCol), 1);
+            #else
+                discard;
+            #endif
+        // Otherwise, calculate skybox
+        else albedo.rgb = pow(albedo.rgb * glcolor.rgb, vec3(GAMMA)) * albedo.a * glcolor.a * SKYBOX_BRIGHTNESS;
+
+    /* DRAWBUFFERS:0 */
+        gl_FragData[0] = vec4(albedo.rgb, 1); //gcolor
     }
 #endif
