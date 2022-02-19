@@ -31,6 +31,10 @@ uniform mat4 gbufferModelViewInverse;
 
         #include "/lib/utility/taaJitter.glsl"
     #endif
+
+    #ifdef WORLD_CURVATURE
+        uniform mat4 gbufferModelView;
+    #endif
     
     attribute vec4 mc_midTexCoord;
     attribute vec4 at_tangent;
@@ -54,7 +58,16 @@ uniform mat4 gbufferModelViewInverse;
             vTexCoord = sign(texMinMidCoord) * 0.5 + 0.5;
         #endif
         
-	    gl_Position = ftransform();
+	    #ifdef WORLD_CURVATURE
+            // Feet player pos
+            vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+
+            vertexPos.y -= lengthSquared(vertexPos.xz) / WORLD_CURVATURE_SIZE;
+            
+            gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
+        #else
+            gl_Position = ftransform();
+        #endif
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
@@ -126,10 +139,6 @@ uniform mat4 gbufferModelViewInverse;
 	    posVector.viewPos = toView(posVector.screenPos);
         posVector.eyePlayerPos = mat3(gbufferModelViewInverse) * posVector.viewPos;
         posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
-        
-		#if defined SHD_ENABLE && defined WORLD_LIGHT
-			posVector.shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * posVector.feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz;
-		#endif
 
 	    // Declare materials
 	    matPBR material;
@@ -140,7 +149,7 @@ uniform mat4 gbufferModelViewInverse;
         material.light = lmCoord;
 
         #ifdef ENVIRO_MAT
-            enviroPBR(material, posVector.worldPos);
+            enviroPBR(material, posVector.feetPlayerPos + cameraPosition);
         #endif
 
         #if ANTI_ALIASING == 2

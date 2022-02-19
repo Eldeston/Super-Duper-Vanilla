@@ -8,7 +8,7 @@ varying float blockId;
 varying vec2 texCoord;
 
 varying vec3 worldPos;
-varying vec3 gcolor;
+varying vec3 glcolor;
 
 #ifdef VERTEX
     uniform mat4 shadowModelView;
@@ -36,11 +36,15 @@ varying vec3 gcolor;
             getWave(vertexPos.xyz, worldPos, texCoord, mc_midTexCoord, mc_Entity.x, (gl_TextureMatrix[1] * gl_MultiTexCoord1).y);
         #endif
 
+        #ifdef WORLD_CURVATURE
+            vertexPos.y -= lengthSquared(vertexPos.xz) / WORLD_CURVATURE_SIZE;
+        #endif
+
         gl_Position = shadowProjection * (shadowModelView * vertexPos);
 
         gl_Position.xyz = distort(gl_Position.xyz);
 
-        gcolor = gl_Color.rgb;
+        glcolor = gl_Color.rgb;
     }
 #endif
 
@@ -55,7 +59,7 @@ varying vec3 gcolor;
 
     void main(){
         vec4 shdColor = texture2D(tex, texCoord);
-        shdColor.rgb = shdColor.rgb * gcolor;
+        shdColor.rgb = shdColor.rgb * glcolor;
 
         #ifdef UNDERWATER_CAUSTICS
             if(isEyeInWater == 1 && int(blockId + 0.5) == 10034) shdColor.rgb *= vec3(cubed(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 8.0);

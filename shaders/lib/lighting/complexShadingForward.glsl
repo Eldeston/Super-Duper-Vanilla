@@ -24,7 +24,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, float di
 		#if defined SHD_ENABLE && !defined ENTITIES_GLOWING
 			// Cave fix
 			float caveFixShdFactor = smoothstep(0.25, 0.5, material.light.y) * (1.0 - eyeBrightFact) + eyeBrightFact;
-			vec3 shadow = getShdMapping(posVector.shdPos, dirLight, dither) * (isEyeInWater == 1 ? 1.0 : caveFixShdFactor) * material.parallaxShd;
+			vec3 shadow = getShdMapping(mat3(shadowProjection) * (mat3(shadowModelView) * posVector.feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz, dirLight, dither) * (isEyeInWater == 1 ? 1.0 : caveFixShdFactor) * material.parallaxShd;
 		#else
 			float shadow = smoothstep(0.94, 0.96, material.light.y) * material.parallaxShd;
 		#endif

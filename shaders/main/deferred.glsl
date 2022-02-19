@@ -116,7 +116,6 @@ varying vec2 screenCoord;
         posVector.viewPos = toView(posVector.screenPos);
         posVector.eyePlayerPos = mat3(gbufferModelViewInverse) * posVector.viewPos;
         posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
-        posVector.worldPos = posVector.feetPlayerPos + cameraPosition;
 
         vec3 sceneCol = texture2D(gcolor, screenCoord).rgb;
 
@@ -148,7 +147,7 @@ varying vec2 screenCoord;
         }
 
         // Fog calculation
-        sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, skyRender, posVector.worldPos.y, skyMask);
+        sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, skyRender, posVector.feetPlayerPos.y + cameraPosition.y, skyMask);
 
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(sceneCol, 1); //gcolor

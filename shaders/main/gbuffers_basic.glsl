@@ -20,6 +20,10 @@ uniform mat4 gbufferModelViewInverse;
 
         #include "/lib/utility/taaJitter.glsl"
     #endif
+
+    #ifdef WORLD_CURVATURE
+        uniform mat4 gbufferModelView;
+    #endif
     
     void main(){
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
@@ -27,7 +31,16 @@ uniform mat4 gbufferModelViewInverse;
 
 	    norm = normalize(mat3(gbufferModelViewInverse) * (gl_NormalMatrix * gl_Normal));
         
-	    gl_Position = ftransform();
+	    #ifdef WORLD_CURVATURE
+            // Feet player pos
+            vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+
+            vertexPos.y -= lengthSquared(vertexPos.xz) / WORLD_CURVATURE_SIZE;
+            
+            gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
+        #else
+            gl_Position = ftransform();
+        #endif
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
@@ -50,9 +63,6 @@ uniform mat4 gbufferModelViewInverse;
             uniform mat4 shadowProjection;
         #endif
     #endif
-
-    /* Position uniforms */
-    uniform vec3 cameraPosition;
 
     /* Screen resolutions */
     uniform float viewWidth;
@@ -96,10 +106,6 @@ uniform mat4 gbufferModelViewInverse;
         posVector.viewPos = toView(posVector.screenPos);
         posVector.eyePlayerPos = mat3(gbufferModelViewInverse) * posVector.viewPos;
         posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
-        
-		#if defined SHD_ENABLE && defined WORLD_LIGHT
-			posVector.shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * posVector.feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz;
-		#endif
 
 	    // Declare materials
 	    matPBR material;

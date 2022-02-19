@@ -28,7 +28,8 @@ vec2 cubed(vec2 x) { return x * x * x; }
 vec3 cubed(vec3 x) { return x * x * x; }
 vec4 cubed(vec4 x) { return x * x * x; }
 
-float lengthSquared(vec3 vec){ return dot(vec, vec); }
+float lengthSquared(vec2 x){ return dot(x, x); }
+float lengthSquared(vec3 x){ return dot(x, x); }
 
 // Max functions
 float max2(vec2 x) { return max(x.r, x.g); }

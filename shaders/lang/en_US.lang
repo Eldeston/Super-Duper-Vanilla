@@ -105,10 +105,12 @@ screen.LAVA_SETTINGS=Lava material settings
     value.SUN_MOON_TYPE.1=Round
     value.SUN_MOON_TYPE.2=Vanilla
 
-#Animation
-    option.ANIMATE=Animate
+#World
+    option.ANIMATE=Animation
     option.CURRENT_SPEED=Current speed
     option.WIND_SPEED=Wind speed
+    option.WORLD_CURVATURE=World curvature
+    option.WORLD_CURVATURE_SIZE=World curvature size
 
 screen.CONFIGURE_COLORS=Configure colors
 

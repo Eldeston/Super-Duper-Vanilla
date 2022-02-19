@@ -13,6 +13,11 @@ varying vec4 glcolor;
         #include "/lib/utility/taaJitter.glsl"
     #endif
 
+    #ifdef WORLD_CURVATURE
+        uniform mat4 gbufferModelView;
+        uniform mat4 gbufferModelViewInverse;
+    #endif
+
     const float VIEW_SHRINK = 1.0 - (1.0 / 256.0);
     const mat4 VIEW_SCALE = mat4(
         VIEW_SHRINK, 0.0, 0.0, 0.0,
@@ -21,16 +26,32 @@ varying vec4 glcolor;
         0.0, 0.0, 0.0, 1.0
     );
 
-    void main() {
-        vec4 linePosStart = gl_ProjectionMatrix * VIEW_SCALE * gl_ModelViewMatrix * vec4(gl_Vertex.xyz, 1.0);
-        vec4 linePosEnd = gl_ProjectionMatrix * VIEW_SCALE * gl_ModelViewMatrix * vec4(gl_Vertex.xyz + gl_Normal.xyz, 1.0);
+    void main(){
+        #ifdef WORLD_CURVATURE
+            // Feet player pos
+            vec4 linePosStart = gbufferModelViewInverse * (gl_ModelViewMatrix * vec4(gl_Vertex.xyz, 1.0));
+            vec4 linePosEnd = gbufferModelViewInverse * (gl_ModelViewMatrix * vec4(gl_Vertex.xyz + gl_Normal.xyz, 1.0));
+
+            linePosStart.y -= lengthSquared(linePosStart.xz) / WORLD_CURVATURE_SIZE;
+            linePosEnd.y -= lengthSquared(linePosEnd.xz) / WORLD_CURVATURE_SIZE;
+            
+            linePosStart = gbufferModelView * linePosStart;
+            linePosEnd = gbufferModelView * linePosEnd;
+        #else
+            // Feet player pos
+            vec4 linePosStart = gl_ModelViewMatrix * vec4(gl_Vertex.xyz, 1.0);
+            vec4 linePosEnd = gl_ModelViewMatrix * vec4(gl_Vertex.xyz + gl_Normal.xyz, 1.0);
+        #endif
+
+        linePosStart = gl_ProjectionMatrix * VIEW_SCALE * linePosStart;
+        linePosEnd = gl_ProjectionMatrix * VIEW_SCALE * linePosEnd;
 
         vec3 ndc1 = linePosStart.xyz / linePosStart.w;
         vec3 ndc2 = linePosEnd.xyz / linePosEnd.w;
 
         vec2 ScreenSize = vec2(viewWidth, viewHeight);
         vec2 lineScreenDirection = normalize((ndc2.xy - ndc1.xy) * ScreenSize);
-        vec2 lineOffset = vec2(-lineScreenDirection.y, lineScreenDirection.x) / ScreenSize;
+        vec2 lineOffset = vec2(-lineScreenDirection.y, lineScreenDirection.x) / ScreenSize * 2.0;
 
         if(lineOffset.x < 0.0) lineOffset *= -1.0;
 

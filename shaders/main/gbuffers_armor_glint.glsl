@@ -15,6 +15,10 @@ varying vec4 glcolor;
 
         #include "/lib/utility/taaJitter.glsl"
     #endif
+
+    #ifdef WORLD_CURVATURE
+        uniform mat4 gbufferModelView;
+    #endif
     
     uniform mat4 gbufferModelViewInverse;
 
@@ -23,7 +27,16 @@ varying vec4 glcolor;
 
 	    norm = normalize(mat3(gbufferModelViewInverse) * (gl_NormalMatrix * gl_Normal));
         
-	    gl_Position = ftransform();
+	    #ifdef WORLD_CURVATURE
+            // Feet player pos
+            vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+
+            vertexPos.y -= lengthSquared(vertexPos.xz) / WORLD_CURVATURE_SIZE;
+            
+            gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
+        #else
+            gl_Position = ftransform();
+        #endif
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
