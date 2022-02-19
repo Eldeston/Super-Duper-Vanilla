@@ -251,7 +251,7 @@ uniform sampler2D texture;
         if(material.albedo.a <= ALPHA_THRESHOLD) discard;
 
         // Generate bumped normals
-        #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined AUTO_GEN_NORM
+        #if (defined TERRAIN || defined WATER || defined BLOCK) && defined AUTO_GEN_NORM
             float d = length(material.albedo.rgb);
             float dx = d - length(texture2DGradARB(texture, fract(vTexCoord + vec2(0.0125, 0)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
             float dy = d - length(texture2DGradARB(texture, fract(vTexCoord + vec2(0, 0.0125)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);

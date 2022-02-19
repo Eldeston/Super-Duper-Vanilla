@@ -64,7 +64,7 @@ uniform mat4 gbufferModelViewInverse;
         vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
 
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
-        lmCoord  = (gl_TextureMatrix[1] * gl_MultiTexCoord1).xy;
+        lmCoord = (gl_TextureMatrix[1] * gl_MultiTexCoord1).xy;
         blockId = mc_Entity.x;
 
         vec3 tangent = normalize(gl_NormalMatrix * at_tangent.xyz);
@@ -101,12 +101,14 @@ uniform mat4 gbufferModelViewInverse;
     // Projection matrix uniforms
     uniform mat4 gbufferProjectionInverse;
 
-    #if defined SHD_ENABLE && defined WORLD_LIGHT
+    #ifdef WORLD_LIGHT
         // Shadow view matrix uniforms
         uniform mat4 shadowModelView;
 
-        // Shadow projection matrix uniforms
-        uniform mat4 shadowProjection;
+        #ifdef SHD_ENABLE
+            // Shadow projection matrix uniforms
+            uniform mat4 shadowProjection;
+        #endif
     #endif
 
     /* Position uniforms */

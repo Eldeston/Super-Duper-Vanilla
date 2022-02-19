@@ -7,12 +7,12 @@
 #include "/lib/settings.glsl"
 #include "/lib/structs.glsl"
 
-varying float blockId;
+uniform int entityId;
 
 varying vec2 lmCoord;
 varying vec2 texCoord;
 
-#if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
+#ifdef PARALLAX_OCCLUSION
     varying vec2 vTexCoordScale;
     varying vec2 vTexCoordPos;
     varying vec2 vTexCoord;
@@ -35,13 +35,11 @@ uniform mat4 gbufferModelViewInverse;
     #endif
     
     attribute vec4 mc_midTexCoord;
-    attribute vec4 mc_Entity;
     attribute vec4 at_tangent;
 
     void main(){
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
-        lmCoord  = (gl_TextureMatrix[1] * gl_MultiTexCoord1).xy;
-        blockId = mc_Entity.x;
+        lmCoord = (gl_TextureMatrix[1] * gl_MultiTexCoord1).xy;
 
         vec3 tangent = normalize(gl_NormalMatrix * at_tangent.xyz);
 	    vec3 binormal = normalize(gl_NormalMatrix * cross(at_tangent.xyz, gl_Normal) * at_tangent.w);
@@ -49,7 +47,7 @@ uniform mat4 gbufferModelViewInverse;
 
 	    TBN = mat3(gbufferModelViewInverse) * mat3(tangent, binormal, normal);
 
-        #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
+        #ifdef PARALLAX_OCCLUSION
             vec2 midCoord = (gl_TextureMatrix[0] * mc_midTexCoord).xy;
             vec2 texMinMidCoord = texCoord - midCoord;
 
@@ -72,16 +70,15 @@ uniform mat4 gbufferModelViewInverse;
     // Projection matrix uniforms
     uniform mat4 gbufferProjectionInverse;
 
-    #if defined SHD_ENABLE && defined WORLD_LIGHT
+    #ifdef WORLD_LIGHT
         // Shadow view matrix uniforms
         uniform mat4 shadowModelView;
 
-        // Shadow projection matrix uniforms
-        uniform mat4 shadowProjection;
+        #ifdef SHD_ENABLE
+            // Shadow projection matrix uniforms
+            uniform mat4 shadowProjection;
+        #endif
     #endif
-
-    /* Position uniforms */
-    uniform vec3 cameraPosition;
 
     /* Screen resolutions */
     uniform float viewWidth;
@@ -136,21 +133,13 @@ uniform mat4 gbufferModelViewInverse;
 
 	    // Declare materials
 	    matPBR material;
-        int rBlockId = int(blockId + 0.5);
-        getPBR(material, posVector, rBlockId);
+        getPBR(material, posVector, entityId);
 
         material.albedo.rgb = mix(material.albedo.rgb, entityColor.rgb, entityColor.a);
 
         material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
         material.light = lmCoord;
-
-        // Lightning
-        if(rBlockId == 10101){
-            material.metallic = 0.0;
-            material.emissive = 1.0;
-            material.smoothness = 0.0;
-        }
 
         #if ANTI_ALIASING == 2
             vec4 sceneCol = complexShadingGbuffers(material, posVector, toRandPerFrame(getRand1(gl_FragCoord.xy * 0.03125), frameTimeCounter));
