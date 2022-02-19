@@ -132,7 +132,7 @@ varying vec2 screenCoord;
                 sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
 
                 // Get sky color
-                vec3 skyRender = getSkyRender(skyCol, posVector.eyePlayerPos, false);
+                vec3 skyRender = getSkyRender(vec3(0), posVector.eyePlayerPos, false);
 
                 // Fog calculation
                 sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, skyRender, posVector.feetPlayerPos.y + cameraPosition.y, skyMask);
