@@ -7,8 +7,6 @@
 #include "/lib/settings.glsl"
 #include "/lib/structs.glsl"
 
-uniform int entityId;
-
 varying vec2 lmCoord;
 varying vec2 texCoord;
 
@@ -76,6 +74,9 @@ uniform mat4 gbufferModelViewInverse;
         // Shadow view matrix uniforms
         uniform mat4 shadowModelView;
     #endif
+
+    // Get entity id
+    uniform int entityId;
 
     /* Screen resolutions */
     uniform float viewWidth;

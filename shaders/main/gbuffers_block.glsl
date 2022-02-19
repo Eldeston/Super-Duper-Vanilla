@@ -7,8 +7,6 @@
 #include "/lib/settings.glsl"
 #include "/lib/structs.glsl"
 
-uniform int blockEntityId;
-
 varying vec2 lmCoord;
 varying vec2 texCoord;
 
@@ -79,6 +77,9 @@ uniform mat4 gbufferModelViewInverse;
             uniform mat4 shadowProjection;
         #endif
     #endif
+
+    // Get entity id
+    uniform int blockEntityId;
 
     /* Position uniforms */
     uniform vec3 cameraPosition;

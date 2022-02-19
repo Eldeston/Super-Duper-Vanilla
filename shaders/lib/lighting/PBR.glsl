@@ -28,9 +28,6 @@ uniform sampler2D texture;
     }
 #endif
 
-// Gets the actual texCoord
-#define GET_TEXCOORD(TEXCOORD) fract(TEXCOORD) * vTexCoordScale + vTexCoordPos
-
 #if DEFAULT_MAT == 2
     uniform sampler2D normals;
     uniform sampler2D specular;
@@ -74,14 +71,13 @@ uniform sampler2D texture;
                 float traceDepth = currPos.z;
                 vec2 traceUv = currPos.xy;
 
-                for(int i = int(traceDepth * PARALLAX_SHD_STEPS); i < PARALLAX_SHD_STEPS; ++i){
+                for(int i = int(traceDepth * PARALLAX_SHD_STEPS); i < PARALLAX_SHD_STEPS; i++){
                     traceUv += stepOffset;
                     traceDepth += stepSize;
-                    float texDepth = texture2DGradARB(normals, fract(traceUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
                     
-                    // if(texDepth > traceDepth) return 0.0;
+                    // if(texture2DGradARB(normals, fract(traceUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a > traceDepth) return 0.0;
                     
-                    if(texDepth > traceDepth) return pow(i * stepSize, 16.0);
+                    if(texture2DGradARB(normals, fract(traceUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a > traceDepth) return pow(i * stepSize, 16.0);
                 }
 
                 return 1.0;
@@ -167,7 +163,7 @@ uniform sampler2D texture;
         #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined PARALLAX_OCCLUSION
             if(id != 10102){
                 #ifdef SLOPE_NORMALS
-                    if(texture2DGradARB(normals, texUv, dcdx, dcdy).a > currPos.z) normalMap.xy = getSlopeNormals(-viewDir, texUv, currPos.z);
+                    if(texture2DGradARB(normals, texUv, dcdx, dcdy).a > currPos.z) normalMap = vec3(getSlopeNormals(-viewDir, texUv, currPos.z), 0);
                 #endif
 
                 #if defined PARALLAX_SHADOWS && defined WORLD_LIGHT
