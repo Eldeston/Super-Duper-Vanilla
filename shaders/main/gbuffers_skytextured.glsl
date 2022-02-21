@@ -56,17 +56,15 @@ varying vec4 glcolor;
         // Alpha test, discard immediately
         if(albedo.a <= ALPHA_THRESHOLD) discard;
 
+    /* DRAWBUFFERS:0 */
         // Detect and calculate the sun and moon
         if(renderStage == MC_RENDER_STAGE_SUN || renderStage == MC_RENDER_STAGE_MOON)
             #if USE_SUN_MOON == 1 && SUN_MOON_TYPE == 2
-                albedo = vec4(pow(albedo.rgb, vec3(GAMMA)) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * sqrt(lightCol), 1);
+                gl_FragData[0] = vec4(pow(albedo.rgb, vec3(GAMMA)) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * sqrt(lightCol), 1);
             #else
                 discard;
             #endif
         // Otherwise, calculate skybox
-        else albedo.rgb = pow(albedo.rgb * glcolor.rgb, vec3(GAMMA)) * albedo.a * glcolor.a * SKYBOX_BRIGHTNESS;
-
-    /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(albedo.rgb, 1); //gcolor
+        else gl_FragData[0] = vec4(pow(albedo.rgb * glcolor.rgb, vec3(GAMMA)) * albedo.a * glcolor.a * SKYBOX_BRIGHTNESS, 1);
     }
 #endif

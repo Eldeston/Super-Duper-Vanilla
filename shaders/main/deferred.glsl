@@ -12,6 +12,9 @@ varying vec2 screenCoord;
 #endif
 
 #ifdef FRAGMENT
+    // Sky silhoutte fix
+    const vec4 gcolorClearColor = vec4(0, 0, 0, 1);
+
     uniform sampler2D depthtex0;
     uniform sampler2D gcolor;
     uniform sampler2D colortex1;
@@ -120,7 +123,7 @@ varying vec2 screenCoord;
         vec3 sceneCol = texture2D(gcolor, screenCoord).rgb;
 
         // Get sky color and do skyCol with vanilla sun and moon and skybox blend and input as new skyCol
-        vec3 skyRender = getSkyRender(skyMask ? sceneCol : vec3(0), posVector.eyePlayerPos, skyMask, skyMask);
+        vec3 skyRender = getSkyRender(sceneCol, posVector.eyePlayerPos, skyMask, skyMask);
 
         // If not sky, don't calculate lighting
         if(!skyMask){

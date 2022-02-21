@@ -50,7 +50,7 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
     #endif
 
     // Sky box and vanila sun and moon blending
-    finalCol = finalCol * max(vec3(0), 1.0 - skyBoxCol) + skyBoxCol;
+    if(skyMask) finalCol = finalCol * max(vec3(0), 1.0 - skyBoxCol) + skyBoxCol;
 
     #ifdef USE_HORIZON_COL
         finalCol += USE_HORIZON_COL * squared(1.0 - abs(nPlayerPos.y));

@@ -11,9 +11,7 @@ varying vec2 texCoord;
 #endif
 
 #ifdef FRAGMENT
-    uniform sampler2D BUFFER_VIEW;
-
-    /* Texture buffer settings */
+    /* Buffer settings */
 
     /*
     const int gcolorFormat = R11F_G11F_B10F;
@@ -25,6 +23,8 @@ varying vec2 texCoord;
     const int colortex6Format = RGBA16F;
     const int colortex7Format = RGBA8;
     */
+    
+    uniform sampler2D BUFFER_VIEW;
 
     void main(){
         gl_FragColor = vec4(texture2D(BUFFER_VIEW, texCoord).rgb, 1); //final color

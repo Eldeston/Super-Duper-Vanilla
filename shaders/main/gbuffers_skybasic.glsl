@@ -1,12 +1,13 @@
+// Completely disable this program
+
 #ifdef VERTEX
     void main(){
-        gl_Position = ftransform();
+        gl_Position = vec4(0);
     }
 #endif
 
 #ifdef FRAGMENT
     void main(){
-    /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(0, 0, 0, 1); //gcolor
+        discard;
     }
 #endif
