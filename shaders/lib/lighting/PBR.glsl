@@ -44,7 +44,7 @@ uniform sampler2D texture;
             return normalize(dirT.xy) * (sqrt(lengthSquared(dirT) - squared(dirT.z)) * PARALLAX_DEPTH / dirT.z);
         }
 
-        vec2 parallaxUv(vec2 startUv, vec2 endUv, out vec3 currPos) {
+        vec2 parallaxUv(vec2 startUv, vec2 endUv, out vec3 currPos){
             float stepSize = 1.0 / PARALLAX_STEPS;
             endUv *= stepSize * PARALLAX_DEPTH;
 
