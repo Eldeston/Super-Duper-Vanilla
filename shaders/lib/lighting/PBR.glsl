@@ -149,9 +149,6 @@ uniform sampler2D texture;
         #if defined TERRAIN || defined BLOCK
             // Foliage and corals
             if((id >= 10000 && id <= 10008) || (id >= 10011 && id <= 10013)) material.ss = 1.0;
-
-            // If lava
-            else if(id == 10017) material.emissive = 1.0;
         #endif
 
         // Get parallax shadows
@@ -190,6 +187,11 @@ uniform sampler2D texture;
         #else
             // For others, don't use vanilla AO
             material.ambient = normalAOH.b;
+        #endif
+
+        #if defined TERRAIN || defined BLOCK
+            // If lava
+            if(id == 10017) material.emissive = 1.0;
         #endif
 
         #if defined WATER || defined BLOCK

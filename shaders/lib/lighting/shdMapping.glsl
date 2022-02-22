@@ -8,7 +8,7 @@ const float sunPathRotation = 0.0; // Light angle [-60.0 -55.0 -50.0 -45.0 -40.0
 	const float shadowDistance = 160.0; // Shadow distance. Increase to stretch the shadow map to farther distances in blocks. It's recommended to match this setting with your render distance. [32.0 64.0 80.0 96.0 112.0 128.0 160.0 192.0 224.0 256.0 320.0 384.0 512.0 768.0 1024.0]
 	const float shadowDistanceRenderMul = 1.0; // Hardcoded to be always on for maximum optimization.
 
-	// Shadow bias
+	// Shadow bias (unused)
 	const float shdBias = 0.02; // Don't go below the default value otherwise it'll mess up lighting
 
 	// Shadow opaque
