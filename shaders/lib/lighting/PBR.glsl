@@ -52,11 +52,10 @@ uniform sampler2D texture;
             float traceDepth = 1.0;
 
             for(int i = 0; i < PARALLAX_STEPS; i++){
+                if(texDepth >= traceDepth) break;
                 startUv += endUv;
                 traceDepth -= stepSize;
                 texDepth = texture2DGradARB(normals, fract(startUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
-
-                if(texDepth > traceDepth) break;
             }
 
             currPos = vec3(startUv - endUv, traceDepth + stepSize);
@@ -72,12 +71,10 @@ uniform sampler2D texture;
                 vec2 traceUv = currPos.xy;
 
                 for(int i = int(traceDepth * PARALLAX_SHD_STEPS); i < PARALLAX_SHD_STEPS; i++){
+                    if(texture2DGradARB(normals, fract(traceUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a >= traceDepth) return pow(i * stepSize, 16.0);
+                    // if(texture2DGradARB(normals, fract(traceUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a >= traceDepth) return 0.0;
                     traceUv += stepOffset;
                     traceDepth += stepSize;
-                    
-                    // if(texture2DGradARB(normals, fract(traceUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a > traceDepth) return 0.0;
-                    
-                    if(texture2DGradARB(normals, fract(traceUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a > traceDepth) return pow(i * stepSize, 16.0);
                 }
 
                 return 1.0;
