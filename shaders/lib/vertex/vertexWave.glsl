@@ -24,7 +24,7 @@ void getWave(inout vec3 vertexPos, in vec3 worldPos, in vec2 texCoord, in vec2 m
 		// Floating plants
 		if(id == 10004) vertexPos.y += waterDisp;
 		// Lava
-		if(id == 10017) vertexPos.y += waterDisp;
+		if(id == 10018) vertexPos.y += waterDisp;
 	#endif
 
 	#if defined WATER || defined SHADOW

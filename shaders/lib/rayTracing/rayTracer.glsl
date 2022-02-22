@@ -1,5 +1,5 @@
 vec3 binarySearch(vec3 screenPosRayDir, vec3 startPos, int binarySearchSteps){
-	for(int y = 0; y < binarySearchSteps; y++){
+	for(int i = 0; i < binarySearchSteps; i++){
 		if(startPos.x < 0 || startPos.y < 0 || startPos.x > 1 || startPos.y > 1) return vec3(0);
 
 		screenPosRayDir *= 0.5;

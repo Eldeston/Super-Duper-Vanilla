@@ -146,9 +146,30 @@ uniform sampler2D texture;
         // Assign SS
         material.ss = saturate((SRPSSE.b * 255.0 - 64.0) / (255.0 - 64.0));
 
+        // Assign smoothness
+        material.smoothness = SRPSSE.r;
+
+        // Assign reflectance
+        material.metallic = SRPSSE.g;
+
+        // Assign emissive
+        material.emissive = SRPSSE.a * float(SRPSSE.a != 1);
+
+        // Assign ambient
+        #ifdef TERRAIN
+            // Apply vanilla AO with it in terrain
+            material.ambient = glcolor.a * normalAOH.b;
+        #else
+            // For others, don't use vanilla AO
+            material.ambient = normalAOH.b;
+        #endif
+
         #if defined TERRAIN || defined BLOCK
+            // If lava and fire
+            if(id == 10018 || id == 10017) material.emissive = 1.0;
+
             // Foliage and corals
-            if((id >= 10000 && id <= 10008) || (id >= 10011 && id <= 10013)) material.ss = 1.0;
+            else if((id >= 10000 && id <= 10008) || (id >= 10011 && id <= 10013)) material.ss = 1.0;
         #endif
 
         // Get parallax shadows
@@ -170,29 +191,6 @@ uniform sampler2D texture;
 
         // Assign normal
         material.normal = normalize(TBN * normalMap);
-
-        // Assign smoothness
-        material.smoothness = SRPSSE.r;
-
-        // Assign reflectance
-        material.metallic = SRPSSE.g;
-
-        // Assign emissive
-        material.emissive = SRPSSE.a * float(SRPSSE.a != 1);
-
-        // Assign ambient
-        #ifdef TERRAIN
-            // Apply vanilla AO with it in terrain
-            material.ambient = glcolor.a * normalAOH.b;
-        #else
-            // For others, don't use vanilla AO
-            material.ambient = normalAOH.b;
-        #endif
-
-        #if defined TERRAIN || defined BLOCK
-            // If lava
-            if(id == 10017) material.emissive = 1.0;
-        #endif
 
         #if defined WATER || defined BLOCK
             // If water
@@ -268,8 +266,8 @@ uniform sampler2D texture;
             // Foliage and corals
             if((id >= 10000 && id <= 10008) || (id >= 10011 && id <= 10013)) material.ss = 1.0;
 
-            // If lava
-            else if(id == 10017) material.emissive = 1.0;
+            // If lava and fire
+            else if(id == 10018 || id == 10017) material.emissive = 1.0;
         #endif
 
         #if defined WATER || defined BLOCK
@@ -321,10 +319,10 @@ uniform sampler2D texture;
                 else if(id == 10011) material.emissive = max2(material.albedo.rg) > 0.8 ? 0.72 : material.emissive;
 
                 // Emissives
-                else if(id == 10016 || id == 10017) material.emissive = smoothstep(0.6, 0.8, hsv.z);
+                else if(id == 10016 || id == 10018) material.emissive = smoothstep(0.6, 0.8, hsv.z);
 
                 // Redstone
-                else if(id == 10018 || id == 10068){
+                else if(id == 10019 || id == 10068){
                     material.emissive = cubed(material.albedo.r) * hsv.y;
                     material.smoothness = material.emissive;
                     material.metallic = step(0.8, material.emissive);
