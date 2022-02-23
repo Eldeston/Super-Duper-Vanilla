@@ -93,7 +93,7 @@ vec3 getSkyRender(vec3 skyBoxCol, vec3 playerPos, bool skyMask){
 
 vec3 getSkyRender(vec3 skyBoxCol, vec3 playerPos, bool skyMask, bool sunMoonMask){
     vec3 nPlayerPos = normalize(playerPos);
-    vec3 nSkyPos = normalize(mat3(shadowProjection) * (mat3(shadowModelView) * playerPos));
+    vec3 nSkyPos = normalize(mat3(shadowModelView) * playerPos);
 
     vec3 finalCol = vec3(0);
 
