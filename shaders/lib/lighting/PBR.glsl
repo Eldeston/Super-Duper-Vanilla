@@ -124,7 +124,7 @@ uniform sampler2D texture;
             vec3 currPos;
             
             // Exclude signs, due to a missing text bug
-            if(id != 10102) texUv = fract(parallaxUv(vTexCoord, viewDir.xy / -viewDir.z, currPos)) * vTexCoordScale + vTexCoordPos;
+            if(id != 10019) texUv = fract(parallaxUv(vTexCoord, viewDir.xy / -viewDir.z, currPos)) * vTexCoordScale + vTexCoordPos;
         #endif
 
         // Assign albedo
@@ -166,17 +166,17 @@ uniform sampler2D texture;
 
         #if defined TERRAIN || defined BLOCK
             // If lava and fire
-            if(id == 10018 || id == 10017) material.emissive = 1.0;
+            if(id == 10002 || id == 10003) material.emissive = 1.0;
 
             // Foliage and corals
-            else if((id >= 10000 && id <= 10008) || (id >= 10011 && id <= 10013)) material.ss = 1.0;
+            else if((id >= 10004 && id <= 10016) || id == 10036 || id == 10037) material.ss = 1.0;
         #endif
 
         // Get parallax shadows
         material.parallaxShd = 1.0;
 
         #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined PARALLAX_OCCLUSION
-            if(id != 10102){
+            if(id != 10019){
                 #ifdef SLOPE_NORMALS
                     if(texture2DGradARB(normals, texUv, dcdx, dcdy).a > currPos.z) normalMap = vec3(getSlopeNormals(-viewDir, texUv, currPos.z), 0);
                 #endif
@@ -194,13 +194,13 @@ uniform sampler2D texture;
 
         #if defined WATER || defined BLOCK
             // If water
-            if(id == 10034){
+            if(id == 10001){
                 material.smoothness = 0.96;
                 material.metallic = 0.02;
             }
 
             // End portal
-            else if(id == 10100){
+            else if(id == 10017){
                 vec3 d0 = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.02)) * 0.5, dcdx, dcdy).rgb;
                 vec3 d1 = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.01)), dcdx, dcdy).rgb;
                 material.albedo = vec4(d0 + d1 + 0.05, 1);
@@ -211,7 +211,7 @@ uniform sampler2D texture;
             }
             
             // Nether portal
-            else if(id == 10101){
+            else if(id == 10018){
                 material.smoothness = 0.96;
                 material.metallic = 0.04;
                 material.emissive = maxC(material.albedo.rgb);
@@ -263,22 +263,22 @@ uniform sampler2D texture;
         #endif
 
         #if defined TERRAIN || defined BLOCK
-            // Foliage and corals
-            if((id >= 10000 && id <= 10008) || (id >= 10011 && id <= 10013)) material.ss = 1.0;
-
             // If lava and fire
-            else if(id == 10018 || id == 10017) material.emissive = 1.0;
+            if(id == 10002 || id == 10003) material.emissive = 1.0;
+
+            // Foliage and corals
+            else if((id >= 10004 && id <= 10016) || id == 10036 || id == 10037) material.ss = 1.0;
         #endif
 
         #if defined WATER || defined BLOCK
             // If water
-            if(id == 10034){
+            if(id == 10001){
                 material.smoothness = 0.96;
                 material.metallic = 0.02;
             }
 
             // End portal
-            else if(id == 10100){
+            else if(id == 10017){
                 vec3 d0 = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.02)) * 0.5, dcdx, dcdy).rgb;
                 vec3 d1 = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.01)), dcdx, dcdy).rgb;
                 material.albedo = vec4(d0 + d1 + 0.05, 1);
@@ -289,7 +289,7 @@ uniform sampler2D texture;
             }
             
             // Nether portal
-            else if(id == 10101){
+            else if(id == 10018){
                 material.smoothness = 0.96;
                 material.metallic = 0.04;
                 material.emissive = maxC(material.albedo.rgb);
@@ -309,20 +309,20 @@ uniform sampler2D texture;
         #if DEFAULT_MAT == 1
             #if defined TERRAIN || defined BLOCK
                 // Glow berries
-                if(id == 10012) material.emissive = max2(material.albedo.rg) > 0.8 ? 0.72 : material.emissive;
+                if(id == 10033) material.emissive = max2(material.albedo.rg) > 0.8 ? 0.72 : material.emissive;
 
                 // Stems
-                else if(id == 10009) material.emissive = material.albedo.r < 0.1 ? hsv.z * 0.72 : material.emissive;
-                else if(id == 10010) material.emissive = material.albedo.b < 0.16 && material.albedo.r > 0.4 ? hsv.z * 0.72 : material.emissive;
+                else if(id == 10034) material.emissive = material.albedo.r < 0.1 ? hsv.z * 0.72 : material.emissive;
+                else if(id == 10035) material.emissive = material.albedo.b < 0.16 && material.albedo.r > 0.4 ? hsv.z * 0.72 : material.emissive;
 
                 // Fungus
-                else if(id == 10011) material.emissive = max2(material.albedo.rg) > 0.8 ? 0.72 : material.emissive;
+                else if(id == 10036) material.emissive = max2(material.albedo.rg) > 0.8 ? 0.72 : material.emissive;
 
                 // Emissives
-                else if(id == 10016 || id == 10018) material.emissive = smoothstep(0.6, 0.8, hsv.z);
+                else if(id == 10038) material.emissive = smoothstep(0.6, 0.8, hsv.z);
 
                 // Redstone
-                else if(id == 10019 || id == 10068){
+                else if(id == 10039 || id == 10068){
                     material.emissive = cubed(material.albedo.r) * hsv.y;
                     material.smoothness = material.emissive;
                     material.metallic = step(0.8, material.emissive);
@@ -382,10 +382,10 @@ uniform sampler2D texture;
 
             #if defined WATER || defined BLOCK
                 // Glass and ice
-                if(id == 10032 || id == 10033) material.smoothness = 0.96;
+                if(id == 10041 || id == 10042) material.smoothness = 0.96;
 
-                // Slime and honey
-                else if(id == 10035) material.smoothness = 0.96;
+                // Gelatin
+                else if(id == 10043) material.smoothness = 0.96;
             #endif
         #endif
 

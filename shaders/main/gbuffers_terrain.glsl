@@ -152,7 +152,7 @@ uniform vec3 cameraPosition;
 
         vec3 worldPos = posVector.feetPlayerPos + cameraPosition;
 
-        if(rBlockId == 10017){
+        if(rBlockId == 10002){
             #ifdef LAVA_NOISE
                 vec2 lavaUv = worldPos.xz * (1.0 - TBN[2].y) + worldPos.xz * TBN[2].y;
                 float lavaWaves = max(getLuminance(material.albedo.rgb), getCellNoise2(floor(lavaUv * 16.0) / (LAVA_TILE_SIZE * 16.0)));

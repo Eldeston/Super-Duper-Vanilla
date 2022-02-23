@@ -155,7 +155,7 @@ uniform vec3 cameraPosition;
         vec3 worldPos = posVector.feetPlayerPos + cameraPosition;
         
         // If water
-        if(rBlockId == 10034){
+        if(rBlockId == 10001){
             float waterNoise = WATER_BRIGHTNESS;
 
             #if !(defined END || defined NETHER)
