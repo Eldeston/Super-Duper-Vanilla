@@ -2,10 +2,10 @@
     float getSunMoonShape(vec2 pos){
         #if SUN_MOON_TYPE == 1
             // Round sun and moon
-            return min(1.0, exp2(-(length(pos) - 0.075) * 256.0));
+            return min(1.0, exp2(-(length(pos) - 0.1) * 256.0));
         #else
             // Default sun and moon
-            return min(1.0, exp2(-(pow(abs(pos.x * pos.x * pos.x) + abs(pos.y * pos.y * pos.y), 0.333) - 0.075) * 256.0));
+            return min(1.0, exp2(-(pow(abs(pos.x * pos.x * pos.x) + abs(pos.y * pos.y * pos.y), 0.333) - 0.1) * 256.0));
         #endif
     }
 #endif
@@ -81,7 +81,7 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
     if(isEyeInWater == 1) finalCol *= voidGradient;
 
     #if USE_SUN_MOON == 1 && defined WORLD_LIGHT
-        finalCol += lightCol * pow(max(-nSkyPosZ * 0.5, 0.0), abs(nPlayerPos.y) + 1.0);
+        finalCol += lightCol * pow(max(nSkyPosZ * 0.5, 0.0), abs(nPlayerPos.y) + 1.0);
     #endif
     
     return finalCol * (isEyeInWater == 0 ? voidGradient * (1.0 - eyeBrightFact) + eyeBrightFact : 1.0) + ambientLighting;
@@ -101,9 +101,9 @@ vec3 getSkyRender(vec3 skyBoxCol, vec3 playerPos, bool skyMask, bool sunMoonMask
         if(sunMoonMask) finalCol += getSunMoonShape(nSkyPos.xy) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * sqrt(lightCol);
     #elif USE_SUN_MOON == 2
         if(sunMoonMask){
-            float blackHole = min(1.0, 0.005 / ((nSkyPos.z + 1.0) * 32.0 - 0.075));
+            float blackHole = min(1.0, 0.005 / ((1.0 - nSkyPos.z) * 32.0 - 0.1));
             if(blackHole <= 0) return vec3(0);
-            float ring0 = exp(-abs(length(vec2(nSkyPos.x, nSkyPos.y)) - 0.075) * 256.0);
+            float ring0 = exp(-abs(length(vec2(nSkyPos.x, nSkyPos.y)) - 0.1) * 256.0);
             finalCol += blackHole * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * lightCol;
             nPlayerPos = mix(nPlayerPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), blackHole);
             nSkyPos = mix(nSkyPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), blackHole);
