@@ -218,5 +218,5 @@ float vnoise(vec2 p, float time, float tiles){
 	}
 
 float edgeVisibility(vec2 screenPos) {
-    return 1.0 - hermiteMix(0.05, 0.0125, min2(screenPos * (1.0 - screenPos)));
+    return 1.0 - hermiteMix(0.025, 0.0, min2(screenPos * (1.0 - screenPos)));
 }
