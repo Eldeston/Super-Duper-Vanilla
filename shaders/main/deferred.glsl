@@ -37,9 +37,6 @@ varying vec2 screenCoord;
     // Shadow view matrix uniforms
     uniform mat4 shadowModelView;
 
-    // Shadow projection matrix uniforms
-    uniform mat4 shadowProjection;
-
     /* Position uniforms */
     uniform vec3 cameraPosition;
 

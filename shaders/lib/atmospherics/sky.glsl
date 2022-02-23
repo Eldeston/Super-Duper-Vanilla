@@ -88,7 +88,7 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
 }
 
 vec3 getSkyRender(vec3 skyBoxCol, vec3 playerPos, bool skyMask){
-    return getSkyColor(skyBoxCol, normalize(playerPos), normalize(mat3(shadowProjection) * (mat3(shadowModelView) * playerPos)).z, skyMask);
+    return getSkyColor(skyBoxCol, normalize(playerPos), normalize(mat3(shadowModelView) * playerPos).z, skyMask);
 }
 
 vec3 getSkyRender(vec3 skyBoxCol, vec3 playerPos, bool skyMask, bool sunMoonMask){

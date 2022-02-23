@@ -35,8 +35,10 @@ varying vec2 screenCoord;
     // Shadow view matrix uniforms
     uniform mat4 shadowModelView;
 
-    // Shadow projection matrix uniforms
-    uniform mat4 shadowProjection;
+    #if defined WORLD_LIGHT && defined SHD_ENABLE
+        // Shadow projection matrix uniforms
+        uniform mat4 shadowProjection;
+    #endif
 
     /* Position uniforms */
     uniform vec3 cameraPosition;
