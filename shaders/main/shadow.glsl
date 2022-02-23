@@ -59,10 +59,10 @@ varying vec3 glcolor;
 
     void main(){
         vec4 shdColor = texture2D(tex, texCoord);
-        shdColor.rgb = shdColor.rgb * glcolor;
+        shdColor.rgb = pow(shdColor.rgb * glcolor, vec3(GAMMA));
 
         #ifdef UNDERWATER_CAUSTICS
-            if(isEyeInWater == 1 && int(blockId + 0.5) == 10034) shdColor.rgb *= vec3(cubed(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 8.0);
+            if(isEyeInWater == 1 && int(blockId + 0.5) == 10001) shdColor.rgb *= vec3(cubed(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 32.0);
         #endif
 
     /* DRAWBUFFERS:0 */
