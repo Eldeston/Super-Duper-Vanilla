@@ -103,7 +103,7 @@ varying vec2 screenCoord;
         // Declare and get positions
         positionVectors posVector;
         posVector.screenPos = vec3(screenCoord, texture2D(depthtex0, screenCoord).x);
-        posVector.viewPos = toView2(posVector.screenPos);
+        posVector.viewPos = toView(posVector.screenPos);
         posVector.eyePlayerPos = mat3(gbufferModelViewInverse) * posVector.viewPos;
         posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
 
@@ -133,7 +133,7 @@ varying vec2 screenCoord;
                 vec3 skyRender = getSkyRender(vec3(0), posVector.eyePlayerPos, false);
 
                 // Fog calculation
-                sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, skyRender, posVector.feetPlayerPos.y + cameraPosition.y, false);
+                // sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, skyRender, posVector.feetPlayerPos.y + cameraPosition.y, false);
             }
         }
 
