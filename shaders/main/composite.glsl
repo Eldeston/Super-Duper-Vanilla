@@ -118,7 +118,7 @@ varying vec2 screenCoord;
         // If not sky, don't calculate lighting
         if(posVector.screenPos.z != 1){
             // If the object is transparent render lighting sperately
-            if(posVector.viewPos.z - toView(texture2D(depthtex1, screenCoord).r) > 0.005){
+            if(texture2D(depthtex1, screenCoord).x > posVector.screenPos.z){
                 // Declare and get materials
                 matPBR material;
                 material.albedo = texture2D(colortex2, screenCoord);
@@ -133,7 +133,7 @@ varying vec2 screenCoord;
                 vec3 skyRender = getSkyRender(vec3(0), posVector.eyePlayerPos, false);
 
                 // Fog calculation
-                // sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, skyRender, posVector.feetPlayerPos.y + cameraPosition.y, false);
+                sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, skyRender, posVector.feetPlayerPos.y + cameraPosition.y, false);
             }
         }
 

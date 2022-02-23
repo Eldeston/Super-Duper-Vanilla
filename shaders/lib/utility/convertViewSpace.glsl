@@ -4,11 +4,6 @@ vec3 toView(vec3 pos){
     return viewPos / (gbufferProjectionInverse[2].w * result.z + gbufferProjectionInverse[3].w);
 }
 
-vec3 toView2(vec3 pos){
-    vec4 viewPos = gbufferProjectionInverse * (vec4(pos * 2.0 - 1.0, 1));
-	return (viewPos / viewPos.w).xyz;
-}
-
 float toView(float depth){
 	return gbufferProjectionInverse[3].z / (gbufferProjectionInverse[2].w * (depth * 2.0 - 1.0) + gbufferProjectionInverse[3].w);
 }
