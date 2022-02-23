@@ -116,7 +116,7 @@ varying vec2 screenCoord;
             if(skyMask) posVector.screenPos.xy += jitterPos(-0.5);
         #endif
         
-        posVector.viewPos = toView(posVector.screenPos);
+        posVector.viewPos = toView2(posVector.screenPos);
         posVector.eyePlayerPos = mat3(gbufferModelViewInverse) * posVector.viewPos;
         posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
 
