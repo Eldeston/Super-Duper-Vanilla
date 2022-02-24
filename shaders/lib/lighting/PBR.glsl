@@ -229,6 +229,10 @@ uniform sampler2D texture;
         #endif
 
         material.smoothness = min(material.smoothness, 0.96);
+
+        #ifdef ENTITIES
+            if(id == 0) material.ambient = 1.0;
+        #endif
     }
 #else
     void getPBR(inout matPBR material, in positionVectors posVector, in int id){
