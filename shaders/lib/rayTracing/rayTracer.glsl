@@ -14,7 +14,7 @@ vec3 binarySearch(vec3 screenPosRayDir, vec3 startPos, int binarySearchSteps){
 // (it's basically an upgrade to Shadax's raytracer https://github.com/Shadax-stack/MinecraftSSR)
 vec3 rayTraceScene(vec3 screenPos, vec3 viewPos, vec3 rayDir, int steps, int binarySearchSteps){
 	// If hand, do simple, flipped reflections
-	if((screenPos.z * 2.0 - 1.0) < MC_HAND_DEPTH){
+	if(screenPos.z < 0.56){
 		vec3 handScreenPos = toScreenSpacePos(toScreen(viewPos + rayDir * 128.0).xy, depthtex0);
 		return vec3(handScreenPos.xy, handScreenPos.z != 1);
 	}
@@ -29,7 +29,7 @@ vec3 rayTraceScene(vec3 screenPos, vec3 viewPos, vec3 rayDir, int steps, int bin
 		if(screenPos.x < 0 || screenPos.y < 0 || screenPos.x > 1 || screenPos.y > 1) return vec3(0);
 		float currDepth = texture2D(depthtex0, screenPos.xy).x;
 
-		if(screenPos.z >= currDepth && (screenPos.z - currDepth) < MC_HAND_DEPTH){
+		if(screenPos.z > currDepth && (screenPos.z - currDepth) < 0.125){
 			if(binarySearchSteps == 0) return vec3(screenPos.xy, currDepth != 1);
 			return vec3(binarySearch(screenPosRayDir, screenPos, binarySearchSteps).xy, currDepth != 1);
 		}
