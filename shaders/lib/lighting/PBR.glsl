@@ -231,7 +231,7 @@ uniform sampler2D texture;
         material.smoothness = min(material.smoothness, 0.96);
 
         // Ambient occlusion fix
-        #if defined HAND || defined HAND_WATER
+        #if defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER
             if(id == 0) material.ambient = 1.0;
         #endif
     }
