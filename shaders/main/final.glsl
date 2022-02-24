@@ -21,7 +21,7 @@ varying vec2 texCoord;
     const int colortex4Format = RGB8;
     const int colortex5Format = R11F_G11F_B10F;
     const int colortex6Format = RGBA16F;
-    const int colortex7Format = RGBA8;
+    const int colortex7Format = RGB8;
     */
     
     uniform sampler2D BUFFER_VIEW;
