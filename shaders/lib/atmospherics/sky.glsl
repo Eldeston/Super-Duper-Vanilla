@@ -87,13 +87,12 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
     return finalCol * (isEyeInWater == 0 ? voidGradient * (1.0 - eyeBrightFact) + eyeBrightFact : 1.0) + ambientLighting;
 }
 
-vec3 getSkyRender(vec3 skyBoxCol, vec3 playerPos, bool skyMask){
-    return getSkyColor(skyBoxCol, normalize(playerPos), normalize(mat3(shadowModelView) * playerPos).z, skyMask);
+vec3 getSkyRender(vec3 skyBoxCol, vec3 nPlayerPos, bool skyMask){
+    return getSkyColor(skyBoxCol, nPlayerPos, dot(nPlayerPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), skyMask);
 }
 
-vec3 getSkyRender(vec3 skyBoxCol, vec3 playerPos, bool skyMask, bool sunMoonMask){
-    vec3 nPlayerPos = normalize(playerPos);
-    vec3 nSkyPos = normalize(mat3(shadowModelView) * playerPos);
+vec3 getSkyRender(vec3 skyBoxCol, vec3 nPlayerPos, bool skyMask, bool sunMoonMask){
+    vec3 nSkyPos = mat3(shadowModelView) * nPlayerPos;
 
     vec3 finalCol = vec3(0);
 

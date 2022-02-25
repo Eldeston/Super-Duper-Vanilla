@@ -122,10 +122,10 @@ uniform mat4 gbufferModelViewInverse;
         // World border fix
         if(renderStage == MC_RENDER_STAGE_WORLD_BORDER){
         /* DRAWBUFFERS:0 */
-            gl_FragData[0] = vec4(material.albedo.a * EMISSIVE_INTENSITY * vec3(0.5, 0.75, 1), material.albedo.a); //gcolor
+            gl_FragData[0] = vec4(material.albedo.rgb * EMISSIVE_INTENSITY * vec3(0.5, 0.75, 1), material.albedo.a); //gcolor
             return; // Return immediately, no need for lighting calculation
         }
-
+        
         // Assign normals
         material.normal = norm;
 

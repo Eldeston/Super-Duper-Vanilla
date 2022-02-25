@@ -126,13 +126,13 @@ varying vec2 screenCoord;
                 material.albedo = texture2D(colortex2, screenCoord);
                 material.normal = texture2D(colortex1, screenCoord).rgb * 2.0 - 1.0;
 
-                vec3 matRaw0 = texture2D(colortex3, screenCoord).xyz;
+                vec2 matRaw0 = texture2D(colortex3, screenCoord).xy;
                 material.metallic = matRaw0.x; material.smoothness = matRaw0.y;
 
                 sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
 
                 // Get sky color
-                vec3 skyRender = getSkyRender(vec3(0), posVector.eyePlayerPos, false);
+                vec3 skyRender = getSkyRender(vec3(0), normalize(posVector.eyePlayerPos), false);
 
                 // Fog calculation
                 sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, skyRender, posVector.feetPlayerPos.y + cameraPosition.y, false);
