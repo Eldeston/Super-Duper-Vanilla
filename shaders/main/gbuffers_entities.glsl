@@ -134,6 +134,15 @@ uniform mat4 gbufferModelViewInverse;
     #include "/lib/lighting/complexShadingForward.glsl"
     
     void main(){
+        #ifdef ENTITIES
+            // Lightning fix
+            if(entityId == 10101){
+            /* DRAWBUFFERS:0 */
+                gl_FragData[0] = vec4(glcolor.rgb * EMISSIVE_INTENSITY * vec3(0.5, 0.75, 1), glcolor.a); //gcolor
+                return;
+            }
+        #endif
+
         // Declare and get positions
         positionVectors posVector;
         posVector.screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);

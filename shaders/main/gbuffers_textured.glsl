@@ -119,6 +119,13 @@ uniform mat4 gbufferModelViewInverse;
         // Alpha test, discard immediately
         if(material.albedo.a <= ALPHA_THRESHOLD) discard;
         
+        // World border fix
+        if(renderStage == MC_RENDER_STAGE_WORLD_BORDER){
+        /* DRAWBUFFERS:0 */
+            gl_FragData[0] = vec4(material.albedo.a * EMISSIVE_INTENSITY * vec3(0.5, 0.75, 1), material.albedo.a); //gcolor
+            return; // Return immediately, no need for lighting calculation
+        }
+
         // Assign normals
         material.normal = norm;
 
@@ -133,15 +140,6 @@ uniform mat4 gbufferModelViewInverse;
         #endif
 
         material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
-
-        // World border fix
-        if(renderStage == MC_RENDER_STAGE_WORLD_BORDER){
-        /* DRAWBUFFERS:012 */
-            gl_FragData[0] = vec4(material.albedo.rgb * EMISSIVE_INTENSITY * vec3(0.5, 0.75, 1), material.albedo.a); //gcolor
-            gl_FragData[1] = vec4(material.normal * 0.5 + 0.5, 1); //colortex1
-            gl_FragData[2] = vec4(material.albedo.rgb, 1); //colortex2
-            return; // Return immediately, no need for lighting calculation
-        }
 
         material.metallic = 0.0;
         material.ss = 1.0;
