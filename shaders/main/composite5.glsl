@@ -37,7 +37,7 @@ varying vec2 texCoord;
 
         vec3 getBloomTile(vec2 uv, vec2 coords, float LOD){
             // Uncompress bloom
-            return texture2DBicubic(colortex2, uv / exp2(LOD) + coords, vec2(viewWidth, viewHeight)).rgb;
+            return texture2DBox(colortex2, uv / exp2(LOD) + coords, vec2(viewWidth, viewHeight)).rgb;
         }
     #endif
 

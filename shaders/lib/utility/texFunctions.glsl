@@ -33,15 +33,15 @@ vec4 texPix2DCubic(sampler2D image, vec2 st, vec2 texSize){
 }
 
 vec4 cubic(float v){
-    vec4 n = vec4(1.0, 2.0, 3.0, 4.0) - v;
+    vec4 n = vec4(1, 2, 3, 4) - v;
     vec4 s = n * n * n;
     float x = s.x;
     float y = s.y - 4.0 * s.x;
     float z = s.z - 4.0 * s.y + 6.0 * s.x;
     float w = 6.0 - x - y - z;
-    return vec4(x, y, z, w) * (1.0/6.0);
+    return vec4(x, y, z, w) / 6.0;
 }
- 
+
 vec4 texture2DBicubic(sampler2D image, vec2 texCoords, vec2 texSize){
     vec2 invTexSize = 1.0 / texSize;
 
@@ -70,3 +70,10 @@ vec4 texture2DBicubic(sampler2D image, vec2 texCoords, vec2 texSize){
  
     return mix(mix(sample3, sample2, sx), mix(sample1, sample0, sx), sy);
 }
+
+vec4 texture2DBox(sampler2D image, vec2 texCoords, vec2 texSize){
+    vec2 invTexSize = 1.0 / texSize;
+	vec4 sample = texture2D(image, texCoords - invTexSize) + texture2D(image, texCoords + invTexSize) +
+    texture2D(image, texCoords - vec2(-invTexSize.x, invTexSize.y)) + texture2D(image, texCoords + vec2(-invTexSize.x, invTexSize.y));
+	return sample * 0.25;
+	}
