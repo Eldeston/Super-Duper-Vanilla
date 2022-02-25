@@ -11,6 +11,14 @@ varying vec3 worldPos;
 varying vec3 glcolor;
 
 #ifdef VERTEX
+    #if TIMELAPSE_MODE == 2
+        uniform float animationFrameTime;
+
+        float newFrameTimeCounter = animationFrameTime;
+    #else
+        float newFrameTimeCounter = frameTimeCounter;
+    #endif
+
     uniform mat4 shadowModelView;
     uniform mat4 shadowModelViewInverse;
     uniform mat4 shadowProjection;
@@ -49,6 +57,14 @@ varying vec3 glcolor;
 #endif
 
 #ifdef FRAGMENT
+    #if TIMELAPSE_MODE != 0
+        uniform float animationFrameTime;
+
+        float newFrameTimeCounter = animationFrameTime;
+    #else
+        float newFrameTimeCounter = frameTimeCounter;
+    #endif
+
     uniform sampler2D tex;
 
     uniform int isEyeInWater;

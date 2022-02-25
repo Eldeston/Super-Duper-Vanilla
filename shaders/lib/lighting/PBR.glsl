@@ -201,8 +201,8 @@ uniform sampler2D texture;
 
             // End portal
             else if(id == 10017){
-                vec3 d0 = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.02)) * 0.5, dcdx, dcdy).rgb;
-                vec3 d1 = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.01)), dcdx, dcdy).rgb;
+                vec3 d0 = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, newFrameTimeCounter * 0.02)) * 0.5, dcdx, dcdy).rgb;
+                vec3 d1 = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, newFrameTimeCounter * 0.01)), dcdx, dcdy).rgb;
                 material.albedo = vec4(d0 + d1 + 0.05, 1);
                 material.normal = TBN[2];
                 material.smoothness = 0.96;
@@ -284,8 +284,8 @@ uniform sampler2D texture;
 
             // End portal
             else if(id == 10017){
-                vec3 d0 = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.02)) * 0.5, dcdx, dcdy).rgb;
-                vec3 d1 = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, frameTimeCounter * 0.01)), dcdx, dcdy).rgb;
+                vec3 d0 = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, newFrameTimeCounter * 0.02)) * 0.5, dcdx, dcdy).rgb;
+                vec3 d1 = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, newFrameTimeCounter * 0.01)), dcdx, dcdy).rgb;
                 material.albedo = vec4(d0 + d1 + 0.05, 1);
                 material.normal = TBN[2];
                 material.smoothness = 0.96;

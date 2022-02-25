@@ -39,6 +39,14 @@ uniform vec3 cameraPosition;
 
         #include "/lib/utility/taaJitter.glsl"
     #endif
+
+    #if TIMELAPSE_MODE == 2
+        uniform float animationFrameTime;
+
+        float newFrameTimeCounter = animationFrameTime;
+    #else
+        float newFrameTimeCounter = frameTimeCounter;
+    #endif
     
     #include "/lib/vertex/vertexWave.glsl"
 
@@ -102,6 +110,14 @@ uniform vec3 cameraPosition;
             // Shadow projection matrix uniforms
             uniform mat4 shadowProjection;
         #endif
+    #endif
+
+    #if TIMELAPSE_MODE != 0
+        uniform float animationFrameTime;
+
+        float newFrameTimeCounter = animationFrameTime;
+    #else
+        float newFrameTimeCounter = frameTimeCounter;
     #endif
 
     /* Screen resolutions */

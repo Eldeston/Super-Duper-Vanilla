@@ -103,6 +103,14 @@ uniform mat4 gbufferModelViewInverse;
 
     // Get frame time
     uniform float frameTimeCounter;
+
+    #if TIMELAPSE_MODE != 0
+        uniform float animationFrameTime;
+
+        float newFrameTimeCounter = animationFrameTime;
+    #else
+        float newFrameTimeCounter = frameTimeCounter;
+    #endif
     
     // Get world time
     uniform float day;

@@ -112,6 +112,10 @@ screen.LAVA_SETTINGS=Lava material settings
     option.WIND_SPEED=Wind speed
     option.WORLD_CURVATURE=World curvature
     option.WORLD_CURVATURE_SIZE=World curvature size
+    option.TIMELAPSE_MODE=Timelapse mode
+    value.TIMELAPSE_MODE.0=OFF
+    value.TIMELAPSE_MODE.1=Fragment
+    value.TIMELAPSE_MODE.2=Full
 
 screen.CONFIGURE_COLORS=Configure colors
 

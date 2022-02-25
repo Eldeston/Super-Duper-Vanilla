@@ -40,6 +40,14 @@ uniform vec3 cameraPosition;
         #include "/lib/utility/taaJitter.glsl"
     #endif
 
+    #if TIMELAPSE_MODE == 2
+        uniform float animationFrameTime;
+
+        float newFrameTimeCounter = animationFrameTime;
+    #else
+        float newFrameTimeCounter = frameTimeCounter;
+    #endif
+
     #include "/lib/vertex/vertexWave.glsl"
 
     uniform mat4 gbufferModelView;
@@ -102,6 +110,14 @@ uniform vec3 cameraPosition;
             // Shadow projection matrix uniforms
             uniform mat4 shadowProjection;
         #endif
+    #endif
+
+    #if TIMELAPSE_MODE != 0
+        uniform float animationFrameTime;
+
+        float newFrameTimeCounter = animationFrameTime;
+    #else
+        float newFrameTimeCounter = frameTimeCounter;
     #endif
 
     /* Screen resolutions */
@@ -178,7 +194,7 @@ uniform vec3 cameraPosition;
             #endif
 
             // Water color and foam 
-            float waterDepth = toView(posVector.screenPos.z) - toView(texture2D(depthtex1, posVector.screenPos.xy).x);
+            float waterDepth = posVector.viewPos.z - toView(texture2D(depthtex1, posVector.screenPos.xy).x);
 
             if(isEyeInWater != 1){
                 #ifdef STYLIZED_WATER_ABSORPTION

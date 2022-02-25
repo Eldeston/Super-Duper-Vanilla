@@ -23,6 +23,14 @@
 #endif
 
 #if defined STORY_MODE_CLOUDS && !defined FORCE_DISABLE_CLOUDS
+    #if TIMELAPSE_MODE != 0
+        uniform float animationFrameTime;
+        
+        #define ANIMATION_FRAMETIME animationFrameTime
+    #else
+        #define ANIMATION_FRAMETIME frameTimeCounter
+    #endif
+
     float cloudParallax(vec2 pos, float time, int steps){
         vec2 uv = pos / 48.0;
         float invSteps = 1.0 / steps;
@@ -62,10 +70,10 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
                 vec2 planeUv = nPlayerPos.xz / nPlayerPos.y;
 
                 #ifdef CLOUD_FADE
-                    float fade = smootherstep(sin(frameTimeCounter * FADE_SPEED) * 0.5 + 0.5);
-                    float clouds = mix(cloudParallax(planeUv, frameTimeCounter, 8), cloudParallax(-planeUv, 1250.0 - frameTimeCounter, 8), fade);
+                    float fade = smootherstep(sin(ANIMATION_FRAMETIME * FADE_SPEED) * 0.5 + 0.5);
+                    float clouds = mix(cloudParallax(planeUv, ANIMATION_FRAMETIME, 8), cloudParallax(-planeUv, 1250.0 - ANIMATION_FRAMETIME, 8), fade);
                 #else
-                    float clouds = cloudParallax(planeUv, frameTimeCounter, 8);
+                    float clouds = cloudParallax(planeUv, ANIMATION_FRAMETIME, 8);
                 #endif
 
                 #ifdef WORLD_LIGHT

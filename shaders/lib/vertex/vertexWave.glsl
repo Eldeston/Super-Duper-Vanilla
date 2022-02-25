@@ -14,8 +14,8 @@ void getWave(inout vec3 vertexPos, in vec3 worldPos, in vec2 texCoord, in vec2 m
 		waterWeight *= offSet;
 	}
 
-    float windDisp = sin(worldPos.x + worldPos.z * 2.0 + frameTimeCounter * 1.32 * WIND_SPEED) * plantWeight * outSide;
-	float waterDisp = sin(worldPos.x + worldPos.z + frameTimeCounter * 1.64 * CURRENT_SPEED) * waterWeight;
+    float windDisp = sin(worldPos.x + worldPos.z * 2.0 + newFrameTimeCounter * 1.32 * WIND_SPEED) * plantWeight * outSide;
+	float waterDisp = sin(worldPos.x + worldPos.z + newFrameTimeCounter * 1.64 * CURRENT_SPEED) * waterWeight;
 	
 	#if defined TERRAIN || defined SHADOW
 		// Lava
