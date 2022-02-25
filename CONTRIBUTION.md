@@ -5,6 +5,12 @@
 ### Do not make large changes before discussing them first.
    If you're changing large amounts of code, please discuss it with me via. Github or Discord (Eldeston#3590) or in FlameRender Studio Discord in #super-duper-vanilla.
 
+### Mod compatibility
+   If you're making a pull request for mod compatibility, please make sure your fix does not affect other fixes from other mods.
+
+### Keep everything FAST
+   Please check if your code performs well and try to optimize it as much as possible.
+   
 ## Style guidelines
    * No spaces around parentheses: `if(condition){`, `this = function()`
    * No underscores, macros are exempted from this rule.

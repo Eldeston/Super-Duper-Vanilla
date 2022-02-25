@@ -19,6 +19,9 @@
 ## Contribution
    If you plan to contribute to this project, see [**CONTRIBUTION**](CONTRIBUTION.md) for more info.
 
+## Mod compatibility
+   If you want to request mod compatibility with this shader, make a pull request in this repository with the mod that you want to enable compatibility via linking. If you're planning to add mod compatibility by coding it yourself, see [**CONTRIBUTION**](CONTRIBUTION.md).
+
 ## License 
    This shader uses the **GNU GPL 3.0** license. See [**LICENSE**](LICENSE) for more info.
 
@@ -26,10 +29,7 @@
    See all available releases [here](https://github.com/Eldeston/Super-Duper-Vanilla/releases), and get the latest build [here](https://github.com/Eldeston/Super-Duper-Vanilla/archive/refs/heads/master.zip), this build will always be the latest build by default. Latests builds and pre-release versions are expected to be unstable, please report any issues or bugs anytime. Feedback is much appreciated.
 
 ## Official CurseForge Page
-   Super Duper Vanilla just happen to be on CurseForge! Stable and latest releases will be available there. Check it out [here](https://www.curseforge.com/minecraft/customization/super-duper-vanilla-shaders) and show your support by clicking on one of the download links there!
-
-# NOTICE
-   For expected results, please make sure to extract/unzip the downloaded zipped file, otherwise things may break.
+   Super Duper Vanilla just happen to be on CurseForge! Stable and latest releases will always be available there. Check it out [here](https://www.curseforge.com/minecraft/customization/super-duper-vanilla-shaders) and show your support by clicking on one of the download links there!
 
 ## About creator
    Try out my other shader for Minecraft Bedrock, ESTN Shaders, on McpeDL!
