@@ -87,5 +87,5 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 #define SKY_DD vec3(SKY0_DDR, SKY0_DDG, SKY0_DDB) * SKY0_DDI
 
 // Holds the data on how the light will change according to multiple environmental factors
-#define LIGHT_COL_DATA_BLOCK vec3 lightCol = pow(toneSaturation(mix(mix(LIGHT_N, LIGHT_D, day), LIGHT_DD, newDawnDusk) * 0.00392156863, 1.0 - rainStrength * 0.5), vec3(GAMMA)) * (1.0 - cubed(twilight));
-#define SKY_COL_DATA_BLOCK vec3 skyCol = pow(toneSaturation(mix(mix(SKY_N, SKY_D, day), SKY_DD, newDawnDusk) * 0.00392156863, 1.0 - rainStrength * 0.5), vec3(GAMMA));
+#define LIGHT_COL_DATA_BLOCK vec3 lightCol = pow(toneSaturation(mix(mix(LIGHT_N, LIGHT_D, day), LIGHT_DD, dawnDusk) * 0.00392156863, 1.0 - rainStrength * 0.5), vec3(GAMMA)) * shdFade;
+#define SKY_COL_DATA_BLOCK vec3 skyCol = pow(toneSaturation(mix(mix(SKY_N, SKY_D, day), SKY_DD, dawnDusk) * 0.00392156863, 1.0 - rainStrength * 0.5), vec3(GAMMA));

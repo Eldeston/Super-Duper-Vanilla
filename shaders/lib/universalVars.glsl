@@ -5,7 +5,6 @@ uniform float rainStrength;
 
 uniform float day;
 uniform float dawnDusk;
-uniform float twilight;
 
 uniform vec3 fogColor;
 
@@ -22,7 +21,7 @@ float newRainStrength = saturate(rainStrength * eyeBrightFact * float(isEyeInWat
 float ambientLighting = pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
 
 #ifdef WORLD_LIGHT
-    float newDawnDusk = smoothstep(0.32, 0.96, dawnDusk);
+    uniform float shdFade;
     
     // This macro gets the world light color data
     LIGHT_COL_DATA_BLOCK
