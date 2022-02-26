@@ -104,17 +104,19 @@ vec3 getSkyRender(vec3 skyBoxCol, vec3 nPlayerPos, bool skyMask, bool sunMoonMas
 
     vec3 finalCol = vec3(0);
 
-    #if USE_SUN_MOON == 1 && SUN_MOON_TYPE != 2
-        if(sunMoonMask) finalCol += getSunMoonShape(nSkyPos.xy) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * sqrt(lightCol);
-    #elif USE_SUN_MOON == 2
-        if(sunMoonMask){
-            float blackHole = min(1.0, 0.005 / ((1.0 - nSkyPos.z) * 32.0 - 0.1));
-            if(blackHole <= 0) return vec3(0);
-            float ring0 = exp(-abs(length(vec2(nSkyPos.x, nSkyPos.y)) - 0.1) * 256.0);
-            finalCol += blackHole * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * lightCol;
-            nPlayerPos = mix(nPlayerPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), blackHole);
-            nSkyPos = mix(nSkyPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), blackHole);
-        }
+    #ifdef WORLD_LIGHT
+        #if USE_SUN_MOON == 1 && SUN_MOON_TYPE != 2
+            if(sunMoonMask) finalCol += getSunMoonShape(nSkyPos.xy) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * sqrt(lightCol);
+        #elif USE_SUN_MOON == 2
+            if(sunMoonMask){
+                float blackHole = min(1.0, 0.005 / ((1.0 - nSkyPos.z) * 32.0 - 0.1));
+                if(blackHole <= 0) return vec3(0);
+                float ring0 = exp(-abs(length(vec2(nSkyPos.x, nSkyPos.y)) - 0.1) * 256.0);
+                finalCol += blackHole * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * lightCol;
+                nPlayerPos = mix(nPlayerPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), blackHole);
+                nSkyPos = mix(nSkyPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), blackHole);
+            }
+        #endif
     #endif
 
     finalCol += getSkyColor(skyBoxCol, nPlayerPos, nSkyPos.z, skyMask);
