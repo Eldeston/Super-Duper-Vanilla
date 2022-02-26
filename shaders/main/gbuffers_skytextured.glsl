@@ -33,20 +33,6 @@ varying vec4 glcolor;
     uniform int renderStage;
 
     #if USE_SUN_MOON == 1 && SUN_MOON_TYPE == 2
-        // Get world time
-        uniform float day;
-        uniform float dawnDusk;
-        uniform float twilight;
-
-        uniform int isEyeInWater;
-
-        uniform float nightVision;
-        uniform float rainStrength;
-
-        uniform ivec2 eyeBrightnessSmooth;
-
-        uniform vec3 fogColor;
-
         #include "/lib/universalVars.glsl"
     #endif
     

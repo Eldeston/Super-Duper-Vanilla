@@ -52,7 +52,7 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
     if(isEyeInWater == 2) return pow(fogColor, vec3(GAMMA));
 
     #ifdef WORLD_SKY_GROUND
-        vec3 finalCol = skyCol * vec2(1.0 - smoothen((-nPlayerPos.y * 4.0) / (isEyeInWater * 2.56 + rainMult)), 1).xxy;
+        vec3 finalCol = skyCol * vec2(1.0 - smoothen((-nPlayerPos.y * 4.0) / (isEyeInWater * 2.56 + newRainStrength + 1.0)), 1).xxy;
     #else
         vec3 finalCol = skyCol;
     #endif
@@ -61,7 +61,7 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
     if(skyMask) finalCol = finalCol * max(vec3(0), 1.0 - skyBoxCol) + skyBoxCol;
 
     #ifdef USE_HORIZON_COL
-        finalCol += USE_HORIZON_COL * squared(1.0 - abs(nPlayerPos.y));
+        finalCol += USE_HORIZON_COL * cubed(1.0 - abs(nPlayerPos.y));
     #endif
     
     #ifdef STORY_MODE_CLOUDS

@@ -8,7 +8,7 @@ vec3 getGodRays(vec3 feetPlayerPos, float worldPosY, float dither){
 		// Return 0 if volumetric brightness is 0
 		if(VOL_LIGHT_BRIGHTNESS == 0) return vec3(0);
 
-		float c = WORLD_FOG_TOTAL_DENSITY * (isEyeInWater * 2.56 + rainMult);
+		float c = WORLD_FOG_TOTAL_DENSITY * (isEyeInWater * 2.56 + newRainStrength + 1.0);
 		float b = WORLD_FOG_VERTICAL_DENSITY;
 
 		float nPlayerPosY = normalize(feetPlayerPos).y;

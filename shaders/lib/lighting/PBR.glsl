@@ -201,9 +201,9 @@ uniform sampler2D texture;
 
             // End portal
             else if(id == 10017){
-                vec3 d0 = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, newFrameTimeCounter * 0.02)) * 0.5, dcdx, dcdy).rgb;
-                vec3 d1 = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, newFrameTimeCounter * 0.01)), dcdx, dcdy).rgb;
-                material.albedo = vec4(d0 + d1 + 0.05, 1);
+                vec3 starParallax = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, newFrameTimeCounter * 0.02)) * 0.5, dcdx, dcdy).rgb;
+                starParallax += texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, newFrameTimeCounter * 0.02)), dcdx, dcdy).rgb;
+                material.albedo = vec4(starParallax + 0.05, 1);
                 material.normal = TBN[2];
                 material.smoothness = 0.96;
                 material.metallic = 0.04;
@@ -284,9 +284,9 @@ uniform sampler2D texture;
 
             // End portal
             else if(id == 10017){
-                vec3 d0 = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, newFrameTimeCounter * 0.02)) * 0.5, dcdx, dcdy).rgb;
-                vec3 d1 = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, newFrameTimeCounter * 0.01)), dcdx, dcdy).rgb;
-                material.albedo = vec4(d0 + d1 + 0.05, 1);
+                vec3 starParallax = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, newFrameTimeCounter * 0.02)) * 0.5, dcdx, dcdy).rgb;
+                starParallax += texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, newFrameTimeCounter * 0.02)), dcdx, dcdy).rgb;
+                material.albedo = vec4(starParallax + 0.05, 1);
                 material.normal = TBN[2];
                 material.smoothness = 0.96;
                 material.metallic = 0.04;

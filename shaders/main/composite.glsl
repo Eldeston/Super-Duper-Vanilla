@@ -64,22 +64,8 @@ varying vec2 screenCoord;
     // Get frame time
     uniform float frameTimeCounter;
 
-    // Get world time
-    uniform float day;
-    uniform float dawnDusk;
-    uniform float twilight;
-
-    /* Game uniforms */
-    uniform int isEyeInWater;
-
-    uniform float nightVision;
     uniform float blindness;
-    uniform float rainStrength;
     uniform float far;
-
-    uniform ivec2 eyeBrightnessSmooth;
-
-    uniform vec3 fogColor;
 
     #include "/lib/universalVars.glsl"
 

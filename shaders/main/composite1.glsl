@@ -17,22 +17,9 @@ varying vec2 texCoord;
     uniform sampler2D colortex3;
     uniform sampler2D colortex4;
 
-    uniform int isEyeInWater;
-
     /* Screen resolutions */
     uniform float viewWidth;
     uniform float viewHeight;
-
-    uniform float nightVision;
-    uniform float rainStrength;
-
-    uniform float day;
-    uniform float dawnDusk;
-    uniform float twilight;
-
-    uniform ivec2 eyeBrightnessSmooth;
-
-    uniform vec3 fogColor;
 
     #include "/lib/universalVars.glsl"
 
@@ -45,10 +32,10 @@ varying vec2 texCoord;
 
         #ifdef WORLD_LIGHT
             #ifdef SHD_ENABLE
-                float fogMult = min(1.0, WORLD_FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (rainMult + isEyeInWater * 0.5));
+                float fogMult = min(1.0, WORLD_FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (newRainStrength + 1.0 + isEyeInWater * 0.5));
                 sceneCol += texture2D(colortex4, texCoord, 1.5).rgb * (lightCol * fogMult);
             #else
-                float fogMult = min(1.0, WORLD_FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (rainMult + isEyeInWater * 0.5)) * eyeBrightFact;
+                float fogMult = min(1.0, WORLD_FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (newRainStrength + 1.0 + isEyeInWater * 0.5)) * eyeBrightFact;
                 sceneCol += texture2D(colortex4, texCoord, 1.5).rgb * (lightCol * fogMult) * (isEyeInWater == 1 ? fogColor : vec3(1));
             #endif
 

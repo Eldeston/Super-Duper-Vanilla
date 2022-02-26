@@ -124,20 +124,6 @@ uniform vec3 cameraPosition;
     uniform float viewWidth;
     uniform float viewHeight;
 
-    // Get world time
-    uniform float day;
-    uniform float dawnDusk;
-    uniform float twilight;
-
-    uniform int isEyeInWater;
-
-    uniform float nightVision;
-    uniform float rainStrength;
-
-    uniform ivec2 eyeBrightnessSmooth;
-
-    uniform vec3 fogColor;
-
     #include "/lib/universalVars.glsl"
 
     uniform sampler2D depthtex1;
