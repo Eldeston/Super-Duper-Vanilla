@@ -218,6 +218,11 @@ uniform sampler2D texture;
             }
         #endif
 
+        #if defined ENTITIES || defined ENTITIES_GLOWING
+            // Experience orbs and fireballs
+            if(id == 10102 || id == 10103) material.emissive = 1.0;
+        #endif
+
         #if WHITE_MODE == 0
             material.albedo.rgb *= glcolor.rgb;
         #elif WHITE_MODE == 1
@@ -299,6 +304,11 @@ uniform sampler2D texture;
                 material.metallic = 0.04;
                 material.emissive = maxC(material.albedo.rgb);
             }
+        #endif
+
+        #if defined ENTITIES || defined ENTITIES_GLOWING
+            // Experience orbs and fireballs
+            if(id == 10102 || id == 10103) material.emissive = 1.0;
         #endif
 
         #if WHITE_MODE == 0
