@@ -399,10 +399,10 @@ uniform sampler2D texture;
 
             #if defined WATER || defined BLOCK
                 // Glass and ice
-                if(id == 10041 || id == 10042) material.smoothness = 0.96;
+                if(id == 10042 || id == 10043) material.smoothness = 0.96;
 
                 // Gelatin
-                else if(id == 10043) material.smoothness = 0.96;
+                else if(id == 10044) material.smoothness = 0.96;
             #endif
         #endif
 
