@@ -169,7 +169,7 @@ uniform sampler2D texture;
             if(id == 10002 || id == 10003) material.emissive = 1.0;
 
             // Foliage and corals
-            else if((id >= 10004 && id <= 10016) || id == 10036 || id == 10037) material.ss = 1.0;
+            else if((id >= 10004 && id <= 10016) || id == 10033 || id == 10036 || id == 10037) material.ss = 1.0;
         #endif
 
         // Get parallax shadows
@@ -277,7 +277,7 @@ uniform sampler2D texture;
             if(id == 10002 || id == 10003) material.emissive = 1.0;
 
             // Foliage and corals
-            else if((id >= 10004 && id <= 10016) || id == 10036 || id == 10037) material.ss = 1.0;
+            else if((id >= 10004 && id <= 10016) || id == 10033 || id == 10036 || id == 10037) material.ss = 1.0;
         #endif
 
         #if defined WATER || defined BLOCK
@@ -324,7 +324,7 @@ uniform sampler2D texture;
         #if DEFAULT_MAT == 1
             #if defined TERRAIN || defined BLOCK
                 // Glow berries
-                if(id == 10033) material.emissive = max2(material.albedo.rg) > 0.8 ? 0.72 : material.emissive;
+                if(id == 10033) material.emissive = material.albedo.r + material.albedo.g > material.albedo.g * 2.0 ? smootherstep(hsv.z) : material.emissive;
 
                 // Stems
                 else if(id == 10034) material.emissive = material.albedo.r < 0.1 ? hsv.z * 0.72 : material.emissive;
