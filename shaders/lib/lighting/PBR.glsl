@@ -337,7 +337,7 @@ uniform sampler2D texture;
                 else if(id == 10038) material.emissive = smoothstep(0.6, 0.8, hsv.z);
 
                 // Redstone
-                else if(id == 10039 || id == 10068){
+                else if(id == 10039 || id == 10068 && material.albedo.r > material.albedo.g){
                     material.emissive = cubed(material.albedo.r) * hsv.y;
                     material.smoothness = material.emissive;
                     material.metallic = step(0.8, material.emissive);
