@@ -120,10 +120,10 @@ uniform mat4 gbufferModelViewInverse;
     #include "/lib/lighting/complexShadingForward.glsl"
     
     void main(){
-        // Lightning fix
+        // Lightning fix, materials need to be specified due to glitching issues
         if(entityId == 10101){
-        /* DRAWBUFFERS:0 */
-            gl_FragData[0] = vec4(glcolor.rgb * EMISSIVE_INTENSITY * vec3(0.5, 0.75, 1), glcolor.a); //gcolor
+            gl_FragData[0] = vec4(pow(vec3(0.5, 0.75, 1), vec3(GAMMA)) * EMISSIVE_INTENSITY, glcolor.a); //gcolor
+            gl_FragData[3] = vec4(0, 0, 0, 1); //colortex3
             return;
         }
 
