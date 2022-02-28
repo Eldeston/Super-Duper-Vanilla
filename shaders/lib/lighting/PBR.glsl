@@ -343,6 +343,8 @@ uniform sampler2D texture;
                     material.metallic = step(0.8, material.emissive);
                 }
 
+                else if(id == 10041 && material.albedo.g + material.albedo.b > material.albedo.r * 2.0) material.emissive = smoothstep(0.0, 0.5, material.albedo.g - material.albedo.b);
+
                 // Gem ores
                 else if(id == 10048){
                     material.smoothness = hsv.y > 0.128 ? 0.93 : material.smoothness;
