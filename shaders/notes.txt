@@ -23,7 +23,7 @@ Custom defined macros:
     SHADOW
     GBUFFERS
     Gbuffer macros:
-        PBR enabled programs:
+        PBR enabled programs (PBR materials needs to be defined):
             TERRAIN
             WATER
             BLOCK
@@ -32,12 +32,13 @@ Custom defined macros:
             HAND
             HAND_WATER
 
-        Basic programs:
+        Default PBR enabled programs (PBR materials needs to be defined):
             BASIC
             CLOUDS
             TEXTURED
             WEATHER
-            
+
+        Basic programs (No PBR materials defined):
             ARMOR_GLINT
             BEACON_BEAM
             SPIDER_EYES
