@@ -324,7 +324,7 @@ uniform sampler2D texture;
         #if DEFAULT_MAT == 1
             #if defined TERRAIN || defined BLOCK
                 // Glow berries
-                if(id == 10033) material.emissive = material.albedo.r + material.albedo.g > material.albedo.g * 2.0 ? smootherstep(hsv.z) : material.emissive;
+                if(id == 10033) material.emissive = material.albedo.r + material.albedo.g > material.albedo.g * 2.0 ? smoothstep(0.3, 0.9, hsv.z) : material.emissive;
 
                 // Stems
                 else if(id == 10034) material.emissive = material.albedo.r < 0.1 ? hsv.z * 0.72 : material.emissive;
