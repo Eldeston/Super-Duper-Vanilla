@@ -75,7 +75,7 @@
 // #define AUTO_GEN_NORM // Enables auto generated normals. Works if Default PBR is on. Works mostly on vanilla resource packs.
 #define EMISSIVE_INTENSITY 8 // Emissive maps intensity. Does not affect lightmaps and requires PBR on. [2 4 8 16 32]
 #define NOISE_SPEED 8 // The speed in which the noise randomises each frame. Useful for TAA. This effect is visible only when TAA is enabled. [2 4 8 16 32]
-#define BUFFER_VIEW gcolor // Views different stored buffers. gcolor stores the main scene, colortex1 stores normals(in 0-1 range), colortex2 stores bloom, colortex3-4 are the rest of the materials, colortex5 stores previous reflections, colortex6 stores temporal and exposure buffer. [gcolor colortex1 colortex2 colortex3 colortex4 colortex5 colortex6]
+#define BUFFER_VIEW gcolor // Views different stored buffers. [gcolor colortex1 colortex2 colortex3 colortex4 colortex5 colortex6 colortex7]
 
 // #define PARALLAX_OCCLUSION // Enables parallax occlusion. Requires LabPBR on and a resource pack with LabPBR enabled materials.
 #define PARALLAX_DEPTH 0.25 // Parallax occlusion depth amount. Increase for more depth. [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50]

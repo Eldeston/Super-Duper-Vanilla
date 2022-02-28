@@ -11,14 +11,10 @@
 #endif
 
 #ifdef USE_STARS_COL
-    float getStarShape(vec2 st, float size){
-        return smoothstep(0.032, 0.016, max2(abs(st)) / size);
-    }
-
-    float genStar(vec2 nSkyPos){
+    float getStarMap(vec2 nSkyPos){
         vec2 starRand = getRand2(nSkyPos);
-        vec2 starGrid = 0.5 * sin(starRand * 12.0 + 256.0) - fract(nSkyPos * noiseTextureResolution) + 0.5;
-        return getStarShape(starGrid, starRand.x * 0.9 + 0.3);
+        vec2 starGrid = 0.5 * sin(starRand * 16.0 + 256.0) - fract(nSkyPos * noiseTextureResolution) + 0.5;
+        return float(max2(abs(starGrid)) < starRand.x * 0.02 + 0.02);
     }
 #endif
 
@@ -89,7 +85,7 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
     if(isEyeInWater == 1) finalCol *= voidGradient;
 
     #if USE_SUN_MOON == 1 && defined WORLD_LIGHT
-        finalCol += lightCol * pow(max(nSkyPosZ * 0.5, 0.0), abs(nPlayerPos.y) + 1.0);
+        finalCol += lightCol * pow(max(nSkyPosZ * 0.75, 0.0), abs(nPlayerPos.y) + 1.0);
     #endif
     
     return finalCol * (isEyeInWater == 0 ? voidGradient * (1.0 - eyeBrightFact) + eyeBrightFact : 1.0) + ambientLighting;
@@ -125,7 +121,7 @@ vec3 getSkyRender(vec3 skyBoxCol, vec3 nPlayerPos, bool skyMask, bool sunMoonMas
         if(skyMask){
             // Stars
             vec2 starPos = 0.5 > abs(nSkyPos.y) ? vec2(atan(nSkyPos.x, nSkyPos.z), nSkyPos.y) * 0.25 : nSkyPos.xz * 0.333;
-            finalCol += USE_STARS_COL * genStar(starPos * 0.128);
+            finalCol += USE_STARS_COL * getStarMap(starPos * 0.128);
         }
     #endif
 
