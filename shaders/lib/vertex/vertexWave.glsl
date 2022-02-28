@@ -24,7 +24,7 @@ void getWave(inout vec3 vertexPos, in vec3 worldPos, in vec2 texCoord, in vec2 m
 		if(id == 10004) vertexPos.xz += windDisp * 0.72;
 
 		// Single and doubles land
-		if((id >= 10005 && id <= 10009) || id == 10036) vertexPos.x += windDisp;
+		if((id >= 10005 && id <= 10009) || id == 10033 || id == 10036) vertexPos.x += windDisp;
 		// Sided land
 		if(id == 10010) vertexPos.x += windDisp * 0.32;
 
