@@ -32,7 +32,7 @@ varying vec4 glcolor;
 
     uniform int renderStage;
 
-    #if USE_SUN_MOON == 1 && SUN_MOON_TYPE == 2
+    #if USE_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT
         #include "/lib/universalVars.glsl"
     #endif
     

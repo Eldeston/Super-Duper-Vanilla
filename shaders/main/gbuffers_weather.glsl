@@ -106,7 +106,7 @@ uniform mat4 gbufferModelViewInverse;
         material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
         material.metallic = 0.0;
-        material.ss = 0.0;
+        material.ss = 1.0;
         material.emissive = 0.0;
         material.smoothness = 0.0;
         material.parallaxShd = 1.0;
@@ -121,10 +121,8 @@ uniform mat4 gbufferModelViewInverse;
             vec4 sceneCol = complexShadingGbuffers(material, posVector, getRand1(gl_FragCoord.xy * 0.03125));
         #endif
 
-    /* DRAWBUFFERS:0123 */
+    /* DRAWBUFFERS:03 */
         gl_FragData[0] = sceneCol; //gcolor
-        gl_FragData[1] = vec4(material.normal * 0.5 + 0.5, 1); //colortex1
-        gl_FragData[2] = vec4(material.albedo.rgb, 1); //colortex2
-        gl_FragData[3] = vec4(0.04, 0.96, 0, 1); //colortex3
+        gl_FragData[1] = vec4(0, 0, 0, 1); //colortex3
     }
 #endif
