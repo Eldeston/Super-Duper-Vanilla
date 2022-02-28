@@ -44,13 +44,12 @@ varying vec2 texCoord;
             eBloom += bloomTile(texCoord, vec2(0.2075, 0.275), 5.0);
             eBloom += bloomTile(texCoord, vec2(0.135, 0.3625), 6.0);
             eBloom += bloomTile(texCoord, vec2(0.160625, 0.3625), 7.0);
-            // 0.03125
         
-        /* DRAWBUFFERS:2 */
-            gl_FragData[0] = vec4(eBloom, 1); //colortex2
+        /* DRAWBUFFERS:4 */
+            gl_FragData[0] = vec4(eBloom, 1); //colortex4
         #else
-        /* DRAWBUFFERS:2 */
-            gl_FragData[0] = vec4(0, 0, 0, 1); //colortex2
+        /* DRAWBUFFERS:4 */
+            gl_FragData[0] = vec4(0, 0, 0, 1); //colortex4
         #endif
     }
 #endif

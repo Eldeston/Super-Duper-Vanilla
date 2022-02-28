@@ -16,9 +16,9 @@ varying vec2 texCoord;
     /*
     const int gcolorFormat = R11F_G11F_B10F;
     const int colortex1Format = RGB16;
-    const int colortex2Format = R11F_G11F_B10F;
+    const int colortex2Format = RGB8;
     const int colortex3Format = RGB8;
-    const int colortex4Format = RGB8;
+    const int colortex4Format = R11F_G11F_B10F;
     const int colortex5Format = R11F_G11F_B10F;
     const int colortex6Format = RGBA16F;
     const int colortex7Format = RGB8;

@@ -28,7 +28,7 @@ varying vec2 texCoord;
     #endif
 
     #ifdef BLOOM
-        uniform sampler2D colortex2;
+        uniform sampler2D colortex4;
 
         uniform float viewWidth;
         uniform float viewHeight;
@@ -37,7 +37,7 @@ varying vec2 texCoord;
 
         vec3 getBloomTile(vec2 uv, vec2 coords, float LOD){
             // Uncompress bloom
-            return texture2DBox(colortex2, uv / exp2(LOD) + coords, vec2(viewWidth, viewHeight)).rgb;
+            return texture2DBox(colortex4, uv / exp2(LOD) + coords, vec2(viewWidth, viewHeight)).rgb;
         }
     #endif
 
@@ -148,11 +148,11 @@ varying vec2 texCoord;
         gl_FragData[0] = vec4(color, 1); //gcolor
 
         #ifdef BLOOM
-        /* DRAWBUFFERS:02 */
-            gl_FragData[1] = vec4(eBloom, 1); //colortex2
+        /* DRAWBUFFERS:04 */
+            gl_FragData[1] = vec4(eBloom, 1); //colortex4
 
             #ifdef AUTO_EXPOSURE
-            /* DRAWBUFFERS:026 */
+            /* DRAWBUFFERS:046 */
                 gl_FragData[2] = vec4(TAA_DATA, tempPixelLuminance); //colortex6
             #endif
         #else

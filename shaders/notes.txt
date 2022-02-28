@@ -6,12 +6,12 @@ Goal:
 
 Framebuffers:
 
-gcolor - Main scene / Skybox, vanilla sun and moon : RGB16F
+gcolor - Main scene / Skybox, vanilla sun and moon : R11F_G11F_B10F
 colortex1 - Normals : RGB16
 colortex2 - Raw albedo / Bloom : RGB8
 colortex3 - Metallic, roughness, glowing entity : RGB8
-colortex4 - Clouds / Volumetric light : RGB8
-colortex5 - Reflections : RGB16
+colortex4 - Clouds / Volumetric light : R11F_G11F_B10F
+colortex5 - Reflections : R11F_G11F_B10F
 colortex6 - TAA, auto exposure : RGBA16F
 colortex7 - Empty : RGBA8
 
