@@ -111,7 +111,7 @@ varying vec2 screenCoord;
                 vec2 matRaw0 = texture2D(colortex3, screenCoord).xy;
                 material.metallic = matRaw0.x; material.smoothness = matRaw0.y;
 
-                sceneCol = complexShadingDeferred(material, posVector, vec3(0), dither);
+                sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
 
                 // Get sky color
                 vec3 skyRender = getSkyRender(vec3(0), normalize(posVector.eyePlayerPos), false);
