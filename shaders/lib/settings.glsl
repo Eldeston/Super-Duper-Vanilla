@@ -16,7 +16,7 @@
 
 // Off by default
 #define WHITE_MODE 0 // Enables white mode/textureless mode. White mode makes everything white. Black mode makes everything black. Foliage mode shows only foliage colors. Keeps materials on. [0 1 2 3]
-// #define ZA_WARUDO // ZA WARUUUDOOOOOOOOOOOOOOO! TOKI WO TOMARE!!! Requires timelapse mode to be enabled.
+// #define ZA_WARUDO // ZA WARUUUDOOOOOOOOOOOOOOO! TOKI WO TOMARE! Requires timelapse mode to be enabled.
 #define ANTI_ALIASING 1 // Enables anti-aliasing. FXAA is fast and works with screenshot sizes. TAA is slower, doesn't work with screenshots, but smooths noise. Disable anti-aliasing on your shader menu before enabling this feature! [0 1 2]
 // #define VIGNETTE // Enables vignette
 #define VIGNETTE_INTENSITY 1 // Vignette intensity [1 2 3 4 5]

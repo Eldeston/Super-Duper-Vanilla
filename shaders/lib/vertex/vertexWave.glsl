@@ -51,7 +51,7 @@ void getWave(inout vec3 vertexPos, in vec3 worldPos, in vec2 texCoord, in vec2 m
 		if(id == 10014) vertexPos.y += waterDisp;;
 
 		// Lanterns
-		if(id == 10039) vertexPos.xz += windDisp * 0.32;
+		if(id == 10039) vertexPos.xz += windDisp * 0.5;
 	#endif
 
 	#if defined WATER || defined SHADOW
