@@ -56,10 +56,6 @@ varying vec2 screenCoord;
         #include "/lib/utility/convertPrevScreenSpace.glsl"
     #endif
 
-    /* Screen uniforms */
-    uniform float viewWidth;
-    uniform float viewHeight;
-
     /* Time uniforms */
     // Get frame time
     uniform float frameTimeCounter;
@@ -115,7 +111,7 @@ varying vec2 screenCoord;
                 vec2 matRaw0 = texture2D(colortex3, screenCoord).xy;
                 material.metallic = matRaw0.x; material.smoothness = matRaw0.y;
 
-                sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
+                sceneCol = complexShadingDeferred(material, posVector, vec3(0), dither);
 
                 // Get sky color
                 vec3 skyRender = getSkyRender(vec3(0), normalize(posVector.eyePlayerPos), false);
