@@ -19,7 +19,7 @@
 ## Contribution
    If you plan to contribute to this project, see [**CONTRIBUTION**](CONTRIBUTION.md) for more info.
 
-## Mod compatibility
+## Mod Compatibility
    If you want to request mod compatibility with this shader, make a pull request in this repository with the mod that you want to enable compatibility via linking. If you're planning to add mod compatibility by coding it yourself, see [**CONTRIBUTION**](CONTRIBUTION.md).
 
 ## License 
@@ -31,7 +31,7 @@
 ## Official CurseForge Page
    Super Duper Vanilla just happen to be on CurseForge! Stable and latest releases will always be available there. Check it out [here](https://www.curseforge.com/minecraft/customization/super-duper-vanilla-shaders) and show your support by clicking on one of the download links there!
 
-## About creator
+## About Creator
    Try out my other shader for Minecraft Bedrock, ESTN Shaders, on McpeDL!
    [![img](https://github.com/Eldeston/ESTN-Shaders/blob/master/textures/ui/title.png)](https://mcpedl.com/estn-shaders/?cookie_check=1)
    
