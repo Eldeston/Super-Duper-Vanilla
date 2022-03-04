@@ -11,9 +11,9 @@ vec4 H2NWater(vec2 st){
     float waterPixel = WATER_BLUR_SIZE / noiseTextureResolution;
 	vec2 waterUv = st / WATER_TILE_SIZE;
 
-	float d = getCellNoise(waterUv);
-	float dx = (d - getCellNoise(waterUv + vec2(waterPixel, 0))) / waterPixel;
-	float dy = (d - getCellNoise(waterUv + vec2(0, waterPixel))) / waterPixel;
+	float d0 = getCellNoise(waterUv);
+	float d1 = d0 - getCellNoise(waterUv + vec2(waterPixel, 0));
+	float d2 = d0 - getCellNoise(waterUv + vec2(0, waterPixel));
     
-    return vec4(normalize(vec3(dx, dy, WATER_DEPTH_SIZE)), d);
+    return vec4(normalize(vec3(d1, d2, waterPixel * WATER_DEPTH_SIZE)), d0);
 }
