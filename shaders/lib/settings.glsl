@@ -4,7 +4,7 @@
 #define SHD_COL // Enables shadow color from colored transparent objects.
 #define RENDER_FOLIAGE_SHD // Enables cutout objects shadows.
 #define ENABLE_SS // Enables subsurface scattering. 
-#define UNDERWATER_CAUSTICS // Enables underwater caustics. Shadow color must be enabled!
+#define UNDERWATER_CAUSTICS 1 // Enables underwater caustics. Shadow color must be enabled! [0 1 2]
 #define AMBIENT_LIGHTING 0.10 // Overall ambient lighting value. Increase if you dislike the pitch black darkness, higher values may make lighting unrealistic. Set it to zero for a more realistic approach if you have SSGI enabled. Set it to 0.50 for nightvision. [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50]
 
 #define ANIMATE // Enables foliage animations, water animations etc.

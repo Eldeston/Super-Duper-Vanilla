@@ -57,27 +57,33 @@ varying vec3 glcolor;
 #endif
 
 #ifdef FRAGMENT
-    #if TIMELAPSE_MODE != 0
-        uniform float animationFrameTime;
-
-        float newFrameTimeCounter = animationFrameTime;
-    #else
-        float newFrameTimeCounter = frameTimeCounter;
-    #endif
-
     uniform sampler2D tex;
 
-    uniform int isEyeInWater;
+    #if UNDERWATER_CAUSTICS == 1
+        uniform int isEyeInWater;
+    #endif
     
-    #include "/lib/utility/texFunctions.glsl"
-    #include "/lib/utility/noiseFunctions.glsl"
-    #include "/lib/surface/water.glsl"
+    #if UNDERWATER_CAUSTICS != 0
+        #if TIMELAPSE_MODE != 0
+            uniform float animationFrameTime;
+
+            float newFrameTimeCounter = animationFrameTime;
+        #else
+            float newFrameTimeCounter = frameTimeCounter;
+        #endif
+
+        #include "/lib/utility/texFunctions.glsl"
+        #include "/lib/utility/noiseFunctions.glsl"
+        #include "/lib/surface/water.glsl"
+    #endif
 
     void main(){
         vec4 shdColor = texture2D(tex, texCoord);
         shdColor.rgb = pow(shdColor.rgb * glcolor, vec3(GAMMA));
 
-        #ifdef UNDERWATER_CAUSTICS
+        #if UNDERWATER_CAUSTICS == 2
+            if(int(blockId + 0.5) == 10001) shdColor.rgb *= vec3(cubed(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 32.0);
+        #elif UNDERWATER_CAUSTICS == 1
             if(isEyeInWater == 1 && int(blockId + 0.5) == 10001) shdColor.rgb *= vec3(cubed(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 32.0);
         #endif
 
