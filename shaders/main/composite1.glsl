@@ -17,6 +17,9 @@ varying vec2 texCoord;
     uniform sampler2D colortex3;
     uniform sampler2D colortex4;
 
+    #ifdef WORLD_LIGHT
+        uniform float shdFade;
+    #endif
     /* Screen resolutions */
     uniform float viewWidth;
     uniform float viewHeight;
@@ -33,10 +36,10 @@ varying vec2 texCoord;
         #ifdef WORLD_LIGHT
             #ifdef SHD_ENABLE
                 float fogMult = min(1.0, WORLD_FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (newRainStrength + 1.0 + isEyeInWater * 0.5));
-                sceneCol += texture2D(colortex4, texCoord, 1.5).rgb * (lightCol * fogMult);
+                sceneCol += texture2D(colortex4, texCoord, 1.5).rgb * lightCol * (shdFade * fogMult);
             #else
                 float fogMult = min(1.0, WORLD_FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (newRainStrength + 1.0 + isEyeInWater * 0.5)) * eyeBrightFact;
-                sceneCol += texture2D(colortex4, texCoord, 1.5).rgb * (lightCol * fogMult) * (isEyeInWater == 1 ? fogColor : vec3(1));
+                sceneCol += texture2D(colortex4, texCoord, 1.5).rgb * lightCol * (shdFade * fogMult) * (isEyeInWater == 1 ? fogColor : vec3(1));
             #endif
 
         /* DRAWBUFFERS:0 */

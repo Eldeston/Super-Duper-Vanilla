@@ -21,8 +21,6 @@ float newRainStrength = saturate(rainStrength * eyeBrightFact * float(isEyeInWat
 float ambientLighting = pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
 
 #ifdef WORLD_LIGHT
-    uniform float shdFade;
-    
     // This macro gets the world light color data
     LIGHT_COL_DATA_BLOCK
 #endif

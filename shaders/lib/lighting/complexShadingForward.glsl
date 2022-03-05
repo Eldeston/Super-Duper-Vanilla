@@ -1,3 +1,7 @@
+#ifdef WORLD_LIGHT
+	uniform float shdFade;
+#endif
+
 vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, float dither){
 	#ifdef WORLD_SKYLIGHT_AMOUNT
 		material.light.y = WORLD_SKYLIGHT_AMOUNT;
@@ -23,9 +27,9 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, float di
 		#if defined SHD_ENABLE && !defined ENTITIES_GLOWING
 			// Cave fix
 			float caveFixShdFactor = smoothstep(0.4, 0.8, material.light.y) * (1.0 - eyeBrightFact) + eyeBrightFact;
-			vec3 shadow = getShdMapping(mat3(shadowProjection) * (mat3(shadowModelView) * posVector.feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz, dirLight, dither) * (isEyeInWater == 1 ? 1.0 : caveFixShdFactor) * material.parallaxShd;
+			vec3 shadow = getShdMapping(mat3(shadowProjection) * (mat3(shadowModelView) * posVector.feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz, dirLight, dither) * (isEyeInWater == 1 ? 1.0 : caveFixShdFactor) * shdFade * material.parallaxShd;
 		#else
-			float shadow = smoothstep(0.94, 0.96, material.light.y) * material.parallaxShd;
+			float shadow = smoothstep(0.94, 0.96, material.light.y) * shdFade * material.parallaxShd;
 		#endif
 
 		float rainDiff = rainStrength * 0.5;
