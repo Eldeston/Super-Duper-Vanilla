@@ -351,31 +351,33 @@ uniform sampler2D texture;
 
                 // Gem ores
                 else if(id == 10048 && (material.albedo.r > material.albedo.g || material.albedo.r != material.albedo.b || material.albedo.g > material.albedo.b) && length(material.albedo.rgb) > 0.45){
-                    material.smoothness = 0.93 * length(material.albedo.rgb);
+                    material.smoothness = 0.93 * saturate(material.albedo.r + material.albedo.g + material.albedo.b);
                     material.metallic = 0.17;
                 }
 
                 // Gem blocks
-                else if(id == 10050){
-                    material.smoothness = 0.96 * length(material.albedo.rgb);
+                else if(id == 10050 || id == 10051){
+                    material.smoothness = 0.96 * saturate(material.albedo.r + material.albedo.g + material.albedo.b);
                     material.metallic = 0.17;
+
+                    if(id == 10051) material.emissive = cubed(length(material.albedo.rgb));
                 }
 
                 // Netherack gem ores
                 else if(id == 10049 && material.albedo.r < material.albedo.g * 1.6 && material.albedo.r < material.albedo.b * 1.6){
-                    material.smoothness = 0.93 * length(material.albedo.rgb);
+                    material.smoothness = 0.93 * saturate(material.albedo.r + material.albedo.g + material.albedo.b);
                     material.metallic = 0.16;
                 }
 
                 // Metal ores
                 else if(id == 10064 && (material.albedo.r > material.albedo.g || material.albedo.r != material.albedo.b || material.albedo.g > material.albedo.b) && length(material.albedo.rgb) > 0.45){
-                    material.smoothness = 0.93 * length(material.albedo.rgb);
+                    material.smoothness = 0.93 * maxC(material.albedo.rgb);
                     material.metallic = 1.0;
                 }
 
                 // Netherack metal ores
                 else if(id == 10065 && max2(material.albedo.rg) > 0.6){
-                    material.smoothness = 0.93 * length(material.albedo.rgb);
+                    material.smoothness = 0.93 * maxC(material.albedo.rgb);
                     material.metallic = 1.0;
                 }
 
