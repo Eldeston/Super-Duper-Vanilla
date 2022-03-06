@@ -14,14 +14,6 @@
     }
 #endif
 
-#ifdef USE_STARS_COL
-    float getStarMap(vec2 nSkyPos){
-        vec2 starRand = getRand2(nSkyPos);
-        vec2 starGrid = 0.5 * sin(starRand * 16.0 + 256.0) - fract(nSkyPos * noiseTextureResolution) + 0.5;
-        return float(max2(abs(starGrid)) < starRand.x * 0.02 + 0.02);
-    }
-#endif
-
 #if defined STORY_MODE_CLOUDS && !defined FORCE_DISABLE_CLOUDS
     #if TIMELAPSE_MODE != 0
         uniform float animationFrameTime;
@@ -111,7 +103,6 @@ vec3 getSkyRender(vec3 skyBoxCol, vec3 nPlayerPos, bool skyMask, bool sunMoonMas
             if(sunMoonMask){
                 float blackHole = min(1.0, 0.005 / ((1.0 - nSkyPos.z) * 32.0 - 0.1));
                 if(blackHole <= 0) return vec3(0);
-                float ring0 = exp(-abs(length(vec2(nSkyPos.x, nSkyPos.y)) - 0.1) * 256.0);
                 finalCol += blackHole * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * lightCol;
                 nPlayerPos = mix(nPlayerPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), blackHole);
                 nSkyPos = mix(nSkyPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), blackHole);
@@ -121,7 +112,11 @@ vec3 getSkyRender(vec3 skyBoxCol, vec3 nPlayerPos, bool skyMask, bool sunMoonMas
 
     #ifdef USE_STARS_COL
         // Star field generation
-        if(skyMask) finalCol += USE_STARS_COL * getStarMap((nSkyPos.xz / (abs(nSkyPos.y) + length(nSkyPos.xz))) * 0.05);
+        if(skyMask){
+            vec2 starMapUv = nSkyPos.xz / (abs(nSkyPos.y) + length(nSkyPos.xz)) * 0.64;
+            if(texture2D(noisetex, starMapUv).x * texture2D(noisetex, starMapUv * 0.5).x > 0.92)
+                finalCol += USE_STARS_COL;
+        }
     #endif
 
     finalCol += getSkyColor(skyBoxCol, nPlayerPos, nSkyPos.z, skyMask);
