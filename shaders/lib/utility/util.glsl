@@ -5,9 +5,6 @@
 #define PI2 6.283185307179586
 #define PI3 9.42477796076938
 
-#define GAMMA 2.2
-#define RCPGAMMA 0.454545454545455
-
 #define ALPHA_THRESHOLD 0.005
 
 // Saturate / clamp functions

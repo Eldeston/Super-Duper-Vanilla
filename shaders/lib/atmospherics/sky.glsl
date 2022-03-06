@@ -120,7 +120,5 @@ vec3 getSkyRender(vec3 skyBoxCol, vec3 nPlayerPos, bool skyMask, bool sunMoonMas
         }
     #endif
 
-    finalCol += getSkyColor(skyBoxCol, nPlayerPos, nSkyPos.z, skyMask);
-
-    return finalCol;
+    return finalCol + getSkyColor(skyBoxCol, nPlayerPos, nSkyPos.z, skyMask);
 }
