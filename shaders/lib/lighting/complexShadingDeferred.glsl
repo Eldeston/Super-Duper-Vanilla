@@ -10,7 +10,7 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
 	#endif
 	
 	// If smoothness is 0, don't do reflections
-	if(material.smoothness > 0){
+	if(material.smoothness > 0.005){
 		bool isMetal = material.metallic > 0.9;
 
 		// Get fresnel

@@ -12,16 +12,16 @@ uniform sampler2D texture;
     uniform float wetness;
 
     void enviroPBR(inout matPBR material, in vec3 worldPos){
-        float rainMatFact = sqrt(max(0.0, TBN[2].y)) * smoothstep(0.8, 0.9, material.light.y) * wetness * isPrecipitationRain * sqrt(1.0 - material.porosity);
+        float rainMatFact = sqrt(max(0.0, TBN[2].y) * smoothstep(0.8, 0.9, material.light.y) * wetness * isPrecipitationRain * (1.0 - material.porosity));
 
-        if(rainMatFact != 0){
+        if(rainMatFact > 0.005){
             vec3 noiseData = texPix2DCubic(noisetex, worldPos.xz / 512.0, vec2(noiseTextureResolution)).xyz;
             rainMatFact *= smoothstep(0.15, 0.6, (noiseData.y + noiseData.x) * 0.5);
             
             material.normal = mix(material.normal, TBN[2], rainMatFact);
             material.metallic = max(0.02 * rainMatFact, material.metallic);
             material.smoothness = mix(material.smoothness, 0.96, rainMatFact);
-            material.albedo.rgb *= 1.0 - sqrt(rainMatFact) * 0.75;
+            material.albedo.rgb *= 1.0 - rainMatFact * 0.5;
         }
     }
 #endif
