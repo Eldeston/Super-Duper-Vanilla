@@ -14,6 +14,8 @@ struct matPBR{
     float smoothness;
     // Ambient map
     float ambient;
+    // Porosity
+    float porosity;
     // Subsurface scattering
     float ss;
     // POM self shadows

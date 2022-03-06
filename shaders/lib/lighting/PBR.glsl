@@ -12,16 +12,16 @@ uniform sampler2D texture;
     uniform float wetness;
 
     void enviroPBR(inout matPBR material, in vec3 worldPos){
-        float rainMatFact = sqrt(max(0.0, TBN[2].y)) * smoothstep(0.8, 0.9, material.light.y) * wetness * isPrecipitationRain;
+        float rainMatFact = sqrt(max(0.0, TBN[2].y)) * smoothstep(0.8, 0.9, material.light.y) * wetness * isPrecipitationRain * sqrt(1.0 - material.porosity);
 
         if(rainMatFact != 0){
             vec3 noiseData = texPix2DCubic(noisetex, worldPos.xz / 512.0, vec2(noiseTextureResolution)).xyz;
-            rainMatFact *= smoothstep(0.16, 0.64, (noiseData.y + noiseData.x) * 0.5);
+            rainMatFact *= smoothstep(0.15, 0.6, (noiseData.y + noiseData.x) * 0.5);
             
             material.normal = mix(material.normal, TBN[2], rainMatFact);
             material.metallic = max(0.02 * rainMatFact, material.metallic);
             material.smoothness = mix(material.smoothness, 0.96, rainMatFact);
-            material.albedo.rgb *= 1.0 - sqrt(rainMatFact) * 0.25;
+            material.albedo.rgb *= 1.0 - sqrt(rainMatFact) * 0.75;
         }
     }
 #endif
@@ -133,7 +133,6 @@ uniform sampler2D texture;
 
         // Get raw textures
         vec4 normalAOH = texture2DGradARB(normals, texUv, dcdx, dcdy);
-
         vec4 SRPSSE = texture2DGradARB(specular, texUv, dcdx, dcdy);
 
         // Decode and extract the materials
@@ -141,8 +140,11 @@ uniform sampler2D texture;
         vec3 normalMap = vec3(normalAOH.xy * 2.0 - 1.0, 0);
         normalMap.z = sqrt(1.0 - dot(normalMap.xy, normalMap.xy));
 
+        // Assign porosity
+        material.porosity = SRPSSE.b <= 0.251 ? SRPSSE.b * 3.984 : 0.0;
+
         // Assign SS
-        material.ss = saturate((SRPSSE.b * 255.0 - 64.0) / (255.0 - 64.0));
+        material.ss = saturate(SRPSSE.b * 1.335 - 0.355);
 
         // Assign smoothness
         material.smoothness = SRPSSE.r;
@@ -264,6 +266,7 @@ uniform sampler2D texture;
         material.metallic = 0.04; material.emissive = 0.0;
         material.smoothness = 0.0; material.ss = 0.0;
         material.ambient = glcolor.a; material.parallaxShd = 1.0;
+        material.porosity = 0.0;
 
         #if defined TERRAIN || defined BLOCK
             // If lava and fire
