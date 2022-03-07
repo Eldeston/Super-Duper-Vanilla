@@ -6,21 +6,25 @@
    A shader pack for **Minecraft Java Optifine**, created to convey or mimic a certain shading style of the cancelled __Super Duper Graphics Pack__ combined with the shading style of Minecraft Dungeons. Developed by @Eldeston, and presented by __FlameRender Studios__.
 
 ## Screenshots
-![2021-12-29_15 51 13](https://user-images.githubusercontent.com/59617287/148426077-f6b04fca-ffaa-4e38-b4f2-20fdc3ca36e2.png)
-![2022-01-06_20 51 29](https://user-images.githubusercontent.com/59617287/148426111-031e2906-7285-4521-b064-f355c5d7b36e.png)
-![2022-01-06_20 52 28](https://user-images.githubusercontent.com/59617287/148426121-044649ad-fdcd-45e7-bdbb-7b41f9dc02e8.png)
-![2022-01-06_20 56 11](https://user-images.githubusercontent.com/59617287/148426123-3733564f-fa1e-424b-a995-e48adfc6357a.png)
-![2022-01-06_20 56 26](https://user-images.githubusercontent.com/59617287/148426129-93c6f425-8215-465d-9fad-b1ce2d463fd1.png)
-![2021-12-29_15 19 02](https://user-images.githubusercontent.com/59617287/148426133-1d1ae77c-b860-4212-be22-f0cffca93c36.png)
-![2021-12-29_15 22 59](https://user-images.githubusercontent.com/59617287/148426151-f73ec7c7-18ba-4d32-a6b0-06ed3d0046ba.png)
-![2021-12-29_15 23 10](https://user-images.githubusercontent.com/59617287/148426195-441c9b0d-1907-4988-a2ab-73326191406d.png)
-![2021-12-29_15 46 48](https://user-images.githubusercontent.com/59617287/148426242-5a739d72-5439-475b-8dc9-928886df5df0.png)
+![2022-03-07_21 02 44](https://user-images.githubusercontent.com/59617287/157083482-2791dfdb-f25e-40ef-a72e-b97ec4630fdc.png)
+![2022-03-07_21 04 45](https://user-images.githubusercontent.com/59617287/157083513-7a9c6f9f-8ba5-4240-b3b5-17faa830cc25.png)
+![2022-03-07_21 06 02](https://user-images.githubusercontent.com/59617287/157083544-478449de-08b7-44c3-8142-0bd10440e58b.png)
+![2022-03-07_21 08 46](https://user-images.githubusercontent.com/59617287/157083556-7dffea56-e9fd-4298-aac9-8b23735e470b.png)
+![2022-03-07_21 10 43](https://user-images.githubusercontent.com/59617287/157083564-54dd3afb-907a-4c19-ab32-eac2991d5d31.png)
+![2022-03-07_20 55 00](https://user-images.githubusercontent.com/59617287/157083576-a1cc15b3-fb2d-4d43-80ea-6792342d2554.png)
+![2022-03-07_20 58 26](https://user-images.githubusercontent.com/59617287/157083592-549e1a83-03e0-44f3-ac96-963f0cefa2fe.png)
+![2022-03-07_21 02 04](https://user-images.githubusercontent.com/59617287/157083597-4398c198-ffa3-4552-91e2-6cc0ab9ba63c.png)
+![2022-03-07_21 13 22](https://user-images.githubusercontent.com/59617287/157083980-f013b5fd-e6c9-4d56-806e-ef108a101e0a.png)
+![2022-03-07_21 16 58](https://user-images.githubusercontent.com/59617287/157085698-16b62c92-b3b2-4d64-9bda-1d593093eba1.png)
+![2022-03-07_21 19 10](https://user-images.githubusercontent.com/59617287/157085710-bd5b177e-104c-4316-a9e4-4239251cc709.png)
+![2022-03-07_21 21 40](https://user-images.githubusercontent.com/59617287/157085713-e3ed915f-4c60-429f-af59-c18a0fa99f53.png)
+![2022-03-07_21 23 51](https://user-images.githubusercontent.com/59617287/157085717-de74691b-cfa2-4208-9a3a-df326842551d.png)
 
 ## Contribution
    If you plan to contribute to this project, see [**CONTRIBUTION**](CONTRIBUTION.md) for more info.
 
 ## Mod Compatibility
-   If you want to request mod compatibility with this shader, make a pull request in this repository with the mod that you want to enable compatibility via linking. If you're planning to add mod compatibility by coding it yourself, see [**CONTRIBUTION**](CONTRIBUTION.md).
+   If you want to request mod compatibility with this shader, make a pull request in this repository with the mod that you want to enable compatibility via linking. If you're planning to add mod compatibility by coding it yourself, see [**CONTRIBUTION**](CONTRIBUTION.md). Please note that full Iris support is coming soon but it must be done on Iris end and not mines.
 
 ## License 
    This shader uses the **GNU GPL 3.0** license. See [**LICENSE**](LICENSE) for more info.

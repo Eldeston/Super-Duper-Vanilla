@@ -128,13 +128,6 @@ vec3 rgb2hsv(vec3 c){
 }
 
 // For converting hsv to rgb
-vec3 hsv2rgb(vec4 c){
-	vec4 K = vec4(1, 2. / 3., 1. / 3., 3);
-	vec3 p = abs(fract(c.xxx + K.xyz) * 6. - K.www);
-	return vec3(c.z * mix(K.xxx, clamp(p - K.xxx, 0., 1.), c.y));
-}
-
-// For converting hsv to rgb
 vec3 hsv2rgb(vec3 c){
 	vec4 K = vec4(1, 2. / 3., 1. / 3., 3);
 	vec3 p = abs(fract(c.xxx + K.xyz) * 6. - K.www);
@@ -173,7 +166,7 @@ vec4 modFract(vec4 x, vec4 tile){
 // Seeds, (adjust it if you like)
 vec4 s0 = vec4(12.9898, 4.1414, 78.233, 314.13);
 // Must be 1 integer apart ex. 0.36, 1.36, 2.36.....
-vec4 s1 = vec4(.1031, 1.1031, 2.1031, 3.1031);
+vec4 s1 = vec4(0.1031, 1.1031, 2.1031, 3.1031);
 
 // Noise functions
 // 1 out, 1 in...
@@ -214,6 +207,6 @@ float vnoise(vec2 p, float time, float tiles){
 	return mix(mix(rand12(modFract(i, tiles)), rand12(modFract(i + vec2(1, 0), tiles)), u.x), mix(rand12(modFract(i + vec2(0, 1), tiles)), rand12(modFract(i + 1.0, tiles)), u.x), u.y);
 	}
 
-float edgeVisibility(vec2 screenPos) {
-    return 1.0 - hermiteMix(0.025, 0.0, min2(screenPos * (1.0 - screenPos)));
+float edgeVisibility(vec2 screenPos){
+    return smoothstep(0.0, 0.025, min2(screenPos * (1.0 - screenPos)));
 }
