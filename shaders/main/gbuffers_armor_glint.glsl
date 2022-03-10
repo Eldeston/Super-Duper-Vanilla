@@ -65,6 +65,8 @@ varying vec4 glcolor;
             albedo.rgb = glcolor.rgb;
         #endif
 
+        // Test
+
         float emissive = getLuminance(albedo.rgb);
         albedo.rgb = pow(albedo.rgb, vec3(GAMMA));
 
