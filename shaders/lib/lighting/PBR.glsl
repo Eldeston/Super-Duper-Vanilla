@@ -141,10 +141,10 @@ uniform sampler2D texture;
         normalMap.z = sqrt(1.0 - dot(normalMap.xy, normalMap.xy));
 
         // Assign porosity
-        material.porosity = SRPSSE.b <= 0.251 ? SRPSSE.b * 3.984 : 0.0;
+        material.porosity = SRPSSE.b < 0.252 ? SRPSSE.b * 3.984 : 0.0;
 
         // Assign SS
-        material.ss = saturate(SRPSSE.b * 1.335 - 0.355);
+        material.ss = SRPSSE.b > 0.252 ? (SRPSSE.b - 0.250980392) * 1.33507853 : 0.0;
 
         // Assign smoothness
         material.smoothness = SRPSSE.r;
@@ -352,21 +352,22 @@ uniform sampler2D texture;
 
                 // Gem ores
                 else if(id == 10048 && (material.albedo.r > material.albedo.g || material.albedo.r != material.albedo.b || material.albedo.g > material.albedo.b) && length(material.albedo.rgb) > 0.45){
-                    material.smoothness = 0.93 * saturate(material.albedo.r + material.albedo.g + material.albedo.b);
+                    material.smoothness = 0.93 * min(1.0, material.albedo.r + material.albedo.g + material.albedo.b);
                     material.metallic = 0.17;
                 }
 
                 // Gem blocks
                 else if(id == 10050 || id == 10051){
-                    material.smoothness = 0.96 * saturate(material.albedo.r + material.albedo.g + material.albedo.b);
+                    material.smoothness = 0.96 * sqrt(min(1.0, material.albedo.r + material.albedo.g + material.albedo.b));
                     material.metallic = 0.17;
 
+                    // Crying obsidian emissives
                     if(id == 10051) material.emissive = cubed(length(material.albedo.rgb));
                 }
 
                 // Netherack gem ores
                 else if(id == 10049 && material.albedo.r < material.albedo.g * 1.6 && material.albedo.r < material.albedo.b * 1.6){
-                    material.smoothness = 0.93 * saturate(material.albedo.r + material.albedo.g + material.albedo.b);
+                    material.smoothness = 0.93 * min(1.0, material.albedo.r + material.albedo.g + material.albedo.b);
                     material.metallic = 0.16;
                 }
 
@@ -384,24 +385,24 @@ uniform sampler2D texture;
 
                 // Metal blocks
                 else if(id == 10066){
-                    material.smoothness = squared(maxC(material.albedo.rgb));
+                    material.smoothness = 0.96 * squared(maxC(material.albedo.rgb));
                     material.metallic = 1.0;
                 }
 
                 // Dark metals
                 else if(id == 10067){
-                    material.smoothness = saturate(material.albedo.r + material.albedo.g + material.albedo.b);
+                    material.smoothness = 0.96 * min(1.0, material.albedo.r + material.albedo.g + material.albedo.b);
                     material.metallic = 1.0;
                 }
 
                 // Rails
                 else if(id == 10068 && material.albedo.r < material.albedo.g * 1.6 && material.albedo.r < material.albedo.b * 1.6){
-                    material.smoothness = 0.96 * saturate(material.albedo.r + material.albedo.g + material.albedo.b);
+                    material.smoothness = 0.96 * min(1.0, material.albedo.r + material.albedo.g + material.albedo.b);
                     material.metallic = 1.0;
                 }
 
                 // Polished blocks
-                else if(id == 10080) material.smoothness = saturate(material.albedo.r + material.albedo.g + material.albedo.b);
+                else if(id == 10080) material.smoothness = min(1.0, material.albedo.r + material.albedo.g + material.albedo.b);
             #endif
 
             #if defined WATER || defined BLOCK
