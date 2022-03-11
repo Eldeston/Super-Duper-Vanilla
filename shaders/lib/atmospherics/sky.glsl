@@ -40,7 +40,7 @@
     }
 #endif
 
-vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
+vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float LV, bool isSky){
     // If player is in lava, return fog color
     if(isEyeInWater == 2) return pow(fogColor, vec3(GAMMA));
 
@@ -51,7 +51,7 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
     #endif
 
     // Sky box and vanila sun and moon blending
-    if(skyMask) finalCol = finalCol * max(vec3(0), 1.0 - skyBoxCol) + skyBoxCol;
+    if(isSky) finalCol = finalCol * max(vec3(0), 1.0 - skyBoxCol) + skyBoxCol;
 
     #ifdef USE_HORIZON_COL
         finalCol += USE_HORIZON_COL * cubed(1.0 - abs(nPlayerPos.y));
@@ -59,7 +59,7 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
     
     #ifdef STORY_MODE_CLOUDS
         #ifndef FORCE_DISABLE_CLOUDS
-            if(skyMask){
+            if(isSky){
                 vec2 planeUv = nPlayerPos.xz / nPlayerPos.y;
 
                 #ifdef CLOUD_FADE
@@ -82,26 +82,29 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float nSkyPosZ, bool skyMask){
     if(isEyeInWater == 1) finalCol *= voidGradient;
 
     #if USE_SUN_MOON == 1 && defined WORLD_LIGHT
-        finalCol += lightCol * pow(max(nSkyPosZ * 0.75, 0.0), abs(nPlayerPos.y) + 1.0) * shdFade;
+        finalCol += lightCol * pow(max(LV * 0.75, 0.0), abs(nPlayerPos.y) + 1.0) * shdFade;
     #endif
     
     return finalCol * (isEyeInWater == 0 ? voidGradient * (1.0 - eyeBrightFact) + eyeBrightFact : 1.0) + ambientLighting;
 }
 
-vec3 getSkyRender(vec3 skyBoxCol, vec3 nPlayerPos, bool skyMask){
-    return getSkyColor(skyBoxCol, nPlayerPos, dot(nPlayerPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), skyMask);
+vec3 getSkyRender(vec3 skyBoxCol, vec3 nPlayerPos, bool isSky){
+    return getSkyColor(skyBoxCol, nPlayerPos, dot(nPlayerPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), isSky);
 }
 
-vec3 getSkyRender(vec3 skyBoxCol, vec3 nPlayerPos, bool skyMask, bool sunMoonMask){
+vec3 getSkyRender(vec3 skyBoxCol, vec3 nPlayerPos, bool isSky, bool isSunMoon){
     vec3 nSkyPos = mat3(shadowModelView) * nPlayerPos;
 
-    vec3 finalCol = vec3(0);
+    vec3 finalCol = getSkyColor(skyBoxCol, nPlayerPos, nSkyPos.z, isSky);
+
+    // If it's not the sky, return the base sky color
+    if(!isSky) return finalCol;
 
     #ifdef WORLD_LIGHT
         #if USE_SUN_MOON == 1 && SUN_MOON_TYPE != 2
-            if(sunMoonMask) finalCol += getSunMoonShape(nSkyPos.xy) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * sqrt(lightCol);
+            if(isSunMoon) finalCol += getSunMoonShape(nSkyPos.xy) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * sqrt(lightCol);
         #elif USE_SUN_MOON == 2
-            if(sunMoonMask){
+            if(isSunMoon){
                 float blackHole = min(1.0, 0.005 / ((1.0 - nSkyPos.z) * 32.0 - 0.1));
                 if(blackHole <= 0) return vec3(0);
                 finalCol += blackHole * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * lightCol;
@@ -113,12 +116,10 @@ vec3 getSkyRender(vec3 skyBoxCol, vec3 nPlayerPos, bool skyMask, bool sunMoonMas
 
     #ifdef USE_STARS_COL
         // Star field generation
-        if(skyMask){
-            vec2 starMapUv = nSkyPos.xz / (abs(nSkyPos.y) + length(nSkyPos.xz));
-            if(texture2D(noisetex, starMapUv * 0.64).x * texture2D(noisetex, starMapUv * 0.32).x > 0.92)
-                finalCol += USE_STARS_COL;
-        }
+        vec2 starMapUv = nSkyPos.xz / (abs(nSkyPos.y) + length(nSkyPos.xz));
+        if(texture2D(noisetex, starMapUv * 0.64).x * texture2D(noisetex, starMapUv * 0.32).x > 0.92)
+            finalCol += USE_STARS_COL;
     #endif
 
-    return finalCol + getSkyColor(skyBoxCol, nPlayerPos, nSkyPos.z, skyMask);
+    return finalCol;
 }

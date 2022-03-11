@@ -126,7 +126,7 @@ varying vec2 screenCoord;
 
         #ifdef WORLD_LIGHT
         /* DRAWBUFFERS:04 */
-            gl_FragData[1] = vec4(getGodRays(posVector.feetPlayerPos, posVector.feetPlayerPos.y + cameraPosition.y, dither.x), 1); //colortex4
+            gl_FragData[1] = vec4(getGodRays(posVector.feetPlayerPos, dither.x), 1); //colortex4
             
             #ifdef PREVIOUS_FRAME
             /* DRAWBUFFERS:045 */
