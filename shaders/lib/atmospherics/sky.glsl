@@ -24,16 +24,15 @@
     #endif
 
     float cloudParallax(vec2 pos, float time, int steps){
-        vec2 uv = pos / 48.0;
         float invSteps = 1.0 / steps;
 
-        vec2 start = uv;
-        vec2 end = start * 0.08 * invSteps;
+        vec2 start = pos / 48.0;
+        vec2 end = start * invSteps * 0.08;
         float cloudSpeed = time * 0.0004;
 
         for(int i = 0; i < steps; i++){
-            start += end;
             if(texture2D(colortex4, start + vec2(cloudSpeed, 0)).a > ALPHA_THRESHOLD) return 1.0 - i * invSteps;
+            start += end;
         }
         
         return 0.0;
@@ -50,16 +49,16 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float LV, bool isSky){
         vec3 finalCol = skyCol;
     #endif
 
-    // Sky box and vanila sun and moon blending
-    if(isSky) finalCol = finalCol * max(vec3(0), 1.0 - skyBoxCol) + skyBoxCol;
-
     #ifdef USE_HORIZON_COL
         finalCol += USE_HORIZON_COL * cubed(1.0 - abs(nPlayerPos.y));
     #endif
-    
-    #ifdef STORY_MODE_CLOUDS
-        #ifndef FORCE_DISABLE_CLOUDS
-            if(isSky){
+
+    if(isSky){
+        // Sky box and vanila sun and moon blending
+        finalCol = finalCol * max(vec3(0), 1.0 - skyBoxCol) + skyBoxCol;
+
+        #ifdef STORY_MODE_CLOUDS
+            #ifndef FORCE_DISABLE_CLOUDS
                 vec2 planeUv = nPlayerPos.xz / nPlayerPos.y;
 
                 #ifdef CLOUD_FADE
@@ -74,9 +73,9 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float LV, bool isSky){
                 #else
                     finalCol += clouds * smootherstep(nPlayerPos.y * 2.0 - 0.125);
                 #endif
-            }
+            #endif
         #endif
-    #endif
+    }
 
     float voidGradient = smootherstep((nPlayerPos.y + eyeBrightFact - 0.81) * PI);
     if(isEyeInWater == 1) finalCol *= voidGradient;

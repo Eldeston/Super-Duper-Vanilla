@@ -11,15 +11,17 @@ varying vec2 texCoord;
 #endif
 
 #ifdef FRAGMENT
-    const bool colortex4MipmapEnabled = true;
-
     uniform sampler2D gcolor;
     uniform sampler2D colortex3;
-    uniform sampler2D colortex4;
 
     #ifdef WORLD_LIGHT
+        const bool colortex4MipmapEnabled = true;
+
+        uniform sampler2D colortex4;
+
         uniform float shdFade;
     #endif
+    
     /* Screen resolutions */
     uniform float viewWidth;
     uniform float viewHeight;

@@ -106,7 +106,7 @@ varying vec2 screenCoord;
         vec3 sceneCol = texture2D(gcolor, screenCoord).rgb;
 
         // Get sky color and do skyCol with vanilla sun and moon and skybox blend and input as new skyCol
-        vec3 skyRender = getSkyRender(sceneCol, normalize(posVector.eyePlayerPos), skyMask, skyMask);
+        vec3 skyRender = getSkyRender(sceneCol, normalize(posVector.eyePlayerPos), skyMask, true);
 
         // If not sky, don't calculate lighting
         if(!skyMask){
