@@ -15,7 +15,7 @@ colortex5 - Reflections : R11F_G11F_B10F
 colortex6 - TAA, auto exposure : RGBA16F
 colortex7 - Empty : RGBA8
 
-Custom defined macros:
+Custom defined macros (These are defined at the start of every .fsh and .vsh file):
     World macros:
         OVERWORLD
         NETHER
