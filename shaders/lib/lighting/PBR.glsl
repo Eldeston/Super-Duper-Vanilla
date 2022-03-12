@@ -306,16 +306,6 @@ uniform sampler2D texture;
             // Experience orbs and fireballs
             if(id == 10102 || id == 10103) material.emissive = 1.0;
         #endif
-
-        #if WHITE_MODE == 0
-            material.albedo.rgb *= glcolor.rgb;
-        #elif WHITE_MODE == 1
-            material.albedo.rgb = vec3(1);
-        #elif WHITE_MODE == 2
-            material.albedo.rgb = vec3(0);
-        #elif WHITE_MODE == 3
-            material.albedo.rgb = glcolor.rgb;
-        #endif
         
         #if DEFAULT_MAT == 1
             #if defined TERRAIN || defined BLOCK
@@ -414,6 +404,14 @@ uniform sampler2D texture;
             #endif
         #endif
 
-        material.smoothness = min(material.smoothness, 0.96);
+        #if WHITE_MODE == 0
+            material.albedo.rgb *= glcolor.rgb;
+        #elif WHITE_MODE == 1
+            material.albedo.rgb = vec3(1);
+        #elif WHITE_MODE == 2
+            material.albedo.rgb = vec3(0);
+        #elif WHITE_MODE == 3
+            material.albedo.rgb = glcolor.rgb;
+        #endif
     }
 #endif
