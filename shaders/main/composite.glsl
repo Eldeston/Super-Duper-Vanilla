@@ -91,6 +91,7 @@ varying vec2 screenCoord;
         posVector.eyePlayerPos = mat3(gbufferModelViewInverse) * posVector.viewPos;
         posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
 
+        // Get scene color
         vec3 sceneCol = texture2D(gcolor, screenCoord).rgb;
 
         #if ANTI_ALIASING == 2
@@ -111,13 +112,11 @@ varying vec2 screenCoord;
                 vec2 matRaw0 = texture2D(colortex3, screenCoord).xy;
                 material.metallic = matRaw0.x; material.smoothness = matRaw0.y;
 
+                // Apply deffered shading
                 sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
 
-                // Get sky color
-                vec3 skyRender = getSkyRender(vec3(0), normalize(posVector.eyePlayerPos), false);
-
-                // Fog calculation
-                sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, skyRender, posVector.feetPlayerPos.y + cameraPosition.y, false);
+                // Fog and sky calculation
+                sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, getSkyRender(vec3(0), normalize(posVector.eyePlayerPos), false), posVector.feetPlayerPos.y + cameraPosition.y, false);
             }
         }
 
