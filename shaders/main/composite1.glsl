@@ -37,10 +37,10 @@ varying vec2 texCoord;
 
         #ifdef WORLD_LIGHT
             #ifdef SHD_ENABLE
-                float fogMult = min(1.0, WORLD_FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (newRainStrength + 1.0 + isEyeInWater * 0.5));
+                float fogMult = min(1.0, WORLD_FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater * 0.5));
                 sceneCol += texture2D(colortex4, texCoord, 1.5).rgb * lightCol * (shdFade * fogMult);
             #else
-                float fogMult = min(1.0, WORLD_FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (newRainStrength + 1.0 + isEyeInWater * 0.5)) * eyeBrightFact;
+                float fogMult = min(1.0, WORLD_FOG_OPACITY * VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater * 0.5)) * eyeBrightFact;
                 sceneCol += texture2D(colortex4, texCoord, 1.5).rgb * lightCol * (shdFade * fogMult) * (isEyeInWater == 1 ? fogColor : vec3(1));
             #endif
 
