@@ -57,7 +57,8 @@ varying vec2 texCoord;
         uniform mat4 gbufferProjection;
         uniform mat4 gbufferModelView;
 
-        uniform vec3 nLightPos;
+        // Shadow view matrix uniforms
+        uniform mat4 shadowModelView;
 
         uniform float blindness;
 
@@ -102,7 +103,11 @@ varying vec2 texCoord;
         #endif
 
         #if defined LENS_FLARE && defined WORLD_LIGHT
-            vec2 lightDir = toScreen(mat3(gbufferModelView) * nLightPos).xy;
+            vec2 lightDir = toScreen(mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)).xy;
+            // also equivalent to:
+            // vec3(0, 0, 1) * mat3(shadowModelView) = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)
+            // shadowLightPosition is broken in other dimensions. The current is equivalent to:
+            // normalize(mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz)
             
             if(texture2D(depthtex0, lightDir).x == 1 && isEyeInWater == 0)
                 color += getLensFlare(texCoord - 0.5, lightDir - 0.5) * (1.0 - blindness) * (1.0 - rainStrength);
