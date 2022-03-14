@@ -81,7 +81,7 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float LV, bool isSky){
     if(isEyeInWater == 1) finalCol *= voidGradient;
 
     #if USE_SUN_MOON == 1 && defined WORLD_LIGHT
-        finalCol += lightCol * pow(max(LV * 0.75, 0.0), abs(nPlayerPos.y) + 1.0) * shdFade;
+        finalCol += lightCol * pow(max(LV * 0.75, 0.0), abs(nPlayerPos.y) + 1.0) * shdFade * (1.0 - newRainStrength * 0.5);
     #endif
     
     return finalCol * (isEyeInWater == 0 ? voidGradient * (1.0 - eyeBrightFact) + eyeBrightFact : 1.0) + ambientLighting;
@@ -101,7 +101,7 @@ vec3 getSkyRender(vec3 skyBoxCol, vec3 nPlayerPos, bool isSky, bool isSunMoon){
 
     #ifdef WORLD_LIGHT
         #if USE_SUN_MOON == 1 && SUN_MOON_TYPE != 2
-            if(isSunMoon) finalCol += getSunMoonShape(nSkyPos.xy) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * sqrt(lightCol);
+            if(isSunMoon) finalCol += getSunMoonShape(nSkyPos.xy) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * sqrt(lightCol) * (1.0 - newRainStrength);
         #elif USE_SUN_MOON == 2
             if(isSunMoon){
                 float blackHole = min(1.0, 0.005 / ((1.0 - nSkyPos.z) * 32.0 - 0.1));
@@ -117,7 +117,7 @@ vec3 getSkyRender(vec3 skyBoxCol, vec3 nPlayerPos, bool isSky, bool isSunMoon){
         // Star field generation
         vec2 starMapUv = nSkyPos.xz / (abs(nSkyPos.y) + length(nSkyPos.xz));
         if(texture2D(noisetex, starMapUv * 0.64).x * texture2D(noisetex, starMapUv * 0.32).x > 0.92)
-            finalCol += USE_STARS_COL;
+            finalCol += USE_STARS_COL * (1.0 - newRainStrength);
     #endif
 
     return finalCol;

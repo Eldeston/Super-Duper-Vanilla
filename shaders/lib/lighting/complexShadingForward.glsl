@@ -42,7 +42,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, float di
 		if(NL > 0){
 			// Get specular GGX
 			vec3 specCol = getSpecBRDF(normalize(-posVector.eyePlayerPos), vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), NL, 1.0 - material.smoothness) * shadow * NL;
-			totalDiffuse += min(vec3(SUN_MOON_INTENSITY * SUN_MOON_INTENSITY), specCol) * sqrt(lightCol);
+			totalDiffuse += min(vec3(SUN_MOON_INTENSITY * SUN_MOON_INTENSITY), specCol) * sqrt(lightCol) * (1.0 - newRainStrength);
 		}
 	#endif
 

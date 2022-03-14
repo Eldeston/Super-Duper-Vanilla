@@ -105,7 +105,7 @@ varying vec2 texCoord;
             vec2 lightDir = toScreen(mat3(gbufferModelView) * nLightPos).xy;
             
             if(texture2D(depthtex0, lightDir).x == 1 && isEyeInWater == 0)
-                color += getLensFlare(texCoord - 0.5, lightDir - 0.5) * (1.0 - max(newRainStrength, blindness) * 0.9);
+                color += getLensFlare(texCoord - 0.5, lightDir - 0.5) * (1.0 - blindness) * (1.0 - rainStrength);
         #endif
 
         #ifdef AUTO_EXPOSURE
