@@ -164,7 +164,7 @@ uniform sampler2D texture;
             material.ambient = normalAOH.b;
         #endif
 
-        #if defined TERRAIN || defined BLOCK
+        #ifdef TERRAIN
             // If lava and fire
             if(id == 10002 || id == 10003) material.emissive = 1.0;
 
@@ -192,22 +192,11 @@ uniform sampler2D texture;
         // Assign normal
         material.normal = normalize(TBN * normalMap);
 
-        #if defined WATER || defined BLOCK
+        #ifdef WATER
             // If water
             if(id == 10001){
                 material.smoothness = 0.96;
                 material.metallic = 0.02;
-            }
-
-            // End portal
-            else if(id == 10017){
-                vec3 starParallax = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, newFrameTimeCounter * 0.02)) * 0.5, dcdx, dcdy).rgb;
-                starParallax += texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, newFrameTimeCounter * 0.02)), dcdx, dcdy).rgb;
-                material.albedo = vec4(starParallax + 0.05, 1);
-                material.normal = TBN[2];
-                material.smoothness = 0.96;
-                material.metallic = 0.04;
-                material.emissive = 1.0;
             }
             
             // Nether portal
@@ -215,6 +204,18 @@ uniform sampler2D texture;
                 material.smoothness = 0.96;
                 material.metallic = 0.04;
                 material.emissive = maxC(material.albedo.rgb);
+            }
+        #endif
+
+        #ifdef BLOCK
+            if(id == 10017){
+                vec3 starParallax = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, newFrameTimeCounter * 0.02)) * 0.5, dcdx, dcdy).rgb;
+                starParallax += texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, newFrameTimeCounter * 0.02)), dcdx, dcdy).rgb;
+                material.albedo = vec4(starParallax + 0.05, 1);
+                material.normal = TBN[2];
+                material.smoothness = 0.96;
+                material.metallic = 0.04;
+                material.emissive = 1.0;
             }
         #endif
 
@@ -268,7 +269,7 @@ uniform sampler2D texture;
         material.ambient = glcolor.a; material.parallaxShd = 1.0;
         material.porosity = 0.0;
 
-        #if defined TERRAIN || defined BLOCK
+        #ifdef TERRAIN
             // If lava and fire
             if(id == 10002 || id == 10003) material.emissive = 1.0;
 
@@ -276,22 +277,11 @@ uniform sampler2D texture;
             else if((id >= 10004 && id <= 10015) || id == 10033 || id == 10036) material.ss = 1.0;
         #endif
 
-        #if defined WATER || defined BLOCK
+        #ifdef WATER
             // If water
             if(id == 10001){
                 material.smoothness = 0.96;
                 material.metallic = 0.02;
-            }
-
-            // End portal
-            else if(id == 10017){
-                vec3 starParallax = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, newFrameTimeCounter * 0.02)) * 0.5, dcdx, dcdy).rgb;
-                starParallax += texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, newFrameTimeCounter * 0.02)), dcdx, dcdy).rgb;
-                material.albedo = vec4(starParallax + 0.05, 1);
-                material.normal = TBN[2];
-                material.smoothness = 0.96;
-                material.metallic = 0.04;
-                material.emissive = 1.0;
             }
             
             // Nether portal
@@ -302,13 +292,25 @@ uniform sampler2D texture;
             }
         #endif
 
+        #ifdef BLOCK
+            if(id == 10017){
+                vec3 starParallax = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, newFrameTimeCounter * 0.02)) * 0.5, dcdx, dcdy).rgb;
+                starParallax += texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, newFrameTimeCounter * 0.02)), dcdx, dcdy).rgb;
+                material.albedo = vec4(starParallax + 0.05, 1);
+                material.normal = TBN[2];
+                material.smoothness = 0.96;
+                material.metallic = 0.04;
+                material.emissive = 1.0;
+            }
+        #endif
+
         #if defined ENTITIES || defined ENTITIES_GLOWING
             // Experience orbs and fireballs
             if(id == 10102 || id == 10103) material.emissive = 1.0;
         #endif
         
         #if DEFAULT_MAT == 1
-            #if defined TERRAIN || defined BLOCK
+            #ifdef TERRAIN
                 // Glow berries
                 if(id == 10033) material.emissive = material.albedo.r + material.albedo.g > material.albedo.g * 2.0 ? smoothstep(0.3, 0.9, maxC(material.albedo.rgb)) : material.emissive;
 
@@ -395,7 +397,7 @@ uniform sampler2D texture;
                 else if(id == 10080) material.smoothness = min(1.0, material.albedo.r + material.albedo.g + material.albedo.b);
             #endif
 
-            #if defined WATER || defined BLOCK
+            #ifdef WATER
                 // Glass and ice
                 if(id == 10043 || id == 10044) material.smoothness = 0.96;
 
