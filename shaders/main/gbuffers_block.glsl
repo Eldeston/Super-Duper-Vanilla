@@ -143,10 +143,6 @@ uniform mat4 gbufferModelViewInverse;
 
         material.light = lmCoord;
 
-        #ifdef ENVIRO_MAT
-            enviroPBR(material, posVector.feetPlayerPos + cameraPosition);
-        #endif
-
         #if ANTI_ALIASING == 2
             vec4 sceneCol = complexShadingGbuffers(material, posVector, toRandPerFrame(getRand1(gl_FragCoord.xy * 0.03125), frameTimeCounter));
         #else
