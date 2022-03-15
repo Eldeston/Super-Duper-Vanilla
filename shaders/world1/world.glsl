@@ -45,8 +45,6 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 #define WORLD_FOG_VERTICAL_DENSITY 0.01
 // Total density falloff, larger means thicker fog
 #define WORLD_FOG_TOTAL_DENSITY 0.0025
-// Base fog opacity
-#define WORLD_FOG_OPACITY 0.50
 
 // Holds the data on how the light will change according to multiple environmental factors
 #define LIGHT_COL_DATA_BLOCK vec3 lightCol = pow(WORLD_CUSTOM_LIGHTCOL * 0.00392156863, vec3(GAMMA));
