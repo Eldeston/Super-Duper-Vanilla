@@ -117,7 +117,7 @@ vec3 getSkyRender(vec3 skyBoxCol, vec3 nPlayerPos, bool isSky, bool isSunMoon){
         // Star field generation
         vec2 starMapUv = nSkyPos.xz / (abs(nSkyPos.y) + length(nSkyPos.xz));
         if(texture2D(noisetex, starMapUv * 0.64).x * texture2D(noisetex, starMapUv * 0.32).x > 0.92)
-            finalCol += USE_STARS_COL * (1.0 - newRainStrength);
+            finalCol += USE_STARS_COL * (1.0 - rainStrength);
     #endif
 
     return finalCol;

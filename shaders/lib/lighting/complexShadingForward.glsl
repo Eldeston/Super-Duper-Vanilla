@@ -26,8 +26,8 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, float di
 
 		#if defined SHD_ENABLE && !defined ENTITIES_GLOWING
 			// Cave fix
-			float caveFixShdFactor = smoothstep(0.4, 0.8, material.light.y) * (1.0 - eyeBrightFact) + eyeBrightFact;
-			vec3 shadow = getShdMapping(mat3(shadowProjection) * (mat3(shadowModelView) * posVector.feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz, dirLight, dither) * (isEyeInWater == 1 ? 1.0 : caveFixShdFactor) * shdFade * material.parallaxShd;
+			float caveFixShdFactor = isEyeInWater == 1 ? 1.0 : smoothstep(0.4, 0.8, material.light.y) * (1.0 - eyeBrightFact) + eyeBrightFact;
+			vec3 shadow = getShdMapping(mat3(shadowProjection) * (mat3(shadowModelView) * posVector.feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz, dirLight, dither) * caveFixShdFactor * shdFade * material.parallaxShd;
 		#else
 			float shadow = smoothstep(0.94, 0.96, material.light.y) * shdFade * material.parallaxShd;
 		#endif
@@ -41,8 +41,8 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, float di
 	#ifdef WORLD_LIGHT
 		if(NL > 0){
 			// Get specular GGX
-			vec3 specCol = getSpecBRDF(normalize(-posVector.eyePlayerPos), vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), NL, 1.0 - material.smoothness) * shadow * NL;
-			totalDiffuse += min(vec3(SUN_MOON_INTENSITY * SUN_MOON_INTENSITY), specCol) * sqrt(lightCol) * (1.0 - newRainStrength);
+			vec3 specCol = getSpecBRDF(normalize(-posVector.eyePlayerPos), vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), NL, 1.0 - material.smoothness);
+			totalDiffuse += min(vec3(SUN_MOON_INTENSITY * SUN_MOON_INTENSITY), specCol) * sqrt(lightCol) * (1.0 - rainStrength) * shadow;
 		}
 	#endif
 
