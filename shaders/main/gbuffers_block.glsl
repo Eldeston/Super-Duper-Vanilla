@@ -131,6 +131,22 @@ uniform mat4 gbufferModelViewInverse;
         // Declare and get positions
         positionVectors posVector;
         posVector.screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
+
+        // End portal
+        if(blockEntityId == 10017){
+            vec2 endStarOffset = vec2(0, newFrameTimeCounter * 0.01);
+            float endStarField = texture2DGradARB(texture, (posVector.screenPos.yx + endStarOffset) * 0.5, dcdx, dcdy).r;
+            endStarField += texture2DGradARB(texture, posVector.screenPos.xy + endStarOffset, dcdx, dcdy).r;
+            endStarField += texture2DGradARB(texture, (endStarOffset - posVector.screenPos.xy) * 2.0, dcdx, dcdy).r;
+            endStarField += texture2DGradARB(texture, (endStarOffset - posVector.screenPos.yx) * 4.0, dcdx, dcdy).r;
+            vec2 endStarCoord1 = posVector.screenPos.xy * rot2D(0.78539816);
+            endStarField += texture2DGradARB(texture, endStarCoord1.yx + endStarOffset, dcdx, dcdy).r;
+            endStarField += texture2DGradARB(texture, (endStarCoord1 + endStarOffset) * 2.0, dcdx, dcdy).r;
+            endStarField += texture2DGradARB(texture, (endStarOffset - endStarCoord1) * 4.0, dcdx, dcdy).r;
+            gl_FragData[0] = vec4(pow((endStarField + 0.125) * (getRand3(posVector.screenPos.xy) * 0.5 + 0.5) * glcolor.rgb, vec3(GAMMA)) * EMISSIVE_INTENSITY * EMISSIVE_INTENSITY, 1); //gcolor
+            return; // Return immediately, no need for lighting calculation
+        }
+
 	    posVector.viewPos = toView(posVector.screenPos);
         posVector.eyePlayerPos = mat3(gbufferModelViewInverse) * posVector.viewPos;
         posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;

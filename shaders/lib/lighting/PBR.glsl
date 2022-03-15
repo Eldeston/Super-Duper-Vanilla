@@ -207,18 +207,6 @@ uniform sampler2D texture;
             }
         #endif
 
-        #ifdef BLOCK
-            if(id == 10017){
-                vec3 starParallax = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, newFrameTimeCounter * 0.02)) * 0.5, dcdx, dcdy).rgb;
-                starParallax += texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, newFrameTimeCounter * 0.02)), dcdx, dcdy).rgb;
-                material.albedo = vec4(starParallax + 0.05, 1);
-                material.normal = TBN[2];
-                material.smoothness = 0.96;
-                material.metallic = 0.04;
-                material.emissive = 1.0;
-            }
-        #endif
-
         #if defined ENTITIES || defined ENTITIES_GLOWING
             // Experience orbs and fireballs
             if(id == 10102 || id == 10103) material.emissive = 1.0;
@@ -289,18 +277,6 @@ uniform sampler2D texture;
                 material.smoothness = 0.96;
                 material.metallic = 0.04;
                 material.emissive = maxC(material.albedo.rgb);
-            }
-        #endif
-
-        #ifdef BLOCK
-            if(id == 10017){
-                vec3 starParallax = texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, newFrameTimeCounter * 0.02)) * 0.5, dcdx, dcdy).rgb;
-                starParallax += texture2DGradARB(texture, (posVector.screenPos.yx + vec2(0, newFrameTimeCounter * 0.02)), dcdx, dcdy).rgb;
-                material.albedo = vec4(starParallax + 0.05, 1);
-                material.normal = TBN[2];
-                material.smoothness = 0.96;
-                material.metallic = 0.04;
-                material.emissive = 1.0;
             }
         #endif
 
