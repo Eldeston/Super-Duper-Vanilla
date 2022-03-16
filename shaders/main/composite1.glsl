@@ -15,11 +15,13 @@ varying vec2 texCoord;
     uniform sampler2D colortex3;
 
     #ifdef WORLD_LIGHT
-        const bool colortex4MipmapEnabled = true;
-
         uniform sampler2D colortex4;
 
         uniform float shdFade;
+
+        #ifdef SHD_ENABLE
+            #include "/lib/utility/texFunctions.glsl"
+        #endif
     #endif
     
     /* Screen resolutions */
@@ -37,11 +39,9 @@ varying vec2 texCoord;
 
         #ifdef WORLD_LIGHT
             #ifdef SHD_ENABLE
-                float fogMult = min(1.0, VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater));
-                sceneCol += texture2D(colortex4, texCoord, 1.5).rgb * lightCol * (shdFade * fogMult);
+                sceneCol += texture2DBox(colortex4, texCoord, vec2(viewWidth, viewHeight)).rgb * lightCol * (min(1.0, VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater)) * shdFade);
             #else
-                float fogMult = min(1.0, VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater)) * eyeBrightFact;
-                sceneCol += texture2D(colortex4, texCoord, 1.5).rgb * lightCol * (shdFade * fogMult) * (isEyeInWater == 1 ? fogColor : vec3(1));
+                sceneCol += texture2D(colortex4, texCoord, 1.5).rgb * lightCol * (min(1.0, VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater)) * shdFade) * (isEyeInWater == 1 ? fogColor : vec3(1));
             #endif
 
         /* DRAWBUFFERS:0 */
