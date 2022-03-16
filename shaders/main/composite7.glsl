@@ -12,32 +12,32 @@ varying vec2 texCoord;
 
 #ifdef FRAGMENT
     // For Optifine to detect
-    #ifdef SHARPENING_FILTER
+    #ifdef SHARPEN_FILTER
     #endif
 
-    #if (ANTI_ALIASING != 0 && defined SHARPENING_FILTER) || defined CHROMATIC_ABERRATION
+    #if (ANTI_ALIASING != 0 && defined SHARPEN_FILTER) || defined CHROMATIC_ABERRATION
         uniform float viewWidth;
         uniform float viewHeight;
     #endif
 
-    #if ANTI_ALIASING != 0 && defined SHARPENING_FILTER
+    #if ANTI_ALIASING != 0 && defined SHARPEN_FILTER
         #include "/lib/post/sharpenFilter.glsl"
     #endif
 
     uniform sampler2D gcolor;
 
     void main(){
-        vec3 color = texture2D(gcolor, texCoord).rgb;
-
         #ifdef CHROMATIC_ABERRATION
             vec2 chromaStrength = ABERRATION_PIX_SIZE / vec2(viewWidth, viewHeight);
 
-            color *= vec3(0, 1, 0);
-            color.r += texture2D(gcolor, mix(texCoord, vec2(0.5), chromaStrength)).r;
-            color.b += texture2D(gcolor, mix(texCoord, vec2(0.5), -chromaStrength)).b;
+            vec3 color = vec3(texture2D(gcolor, mix(texCoord, vec2(0.5), chromaStrength)).r,
+                texture2D(gcolor, texCoord).g,
+                texture2D(gcolor, mix(texCoord, vec2(0.5), -chromaStrength)).b);
+        #else
+            vec3 color = texture2D(gcolor, texCoord).rgb;
         #endif
 
-        #if ANTI_ALIASING != 0 && defined SHARPENING_FILTER
+        #if ANTI_ALIASING != 0 && defined SHARPEN_FILTER
             color = sharpenFilter(gcolor, color, texCoord);
         #endif
 
