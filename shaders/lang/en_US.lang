@@ -24,6 +24,8 @@
     value.ANTI_ALIASING.1=FXAA
     value.ANTI_ALIASING.2=TAA
     option.SHARPENING_FILTER=Image sharpening
+    option.CHROMATIC_ABERRATION=Chromatic aberration
+    option.CHROMATIC_ABERRATION_SIZE=Chromatic aberration size
     screen.CAMERA.comment=Camera settings for tonemap, vignette, HDR, postprocessing etc.
 
 #Tonemap
