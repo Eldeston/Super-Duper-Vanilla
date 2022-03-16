@@ -30,7 +30,7 @@ varying vec2 texCoord;
         vec3 color = texture2D(gcolor, texCoord).rgb;
 
         #ifdef CHROMATIC_ABERRATION
-            vec2 chromaStrength = CHROMATIC_ABERRATION_SIZE / vec2(viewWidth, viewHeight);
+            vec2 chromaStrength = ABERRATION_PIX_SIZE / vec2(viewWidth, viewHeight);
 
             color *= vec3(0, 1, 0);
             color.r += texture2D(gcolor, mix(texCoord, vec2(0.5), chromaStrength)).r;
