@@ -28,7 +28,7 @@ varying vec2 texCoord;
     #ifdef SHARPENING_FILTER
     #endif
 
-    #if ANTI_ALIASING == 2 && defined SHARPENING_FILTER
+    #if ANTI_ALIASING != 0 && defined SHARPENING_FILTER
         uniform float viewWidth;
         uniform float viewHeight;
 
@@ -38,7 +38,7 @@ varying vec2 texCoord;
     uniform sampler2D BUFFER_VIEW;
 
     void main(){
-        #if ANTI_ALIASING == 2 && defined SHARPENING_FILTER
+        #if ANTI_ALIASING != 0 && defined SHARPENING_FILTER
             gl_FragColor = vec4(sharpenFilter(BUFFER_VIEW, texCoord), 1); //  final color
         #else
             gl_FragColor = vec4(texture2D(BUFFER_VIEW, texCoord).rgb, 1); //  final color
