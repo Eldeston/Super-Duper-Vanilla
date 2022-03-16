@@ -72,7 +72,6 @@ varying vec2 screenCoord;
 
     #include "/lib/utility/convertViewSpace.glsl"
     #include "/lib/utility/convertScreenSpace.glsl"
-    #include "/lib/utility/texFunctions.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
     #include "/lib/rayTracing/rayTracer.glsl"
 

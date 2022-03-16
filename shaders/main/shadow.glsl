@@ -72,9 +72,8 @@ varying vec3 glcolor;
             float newFrameTimeCounter = frameTimeCounter;
         #endif
 
-        #include "/lib/utility/texFunctions.glsl"
         #include "/lib/utility/noiseFunctions.glsl"
-        #include "/lib/surface/water.glsl"
+        #include "/lib/surface/caustics.glsl"
     #endif
 
     void main(){

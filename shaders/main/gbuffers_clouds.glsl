@@ -78,7 +78,6 @@ uniform mat4 gbufferModelViewInverse;
 
     #include "/lib/lighting/shdDistort.glsl"
     #include "/lib/utility/convertViewSpace.glsl"
-    #include "/lib/utility/texFunctions.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
 
     #include "/lib/lighting/shdMapping.glsl"
