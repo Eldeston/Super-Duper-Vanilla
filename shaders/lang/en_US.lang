@@ -23,6 +23,7 @@
     value.ANTI_ALIASING.0=OFF
     value.ANTI_ALIASING.1=FXAA
     value.ANTI_ALIASING.2=TAA
+    option.SHARPENING_FILTER=Image sharpening
     screen.CAMERA.comment=Camera settings for tonemap, vignette, HDR, postprocessing etc.
 
 #Tonemap
