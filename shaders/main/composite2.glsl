@@ -46,7 +46,7 @@ varying vec2 texCoord;
             vec2 randVec = (vec2(sin(dither), cos(dither)) * depth) / (vec2(viewWidth, viewHeight) / exp2(DOF_LOD));
             
             vec3 color = texture2D(gcolor, texCoord + randVec).rgb;
-            color = (color + texture2D(gcolor, texCoord - randVec).rgb) * 0.5;
+            color = (color + texture2D(gcolor, texCoord - randVec).rgb) / (1.0 + depth);
         #else
             vec3 color = texture2D(gcolor, texCoord).rgb;
         #endif
