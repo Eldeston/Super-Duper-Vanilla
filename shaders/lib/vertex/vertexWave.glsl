@@ -34,7 +34,7 @@ void getWave(inout vec3 vertexPos, in vec3 worldPos, in vec2 texCoord, in vec2 m
 	float waterDisp = sin(worldPos.x + worldPos.z + newFrameTimeCounter * 1.64 * CURRENT_SPEED) * waterWeight;
 	
 	#if defined TERRAIN || defined SHADOW
-		if(CURRENT_SPEED >= 0)
+		if(CURRENT_SPEED > 0)
 			// Lava
 			if(id == 10002) vertexPos.y += waterDisp;
 
@@ -45,7 +45,7 @@ void getWave(inout vec3 vertexPos, in vec3 worldPos, in vec2 texCoord, in vec2 m
 			else if(id == 10014) vertexPos.y += waterDisp;
 		}
 
-		if(WIND_SPEED >= 0)
+		if(WIND_SPEED > 0)
 			// Leaves
 			if(id == 10004) vertexPos.xz += windDisp * 0.72;
 
@@ -61,6 +61,6 @@ void getWave(inout vec3 vertexPos, in vec3 worldPos, in vec2 texCoord, in vec2 m
 
 	#if defined WATER || defined SHADOW
 		// Water
-		if(CURRENT_SPEED >= 0 && id == 10001) vertexPos.y += waterDisp;
+		if(CURRENT_SPEED > 0 && id == 10001) vertexPos.y += waterDisp;
 	#endif
 }
