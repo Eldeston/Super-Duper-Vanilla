@@ -13,7 +13,7 @@
 // #define WORLD_CURVATURE // Enable world curvature
 #define WORLD_CURVATURE_SIZE 256 // World curvature size [-4096 -2048 -1024 -512 -256 -128 128 256 512 1024 2048 4096]
 #define TIMELAPSE_MODE 0 // Enable timelapse mode. This smoothens the transition of animations of the sky, the foliage waving etc according to current world time instead of frame time. Set to fragment for water normals and sky only and full for the water normals, sky, and waves. This feature does not work on vanilla clouds, skybox, and the sun and moon. [0 1 2]
-#define RETRO_FILTER // Enable retro filter. Works best at low render quality.
+// #define RETRO_FILTER // Enable retro filter. Works best at low render quality.
 
 // Off by default
 #define WHITE_MODE 0 // Enables white mode/textureless mode. White mode makes everything white. Black mode makes everything black. Foliage mode shows only foliage colors. Keeps materials on. [0 1 2 3]
