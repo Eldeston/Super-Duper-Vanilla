@@ -26,6 +26,7 @@
     option.SHARPEN_FILTER=Image sharpening
     option.CHROMATIC_ABERRATION=Chromatic aberration
     option.ABERRATION_PIX_SIZE=Aberration pixel size
+    option.RETRO_FILTER=Retro filter
     screen.CAMERA.comment=Camera settings for tonemap, vignette, HDR, postprocessing etc.
 
 #Tonemap

@@ -15,7 +15,7 @@ varying vec2 texCoord;
     #ifdef SHARPEN_FILTER
     #endif
 
-    #if (ANTI_ALIASING != 0 && defined SHARPEN_FILTER) || defined CHROMATIC_ABERRATION
+    #if (ANTI_ALIASING != 0 && defined SHARPEN_FILTER) || defined CHROMATIC_ABERRATION || defined RETRO_FILTER
         uniform float viewWidth;
         uniform float viewHeight;
     #endif
@@ -27,6 +27,13 @@ varying vec2 texCoord;
     uniform sampler2D gcolor;
 
     void main(){
+        #ifdef RETRO_FILTER
+            vec2 retroResolution = vec2(viewWidth, viewHeight) * 0.5;
+            vec2 retroCoord = floor(texCoord * retroResolution) / retroResolution;
+
+            #define texCoord retroCoord
+        #endif
+
         #ifdef CHROMATIC_ABERRATION
             vec2 chromaStrength = ABERRATION_PIX_SIZE / vec2(viewWidth, viewHeight);
 
