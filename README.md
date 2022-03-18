@@ -3,7 +3,7 @@
 [![Twitter Follow](https://img.shields.io/twitter/follow/eldeston?color=dark&label=Follow&logoColor=dark)](https://twitter.com/eldeston)
 
 ## Description
-   A shader pack for **Minecraft Java Optifine**, created to convey or mimic a certain shading style of the cancelled __Super Duper Graphics Pack__ combined with the shading style of Minecraft Dungeons. Developed by @Eldeston, and presented by __FlameRender Studios__.
+   A shader pack created to convey the style of the cancelled __Super Duper Graphics Pack__ and other popular Minecraft titles. Developed by @Eldeston, and presented by __FlameRender Studios__.
 
 ## Screenshots
 ![2022-03-07_21 02 44](https://user-images.githubusercontent.com/59617287/157083482-2791dfdb-f25e-40ef-a72e-b97ec4630fdc.png)
