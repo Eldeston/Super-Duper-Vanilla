@@ -12,7 +12,7 @@ vec3 binarySearch(vec3 screenPosRayDir, vec3 startPos, int binarySearchSteps){
 // This raytracer is so fast I swear...
 // Based from Belmu's raytracer https://github.com/BelmuTM/NobleRT
 // (it's basically an upgrade to Shadax's raytracer https://github.com/Shadax-stack/MinecraftSSR)
-vec3 rayTraceScene(vec3 screenPos, vec3 viewPos, vec3 rayDir, int steps, int binarySearchSteps){
+vec3 rayTraceScene(vec3 screenPos, vec3 viewPos, vec3 rayDir, float dither, int steps, int binarySearchSteps){
 	// If hand, do simple, flipped reflections
 	if(screenPos.z < 0.56){
 		vec3 handScreenPos = toScreenSpacePos(toScreen(viewPos + rayDir * 128.0).xy, depthtex0);
@@ -21,9 +21,11 @@ vec3 rayTraceScene(vec3 screenPos, vec3 viewPos, vec3 rayDir, int steps, int bin
 
 	// Get screenspace rayDir
 	vec3 screenPosRayDir = normalize(toScreen(viewPos + rayDir) - screenPos) / steps;
+	// Add dithering
+	screenPos += screenPosRayDir * dither;
 
 	// Screen pos is our startPos
-	for(int x = 0; x < steps; x++){
+	for(int i = 0; i < steps; i++){
 		// We raytrace here
 		screenPos += screenPosRayDir;
 		if(screenPos.x < 0 || screenPos.y < 0 || screenPos.x > 1 || screenPos.y > 1) return vec3(0);

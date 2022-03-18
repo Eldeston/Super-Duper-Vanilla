@@ -1,8 +1,8 @@
-vec4 getSSRCol(vec3 viewPos, vec3 screenPos, vec3 gBMVNorm){
+vec4 getSSRCol(vec3 viewPos, vec3 screenPos, vec3 gBMVNorm, float dither){
     // Reflected direction
 	vec3 reflectedRayDir = reflect(normalize(viewPos), gBMVNorm);
 	// Get reflected screenpos
-	vec3 reflectedScreenPos = rayTraceScene(screenPos, viewPos, reflectedRayDir, SSR_STEPS, SSR_BISTEPS);
+	vec3 reflectedScreenPos = rayTraceScene(screenPos, viewPos, reflectedRayDir, dither, SSR_STEPS, SSR_BISTEPS);
 
 	/*
 	float dist = length(toScreenSpacePos(reflectedScreenPos.xy, depthtex0) - viewPos);

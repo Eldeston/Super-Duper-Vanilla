@@ -28,7 +28,7 @@ vec3 complexShadingDeferred(matPBR material, positionVectors posVector, vec3 sce
 			#endif
 
 			// Get SSR
-			vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.screenPos, gBMVNorm);
+			vec4 SSRCol = getSSRCol(posVector.viewPos, posVector.screenPos, gBMVNorm, dither.x);
 
 			vec3 reflectCol = getSkyRender(vec3(0), normalize(reflect(posVector.eyePlayerPos, material.normal)), true);
 			reflectCol = mix(reflectCol, SSRCol.rgb, SSRCol.a);
