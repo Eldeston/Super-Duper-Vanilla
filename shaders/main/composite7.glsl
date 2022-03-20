@@ -1,3 +1,8 @@
+#ifdef FRAGMENT
+    // For the use of texture2DLod in FXAA.glsl
+    #extension GL_ARB_shader_texture_lod : enable
+#endif
+
 #include "/lib/utility/util.glsl"
 #include "/lib/settings.glsl"
 
@@ -11,44 +16,60 @@ varying vec2 texCoord;
 #endif
 
 #ifdef FRAGMENT
-    // For Optifine to detect
-    #ifdef SHARPEN_FILTER
-    #endif
-
-    #if (ANTI_ALIASING != 0 && defined SHARPEN_FILTER) || defined CHROMATIC_ABERRATION || defined RETRO_FILTER
+    #if ANTI_ALIASING != 0
         uniform float viewWidth;
         uniform float viewHeight;
     #endif
 
-    #if ANTI_ALIASING != 0 && defined SHARPEN_FILTER
-        #include "/lib/post/sharpenFilter.glsl"
+    #if ANTI_ALIASING == 1
+        const bool gcolorMipmapEnabled = true;
+
+        #include "/lib/antialiasing/fxaa.glsl"
+    #elif ANTI_ALIASING == 2
+        uniform sampler2D depthtex0;
+        uniform sampler2D colortex6;
+
+        /* Matrix uniforms */
+        // View matrix uniforms
+        uniform mat4 gbufferModelViewInverse;
+        uniform mat4 gbufferPreviousModelView;
+
+        // Projection matrix uniforms
+        uniform mat4 gbufferProjectionInverse;
+        uniform mat4 gbufferPreviousProjection;
+
+        /* Position uniforms */
+        uniform vec3 cameraPosition;
+        uniform vec3 previousCameraPosition;
+
+        #include "/lib/utility/convertPrevScreenSpace.glsl"
+
+        #include "/lib/antialiasing/taa.glsl"
     #endif
 
     uniform sampler2D gcolor;
 
     void main(){
-        #ifdef RETRO_FILTER
-            vec2 retroResolution = vec2(viewWidth, viewHeight) * 0.5;
-            vec2 retroCoord = floor(texCoord * retroResolution) / retroResolution;
+        #if ANTI_ALIASING == 1
+            vec3 color = textureFXAA(gcolor, texCoord, vec2(viewWidth, viewHeight));
+        #elif ANTI_ALIASING == 2
+            vec3 color = textureTAA(gcolor, colortex6, texCoord, vec2(viewWidth, viewHeight));
 
-            #define texCoord retroCoord
-        #endif
-
-        #ifdef CHROMATIC_ABERRATION
-            vec2 chromaStrength = ABERRATION_PIX_SIZE / vec2(viewWidth, viewHeight);
-
-            vec3 color = vec3(texture2D(gcolor, mix(texCoord, vec2(0.5), chromaStrength)).r,
-                texture2D(gcolor, texCoord).g,
-                texture2D(gcolor, mix(texCoord, vec2(0.5), -chromaStrength)).b);
+            #ifdef AUTO_EXPOSURE
+                #define TEMP_EXPOSURE_DATA texture2D(colortex6, texCoord).a
+            #else
+                #define TEMP_EXPOSURE_DATA 0
+            #endif
         #else
             vec3 color = texture2D(gcolor, texCoord).rgb;
         #endif
-
-        #if ANTI_ALIASING != 0 && defined SHARPEN_FILTER
-            color = sharpenFilter(gcolor, color, texCoord);
-        #endif
-
+        
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(color, 1); // gcolor
+        gl_FragData[0] = vec4(color, 1); //gcolor
+
+        #if ANTI_ALIASING == 2
+        /* DRAWBUFFERS:06 */
+            gl_FragData[1] = vec4(color, TEMP_EXPOSURE_DATA); //colortex6
+        #endif
     }
 #endif

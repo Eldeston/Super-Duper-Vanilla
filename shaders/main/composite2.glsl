@@ -13,14 +13,10 @@ varying vec2 texCoord;
 #ifdef FRAGMENT
     uniform sampler2D gcolor;
 
-    #ifdef DOF
-        const bool gcolorMipmapEnabled = true;
-
-        uniform sampler2D depthtex1;
-
-        uniform mat4 gbufferProjectionInverse;
+    #ifdef MOTION_BLUR
+        uniform sampler2D depthtex0;
         
-        uniform float centerDepthSmooth;
+        /* Screen resolutions */
         uniform float viewWidth;
         uniform float viewHeight;
 
@@ -28,30 +24,42 @@ varying vec2 texCoord;
             uniform float frameTimeCounter;
         #endif
 
-        #include "/lib/utility/convertViewSpace.glsl"
+        /* Matrix uniforms */
+        // View matrix uniforms
+        uniform mat4 gbufferModelViewInverse;
+        uniform mat4 gbufferPreviousModelView;
+
+        // Projection matrix uniforms
+        uniform mat4 gbufferProjectionInverse;
+        uniform mat4 gbufferPreviousProjection;
+
+        /* Position uniforms */
+        uniform vec3 cameraPosition;
+        uniform vec3 previousCameraPosition;
+
+        #include "/lib/utility/convertPrevScreenSpace.glsl"
 
         #include "/lib/utility/noiseFunctions.glsl"
+
+        #include "/lib/post/motionBlur.glsl"
     #endif
 
     void main(){
-        #ifdef DOF
-            float depth = min(1.0, abs(toView(texture2D(depthtex1, texCoord).r) - toView(centerDepthSmooth)) / FOCAL_RANGE);
+        vec3 sceneCol = texture2D(gcolor, texCoord).rgb;
 
-            #if ANTI_ALIASING == 2
-                float dither = toRandPerFrame(getRand1(gl_FragCoord.xy * 0.03125), frameTimeCounter) * PI2;
-            #else
-                float dither = getRand1(gl_FragCoord.xy * 0.03125) * PI2;
-            #endif
+        #ifdef MOTION_BLUR
+            if(texture2D(depthtex0, texCoord).x >= 0.56){
+                #if ANTI_ALIASING == 2
+                    float dither = toRandPerFrame(getRand1(gl_FragCoord.xy * 0.03125), frameTimeCounter);
+                #else
+                    float dither = getRand1(gl_FragCoord.xy * 0.03125);
+                #endif
 
-            vec2 randVec = (vec2(sin(dither), cos(dither)) * depth) / (vec2(viewWidth, viewHeight) / exp2(DOF_LOD));
-            
-            vec3 color = texture2D(gcolor, texCoord + randVec).rgb;
-            color = (color + texture2D(gcolor, texCoord - randVec).rgb) * 0.5;
-        #else
-            vec3 color = texture2D(gcolor, texCoord).rgb;
+                sceneCol = motionBlur(sceneCol, texCoord, dither);
+            }
         #endif
 
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(color, 1); //gcolor
+        gl_FragData[0] = vec4(sceneCol, 1); // gcolor
     }
 #endif

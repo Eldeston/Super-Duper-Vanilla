@@ -5,17 +5,7 @@
     profile.HIGH=High
     profile.ULTRA=Ultra
 
-#Camera
-    option.DOF=Depth of field
-    option.FOCAL_RANGE=Focal range
-    option.DOF_LOD=Depth of field LOD
-    option.VIGNETTE=Vignette
-    option.UNDERWATER_BLUR=Underwater blur
-    option.VIGNETTE_INTENSITY=Vignette intensity
-    option.BLOOM=Bloom
-    option.BLOOM_BRIGHTNESS=Bloom brightness
-    option.LENS_FLARE=Lens flare
-    option.LENS_FLARE_BRIGHTNESS=Lens flare brightness
+#Post
     option.OUTLINES=Outlines
     option.OUTLINE_BRIGHTNESS=Outline brightness
     option.OUTLINE_PIX_SIZE=Outline pixel size
@@ -24,10 +14,23 @@
     value.ANTI_ALIASING.1=FXAA
     value.ANTI_ALIASING.2=TAA
     option.SHARPEN_FILTER=Image sharpening
-    option.CHROMATIC_ABERRATION=Chromatic aberration
-    option.ABERRATION_PIX_SIZE=Aberration pixel size
     option.RETRO_FILTER=Retro filter
-    screen.CAMERA.comment=Camera settings for tonemap, vignette, HDR, postprocessing etc.
+
+    #Camera
+        option.DOF=Depth of field
+        option.FOCAL_RANGE=Focal range
+        option.DOF_LOD=Depth of field LOD
+        option.CHROMATIC_ABERRATION=Chromatic aberration
+        option.ABERRATION_PIX_SIZE=Aberration pixel size
+        option.VIGNETTE=Vignette
+        option.VIGNETTE_INTENSITY=Vignette intensity
+        option.BLOOM=Bloom
+        option.BLOOM_BRIGHTNESS=Bloom brightness
+        option.LENS_FLARE=Lens flare
+        option.LENS_FLARE_BRIGHTNESS=Lens flare brightness
+        option.MOTION_BLUR=Motion blur
+        option.MOTION_BLUR_STRENGTH=Motion blur strength
+        screen.CAMERA.comment=Camera settings for tonemap, vignette, HDR, postprocessing etc.
 
 #Tonemap
     option.SATURATION=Saturation
@@ -184,7 +187,6 @@ screen.BLOCK_LIGHT_COLOR=Block light color
 screen.DEBUG=Super Duper Vanilla by Eldeston
     option.WHITE_MODE=White mode
     option.NOISE_SPEED=Noise speed
-    option.BUFFER_VIEW=Buffer view
     value.WHITE_MODE.0=OFF
     value.WHITE_MODE.1=White Mode
     value.WHITE_MODE.2=Black Mode

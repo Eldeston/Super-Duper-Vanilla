@@ -126,7 +126,7 @@ varying vec2 screenCoord;
 
             #ifdef OUTLINES
                 /* Outline calculation */
-                sceneCol *= 1.0 + getOutline(depthtex0, posVector.screenPos, posVector.viewPos.z, OUTLINE_PIX_SIZE) * (OUTLINE_BRIGHTNESS - 1.0);
+                sceneCol *= 1.0 + getOutline(posVector.screenPos, posVector.viewPos.z, OUTLINE_PIX_SIZE) * (OUTLINE_BRIGHTNESS - 1.0);
             #endif
         }
 

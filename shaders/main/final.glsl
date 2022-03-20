@@ -24,9 +24,43 @@ varying vec2 texCoord;
     const int colortex7Format = RGB8;
     */
 
-    uniform sampler2D BUFFER_VIEW;
+    // For Optifine to detect
+    #ifdef SHARPEN_FILTER
+    #endif
+
+    #if (ANTI_ALIASING != 0 && defined SHARPEN_FILTER) || defined CHROMATIC_ABERRATION || defined RETRO_FILTER
+        uniform float viewWidth;
+        uniform float viewHeight;
+    #endif
+
+    #if ANTI_ALIASING != 0 && defined SHARPEN_FILTER
+        #include "/lib/post/sharpenFilter.glsl"
+    #endif
+
+    uniform sampler2D gcolor;
 
     void main(){
-        gl_FragColor = vec4(texture2D(BUFFER_VIEW, texCoord).rgb, 1); // final color
+        #ifdef RETRO_FILTER
+            vec2 retroResolution = vec2(viewWidth, viewHeight) * 0.5;
+            vec2 retroCoord = floor(texCoord * retroResolution) / retroResolution;
+
+            #define texCoord retroCoord
+        #endif
+
+        #ifdef CHROMATIC_ABERRATION
+            vec2 chromaStrength = ABERRATION_PIX_SIZE / vec2(viewWidth, viewHeight);
+
+            vec3 color = vec3(texture2D(gcolor, mix(texCoord, vec2(0.5), chromaStrength)).r,
+                texture2D(gcolor, texCoord).g,
+                texture2D(gcolor, mix(texCoord, vec2(0.5), -chromaStrength)).b);
+        #else
+            vec3 color = texture2D(gcolor, texCoord).rgb;
+        #endif
+
+        #if ANTI_ALIASING != 0 && defined SHARPEN_FILTER
+            color = sharpenFilter(gcolor, color, texCoord);
+        #endif
+
+        gl_FragColor = vec4(color, 1);
     }
 #endif
