@@ -71,22 +71,22 @@ vec4 smoothen(vec4 x){
 // Smootherstep functions
 float smootherstep(float x){
 	x = saturate(x);
-	return cubed(x) * (x * (x * 6. - 15.) + 10.);
+	return x * x * x * (x * (x * 6.0 - 15.0) + 10.0);
 	}
 
 vec2 smootherstep(vec2 x){
 	x = saturate(x);
-	return cubed(x) * (x * (x * 6. - 15.) + 10.);
+	return x * x * x * (x * (x * 6.0 - 15.0) + 10.0);
 	}
 
 vec3 smootherstep(vec3 x){
 	x = saturate(x);
-	return cubed(x) * (x * (x * 6. - 15.) + 10.);
+	return x * x * x * (x * (x * 6.0 - 15.0) + 10.0);
 	}
 
 vec4 smootherstep(vec4 x){
 	x = saturate(x);
-	return cubed(x) * (x * (x * 6. - 15.) + 10.);
+	return x * x * x * (x * (x * 6.0 - 15.0) + 10.0);
 	}
 
 float getLuminance(vec3 col){
