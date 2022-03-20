@@ -24,6 +24,8 @@
 #define VIGNETTE_INTENSITY 1 // Vignette intensity [1 2 3 4 5]
 // #define CHROMATIC_ABERRATION // Enable chromatic abberation.
 #define ABERRATION_PIX_SIZE 4 // Chromating abberation length. Increase for stronger effects. [1 2 4 8 16]
+// #define MOTION_BLUR // Enable motion blur.
+#define MOTION_BLUR_STRENGTH 1.00 // Motion blur strength. [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.05 1.10 1.15 1.20 1.25 1.30 1.35 1.40 1.45 1.50 1.55 1.60 1.65 1.70 1.75 1.80 1.85 1.90 1.95 2.00]
 
 #define SATURATION 1.25 // Saturation, controls how much color saturation [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.05 1.10 1.15 1.20 1.25 1.30 1.35 1.40 1.45 1.50 1.55 1.60 1.65 1.70 1.75 1.80 1.85 1.90 1.95 2.00]
 #define EXPOSURE 1.00 // Exposure, controls color exposure [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.05 1.10 1.15 1.20 1.25 1.30 1.35 1.40 1.45 1.50 1.55 1.60 1.65 1.70 1.75 1.80 1.85 1.90 1.95 2.00]
@@ -79,7 +81,6 @@
 // #define AUTO_GEN_NORM // Enables auto generated normals. Works if Default PBR is on. Works mostly on vanilla resource packs.
 #define EMISSIVE_INTENSITY 8 // Emissive maps intensity. Does not affect lightmaps and requires PBR on. [2 4 8 16 32]
 #define NOISE_SPEED 8 // The speed in which the noise randomises each frame. Useful for TAA. This effect is visible only when TAA is enabled. [2 4 8 16 32]
-#define BUFFER_VIEW gcolor // Views different stored buffers. [gcolor colortex1 colortex2 colortex3 colortex4 colortex5 colortex6 colortex7]
 
 // #define PARALLAX_OCCLUSION // Enables parallax occlusion. Requires LabPBR on and a resource pack with LabPBR enabled materials.
 #define PARALLAX_DEPTH 0.25 // Parallax occlusion depth amount. Increase for more depth. [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50]
