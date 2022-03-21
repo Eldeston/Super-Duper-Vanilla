@@ -40,9 +40,9 @@ varying vec2 texCoord;
         vec3 sceneCol = texture2D(gcolor, texCoord).rgb;
 
         #ifdef MOTION_BLUR
-            if(texture2D(depthtex0, texCoord).x >= 0.56){
-                sceneCol = motionBlur(sceneCol, texCoord, getRand1(gl_FragCoord.xy * 0.03125));
-            }
+            float depth = texture2D(depthtex0, texCoord).x;
+
+            if(depth > 0.56) sceneCol = motionBlur(sceneCol, texCoord, depth, getRand1(gl_FragCoord.xy * 0.03125));
         #endif
 
     /* DRAWBUFFERS:0 */
