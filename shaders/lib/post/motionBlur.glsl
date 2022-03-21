@@ -1,5 +1,5 @@
 vec3 motionBlur(vec3 currColor, vec2 currScreenPos, float dither){
-    vec2 prevPosition = (currScreenPos - toPrevScreenPos(currScreenPos)) * 0.25 * MOTION_BLUR_STRENGTH;
+    vec2 prevPosition = (currScreenPos - toPrevScreenPos(currScreenPos)) * MOTION_BLUR_STRENGTH * 0.2;
 
     // Apply dithering
     currScreenPos += prevPosition * dither;
