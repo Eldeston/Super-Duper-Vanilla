@@ -16,7 +16,7 @@ uniform vec3 fogColor;
     float eyeBrightFact = eyeBrightnessSmooth.y / 240.0;
 #endif
 
-float newRainStrength = saturate(rainStrength * eyeBrightFact * float(isEyeInWater != 1));
+float newRainStrength = isEyeInWater != 1 ? saturate(rainStrength * eyeBrightFact) : 0.0;
 
 float ambientLighting = pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
 

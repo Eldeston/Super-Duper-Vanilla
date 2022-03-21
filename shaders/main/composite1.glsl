@@ -19,7 +19,9 @@ varying vec2 texCoord;
 
         uniform float shdFade;
 
-        #ifdef SHD_ENABLE
+        #include "/lib/universalVars.glsl"
+
+        #if defined VOL_LIGHT && defined SHD_ENABLE
             #include "/lib/utility/texFunctions.glsl"
         #endif
     #endif
@@ -27,8 +29,6 @@ varying vec2 texCoord;
     /* Screen resolutions */
     uniform float viewWidth;
     uniform float viewHeight;
-
-    #include "/lib/universalVars.glsl"
 
     #include "/lib/post/spectral.glsl"
 
@@ -38,7 +38,7 @@ varying vec2 texCoord;
         vec3 sceneCol = texture2D(gcolor, texCoord).rgb * (1.0 - spectralOutline) + spectralOutline * EMISSIVE_INTENSITY * 0.5;
 
         #ifdef WORLD_LIGHT
-            #ifdef SHD_ENABLE
+            #if defined VOL_LIGHT && defined SHD_ENABLE
                 sceneCol += texture2DBox(colortex4, texCoord, vec2(viewWidth, viewHeight)).rgb * lightCol * (min(1.0, VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater)) * shdFade);
             #else
                 sceneCol += texture2D(colortex4, texCoord, 1.5).rgb * lightCol * (min(1.0, VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater)) * shdFade) * (isEyeInWater == 1 ? fogColor : vec3(1));
