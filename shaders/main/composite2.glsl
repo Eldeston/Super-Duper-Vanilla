@@ -15,14 +15,6 @@ varying vec2 texCoord;
 
     #ifdef MOTION_BLUR
         uniform sampler2D depthtex0;
-        
-        /* Screen resolutions */
-        uniform float viewWidth;
-        uniform float viewHeight;
-
-        #if ANTI_ALIASING == 2
-            uniform float frameTimeCounter;
-        #endif
 
         /* Matrix uniforms */
         // View matrix uniforms
@@ -49,13 +41,7 @@ varying vec2 texCoord;
 
         #ifdef MOTION_BLUR
             if(texture2D(depthtex0, texCoord).x >= 0.56){
-                #if ANTI_ALIASING == 2
-                    float dither = toRandPerFrame(getRand1(gl_FragCoord.xy * 0.03125), frameTimeCounter);
-                #else
-                    float dither = getRand1(gl_FragCoord.xy * 0.03125);
-                #endif
-
-                sceneCol = motionBlur(sceneCol, texCoord, dither);
+                sceneCol = motionBlur(sceneCol, texCoord, getRand1(gl_FragCoord.xy * 0.03125));
             }
         #endif
 
