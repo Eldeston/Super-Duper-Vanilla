@@ -78,6 +78,7 @@ varying vec2 screenCoord;
     #include "/lib/atmospherics/fog.glsl"
     #include "/lib/atmospherics/sky.glsl"
 
+    #include "/lib/lighting/ambientOcclusion.glsl"
     #include "/lib/lighting/GGX.glsl"
     #include "/lib/lighting/SSR.glsl"
     #include "/lib/lighting/SSGI.glsl"
@@ -123,6 +124,9 @@ varying vec2 screenCoord;
 
             // Apply deffered shading
             sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
+
+            // Apply ambient occlusion
+            // sceneCol *= ambientOcclusion(posVector.viewPos, mat3(gbufferModelView) * material.normal, dither);
 
             #ifdef OUTLINES
                 /* Outline calculation */

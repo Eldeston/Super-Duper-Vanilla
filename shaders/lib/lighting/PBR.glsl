@@ -254,8 +254,15 @@ uniform sampler2D texture;
         // Default material if not specified
         material.metallic = 0.04; material.emissive = 0.0;
         material.smoothness = 0.0; material.ss = 0.0;
-        material.ambient = glcolor.a; material.parallaxShd = 1.0;
-        material.porosity = 0.0;
+        material.parallaxShd = 1.0; material.porosity = 0.0;
+
+        #ifdef TERRAIN
+            // Apply vanilla AO with it in terrain
+            material.ambient = glcolor.a;
+        #else
+            // For others, don't use vanilla AO
+            material.ambient = 1.0;
+        #endif
 
         #ifdef TERRAIN
             // If lava and fire
