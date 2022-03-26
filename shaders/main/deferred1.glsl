@@ -128,13 +128,13 @@ varying vec2 screenCoord;
                 vec3 dither = getRand3(gl_FragCoord.xy * 0.03125);
             #endif
 
+            // Apply deffered shading
+            sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
+
             #ifdef SSAO
                 // Apply ambient occlusion
                 sceneCol *= squared(texture2DBox(colortex2, screenCoord, vec2(viewWidth, viewHeight)).a);
             #endif
-
-            // Apply deffered shading
-            sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
 
             #ifdef OUTLINES
                 /* Outline calculation */

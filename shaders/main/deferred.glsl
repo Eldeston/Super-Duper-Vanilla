@@ -39,28 +39,22 @@ varying vec2 texCoord;
 
     void main(){
         #ifdef SSAO
-            vec2 scaledSreenPos = texCoord;
-            float padding = 0.5 + 0.005;
-
             float ambientOcclusion = 1.0;
 
-            if(abs(scaledSreenPos.x - 0.5) < padding && abs(scaledSreenPos.y - 0.5) < padding){
-                // Declare and get positions
-                vec3 screenPos = vec3(scaledSreenPos, texture2D(depthtex0, scaledSreenPos).x);
+            // Declare and get positions
+            vec3 screenPos = vec3(texCoord, texture2D(depthtex0, texCoord).x);
 
-                // If not sky, don't calculate lighting
-                if(screenPos.z != 1 && screenPos.z > 0.56){
-                    vec3 viewPos = toView(screenPos);
-                    vec3 normal = texture2D(colortex1, scaledSreenPos).xyz * 2.0 - 1.0;
+            // If not sky, don't calculate lighting
+            if(screenPos.z != 1 && screenPos.z > 0.56){
+                vec3 normal = mat3(gbufferModelView) * (texture2D(colortex1, texCoord).xyz * 2.0 - 1.0);
 
-                    #if ANTI_ALIASING == 2
-                        vec3 dither = toRandPerFrame(getRand3(gl_FragCoord.xy * 0.03125), frameTimeCounter);
-                    #else
-                        vec3 dither = getRand3(gl_FragCoord.xy * 0.03125);
-                    #endif
+                #if ANTI_ALIASING == 2
+                    vec3 dither = toRandPerFrame(getRand3(gl_FragCoord.xy * 0.03125), frameTimeCounter);
+                #else
+                    vec3 dither = getRand3(gl_FragCoord.xy * 0.03125);
+                #endif
 
-                    ambientOcclusion = getAmbientOcclusion(viewPos, mat3(gbufferModelView) * normal, dither);
-                }
+                ambientOcclusion = getAmbientOcclusion(toView(screenPos), normal, dither);
             }
             
         /* DRAWBUFFERS:2 */
