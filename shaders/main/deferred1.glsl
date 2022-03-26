@@ -53,7 +53,7 @@ varying vec2 screenCoord;
         #include "/lib/utility/convertPrevScreenSpace.glsl"
     #endif
 
-    #if defined SSAO || defined OUTLINES
+    #if defined SSAO || defined OUTLINES || ANTI_ALIASING == 2
         /* Screen uniforms */
         uniform float viewWidth;
         uniform float viewHeight;
