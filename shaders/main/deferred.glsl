@@ -1,148 +1,73 @@
 #include "/lib/utility/util.glsl"
 #include "/lib/settings.glsl"
-#include "/lib/structs.glsl"
 
-varying vec2 screenCoord;
+varying vec2 texCoord;
 
 #ifdef VERTEX
     void main(){
         gl_Position = ftransform();
-        screenCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
     }
 #endif
 
 #ifdef FRAGMENT
-    // Sky silhoutte fix
-    const vec4 gcolorClearColor = vec4(0, 0, 0, 1);
-
-    uniform sampler2D depthtex0;
-    uniform sampler2D gcolor;
-    uniform sampler2D colortex1;
     uniform sampler2D colortex2;
-    uniform sampler2D colortex3;
-    
-    #if defined STORY_MODE_CLOUDS && !defined FORCE_DISABLE_CLOUDS
-        uniform sampler2D colortex4;
+
+    #ifdef SSAO
+        uniform sampler2D depthtex0;
+        uniform sampler2D colortex1;
+
+        /* Matrix uniforms */
+        // View matrix uniforms
+        uniform mat4 gbufferModelView;
+
+        // Projection matrix uniforms
+        uniform mat4 gbufferProjection;
+        uniform mat4 gbufferProjectionInverse;
+        
+        #if ANTI_ALIASING == 2
+            // Get frame time
+            uniform float frameTimeCounter;
+        #endif
+
+        #include "/lib/utility/convertViewSpace.glsl"
+        #include "/lib/utility/convertScreenSpace.glsl"
+        #include "/lib/utility/noiseFunctions.glsl"
+
+        #include "/lib/lighting/ambientOcclusion.glsl"
     #endif
-
-    /* Matrix uniforms */
-    // View matrix uniforms
-    uniform mat4 gbufferModelView;
-    uniform mat4 gbufferModelViewInverse;
-
-    // Projection matrix uniforms
-    uniform mat4 gbufferProjection;
-    uniform mat4 gbufferProjectionInverse;
-
-    // Shadow view matrix uniforms
-    uniform mat4 shadowModelView;
-
-    /* Position uniforms */
-    uniform vec3 cameraPosition;
-
-    #ifdef PREVIOUS_FRAME
-        // Previous reflections
-        uniform sampler2D colortex5;
-        const bool colortex5Clear = false;
-
-        uniform mat4 gbufferPreviousModelView;
-        uniform mat4 gbufferPreviousProjection;
-
-        uniform vec3 previousCameraPosition;
-
-        #include "/lib/utility/convertPrevScreenSpace.glsl"
-    #endif
-
-    /* Screen uniforms */
-    uniform float viewWidth;
-    uniform float viewHeight;
-
-    #if ANTI_ALIASING == 2
-        #include "/lib/utility/taaJitter.glsl"
-    #endif
-
-    /* Time uniforms */
-    // Get frame time
-    uniform float frameTimeCounter;
-    
-    uniform float blindness;
-    uniform float far;
-    
-    #include "/lib/universalVars.glsl"
-
-    #include "/lib/utility/convertViewSpace.glsl"
-    #include "/lib/utility/convertScreenSpace.glsl"
-    #include "/lib/utility/noiseFunctions.glsl"
-    #include "/lib/rayTracing/rayTracer.glsl"
-
-    #include "/lib/atmospherics/fog.glsl"
-    #include "/lib/atmospherics/sky.glsl"
-
-    #include "/lib/lighting/ambientOcclusion.glsl"
-    #include "/lib/lighting/GGX.glsl"
-    #include "/lib/lighting/SSR.glsl"
-    #include "/lib/lighting/SSGI.glsl"
-    #include "/lib/post/outline.glsl"
-
-    #include "/lib/lighting/complexShadingDeferred.glsl"
 
     void main(){
-        // Declare and get positions
-        positionVectors posVector;
-        posVector.screenPos = vec3(screenCoord, texture2D(depthtex0, screenCoord).x);
-        
-        // Get sky mask
-        bool skyMask = posVector.screenPos.z == 1;
+        #ifdef SSAO
+            vec2 scaledSreenPos = texCoord;
+            float padding = 0.5 + 0.005;
 
-        // Jitter the sky only
-        #if ANTI_ALIASING == 2
-            if(skyMask) posVector.screenPos.xy += jitterPos(-0.5);
-        #endif
-        
-        posVector.viewPos = toView(posVector.screenPos);
-        posVector.eyePlayerPos = mat3(gbufferModelViewInverse) * posVector.viewPos;
-        posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
+            float ambientOcclusion = 1.0;
 
-        // Get scene color
-        vec3 sceneCol = texture2D(gcolor, screenCoord).rgb;
+            if(abs(scaledSreenPos.x - 0.5) < padding && abs(scaledSreenPos.y - 0.5) < padding){
+                // Declare and get positions
+                vec3 screenPos = vec3(scaledSreenPos, texture2D(depthtex0, scaledSreenPos).x);
 
-        // If not sky, don't calculate lighting
-        if(!skyMask){
-            // Declare and get materials
-            matPBR material;
-            material.albedo = texture2D(colortex2, screenCoord);
-            material.normal = texture2D(colortex1, screenCoord).rgb * 2.0 - 1.0;
+                // If not sky, don't calculate lighting
+                if(screenPos.z != 1 && screenPos.z > 0.56){
+                    vec3 viewPos = toView(screenPos);
+                    vec3 normal = texture2D(colortex1, scaledSreenPos).xyz * 2.0 - 1.0;
 
-            vec2 matRaw0 = texture2D(colortex3, screenCoord).xy;
-            material.metallic = matRaw0.x; material.smoothness = matRaw0.y;
+                    #if ANTI_ALIASING == 2
+                        vec3 dither = toRandPerFrame(getRand3(gl_FragCoord.xy * 0.03125), frameTimeCounter);
+                    #else
+                        vec3 dither = getRand3(gl_FragCoord.xy * 0.03125);
+                    #endif
 
-            #if ANTI_ALIASING == 2
-                vec3 dither = toRandPerFrame(getRand3(gl_FragCoord.xy * 0.03125), frameTimeCounter);
-            #else
-                vec3 dither = getRand3(gl_FragCoord.xy * 0.03125);
-            #endif
-
-            // Apply deffered shading
-            sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
-
-            // Apply ambient occlusion
-            // sceneCol *= ambientOcclusion(posVector.viewPos, mat3(gbufferModelView) * material.normal, dither);
-
-            #ifdef OUTLINES
-                /* Outline calculation */
-                sceneCol *= 1.0 + getOutline(posVector.screenPos, posVector.viewPos.z, OUTLINE_PIX_SIZE) * (OUTLINE_BRIGHTNESS - 1.0);
-            #endif
-        }
-
-        // Fog and sky calculation
-        sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, getSkyRender(sceneCol, normalize(posVector.eyePlayerPos), skyMask, true), posVector.feetPlayerPos.y + cameraPosition.y, skyMask);
-
-    /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(sceneCol, 1); //gcolor
-
-        #ifdef PREVIOUS_FRAME
-        /* DRAWBUFFERS:05 */
-            gl_FragData[1] = vec4(sceneCol, 1); //colortex5
+                    ambientOcclusion = getAmbientOcclusion(viewPos, mat3(gbufferModelView) * normal, dither);
+                }
+            }
+            
+        /* DRAWBUFFERS:2 */
+            gl_FragData[0] = vec4(texture2D(colortex2, texCoord).rgb, ambientOcclusion); // colortex2
+        #else
+        /* DRAWBUFFERS:2 */
+            gl_FragData[0] = vec4(texture2D(colortex2, texCoord).rgb, 1); // colortex2
         #endif
     }
 #endif

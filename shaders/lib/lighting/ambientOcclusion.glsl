@@ -1,14 +1,18 @@
-vec3 ambientOcclusion(vec3 viewPos, vec3 normal, vec3 dither){
+float getAmbientOcclusion(vec3 viewPos, vec3 normal, vec3 dither){
     float occlusion = 0.0;
 
-    for(int i = 0; i < 4; i++){
-        vec3 sampleDir = normal + fract(dither + i * 0.25);
+    for(int i = 0; i < 8; i++){
+        // Calculate the offsets
+        vec3 sampleDir = normal + fract(dither + i * PI) - 0.5;
+        // Add offsets to origin
+        vec3 samplePos = viewPos + normalize(sampleDir) * 0.5;
+        // Get the sample new depth and linearize
+        float sampleDepth = toView(texture2D(depthtex0, toScreen(samplePos).xy).x);
 
-        vec3 samplePos = viewPos + sampleDir * 0.5;
-        float sampleDepth = texture2D(depthtex0, toScreen(samplePos).xy).x;
-
-        occlusion += sampleDepth > samplePos.z + 0.025 ? smootherstep(0.5 / abs(viewPos.z - sampleDepth)) : 0.0;
+        // Check if the offset points are inside geometry or if the point is occluded
+        occlusion += sampleDepth > samplePos.z ? smootherstep(0.5 / abs(viewPos.z - sampleDepth)) : 0.0;
     }
-
-    return saturate(cubed(1.0 - (occlusion * 0.25)));
+    
+    // Invert results and 
+    return 1.0 - occlusion * 0.125;
 }
