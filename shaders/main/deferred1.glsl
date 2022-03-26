@@ -133,7 +133,7 @@ varying vec2 screenCoord;
 
             #ifdef SSAO
                 // Apply ambient occlusion
-                sceneCol *= squared(texture2DBox(colortex2, screenCoord, vec2(viewWidth, viewHeight)).a);
+                sceneCol *= texture2DBox(colortex2, screenCoord, vec2(viewWidth, viewHeight)).a;
             #endif
 
             #ifdef OUTLINES
