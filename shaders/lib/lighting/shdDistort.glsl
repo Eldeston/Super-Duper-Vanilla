@@ -3,7 +3,7 @@ float getDistortFactor(vec2 v){
 }
 
 vec3 distort(vec3 v, float factor) {
-	return vec3(v.xy / factor, v.z * 0.25);
+	return vec3(v.xy / factor, v.z * 0.2);
 }
 
 vec3 distort(vec3 v) {
