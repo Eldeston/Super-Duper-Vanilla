@@ -81,7 +81,7 @@ varying vec2 texCoord;
         #if TIMELAPSE_MODE != 0 && defined ZA_WARUDO
             float zaWarudoSphere = abs(length((texCoord - 0.5) * vec2(aspectRatio, 1)) * 0.5 + 1.0 - zaWarudo);
 
-            vec2 distortCoord = (texCoord - 0.5) - (texCoord - 0.5) * saturate(zaWarudoSphere) * float(zaWarudoSphere < 0.5 && zaWarudoSphere > 0) + 0.5;
+            vec2 distortCoord = (texCoord - 0.5) - (texCoord - 0.5) * min(1.0, zaWarudoSphere) * float(zaWarudoSphere < 0.5 && zaWarudoSphere > 0) + 0.5;
 
             #define texCoord distortCoord
         #endif

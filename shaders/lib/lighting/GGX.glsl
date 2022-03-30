@@ -46,8 +46,8 @@ vec3 getSpecBRDF(vec3 V, vec3 L, vec3 N, vec3 F0, float NL, float roughness){
     vec3 H = normalize(L + V);
     
     // Dot products
-    float NV = saturate(dot(N, V));
-    float LH = saturate(dot(L, H));
+    float NV = max(0.0, dot(N, V));
+    float LH = max(0.0, dot(L, H));
     float LV = dot(L, V);
 
     // Fresnel

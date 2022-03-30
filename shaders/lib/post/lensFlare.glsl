@@ -2,7 +2,7 @@ float fovMult = gbufferProjection[1].y / 1.37373871;
 
 float lensFlareSimple(vec2 centerCoord, vec2 lightDir, float size, float dist){
     vec2 flareCoord = (centerCoord + lightDir * dist) * vec2(aspectRatio, 1);
-    return squared(squared(saturate(1.0 - length(flareCoord) / (size * fovMult))));
+    return squared(squared(max(0.0, 1.0 - length(flareCoord) / (size * fovMult))));
 }
 
 float lensFlareRays(vec2 centerCoord, vec2 lightDir, float rayBeam, float size, float dist){
