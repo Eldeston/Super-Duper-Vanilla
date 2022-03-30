@@ -13,8 +13,8 @@ vec3 binarySearch(vec3 screenPosRayDir, vec3 startPos, int binarySearchSteps){
 vec3 rayTraceScene(vec3 screenPos, vec3 viewPos, vec3 rayDir, float dither, int steps, int binarySearchSteps){
 	// If hand, do simple, flipped reflections
 	if(screenPos.z < 0.56){
-		vec3 handScreenPos = toScreenSpacePos(toScreen(viewPos + rayDir * 128.0).xy, depthtex0);
-		return vec3(handScreenPos.xy, handScreenPos.z != 1);
+		vec2 handScreenPos = toScreen(viewPos + rayDir * 128.0).xy;
+		return vec3(handScreenPos, texture2D(depthtex0, handScreenPos).x != 1);
 	}
 
 	// Get screenspace rayDir

@@ -6,8 +6,3 @@ vec3 toScreen(vec3 pos){
 float toScreen(float depth){
 	return ((gbufferProjection[2].z * depth + gbufferProjection[3].z) / -depth) * 0.5 + 0.5;
 }
-
-// Full screen position
-vec3 toScreenSpacePos(vec2 st, sampler2D depthTex){
-	return vec3(st, texture2D(depthTex, st).x);
-}

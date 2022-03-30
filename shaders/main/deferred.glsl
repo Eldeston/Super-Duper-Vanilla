@@ -46,15 +46,13 @@ varying vec2 texCoord;
 
             // If not sky, don't calculate lighting
             if(screenPos.z != 1 && screenPos.z > 0.56){
-                vec3 normal = mat3(gbufferModelView) * (texture2D(colortex1, texCoord).xyz * 2.0 - 1.0);
-
                 #if ANTI_ALIASING == 2
                     vec3 dither = toRandPerFrame(getRand3(gl_FragCoord.xy * 0.03125), frameTimeCounter);
                 #else
                     vec3 dither = getRand3(gl_FragCoord.xy * 0.03125);
                 #endif
 
-                ambientOcclusion = getAmbientOcclusion(toView(screenPos), normal, dither);
+                ambientOcclusion = getAmbientOcclusion(toView(screenPos), mat3(gbufferModelView) * (texture2D(colortex1, texCoord).xyz * 2.0 - 1.0), dither);
             }
             
         /* DRAWBUFFERS:2 */
