@@ -142,7 +142,14 @@ uniform mat4 gbufferModelViewInverse;
             endStarField += texture2DGradARB(texture, endStarCoord1.yx + endStarOffset, dcdx, dcdy).r;
             endStarField += texture2DGradARB(texture, (endStarCoord1 + endStarOffset) * 2.0, dcdx, dcdy).r;
             endStarField += texture2DGradARB(texture, (endStarOffset - endStarCoord1) * 4.0, dcdx, dcdy).r;
-            gl_FragData[0] = vec4(pow((endStarField + 0.1) * (getRand3(posVector.screenPos.xy * 0.5) * 0.5 + 0.5) * glcolor.rgb, vec3(GAMMA)) * EMISSIVE_INTENSITY * EMISSIVE_INTENSITY, 1); //gcolor
+            vec3 endPortalAlbedo = pow((endStarField + 0.1) * (getRand3(posVector.screenPos.xy * 0.5) * 0.5 + 0.5) * glcolor.rgb, vec3(GAMMA));
+            gl_FragData[0] = vec4(endPortalAlbedo * EMISSIVE_INTENSITY * EMISSIVE_INTENSITY, 1); //gcolor
+
+            #ifdef SSAO
+                // SSAO End portal fix
+                gl_FragData[1] = vec4(TBN[2] * 0.5 + 0.5, 1); //colortex1
+            #endif
+
             return; // Return immediately, no need for lighting calculation
         }
 
