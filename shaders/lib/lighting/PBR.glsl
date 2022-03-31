@@ -39,7 +39,7 @@ uniform sampler2D texture;
 
     #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined PARALLAX_OCCLUSION
         vec2 getParallaxOffset(vec3 dirT){
-            return normalize(dirT.xy) * (sqrt(lengthSquared(dirT) - squared(dirT.z)) * PARALLAX_DEPTH / dirT.z);
+            return normalize(dirT.xy) * (sqrt(lengthSquared(dirT) - dirT.z * dirT.z) * PARALLAX_DEPTH / dirT.z);
         }
 
         vec2 parallaxUv(vec2 startUv, vec2 endUv, out vec3 currPos){
@@ -234,10 +234,8 @@ uniform sampler2D texture;
         // Assign default normal map
         material.normal = TBN[2];
 
-        vec2 texUv = texCoord;
-
         // Assign albedo
-        material.albedo = texture2DGradARB(texture, texUv, dcdx, dcdy);
+        material.albedo = texture2DGradARB(texture, texCoord, dcdx, dcdy);
 
         // Alpha test, discard immediately
         if(material.albedo.a <= ALPHA_THRESHOLD) discard;

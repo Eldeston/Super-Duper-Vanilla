@@ -1,7 +1,5 @@
 float getCellNoise2(vec2 st){
-    float animateTime = CURRENT_SPEED * newFrameTimeCounter;
-    float d0 = texture2D(noisetex, st + animateTime * 0.032).z;
-    float d1 = texPix2DBilinear(noisetex, st / 64.0 - animateTime * 0.001, vec2(noiseTextureResolution)).y;
-
-    return 1.0 - (d0 + d1) * 0.5;
+    float animateTime = CURRENT_SPEED * newFrameTimeCounter * 0.032;
+    float noiseMap = texPix2DBilinear(noisetex, (st - animateTime) * 0.015625, vec2(noiseTextureResolution)).y;
+    return 1.0 - (noiseMap + texture2D(noisetex, st + animateTime).z) * 0.5;
 }
