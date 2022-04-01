@@ -57,13 +57,13 @@
 #define WATER_BRIGHTNESS 1.00 // Water brightness, lower values mean deeper colors [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00]
 #define WATER_BLUR_SIZE 8.0 // Water normal map blur size, smaller means more defined waves, larger means smoother waves [1.0 2.0 4.0 8.0 16.0 32.0 64.0]
 #define WATER_DEPTH_SIZE 64 // The normal map depth of the waves, the smaller the more depth it has [16 32 64 128 256]
-#define WATER_TILE_SIZE 16 // Tile size of the water [4 8 16 24 32 40 48 56 64]
+#define WATER_TILE_SIZE 16 // Tile size of the water [4 8 16 24 32]
 #define STYLIZED_WATER_ABSORPTION // Enables stylized water absorption. Changes water color based on depth.
 #define WATER_FOAM // Enables water foam. Appears on the sides of most solid objects, including entities.
 #define WATER_NOISE // Enables water noise. Varies the water brightness by noise similar to SDGP.
 
 #define LAVA_BRIGHTNESS 1.00 // Lava brightness, lower values mean darker colors [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00]
-#define LAVA_TILE_SIZE 32 // Tile size of the lava [4 8 16 24 32 40 48 56 64]
+#define LAVA_TILE_SIZE 16 // Tile size of the lava [4 8 16 24 32]
 #define LAVA_NOISE // Enables lava noise. Varies the lava brightness by noise similar to Minecraft Dungeons.
 
 // #define SSGI // Enables SSGI, currently experimental and may not be very optimized, may improve the ambience of dark areas despite the noisiness. Turn on TAA for best results.
