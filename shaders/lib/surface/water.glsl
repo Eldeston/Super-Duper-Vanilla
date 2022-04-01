@@ -1,16 +1,11 @@
 float getWaterHeightBilinear(vec2 uv){
     float pixSize = 1.0 / noiseTextureResolution;
 
-    float downLeft = texture2D(noisetex, uv).z;
-    float downRight = texture2D(noisetex, uv + vec2(pixSize, 0)).z;
-
-    float upRight = texture2D(noisetex, uv + vec2(0, pixSize)).z;
-    float upLeft = texture2D(noisetex, uv + pixSize).z;
-
     float a = fract(uv.x * noiseTextureResolution);
 
-    float horizontal0 = mix(downLeft, downRight, a);
-    float horizontal1 = mix(upRight, upLeft, a);
+    float horizontal0 = mix(texture2D(noisetex, uv).z, texture2D(noisetex, uv + vec2(pixSize, 0)).z, a);
+    float horizontal1 = mix(texture2D(noisetex, uv + vec2(0, pixSize)).z, texture2D(noisetex, uv + pixSize).z, a);
+    
     return mix(horizontal0, horizontal1, fract(uv.y * noiseTextureResolution));
 }
 
