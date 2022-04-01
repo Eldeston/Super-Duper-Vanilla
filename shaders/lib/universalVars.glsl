@@ -1,7 +1,6 @@
 uniform int isEyeInWater;
 
 uniform float nightVision;
-uniform float rainStrength;
 
 uniform float day;
 uniform float dawnDusk;
@@ -13,10 +12,17 @@ uniform vec3 fogColor;
 #else
     uniform ivec2 eyeBrightnessSmooth;
     
-    float eyeBrightFact = eyeBrightnessSmooth.y / 240.0;
+    float eyeBrightFact = eyeBrightnessSmooth.y * 0.00416667;
 #endif
 
-float newRainStrength = isEyeInWater != 1 ? rainStrength * eyeBrightFact : 0.0;
+#ifdef FORCE_DISABLE_WEATHER
+    const float rainStrength = 0.0;
+    const float newRainStrength = 0.0;
+#else
+    uniform float rainStrength;
+
+    float newRainStrength = isEyeInWater != 1 ? rainStrength * eyeBrightFact : 0.0;
+#endif
 
 float ambientLighting = pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
 

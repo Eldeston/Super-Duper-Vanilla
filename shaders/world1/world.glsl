@@ -14,6 +14,8 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 #define WORLD_SKY_GROUND
 // Force disable any clouds
 #define FORCE_DISABLE_CLOUDS
+// Force disable weather
+#define FORCE_DISABLE_WEATHER
 
 // Enable stars in your world
 #define USE_STARS_COL vec3(pow(2.0, GAMMA))
