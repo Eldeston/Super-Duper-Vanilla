@@ -1,7 +1,23 @@
+float getWaterHeightBilinear(vec2 uv){
+    float pixSize = 1.0 / noiseTextureResolution;
+
+    float downLeft = texture2D(noisetex, uv).z;
+    float downRight = texture2D(noisetex, uv + vec2(pixSize, 0)).z;
+
+    float upRight = texture2D(noisetex, uv + vec2(0, pixSize)).z;
+    float upLeft = texture2D(noisetex, uv + pixSize).z;
+
+    float a = fract(uv.x * noiseTextureResolution);
+
+    float horizontal0 = mix(downLeft, downRight, a);
+    float horizontal1 = mix(upRight, upLeft, a);
+    return mix(horizontal0, horizontal1, fract(uv.y * noiseTextureResolution));
+}
+
 float getCellNoise(vec2 st){
     float animateTime = CURRENT_SPEED * newFrameTimeCounter;
-    float heightMap = texPix2DBilinear(noisetex, st + animateTime * 0.025, vec2(noiseTextureResolution)).z;
-    return (heightMap + texPix2DBilinear(noisetex, st - animateTime * 0.05, vec2(noiseTextureResolution)).z) * 0.5;
+    float heightMap = getWaterHeightBilinear(st + animateTime * 0.025);
+    return (heightMap + getWaterHeightBilinear(st - animateTime * 0.05)) * 0.5;
 }
 
 // Convert height map of water to a normal map

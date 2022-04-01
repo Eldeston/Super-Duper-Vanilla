@@ -1,4 +1,4 @@
-float fovMult = gbufferProjection[1].y / 1.37373871;
+float fovMult = gbufferProjection[1].y * 0.72794047;
 
 float lensFlareSimple(vec2 centerCoord, vec2 lightDir, float size, float dist){
     vec2 flareCoord = (centerCoord + lightDir * dist) * vec2(aspectRatio, 1);
