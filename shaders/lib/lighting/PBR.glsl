@@ -244,6 +244,10 @@ uniform sampler2D texture;
         #if defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER
             if(id <= 0) material.ambient = 1.0;
         #endif
+
+        #ifdef BLOCK
+            if(id == 10019) material.ambient = 1.0;
+        #endif
     }
 #else
     void getPBR(inout matPBR material, in positionVectors posVector, in int id){
