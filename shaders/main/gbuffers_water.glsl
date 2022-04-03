@@ -62,11 +62,11 @@ uniform vec3 cameraPosition;
         lmCoord = saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).xy - 0.03125) * 1.06667);
         blockId = mc_Entity.x;
 
+        // Get TBN matrix
         vec3 tangent = normalize(gl_NormalMatrix * at_tangent.xyz);
-	    vec3 binormal = normalize(gl_NormalMatrix * cross(at_tangent.xyz, gl_Normal) * at_tangent.w);
-	    vec3 normal = normalize(gl_NormalMatrix * gl_Normal);
+        vec3 normal = normalize(gl_NormalMatrix * gl_Normal);
 
-	    TBN = mat3(gbufferModelViewInverse) * mat3(tangent, binormal, normal);
+	    TBN = mat3(gbufferModelViewInverse) * mat3(tangent, cross(tangent, normal), normal);
 
         #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
             vec2 midCoord = (gl_TextureMatrix[0] * mc_midTexCoord).xy;

@@ -62,11 +62,11 @@ uniform vec3 cameraPosition;
         lmCoord = saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).xy - 0.03125) * 1.06667);
         blockId = mc_Entity.x;
 
+        // Get TBN matrix
         vec3 tangent = normalize(gl_NormalMatrix * at_tangent.xyz);
-	    vec3 binormal = normalize(gl_NormalMatrix * cross(at_tangent.xyz, gl_Normal) * at_tangent.w);
-	    vec3 normal = normalize(gl_NormalMatrix * gl_Normal);
+        vec3 normal = normalize(gl_NormalMatrix * gl_Normal);
 
-	    TBN = mat3(gbufferModelViewInverse) * mat3(tangent, binormal, normal);
+	    TBN = mat3(gbufferModelViewInverse) * mat3(tangent, cross(tangent, normal), normal);
 
         #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
             vec2 midCoord = (gl_TextureMatrix[0] * mc_midTexCoord).xy;
@@ -157,9 +157,9 @@ uniform vec3 cameraPosition;
 
         if(rBlockId == 10002){
             #ifdef LAVA_NOISE
-                vec2 lavaUv = worldPos.xz * (1.0 - TBN[2].y) + worldPos.xz * TBN[2].y;
+                vec2 lavaUv = worldPos.yz * TBN[2].x + worldPos.xz * TBN[2].y + worldPos.xy * TBN[2].z;
                 float lavaWaves = max(getLuminance(material.albedo.rgb), getLavaNoise(floor(lavaUv * 16.0) / (LAVA_TILE_SIZE * 16.0)));
-                material.albedo.rgb *= smoothstep(0.25, 0.75, lavaWaves) * LAVA_BRIGHTNESS;
+                material.albedo.rgb = floor(material.albedo.rgb * smoothstep(0.25, 0.75, lavaWaves) * LAVA_BRIGHTNESS * 16.0) / 16.0;
             #else
                 material.albedo.rgb = material.albedo.rgb * LAVA_BRIGHTNESS;
             #endif
