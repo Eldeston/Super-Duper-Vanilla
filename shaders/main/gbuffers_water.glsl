@@ -162,17 +162,15 @@ uniform vec3 cameraPosition;
             float waterNoise = WATER_BRIGHTNESS;
 
             #if !(defined END || defined NETHER)
-                vec2 waterUv = worldPos.xz * (1.0 - TBN[2].y) + worldPos.xz * TBN[2].y;
-
                 #ifdef WATER_NORM
-                    vec4 waterData = H2NWater(waterUv);
+                    vec4 waterData = H2NWater(worldPos.xz);
                     material.normal = normalize(TBN * waterData.xyz);
 
                     #ifdef WATER_NOISE
                         waterNoise *= squared(0.128 + waterData.w);
                     #endif
                 #else
-                    float waterData = getCellNoise(waterUv / WATER_TILE_SIZE);
+                    float waterData = getCellNoise(worldPos.xz / WATER_TILE_SIZE);
 
                     #ifdef WATER_NOISE
                         waterNoise *= squared(0.128 + waterData);
