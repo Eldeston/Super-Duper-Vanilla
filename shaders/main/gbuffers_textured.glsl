@@ -1,6 +1,5 @@
 #include "/lib/utility/util.glsl"
 #include "/lib/settings.glsl"
-#include "/lib/structs.glsl"
 
 varying vec2 lmCoord;
 varying vec2 texCoord;
@@ -89,48 +88,36 @@ uniform mat4 gbufferModelViewInverse;
 
     void main(){
         // Declare and get positions
-        positionVectors posVector;
-        posVector.screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
-	    posVector.viewPos = toView(posVector.screenPos);
-        posVector.eyePlayerPos = mat3(gbufferModelViewInverse) * posVector.viewPos;
-        posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
+        vec3 screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
+        vec3 feetPlayerPos = mat3(gbufferModelViewInverse) * toView(screenPos) + gbufferModelViewInverse[3].xyz;
 
-	    // Declare materials
-	    matPBR material;
-
-        material.albedo = texture2D(texture, texCoord);
+        vec4 albedo = texture2D(texture, texCoord);
 
         // Alpha test, discard immediately
-        if(material.albedo.a <= ALPHA_THRESHOLD) discard;
+        if(albedo.a <= ALPHA_THRESHOLD) discard;
         
         // World border fix
         if(renderStage == MC_RENDER_STAGE_WORLD_BORDER){
-            gl_FragData[0] = vec4(pow(material.albedo.rgb * vec3(0.5, 0.75, 1) * material.albedo.a, vec3(GAMMA)) * EMISSIVE_INTENSITY, 1); //gcolor
+            gl_FragData[0] = vec4(pow(albedo.rgb * vec3(0.5, 0.75, 1) * albedo.a, vec3(GAMMA)) * EMISSIVE_INTENSITY, 1); //gcolor
             return; // Return immediately, no need for lighting calculation
         }
-        
-        // Assign normals
-        material.normal = norm;
 
         #if WHITE_MODE == 0
-            material.albedo.rgb *= glcolor;
+            albedo.rgb *= glcolor;
         #elif WHITE_MODE == 1
-            material.albedo.rgb = vec3(1);
+            albedo.rgb = vec3(1);
         #elif WHITE_MODE == 2
-            material.albedo.rgb = vec3(0);
+            albedo.rgb = vec3(0);
         #elif WHITE_MODE == 3
-            material.albedo.rgb = glcolor;
+            albedo.rgb = glcolor;
         #endif
 
-        material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
-
-        material.ss = 1.0;
-        material.light = lmCoord;
+        albedo.rgb = pow(albedo.rgb, vec3(GAMMA));
 
         #if ANTI_ALIASING == 2
-            vec4 sceneCol = simpleShadingGbuffers(material, posVector, toRandPerFrame(getRand1(gl_FragCoord.xy * 0.03125), frameTimeCounter));
+            vec4 sceneCol = simpleShadingGbuffers(albedo, feetPlayerPos, norm, lmCoord, 1.0, toRandPerFrame(getRand1(gl_FragCoord.xy * 0.03125), frameTimeCounter));
         #else
-            vec4 sceneCol = simpleShadingGbuffers(material, posVector, getRand1(gl_FragCoord.xy * 0.03125));
+            vec4 sceneCol = simpleShadingGbuffers(albedo, feetPlayerPos, norm, lmCoord, 1.0, getRand1(gl_FragCoord.xy * 0.03125));
         #endif
 
     /* DRAWBUFFERS:03 */

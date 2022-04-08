@@ -1,6 +1,5 @@
 #include "/lib/utility/util.glsl"
 #include "/lib/settings.glsl"
-#include "/lib/structs.glsl"
 
 varying vec2 texCoord;
 
@@ -86,18 +85,10 @@ uniform mat4 gbufferModelViewInverse;
 
     void main(){
         // Declare and get positions
-        positionVectors posVector;
-        posVector.screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
-	    posVector.viewPos = toView(posVector.screenPos);
-        posVector.eyePlayerPos = mat3(gbufferModelViewInverse) * posVector.viewPos;
-        posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
-
-	    // Declare materials
-	    matPBR material;
+        vec3 screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
+        vec3 feetPlayerPos = mat3(gbufferModelViewInverse) * toView(screenPos) + gbufferModelViewInverse[3].xyz;
 
         float albedoAlpha = texture2D(texture, texCoord).a;
-        // Assign normals
-        material.normal = norm;
 
         #ifdef CLOUD_FADE
             float fade = smootherstep(sin(frameTimeCounter * FADE_SPEED) * 0.5 + 0.5);
@@ -105,22 +96,19 @@ uniform mat4 gbufferModelViewInverse;
             albedoAlpha = mix(albedoAlpha, albedoAlpha2, fade * (1.0 - rainStrength) + albedoAlpha2 * rainStrength);
         #endif
 
+        // Alpha test, discard immediately
+        if(albedoAlpha <= ALPHA_THRESHOLD) discard;
+
         #if WHITE_MODE == 2
-            material.albedo = vec4(0, 0, 0, albedoAlpha);
+            vec4 albedo = vec4(0, 0, 0, albedoAlpha);
         #else
-            material.albedo = vec4(albedoAlpha);
+            vec4 albedo = vec4(1, 1, 1, albedoAlpha);
         #endif
 
-        // Alpha test, discard immediately
-        if(material.albedo.a <= ALPHA_THRESHOLD) discard;
-
-        material.ss = 0.5;
-        material.light = vec2(0, 1);
-
         #if ANTI_ALIASING == 2
-            vec4 sceneCol = simpleShadingGbuffers(material, posVector, toRandPerFrame(getRand1(gl_FragCoord.xy * 0.03125), frameTimeCounter));
+            vec4 sceneCol = simpleShadingGbuffers(albedo, feetPlayerPos, norm, vec2(0, 1), 0.5, toRandPerFrame(getRand1(gl_FragCoord.xy * 0.03125), frameTimeCounter));
         #else
-            vec4 sceneCol = simpleShadingGbuffers(material, posVector, getRand1(gl_FragCoord.xy * 0.03125));
+            vec4 sceneCol = simpleShadingGbuffers(albedo, feetPlayerPos, norm, vec2(0, 1), 0.5, getRand1(gl_FragCoord.xy * 0.03125));
         #endif
 
     /* DRAWBUFFERS:03 */
