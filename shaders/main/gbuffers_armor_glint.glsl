@@ -4,8 +4,7 @@
 varying vec2 texCoord;
 
 varying vec3 norm;
-
-varying vec4 glcolor;
+varying vec3 glcolor;
 
 #ifdef VERTEX
     #if ANTI_ALIASING == 2
@@ -25,7 +24,7 @@ varying vec4 glcolor;
     void main(){
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
 
-	    norm = normalize(mat3(gbufferModelViewInverse) * (gl_NormalMatrix * gl_Normal));
+	    norm = mat3(gbufferModelViewInverse) * normalize(gl_NormalMatrix * gl_Normal);
         
 	    #ifdef WORLD_CURVATURE
             // Feet player pos
@@ -42,7 +41,7 @@ varying vec4 glcolor;
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
 
-        glcolor = gl_Color;
+        glcolor = gl_Color.rgb;
     }
 #endif
 
@@ -56,13 +55,13 @@ varying vec4 glcolor;
         if(albedo.a <= ALPHA_THRESHOLD) discard;
 
         #if WHITE_MODE == 0
-            albedo.rgb *= glcolor.rgb;
+            albedo.rgb *= glcolor;
         #elif WHITE_MODE == 1
             albedo.rgb = vec3(1);
         #elif WHITE_MODE == 2
             albedo.rgb = vec3(0);
         #elif WHITE_MODE == 3
-            albedo.rgb = glcolor.rgb;
+            albedo.rgb = glcolor;
         #endif
 
         float emissive = getLuminance(albedo.rgb);

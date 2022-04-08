@@ -99,24 +99,21 @@ varying vec2 screenCoord;
             vec3 dither = getRand3(gl_FragCoord.xy * 0.03125);
         #endif
 
-        // If not sky, don't calculate lighting
-        if(posVector.screenPos.z != 1){
-            // If the object is transparent render lighting sperately
-            if(texture2D(depthtex1, screenCoord).x > posVector.screenPos.z){
-                // Declare and get materials
-                matPBR material;
-                material.albedo = texture2D(colortex2, screenCoord);
-                material.normal = texture2D(colortex1, screenCoord).rgb * 2.0 - 1.0;
+        // If the object is transparent render lighting sperately
+        if(texture2D(depthtex1, screenCoord).x > posVector.screenPos.z){
+            // Declare and get materials
+            matPBR material;
+            material.albedo = texture2D(colortex2, screenCoord);
+            material.normal = texture2D(colortex1, screenCoord).rgb * 2.0 - 1.0;
 
-                vec2 matRaw0 = texture2D(colortex3, screenCoord).xy;
-                material.metallic = matRaw0.x; material.smoothness = matRaw0.y;
+            vec2 matRaw0 = texture2D(colortex3, screenCoord).xy;
+            material.metallic = matRaw0.x; material.smoothness = matRaw0.y;
 
-                // Apply deffered shading
-                sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
+            // Apply deffered shading
+            sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
 
-                // Fog and sky calculation
-                sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, getSkyRender(vec3(0), normalize(posVector.eyePlayerPos), false), posVector.feetPlayerPos.y + cameraPosition.y, false);
-            }
+            // Fog and sky calculation
+            sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, getSkyRender(vec3(0), normalize(posVector.eyePlayerPos), false), posVector.feetPlayerPos.y + cameraPosition.y, false);
         }
 
     /* DRAWBUFFERS:0 */

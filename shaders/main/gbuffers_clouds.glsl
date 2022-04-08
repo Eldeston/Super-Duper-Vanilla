@@ -39,7 +39,7 @@ uniform mat4 gbufferModelViewInverse;
             texCoord = coord;
         #endif
 
-	    norm = normalize(mat3(gbufferModelViewInverse) * (gl_NormalMatrix * gl_Normal));
+	    norm = mat3(gbufferModelViewInverse) * normalize(gl_NormalMatrix * gl_Normal);
         
 	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
 

@@ -6,8 +6,7 @@ varying vec2 lmCoord;
 varying vec2 texCoord;
 
 varying vec3 norm;
-
-varying vec4 glcolor;
+varying vec3 glcolor;
 
 // View matrix uniforms
 uniform mat4 gbufferModelViewInverse;
@@ -30,7 +29,7 @@ uniform mat4 gbufferModelViewInverse;
         // Lightmap fix for mods
         lmCoord = saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).xy - 0.03125) * 1.06667);
 
-	    norm = normalize(mat3(gbufferModelViewInverse) * (gl_NormalMatrix * gl_Normal));
+	    norm = mat3(gbufferModelViewInverse) * normalize(gl_NormalMatrix * gl_Normal);
         
 	    #ifdef WORLD_CURVATURE
             // Feet player pos
@@ -47,7 +46,7 @@ uniform mat4 gbufferModelViewInverse;
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
 
-        glcolor = gl_Color;
+        glcolor = gl_Color.rgb;
     }
 #endif
 
@@ -95,11 +94,7 @@ uniform mat4 gbufferModelViewInverse;
 
 	    // Declare materials
 	    matPBR material;
-
-        material.albedo = vec4(glcolor.rgb, 1);
-
-        // Alpha test, discard immediately
-        if(material.albedo.a <= ALPHA_THRESHOLD) discard;
+        material.albedo = vec4(glcolor, 1);
         
         // Assign normals
         material.normal = norm;
@@ -117,8 +112,6 @@ uniform mat4 gbufferModelViewInverse;
         material.emissive = 0.0;
         material.smoothness = 0.0;
         material.parallaxShd = 1.0;
-
-        // Apply vanilla AO
         material.ambient = 1.0;
         material.light = lmCoord;
 
