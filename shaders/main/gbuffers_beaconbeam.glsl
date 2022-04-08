@@ -3,8 +3,6 @@
 
 varying vec2 texCoord;
 
-varying vec3 norm;
-
 varying vec4 glcolor;
 
 #ifdef VERTEX
@@ -18,14 +16,11 @@ varying vec4 glcolor;
 
     #ifdef WORLD_CURVATURE
         uniform mat4 gbufferModelView;
+        uniform mat4 gbufferModelViewInverse;
     #endif
-    
-    uniform mat4 gbufferModelViewInverse;
 
     void main(){
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
-
-	    norm = mat3(gbufferModelViewInverse) * normalize(gl_NormalMatrix * gl_Normal);
         
 	    #ifdef WORLD_CURVATURE
             // Feet player pos
@@ -65,9 +60,7 @@ varying vec4 glcolor;
             albedo.rgb = glcolor.rgb;
         #endif
 
-        albedo.rgb = pow(albedo.rgb, vec3(GAMMA));
-
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(albedo.rgb * EMISSIVE_INTENSITY, albedo.a * glcolor.a); //gcolor
+        gl_FragData[0] = vec4(pow(albedo.rgb, vec3(GAMMA)) * EMISSIVE_INTENSITY, albedo.a * glcolor.a); //gcolor
     }
 #endif

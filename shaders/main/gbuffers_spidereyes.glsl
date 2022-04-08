@@ -3,9 +3,6 @@
 
 varying vec2 texCoord;
 
-varying vec3 norm;
-varying vec3 glcolor;
-
 #ifdef VERTEX
     #if ANTI_ALIASING == 2
         /* Screen resolutions */
@@ -17,14 +14,11 @@ varying vec3 glcolor;
 
     #ifdef WORLD_CURVATURE
         uniform mat4 gbufferModelView;
+        uniform mat4 gbufferModelViewInverse;
     #endif
-    
-    uniform mat4 gbufferModelViewInverse;
 
     void main(){
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
-
-	    norm = mat3(gbufferModelViewInverse) * normalize(gl_NormalMatrix * gl_Normal);
         
 	    #ifdef WORLD_CURVATURE
             // Feet player pos
@@ -40,8 +34,6 @@ varying vec3 glcolor;
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
-
-        glcolor = gl_Color.rgb;
     }
 #endif
 
@@ -54,19 +46,7 @@ varying vec3 glcolor;
         // Alpha test, discard immediately
         if(albedo.a <= ALPHA_THRESHOLD) discard;
 
-        #if WHITE_MODE == 0
-            albedo.rgb *= glcolor;
-        #elif WHITE_MODE == 1
-            albedo.rgb = vec3(1);
-        #elif WHITE_MODE == 2
-            albedo.rgb = vec3(0);
-        #elif WHITE_MODE == 3
-            albedo.rgb = glcolor;
-        #endif
-
-        albedo.rgb = pow(albedo.rgb, vec3(GAMMA));
-
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(albedo.rgb * EMISSIVE_INTENSITY, 1); //gcolor
+        gl_FragData[0] = vec4(pow(albedo.rgb, vec3(GAMMA)) * EMISSIVE_INTENSITY, albedo.a); //gcolor
     }
 #endif

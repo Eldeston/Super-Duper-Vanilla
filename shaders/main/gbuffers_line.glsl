@@ -1,8 +1,5 @@
 #include "/lib/utility/util.glsl"
 #include "/lib/settings.glsl"
-#include "/lib/structs.glsl"
-
-varying vec4 glcolor;
 
 #ifdef VERTEX
     /* Screen resolutions */
@@ -18,12 +15,11 @@ varying vec4 glcolor;
         uniform mat4 gbufferModelViewInverse;
     #endif
 
-    const float VIEW_SHRINK = 1.0 - (1.0 / 256.0);
-    const mat4 VIEW_SCALE = mat4(
-        VIEW_SHRINK, 0.0, 0.0, 0.0,
-        0.0, VIEW_SHRINK, 0.0, 0.0,
-        0.0, 0.0, VIEW_SHRINK, 0.0,
-        0.0, 0.0, 0.0, 1.0
+    const mat4 viewScale = mat4(
+        0.99609375, 0, 0, 0,
+        0, 0.99609375, 0, 0,
+        0, 0, 0.99609375, 0,
+        0, 0, 0, 1
     );
 
     void main(){
@@ -43,8 +39,8 @@ varying vec4 glcolor;
             vec4 linePosEnd = gl_ModelViewMatrix * vec4(gl_Vertex.xyz + gl_Normal.xyz, 1.0);
         #endif
 
-        linePosStart = gl_ProjectionMatrix * VIEW_SCALE * linePosStart;
-        linePosEnd = gl_ProjectionMatrix * VIEW_SCALE * linePosEnd;
+        linePosStart = gl_ProjectionMatrix * viewScale * linePosStart;
+        linePosEnd = gl_ProjectionMatrix * viewScale * linePosEnd;
 
         vec3 ndc1 = linePosStart.xyz / linePosStart.w;
         vec3 ndc2 = linePosEnd.xyz / linePosEnd.w;
@@ -60,14 +56,12 @@ varying vec4 glcolor;
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
-
-        glcolor = gl_Color;
     }
 #endif
 
 #ifdef FRAGMENT
     void main(){
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = glcolor; //gcolor
+        gl_FragData[0] = vec4(0, 0, 0, 1); //gcolor
     }
 #endif

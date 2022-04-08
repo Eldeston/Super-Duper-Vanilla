@@ -23,7 +23,7 @@ Custom defined macros (These are defined at the start of every .fsh and .vsh fil
     SHADOW
     GBUFFERS
     Gbuffer macros:
-        PBR enabled programs (PBR materials needs to be defined):
+        PBR enabled programs:
             TERRAIN
             WATER
             BLOCK
@@ -32,17 +32,17 @@ Custom defined macros (These are defined at the start of every .fsh and .vsh fil
             HAND
             HAND_WATER
 
-        Default PBR enabled programs (PBR materials needs to be defined):
+        Simple PBR enabled programs:
             BASIC
             CLOUDS
             TEXTURED
-            WEATHER
 
         Basic programs (No PBR materials defined):
             ARMOR_GLINT
             BEACON_BEAM
             SPIDER_EYES
             DAMAGED_BLOCK
+            WEATHER
 
             LINE
             SKY_BASIC
