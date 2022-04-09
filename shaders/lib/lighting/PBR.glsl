@@ -127,9 +127,6 @@ uniform sampler2D texture;
     #endif
 
     void getPBR(inout matPBR material, in positionVectors posVector, in int id){
-        // Assign default normal map
-        material.normal = TBN[2];
-
         vec2 texUv = texCoord;
 
         #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined PARALLAX_OCCLUSION
@@ -146,6 +143,9 @@ uniform sampler2D texture;
 
         // Alpha test, discard immediately
         if(material.albedo.a <= ALPHA_THRESHOLD) discard;
+
+        // Assign default normal map
+        material.normal = TBN[2];
 
         // Get raw textures
         vec4 normalAOH = texture2DGradARB(normals, texUv, dcdx, dcdy);
@@ -251,14 +251,14 @@ uniform sampler2D texture;
     }
 #else
     void getPBR(inout matPBR material, in positionVectors posVector, in int id){
-        // Assign default normal map
-        material.normal = TBN[2];
-
         // Assign albedo
         material.albedo = texture2DGradARB(texture, texCoord, dcdx, dcdy);
 
         // Alpha test, discard immediately
         if(material.albedo.a <= ALPHA_THRESHOLD) discard;
+
+        // Assign default normal map
+        material.normal = TBN[2];
 
         // Generate bumped normals
         #if (defined TERRAIN || defined WATER || defined BLOCK) && defined AUTO_GEN_NORM
@@ -267,7 +267,7 @@ uniform sampler2D texture;
                 float d1 = length(texture2DGradARB(texture, fract(vTexCoord + vec2(0.0125, 0)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
                 float d2 = length(texture2DGradARB(texture, fract(vTexCoord + vec2(0, 0.0125)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
 
-                material.normal = normalize(TBN * normalize(vec3(d0 - d1, d0 - d2, 0.125)));
+                material.normal = normalize(TBN * vec3(d0 - d1, d0 - d2, 0.125));
             }
         #endif
 
