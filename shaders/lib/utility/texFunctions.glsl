@@ -43,7 +43,7 @@ vec4 cubic(float v){
 }
 
 vec4 texture2DBicubic(sampler2D image, vec2 texCoords, vec2 texSize){
-    vec2 invTexSize = 1.0 / texSize;
+    vec2 pixSize = 1.0 / texSize;
 
     texCoords = texCoords * texSize - 0.5;
 
@@ -58,7 +58,7 @@ vec4 texture2DBicubic(sampler2D image, vec2 texCoords, vec2 texSize){
     vec4 s = vec4(xcubic.xz + xcubic.yw, ycubic.xz + ycubic.yw);
     vec4 offset = c + vec4(xcubic.yw, ycubic.yw) / s;
  
-    offset *= invTexSize.xxyy;
+    offset *= pixSize.xxyy;
  
     vec4 sample0 = texture2D(image, offset.xz);
     vec4 sample1 = texture2D(image, offset.yz);
@@ -72,8 +72,8 @@ vec4 texture2DBicubic(sampler2D image, vec2 texCoords, vec2 texSize){
 }
 
 vec4 texture2DBox(sampler2D image, vec2 texCoords, vec2 texSize){
-    vec2 invTexSize = 1.0 / texSize;
-	vec4 sample = texture2D(image, texCoords - invTexSize) + texture2D(image, texCoords + invTexSize) +
-    texture2D(image, texCoords - vec2(-invTexSize.x, invTexSize.y)) + texture2D(image, texCoords + vec2(-invTexSize.x, invTexSize.y));
+    vec2 pixSize = 1.0 / texSize;
+	vec4 sample = texture2D(image, texCoords - pixSize) + texture2D(image, texCoords + pixSize) +
+    texture2D(image, texCoords - vec2(-pixSize.x, pixSize.y)) + texture2D(image, texCoords + vec2(-pixSize.x, pixSize.y));
 	return sample * 0.25;
 	}

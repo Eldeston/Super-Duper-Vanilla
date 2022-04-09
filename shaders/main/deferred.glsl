@@ -12,7 +12,7 @@ varying vec2 texCoord;
 
 #ifdef FRAGMENT
     // SSAO without normals fix for beacon
-    const vec4 colortex1ClearColor = vec4(0, 0, 0, 0);
+    const vec4 colortex1ClearColor = vec4(0.5, 0.5, 0.5, 0);
 
     uniform sampler2D colortex2;
 
@@ -46,11 +46,12 @@ varying vec2 texCoord;
 
             // Declare and get positions
             vec3 screenPos = vec3(texCoord, texture2D(depthtex0, texCoord).x);
-            vec4 rawNormal = texture2D(colortex1, texCoord);
+            
+            if(screenPos.z > 0.56 && screenPos.z != 1){
+                vec4 rawNormal = texture2D(colortex1, texCoord);
 
-            if(rawNormal.a == 0){
-                // If not sky, don't calculate lighting
-                if(screenPos.z != 1 && screenPos.z > 0.56){
+                // Check if rawNormal has no direction
+                if(rawNormal.a != 0){
                     #if ANTI_ALIASING == 2
                         vec3 dither = toRandPerFrame(getRand3(gl_FragCoord.xy * 0.03125), frameTimeCounter);
                     #else
