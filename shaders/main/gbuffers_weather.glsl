@@ -34,7 +34,12 @@ varying vec2 texCoord;
         // Alpha test, discard immediately
         if(albedo.a <= ALPHA_THRESHOLD) discard;
 
-    /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(pow(albedo.rgb, vec3(GAMMA)) * (skyCol + ambientLighting + lightCol), albedo.a); //gcolor
+        #ifdef WORLD_LIGHT
+        /* DRAWBUFFERS:0 */
+            gl_FragData[0] = vec4(pow(albedo.rgb, vec3(GAMMA)) * (skyCol + ambientLighting + lightCol), albedo.a); //gcolor
+        #else
+        /* DRAWBUFFERS:0 */
+            gl_FragData[0] = vec4(pow(albedo.rgb, vec3(GAMMA)) * (skyCol + ambientLighting), albedo.a); //gcolor
+        #endif
     }
 #endif
