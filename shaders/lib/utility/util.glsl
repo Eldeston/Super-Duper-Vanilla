@@ -3,7 +3,6 @@
 
 #define PI 3.1415927
 #define PI2 6.2831853
-#define PI3 9.424778
 
 #define ALPHA_THRESHOLD 0.005
 

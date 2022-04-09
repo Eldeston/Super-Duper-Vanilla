@@ -11,6 +11,9 @@ varying vec2 texCoord;
 #endif
 
 #ifdef FRAGMENT
+    // SSAO without normals fix for beacon
+    const vec4 colortex1ClearColor = vec4(0, 0, 0, 0);
+
     uniform sampler2D colortex2;
 
     #ifdef SSAO
@@ -43,16 +46,19 @@ varying vec2 texCoord;
 
             // Declare and get positions
             vec3 screenPos = vec3(texCoord, texture2D(depthtex0, texCoord).x);
+            vec4 rawNormal = texture2D(colortex1, texCoord);
 
-            // If not sky, don't calculate lighting
-            if(screenPos.z != 1 && screenPos.z > 0.56){
-                #if ANTI_ALIASING == 2
-                    vec3 dither = toRandPerFrame(getRand3(gl_FragCoord.xy * 0.03125), frameTimeCounter);
-                #else
-                    vec3 dither = getRand3(gl_FragCoord.xy * 0.03125);
-                #endif
+            if(rawNormal.a == 0){
+                // If not sky, don't calculate lighting
+                if(screenPos.z != 1 && screenPos.z > 0.56){
+                    #if ANTI_ALIASING == 2
+                        vec3 dither = toRandPerFrame(getRand3(gl_FragCoord.xy * 0.03125), frameTimeCounter);
+                    #else
+                        vec3 dither = getRand3(gl_FragCoord.xy * 0.03125);
+                    #endif
 
-                ambientOcclusion = getAmbientOcclusion(toView(screenPos), mat3(gbufferModelView) * (texture2D(colortex1, texCoord).xyz * 2.0 - 1.0), dither);
+                    ambientOcclusion = getAmbientOcclusion(toView(screenPos), mat3(gbufferModelView) * (rawNormal.xyz * 2.0 - 1.0), dither);
+                }
             }
             
         /* DRAWBUFFERS:2 */
