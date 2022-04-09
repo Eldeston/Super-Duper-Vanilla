@@ -16,6 +16,5 @@ float getLavaNoiseBilinear(vec2 uv){
 
 float getLavaNoise(vec2 uv){
     float animateTime = CURRENT_SPEED * newFrameTimeCounter * 0.03125;
-    float noiseMap = getLavaNoiseBilinear((uv - animateTime) * 0.015625);
-    return 1.0 - (noiseMap + texture2D(noisetex, uv + animateTime).z) * 0.5;
+    return (1.0 - texture2D(noisetex, (uv - animateTime) * 0.5).z) * 0.667 + texture2D(noisetex, uv + animateTime).z * 0.333;
 }
