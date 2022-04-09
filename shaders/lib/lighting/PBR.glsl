@@ -206,7 +206,7 @@ uniform sampler2D texture;
         #endif
 
         // Assign normal
-        material.normal = normalize(TBN * normalMap);
+        material.normal = TBN * normalize(normalMap);
 
         #ifdef WATER
             // If water
@@ -267,7 +267,7 @@ uniform sampler2D texture;
                 float d1 = length(texture2DGradARB(texture, fract(vTexCoord + vec2(0.0125, 0)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
                 float d2 = length(texture2DGradARB(texture, fract(vTexCoord + vec2(0, 0.0125)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
 
-                material.normal = normalize(TBN * vec3(d0 - d1, d0 - d2, 0.125));
+                material.normal = TBN * normalize(vec3(d0 - d1, d0 - d2, 0.125));
             }
         #endif
 

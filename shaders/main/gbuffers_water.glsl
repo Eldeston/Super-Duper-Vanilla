@@ -164,7 +164,7 @@ uniform vec3 cameraPosition;
             #if !(defined END || defined NETHER)
                 #ifdef WATER_NORM
                     vec4 waterData = H2NWater(worldPos.xz);
-                    material.normal = normalize(TBN * waterData.xyz);
+                    material.normal = TBN * waterData.xyz;
 
                     #ifdef WATER_NOISE
                         waterNoise *= squared(0.128 + waterData.w);
