@@ -262,11 +262,13 @@ uniform sampler2D texture;
 
         // Generate bumped normals
         #if (defined TERRAIN || defined WATER || defined BLOCK) && defined AUTO_GEN_NORM
-            float d = length(material.albedo.rgb);
-            float dx = d - length(texture2DGradARB(texture, fract(vTexCoord + vec2(0.0125, 0)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
-            float dy = d - length(texture2DGradARB(texture, fract(vTexCoord + vec2(0, 0.0125)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
+            if(id != 10019){
+                float d0 = length(material.albedo.rgb);
+                float d1 = length(texture2DGradARB(texture, fract(vTexCoord + vec2(0.0125, 0)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
+                float d2 = length(texture2DGradARB(texture, fract(vTexCoord + vec2(0, 0.0125)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
 
-            material.normal = normalize(TBN * normalize(vec3(dx, dy, 0.125)));
+                material.normal = normalize(TBN * normalize(vec3(d0 - d1, d0 - d2, 0.125)));
+            }
         #endif
 
         // Default material if not specified
