@@ -174,7 +174,7 @@ uniform sampler2D texture;
         // Assign ambient
         #ifdef TERRAIN
             // Apply vanilla AO with it in terrain
-            material.ambient = smoothstep(0.5, 1.0, glcolor.a) * normalAOH.b;
+            material.ambient = smoothstep(0.2, 0.8, glcolor.a) * normalAOH.b;
         #else
             // For others, don't use vanilla AO
             material.ambient = normalAOH.b;
@@ -278,7 +278,7 @@ uniform sampler2D texture;
 
         #ifdef TERRAIN
             // Apply vanilla AO with it in terrain
-            material.ambient = smoothstep(0.5, 1.0, glcolor.a);
+            material.ambient = smoothstep(0.2, 0.8, glcolor.a);
         #else
             // For others, don't use vanilla AO
             material.ambient = 1.0;
