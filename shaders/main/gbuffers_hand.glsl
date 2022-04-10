@@ -36,9 +36,15 @@ uniform mat4 gbufferModelViewInverse;
     attribute vec4 at_tangent;
 
     void main(){
+        // Get texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+
         // Lightmap fix for mods
-        lmCoord = saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).xy - 0.03125) * 1.06667);
+        #ifdef WORLD_SKYLIGHT_AMOUNT
+            lmCoord = vec2(saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).x - 0.03125) * 1.06667), WORLD_SKYLIGHT_AMOUNT);
+        #else
+            lmCoord = saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).xy - 0.03125) * 1.06667);
+        #endif
 
         // Get TBN matrix
         vec3 tangent = normalize(gl_NormalMatrix * at_tangent.xyz);
@@ -121,8 +127,6 @@ uniform mat4 gbufferModelViewInverse;
         material.albedo.rgb = mix(material.albedo.rgb, entityColor.rgb, entityColor.a);
 
         material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
-
-        material.light = lmCoord;
 
         #if ANTI_ALIASING == 2
             vec4 sceneCol = complexShadingGbuffers(material, posVector, toRandPerFrame(getRand1(gl_FragCoord.xy * 0.03125), frameTimeCounter));

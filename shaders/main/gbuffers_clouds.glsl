@@ -106,9 +106,9 @@ uniform mat4 gbufferModelViewInverse;
         #endif
 
         #if ANTI_ALIASING == 2
-            vec4 sceneCol = simpleShadingGbuffers(albedo, feetPlayerPos, norm, vec2(0, 1), 0.5, toRandPerFrame(getRand1(gl_FragCoord.xy * 0.03125), frameTimeCounter));
+            vec4 sceneCol = simpleShadingGbuffers(albedo, feetPlayerPos, toRandPerFrame(getRand1(gl_FragCoord.xy * 0.03125), frameTimeCounter));
         #else
-            vec4 sceneCol = simpleShadingGbuffers(albedo, feetPlayerPos, norm, vec2(0, 1), 0.5, getRand1(gl_FragCoord.xy * 0.03125));
+            vec4 sceneCol = simpleShadingGbuffers(albedo, feetPlayerPos, getRand1(gl_FragCoord.xy * 0.03125));
         #endif
 
     /* DRAWBUFFERS:03 */

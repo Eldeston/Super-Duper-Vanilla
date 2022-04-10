@@ -24,9 +24,15 @@ uniform mat4 gbufferModelViewInverse;
     #endif
     
     void main(){
+        // Get texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+
         // Lightmap fix for mods
-        lmCoord = saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).xy - 0.03125) * 1.06667);
+        #ifdef WORLD_SKYLIGHT_AMOUNT
+            lmCoord = vec2(saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).x - 0.03125) * 1.06667), WORLD_SKYLIGHT_AMOUNT);
+        #else
+            lmCoord = saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).xy - 0.03125) * 1.06667);
+        #endif
 
 	    norm = mat3(gbufferModelViewInverse) * normalize(gl_NormalMatrix * gl_Normal);
         
@@ -115,9 +121,9 @@ uniform mat4 gbufferModelViewInverse;
         albedo.rgb = pow(albedo.rgb, vec3(GAMMA));
 
         #if ANTI_ALIASING == 2
-            vec4 sceneCol = simpleShadingGbuffers(albedo, feetPlayerPos, norm, lmCoord, 1.0, toRandPerFrame(getRand1(gl_FragCoord.xy * 0.03125), frameTimeCounter));
+            vec4 sceneCol = simpleShadingGbuffers(albedo, feetPlayerPos, toRandPerFrame(getRand1(gl_FragCoord.xy * 0.03125), frameTimeCounter));
         #else
-            vec4 sceneCol = simpleShadingGbuffers(albedo, feetPlayerPos, norm, lmCoord, 1.0, getRand1(gl_FragCoord.xy * 0.03125));
+            vec4 sceneCol = simpleShadingGbuffers(albedo, feetPlayerPos, getRand1(gl_FragCoord.xy * 0.03125));
         #endif
 
     /* DRAWBUFFERS:03 */

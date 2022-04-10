@@ -4,8 +4,6 @@ struct matPBR{
     vec4 albedo;
     // Normal map
     vec3 normal;
-    // Light map
-    vec2 light;
     // Metalic map
     float metallic;
     // Emissive map

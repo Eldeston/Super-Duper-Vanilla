@@ -57,9 +57,17 @@ uniform vec3 cameraPosition;
     attribute vec4 at_tangent;
 
     void main(){
+        // Get texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+
         // Lightmap fix for mods
-        lmCoord = saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).xy - 0.03125) * 1.06667);
+        #ifdef WORLD_SKYLIGHT_AMOUNT
+            lmCoord = vec2(saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).x - 0.03125) * 1.06667), WORLD_SKYLIGHT_AMOUNT);
+        #else
+            lmCoord = saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).xy - 0.03125) * 1.06667);
+        #endif
+
+        // Get block id
         blockId = mc_Entity.x;
 
         // Get TBN matrix
@@ -197,10 +205,8 @@ uniform vec3 cameraPosition;
 
         material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
-        material.light = lmCoord;
-
         #ifdef ENVIRO_MAT
-            if(rBlockId != 10034) enviroPBR(material, worldPos);
+            if(rBlockId != 10001) enviroPBR(material, worldPos);
         #endif
 
         #if ANTI_ALIASING == 2
