@@ -81,9 +81,9 @@ varying vec3 glcolor;
         shdColor.rgb = pow(shdColor.rgb * glcolor, vec3(GAMMA));
 
         #if UNDERWATER_CAUSTICS == 2
-            if(int(blockId + 0.5) == 10001) shdColor.rgb *= vec3(cubed(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 16.0);
+            if(int(blockId + 0.5) == 10001) shdColor.rgb *= cubed(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 16.0;
         #elif UNDERWATER_CAUSTICS == 1
-            if(isEyeInWater == 1 && int(blockId + 0.5) == 10001) shdColor.rgb *= vec3(cubed(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 16.0);
+            if(isEyeInWater == 1 && int(blockId + 0.5) == 10001) shdColor.rgb *= cubed(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 16.0;
         #endif
 
     /* DRAWBUFFERS:0 */

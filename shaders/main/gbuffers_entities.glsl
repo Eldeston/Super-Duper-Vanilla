@@ -7,6 +7,8 @@
 #include "/lib/settings.glsl"
 #include "/lib/structs.glsl"
 
+varying float glcoloralpha;
+
 varying vec2 lmCoord;
 varying vec2 texCoord;
 
@@ -16,7 +18,7 @@ varying vec2 texCoord;
     varying vec2 vTexCoord;
 #endif
 
-varying vec4 glcolor;
+varying vec3 glcolor;
 
 varying mat3 TBN;
 
@@ -80,7 +82,8 @@ uniform mat4 gbufferModelViewInverse;
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
 
-        glcolor = gl_Color;
+        glcoloralpha = gl_Color.a;
+        glcolor = gl_Color.rgb;
     }
 #endif
 
@@ -128,7 +131,7 @@ uniform mat4 gbufferModelViewInverse;
     void main(){
         // Lightning fix, materials need to be specified due to glitching issues
         if(entityId == 10101){
-            gl_FragData[0] = vec4(pow(vec3(0.5, 0.75, 1), vec3(GAMMA)) * EMISSIVE_INTENSITY, glcolor.a); //gcolor
+            gl_FragData[0] = vec4(pow(vec3(0.5, 0.75, 1), vec3(GAMMA)) * EMISSIVE_INTENSITY, glcoloralpha); //gcolor
             gl_FragData[3] = vec4(0, 0, 0, 1); //colortex3
             return;
         }

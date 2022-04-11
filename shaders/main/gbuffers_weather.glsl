@@ -13,6 +13,7 @@ varying vec2 texCoord;
     #endif
 
     void main(){
+        // Get texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         
 	    gl_Position = ftransform();

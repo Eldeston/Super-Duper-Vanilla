@@ -12,7 +12,7 @@ varying vec2 texCoord;
 
 #ifdef FRAGMENT
     // SSAO without normals fix for beacon
-    const vec4 colortex1ClearColor = vec4(0.5, 0.5, 0.5, 0);
+    const vec4 colortex1ClearColor = vec4(0.5, 0.5, 0.5, 1);
 
     uniform sampler2D colortex2;
 
@@ -37,7 +37,7 @@ varying vec2 texCoord;
         #include "/lib/utility/convertScreenSpace.glsl"
         #include "/lib/utility/noiseFunctions.glsl"
 
-        #include "/lib/lighting/ambientOcclusion.glsl"
+        #include "/lib/lighting/SSAO.glsl"
     #endif
 
     void main(){
@@ -45,28 +45,28 @@ varying vec2 texCoord;
             float ambientOcclusion = 1.0;
 
             // Declare and get positions
-            vec3 screenPos = vec3(texCoord, texture2D(depthtex0, texCoord).x);
+            float depth = texture2D(depthtex0, texCoord).x;
             
-            if(screenPos.z > 0.56 && screenPos.z != 1){
-                vec4 rawNormal = texture2D(colortex1, texCoord);
+            if(depth > 0.56 && depth != 1){
+                vec3 normal = texture2D(colortex1, texCoord).xyz * 2.0 - 1.0;
 
-                // Check if rawNormal has no direction
-                if(rawNormal.a != 0){
+                // Check if normal has direction
+                if(length(normal) != 0){
                     #if ANTI_ALIASING == 2
                         vec3 dither = toRandPerFrame(getRand3(gl_FragCoord.xy * 0.03125), frameTimeCounter);
                     #else
                         vec3 dither = getRand3(gl_FragCoord.xy * 0.03125);
                     #endif
 
-                    ambientOcclusion = getAmbientOcclusion(toView(screenPos), mat3(gbufferModelView) * (rawNormal.xyz * 2.0 - 1.0), dither);
+                    ambientOcclusion = getSSAO(toView(vec3(texCoord, depth)), mat3(gbufferModelView) * normal, dither);
                 }
             }
             
         /* DRAWBUFFERS:2 */
-            gl_FragData[0] = vec4(texture2D(colortex2, texCoord).rgb, ambientOcclusion); // colortex2
+            gl_FragData[0] = vec4(texture2D(colortex2, texCoord).rgb, ambientOcclusion); //colortex2
         #else
         /* DRAWBUFFERS:2 */
-            gl_FragData[0] = vec4(texture2D(colortex2, texCoord).rgb, 1); // colortex2
+            gl_FragData[0] = vec4(texture2D(colortex2, texCoord).rgb, 1); //colortex2
         #endif
     }
 #endif

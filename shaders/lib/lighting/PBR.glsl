@@ -174,7 +174,7 @@ uniform sampler2D texture;
         // Assign ambient
         #ifdef TERRAIN
             // Apply vanilla AO with it in terrain
-            material.ambient = smoothstep(0.2, 0.8, glcolor.a) * normalAOH.b;
+            material.ambient = glcolorAO * normalAOH.b;
         #else
             // For others, don't use vanilla AO
             material.ambient = normalAOH.b;
@@ -229,13 +229,13 @@ uniform sampler2D texture;
         #endif
 
         #if WHITE_MODE == 0
-            material.albedo.rgb *= glcolor.rgb;
+            material.albedo.rgb *= glcolor;
         #elif WHITE_MODE == 1
             material.albedo.rgb = vec3(1);
         #elif WHITE_MODE == 2
             material.albedo.rgb = vec3(0);
         #elif WHITE_MODE == 3
-            material.albedo.rgb = glcolor.rgb;
+            material.albedo.rgb = glcolor;
         #endif
 
         material.smoothness = min(material.smoothness, 0.96);
@@ -278,7 +278,7 @@ uniform sampler2D texture;
 
         #ifdef TERRAIN
             // Apply vanilla AO with it in terrain
-            material.ambient = smoothstep(0.2, 0.8, glcolor.a);
+            material.ambient = glcolorAO;
         #else
             // For others, don't use vanilla AO
             material.ambient = 1.0;
@@ -410,13 +410,13 @@ uniform sampler2D texture;
         #endif
 
         #if WHITE_MODE == 0
-            material.albedo.rgb *= glcolor.rgb;
+            material.albedo.rgb *= glcolor;
         #elif WHITE_MODE == 1
             material.albedo.rgb = vec3(1);
         #elif WHITE_MODE == 2
             material.albedo.rgb = vec3(0);
         #elif WHITE_MODE == 3
-            material.albedo.rgb = glcolor.rgb;
+            material.albedo.rgb = glcolor;
         #endif
     }
 #endif

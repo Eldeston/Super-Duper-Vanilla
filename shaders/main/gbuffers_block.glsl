@@ -16,7 +16,7 @@ varying vec2 texCoord;
     varying vec2 vTexCoord;
 #endif
 
-varying vec4 glcolor;
+varying vec3 glcolor;
 
 varying mat3 TBN;
 
@@ -80,7 +80,7 @@ uniform mat4 gbufferModelViewInverse;
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
 
-        glcolor = gl_Color;
+        glcolor = gl_Color.rgb;
     }
 #endif
 
@@ -150,7 +150,7 @@ uniform mat4 gbufferModelViewInverse;
 
             #ifdef SSAO
                 // SSAO End portal fix
-                gl_FragData[1] = vec4(TBN[2] * 0.5 + 0.5, 1); //colortex1
+                gl_FragData[1] = vec4(0.5, 0.5, 0.5, 1); //colortex1
             #endif
 
             return; // Return immediately, no need for lighting calculation
