@@ -7,7 +7,7 @@ varying vec2 texCoord;
     varying vec2 vTexCoord;
 #endif
 
-varying vec4 glcolor;
+varying vec3 glcolor;
 
 varying mat3 TBN;
 
@@ -61,7 +61,7 @@ uniform mat4 gbufferModelViewInverse;
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
 
-        glcolor = gl_Color;
+        glcolor = gl_Color.rgb;
     }
 #endif
 

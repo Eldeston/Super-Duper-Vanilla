@@ -43,7 +43,7 @@ uniform vec3 cameraPosition;
 
     uniform mat4 gbufferModelView;
 
-    #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
+    #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION || defined ANIMATE
         attribute vec4 mc_midTexCoord;
     #endif
 
