@@ -1,8 +1,8 @@
+uniform vec3 fogColor;
+
 uniform int isEyeInWater;
 
 uniform float nightVision;
-
-uniform vec3 fogColor;
 
 float ambientLighting = pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
 

@@ -184,7 +184,7 @@ uniform vec3 cameraPosition;
             // Water color and foam 
             float waterDepth = posVector.viewPos.z - toView(texture2D(depthtex1, posVector.screenPos.xy).x);
 
-            if(isEyeInWater != 1){
+            if(isEyeInWater == 0){
                 #ifdef STYLIZED_WATER_ABSORPTION
                     float depthBrightness = exp(-waterDepth * 0.32);
                     material.albedo.rgb = mix(material.albedo.rgb * waterNoise, saturate(toneSaturation(material.albedo.rgb, 2.0) * 2.0), depthBrightness);

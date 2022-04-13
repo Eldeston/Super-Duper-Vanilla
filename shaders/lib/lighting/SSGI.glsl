@@ -17,17 +17,16 @@ vec3 getSSGICol(vec3 viewPos, vec3 screenPos, vec3 gBMVNorm, vec2 dither){
     // Get reflected screenpos
 	vec3 reflectedScreenPos = rayTraceScene(screenPos, viewPos, cosWeightedRandHemisphereDir(gBMVNorm, dither), dither.x, SSGI_STEPS, SSGI_BISTEPS);
     
-    if(reflectedScreenPos.z > 0){
-        #ifdef PREVIOUS_FRAME
-            // Transform coords to previous frame coords
-            reflectedScreenPos.xy = toPrevScreenPos(reflectedScreenPos.xy);
-            // Sample color and return
-            return texture2D(colortex5, reflectedScreenPos.xy).rgb;
-        #else
-            // Sample color and return
-            return texture2D(gcolor, reflectedScreenPos.xy).rgb;
-        #endif
-    }
+    // Check if it's the sky and return nothing
+    if(reflectedScreenPos.z == 0) return vec3(0);
+    
+    #ifdef PREVIOUS_FRAME
+        // Transform coords to previous frame coords, sample color and return
+        return texture2D(colortex5, toPrevScreenPos(reflectedScreenPos.xy)).rgb;
+    #else
+        // Sample color and return
+        return texture2D(gcolor, reflectedScreenPos.xy).rgb;
+    #endif
 
     return vec3(0);
 }
