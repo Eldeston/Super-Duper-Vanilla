@@ -1,6 +1,3 @@
-#include "/lib/utility/util.glsl"
-#include "/lib/settings.glsl"
-
 uniform float frameTimeCounter;
 
 varying float blockId;

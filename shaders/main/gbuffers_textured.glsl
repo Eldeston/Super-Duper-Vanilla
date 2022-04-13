@@ -1,6 +1,3 @@
-#include "/lib/utility/util.glsl"
-#include "/lib/settings.glsl"
-
 varying vec2 lmCoord;
 varying vec2 texCoord;
 

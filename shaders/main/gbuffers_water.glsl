@@ -1,12 +1,3 @@
-#ifdef FRAGMENT
-    // For the use of texture2DGradARB in PBR.glsl
-    #extension GL_ARB_shader_texture_lod : enable
-#endif
-
-#include "/lib/utility/util.glsl"
-#include "/lib/settings.glsl"
-#include "/lib/structs.glsl"
-
 // Get frame time
 uniform float frameTimeCounter;
 
@@ -52,7 +43,10 @@ uniform vec3 cameraPosition;
 
     uniform mat4 gbufferModelView;
 
-    attribute vec4 mc_midTexCoord;
+    #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
+        attribute vec4 mc_midTexCoord;
+    #endif
+
     attribute vec4 mc_Entity;
     attribute vec4 at_tangent;
 
@@ -134,6 +128,7 @@ uniform vec3 cameraPosition;
     uniform float viewHeight;
 
     #include "/lib/universalVars.glsl"
+    #include "/lib/structs.glsl"
 
     uniform sampler2D depthtex1;
     

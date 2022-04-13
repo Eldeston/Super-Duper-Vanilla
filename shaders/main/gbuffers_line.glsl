@@ -1,6 +1,3 @@
-#include "/lib/utility/util.glsl"
-#include "/lib/settings.glsl"
-
 #ifdef VERTEX
     /* Screen resolutions */
     uniform float viewWidth;

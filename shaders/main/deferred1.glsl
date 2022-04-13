@@ -1,7 +1,3 @@
-#include "/lib/utility/util.glsl"
-#include "/lib/settings.glsl"
-#include "/lib/structs.glsl"
-
 varying vec2 screenCoord;
 
 #ifdef VERTEX
@@ -71,6 +67,7 @@ varying vec2 screenCoord;
     uniform float far;
     
     #include "/lib/universalVars.glsl"
+    #include "/lib/structs.glsl"
 
     #include "/lib/utility/convertViewSpace.glsl"
     #include "/lib/utility/convertScreenSpace.glsl"

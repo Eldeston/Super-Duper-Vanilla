@@ -1,12 +1,3 @@
-#ifdef FRAGMENT
-    // For the use of texture2DGradARB in PBR.glsl
-    #extension GL_ARB_shader_texture_lod : enable
-#endif
-
-#include "/lib/utility/util.glsl"
-#include "/lib/settings.glsl"
-#include "/lib/structs.glsl"
-
 varying vec2 lmCoord;
 varying vec2 texCoord;
 
@@ -35,8 +26,11 @@ uniform mat4 gbufferModelViewInverse;
     #ifdef WORLD_CURVATURE
         uniform mat4 gbufferModelView;
     #endif
+
+    #ifdef PARALLAX_OCCLUSION
+        attribute vec4 mc_midTexCoord;
+    #endif
     
-    attribute vec4 mc_midTexCoord;
     attribute vec4 at_tangent;
 
     void main(){
@@ -102,9 +96,10 @@ uniform mat4 gbufferModelViewInverse;
     uniform float viewWidth;
     uniform float viewHeight;
 
-    #include "/lib/universalVars.glsl"
-
     uniform vec4 entityColor;
+    
+    #include "/lib/universalVars.glsl"
+    #include "/lib/structs.glsl"
 
     #include "/lib/utility/convertViewSpace.glsl"
 
