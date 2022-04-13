@@ -65,7 +65,7 @@ uniform mat4 gbufferModelViewInverse;
     uniform float viewWidth;
     uniform float viewHeight;
 
-    #if defined CLOUD_FADE || ANTI_ALIASING == 2
+    #if defined DYNAMIC_CLOUDS || ANTI_ALIASING == 2
         // Get frame time
         uniform float frameTimeCounter;
     #endif
@@ -87,10 +87,10 @@ uniform mat4 gbufferModelViewInverse;
 
         float albedoAlpha = texture2D(texture, texCoord).a;
 
-        #ifdef CLOUD_FADE
+        #ifdef DYNAMIC_CLOUDS
             float fade = smootherstep(sin(frameTimeCounter * FADE_SPEED) * 0.5 + 0.5);
             float albedoAlpha2 = texture2D(texture, 0.5 - texCoord).a;
-            albedoAlpha = mix(albedoAlpha, albedoAlpha2, fade * (1.0 - rainStrength) + albedoAlpha2 * rainStrength);
+            albedoAlpha = mix(mix(albedoAlpha, albedoAlpha2, fade), max(albedoAlpha, albedoAlpha2), rainStrength);
         #endif
 
         // Alpha test, discard immediately

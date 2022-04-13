@@ -59,11 +59,12 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float LV, bool isSky){
             #ifndef FORCE_DISABLE_CLOUDS
                 vec2 planeUv = nPlayerPos.xz / (nPlayerPos.y * 48.0);
 
-                #ifdef CLOUD_FADE
+                float clouds = cloudParallax(planeUv, ANIMATION_FRAMETIME);
+
+                #ifdef DYNAMIC_CLOUDS
                     float fade = smootherstep(sin(ANIMATION_FRAMETIME * FADE_SPEED) * 0.5 + 0.5);
-                    float clouds = mix(cloudParallax(planeUv, ANIMATION_FRAMETIME), cloudParallax(-planeUv, 1250.0 - ANIMATION_FRAMETIME), fade);
-                #else
-                    float clouds = cloudParallax(planeUv, ANIMATION_FRAMETIME);
+                    float clouds2 = cloudParallax(-planeUv, 1250.0 - ANIMATION_FRAMETIME);
+                    clouds = mix(mix(clouds, clouds2, fade), max(clouds, clouds2), rainStrength);
                 #endif
 
                 #ifdef WORLD_LIGHT
