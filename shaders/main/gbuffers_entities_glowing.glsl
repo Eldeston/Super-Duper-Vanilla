@@ -38,8 +38,8 @@ uniform mat4 gbufferModelViewInverse;
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
 
         // Lightmap fix for mods
-        #ifdef WORLD_SKYLIGHT_AMOUNT
-            lmCoord = vec2(saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).x - 0.03125) * 1.06667), WORLD_SKYLIGHT_AMOUNT);
+        #ifdef WORLD_SKYLIGHT
+            lmCoord = vec2(saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).x - 0.03125) * 1.06667), WORLD_SKYLIGHT);
         #else
             lmCoord = saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).xy - 0.03125) * 1.06667);
         #endif

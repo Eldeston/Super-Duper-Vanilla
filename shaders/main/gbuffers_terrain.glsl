@@ -56,8 +56,8 @@ uniform vec3 cameraPosition;
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
 
         // Lightmap fix for mods
-        #ifdef WORLD_SKYLIGHT_AMOUNT
-            lmCoord = vec2(saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).x - 0.03125) * 1.06667), WORLD_SKYLIGHT_AMOUNT);
+        #ifdef WORLD_SKYLIGHT
+            lmCoord = vec2(saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).x - 0.03125) * 1.06667), WORLD_SKYLIGHT);
         #else
             lmCoord = saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).xy - 0.03125) * 1.06667);
         #endif
@@ -163,7 +163,7 @@ uniform vec3 cameraPosition;
         if(rBlockId == 10002){
             #ifdef LAVA_NOISE
                 vec2 lavaUv = worldPos.yz * TBN[2].x + worldPos.xz * TBN[2].y + worldPos.xy * TBN[2].z;
-                float lavaNoise = max(getLavaNoise(floor(lavaUv * 16.0) / (LAVA_TILE_SIZE * 16.0)), (material.albedo.r + material.albedo.g + material.albedo.b) * 0.33 + 0.01);
+                float lavaNoise = max(getLavaNoise(lavaUv / LAVA_TILE_SIZE), (material.albedo.r + material.albedo.g + material.albedo.b) * 0.33 + 0.01);
                 material.albedo.rgb = floor(material.albedo.rgb * smoothstep(0.25, 0.75, lavaNoise) * LAVA_BRIGHTNESS * 16.0) / 16.0;
             #else
                 material.albedo.rgb = material.albedo.rgb * LAVA_BRIGHTNESS;

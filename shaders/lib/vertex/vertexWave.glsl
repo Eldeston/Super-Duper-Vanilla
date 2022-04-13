@@ -1,7 +1,7 @@
 // Wave calculation function
 void getWave(inout vec3 vertexPos, in vec3 worldPos, in vec2 texCoord, in vec2 midTexCoord, in float id, in float outSide){
-	#ifdef WORLD_SKYLIGHT_AMOUNT
-		outSide = WORLD_SKYLIGHT_AMOUNT;
+	#ifdef WORLD_SKYLIGHT
+		outSide = WORLD_SKYLIGHT;
 	#endif
 
 	float plantWeight = 0.128; float waterWeight = 0.072;

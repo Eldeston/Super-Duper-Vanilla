@@ -29,7 +29,7 @@ varying vec4 glcolor;
 
     uniform int renderStage;
 
-    #if USE_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT
+    #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT
         #include "/lib/universalVars.glsl"
     #endif
     
@@ -42,7 +42,7 @@ varying vec4 glcolor;
     /* DRAWBUFFERS:0 */
         // Detect and calculate the sun and moon
         if(renderStage == MC_RENDER_STAGE_SUN || renderStage == MC_RENDER_STAGE_MOON)
-            #if USE_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT
+            #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT
                 gl_FragData[0] = vec4(pow(albedo.rgb * glcolor.rgb, vec3(GAMMA)) * albedo.a * glcolor.a * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * sqrt(lightCol), 1);
             #else
                 discard;

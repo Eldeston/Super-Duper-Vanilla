@@ -26,7 +26,7 @@ vec3 getLensFlare(vec2 centerCoord, vec2 lightDir){
     float lens2 = lensFlareSimple(centerCoord, lightDir, 0.05, 0.25);
     vec3 chromaLens = chromaLens(centerCoord, lightDir, 0.05, 0.05, -0.5);
 
-    #if USE_SUN_MOON == 2
+    #if WORLD_SUN_MOON == 2
         return (lens1 + (lens0 + lens2) * 0.125 + chromaLens) * LENS_FLARE_BRIGHTNESS * sqrt(lightCol);
     #elif SUN_MOON_TYPE == 2
         float rays = lensFlareRays(centerCoord, lightDir, 8.0, 0.1, -1.0);

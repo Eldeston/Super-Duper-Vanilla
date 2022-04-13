@@ -1,8 +1,8 @@
-#if USE_SUN_MOON == 1 && defined WORLD_LIGHT
+#if WORLD_SUN_MOON == 1 && defined WORLD_LIGHT
 	uniform float shdFade;
 #endif
 
-#if USE_SUN_MOON != 0
+#if WORLD_SUN_MOON != 0
     float getSunMoonShape(vec2 pos){
         #if SUN_MOON_TYPE == 1
             // Round sun and moon
@@ -47,8 +47,8 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float LV, bool isSky){
         vec3 finalCol = skyCol;
     #endif
 
-    #ifdef USE_HORIZON_COL
-        finalCol += USE_HORIZON_COL * cubed(1.0 - abs(nPlayerPos.y));
+    #ifdef WORLD_HORIZONCOL
+        finalCol += WORLD_HORIZONCOL * cubed(1.0 - abs(nPlayerPos.y));
     #endif
 
     if(isSky){
@@ -79,7 +79,7 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float LV, bool isSky){
     float voidGradient = smootherstep((nPlayerPos.y + eyeBrightFact - 0.81) * PI);
     if(isEyeInWater == 1) finalCol *= voidGradient;
 
-    #if USE_SUN_MOON == 1 && defined WORLD_LIGHT
+    #if WORLD_SUN_MOON == 1 && defined WORLD_LIGHT
         finalCol += lightCol * pow(max(LV * 0.75, 0.0), abs(nPlayerPos.y) + 1.0) * shdFade;
     #endif
     
@@ -99,9 +99,9 @@ vec3 getSkyRender(vec3 skyBoxCol, vec3 nPlayerPos, bool isSky, bool isSunMoon){
     if(!isSky) return finalCol;
 
     #ifdef WORLD_LIGHT
-        #if USE_SUN_MOON == 1 && SUN_MOON_TYPE != 2
+        #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE != 2
             if(isSunMoon) finalCol += getSunMoonShape(nSkyPos.xy) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * sqrt(lightCol) * (1.0 - rainStrength);
-        #elif USE_SUN_MOON == 2
+        #elif WORLD_SUN_MOON == 2
             if(isSunMoon){
                 float blackHole = min(1.0, 0.005 / ((1.0 - nSkyPos.z) * 32.0 - 0.1));
                 if(blackHole <= 0) return vec3(0);
@@ -112,10 +112,10 @@ vec3 getSkyRender(vec3 skyBoxCol, vec3 nPlayerPos, bool isSky, bool isSunMoon){
         #endif
     #endif
 
-    #ifdef USE_STARS_COL
+    #ifdef WORLD_STARCOL
         // Star field generation
         vec2 starData = texture2D(noisetex, nSkyPos.xz / (abs(nSkyPos.y) + length(nSkyPos.xz))).xy;
-        if(starData.x * starData.y > 0.9) finalCol += (1.0 - rainStrength) * USE_STARS_COL;
+        if(starData.x * starData.y > 0.9) finalCol += (1.0 - rainStrength) * WORLD_STARCOL;
     #endif
 
     return finalCol;
