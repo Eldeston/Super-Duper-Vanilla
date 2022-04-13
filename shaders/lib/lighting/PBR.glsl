@@ -7,7 +7,10 @@ uniform sampler2D texture;
 #ifdef AUTO_GEN_NORM
 #endif
 
-#if (defined TERRAIN || defined WATER) && defined ENVIRO_MAT
+#ifdef ENVIRO_MAT
+#endif
+
+#if (defined TERRAIN || defined WATER) && defined ENVIRO_MAT && !defined FORCE_DISABLE_WEATHER
     uniform float isPrecipitationRain;
     uniform float wetness;
 

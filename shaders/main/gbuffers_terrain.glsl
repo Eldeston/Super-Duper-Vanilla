@@ -162,8 +162,8 @@ uniform vec3 cameraPosition;
 
         if(rBlockId == 10002){
             #ifdef LAVA_NOISE
-                vec2 lavaUv = worldPos.yz * TBN[2].x + worldPos.xz * TBN[2].y + worldPos.xy * TBN[2].z;
-                float lavaNoise = max(getLavaNoise(lavaUv / LAVA_TILE_SIZE), (material.albedo.r + material.albedo.g + material.albedo.b) * 0.33 + 0.01);
+                vec2 lavaUv = (worldPos.yz * TBN[2].x + worldPos.xz * TBN[2].y + worldPos.xy * TBN[2].z) / LAVA_TILE_SIZE;
+                float lavaNoise = max(getLavaNoise(lavaUv), (material.albedo.r + material.albedo.g + material.albedo.b) * 0.33 + 0.01);
                 material.albedo.rgb = floor(material.albedo.rgb * smoothstep(0.25, 0.75, lavaNoise) * LAVA_BRIGHTNESS * 16.0) / 16.0;
             #else
                 material.albedo.rgb = material.albedo.rgb * LAVA_BRIGHTNESS;
@@ -172,8 +172,8 @@ uniform vec3 cameraPosition;
 
         material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
-        #ifdef ENVIRO_MAT
-            enviroPBR(material, worldPos);
+        #if defined ENVIRO_MAT && !defined FORCE_DISABLE_WEATHER
+            if(rBlockId != 10002) enviroPBR(material, worldPos);
         #endif
 
         #if ANTI_ALIASING == 2

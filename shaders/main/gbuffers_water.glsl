@@ -200,7 +200,7 @@ uniform vec3 cameraPosition;
 
         material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
-        #ifdef ENVIRO_MAT
+        #if defined ENVIRO_MAT && !defined FORCE_DISABLE_WEATHER
             if(rBlockId != 10001) enviroPBR(material, worldPos);
         #endif
 
