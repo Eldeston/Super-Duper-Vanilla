@@ -17,8 +17,23 @@
 			float rainDiff = rainStrength * 0.5;
 
 			#ifdef SHD_ENABLE
-				vec3 shadow = getShdMapping(mat3(shadowProjection) * (mat3(shadowModelView) * feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz, NL, dither) * shdFade;
-				totalDiffuse += (NL * shadow * (1.0 - rainDiff) + rainDiff) * lightCol;
+				vec3 shadowCol = vec3(0);
+
+				// If the area isn't shaded, apply shadow mapping
+				if(NL > 0){
+					vec3 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz;
+					float distortFactor = getDistortFactor(shdPos.xy);
+					shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * norm) * (distortFactor * distortFactor * 4.0);
+					shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
+
+					#ifdef SHADOW_FILTER
+						shadowCol = getShdFilter(shdPos, dither * PI2, 1.0 / shadowMapResolution) * shdFade;
+					#else
+						shadowCol = getShdTex(shdPos) * shdFade;
+					#endif
+				}
+
+				totalDiffuse += (NL * shadowCol * (1.0 - rainDiff) + rainDiff) * lightCol;
 			#else
 				totalDiffuse += (NL * (1.0 - rainDiff) + rainDiff) * lightCol;
 			#endif
@@ -39,15 +54,30 @@
 			// normalize(mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz)
 
 			#ifdef SHD_ENABLE
-				// Cave fix
-				float caveFixShdFactor = isEyeInWater == 1 ? 1.0 : smoothstep(0.4, 0.8, lmCoord.y) * (1.0 - eyeBrightFact) + eyeBrightFact;
-				vec3 shadow = getShdMapping(mat3(shadowProjection) * (mat3(shadowModelView) * feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz, NL, dither) * caveFixShdFactor * shdFade;
+				vec3 shadowCol = vec3(0);
+
+				// If the area isn't shaded, apply shadow mapping
+				if(NL > 0){
+					// Cave light leak fix
+					float caveFixShdFactor = isEyeInWater == 1 ? 1.0 : smoothstep(0.4, 0.8, lmCoord.y) * (1.0 - eyeBrightFact) + eyeBrightFact;
+
+					vec3 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz;
+					float distortFactor = getDistortFactor(shdPos.xy);
+					shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * norm) * (distortFactor * distortFactor * 4.0);
+					shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
+
+					#ifdef SHADOW_FILTER
+						shadowCol = getShdFilter(shdPos, dither * PI2, 1.0 / shadowMapResolution) * caveFixShdFactor * shdFade;
+					#else
+						shadowCol = getShdTex(shdPos) * caveFixShdFactor * shdFade;
+					#endif
+				}
 			#else
-				float shadow = smoothstep(0.94, 0.96, lmCoord.y) * shdFade;
+				float shadowCol = smoothstep(0.94, 0.96, lmCoord.y) * shdFade;
 			#endif
 
 			float rainDiff = rainStrength * 0.5;
-			totalDiffuse += (NL * shadow * (1.0 - rainDiff) + lmCoord.y * lmCoord.y * rainDiff) * lightCol;
+			totalDiffuse += (NL * shadowCol * (1.0 - rainDiff) + lmCoord.y * lmCoord.y * rainDiff) * lightCol;
 		#endif
 
 		return vec4(albedo.rgb * totalDiffuse, albedo.a);

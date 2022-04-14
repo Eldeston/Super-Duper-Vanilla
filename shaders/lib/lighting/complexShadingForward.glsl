@@ -21,15 +21,30 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, float di
 		#endif
 
 		#if defined SHD_ENABLE && !defined ENTITIES_GLOWING
-			// Cave fix
-			float caveFixShdFactor = isEyeInWater == 1 ? 1.0 : smoothstep(0.4, 0.8, lmCoord.y) * (1.0 - eyeBrightFact) + eyeBrightFact;
-			vec3 shadow = getShdMapping(mat3(shadowProjection) * (mat3(shadowModelView) * posVector.feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz, dirLight, dither) * caveFixShdFactor * shdFade * material.parallaxShd;
+			vec3 shadowCol = vec3(0);
+
+			// If the area isn't shaded, apply shadow mapping
+			if(dirLight > 0){
+				// Cave light leak fix
+				float caveFixShdFactor = isEyeInWater == 1 ? 1.0 : smoothstep(0.4, 0.8, lmCoord.y) * (1.0 - eyeBrightFact) + eyeBrightFact;
+
+				vec3 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * posVector.feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz;
+				float distortFactor = getDistortFactor(shdPos.xy);
+				shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * material.normal) * (distortFactor * distortFactor * 4.0);
+				shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
+
+				#ifdef SHADOW_FILTER
+					shadowCol = getShdFilter(shdPos, dither * PI2, 1.0 / shadowMapResolution) * caveFixShdFactor * shdFade * material.parallaxShd;
+				#else
+					shadowCol = getShdTex(shdPos) * caveFixShdFactor * shdFade * material.parallaxShd;
+				#endif
+			}
 		#else
-			float shadow = smoothstep(0.94, 0.96, lmCoord.y) * shdFade * material.parallaxShd;
+			float shadowCol = smoothstep(0.94, 0.96, lmCoord.y) * shdFade * material.parallaxShd;
 		#endif
 
 		float rainDiff = rainStrength * 0.5;
-		totalDiffuse += (dirLight * shadow * (1.0 - rainDiff) + lmCoord.y * lmCoord.y * material.ambient * rainDiff) * lightCol;
+		totalDiffuse += (dirLight * shadowCol * (1.0 - rainDiff) + lmCoord.y * lmCoord.y * material.ambient * rainDiff) * lightCol;
 	#endif
 
 	totalDiffuse = material.albedo.rgb * (totalDiffuse + material.emissive * EMISSIVE_INTENSITY);
@@ -38,7 +53,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, float di
 		if(NL > 0){
 			// Get specular GGX
 			vec3 specCol = getSpecBRDF(normalize(-posVector.eyePlayerPos), vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), NL, 1.0 - material.smoothness);
-			totalDiffuse += min(vec3(SUN_MOON_INTENSITY * SUN_MOON_INTENSITY), specCol) * sqrt(lightCol) * (1.0 - rainStrength) * shadow;
+			totalDiffuse += min(vec3(SUN_MOON_INTENSITY * SUN_MOON_INTENSITY), specCol) * sqrt(lightCol) * (1.0 - rainStrength) * shadowCol;
 		}
 	#endif
 

@@ -41,19 +41,18 @@ const float sunPathRotation = 30.0; // Light angle [-60.0 -55.0 -50.0 -45.0 -40.
 	}
 
 	// Shadow function
-	vec3 getShdMapping(vec3 shdPos, float dirLight, float dither){
+	vec3 getShdMapping(vec3 feetPlayerPos, vec3 normal, float dirLight, float dither){
 		// If the area isn't shaded, apply shadow mapping
 		if(dirLight > 0){
-			float shdRcp = 1.0 / shadowMapResolution;
-			
+			vec3 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz;
 			float distortFactor = getDistortFactor(shdPos.xy);
-			shdPos.xyz = distort(shdPos.xyz, distortFactor) * 0.5 + 0.5;
-			shdPos.z -= (4.2 * shdRcp * distortFactor * distortFactor) / dirLight;
+			shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * normal) * (distortFactor * distortFactor * 4.0);
+			shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
 
 			#ifdef SHADOW_FILTER
-				return getShdFilter(shdPos.xyz, dither * PI2, shdRcp);
+				return getShdFilter(shdPos, dither * PI2, 1.0 / shadowMapResolution);
 			#else
-				return getShdTex(shdPos.xyz);
+				return getShdTex(shdPos);
 			#endif
 		}
 
