@@ -8,9 +8,6 @@ const float sunPathRotation = 30.0; // Light angle [-60.0 -55.0 -50.0 -45.0 -40.
 	const float shadowDistance = 160.0; // Shadow distance. Increase to stretch the shadow map to farther distances in blocks. It's recommended to match this setting with your render distance. [32.0 64.0 80.0 96.0 112.0 128.0 160.0 192.0 224.0 256.0 320.0 384.0 512.0 768.0 1024.0]
 	const float shadowDistanceRenderMul = 1.0; // Hardcoded to be always on for maximum optimization.
 
-	// Shadow bias (unused)
-	const float shdBias = 0.02; // Don't go below the default value otherwise it'll mess up lighting
-
 	// Shadow opaque
 	uniform sampler2DShadow shadowtex0;
 
@@ -38,25 +35,5 @@ const float sunPathRotation = 30.0; // Light angle [-60.0 -55.0 -50.0 -45.0 -40.
 		
 		vec3 shdCol = getShdTex(vec3(shdPos.xy + randVec, shdPos.z));
 		return (shdCol + getShdTex(vec3(shdPos.xy - randVec, shdPos.z))) * 0.5;
-	}
-
-	// Shadow function
-	vec3 getShdMapping(vec3 feetPlayerPos, vec3 normal, float dirLight, float dither){
-		// If the area isn't shaded, apply shadow mapping
-		if(dirLight > 0){
-			vec3 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz;
-			float distortFactor = getDistortFactor(shdPos.xy);
-			shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * normal) * (distortFactor * distortFactor * 4.0);
-			shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
-
-			#ifdef SHADOW_FILTER
-				return getShdFilter(shdPos, dither * PI2, 1.0 / shadowMapResolution);
-			#else
-				return getShdTex(shdPos);
-			#endif
-		}
-
-		// Otherwise, return nothing
-		return vec3(0);
 	}
 #endif
