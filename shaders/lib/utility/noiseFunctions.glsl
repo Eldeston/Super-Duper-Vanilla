@@ -4,10 +4,6 @@ const int noiseTextureResolution = 256;
 // Noise sample, r for blue noise, g for white noise, and b for cell noise
 uniform sampler2D noisetex;
 
-float getRand1(vec2 st){
-    return texture2D(noisetex, st).x;
-}
-
 vec2 getRand2(vec2 st){
     return vec2(texture2D(noisetex, st).x, texture2D(noisetex, vec2(-st.x, st.y)).x);
 }

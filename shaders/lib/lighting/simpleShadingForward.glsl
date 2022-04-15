@@ -3,7 +3,7 @@
 #endif
 
 #ifdef CLOUDS
-	vec4 simpleShadingGbuffers(vec4 albedo, vec3 feetPlayerPos, float dither){
+	vec4 simpleShadingGbuffers(vec4 albedo, vec3 feetPlayerPos){
 		// Get lightmaps and add simple sky GI
 		vec3 totalDiffuse = skyCol + ambientLighting;
 
@@ -23,11 +23,15 @@
 				if(NL > 0){
 					vec3 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz;
 					float distortFactor = getDistortFactor(shdPos.xy);
-					shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * norm) * (distortFactor * distortFactor * 4.0);
+					shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * norm) * distortFactor;
 					shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
 
 					#ifdef SHADOW_FILTER
-						shadowCol = getShdFilter(shdPos, dither * PI2, 1.0 / shadowMapResolution) * shdFade;
+						#if ANTI_ALIASING == 2
+							shadowCol = getShdFilter(shdPos, toRandPerFrame(texture2D(noisetex, gl_FragCoord.xy * 0.03125).x, frameTimeCounter) * PI2, 1.0 / shadowMapResolution) * shdFade;
+						#else
+							shadowCol = getShdFilter(shdPos, texture2D(noisetex, gl_FragCoord.xy * 0.03125).x * PI2, 1.0 / shadowMapResolution) * shdFade;
+						#endif
 					#else
 						shadowCol = getShdTex(shdPos) * shdFade;
 					#endif
@@ -42,7 +46,7 @@
 		return vec4(albedo.rgb * totalDiffuse, albedo.a);
 	}
 #else
-	vec4 simpleShadingGbuffers(vec4 albedo, vec3 feetPlayerPos, float dither){
+	vec4 simpleShadingGbuffers(vec4 albedo, vec3 feetPlayerPos){
 		// Get lightmaps and add simple sky GI
 		vec3 totalDiffuse = skyCol * lmCoord.y * lmCoord.y + ambientLighting + pow((lmCoord.x * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B), vec3(GAMMA));
 
@@ -63,11 +67,15 @@
 
 					vec3 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz;
 					float distortFactor = getDistortFactor(shdPos.xy);
-					shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * norm) * (distortFactor * distortFactor * 4.0);
+					shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * norm) * distortFactor;
 					shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
 
 					#ifdef SHADOW_FILTER
-						shadowCol = getShdFilter(shdPos, dither * PI2, 1.0 / shadowMapResolution) * caveFixShdFactor * shdFade;
+						#if ANTI_ALIASING == 2
+							shadowCol = getShdFilter(shdPos, toRandPerFrame(texture2D(noisetex, gl_FragCoord.xy * 0.03125).x, frameTimeCounter) * PI2, 1.0 / shadowMapResolution) * shdFade;
+						#else
+							shadowCol = getShdFilter(shdPos, texture2D(noisetex, gl_FragCoord.xy * 0.03125).x * PI2, 1.0 / shadowMapResolution) * shdFade;
+						#endif
 					#else
 						shadowCol = getShdTex(shdPos) * caveFixShdFactor * shdFade;
 					#endif

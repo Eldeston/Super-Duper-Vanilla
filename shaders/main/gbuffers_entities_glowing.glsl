@@ -125,8 +125,7 @@ uniform mat4 gbufferModelViewInverse;
 
         material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
-        // Doesn't use any dithering
-        vec4 sceneCol = complexShadingGbuffers(material, posVector, 0.0);
+        vec4 sceneCol = complexShadingGbuffers(material, posVector);
 
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; //gcolor

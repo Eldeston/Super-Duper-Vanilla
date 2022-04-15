@@ -140,7 +140,7 @@ varying vec2 texCoord;
         color = pow(color, vec3(RCPGAMMA));
         
         // Color saturation, contrast, etc. and film grain
-        color = toneA(color) + (getRand1(gl_FragCoord.xy * 0.03125) - 0.5) * 0.00392156863;
+        color = toneA(color) + (texture2D(noisetex, gl_FragCoord.xy * 0.03125).x - 0.5) * 0.00392156863;
 
         #if TIMELAPSE_MODE != 0 && defined ZA_WARUDO
             color = mix(color, 1.0 - saturate(color), smoothstep(0.51, 0.49, zaWarudoSphere));

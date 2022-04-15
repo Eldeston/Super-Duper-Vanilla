@@ -35,9 +35,9 @@ varying vec2 texCoord;
             float depth = min(1.0, abs(toView(texture2D(depthtex1, texCoord).r) - toView(centerDepthSmooth)) / FOCAL_RANGE);
 
             #if ANTI_ALIASING == 2
-                float dither = toRandPerFrame(getRand1(gl_FragCoord.xy * 0.03125), frameTimeCounter) * PI2;
+                float dither = toRandPerFrame(texture2D(noisetex, gl_FragCoord.xy * 0.03125).x, frameTimeCounter) * PI2;
             #else
-                float dither = getRand1(gl_FragCoord.xy * 0.03125) * PI2;
+                float dither = texture2D(noisetex, gl_FragCoord.xy * 0.03125).x * PI2;
             #endif
 
             vec2 randVec = (vec2(sin(dither), cos(dither)) * depth) / (vec2(viewWidth, viewHeight) / exp2(DOF_LOD));

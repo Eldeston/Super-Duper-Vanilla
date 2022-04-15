@@ -2,7 +2,7 @@
 	uniform float shdFade;
 #endif
 
-vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, float dither){
+vec4 complexShadingGbuffers(matPBR material, positionVectors posVector){
 	// Get lightmaps and add simple sky GI
 	vec3 totalDiffuse = (skyCol * lmCoord.y * lmCoord.y + ambientLighting + pow((lmCoord.x * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B), vec3(GAMMA))) * material.ambient;
 
@@ -34,7 +34,11 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector, float di
 				shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
 
 				#ifdef SHADOW_FILTER
-					shadowCol = getShdFilter(shdPos, dither * PI2, 1.0 / shadowMapResolution) * caveFixShdFactor * shdFade * material.parallaxShd;
+					#if ANTI_ALIASING == 2
+						shadowCol = getShdFilter(shdPos, toRandPerFrame(texture2D(noisetex, gl_FragCoord.xy * 0.03125).x, frameTimeCounter) * PI2, 1.0 / shadowMapResolution) * caveFixShdFactor * shdFade * material.parallaxShd;
+					#else
+						shadowCol = getShdFilter(shdPos, texture2D(noisetex, gl_FragCoord.xy * 0.03125).x * PI2, 1.0 / shadowMapResolution) * caveFixShdFactor * shdFade * material.parallaxShd;
+					#endif
 				#else
 					shadowCol = getShdTex(shdPos) * caveFixShdFactor * shdFade * material.parallaxShd;
 				#endif

@@ -176,11 +176,7 @@ uniform vec3 cameraPosition;
             if(rBlockId != 10002) enviroPBR(material, worldPos);
         #endif
 
-        #if ANTI_ALIASING == 2
-            vec4 sceneCol = complexShadingGbuffers(material, posVector, toRandPerFrame(getRand1(gl_FragCoord.xy * 0.03125), frameTimeCounter));
-        #else
-            vec4 sceneCol = complexShadingGbuffers(material, posVector, getRand1(gl_FragCoord.xy * 0.03125));
-        #endif
+        vec4 sceneCol = complexShadingGbuffers(material, posVector);
 
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; //gcolor
