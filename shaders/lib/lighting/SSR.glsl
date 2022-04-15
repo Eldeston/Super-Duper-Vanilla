@@ -3,7 +3,7 @@ vec4 getSSRCol(vec3 viewPos, vec3 screenPos, vec3 gBMVNorm, float dither){
 	vec3 reflectedScreenPos = rayTraceScene(screenPos, viewPos, reflect(normalize(viewPos), gBMVNorm), dither, SSR_STEPS, SSR_BISTEPS);
 	
 	// Check if it's the sky and return nothing
-	if(reflectedScreenPos.z == 0) return vec4(0);
+	if(reflectedScreenPos.z < 0.5) return vec4(0);
 
 	#ifdef PREVIOUS_FRAME
 		// Transform coords to previous frame coords

@@ -148,7 +148,7 @@ vec3 textureFXAA(sampler2D aliased, vec2 uv, vec2 resolution){
     float edgeThickness = (distance1 + distance2);
 
     // UV offset: read in the direction of the closest side of the edge.
-    float pixelOffset = - distanceFinal / edgeThickness + 0.5;
+    float pixelOffset = -distanceFinal / edgeThickness + 0.5;
 
     // Is the luma at center smaller than the local average ?
     bool isLumaCenterSmaller = lumaCenter < lumaLocalAverage;
@@ -162,7 +162,7 @@ vec3 textureFXAA(sampler2D aliased, vec2 uv, vec2 resolution){
 
     // Sub-pixel shifting
     // Full weighted average of the luma over the 3x3 neighborhood.
-    float lumaAverage = (1.0 / 12.0) * (2.0 * (lumaDownUp + lumaLeftRight) + lumaLeftCorners + lumaRightCorners);
+    float lumaAverage = (2.0 * (lumaDownUp + lumaLeftRight) + lumaLeftCorners + lumaRightCorners) / 12.0;
     // Ratio of the delta between the global average and the center luma, over the luma range in the 3x3 neighborhood.
     float subPixelOffset1 = clamp(abs(lumaAverage - lumaCenter) / lumaRange, 0.0, 1.0);
     float subPixelOffset2 = (-2.0 * subPixelOffset1 + 3.0) * subPixelOffset1 * subPixelOffset1;

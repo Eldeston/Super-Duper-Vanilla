@@ -164,7 +164,7 @@ uniform vec3 cameraPosition;
             #ifdef LAVA_NOISE
                 vec2 lavaUv = (worldPos.yz * TBN[2].x + worldPos.xz * TBN[2].y + worldPos.xy * TBN[2].z) / LAVA_TILE_SIZE;
                 float lavaNoise = max(getLavaNoise(lavaUv), (material.albedo.r + material.albedo.g + material.albedo.b) * 0.33 + 0.01);
-                material.albedo.rgb = floor(material.albedo.rgb * smoothstep(0.25, 0.75, lavaNoise) * LAVA_BRIGHTNESS * 16.0) / 16.0;
+                material.albedo.rgb = floor(material.albedo.rgb * smoothstep(0.25, 0.75, lavaNoise) * LAVA_BRIGHTNESS * 16.0) * 0.0625;
             #else
                 material.albedo.rgb = material.albedo.rgb * LAVA_BRIGHTNESS;
             #endif

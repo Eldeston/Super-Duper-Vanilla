@@ -111,11 +111,8 @@ varying vec2 texCoord;
         #endif
 
         #ifdef AUTO_EXPOSURE
-            // Get center pixel current average scene luminance...
-            float lumiCurrent = max(sqrt(length(texture2D(gcolor, vec2(0.5), 10.0).rgb)), 0.05);
-
-            // Mix previous and current buffer...
-            float tempPixelLuminance = mix(lumiCurrent, texture2D(colortex6, vec2(0)).a, exp2(-AUTO_EXPOSURE_SPEED * frameTime));
+            // Get center pixel current average scene luminance and mix previous and current pixel...
+            float tempPixelLuminance = mix(sqrt(length(texture2D(gcolor, vec2(0.5), 10.0).rgb)), texture2D(colortex6, vec2(0)).a, exp2(-AUTO_EXPOSURE_SPEED * frameTime));
 
             // Apply auto exposure
             color /= max(tempPixelLuminance, 0.05);
@@ -140,7 +137,7 @@ varying vec2 texCoord;
         color = pow(color, vec3(RCPGAMMA));
         
         // Color saturation, contrast, etc. and film grain
-        color = toneA(color); // + (texture2D(noisetex, gl_FragCoord.xy * 0.03125).x - 0.5) * 0.00392156863;
+        color = toneA(color) + (texture2D(noisetex, gl_FragCoord.xy * 0.03125).x - 0.5) * 0.00392156863;
 
         #if TIMELAPSE_MODE != 0 && defined ZA_WARUDO
             color = mix(color, 1.0 - saturate(color), smoothstep(0.51, 0.49, zaWarudoSphere));
