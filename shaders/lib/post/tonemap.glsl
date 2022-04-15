@@ -4,6 +4,6 @@ vec3 toneA(vec3 base){
 
 vec3 whitePreservingLumaBasedReinhardToneMapping(vec3 color){
 	float luma = getLuminance(color);
-	float toneMappedLuma = (luma + luma * luma * 0.25) / (1.0 + luma);
-	return color * (toneMappedLuma / luma);
+	float lumaSqrd = luma * luma;
+	return color * ((luma + lumaSqrd * 0.25) / (luma + lumaSqrd));
 }

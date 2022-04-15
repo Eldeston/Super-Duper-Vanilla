@@ -54,12 +54,12 @@ vec3 getSpecBRDF(vec3 V, vec3 L, vec3 N, vec3 F0, float NL, float roughness){
     vec3 fresnel = F0 + (1.0 - F0) * exp2(((-5.55473 * LH) - 6.98316) * LH);
     
     // Roughness remapping
-    float alphaSqr = squared(roughness * roughness);
-    
+    float alphaSqrd = squared(roughness * roughness);
+
     // D
     float NHSqr = getNoHSquared(0.1, NL, NV, LV);
-    float denominator = NHSqr * (alphaSqr - 1.0) + 1.0;
-    float distribution = alphaSqr / (PI * denominator * denominator);
+    float denominator = NHSqr * (alphaSqrd - 1.0) + 1.0;
+    float distribution = alphaSqrd / (PI * denominator * denominator);
 
     // V
     float visibility = 1.0 / (LH + (1.0 / roughness));
