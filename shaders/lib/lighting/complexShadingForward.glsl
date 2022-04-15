@@ -30,7 +30,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector){
 
 				vec3 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * posVector.feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz;
 				float distortFactor = getDistortFactor(shdPos.xy);
-				shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * material.normal) * distortFactor;
+				shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * material.normal) * exp2(max(0.0, (shadowDistance - shadowMapResolution * 0.125) / shadowDistance)) * distortFactor;
 				shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
 
 				#ifdef SHADOW_FILTER
