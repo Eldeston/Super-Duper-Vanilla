@@ -6,10 +6,10 @@
     float getSunMoonShape(vec2 pos){
         #if SUN_MOON_TYPE == 1
             // Round sun and moon
-            return min(1.0, exp2(-(length(pos) - 0.1) * 256.0));
+            return saturate(exp2(-(length(pos) - 0.1) * 256.0));
         #else
             // Default sun and moon
-            return min(1.0, exp2(-(pow(abs(pos.x * pos.x * pos.x) + abs(pos.y * pos.y * pos.y), 0.333) - 0.1) * 256.0));
+            return saturate(exp2(-(pow(abs(pos.x * pos.x * pos.x) + abs(pos.y * pos.y * pos.y), 0.333) - 0.1) * 256.0));
         #endif
     }
 #endif
