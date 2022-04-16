@@ -1,8 +1,3 @@
-#ifdef FRAGMENT
-    // For the use of texture2DLod in FXAA.glsl
-    #extension GL_ARB_shader_texture_lod : enable
-#endif
-
 varying vec2 texCoord;
 
 #ifdef VERTEX

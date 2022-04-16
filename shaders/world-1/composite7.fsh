@@ -1,5 +1,8 @@
 #version 120
 
+// For the use of texture2DLod in FXAA.glsl
+#extension GL_ARB_shader_texture_lod : enable
+
 #define COMPOSITE7
 #define FRAGMENT
 

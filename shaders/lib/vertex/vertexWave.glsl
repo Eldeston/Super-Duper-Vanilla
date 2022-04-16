@@ -23,7 +23,7 @@ void getWave(inout vec3 vertexPos, in vec3 worldPos, in vec2 texCoord, in vec2 m
 	}
 
 	// Lantern
-	else if(id == 10039){
+	else if(id == 10040){
 		float offSet = 1.0 - sqrt(fract(worldPos.y - 0.001));
 
 		plantWeight *= offSet;
@@ -55,7 +55,7 @@ void getWave(inout vec3 vertexPos, in vec3 worldPos, in vec2 texCoord, in vec2 m
 			else if(id == 10009) vertexPos.x += windDisp * 0.32;
 
 			// Lanterns
-			else if(id == 10039) vertexPos.xz += windDisp * 0.5;
+			else if(id == 10040) vertexPos.xz += windDisp * 0.5;
 		}
 	#endif
 

@@ -80,7 +80,7 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float LV, bool isSky){
     if(isEyeInWater == 1) finalCol *= voidGradient;
 
     #if WORLD_SUN_MOON == 1 && defined WORLD_LIGHT
-        finalCol += lightCol * pow(max(LV * 0.75, 0.0), abs(nPlayerPos.y) + 1.0) * shdFade;
+        finalCol += lightCol * pow(max(LV, 0.0) * 0.75, abs(nPlayerPos.y) + 1.0) * shdFade;
     #endif
     
     return finalCol * (isEyeInWater == 0 ? voidGradient * (1.0 - eyeBrightFact) + eyeBrightFact : 1.0) + ambientLighting;

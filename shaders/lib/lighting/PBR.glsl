@@ -326,27 +326,28 @@ uniform sampler2D texture;
 
                 // Fungus
                 else if(id == 10036) material.emissive = max2(material.albedo.rg) > 0.8 ? 0.72 : material.emissive;
+                else if(id == 10037) material.emissive = smoothstep(1.2, 1.8, material.albedo.r + material.albedo.g + material.albedo.b);
 
                 // Emissives
-                else if(id == 10037) material.emissive = smoothstep(0.88, 1.0, maxC(material.albedo.rgb));
-                else if(id == 10038 || id == 10039) material.emissive = smoothstep(0.64, 0.8, maxC(material.albedo.rgb));
+                else if(id == 10038) material.emissive = smoothstep(0.88, 1.0, maxC(material.albedo.rgb));
+                else if(id == 10039 || id == 10040) material.emissive = smoothstep(0.64, 0.8, maxC(material.albedo.rgb));
 
                 // Redstone stuff
-                else if((id == 10040 || id == 10068) && material.albedo.r > material.albedo.b * 2.4){
+                else if((id == 10041 || id == 10068) && material.albedo.r > material.albedo.b * 2.4){
                     material.emissive = float(material.albedo.r > 0.5);
                     material.smoothness = 0.93 * sqrt(material.albedo.r);
                     material.metallic = 1.0;
                 }
 
                 // Redstone block
-                else if(id == 10041){
+                else if(id == 10042){
                     material.emissive = 1.0;
                     material.smoothness = 0.93 * material.albedo.r;
                     material.metallic = 1.0;
                 }
 
                 // End portal frame
-                else if(id == 10042 && material.albedo.g + material.albedo.b > material.albedo.r * 2.0) material.emissive = smoothstep(0.0, 0.5, material.albedo.g - material.albedo.b);
+                else if(id == 10043 && material.albedo.g + material.albedo.b > material.albedo.r * 2.0) material.emissive = smoothstep(0.0, 0.5, material.albedo.g - material.albedo.b);
 
                 // Gem ores
                 else if(id == 10048 && (material.albedo.r > material.albedo.g || material.albedo.r != material.albedo.b || material.albedo.g > material.albedo.b) && length(material.albedo.rgb) > 0.45){
@@ -405,10 +406,10 @@ uniform sampler2D texture;
 
             #ifdef WATER
                 // Glass and ice
-                if(id == 10043 || id == 10044) material.smoothness = 0.96;
+                if(id == 10044 || id == 10045) material.smoothness = 0.96;
 
                 // Gelatin
-                else if(id == 10045) material.smoothness = 0.96;
+                else if(id == 10046) material.smoothness = 0.96;
             #endif
         #endif
 
