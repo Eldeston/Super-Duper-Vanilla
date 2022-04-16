@@ -98,7 +98,7 @@ uniform vec3 cameraPosition;
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
 
-        glcolorAO = gl_Color.a;
+        glcolorAO = smoothstep(0.2, 0.8, gl_Color.a);
         glcolor = gl_Color.rgb;
     }
 #endif

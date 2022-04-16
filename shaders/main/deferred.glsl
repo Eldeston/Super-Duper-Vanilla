@@ -9,7 +9,7 @@ varying vec2 texCoord;
 
 #ifdef FRAGMENT
     // SSAO without normals fix for beacon
-    const vec4 colortex1ClearColor = vec4(0.5, 0.5, 1, 0.5);
+    const vec4 colortex1ClearColor = vec4(0.5, 0.5, 0.5, 1);
 
     uniform sampler2D colortex2;
 
@@ -45,18 +45,18 @@ varying vec2 texCoord;
             float depth = texture2D(depthtex0, texCoord).x;
             
             if(depth > 0.56 && depth != 1){
-                vec3 normal = texture2D(colortex1, texCoord).xyz * 2.0 - 1.0;
+                vec3 normal = texture2D(colortex1, texCoord).xyz - 0.5;
 
                 // Check if normal has direction
-                // if(length(normal) != 0){
+                if(length(normal) != 0){
                     #if ANTI_ALIASING == 2
                         vec3 dither = toRandPerFrame(getRand3(gl_FragCoord.xy * 0.03125), frameTimeCounter);
                     #else
                         vec3 dither = getRand3(gl_FragCoord.xy * 0.03125);
                     #endif
 
-                    ambientOcclusion = getSSAO(toView(vec3(texCoord, depth)), mat3(gbufferModelView) * normal, dither);
-                // }
+                    ambientOcclusion = getSSAO(toView(vec3(texCoord, depth)), mat3(gbufferModelView) * (normal * 2.0), dither);
+                }
             }
             
         /* DRAWBUFFERS:2 */
