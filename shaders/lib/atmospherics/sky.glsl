@@ -6,10 +6,10 @@
     float getSunMoonShape(vec2 pos){
         #if SUN_MOON_TYPE == 1
             // Round sun and moon
-            return saturate(exp2(-(length(pos) - 0.1) * 256.0));
+            return min(1.0, exp2(-(length(pos) - 0.1) * 256.0));
         #else
             // Default sun and moon
-            return saturate(exp2(-(pow(abs(pos.x * pos.x * pos.x) + abs(pos.y * pos.y * pos.y), 0.333) - 0.1) * 256.0));
+            return min(1.0, exp2(-(pow(abs(pos.x * pos.x * pos.x) + abs(pos.y * pos.y * pos.y), 0.333) - 0.1) * 256.0));
         #endif
     }
 #endif
@@ -100,7 +100,7 @@ vec3 getSkyRender(vec3 skyBoxCol, vec3 nPlayerPos, bool isSky, bool isSunMoon){
 
     #ifdef WORLD_LIGHT
         #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE != 2
-            if(isSunMoon) finalCol += getSunMoonShape(nSkyPos.xy) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * sqrt(lightCol) * (1.0 - rainStrength);
+            if(isSunMoon) finalCol += getSunMoonShape(nSkyPos.xy) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * saturate(1.0 - rainStrength) * sqrt(lightCol);
         #elif WORLD_SUN_MOON == 2
             if(isSunMoon){
                 float blackHole = min(1.0, 0.005 / ((1.0 - nSkyPos.z) * 32.0 - 0.1));
