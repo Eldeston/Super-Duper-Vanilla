@@ -30,8 +30,8 @@ const float sunPathRotation = 30.0; // Light angle [-60.0 -55.0 -50.0 -45.0 -40.
 		#endif
 	}
 
-	vec3 getShdFilter(vec3 shdPos, float dither, float shdRcp){
-		vec2 randVec = vec2(sin(dither), cos(dither)) * shdRcp;
+	vec3 getShdFilter(vec3 shdPos, float dither){
+		vec2 randVec = vec2(sin(dither), cos(dither)) / shadowMapResolution;
 		
 		vec3 shdCol = getShdTex(vec3(shdPos.xy + randVec, shdPos.z));
 		return (shdCol + getShdTex(vec3(shdPos.xy - randVec, shdPos.z))) * 0.5;

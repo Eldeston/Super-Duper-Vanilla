@@ -389,7 +389,7 @@ uniform sampler2D texture;
 
                 // Dark metals
                 else if(id == 10067){
-                    material.smoothness = 0.96 * min(1.0, material.albedo.r + material.albedo.g + material.albedo.b);
+                    material.smoothness = sqrt((material.albedo.r + material.albedo.g + material.albedo.b) * 0.333);
                     material.metallic = 1.0;
                 }
 
@@ -400,7 +400,7 @@ uniform sampler2D texture;
                 }
 
                 // Polished blocks
-                else if(id == 10080) material.smoothness = min(1.0, material.albedo.r + material.albedo.g + material.albedo.b);
+                else if(id == 10080) material.smoothness = sqrt((material.albedo.r + material.albedo.g + material.albedo.b) * 0.333);
             #endif
 
             #ifdef WATER

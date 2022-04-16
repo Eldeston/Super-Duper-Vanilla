@@ -35,9 +35,9 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector){
 
 				#ifdef SHADOW_FILTER
 					#if ANTI_ALIASING == 2
-						shadowCol = getShdFilter(shdPos, toRandPerFrame(texture2D(noisetex, gl_FragCoord.xy * 0.03125).x, frameTimeCounter) * PI2, 1.0 / shadowMapResolution) * caveFixShdFactor * shdFade * material.parallaxShd;
+						shadowCol = getShdFilter(shdPos, toRandPerFrame(texture2D(noisetex, gl_FragCoord.xy * 0.03125).x, frameTimeCounter) * PI2) * caveFixShdFactor * shdFade * material.parallaxShd;
 					#else
-						shadowCol = getShdFilter(shdPos, texture2D(noisetex, gl_FragCoord.xy * 0.03125).x * PI2, 1.0 / shadowMapResolution) * caveFixShdFactor * shdFade * material.parallaxShd;
+						shadowCol = getShdFilter(shdPos, texture2D(noisetex, gl_FragCoord.xy * 0.03125).x * PI2) * caveFixShdFactor * shdFade * material.parallaxShd;
 					#endif
 				#else
 					shadowCol = getShdTex(shdPos) * caveFixShdFactor * shdFade * material.parallaxShd;

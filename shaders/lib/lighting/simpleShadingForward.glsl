@@ -28,9 +28,9 @@
 
 					#ifdef SHADOW_FILTER
 						#if ANTI_ALIASING == 2
-							shadowCol = getShdFilter(shdPos, toRandPerFrame(texture2D(noisetex, gl_FragCoord.xy * 0.03125).x, frameTimeCounter) * PI2, 1.0 / shadowMapResolution) * shdFade;
+							shadowCol = getShdFilter(shdPos, toRandPerFrame(texture2D(noisetex, gl_FragCoord.xy * 0.03125).x, frameTimeCounter) * PI2) * shdFade;
 						#else
-							shadowCol = getShdFilter(shdPos, texture2D(noisetex, gl_FragCoord.xy * 0.03125).x * PI2, 1.0 / shadowMapResolution) * shdFade;
+							shadowCol = getShdFilter(shdPos, texture2D(noisetex, gl_FragCoord.xy * 0.03125).x * PI2) * shdFade;
 						#endif
 					#else
 						shadowCol = getShdTex(shdPos) * shdFade;
@@ -72,9 +72,9 @@
 
 					#ifdef SHADOW_FILTER
 						#if ANTI_ALIASING == 2
-							shadowCol = getShdFilter(shdPos, toRandPerFrame(texture2D(noisetex, gl_FragCoord.xy * 0.03125).x, frameTimeCounter) * PI2, 1.0 / shadowMapResolution) * shdFade;
+							shadowCol = getShdFilter(shdPos, toRandPerFrame(texture2D(noisetex, gl_FragCoord.xy * 0.03125).x, frameTimeCounter) * PI2) * shdFade;
 						#else
-							shadowCol = getShdFilter(shdPos, texture2D(noisetex, gl_FragCoord.xy * 0.03125).x * PI2, 1.0 / shadowMapResolution) * shdFade;
+							shadowCol = getShdFilter(shdPos, texture2D(noisetex, gl_FragCoord.xy * 0.03125).x * PI2) * shdFade;
 						#endif
 					#else
 						shadowCol = getShdTex(shdPos) * caveFixShdFactor * shdFade;
