@@ -44,19 +44,13 @@ varying vec2 texCoord;
             // Declare and get positions
             float depth = texture2D(depthtex0, texCoord).x;
             
+            // Check if sky and player hand
             if(depth > 0.56 && depth != 1){
                 vec3 normal = texture2D(colortex1, texCoord).xyz - 0.5;
 
-                // Check if normal has direction
-                if(length(normal) != 0){
-                    #if ANTI_ALIASING == 2
-                        vec3 dither = toRandPerFrame(getRand3(gl_FragCoord.xy * 0.03125), frameTimeCounter);
-                    #else
-                        vec3 dither = getRand3(gl_FragCoord.xy * 0.03125);
-                    #endif
-
-                    ambientOcclusion = getSSAO(toView(vec3(texCoord, depth)), mat3(gbufferModelView) * (normal * 2.0), dither);
-                }
+                // Check if normal has a direction
+                if(normal.x + normal.y + normal.z != 0)
+                    ambientOcclusion = getSSAO(toView(vec3(texCoord, depth)), mat3(gbufferModelView) * (normal * 2.0));
             }
             
         /* DRAWBUFFERS:2 */
