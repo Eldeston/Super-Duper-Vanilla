@@ -84,8 +84,7 @@ uniform vec3 cameraPosition;
         vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
         
         #ifdef ANIMATE
-            vec3 worldPos = vertexPos.xyz + cameraPosition;
-	        getWave(vertexPos.xyz, worldPos, texCoord, mc_midTexCoord.xy, mc_Entity.x, lmCoord.y);
+	        getWave(vertexPos.xyz, vertexPos.xyz + cameraPosition, texCoord, mc_midTexCoord.xy, mc_Entity.x, lmCoord.y);
         #endif
 
         #ifdef WORLD_CURVATURE
@@ -173,7 +172,7 @@ uniform vec3 cameraPosition;
         material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
         #if defined ENVIRO_MAT && !defined FORCE_DISABLE_WEATHER
-            if(rBlockId != 10002) enviroPBR(material, worldPos);
+            if(rBlockId != 10002) enviroPBR(material, worldPos.xz);
         #endif
 
         vec4 sceneCol = complexShadingGbuffers(material, posVector);

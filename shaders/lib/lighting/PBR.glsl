@@ -10,7 +10,7 @@ uniform sampler2D texture;
 #ifdef ENVIRO_MAT
 #endif
 
-#if (defined TERRAIN || defined WATER) && defined ENVIRO_MAT && !defined FORCE_DISABLE_WEATHER
+#if defined TERRAIN && defined ENVIRO_MAT && !defined FORCE_DISABLE_WEATHER
     uniform float isPrecipitationRain;
     uniform float wetness;
 
@@ -30,11 +30,11 @@ uniform sampler2D texture;
         return mix(horizontal0, horizontal1, smoothen(fract(uv.y * noiseTextureResolution)));
     }
 
-    void enviroPBR(inout matPBR material, in vec3 worldPos){
+    void enviroPBR(inout matPBR material, in vec2 worldPos){
         float rainMatFact = sqrt(max(0.0, TBN[2].y) * smoothstep(0.8, 0.9, lmCoord.y) * wetness * isPrecipitationRain * (1.0 - material.porosity));
 
         if(rainMatFact > 0.005){
-            vec2 noiseData = getNoiseDataCubic(worldPos.xz * 0.001953125).xy;
+            vec2 noiseData = getNoiseDataCubic(worldPos * 0.001953125).xy;
             rainMatFact *= smoothstep(0.15, 0.6, (noiseData.y + noiseData.x) * 0.5);
             
             material.normal = mix(material.normal, TBN[2], rainMatFact);

@@ -83,8 +83,7 @@ uniform vec3 cameraPosition;
         vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
 
         #ifdef ANIMATE
-            vec3 worldPos = vertexPos.xyz + cameraPosition;
-	        getWave(vertexPos.xyz, worldPos, texCoord, mc_midTexCoord.xy, mc_Entity.x, lmCoord.y);
+	        getWave(vertexPos.xyz, vertexPos.xyz + cameraPosition, texCoord, mc_midTexCoord.xy, mc_Entity.x, lmCoord.y);
         #endif
 
         #ifdef WORLD_CURVATURE
@@ -158,22 +157,20 @@ uniform vec3 cameraPosition;
         int rBlockId = int(blockId + 0.5);
         getPBR(material, posVector, rBlockId);
         
-        vec3 worldPos = posVector.feetPlayerPos + cameraPosition;
-        
         // If water
         if(rBlockId == 10001){
             float waterNoise = WATER_BRIGHTNESS;
 
             #ifdef WORLD_WATERNORM
                 #ifdef WATER_NORM
-                    vec4 waterData = H2NWater(worldPos.xz);
+                    vec4 waterData = H2NWater(posVector.feetPlayerPos.xz + cameraPosition.xz);
                     material.normal = TBN * waterData.xyz;
 
                     #ifdef WATER_NOISE
                         waterNoise *= squared(0.128 + waterData.w);
                     #endif
                 #else
-                    float waterData = getCellNoise(worldPos.xz / WATER_TILE_SIZE);
+                    float waterData = getCellNoise((posVector.feetPlayerPos.xz + cameraPosition.xz) / WATER_TILE_SIZE);
 
                     #ifdef WATER_NOISE
                         waterNoise *= squared(0.128 + waterData);
@@ -199,10 +196,6 @@ uniform vec3 cameraPosition;
         }
 
         material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
-
-        #if defined ENVIRO_MAT && !defined FORCE_DISABLE_WEATHER
-            if(rBlockId != 10001) enviroPBR(material, worldPos);
-        #endif
 
         vec4 sceneCol = complexShadingGbuffers(material, posVector);
 
