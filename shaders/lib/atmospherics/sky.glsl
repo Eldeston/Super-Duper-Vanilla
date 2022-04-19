@@ -27,9 +27,10 @@
         // start * stepSize * depthSize = start * 0.125 * 0.08
         vec2 end = start * 0.01;
         
-        float cloudSpeed = time * 0.0004;
+        // Move towards west
+        start.x += time * 0.0004;
         for(int i = 0; i < 8; i++){
-            if(texture2D(colortex4, start + vec2(cloudSpeed, 0)).a > ALPHA_THRESHOLD) return 1.0 - i * 0.125;
+            if(texture2D(colortex4, start).a > ALPHA_THRESHOLD) return 1.0 - i * 0.125;
             start += end;
         }
         

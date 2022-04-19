@@ -134,7 +134,8 @@ varying vec2 texCoord;
         #endif
 
         // Gamma correction
-        color = pow(color, vec3(RCPGAMMA));
+        const vec3 gammaRcp = vec3(1.0 / GAMMA);
+        color = pow(color, gammaRcp);
         
         // Color saturation, contrast, etc. and film grain
         color = toneA(color) + (texture2D(noisetex, gl_FragCoord.xy * 0.03125).x - 0.5) * 0.00392156863;
