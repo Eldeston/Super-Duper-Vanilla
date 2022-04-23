@@ -1,21 +1,11 @@
-vec2 spectralOffsets[2] = vec2[2](
-    vec2(1),
-    vec2(1, -1)
-);
+float getSpectral(sampler2D mask, vec2 uv){
+    vec2 pixSize = 1.0 / vec2(viewWidth, viewHeight);
 
-float getSpectral(sampler2D mask, vec2 st){
-    vec2 pixOffSet = 1.0 / vec2(viewWidth, viewHeight);
-    float depthOrigin = texture2D(mask, st).z;
-    float totalDepth = 0.0;
-
-    for(int i = 0; i < 2; i++){
-        vec2 offSets = spectralOffsets[i] * pixOffSet;
-        float depth0 = texture2D(mask, st - offSets).z;
-        float depth1 = texture2D(mask, st + offSets).z;
-
-        totalDepth += depth0 + depth1;
-    }
+    float totalDepth = texture2D(mask, uv + pixSize).z;
+    totalDepth += texture2D(mask, uv - pixSize).z;
+    totalDepth += texture2D(mask, uv + vec2(pixSize.x, -pixSize.y)).z;
+    totalDepth += texture2D(mask, uv - vec2(pixSize.x, -pixSize.y)).z;
 
     // Calculate the differences of the offsetted depths...
-    return abs(totalDepth - depthOrigin * 4.0);
+    return abs(totalDepth * 0.25 - texture2D(mask, uv).z);
 }

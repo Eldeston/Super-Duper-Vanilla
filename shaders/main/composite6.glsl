@@ -106,7 +106,7 @@ varying vec2 texCoord;
             // shadowLightPosition is broken in other dimensions. The current is equivalent to:
             // normalize(mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz)
             
-            if(texture2D(depthtex0, lightDir).x == 1 && isEyeInWater == 0)
+            if(texture2D(depthtex0, lightDir).x == 1 && isEyeInWater == 0 && lightDir.x > 0 && lightDir.y > 0 && lightDir.x < 1 && lightDir.y < 1)
                 color += getLensFlare(texCoord - 0.5, lightDir - 0.5) * (1.0 - blindness) * (1.0 - rainStrength);
         #endif
 
@@ -134,8 +134,7 @@ varying vec2 texCoord;
         #endif
 
         // Gamma correction
-        const vec3 gammaRcp = vec3(1.0 / GAMMA);
-        color = pow(color, gammaRcp);
+        color = pow(color, vec3(1.0 / GAMMA));
         
         // Color saturation, contrast, etc. and film grain
         color = toneA(color) + (texture2D(noisetex, gl_FragCoord.xy * 0.03125).x - 0.5) * 0.00392156863;

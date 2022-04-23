@@ -60,7 +60,6 @@ varying vec2 screenCoord;
     uniform float far;
 
     #include "/lib/universalVars.glsl"
-    #include "/lib/structs.glsl"
 
     #include "/lib/lighting/shdDistort.glsl"
     #include "/lib/utility/convertViewSpace.glsl"

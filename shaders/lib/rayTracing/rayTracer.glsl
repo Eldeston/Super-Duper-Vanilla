@@ -26,7 +26,7 @@ vec3 rayTraceScene(vec3 screenPos, vec3 viewPos, vec3 rayDir, float dither, int 
 	for(int i = 0; i < steps; i++){
 		// We raytrace here
 		screenPos += screenPosRayDir;
-		if(screenPos.x < 0 || screenPos.y < 0 || screenPos.x > 1 || screenPos.y > 1) return vec3(0);
+		if(screenPos.x <= 0 || screenPos.y <= 0 || screenPos.x >= 1 || screenPos.y >= 1) return vec3(0);
 		float currDepth = texture2D(depthtex0, screenPos.xy).x;
 
 		if(screenPos.z > currDepth && currDepth > 0.56){

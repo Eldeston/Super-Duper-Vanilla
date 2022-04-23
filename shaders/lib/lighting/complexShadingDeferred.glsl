@@ -30,8 +30,7 @@ vec3 complexShadingDeferred(vec3 screenPos, vec3 viewPos, vec3 eyePlayerPos, vec
 			// Get SSR
 			vec4 SSRCol = getSSRCol(viewPos, screenPos, gBMVNorm, dither.x);
 
-			vec3 reflectCol = getSkyRender(vec3(0), normalize(reflect(eyePlayerPos, normal)), SSRCol.a != 0);
-			reflectCol = mix(reflectCol, SSRCol.rgb, SSRCol.a);
+			vec3 reflectCol = SSRCol.a < 0.5 ? getSkyRender(vec3(0), normalize(reflect(eyePlayerPos, normal)), true) : SSRCol.rgb;
 		#else
 			vec3 reflectCol = getSkyRender(vec3(0), normalize(reflect(eyePlayerPos, normal)), true);
 		#endif
