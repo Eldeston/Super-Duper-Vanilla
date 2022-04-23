@@ -3,8 +3,8 @@ vec2 spectralOffsets[2] = vec2[2](
     vec2(1, -1)
 );
 
-float getSpectral(sampler2D mask, vec2 st, float pixSize){
-    vec2 pixOffSet = pixSize / vec2(viewWidth, viewHeight);
+float getSpectral(sampler2D mask, vec2 st){
+    vec2 pixOffSet = 1.0 / vec2(viewWidth, viewHeight);
     float depthOrigin = texture2D(mask, st).z;
     float totalDepth = 0.0;
 
