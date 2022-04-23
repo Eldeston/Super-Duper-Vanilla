@@ -30,9 +30,8 @@ varying vec2 texCoord;
     #include "/lib/post/spectral.glsl"
 
     void main(){
-        // Spectral
-        float spectralOutline = getSpectral(colortex3, texCoord, 2.0);
-        vec3 sceneCol = texture2D(gcolor, texCoord).rgb * (1.0 - spectralOutline) + spectralOutline * EMISSIVE_INTENSITY * 0.5;
+        // Spectral effect
+        vec3 sceneCol = texture2D(gcolor, texCoord).rgb + getSpectral(colortex3, texCoord) * EMISSIVE_INTENSITY;
 
         #ifdef WORLD_LIGHT
             #if defined VOL_LIGHT && defined SHD_ENABLE

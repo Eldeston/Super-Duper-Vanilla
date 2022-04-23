@@ -10,23 +10,18 @@ uniform sampler2D texture;
 #ifdef ENVIRO_MAT
 #endif
 
-#if defined TERRAIN && defined ENVIRO_MAT && !defined FORCE_DISABLE_WEATHER
+#if (defined TERRAIN || defined WATER) && defined ENVIRO_MAT && !defined FORCE_DISABLE_WEATHER
     uniform float isPrecipitationRain;
     uniform float wetness;
 
     vec2 getNoiseDataCubic(vec2 uv){
         float pixSize = 1.0 / noiseTextureResolution;
 
-        vec2 downLeft = texture2D(noisetex, uv).xy;
-        vec2 downRight = texture2D(noisetex, uv + vec2(pixSize, 0)).xy;
-
-        vec2 upRight = texture2D(noisetex, uv + vec2(0, pixSize)).xy;
-        vec2 upLeft = texture2D(noisetex, uv + pixSize).xy;
-
         float a = smoothen(fract(uv.x * noiseTextureResolution));
 
-        vec2 horizontal0 = mix(downLeft, downRight, a);
-        vec2 horizontal1 = mix(upRight, upLeft, a);
+        vec2 horizontal0 = mix(texture2D(noisetex, uv).xy, texture2D(noisetex, uv + vec2(pixSize, 0)).xy, a);
+        vec2 horizontal1 = mix(texture2D(noisetex, uv + vec2(0, pixSize)).xy, texture2D(noisetex, uv + pixSize).xy, a);
+        
         return mix(horizontal0, horizontal1, smoothen(fract(uv.y * noiseTextureResolution)));
     }
 

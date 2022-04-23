@@ -81,11 +81,10 @@ varying vec2 screenCoord;
     
     void main(){
         // Declare and get positions
-        positionVectors posVector;
-        posVector.screenPos = vec3(screenCoord, texture2D(depthtex0, screenCoord).x);
-        posVector.viewPos = toView(posVector.screenPos);
-        posVector.eyePlayerPos = mat3(gbufferModelViewInverse) * posVector.viewPos;
-        posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
+        vec3 screenPos = vec3(screenCoord, texture2D(depthtex0, screenCoord).x);
+        vec3 viewPos = toView(screenPos);
+        vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
+        vec3 feetPlayerPos = eyePlayerPos + gbufferModelViewInverse[3].xyz;
 
         // Get scene color
         vec3 sceneCol = texture2D(gcolor, screenCoord).rgb;
@@ -97,20 +96,15 @@ varying vec2 screenCoord;
         #endif
 
         // If the object is transparent render lighting sperately
-        if(texture2D(depthtex1, screenCoord).x > posVector.screenPos.z){
+        if(texture2D(depthtex1, screenCoord).x > screenPos.z){
             // Declare and get materials
-            matPBR material;
-            material.albedo = texture2D(colortex2, screenCoord);
-            material.normal = texture2D(colortex1, screenCoord).rgb * 2.0 - 1.0;
-
             vec2 matRaw0 = texture2D(colortex3, screenCoord).xy;
-            material.metallic = matRaw0.x; material.smoothness = matRaw0.y;
 
             // Apply deffered shading
-            sceneCol = complexShadingDeferred(material, posVector, sceneCol, dither);
+            sceneCol = complexShadingDeferred(screenPos, viewPos, eyePlayerPos, texture2D(colortex1, screenCoord).rgb * 2.0 - 1.0, texture2D(colortex2, screenCoord).rgb, sceneCol, matRaw0.x, matRaw0.y, dither);
 
             // Fog and sky calculation
-            sceneCol = getFogRender(posVector.eyePlayerPos, sceneCol, getSkyRender(vec3(0), normalize(posVector.eyePlayerPos), false), posVector.feetPlayerPos.y + cameraPosition.y, false);
+            sceneCol = getFogRender(eyePlayerPos, sceneCol, getSkyRender(vec3(0), normalize(eyePlayerPos), false), feetPlayerPos.y + cameraPosition.y, false);
         }
 
     /* DRAWBUFFERS:0 */
@@ -118,7 +112,7 @@ varying vec2 screenCoord;
 
         #ifdef WORLD_LIGHT
         /* DRAWBUFFERS:04 */
-            gl_FragData[1] = vec4(getGodRays(posVector.feetPlayerPos, dither.x), 1); //colortex4
+            gl_FragData[1] = vec4(getGodRays(feetPlayerPos, dither.x), 1); //colortex4
             
             #ifdef PREVIOUS_FRAME
             /* DRAWBUFFERS:045 */

@@ -17,7 +17,7 @@ float getNoHSquared(float radiusTan, float NoL, float NoV, float VoL){
     float VoTr = rOverLengthT * (2.0 * NoV * NoV - 1.0 - RoL * VoL);
 
     // Calculate dot(cross(N, L), V). This could already be calculated and available.
-    float triple = sqrt(saturate(1.0 - NoL * NoL - NoV * NoV - VoL * VoL + 2.0 * NoL * NoV * VoL));
+    float triple = sqrt(max(0.0, 1.0 - NoL * NoL - NoV * NoV - VoL * VoL + 2.0 * NoL * NoV * VoL));
     
     // Do one Newton iteration to improve the bent light vector
     float NoBr = rOverLengthT * triple, VoBr = rOverLengthT * (2.0 * triple * NoV);

@@ -18,18 +18,3 @@ float getOutline(vec3 screenPos, float depthOrigin, int pixSize){
     // Calculate the differences of the offsetted depths...
     return smootherstep(totalDepth - depthOrigin * 4.0);
 }
-
-vec3 sampleDepthNorm(vec2 uv){
-    return toView(texture2D(depthtex0, uv).x) * (texture2D(colortex1, uv).xyz * 2.0 - 1.0);
-}
-
-float getEdge(vec3 normal, vec3 screenPos, float depthOrigin, int pixSize){
-    float pixOffSet = pixSize / max(viewWidth, viewHeight);
-
-    vec3 totalDepthNorm = sampleDepthNorm(screenPos.xy + vec2(pixOffSet, 0));
-    totalDepthNorm += sampleDepthNorm(screenPos.xy - vec2(pixOffSet, 0));
-    totalDepthNorm += sampleDepthNorm(screenPos.xy + vec2(0, pixOffSet));
-    totalDepthNorm += sampleDepthNorm(screenPos.xy - vec2(0, pixOffSet));
-
-    return smootherstep(maxC(totalDepthNorm - depthOrigin * normal * 4.0));
-}
