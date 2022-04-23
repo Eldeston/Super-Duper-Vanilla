@@ -6,12 +6,10 @@ vec4 getSSRCol(vec3 viewPos, vec3 screenPos, vec3 gBMVNorm, float dither){
 	if(reflectedScreenPos.z < 0.5) return vec4(0);
 
 	#ifdef PREVIOUS_FRAME
-		// Transform coords to previous frame coords
-		reflectedScreenPos.xy = toPrevScreenPos(reflectedScreenPos.xy);
-		// Return color and output SSR mask in the alpha channel
-		return vec4(texture2D(colortex5, reflectedScreenPos.xy).rgb, edgeVisibility(reflectedScreenPos.xy));
+		// Transform coords to previous frame coords, sample color and return
+		return vec4(texture2D(colortex5, toPrevScreenPos(reflectedScreenPos.xy)).rgb, 1);
 	#else
-		// Return color and output SSR mask in the alpha channel
-		return vec4(texture2D(gcolor, reflectedScreenPos.xy).rgb, edgeVisibility(reflectedScreenPos.xy));
+		// Sample color and return
+		return vec4(texture2D(gcolor, reflectedScreenPos.xy).rgb, 1);
 	#endif
 }
