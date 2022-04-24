@@ -145,8 +145,7 @@ uniform vec3 cameraPosition;
 
     void main(){
         // Declare and get positions
-        vec3 screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
-        vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * toView(screenPos);
+        vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * toView(vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z));
         vec3 feetPlayerPos = eyePlayerPos + gbufferModelViewInverse[3].xyz;
 
 	    // Declare materials

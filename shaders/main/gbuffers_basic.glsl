@@ -86,11 +86,7 @@ uniform mat4 gbufferModelViewInverse;
     #include "/lib/lighting/simpleShadingForward.glsl"
 
     void main(){
-        // Declare and get positions
-        vec3 screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
-        vec3 feetPlayerPos = mat3(gbufferModelViewInverse) * toView(screenPos) + gbufferModelViewInverse[3].xyz;
-
-	    // Declare materials
+        // Get albedo
         vec4 albedo = vec4(glcolor, 1);
 
         #if WHITE_MODE == 1
@@ -101,7 +97,7 @@ uniform mat4 gbufferModelViewInverse;
 
         albedo.rgb = pow(albedo.rgb, vec3(GAMMA));
 
-        vec4 sceneCol = simpleShadingGbuffers(albedo, feetPlayerPos);
+        vec4 sceneCol = simpleShadingGbuffers(albedo, mat3(gbufferModelViewInverse) * toView(vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z)) + gbufferModelViewInverse[3].xyz);
 
     /* DRAWBUFFERS:03 */
         gl_FragData[0] = sceneCol; //gcolor

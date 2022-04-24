@@ -81,10 +81,7 @@ uniform mat4 gbufferModelViewInverse;
     #include "/lib/lighting/simpleShadingForward.glsl"
 
     void main(){
-        // Declare and get positions
-        vec3 screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
-        vec3 feetPlayerPos = mat3(gbufferModelViewInverse) * toView(screenPos) + gbufferModelViewInverse[3].xyz;
-
+        // Get albedo alpha
         float albedoAlpha = texture2D(texture, texCoord).a;
 
         #ifdef DYNAMIC_CLOUDS
@@ -102,7 +99,7 @@ uniform mat4 gbufferModelViewInverse;
             vec4 albedo = vec4(1, 1, 1, albedoAlpha);
         #endif
 
-        vec4 sceneCol = simpleShadingGbuffers(albedo, feetPlayerPos);
+        vec4 sceneCol = simpleShadingGbuffers(albedo, mat3(gbufferModelViewInverse) * toView(vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z)) + gbufferModelViewInverse[3].xyz);
 
     /* DRAWBUFFERS:03 */
         gl_FragData[0] = sceneCol; //gcolor

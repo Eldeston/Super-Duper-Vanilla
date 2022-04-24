@@ -108,9 +108,7 @@ uniform mat4 gbufferModelViewInverse;
     
     void main(){
         // Declare and get positions
-        vec3 screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
-        vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * toView(screenPos);
-        vec3 feetPlayerPos = eyePlayerPos + gbufferModelViewInverse[3].xyz;
+        vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * toView(vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z));
 
 	    // Declare materials
 	    matPBR material;
@@ -120,7 +118,7 @@ uniform mat4 gbufferModelViewInverse;
 
         material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
-        vec4 sceneCol = complexShadingGbuffers(material, eyePlayerPos, feetPlayerPos);
+        vec4 sceneCol = complexShadingGbuffers(material, eyePlayerPos, eyePlayerPos + gbufferModelViewInverse[3].xyz);
 
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; //gcolor
