@@ -107,7 +107,3 @@ vec3 toneContrast(vec3 col, float a){
 mat2 rot2D(float x){
     return mat2(cos(x),-sin(x), sin(x),cos(x));
 }
-
-float edgeVisibility(vec2 screenPos){
-    return smoothstep(0.0, 0.025, min2(screenPos * (1.0 - screenPos)));
-}

@@ -27,7 +27,7 @@ vec3 complexShadingDeferred(vec3 screenPos, vec3 viewPos, vec3 eyePlayerPos, vec
 				normal = mat3(gbufferModelViewInverse) * gBMVNorm;
 			#endif
 
-			// Get SSR
+			// Get SSR color
 			vec4 SSRCol = getSSRCol(viewPos, screenPos, gBMVNorm, dither.x);
 
 			vec3 reflectCol = SSRCol.a < 0.5 ? getSkyRender(vec3(0), normalize(reflect(eyePlayerPos, normal)), true) : SSRCol.rgb;

@@ -36,6 +36,7 @@
     option.SATURATION=Saturation
     option.CONTRAST=Contrast
     option.EXPOSURE=Exposure
+    option.MIN_EXPOSURE=Min exposure
     option.AUTO_EXPOSURE=Auto exposure
     option.AUTO_EXPOSURE_SPEED=Auto exposure speed
     option.TINT_R=Red tint

@@ -10,17 +10,18 @@ varying vec2 texCoord;
 #ifdef FRAGMENT
     uniform sampler2D gcolor;
 
-    // Get frame time
-    uniform float frameTime;
-
     #if ANTI_ALIASING == 2 || defined AUTO_EXPOSURE
-        // Needs to be true whenever auto exposure or TAA is on
-        const bool colortex6MipmapEnabled = true;
         // Needs to be false whenever auto exposure or TAA is on
         const bool colortex6Clear = false;
 
         #ifdef AUTO_EXPOSURE
+            // Needs to be true whenever auto exposure or TAA is on
+            const bool colortex6MipmapEnabled = true;
+            // Get previous frame color
             uniform sampler2D colortex6;
+
+            // Get frame time
+            uniform float frameTime;
         #endif
     #endif
 
@@ -106,7 +107,7 @@ varying vec2 texCoord;
             // shadowLightPosition is broken in other dimensions. The current is equivalent to:
             // normalize(mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz)
             
-            if(texture2D(depthtex0, lightDir).x == 1 && isEyeInWater == 0 && lightDir.x > 0 && lightDir.y > 0 && lightDir.x < 1 && lightDir.y < 1)
+            if(texture2D(depthtex0, lightDir).x == 1 && isEyeInWater == 0)
                 color += getLensFlare(texCoord - 0.5, lightDir - 0.5) * (1.0 - blindness) * (1.0 - rainStrength);
         #endif
 
@@ -115,7 +116,7 @@ varying vec2 texCoord;
             float tempPixelLuminance = mix(sqrt(length(texture2D(gcolor, vec2(0.5), 10.0).rgb)), texture2D(colortex6, vec2(0)).a, exp2(-AUTO_EXPOSURE_SPEED * frameTime));
 
             // Apply auto exposure
-            color /= max(tempPixelLuminance, 0.05);
+            color /= max(tempPixelLuminance, MIN_EXPOSURE);
 
             #if ANTI_ALIASING == 2
                 #define TAA_DATA texture2D(colortex6, texCoord).rgb

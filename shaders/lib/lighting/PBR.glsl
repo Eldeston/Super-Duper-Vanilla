@@ -351,12 +351,16 @@ uniform sampler2D texture;
                 }
 
                 // Gem blocks
-                else if(id == 10050 || id == 10051){
+                else if(id == 10050){
                     material.smoothness = 0.96 * sqrt(min(1.0, material.albedo.r + material.albedo.g + material.albedo.b));
                     material.metallic = 0.17;
+                }
 
-                    // Crying obsidian emissives
-                    if(id == 10051) material.emissive = cubed(length(material.albedo.rgb));
+                // Crying obsidian emissives
+                else if(id == 10051){
+                    material.smoothness = 0.96 * sqrt(min(1.0, material.albedo.r + material.albedo.g + material.albedo.b));
+                    material.emissive = cubed(length(material.albedo.rgb));
+                    material.metallic = 0.17;
                 }
 
                 // Netherack gem ores
