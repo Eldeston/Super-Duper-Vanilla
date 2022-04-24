@@ -56,9 +56,6 @@ varying vec2 screenCoord;
     // Get frame time
     uniform float frameTimeCounter;
 
-    uniform float blindness;
-    uniform float far;
-
     #include "/lib/universalVars.glsl"
 
     #include "/lib/lighting/shdDistort.glsl"

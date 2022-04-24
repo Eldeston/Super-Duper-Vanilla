@@ -1,3 +1,25 @@
+// Material PBR struct
+struct matPBR{
+    // Albedo texture
+    vec4 albedo;
+    // Normal map
+    vec3 normal;
+    // Metalic map
+    float metallic;
+    // Emissive map
+	float emissive;
+    // Smoothness map
+    float smoothness;
+    // Ambient map
+    float ambient;
+    // Porosity
+    float porosity;
+    // Subsurface scattering
+    float ss;
+    // POM self shadows
+    float parallaxShd;
+};
+
 // Derivatives
 vec2 dcdx = dFdx(texCoord);
 vec2 dcdy = dFdy(texCoord);
@@ -124,11 +146,11 @@ uniform sampler2D texture;
         #endif
     #endif
 
-    void getPBR(inout matPBR material, in positionVectors posVector, in int id){
+    void getPBR(inout matPBR material, in vec3 eyePlayerPos, in int id){
         vec2 texUv = texCoord;
 
         #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined PARALLAX_OCCLUSION
-            vec3 viewDir = -posVector.eyePlayerPos * TBN;
+            vec3 viewDir = -eyePlayerPos * TBN;
 
             vec3 currPos;
             
@@ -248,7 +270,7 @@ uniform sampler2D texture;
         #endif
     }
 #else
-    void getPBR(inout matPBR material, in positionVectors posVector, in int id){
+    void getPBR(inout matPBR material, in vec3 eyePlayerPos, in int id){
         // Assign albedo
         material.albedo = texture2DGradARB(texture, texCoord, dcdx, dcdy);
 

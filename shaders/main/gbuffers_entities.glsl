@@ -110,7 +110,6 @@ uniform mat4 gbufferModelViewInverse;
     uniform vec4 entityColor;
 
     #include "/lib/universalVars.glsl"
-    #include "/lib/structs.glsl"
 
     #include "/lib/lighting/shdDistort.glsl"
     #include "/lib/utility/convertViewSpace.glsl"
@@ -132,21 +131,19 @@ uniform mat4 gbufferModelViewInverse;
         }
 
         // Declare and get positions
-        positionVectors posVector;
-        posVector.screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
-	    posVector.viewPos = toView(posVector.screenPos);
-        posVector.eyePlayerPos = mat3(gbufferModelViewInverse) * posVector.viewPos;
-        posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
+        vec3 screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
+        vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * toView(screenPos);
+        vec3 feetPlayerPos = eyePlayerPos + gbufferModelViewInverse[3].xyz;
 
 	    // Declare materials
 	    matPBR material;
-        getPBR(material, posVector, entityId);
+        getPBR(material, eyePlayerPos, entityId);
 
         material.albedo.rgb = mix(material.albedo.rgb, entityColor.rgb, entityColor.a);
 
         material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
-        vec4 sceneCol = complexShadingGbuffers(material, posVector);
+        vec4 sceneCol = complexShadingGbuffers(material, eyePlayerPos, feetPlayerPos);
 
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; //gcolor

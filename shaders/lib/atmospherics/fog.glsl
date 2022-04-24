@@ -1,3 +1,6 @@
+uniform float blindness;
+uniform float far;
+
 float atmoFog(float playerPosLength, float fogDensity){
     return 1.0 - exp(-playerPosLength * fogDensity);
 }

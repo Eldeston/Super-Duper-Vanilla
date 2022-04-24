@@ -126,10 +126,9 @@ uniform vec3 cameraPosition;
     uniform float viewWidth;
     uniform float viewHeight;
 
-    #include "/lib/universalVars.glsl"
-    #include "/lib/structs.glsl"
-
     uniform sampler2D depthtex1;
+    
+    #include "/lib/universalVars.glsl"
     
     #include "/lib/lighting/shdDistort.glsl"
     #include "/lib/utility/convertViewSpace.glsl"
@@ -146,18 +145,17 @@ uniform vec3 cameraPosition;
 
     void main(){
         // Declare and get positions
-        positionVectors posVector;
-        posVector.screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
-	    posVector.viewPos = toView(posVector.screenPos);
-        posVector.eyePlayerPos = mat3(gbufferModelViewInverse) * posVector.viewPos;
-        posVector.feetPlayerPos = posVector.eyePlayerPos + gbufferModelViewInverse[3].xyz;
+        vec3 screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
+	    vec3 viewPos = toView(screenPos);
+        vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
+        vec3 feetPlayerPos = eyePlayerPos + gbufferModelViewInverse[3].xyz;
 
 	    // Declare materials
 	    matPBR material;
         int rBlockId = int(blockId + 0.5);
-        getPBR(material, posVector, rBlockId);
+        getPBR(material, eyePlayerPos, rBlockId);
         
-        vec2 worldPos = posVector.feetPlayerPos.xz + cameraPosition.xz;
+        vec2 worldPos = feetPlayerPos.xz + cameraPosition.xz;
         
         // If water
         if(rBlockId == 10001){
@@ -181,7 +179,7 @@ uniform vec3 cameraPosition;
             #endif
 
             // Water color and foam 
-            float waterDepth = posVector.viewPos.z - toView(texture2D(depthtex1, posVector.screenPos.xy).x);
+            float waterDepth = viewPos.z - toView(texture2D(depthtex1, screenPos.xy).x);
 
             if(isEyeInWater == 0){
                 #ifdef STYLIZED_WATER_ABSORPTION
@@ -203,7 +201,7 @@ uniform vec3 cameraPosition;
             if(rBlockId != 10001) enviroPBR(material, worldPos);
         #endif
 
-        vec4 sceneCol = complexShadingGbuffers(material, posVector);
+        vec4 sceneCol = complexShadingGbuffers(material, eyePlayerPos, feetPlayerPos);
 
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; //gcolor
