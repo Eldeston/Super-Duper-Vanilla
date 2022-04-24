@@ -26,7 +26,7 @@
 					shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * norm) * squared(exp2(max(0.0, (shadowDistance - shadowMapResolution * 0.125) / shadowDistance))) * distortFactor * 0.5;
 					shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
 
-					#ifdef SHADOW_FILTER
+					#ifdef SHD_FILTER
 						#if ANTI_ALIASING == 2
 							shadowCol = getShdFilter(shdPos, toRandPerFrame(texture2D(noisetex, gl_FragCoord.xy * 0.03125).x, frameTimeCounter) * PI2) * shdFade;
 						#else
@@ -70,7 +70,7 @@
 					shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * norm) * squared(exp2(max(0.0, (shadowDistance - shadowMapResolution * 0.125) / shadowDistance))) * distortFactor;
 					shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
 
-					#ifdef SHADOW_FILTER
+					#ifdef SHD_FILTER
 						#if ANTI_ALIASING == 2
 							shadowCol = getShdFilter(shdPos, toRandPerFrame(texture2D(noisetex, gl_FragCoord.xy * 0.03125).x, frameTimeCounter) * PI2) * shdFade;
 						#else

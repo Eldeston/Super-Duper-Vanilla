@@ -13,7 +13,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector){
     	// shadowLightPosition is broken in other dimensions. The current is equivalent to:
     	// normalize(mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz)
 
-		#ifdef ENABLE_SS
+		#ifdef SUBSURFACE_SCATTERING
 			// Diffuse with simple SS approximation
 			float dirLight = NL * (1.0 - material.ss) + material.ss;
 		#else
@@ -33,7 +33,7 @@ vec4 complexShadingGbuffers(matPBR material, positionVectors posVector){
 				shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * material.normal) * squared(exp2(max(0.0, (shadowDistance - shadowMapResolution * 0.125) / shadowDistance))) * distortFactor * 0.5;
 				shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
 
-				#ifdef SHADOW_FILTER
+				#ifdef SHD_FILTER
 					#if ANTI_ALIASING == 2
 						shadowCol = getShdFilter(shdPos, toRandPerFrame(texture2D(noisetex, gl_FragCoord.xy * 0.03125).x, frameTimeCounter) * PI2) * caveFixShdFactor * shdFade * material.parallaxShd;
 					#else

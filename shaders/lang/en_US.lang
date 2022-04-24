@@ -50,13 +50,13 @@
     option.shadowDistance=Shadow distance
     option.sunPathRotation=Light rotation
     option.SHD_ENABLE=Shadowmapping enabled
-    option.SHADOW_FILTER=Soft shadow filter
+    option.SHD_FILTER=Soft shadow filter
     option.UNDERWATER_CAUSTICS=Underwater caustics
     value.UNDERWATER_CAUSTICS.0=OFF
     value.UNDERWATER_CAUSTICS.1=Underwater
     value.UNDERWATER_CAUSTICS.2=Full
     option.AMBIENT_LIGHTING=Ambient lighting
-    option.ENABLE_SS=Subsurface scattering
+    option.SUBSURFACE_SCATTERING=Subsurface scattering
     screen.Lighting.comment=Lighting settings for shadow resolution, lightmap etc.
 
 #PBR
