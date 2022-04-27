@@ -27,7 +27,7 @@ uniform mat4 gbufferModelViewInverse;
         uniform mat4 gbufferModelView;
     #endif
     
-    #ifdef PARALLAX_OCCLUSION
+    #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
         attribute vec4 mc_midTexCoord;
     #endif
 
