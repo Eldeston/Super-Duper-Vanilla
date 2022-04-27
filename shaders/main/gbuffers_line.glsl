@@ -25,8 +25,8 @@
             vec4 linePosStart = gbufferModelViewInverse * (gl_ModelViewMatrix * vec4(gl_Vertex.xyz, 1.0));
             vec4 linePosEnd = gbufferModelViewInverse * (gl_ModelViewMatrix * vec4(gl_Vertex.xyz + gl_Normal.xyz, 1.0));
 
-            linePosStart.y -= lengthSquared(linePosStart.xz) / WORLD_CURVATURE_SIZE;
-            linePosEnd.y -= lengthSquared(linePosEnd.xz) / WORLD_CURVATURE_SIZE;
+            linePosStart.y -= dot(linePosStart.xz, linePosStart.xz) / WORLD_CURVATURE_SIZE;
+            linePosEnd.y -= dot(linePosEnd.xz, linePosEnd.xz) / WORLD_CURVATURE_SIZE;
             
             linePosStart = gbufferModelView * linePosStart;
             linePosEnd = gbufferModelView * linePosEnd;

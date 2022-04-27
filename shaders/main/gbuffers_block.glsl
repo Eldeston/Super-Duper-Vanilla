@@ -63,7 +63,7 @@ uniform mat4 gbufferModelViewInverse;
             // Feet player pos
             vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
 
-            vertexPos.y -= lengthSquared(vertexPos.xz) / WORLD_CURVATURE_SIZE;
+            vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
             
             gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
         #else
@@ -133,12 +133,14 @@ uniform mat4 gbufferModelViewInverse;
             float endStarField = texture2DGradARB(texture, (screenPos.yx + endStarOffset) * 0.5, dcdx, dcdy).r;
             endStarField += texture2DGradARB(texture, screenPos.xy + endStarOffset, dcdx, dcdy).r;
             endStarField += texture2DGradARB(texture, (endStarOffset - screenPos.xy) * 2.0, dcdx, dcdy).r;
-            endStarField += texture2DGradARB(texture, (endStarOffset - screenPos.yx) * 4.0, dcdx, dcdy).r;
+            
             vec2 endStarCoord1 = screenPos.xy * rot2D(0.78539816);
             endStarField += texture2DGradARB(texture, endStarCoord1.yx + endStarOffset, dcdx, dcdy).r;
             endStarField += texture2DGradARB(texture, (endStarCoord1 + endStarOffset) * 2.0, dcdx, dcdy).r;
             endStarField += texture2DGradARB(texture, (endStarOffset - endStarCoord1) * 4.0, dcdx, dcdy).r;
-            vec3 endPortalAlbedo = pow((endStarField + 0.1) * (getRand3(screenPos.xy * 0.5) * 0.5 + 0.5) * glcolor.rgb, vec3(GAMMA));
+
+            vec3 endPortalAlbedo = pow((endStarField + 0.125) * (getRand3(screenPos.xy * 0.5) * 0.5 + 0.5) * glcolor.rgb, vec3(GAMMA));
+            
             gl_FragData[0] = vec4(endPortalAlbedo * EMISSIVE_INTENSITY * EMISSIVE_INTENSITY, 1); //gcolor
 
             #ifdef SSAO

@@ -23,7 +23,7 @@ varying vec4 glcolor;
             // Feet player pos
             vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
 
-            vertexPos.y -= lengthSquared(vertexPos.xz) / WORLD_CURVATURE_SIZE;
+            vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
             
             gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
         #else

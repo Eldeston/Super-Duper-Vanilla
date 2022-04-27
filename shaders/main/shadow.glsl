@@ -42,7 +42,7 @@ varying vec3 glcolor;
         #endif
 
         #ifdef WORLD_CURVATURE
-            vertexPos.y -= lengthSquared(vertexPos.xz) / WORLD_CURVATURE_SIZE;
+            vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
         #endif
 
         gl_Position = shadowProjection * (shadowModelView * vertexPos);
