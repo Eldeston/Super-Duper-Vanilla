@@ -75,7 +75,7 @@ uniform sampler2D texture;
 
     #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined PARALLAX_OCCLUSION
         vec2 getParallaxOffset(vec3 dirT){
-            return normalize(dirT.xy) * (sqrt(lengthSquared(dirT) - dirT.z * dirT.z) * PARALLAX_DEPTH / dirT.z);
+            return dirT.xy * (PARALLAX_DEPTH / dirT.z);
         }
 
         vec2 parallaxUv(vec2 startUv, vec2 endUv, out vec3 currPos){
@@ -218,7 +218,7 @@ uniform sampler2D texture;
                 #endif
 
                 #if defined PARALLAX_SHADOWS && defined WORLD_LIGHT
-                    if(dot(material.normal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) > 0.000001)
+                    if(dot(material.normal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) > 0.0000001)
                         material.parallaxShd = parallaxShadow(currPos, getParallaxOffset(vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z) * TBN));
                     else material.parallaxShd = material.ss;
                 #endif
@@ -368,44 +368,44 @@ uniform sampler2D texture;
 
                 // Gem ores
                 else if(id == 10048 && (material.albedo.r > material.albedo.g || material.albedo.r != material.albedo.b || material.albedo.g > material.albedo.b) && length(material.albedo.rgb) > 0.45){
-                    material.smoothness = 0.93 * min(1.0, material.albedo.r + material.albedo.g + material.albedo.b);
+                    material.smoothness = min(0.93, material.albedo.r + material.albedo.g + material.albedo.b);
                     material.metallic = 0.17;
                 }
 
                 // Gem blocks
                 else if(id == 10050){
-                    material.smoothness = 0.96 * sqrt(min(1.0, material.albedo.r + material.albedo.g + material.albedo.b));
+                    material.smoothness = sqrt(min(0.9216, material.albedo.r + material.albedo.g + material.albedo.b));
                     material.metallic = 0.17;
                 }
 
                 // Crying obsidian emissives
                 else if(id == 10051){
-                    material.smoothness = 0.96 * sqrt(min(1.0, material.albedo.r + material.albedo.g + material.albedo.b));
+                    material.smoothness = sqrt(min(0.9216, material.albedo.r + material.albedo.g + material.albedo.b));
                     material.emissive = cubed(length(material.albedo.rgb));
                     material.metallic = 0.17;
                 }
 
                 // Netherack gem ores
                 else if(id == 10049 && material.albedo.r < material.albedo.g * 1.6 && material.albedo.r < material.albedo.b * 1.6){
-                    material.smoothness = 0.93 * min(1.0, material.albedo.r + material.albedo.g + material.albedo.b);
+                    material.smoothness = min(0.93, material.albedo.r + material.albedo.g + material.albedo.b);
                     material.metallic = 0.16;
                 }
 
                 // Metal ores
                 else if(id == 10064 && (material.albedo.r > material.albedo.g || material.albedo.r != material.albedo.b || material.albedo.g > material.albedo.b) && length(material.albedo.rgb) > 0.45){
-                    material.smoothness = 0.93 * maxC(material.albedo.rgb);
+                    material.smoothness = (material.albedo.r + material.albedo.g + material.albedo.b) * 0.333;
                     material.metallic = 1.0;
                 }
 
                 // Netherack metal ores
                 else if(id == 10065 && max2(material.albedo.rg) > 0.6){
-                    material.smoothness = 0.93 * maxC(material.albedo.rgb);
+                    material.smoothness = (material.albedo.r + material.albedo.g + material.albedo.b) * 0.333;
                     material.metallic = 1.0;
                 }
 
                 // Metal blocks
                 else if(id == 10066){
-                    material.smoothness = 0.96 * squared(maxC(material.albedo.rgb));
+                    material.smoothness = (material.albedo.r + material.albedo.g + material.albedo.b) * 0.333;
                     material.metallic = 1.0;
                 }
 
@@ -417,7 +417,7 @@ uniform sampler2D texture;
 
                 // Rails
                 else if(id == 10068 && material.albedo.r < material.albedo.g * 1.6 && material.albedo.r < material.albedo.b * 1.6){
-                    material.smoothness = 0.96 * min(1.0, material.albedo.r + material.albedo.g + material.albedo.b);
+                    material.smoothness = sqrt((material.albedo.r + material.albedo.g + material.albedo.b) * 0.333);
                     material.metallic = 1.0;
                 }
 
