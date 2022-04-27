@@ -116,12 +116,13 @@ uniform sampler2D texture;
         #endif
 
         #ifdef SLOPE_NORMALS
+            uniform ivec2 atlasSize;
+            
             vec2 getSlopeNormals(vec3 viewT, vec2 texUv, float traceDepth){
-                vec2 texRes = textureSize(normals, 0);
-                vec2 texPixSize = 1.0 / texRes;
+                vec2 texPixSize = 1.0 / atlasSize;
 
-                vec2 texSnapped = floor(texUv * texRes) * texPixSize;
-                vec2 texOffset = texUv - texSnapped - 0.5 * texPixSize;
+                vec2 texSnapped = floor(texUv * atlasSize) * texPixSize;
+                vec2 texOffset = texUv - texSnapped - texPixSize * 0.5;
                 vec2 stepSign = sign(-viewT.xy);
 
                 vec2 texX = texSnapped + vec2(texPixSize.x * stepSign.x, 0);
@@ -135,7 +136,7 @@ uniform sampler2D texture;
                 if(abs(texOffset.x) < abs(texOffset.y)){
                     if(hasY) return vec2(0, stepSign.y);
                     if(hasX) return vec2(stepSign.x, 0);
-                } else {
+                }else{
                     if(hasX) return vec2(stepSign.x, 0);
                     if(hasY) return vec2(0, stepSign.y);
                 }
@@ -218,7 +219,7 @@ uniform sampler2D texture;
                 #endif
 
                 #if defined PARALLAX_SHADOWS && defined WORLD_LIGHT
-                    if(dot(material.normal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) > 0.0000001)
+                    if(dot(material.normal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) > 0.001)
                         material.parallaxShd = parallaxShadow(currPos, getParallaxOffset(vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z) * TBN));
                     else material.parallaxShd = material.ss;
                 #endif
