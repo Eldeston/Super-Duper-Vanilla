@@ -41,13 +41,6 @@ varying vec2 texCoord;
 
     #ifdef LENS_FLARE
     #endif
-    
-    #ifdef ZA_WARUDO
-    #endif
-    
-    #if (TIMELAPSE_MODE != 0 && defined ZA_WARUDO) || (defined LENS_FLARE && defined WORLD_LIGHT)
-        uniform float aspectRatio;
-    #endif
 
     #if defined LENS_FLARE && defined WORLD_LIGHT
         uniform sampler2D depthtex0;
@@ -59,6 +52,7 @@ varying vec2 texCoord;
         uniform mat4 shadowModelView;
 
         uniform float blindness;
+        uniform float aspectRatio;
 
         #include "/lib/universalVars.glsl"
 
@@ -71,19 +65,7 @@ varying vec2 texCoord;
 
     #include "/lib/post/tonemap.glsl"
 
-    #if TIMELAPSE_MODE != 0 && defined ZA_WARUDO
-        uniform float zaWarudo;
-    #endif
-
     void main(){
-        #if TIMELAPSE_MODE != 0 && defined ZA_WARUDO
-            float zaWarudoSphere = abs(length((texCoord - 0.5) * vec2(aspectRatio, 1)) * 0.5 + 1.0 - zaWarudo);
-
-            vec2 distortCoord = (texCoord - 0.5) - (texCoord - 0.5) * min(1.0, zaWarudoSphere) * float(zaWarudoSphere < 0.5 && zaWarudoSphere > 0) + 0.5;
-
-            #define texCoord distortCoord
-        #endif
-
         // Original scene color
         vec3 color = texture2D(gcolor, texCoord).rgb;
 
@@ -139,10 +121,6 @@ varying vec2 texCoord;
         
         // Color saturation, contrast, etc. and film grain
         color = toneA(color) + (texture2D(noisetex, gl_FragCoord.xy * 0.03125).x - 0.5) * 0.00392156863;
-
-        #if TIMELAPSE_MODE != 0 && defined ZA_WARUDO
-            color = mix(color, 1.0 - saturate(color), smoothstep(0.51, 0.49, zaWarudoSphere));
-        #endif
 
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(color, 1); //gcolor

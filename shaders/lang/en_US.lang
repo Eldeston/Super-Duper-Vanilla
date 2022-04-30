@@ -192,7 +192,6 @@ screen.DEBUG=Super Duper Vanilla by Eldeston
     value.WHITE_MODE.1=White Mode
     value.WHITE_MODE.2=Black Mode
     value.WHITE_MODE.3=Foliage Mode
-    option.ZA_WARUDO=ZA WARUDO
     option.GAMMA=Gamma
     value.GAMMA.2.2=Standard
     value.GAMMA.1.0=Legacy
