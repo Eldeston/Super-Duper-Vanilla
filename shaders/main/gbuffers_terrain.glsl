@@ -130,6 +130,9 @@ uniform vec3 cameraPosition;
 
     #include "/lib/universalVars.glsl"
 
+    // Get night vision
+    uniform float nightVision;
+
     #include "/lib/lighting/shdDistort.glsl"
     #include "/lib/utility/convertViewSpace.glsl"
     #include "/lib/utility/texFunctions.glsl"

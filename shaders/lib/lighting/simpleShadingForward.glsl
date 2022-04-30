@@ -5,9 +5,13 @@
 #ifdef CLOUDS
 	vec4 simpleShadingGbuffers(vec4 albedo, vec3 feetPlayerPos){
 		// Get lightmaps and add simple sky GI
-		vec3 totalDiffuse = skyCol + ambientLighting;
+		vec3 totalDiffuse = pow(SKY_COL_DATA_BLOCK, vec3(GAMMA)) +
+			pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
 
 		#ifdef WORLD_LIGHT
+			// Get light color
+			vec3 lightCol = pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA));
+
 			float NL = max(0.0, dot(norm, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z))) * 0.6 + 0.4;
 			// also equivalent to:
 			// vec3(0, 0, 1) * mat3(shadowModelView) = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)
@@ -48,9 +52,14 @@
 #else
 	vec4 simpleShadingGbuffers(vec4 albedo, vec3 feetPlayerPos){
 		// Get lightmaps and add simple sky GI
-		vec3 totalDiffuse = skyCol * lmCoord.y * lmCoord.y + ambientLighting + pow((lmCoord.x * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B), vec3(GAMMA));
+		vec3 totalDiffuse = pow(SKY_COL_DATA_BLOCK * lmCoord.y, vec3(GAMMA)) +
+			pow((lmCoord.x * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B), vec3(GAMMA)) +
+			pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
 
 		#ifdef WORLD_LIGHT
+			// Get light color
+			vec3 lightCol = pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA));
+
 			float NL = max(0.0, dot(norm, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)));
 			// also equivalent to:
 			// vec3(0, 0, 1) * mat3(shadowModelView) = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)

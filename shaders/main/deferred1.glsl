@@ -65,6 +65,9 @@ varying vec2 screenCoord;
     
     #include "/lib/universalVars.glsl"
 
+    // Get night vision
+    uniform float nightVision;
+
     #include "/lib/utility/convertViewSpace.glsl"
     #include "/lib/utility/convertScreenSpace.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
@@ -104,7 +107,7 @@ varying vec2 screenCoord;
         // Get scene color
         vec3 sceneCol = texture2D(gcolor, screenCoord).rgb;
 
-        // If not sky, don't calculate lighting
+        // If sky, don't calculate lighting
         if(!skyMask){
             #if ANTI_ALIASING == 2
                 vec3 dither = toRandPerFrame(getRand3(gl_FragCoord.xy * 0.03125), frameTimeCounter);

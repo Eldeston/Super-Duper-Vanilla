@@ -36,8 +36,6 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 // Total density falloff, larger means thicker fog
 #define WORLD_FOG_TOTAL_DENSITY 0.0025
 
-/* WORLD_VANILLA_FOGCOL and WORLD_CUSTOM_FOGCOL must be disabled! */
-
 #define LIGHT0_DR 255 // Red value [3 6 9 12 15 18 21 24 27 30 33 36 39 42 45 48 51 54 57 60 63 66 69 72 75 78 81 84 87 90 93 96 99 102 105 108 111 114 117 120 123 126 129 132 135 138 141 144 147 150 153 156 159 162 165 168 171 174 177 180 183 186 189 192 195 198 201 204 207 210 213 216 219 222 225 228 231 234 237 240 243 246 249 252 255]
 #define LIGHT0_DG 216 // Green value [3 6 9 12 15 18 21 24 27 30 33 36 39 42 45 48 51 54 57 60 63 66 69 72 75 78 81 84 87 90 93 96 99 102 105 108 111 114 117 120 123 126 129 132 135 138 141 144 147 150 153 156 159 162 165 168 171 174 177 180 183 186 189 192 195 198 201 204 207 210 213 216 219 222 225 228 231 234 237 240 243 246 249 252 255]
 #define LIGHT0_DB 171 // Blue value [3 6 9 12 15 18 21 24 27 30 33 36 39 42 45 48 51 54 57 60 63 66 69 72 75 78 81 84 87 90 93 96 99 102 105 108 111 114 117 120 123 126 129 132 135 138 141 144 147 150 153 156 159 162 165 168 171 174 177 180 183 186 189 192 195 198 201 204 207 210 213 216 219 222 225 228 231 234 237 240 243 246 249 252 255]
@@ -75,5 +73,5 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 #define SKY_DD vec3(SKY0_DDR, SKY0_DDG, SKY0_DDB) * SKY0_DDI
 
 // Holds the data on how the light will change according to multiple environmental factors
-#define LIGHT_COL_DATA_BLOCK vec3 lightCol = pow(toneSaturation(mix(mix(LIGHT_N, LIGHT_D, day), LIGHT_DD, dawnDusk) * 0.00392156863, 1.0 - rainStrength * 0.5), vec3(GAMMA));
-#define SKY_COL_DATA_BLOCK vec3 skyCol = pow(toneSaturation(mix(mix(SKY_N, SKY_D, day), SKY_DD, dawnDusk) * 0.00392156863, 1.0 - rainStrength * 0.5), vec3(GAMMA));
+#define LIGHT_COL_DATA_BLOCK toneSaturation(mix(mix(LIGHT_N, LIGHT_D, day), LIGHT_DD, dawnDusk) * 0.00392156863, 1.0 - rainStrength * 0.5)
+#define SKY_COL_DATA_BLOCK toneSaturation(mix(mix(SKY_N, SKY_D, day), SKY_DD, dawnDusk) * 0.00392156863, 1.0 - rainStrength * 0.5)

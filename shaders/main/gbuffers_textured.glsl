@@ -81,6 +81,9 @@ uniform mat4 gbufferModelViewInverse;
 
     #include "/lib/universalVars.glsl"
 
+    // Get night vision
+    uniform float nightVision;
+
     #include "/lib/lighting/shdDistort.glsl"
     #include "/lib/utility/convertViewSpace.glsl"
     #include "/lib/utility/noiseFunctions.glsl"

@@ -43,7 +43,7 @@ varying vec4 glcolor;
         // Detect and calculate the sun and moon
         if(renderStage == MC_RENDER_STAGE_SUN || renderStage == MC_RENDER_STAGE_MOON)
             #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT
-                gl_FragData[0] = vec4(pow(albedo.rgb * glcolor.rgb, vec3(GAMMA)) * albedo.a * glcolor.a * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * sqrt(lightCol), 1);
+                gl_FragData[0] = vec4(pow(albedo.rgb * glcolor.rgb, vec3(GAMMA)) * albedo.a * glcolor.a * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * LIGHT_COL_DATA_BLOCK, 1);
             #else
                 discard;
             #endif

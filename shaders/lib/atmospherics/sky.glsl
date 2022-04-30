@@ -1,5 +1,10 @@
-#if WORLD_SUN_MOON == 1 && defined WORLD_LIGHT
-	uniform float shdFade;
+#ifdef WORLD_LIGHT
+    // Get light color
+    vec3 lightCol = pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA));
+
+    #if WORLD_SUN_MOON == 1
+        uniform float shdFade;
+    #endif
 #endif
 
 #if WORLD_SUN_MOON != 0
@@ -43,9 +48,9 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float LV, bool isSky){
     if(isEyeInWater == 2) return pow(fogColor, vec3(GAMMA));
 
     #ifdef WORLD_SKY_GROUND
-        vec3 finalCol = skyCol * vec2(1.0 - smoothen((-nPlayerPos.y * 4.0) / (isEyeInWater * 2.56 + newRainStrength + 1.0)), 1).xxy;
+        vec3 finalCol = pow(SKY_COL_DATA_BLOCK, vec3(GAMMA)) * vec2(1.0 - smoothen((-nPlayerPos.y * 4.0) / (isEyeInWater * 2.56 + newRainStrength + 1.0)), 1).xxy;
     #else
-        vec3 finalCol = skyCol;
+        vec3 finalCol = pow(SKY_COL_DATA_BLOCK, vec3(GAMMA));
     #endif
 
     #ifdef WORLD_HORIZONCOL
@@ -82,7 +87,7 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float LV, bool isSky){
     #endif
 
     float voidGradient = smootherstep((nPlayerPos.y + eyeBrightFact - 0.81) * PI);
-    return finalCol * (isEyeInWater == 0 ? voidGradient * (1.0 - eyeBrightFact) + eyeBrightFact : voidGradient) + ambientLighting;
+    return finalCol * (isEyeInWater == 0 ? voidGradient * (1.0 - eyeBrightFact) + eyeBrightFact : voidGradient) + pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
 }
 
 vec3 getSkyRender(vec3 skyBoxCol, vec3 nPlayerPos, bool isSky){

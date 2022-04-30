@@ -25,6 +25,9 @@ varying vec2 texCoord;
     uniform sampler2D texture;
 
     #include "/lib/universalVars.glsl"
+
+    // Get night vision
+    uniform float nightVision;
     
     void main(){
         vec4 albedo = texture2D(texture, texCoord);
@@ -34,10 +37,10 @@ varying vec2 texCoord;
 
         #ifdef WORLD_LIGHT
         /* DRAWBUFFERS:0 */
-            gl_FragData[0] = vec4(pow(albedo.rgb, vec3(GAMMA)) * (skyCol + ambientLighting + lightCol), albedo.a); //gcolor
+            gl_FragData[0] = vec4(pow(albedo.rgb, vec3(GAMMA)) * (pow(SKY_COL_DATA_BLOCK, vec3(GAMMA)) + pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA)) + pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA)), albedo.a); //gcolor
         #else
         /* DRAWBUFFERS:0 */
-            gl_FragData[0] = vec4(pow(albedo.rgb, vec3(GAMMA)) * (skyCol + ambientLighting), albedo.a); //gcolor
+            gl_FragData[0] = vec4(pow(albedo.rgb, vec3(GAMMA)) * (pow(SKY_COL_DATA_BLOCK, vec3(GAMMA)) + pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA)), albedo.a); //gcolor
         #endif
     }
 #endif

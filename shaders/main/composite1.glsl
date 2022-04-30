@@ -34,6 +34,9 @@ varying vec2 texCoord;
         vec3 sceneCol = texture2D(gcolor, texCoord).rgb + getSpectral(colortex3, texCoord) * EMISSIVE_INTENSITY;
 
         #ifdef WORLD_LIGHT
+            // Get light color
+            vec3 lightCol = pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA));
+
             #if defined VOL_LIGHT && defined SHD_ENABLE
                 sceneCol += texture2DBox(colortex4, texCoord, vec2(viewWidth, viewHeight)).rgb * lightCol * (min(1.0, VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater)) * shdFade);
             #else

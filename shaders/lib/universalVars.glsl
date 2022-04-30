@@ -2,10 +2,6 @@ uniform vec3 fogColor;
 
 uniform int isEyeInWater;
 
-uniform float nightVision;
-
-float ambientLighting = pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
-
 #if WORLD_ID == -1
     // Uniforms for world-1 (Nether)
 #elif WORLD_ID == 0
@@ -32,11 +28,3 @@ float ambientLighting = pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
 
     float newRainStrength = isEyeInWater != 1 ? rainStrength * eyeBrightFact : 0.0;
 #endif
-
-#ifdef WORLD_LIGHT
-    // This macro gets the world light color data
-    LIGHT_COL_DATA_BLOCK
-#endif
-
-// This macro gets the world sky color data
-SKY_COL_DATA_BLOCK

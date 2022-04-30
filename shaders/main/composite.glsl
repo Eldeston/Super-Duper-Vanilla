@@ -58,6 +58,9 @@ varying vec2 screenCoord;
 
     #include "/lib/universalVars.glsl"
 
+    // Get night vision
+    uniform float nightVision;
+
     #include "/lib/lighting/shdDistort.glsl"
     #include "/lib/utility/convertViewSpace.glsl"
     #include "/lib/utility/convertScreenSpace.glsl"
@@ -91,7 +94,7 @@ varying vec2 screenCoord;
             vec3 dither = getRand3(gl_FragCoord.xy * 0.03125);
         #endif
 
-        // If the object is transparent render lighting sperately
+        // If the object is a transparent render separate lighting
         if(texture2D(depthtex1, screenCoord).x > screenPos.z){
             // Declare and get materials
             vec2 matRaw0 = texture2D(colortex3, screenCoord).xy;
