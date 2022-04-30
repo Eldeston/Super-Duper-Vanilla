@@ -379,10 +379,10 @@ uniform sampler2D texture;
                     material.metallic = 0.17;
                 }
 
-                // Crying obsidian emissives
+                // Crying and amethyst cluster obsidian emissives
                 else if(id == 10051){
                     material.smoothness = sqrt(min(0.9216, material.albedo.r + material.albedo.g + material.albedo.b));
-                    material.emissive = cubed(length(material.albedo.rgb));
+                    material.emissive = cubed(maxC(material.albedo.rgb));
                     material.metallic = 0.17;
                 }
 
