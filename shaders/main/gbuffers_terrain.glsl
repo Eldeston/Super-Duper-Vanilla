@@ -158,7 +158,7 @@ uniform vec3 cameraPosition;
 
         vec3 worldPos = feetPlayerPos + cameraPosition;
 
-        if(rBlockId == 10002){
+        if(rBlockId == 10001){
             #ifdef LAVA_NOISE
                 vec2 lavaUv = (worldPos.yz * TBN[2].x + worldPos.xz * TBN[2].y + worldPos.xy * TBN[2].z) / LAVA_TILE_SIZE;
                 float lavaNoise = max(getLavaNoise(lavaUv), (material.albedo.r + material.albedo.g + material.albedo.b) * 0.33 + 0.01);
@@ -171,7 +171,7 @@ uniform vec3 cameraPosition;
         material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
         #if defined ENVIRO_MAT && !defined FORCE_DISABLE_WEATHER
-            if(rBlockId != 10002) enviroPBR(material, worldPos.xz);
+            if(rBlockId != 10001) enviroPBR(material, worldPos.xz);
         #endif
 
         vec4 sceneCol = complexShadingGbuffers(material, eyePlayerPos, feetPlayerPos);

@@ -156,7 +156,7 @@ uniform sampler2D texture;
             vec3 currPos;
             
             // Exclude signs, due to a missing text bug
-            if(id != 10019) texUv = fract(parallaxUv(vTexCoord, viewDir.xy / -viewDir.z, currPos)) * vTexCoordScale + vTexCoordPos;
+            if(id != 10018) texUv = fract(parallaxUv(vTexCoord, viewDir.xy / -viewDir.z, currPos)) * vTexCoordScale + vTexCoordPos;
         #endif
 
         // Assign albedo
@@ -203,17 +203,17 @@ uniform sampler2D texture;
 
         #ifdef TERRAIN
             // If lava and fire
-            if(id == 10002 || id == 10003) material.emissive = 1.0;
+            if(id == 10001 || id == 10002) material.emissive = 1.0;
 
             // Foliage and corals
-            else if((id >= 10004 && id <= 10015) || id == 10033 || id == 10036) material.ss = 1.0;
+            else if((id >= 10003 && id <= 10014) || id == 10033 || id == 10036) material.ss = 1.0;
         #endif
 
         // Get parallax shadows
         material.parallaxShd = 1.0;
 
         #if (defined TERRAIN || defined WATER || defined BLOCK || defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER) && defined PARALLAX_OCCLUSION
-            if(id != 10019){
+            if(id != 10018){
                 #ifdef SLOPE_NORMALS
                     if(texture2DGradARB(normals, texUv, dcdx, dcdy).a > currPos.z) normalMap = vec3(getSlopeNormals(-viewDir, texUv, currPos.z), 0);
                 #endif
@@ -231,13 +231,13 @@ uniform sampler2D texture;
 
         #ifdef WATER
             // If water
-            if(id == 10001){
+            if(id == 10000){
                 material.smoothness = 0.96;
                 material.metallic = 0.02;
             }
             
             // Nether portal
-            else if(id == 10018){
+            else if(id == 10017){
                 material.smoothness = 0.96;
                 material.metallic = 0.04;
                 material.emissive = maxC(material.albedo.rgb);
@@ -267,7 +267,7 @@ uniform sampler2D texture;
         #endif
 
         #ifdef BLOCK
-            if(id == 10019) material.ambient = 1.0;
+            if(id == 10018) material.ambient = 1.0;
         #endif
     }
 #else
@@ -283,7 +283,7 @@ uniform sampler2D texture;
 
         // Generate bumped normals
         #if (defined TERRAIN || defined WATER || defined BLOCK) && defined AUTO_GEN_NORM
-            if(id != 10019){
+            if(id != 10018){
                 float d0 = length(material.albedo.rgb);
                 float d1 = length(texture2DGradARB(texture, fract(vTexCoord + vec2(0.0125, 0)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
                 float d2 = length(texture2DGradARB(texture, fract(vTexCoord + vec2(0, 0.0125)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
@@ -307,21 +307,21 @@ uniform sampler2D texture;
 
         #ifdef TERRAIN
             // If lava and fire
-            if(id == 10002 || id == 10003) material.emissive = 1.0;
+            if(id == 10001 || id == 10002) material.emissive = 1.0;
 
             // Foliage and corals
-            else if((id >= 10004 && id <= 10015) || id == 10033 || id == 10036) material.ss = 1.0;
+            else if((id >= 10003 && id <= 10014) || id == 10033 || id == 10036) material.ss = 1.0;
         #endif
 
         #ifdef WATER
             // If water
-            if(id == 10001){
+            if(id == 10000){
                 material.smoothness = 0.96;
                 material.metallic = 0.02;
             }
             
             // Nether portal
-            else if(id == 10018){
+            else if(id == 10017){
                 material.smoothness = 0.96;
                 material.metallic = 0.04;
                 material.emissive = maxC(material.albedo.rgb);
@@ -335,8 +335,11 @@ uniform sampler2D texture;
         
         #if DEFAULT_MAT == 1
             #ifdef TERRAIN
+                // Glow lichen
+                if(id == 10032) material.emissive = material.albedo.r > material.albedo.b ? 1.0 : 0.0;
+
                 // Glow berries
-                if(id == 10033) material.emissive = material.albedo.r + material.albedo.g > material.albedo.g * 2.0 ? smoothstep(0.3, 0.9, maxC(material.albedo.rgb)) : material.emissive;
+                else if(id == 10033) material.emissive = material.albedo.r + material.albedo.g > material.albedo.g * 2.0 ? smoothstep(0.3, 0.9, maxC(material.albedo.rgb)) : material.emissive;
 
                 // Stems
                 else if(id == 10034) material.emissive = material.albedo.r < 0.1 ? maxC(material.albedo.rgb) * 0.72 : material.emissive;

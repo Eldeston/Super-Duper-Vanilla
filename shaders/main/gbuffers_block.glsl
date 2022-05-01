@@ -131,7 +131,7 @@ uniform mat4 gbufferModelViewInverse;
         vec3 screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
 
         // End portal
-        if(blockEntityId == 10017){
+        if(blockEntityId == 10016){
             vec2 endStarOffset = vec2(0, newFrameTimeCounter * 0.01);
             float endStarField = texture2DGradARB(texture, (screenPos.yx + endStarOffset) * 0.5, dcdx, dcdy).r;
             endStarField += texture2DGradARB(texture, screenPos.xy + endStarOffset, dcdx, dcdy).r;

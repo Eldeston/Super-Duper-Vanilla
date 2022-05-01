@@ -161,7 +161,7 @@ uniform vec3 cameraPosition;
         vec2 worldPos = feetPlayerPos.xz + cameraPosition.xz;
         
         // If water
-        if(rBlockId == 10001){
+        if(rBlockId == 10000){
             float waterNoise = WATER_BRIGHTNESS;
 
             #ifdef WORLD_WATERNORM
@@ -201,7 +201,7 @@ uniform vec3 cameraPosition;
         material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
         #if defined ENVIRO_MAT && !defined FORCE_DISABLE_WEATHER
-            if(rBlockId != 10001) enviroPBR(material, worldPos);
+            if(rBlockId != 10000) enviroPBR(material, worldPos);
         #endif
 
         vec4 sceneCol = complexShadingGbuffers(material, eyePlayerPos, feetPlayerPos);
