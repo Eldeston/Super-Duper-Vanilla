@@ -389,7 +389,7 @@ uniform sampler2D texture;
                 // Amethyst
                 else if(id == 10052 || id == 10053){
                     material.smoothness = (material.albedo.r + material.albedo.g + material.albedo.b) * 0.333;
-                    material.emissive = material.smoothness * material.smoothness * material.smoothness * material.smoothness * (id == 10053 ? material.smoothness * material.smoothness * material.smoothness * material.smoothness * material.smoothness * material.smoothness * 0.5 : material.smoothness);
+                    material.emissive = material.smoothness * material.smoothness * material.smoothness * material.smoothness * (id == 10053 ? material.smoothness * material.smoothness * material.smoothness * material.smoothness * material.smoothness * material.smoothness : material.smoothness);
                     material.metallic = 0.17;
                 }
 
