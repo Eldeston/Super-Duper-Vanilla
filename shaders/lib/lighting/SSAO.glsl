@@ -8,6 +8,9 @@ float getSSAO(vec3 viewPos, vec3 normal){
     float occlusion = 0.0;
 
     for(int i = 0; i < 4; i++){
+        // Iterate by adding stepsize
+        dither += 0.25;
+
         // Add new offsets to origin
         vec3 samplePos = viewPos + (normal + fract(dither) - 0.5) * 0.5;
         // Sample new depth and linearize
@@ -15,8 +18,6 @@ float getSSAO(vec3 viewPos, vec3 normal){
 
         // Check if the offset points are inside geometry or if the point is occluded
         occlusion += sampleDepth > samplePos.z ? smoothen(0.5 / abs(viewPos.z - sampleDepth)) : 0.0;
-        // Iterate noise/dither by adding stepsize
-        dither += 0.25;
     }
     
     // Invert results and return
