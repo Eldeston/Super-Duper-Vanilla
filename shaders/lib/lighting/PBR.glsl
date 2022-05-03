@@ -363,7 +363,7 @@ uniform sampler2D texture;
                 // Redstone block
                 else if(id == 10042){
                     material.emissive = 1.0;
-                    material.smoothness = 0.93 * material.albedo.r;
+                    material.smoothness = 0.93 * maxC(material.albedo.rgb);
                     material.metallic = 1.0;
                 }
 
@@ -422,18 +422,21 @@ uniform sampler2D texture;
 
                 // Dark metals
                 else if(id == 10067){
-                    material.smoothness = sqrt((material.albedo.r + material.albedo.g + material.albedo.b) * 0.333);
+                    material.smoothness = (material.albedo.r + material.albedo.g + material.albedo.b) * 0.1998 + 0.4;
                     material.metallic = 1.0;
                 }
 
                 // Rails
                 else if(id == 10068 && material.albedo.r < material.albedo.g * 1.6 && material.albedo.r < material.albedo.b * 1.6){
-                    material.smoothness = sqrt((material.albedo.r + material.albedo.g + material.albedo.b) * 0.333);
+                    material.smoothness = (material.albedo.r + material.albedo.g + material.albedo.b) * 0.333;
                     material.metallic = 1.0;
                 }
 
                 // Polished blocks
-                else if(id == 10080) material.smoothness = sqrt((material.albedo.r + material.albedo.g + material.albedo.b) * 0.333);
+                else if(id == 10080) material.smoothness = (material.albedo.r + material.albedo.g + material.albedo.b) * 0.1998 + 0.4;
+            
+                // Packed ice
+                else if(id == 10045) material.smoothness = 0.96;
             #endif
 
             #ifdef WATER
