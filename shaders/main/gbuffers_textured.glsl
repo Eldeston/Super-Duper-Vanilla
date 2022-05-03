@@ -101,7 +101,7 @@ uniform mat4 gbufferModelViewInverse;
         
         // World border fix
         if(renderStage == MC_RENDER_STAGE_WORLD_BORDER){
-            gl_FragData[0] = vec4(pow(albedo.rgb * vec3(0.5, 0.75, 1) * albedo.a, vec3(GAMMA)) * EMISSIVE_INTENSITY, 1); //gcolor
+            gl_FragData[0] = vec4(pow(albedo.rgb * vec3(0.5, 0.75, 1) * albedo.a, vec3(GAMMA)) * EMISSIVE_INTENSITY, 1); // gcolor
             return; // Return immediately, no need for lighting calculation
         }
 
@@ -120,7 +120,7 @@ uniform mat4 gbufferModelViewInverse;
         vec4 sceneCol = simpleShadingGbuffers(albedo, mat3(gbufferModelViewInverse) * toView(vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z)) + gbufferModelViewInverse[3].xyz);
 
     /* DRAWBUFFERS:03 */
-        gl_FragData[0] = sceneCol; //gcolor
+        gl_FragData[0] = sceneCol; // gcolor
         gl_FragData[1] = vec4(0, 0, 0, 1); //colortex3
     }
 #endif

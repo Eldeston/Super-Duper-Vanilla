@@ -144,7 +144,7 @@ uniform mat4 gbufferModelViewInverse;
 
             vec3 endPortalAlbedo = pow((endStarField + 0.125) * (getRand3(screenPos.xy * 0.5) * 0.5 + 0.5) * glcolor.rgb, vec3(GAMMA));
             
-            gl_FragData[0] = vec4(endPortalAlbedo * EMISSIVE_INTENSITY * EMISSIVE_INTENSITY, 1); //gcolor
+            gl_FragData[0] = vec4(endPortalAlbedo * EMISSIVE_INTENSITY * EMISSIVE_INTENSITY, 1); // gcolor
 
             #ifdef SSAO
                 // SSAO End portal fix
@@ -166,7 +166,7 @@ uniform mat4 gbufferModelViewInverse;
         vec4 sceneCol = complexShadingGbuffers(material, eyePlayerPos, feetPlayerPos);
 
     /* DRAWBUFFERS:0123 */
-        gl_FragData[0] = sceneCol; //gcolor
+        gl_FragData[0] = sceneCol; // gcolor
         gl_FragData[1] = vec4(material.normal * 0.5 + 0.5, 1); //colortex1
         gl_FragData[2] = vec4(material.albedo.rgb, 1); //colortex2
         gl_FragData[3] = vec4(material.metallic, material.smoothness, 0, 1); //colortex3

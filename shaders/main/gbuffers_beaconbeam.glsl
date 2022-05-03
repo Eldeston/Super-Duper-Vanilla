@@ -58,6 +58,6 @@ varying vec4 glcolor;
         #endif
 
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(pow(albedo.rgb, vec3(GAMMA)) * EMISSIVE_INTENSITY, albedo.a * glcolor.a); //gcolor
+        gl_FragData[0] = vec4(pow(albedo.rgb, vec3(GAMMA)) * EMISSIVE_INTENSITY, albedo.a * glcolor.a); // gcolor
     }
 #endif

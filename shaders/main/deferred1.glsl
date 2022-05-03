@@ -136,7 +136,7 @@ varying vec2 screenCoord;
         sceneCol = getFogRender(eyePlayerPos, sceneCol, getSkyRender(sceneCol, normalize(eyePlayerPos), skyMask, true), feetPlayerPos.y + cameraPosition.y, skyMask);
 
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(sceneCol, 1); //gcolor
+        gl_FragData[0] = vec4(sceneCol, 1); // gcolor
 
         #ifdef PREVIOUS_FRAME
         /* DRAWBUFFERS:05 */

@@ -149,13 +149,13 @@ uniform vec3 cameraPosition;
     void main(){
         // Declare and get positions
         vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * toView(vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z));
-        vec3 feetPlayerPos = eyePlayerPos + gbufferModelViewInverse[3].xyz;
 
 	    // Declare materials
 	    matPBR material;
         int rBlockId = int(blockId + 0.5);
         getPBR(material, eyePlayerPos, rBlockId);
 
+        vec3 feetPlayerPos = eyePlayerPos + gbufferModelViewInverse[3].xyz;
         vec3 worldPos = feetPlayerPos + cameraPosition;
 
         if(rBlockId == 10001){
@@ -177,7 +177,7 @@ uniform vec3 cameraPosition;
         vec4 sceneCol = complexShadingGbuffers(material, eyePlayerPos, feetPlayerPos);
 
     /* DRAWBUFFERS:0123 */
-        gl_FragData[0] = sceneCol; //gcolor
+        gl_FragData[0] = sceneCol; // gcolor
         gl_FragData[1] = vec4(material.normal * 0.5 + 0.5, 1); //colortex1
         gl_FragData[2] = vec4(material.albedo.rgb, 1); //colortex2
         gl_FragData[3] = vec4(material.metallic, material.smoothness, 0, 1); //colortex3

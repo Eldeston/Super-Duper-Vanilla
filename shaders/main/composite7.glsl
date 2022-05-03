@@ -57,7 +57,7 @@ varying vec2 texCoord;
         #endif
         
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(color, 1); //gcolor
+        gl_FragData[0] = vec4(color, 1); // gcolor
 
         #if ANTI_ALIASING == 2
         /* DRAWBUFFERS:06 */

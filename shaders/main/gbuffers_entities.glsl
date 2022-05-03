@@ -128,7 +128,7 @@ uniform mat4 gbufferModelViewInverse;
     void main(){
         // Lightning fix, materials need to be specified due to glitching issues
         if(entityId == 10101){
-            gl_FragData[0] = vec4(pow(vec3(0.5, 0.75, 1), vec3(GAMMA)) * EMISSIVE_INTENSITY, glcoloralpha); //gcolor
+            gl_FragData[0] = vec4(pow(vec3(0.5, 0.75, 1), vec3(GAMMA)) * EMISSIVE_INTENSITY, glcoloralpha); // gcolor
             gl_FragData[3] = vec4(0, 0, 0, 1); //colortex3
             return;
         }
@@ -147,7 +147,7 @@ uniform mat4 gbufferModelViewInverse;
         vec4 sceneCol = complexShadingGbuffers(material, eyePlayerPos, eyePlayerPos + gbufferModelViewInverse[3].xyz);
 
     /* DRAWBUFFERS:0123 */
-        gl_FragData[0] = sceneCol; //gcolor
+        gl_FragData[0] = sceneCol; // gcolor
         gl_FragData[1] = vec4(material.normal * 0.5 + 0.5, 1); //colortex1
         gl_FragData[2] = vec4(material.albedo.rgb, 1); //colortex2
         gl_FragData[3] = vec4(material.metallic, material.smoothness, 0, 1); //colortex3

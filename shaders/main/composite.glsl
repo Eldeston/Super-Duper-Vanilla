@@ -107,7 +107,7 @@ varying vec2 screenCoord;
         }
 
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(sceneCol, 1); //gcolor
+        gl_FragData[0] = vec4(sceneCol, 1); // gcolor
 
         #ifdef WORLD_LIGHT
         /* DRAWBUFFERS:04 */

@@ -44,6 +44,6 @@ varying vec2 texCoord;
         if(albedo.a <= ALPHA_THRESHOLD) discard;
 
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(pow(albedo.rgb, vec3(GAMMA)) * EMISSIVE_INTENSITY, albedo.a); //gcolor
+        gl_FragData[0] = vec4(pow(albedo.rgb, vec3(GAMMA)) * EMISSIVE_INTENSITY, albedo.a); // gcolor
     }
 #endif

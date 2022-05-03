@@ -123,7 +123,7 @@ varying vec2 texCoord;
         color = toneA(color) + (texture2D(noisetex, gl_FragCoord.xy * 0.03125).x - 0.5) * 0.00392156863;
 
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(color, 1); //gcolor
+        gl_FragData[0] = vec4(color, 1); // gcolor
 
         #ifdef BLOOM
         /* DRAWBUFFERS:04 */
