@@ -1,6 +1,9 @@
 // --------------- Code Library ---------------- //
 // Common utility functions goes here
 
+#define GAMMA 2.2
+#define RCPGAMMA 0.4545455
+
 #define PI 3.1415927
 #define PI2 6.2831853
 
