@@ -9,9 +9,6 @@
 			pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
 
 		#ifdef WORLD_LIGHT
-			// Get light color
-			vec3 lightCol = pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA));
-
 			float NL = max(0.0, dot(norm, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z))) * 0.6 + 0.4;
 			// also equivalent to:
 			// vec3(0, 0, 1) * mat3(shadowModelView) = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)
@@ -41,9 +38,9 @@
 					#endif
 				}
 
-				totalDiffuse += (NL * shadowCol * (1.0 - rainDiff) + rainDiff) * lightCol;
+				totalDiffuse += (NL * shadowCol * (1.0 - rainDiff) + rainDiff) * pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA));
 			#else
-				totalDiffuse += (NL * (1.0 - rainDiff) + rainDiff) * lightCol;
+				totalDiffuse += (NL * (1.0 - rainDiff) + rainDiff) * pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA));
 			#endif
 		#endif
 
@@ -57,9 +54,6 @@
 			pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
 
 		#ifdef WORLD_LIGHT
-			// Get light color
-			vec3 lightCol = pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA));
-
 			float NL = max(0.0, dot(norm, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)));
 			// also equivalent to:
 			// vec3(0, 0, 1) * mat3(shadowModelView) = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)
@@ -94,7 +88,7 @@
 			#endif
 
 			float rainDiff = rainStrength * 0.5;
-			totalDiffuse += (NL * shadowCol * (1.0 - rainDiff) + lmCoord.y * lmCoord.y * rainDiff) * lightCol;
+			totalDiffuse += (NL * shadowCol * (1.0 - rainDiff) + lmCoord.y * lmCoord.y * rainDiff) * pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA));
 		#endif
 
 		return vec4(albedo.rgb * totalDiffuse, albedo.a);

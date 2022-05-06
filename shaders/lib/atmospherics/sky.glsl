@@ -1,6 +1,6 @@
 #ifdef WORLD_LIGHT
     // Get light color
-    vec3 lightCol = pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA));
+    vec3 lightCol = LIGHT_COL_DATA_BLOCK;
 
     #if WORLD_SUN_MOON == 1
         uniform float shdFade;
@@ -47,6 +47,8 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float LV, bool isSky){
     // If player is in lava, return fog color
     if(isEyeInWater == 2) return pow(fogColor, vec3(GAMMA));
 
+    vec3 lightColLinear = pow(lightCol, vec3(GAMMA));
+
     #ifdef WORLD_SKY_GROUND
         vec3 finalCol = pow(SKY_COL_DATA_BLOCK, vec3(GAMMA)) * vec2(1.0 - smoothen((-nPlayerPos.y * 4.0) / (isEyeInWater * 2.56 + newRainStrength + 1.0)), 1).xxy;
     #else
@@ -74,7 +76,7 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float LV, bool isSky){
                 #endif
 
                 #ifdef WORLD_LIGHT
-                    finalCol += lightCol * (clouds * smootherstep(nPlayerPos.y * 2.0 - 0.125));
+                    finalCol += lightColLinear * (clouds * smootherstep(nPlayerPos.y * 2.0 - 0.125));
                 #else
                     finalCol += clouds * smootherstep(nPlayerPos.y * 2.0 - 0.125);
                 #endif
@@ -83,7 +85,7 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float LV, bool isSky){
     }
 
     #if WORLD_SUN_MOON == 1 && defined WORLD_LIGHT
-        finalCol += lightCol * pow(max(LV, 0.0) * 0.75, abs(nPlayerPos.y) + 1.0) * shdFade;
+        finalCol += lightColLinear * pow(max(LV, 0.0) * 0.75, abs(nPlayerPos.y) + 1.0) * shdFade;
     #endif
 
     float voidGradient = smootherstep((nPlayerPos.y + eyeBrightFact - 0.81) * PI);
@@ -104,7 +106,7 @@ vec3 getSkyRender(vec3 skyBoxCol, vec3 nPlayerPos, bool isSky, bool isSunMoon){
 
     #ifdef WORLD_LIGHT
         #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE != 2
-            if(isSunMoon) finalCol += (getSunMoonShape(nSkyPos.xy) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * (1.0 - rainStrength)) * sqrt(lightCol);
+            if(isSunMoon) finalCol += (getSunMoonShape(nSkyPos.xy) * (1.0 - rainStrength) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY) * lightCol;
         #elif WORLD_SUN_MOON == 2
             if(isSunMoon){
                 float blackHole = min(1.0, 0.005 / ((1.0 - nSkyPos.z) * 32.0 - 0.1));
