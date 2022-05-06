@@ -95,15 +95,17 @@ varying vec2 texCoord;
 
         #ifdef AUTO_EXPOSURE
             // Get center pixel current average scene luminance and mix previous and current pixel...
-            float tempPixelLuminance = mix(sqrt(length(texture2D(gcolor, vec2(0.5), 10.0).rgb)), texture2D(colortex6, vec2(0)).a, exp2(-AUTO_EXPOSURE_SPEED * frameTime));
+            vec3 centerPixCol = texture2D(gcolor, vec2(0.5), 10.0).rgb;
 
-            // Apply auto exposure
-            color /= max(tempPixelLuminance, MIN_EXPOSURE);
+            float tempPixLuminance = mix(centerPixCol.r + centerPixCol.g + centerPixCol.b, texture2D(colortex6, vec2(0)).a, exp2(-AUTO_EXPOSURE_SPEED * frameTime));
+
+            // Apply auto exposure by dividing it by the pixel's luminance in sRGB
+            color /= max(pow(tempPixLuminance, RCPGAMMA), MIN_EXPOSURE);
 
             #if ANTI_ALIASING == 2
                 #define TAA_DATA texture2D(colortex6, texCoord).rgb
             #else
-                // vec4(0, 0, 0, tempPixelLuminance)
+                // vec4(0, 0, 0, tempPixLuminance)
                 #define TAA_DATA 0, 0, 0
             #endif
         #endif
@@ -116,11 +118,8 @@ varying vec2 texCoord;
             color *= max(0.0, 1.0 - length(texCoord - 0.5) * VIGNETTE_INTENSITY * (1.0 - getLuminance(color)));
         #endif
 
-        // Gamma correction
-        color = pow(color, vec3(1.0 / GAMMA));
-        
-        // Color saturation, contrast, etc. and film grain
-        color = toneA(color) + (texture2D(noisetex, gl_FragCoord.xy * 0.03125).x - 0.5) * 0.00392156863;
+        // Gamma correction, color saturation, contrast, etc. and film grain
+        color = toneA(pow(color, vec3(RCPGAMMA))) + (texture2D(noisetex, gl_FragCoord.xy * 0.03125).x - 0.5) * 0.00392156863;
 
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(color, 1); // gcolor
@@ -131,12 +130,12 @@ varying vec2 texCoord;
 
             #ifdef AUTO_EXPOSURE
             /* DRAWBUFFERS:046 */
-                gl_FragData[2] = vec4(TAA_DATA, tempPixelLuminance); //colortex6
+                gl_FragData[2] = vec4(TAA_DATA, tempPixLuminance); //colortex6
             #endif
         #else
             #ifdef AUTO_EXPOSURE
             /* DRAWBUFFERS:06 */
-                gl_FragData[1] = vec4(TAA_DATA, tempPixelLuminance); //colortex6
+                gl_FragData[1] = vec4(TAA_DATA, tempPixLuminance); //colortex6
             #endif
         #endif
     }
