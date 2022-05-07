@@ -47,7 +47,9 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float LV, bool isSky){
     // If player is in lava, return fog color
     if(isEyeInWater == 2) return pow(fogColor, vec3(GAMMA));
 
-    vec3 lightColLinear = pow(lightCol, vec3(GAMMA));
+    #ifdef WORLD_LIGHT
+        vec3 lightColLinear = pow(lightCol, vec3(GAMMA));
+    #endif
 
     #ifdef WORLD_SKY_GROUND
         vec3 finalCol = pow(SKY_COL_DATA_BLOCK, vec3(GAMMA)) * vec2(1.0 - smoothen((-nPlayerPos.y * 4.0) / (isEyeInWater * 2.56 + newRainStrength + 1.0)), 1).xxy;
