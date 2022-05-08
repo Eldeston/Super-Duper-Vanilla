@@ -49,6 +49,11 @@ vec2 hermiteMix(vec2 a, vec2 b, vec2 x) { return saturate((x - a) / (b - a)); }
 vec3 hermiteMix(vec3 a, vec3 b, vec3 x) { return saturate((x - a) / (b - a)); }
 vec4 hermiteMix(vec4 a, vec4 b, vec4 x) { return saturate((x - a) / (b - a)); }
 
+float fastSqrt(float x){ return x * (2.0 - x); }
+vec2 fastSqrt(vec2 x){ return x * (2.0 - x); }
+vec3 fastSqrt(vec3 x){ return x * (2.0 - x); }
+vec4 fastSqrt(vec4 x){ return x * (2.0 - x); }
+
 // Smoothstep functions
 float smoothen(float x){
 	x = saturate(x);

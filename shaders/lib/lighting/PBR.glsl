@@ -48,7 +48,7 @@ uniform sampler2D texture;
     }
 
     void enviroPBR(inout matPBR material, in vec2 worldPos){
-        float rainMatFact = sqrt(max(0.0, TBN[2].y) * smoothstep(0.8, 0.9, lmCoord.y) * wetness * isPrecipitationRain * (1.0 - material.porosity));
+        float rainMatFact = fastSqrt(max(0.0, TBN[2].y) * smoothstep(0.8, 0.9, lmCoord.y) * wetness * isPrecipitationRain * (1.0 - material.porosity));
 
         if(rainMatFact > 0.005){
             vec2 noiseData = getNoiseDataCubic(worldPos * 0.001953125).xy;
@@ -356,14 +356,14 @@ uniform sampler2D texture;
                 // Redstone stuff
                 else if((id == 10041 || id == 10068) && material.albedo.r > material.albedo.b * 2.4){
                     material.emissive = float(material.albedo.r > 0.5);
-                    material.smoothness = 0.93 * sqrt(material.albedo.r);
+                    material.smoothness = 0.9;
                     material.metallic = 1.0;
                 }
 
                 // Redstone block
                 else if(id == 10042){
                     material.emissive = 1.0;
-                    material.smoothness = 0.93 * maxC(material.albedo.rgb);
+                    material.smoothness = 0.9 * material.albedo.r;
                     material.metallic = 1.0;
                 }
 
@@ -378,13 +378,13 @@ uniform sampler2D texture;
 
                 // Gem blocks
                 else if(id == 10050){
-                    material.smoothness = sqrt(min(0.9216, material.albedo.r + material.albedo.g + material.albedo.b));
+                    material.smoothness = fastSqrt(min(0.8, material.albedo.r + material.albedo.g + material.albedo.b));
                     material.metallic = 0.17;
                 }
 
                 // Crying obsidian
                 else if(id == 10051){
-                    material.smoothness = sqrt(min(0.9216, material.albedo.r + material.albedo.g + material.albedo.b));
+                    material.smoothness = fastSqrt(min(0.8, material.albedo.r + material.albedo.g + material.albedo.b));
                     material.emissive = cubed(maxC(material.albedo.rgb));
                     material.metallic = 0.17;
                 }
