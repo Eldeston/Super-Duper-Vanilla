@@ -32,7 +32,6 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 
 // Enable if your world uses a specific world color that uses the vanilla fog color, overrides sky colors
 #define WORLDn1_VANILLA_FOGCOLI 1.00 // Intensity value [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.05 1.10 1.15 1.20 1.25 1.30 1.35 1.40 1.45 1.50 1.55 1.60 1.65 1.70 1.75 1.80 1.85 1.90 1.95 2.00]
-#define WORLD_VANILLA_FOGCOL sqrt(fogColor) * WORLDn1_VANILLA_FOGCOLI
 
 // Use a sky light amount if your world has an undefined sky lighting environment like The End or the Nether
 #define WORLD_SKYLIGHT 1.00
@@ -43,5 +42,4 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 #define WORLD_FOG_TOTAL_DENSITY 0.025
 
 // Holds the data on how the light will change according to multiple environmental factors
-#define LIGHT_COL_DATA_BLOCK vec3(0)
-#define SKY_COL_DATA_BLOCK WORLD_VANILLA_FOGCOL
+#define SKY_COL_DATA_BLOCK fastSqrt(fogColor) * WORLDn1_VANILLA_FOGCOLI
