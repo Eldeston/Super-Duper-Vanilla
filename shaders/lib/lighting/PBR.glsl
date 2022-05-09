@@ -240,7 +240,7 @@ uniform sampler2D texture;
             else if(id == 10017){
                 material.smoothness = 0.96;
                 material.metallic = 0.04;
-                material.emissive = maxC(material.albedo.rgb);
+                material.emissive = maxOf(material.albedo.rgb);
             }
         #endif
 
@@ -324,7 +324,7 @@ uniform sampler2D texture;
             else if(id == 10017){
                 material.smoothness = 0.96;
                 material.metallic = 0.04;
-                material.emissive = maxC(material.albedo.rgb);
+                material.emissive = maxOf(material.albedo.rgb);
             }
         #endif
 
@@ -339,19 +339,18 @@ uniform sampler2D texture;
                 if(id == 10032) material.emissive = material.albedo.r > material.albedo.b ? 1.0 : 0.0;
 
                 // Glow berries
-                else if(id == 10033) material.emissive = material.albedo.r + material.albedo.g > material.albedo.g * 2.0 ? smoothstep(0.3, 0.9, maxC(material.albedo.rgb)) : material.emissive;
+                else if(id == 10033) material.emissive = material.albedo.r + material.albedo.g > material.albedo.g * 2.0 ? smoothstep(0.3, 0.9, maxOf(material.albedo.rgb)) : material.emissive;
 
                 // Stems
-                else if(id == 10034) material.emissive = material.albedo.r < 0.1 ? maxC(material.albedo.rgb) * 0.72 : material.emissive;
-                else if(id == 10035) material.emissive = material.albedo.b < 0.16 && material.albedo.r > 0.4 ? maxC(material.albedo.rgb) * 0.72 : material.emissive;
+                else if(id == 10034) material.emissive = material.albedo.r < 0.1 ? maxOf(material.albedo.rgb) * 0.72 : material.emissive;
+                else if(id == 10035) material.emissive = material.albedo.b < 0.16 && material.albedo.r > 0.4 ? maxOf(material.albedo.rgb) * 0.72 : material.emissive;
 
                 // Fungus
-                else if(id == 10036) material.emissive = max2(material.albedo.rg) > 0.8 ? 0.72 : material.emissive;
-                else if(id == 10037) material.emissive = smoothstep(1.2, 1.8, material.albedo.r + material.albedo.g + material.albedo.b);
+                else if(id == 10036) material.emissive = maxOf(material.albedo.rg) > 0.8 ? 0.72 : material.emissive;
 
                 // Emissives
-                else if(id == 10038) material.emissive = smoothstep(0.88, 1.0, maxC(material.albedo.rgb));
-                else if(id == 10039 || id == 10040) material.emissive = smoothstep(0.64, 0.8, maxC(material.albedo.rgb));
+                else if(id == 10038) material.emissive = smoothstep(0.88, 1.0, maxOf(material.albedo.rgb));
+                else if(id == 10039 || id == 10040) material.emissive = smoothstep(0.64, 0.8, maxOf(material.albedo.rgb));
 
                 // Redstone stuff
                 else if((id == 10041 || id == 10068) && material.albedo.r > material.albedo.b * 2.4){
@@ -385,7 +384,7 @@ uniform sampler2D texture;
                 // Crying obsidian
                 else if(id == 10051){
                     material.smoothness = fastSqrt(min(0.8, material.albedo.r + material.albedo.g + material.albedo.b));
-                    material.emissive = cubed(maxC(material.albedo.rgb));
+                    material.emissive = cubed(maxOf(material.albedo.rgb));
                     material.metallic = 0.17;
                 }
 
@@ -399,7 +398,7 @@ uniform sampler2D texture;
                 // Netherack gem ores
                 else if(id == 10049 && material.albedo.r < material.albedo.g * 1.6 && material.albedo.r < material.albedo.b * 1.6){
                     material.smoothness = min(0.93, material.albedo.r + material.albedo.g + material.albedo.b);
-                    material.metallic = 0.16;
+                    material.metallic = 0.17;
                 }
 
                 // Metal ores
@@ -409,7 +408,7 @@ uniform sampler2D texture;
                 }
 
                 // Netherack metal ores
-                else if(id == 10065 && max2(material.albedo.rg) > 0.6){
+                else if(id == 10065 && maxOf(material.albedo.rg) > 0.6){
                     material.smoothness = (material.albedo.r + material.albedo.g + material.albedo.b) * 0.333;
                     material.metallic = 1.0;
                 }

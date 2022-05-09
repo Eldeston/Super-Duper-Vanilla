@@ -30,15 +30,15 @@ vec4 cubed(vec4 x) { return x * x * x; }
 float lengthSquared(vec2 x){ return dot(x, x); }
 float lengthSquared(vec3 x){ return dot(x, x); }
 
-// Max functions
-float max2(vec2 x) { return max(x.r, x.g); }
-float maxC(vec3 x) { return max(x.r, max(x.g, x.b)); }
-float maxC(vec4 x) { return max(x.r, max(x.g, max(x.b, x.a))); }
-
 // Min functions
-float min2(vec2 x) { return min(x.r, x.g); }
-float minC(vec3 x) { return min(x.r, min(x.g, x.b)); }
-float minC(vec4 x) { return min(x.r, min(x.g, min(x.b, x.a))); }
+float minOf(vec2 x) { return min(x.x, x.y); }
+float minOf(vec3 x) { return min(x.x, min(x.y, x.z)); }
+float minOf(vec4 x) { return min(min(x.x, x.y), min(x.z, x.w)); }
+
+// Max functions
+float maxOf(vec2 x) { return max(x.x, x.y); }
+float maxOf(vec3 x) { return max(x.x, max(x.y, x.z)); }
+float maxOf(vec4 x) { return max(max(x.x, x.y), max(x.z, x.w)); }
 
 // Hermite interpolation
 float hermiteMix(float a, float b, float x) { return saturate((x - a) / (b - a)); }
@@ -108,7 +108,7 @@ vec3 toneSaturation(vec3 col, float a){
 
 // Contrast function
 vec3 toneContrast(vec3 col, float a){
-	return saturate(0.5 * (1.0 - a) + col.rgb * a);
+	return saturate((col.rgb - 0.5) * a + 0.5);
 }
 
 // Rotation function

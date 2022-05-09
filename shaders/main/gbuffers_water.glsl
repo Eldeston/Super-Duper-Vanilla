@@ -126,7 +126,9 @@ uniform vec3 cameraPosition;
     uniform float viewWidth;
     uniform float viewHeight;
 
-    uniform sampler2D depthtex1;
+    #if defined STYLIZED_WATER_ABSORPTION || defined WATER_FOAM
+        uniform sampler2D depthtex1;
+    #endif
     
     #include "/lib/universalVars.glsl"
 
@@ -181,19 +183,23 @@ uniform vec3 cameraPosition;
                 #endif
             #endif
 
-            // Water color and foam 
-            float waterDepth = viewPos.z - toView(texture2D(depthtex1, screenPos.xy).x);
+            #if defined STYLIZED_WATER_ABSORPTION || defined WATER_FOAM
+                // Water color and foam 
+                float waterDepth = viewPos.z - toView(texture2D(depthtex1, screenPos.xy).x);
+            #endif
 
-            if(isEyeInWater == 0){
-                #ifdef STYLIZED_WATER_ABSORPTION
-                    float depthBrightness = exp(-waterDepth * 0.32);
-                    material.albedo.rgb = mix(material.albedo.rgb * waterNoise, saturate(toneSaturation(material.albedo.rgb, 2.0) * 2.0), depthBrightness);
-                    material.albedo.a = fastSqrt(material.albedo.a) * (1.0 - depthBrightness);
-                #endif
-            } else material.albedo.rgb *= waterNoise;
+            #ifdef STYLIZED_WATER_ABSORPTION
+                if(isEyeInWater == 0){
+                        float depthBrightness = exp(-waterDepth * 0.32);
+                        material.albedo.rgb = mix(material.albedo.rgb * waterNoise, saturate(toneSaturation(material.albedo.rgb, 2.0) * 2.0), depthBrightness);
+                        material.albedo.a = fastSqrt(material.albedo.a) * (1.0 - depthBrightness);
+                } else material.albedo.rgb *= waterNoise;
+            #else
+                material.albedo.rgb *= waterNoise;
+            #endif
 
             #ifdef WATER_FOAM
-                float foam = min(1.0, exp(-(waterDepth - 0.128) * 10.0));
+                float foam = min(1.0, exp((0.128 - waterDepth) * 10.0));
                 material.albedo = material.albedo * (1.0 - foam) + foam;
             #endif
         }
