@@ -1,9 +1,9 @@
-varying vec2 texCoord;
+varying vec2 screenCoord;
 
 #ifdef VERTEX
     void main(){
         gl_Position = ftransform();
-        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        screenCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
     }
 #endif
 
@@ -18,12 +18,14 @@ varying vec2 texCoord;
 
     void main(){
         #ifdef BLOOM
-            float pixelSize = 1.0 / viewHeight;
-            vec3 eBloom = texture2D(colortex4, texCoord + vec2(0, pixelSize * 2.0)).rgb * 0.0625;
-            eBloom += texture2D(colortex4, texCoord + vec2(0, pixelSize)).rgb * 0.25;
-            eBloom += texture2D(colortex4, texCoord).rgb * 0.375;
-            eBloom += texture2D(colortex4, texCoord - vec2(0, pixelSize)).rgb * 0.25;
-            eBloom += texture2D(colortex4, texCoord - vec2(0, pixelSize * 2.0)).rgb * 0.0625;
+            // Get pixel size
+            float pixSize = 1.0 / viewHeight;
+
+            vec3 eBloom = (texture2D(colortex4, screenCoord + vec2(0, pixSize * 2.0)).rgb +
+                texture2D(colortex4, screenCoord - vec2(0, pixSize * 2.0)).rgb) * 0.0625;
+            eBloom += (texture2D(colortex4, screenCoord + vec2(0, pixSize)).rgb +
+                texture2D(colortex4, screenCoord - vec2(0, pixSize)).rgb) * 0.25;
+            eBloom += texture2D(colortex4, screenCoord).rgb * 0.375;
             
         /* DRAWBUFFERS:4 */
             gl_FragData[0] = vec4(eBloom, 1); //colortex4

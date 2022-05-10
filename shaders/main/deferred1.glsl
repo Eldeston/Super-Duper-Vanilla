@@ -53,6 +53,12 @@ varying vec2 screenCoord;
         /* Screen uniforms */
         uniform float viewWidth;
         uniform float viewHeight;
+
+        float getSSAOBoxBlur(vec2 pixSize){
+            // Apply simple box blur
+            return (texture2D(colortex2, screenCoord - pixSize).a + texture2D(colortex2, screenCoord + pixSize).a +
+                texture2D(colortex2, screenCoord - vec2(pixSize.x, -pixSize.y)).a + texture2D(colortex2, screenCoord + vec2(pixSize.x, -pixSize.y)).a) * 0.25;
+        }
     #endif
 
     #if ANTI_ALIASING == 2
@@ -72,8 +78,6 @@ varying vec2 screenCoord;
     #include "/lib/utility/convertScreenSpace.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
     #include "/lib/rayTracing/rayTracer.glsl"
-
-    #include "/lib/utility/texFunctions.glsl"
 
     #include "/lib/atmospherics/fog.glsl"
     #include "/lib/atmospherics/sky.glsl"
@@ -123,7 +127,7 @@ varying vec2 screenCoord;
 
             #ifdef SSAO
                 // Apply ambient occlusion with simple blur
-                sceneCol *= texture2DBox(colortex2, screenCoord, vec2(viewWidth, viewHeight)).a;
+                sceneCol *= getSSAOBoxBlur(1.0 / vec2(viewWidth, viewHeight));
             #endif
 
             #ifdef OUTLINES

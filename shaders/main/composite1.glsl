@@ -1,9 +1,9 @@
-varying vec2 texCoord;
+varying vec2 screenCoord;
 
 #ifdef VERTEX
     void main(){
         gl_Position = ftransform();
-        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        screenCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
     }
 #endif
 
@@ -19,7 +19,11 @@ varying vec2 texCoord;
         #include "/lib/universalVars.glsl"
 
         #if defined VOL_LIGHT && defined SHD_ENABLE
-            #include "/lib/utility/texFunctions.glsl"
+            vec3 getVolLightBoxBlur(vec2 pixSize){
+                // Apply simple box blur
+                return (texture2D(colortex4, screenCoord - pixSize).rgb + texture2D(colortex4, screenCoord + pixSize).rgb +
+                    texture2D(colortex4, screenCoord - vec2(pixSize.x, -pixSize.y)).rgb + texture2D(colortex4, screenCoord + vec2(pixSize.x, -pixSize.y)).rgb) * 0.25;
+            }
         #endif
     #endif
     
@@ -27,20 +31,29 @@ varying vec2 texCoord;
     uniform float viewWidth;
     uniform float viewHeight;
 
-    #include "/lib/post/spectral.glsl"
+    float getSpectral(vec2 pixSize){
+        // Do a simple blur
+        float totalDepth = texture2D(colortex3, screenCoord + pixSize).z + texture2D(colortex3, screenCoord - pixSize).z +
+            texture2D(colortex3, screenCoord + vec2(pixSize.x, -pixSize.y)).z + texture2D(colortex3, screenCoord - vec2(pixSize.x, -pixSize.y)).z;
+
+        // Get the difference between the blurred samples and original
+        return abs(totalDepth * 0.25 - texture2D(colortex3, screenCoord).z);
+    }
 
     void main(){
+        // Get pixel size
+        vec2 pixSize = 1.0 / vec2(viewWidth, viewHeight);
         // Spectral effect
-        vec3 sceneCol = texture2D(gcolor, texCoord).rgb + getSpectral(colortex3, texCoord) * EMISSIVE_INTENSITY;
+        vec3 sceneCol = texture2D(gcolor, screenCoord).rgb + getSpectral(pixSize) * EMISSIVE_INTENSITY;
 
         #ifdef WORLD_LIGHT
             // Get light color
             vec3 lightCol = pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA));
 
             #if defined VOL_LIGHT && defined SHD_ENABLE
-                sceneCol += texture2DBox(colortex4, texCoord, vec2(viewWidth, viewHeight)).rgb * lightCol * (min(1.0, VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater)) * shdFade);
+                sceneCol += getVolLightBoxBlur(pixSize) * lightCol * (min(1.0, VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater)) * shdFade);
             #else
-                sceneCol += texture2D(colortex4, texCoord, 1.5).rgb * lightCol * (min(1.0, VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater)) * shdFade) * (isEyeInWater == 1 ? fogColor : vec3(1));
+                sceneCol += (isEyeInWater == 1 ? lightCol * fogColor : lightCol) * (texture2D(colortex4, screenCoord, 1.0).r * min(1.0, VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater)) * shdFade);
             #endif
 
         /* DRAWBUFFERS:0 */

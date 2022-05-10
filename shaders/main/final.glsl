@@ -1,9 +1,9 @@
-varying vec2 texCoord;
+varying vec2 screenCoord;
 
 #ifdef VERTEX
     void main(){
         gl_Position = ftransform();
-        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        screenCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
     }
 #endif
 
@@ -21,6 +21,8 @@ varying vec2 texCoord;
     const int colortex7Format = RGB8;
     */
 
+    uniform sampler2D gcolor;
+
     // For Optifine to detect
     #ifdef SHARPEN_FILTER
     #endif
@@ -31,31 +33,37 @@ varying vec2 texCoord;
     #endif
 
     #if ANTI_ALIASING != 0 && defined SHARPEN_FILTER
-        #include "/lib/post/sharpenFilter.glsl"
-    #endif
+        // https://www.shadertoy.com/view/lslGRr
+        vec3 sharpenFilter(vec3 color, vec2 texCoord){
+            vec2 pixSize = 1.0 / vec2(viewWidth, viewHeight);
 
-    uniform sampler2D gcolor;
+            vec3 blur = texture2D(gcolor, texCoord + pixSize).rgb + texture2D(gcolor, texCoord - pixSize).rgb +
+                texture2D(gcolor, texCoord + vec2(pixSize.x, -pixSize.y)).rgb + texture2D(gcolor, texCoord - vec2(pixSize.x, -pixSize.y)).rgb;
+            
+            return (color - blur * 0.25) + color;
+        }
+    #endif
 
     void main(){
         #ifdef RETRO_FILTER
             vec2 retroResolution = vec2(viewWidth, viewHeight) * 0.5;
-            vec2 retroCoord = floor(texCoord * retroResolution) / retroResolution;
+            vec2 retroCoord = floor(screenCoord * retroResolution) / retroResolution;
 
-            #define texCoord retroCoord
+            #define screenCoord retroCoord
         #endif
 
         #ifdef CHROMATIC_ABERRATION
             vec2 chromaStrength = ABERRATION_PIX_SIZE / vec2(viewWidth, viewHeight);
 
-            vec3 color = vec3(texture2D(gcolor, mix(texCoord, vec2(0.5), chromaStrength)).r,
-                texture2D(gcolor, texCoord).g,
-                texture2D(gcolor, mix(texCoord, vec2(0.5), -chromaStrength)).b);
+            vec3 color = vec3(texture2D(gcolor, mix(screenCoord, vec2(0.5), chromaStrength)).r,
+                texture2D(gcolor, screenCoord).g,
+                texture2D(gcolor, mix(screenCoord, vec2(0.5), -chromaStrength)).b);
         #else
-            vec3 color = texture2D(gcolor, texCoord).rgb;
+            vec3 color = texture2D(gcolor, screenCoord).rgb;
         #endif
 
         #if ANTI_ALIASING != 0 && defined SHARPEN_FILTER
-            color = sharpenFilter(gcolor, color, texCoord);
+            color = sharpenFilter(color, screenCoord);
         #endif
 
         gl_FragColor = vec4(color, 1);

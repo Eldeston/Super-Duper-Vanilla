@@ -1,9 +1,9 @@
-varying vec2 texCoord;
+varying vec2 screenCoord;
 
 #ifdef VERTEX
     void main(){
         gl_Position = ftransform();
-        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        screenCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
     }
 #endif
 
@@ -31,11 +31,15 @@ varying vec2 texCoord;
         uniform float viewWidth;
         uniform float viewHeight;
 
-        #include "/lib/utility/texFunctions.glsl"
+        vec3 getBloomTile(vec2 pixSize, vec2 coords, float LOD){
+            // Remap to bloom tile texture coordinates
+            vec2 texCoord = screenCoord / exp2(LOD) + coords;
 
-        vec3 getBloomTile(vec2 uv, vec2 coords, float LOD){
-            // Uncompress bloom
-            return texture2DBox(colortex4, uv / exp2(LOD) + coords, vec2(viewWidth, viewHeight)).rgb;
+            // Apply box blur all tiles
+            // return (texture2D(colortex4, texCoord - pixSize).rgb + texture2D(colortex4, texCoord + pixSize).rgb +
+            //    texture2D(colortex4, texCoord - vec2(pixSize.x, -pixSize.y)).rgb + texture2D(colortex4, texCoord + vec2(pixSize.x, -pixSize.y)).rgb) * 0.25;
+            return texture2D(colortex4, texCoord - pixSize).rgb + texture2D(colortex4, texCoord + pixSize).rgb +
+                texture2D(colortex4, texCoord - vec2(pixSize.x, -pixSize.y)).rgb + texture2D(colortex4, texCoord + vec2(pixSize.x, -pixSize.y)).rgb;
         }
     #endif
 
@@ -67,18 +71,25 @@ varying vec2 texCoord;
 
     void main(){
         // Original scene color
-        vec3 color = texture2D(gcolor, texCoord).rgb;
+        vec3 color = texture2D(gcolor, screenCoord).rgb;
 
         #ifdef BLOOM
-            // Uncompress the HDR colors and upscale
-            vec3 eBloom = getBloomTile(texCoord, vec2(0), 2.0);
-            eBloom += getBloomTile(texCoord, vec2(0, 0.275), 3.0);
-            eBloom += getBloomTile(texCoord, vec2(0.135, 0.275), 4.0);
-            eBloom += getBloomTile(texCoord, vec2(0.2075, 0.275), 5.0);
-            eBloom += getBloomTile(texCoord, vec2(0.135, 0.3625), 6.0);
-            eBloom += getBloomTile(texCoord, vec2(0.160625, 0.3625), 7.0);
-            eBloom = eBloom * 0.16666667;
+            // Get pixel size
+            vec2 pixSize = 1.0 / vec2(viewWidth, viewHeight);
 
+            // Uncompress the HDR colors and upscale
+            vec3 eBloom = getBloomTile(pixSize, vec2(0), 2.0);
+            eBloom += getBloomTile(pixSize, vec2(0, 0.275), 3.0);
+            eBloom += getBloomTile(pixSize, vec2(0.135, 0.275), 4.0);
+            eBloom += getBloomTile(pixSize, vec2(0.2075, 0.275), 5.0);
+            eBloom += getBloomTile(pixSize, vec2(0.135, 0.3625), 6.0);
+            eBloom += getBloomTile(pixSize, vec2(0.160625, 0.3625), 7.0);
+
+            // Average the total samples
+            // eBloom *= 0.16666667 * 0.25;
+            eBloom *= 0.04166666;
+
+            // Apply bloom
             color = mix(color, eBloom, 0.2 * BLOOM_BRIGHTNESS);
         #endif
 
@@ -90,7 +101,7 @@ varying vec2 texCoord;
             // normalize(mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz)
             
             if(texture2D(depthtex0, lightDir).x == 1 && isEyeInWater == 0)
-                color += getLensFlare(texCoord - 0.5, lightDir - 0.5) * (1.0 - blindness) * (1.0 - rainStrength);
+                color += getLensFlare(screenCoord - 0.5, lightDir - 0.5) * (1.0 - blindness) * (1.0 - rainStrength);
         #endif
 
         #ifdef AUTO_EXPOSURE
@@ -103,7 +114,7 @@ varying vec2 texCoord;
             color /= max(pow(tempPixLuminance, RCPGAMMA), MIN_EXPOSURE);
 
             #if ANTI_ALIASING == 2
-                #define TAA_DATA texture2D(colortex6, texCoord).rgb
+                #define TAA_DATA texture2D(colortex6, screenCoord).rgb
             #else
                 // vec4(0, 0, 0, tempPixLuminance)
                 #define TAA_DATA 0, 0, 0
@@ -115,7 +126,7 @@ varying vec2 texCoord;
 
         #ifdef VIGNETTE
             // BSL's vignette, modified to control intensity
-            color *= max(0.0, 1.0 - length(texCoord - 0.5) * VIGNETTE_INTENSITY * (1.0 - getLuminance(color)));
+            color *= max(0.0, 1.0 - length(screenCoord - 0.5) * VIGNETTE_INTENSITY * (1.0 - getLuminance(color)));
         #endif
 
         // Gamma correction, color saturation, contrast, etc. and film grain
