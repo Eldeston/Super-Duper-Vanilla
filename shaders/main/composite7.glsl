@@ -1,9 +1,9 @@
-varying vec2 texCoord;
+varying vec2 screenCoord;
 
 #ifdef VERTEX
     void main(){
         gl_Position = ftransform();
-        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        screenCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
     }
 #endif
 
@@ -16,10 +16,13 @@ varying vec2 texCoord;
     #if ANTI_ALIASING == 1
         const bool gcolorMipmapEnabled = true;
 
+        uniform sampler2D gcolor;
+
         #include "/lib/antialiasing/fxaa.glsl"
     #elif ANTI_ALIASING == 2
-        uniform sampler2D depthtex0;
+        uniform sampler2D gcolor;
         uniform sampler2D colortex6;
+        uniform sampler2D depthtex0;
 
         /* Matrix uniforms */
         // View matrix uniforms
@@ -37,31 +40,30 @@ varying vec2 texCoord;
         #include "/lib/utility/convertPrevScreenSpace.glsl"
 
         #include "/lib/antialiasing/taa.glsl"
+    #else
+        uniform sampler2D gcolor;
     #endif
-
-    uniform sampler2D gcolor;
 
     void main(){
         #if ANTI_ALIASING == 1
-            vec3 color = textureFXAA(gcolor, texCoord, vec2(viewWidth, viewHeight));
+            vec3 color = textureFXAA(screenCoord, vec2(viewWidth, viewHeight));
         #elif ANTI_ALIASING == 2
-            vec3 color = textureTAA(gcolor, colortex6, texCoord, vec2(viewWidth, viewHeight));
-
-            #ifdef AUTO_EXPOSURE
-                #define TEMP_EXPOSURE_DATA texture2D(colortex6, texCoord).a
-            #else
-                #define TEMP_EXPOSURE_DATA 0
-            #endif
+            vec3 color = textureTAA(screenCoord, vec2(viewWidth, viewHeight));
         #else
-            vec3 color = texture2D(gcolor, texCoord).rgb;
+            vec3 color = texture2D(gcolor, screenCoord).rgb;
         #endif
         
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(color, 1); // gcolor
 
         #if ANTI_ALIASING == 2
-        /* DRAWBUFFERS:06 */
-            gl_FragData[1] = vec4(color, TEMP_EXPOSURE_DATA); //colortex6
+            #ifdef AUTO_EXPOSURE
+            /* DRAWBUFFERS:06 */
+                gl_FragData[1] = vec4(color, texture2D(colortex6, screenCoord).a); //colortex6
+            #else
+            /* DRAWBUFFERS:06 */
+                gl_FragData[1] = vec4(color, 0); //colortex6
+            #endif
         #endif
     }
 #endif

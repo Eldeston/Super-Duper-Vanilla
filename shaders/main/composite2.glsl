@@ -1,9 +1,9 @@
-varying vec2 texCoord;
+varying vec2 screenCoord;
 
 #ifdef VERTEX
     void main(){
         gl_Position = ftransform();
-        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        screenCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
     }
 #endif
 
@@ -34,12 +34,12 @@ varying vec2 texCoord;
     #endif
 
     void main(){
-        vec3 sceneCol = texture2D(gcolor, texCoord).rgb;
+        vec3 sceneCol = texture2D(gcolor, screenCoord).rgb;
 
         #ifdef MOTION_BLUR
-            float depth = texture2D(depthtex0, texCoord).x;
+            float depth = texture2D(depthtex0, screenCoord).x;
 
-            if(depth > 0.56) sceneCol = motionBlur(sceneCol, texCoord, depth, texture2D(noisetex, gl_FragCoord.xy * 0.03125).x);
+            if(depth > 0.56) sceneCol = motionBlur(sceneCol, screenCoord, depth, texture2D(noisetex, gl_FragCoord.xy * 0.03125).x);
         #endif
 
     /* DRAWBUFFERS:0 */

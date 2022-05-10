@@ -53,7 +53,9 @@ varying vec2 screenCoord;
         /* Screen uniforms */
         uniform float viewWidth;
         uniform float viewHeight;
+    #endif
 
+    #ifdef SSAO
         float getSSAOBoxBlur(vec2 pixSize){
             // Apply simple box blur
             return (texture2D(colortex2, screenCoord - pixSize).a + texture2D(colortex2, screenCoord + pixSize).a +

@@ -8,21 +8,21 @@
 float quality[12] = float[12](1.0, 1.0, 1.0, 1.0, 1.0, 1.5, 2.0, 2.0, 2.0, 2.0, 4.0, 8.0);
 
 // http://blog.simonrodriguez.fr/articles/30-07-2016_implementing_fxaa.html
-vec3 textureFXAA(sampler2D aliased, vec2 uv, vec2 resolution){
+vec3 textureFXAA(vec2 screenPos, vec2 resolution){
     // Pixel size
     vec2 pixSize = 1.0 / resolution.xy;
 
     // Aliased texture
-    vec3 colorCenter = texture2DLod(aliased, uv, 0).rgb;
+    vec3 colorCenter = texture2DLod(gcolor, screenPos, 0).rgb;
 
     // Luma at the current fragment
     float lumaCenter = getLuminance(colorCenter);
 
     // Luma at the four direct neighbours of the current fragment.
-    float lumaUp = getLuminance(texture2DLod(aliased, uv + vec2(0, pixSize.y), 0).rgb);
-    float lumaDown = getLuminance(texture2DLod(aliased, uv - vec2(0, pixSize.y), 0).rgb);
-    float lumaLeft = getLuminance(texture2DLod(aliased, uv - vec2(pixSize.x, 0), 0).rgb);
-    float lumaRight = getLuminance(texture2DLod(aliased, uv + vec2(pixSize.x, 0), 0).rgb);
+    float lumaUp = getLuminance(texture2DLod(gcolor, screenPos + vec2(0, pixSize.y), 0).rgb);
+    float lumaDown = getLuminance(texture2DLod(gcolor, screenPos - vec2(0, pixSize.y), 0).rgb);
+    float lumaLeft = getLuminance(texture2DLod(gcolor, screenPos - vec2(pixSize.x, 0), 0).rgb);
+    float lumaRight = getLuminance(texture2DLod(gcolor, screenPos + vec2(pixSize.x, 0), 0).rgb);
 
     // Find the maximum and minimum luma around the current fragment.
     float lumaMin = min(lumaCenter, min(min(lumaDown, lumaUp), min(lumaLeft, lumaRight)));
@@ -34,10 +34,10 @@ vec3 textureFXAA(sampler2D aliased, vec2 uv, vec2 resolution){
     if(lumaRange < max(EDGE_THRESHOLD_MIN, lumaMax * EDGE_THRESHOLD_MAX)) return colorCenter;
 
     // Query the 4 remaining corners lumas.
-    float lumaUpRight = getLuminance(texture2DLod(aliased, uv + pixSize, 0).rgb);
-    float lumaDownLeft = getLuminance(texture2DLod(aliased, uv - pixSize, 0).rgb);
-    float lumaUpLeft = getLuminance(texture2DLod(aliased, uv - vec2(pixSize.x, -pixSize.y), 0).rgb);
-    float lumaDownRight = getLuminance(texture2DLod(aliased, uv + vec2(pixSize.x, -pixSize.y), 0).rgb);
+    float lumaUpRight = getLuminance(texture2DLod(gcolor, screenPos + pixSize, 0).rgb);
+    float lumaDownLeft = getLuminance(texture2DLod(gcolor, screenPos - pixSize, 0).rgb);
+    float lumaUpLeft = getLuminance(texture2DLod(gcolor, screenPos - vec2(pixSize.x, -pixSize.y), 0).rgb);
+    float lumaDownRight = getLuminance(texture2DLod(gcolor, screenPos + vec2(pixSize.x, -pixSize.y), 0).rgb);
 
     // Combine the four edges lumas (using intermediary variables for future computations with the same values).
     float lumaDownUp = lumaDown + lumaUp;
@@ -84,7 +84,7 @@ vec3 textureFXAA(sampler2D aliased, vec2 uv, vec2 resolution){
     }
 
     // Shift UV in the correct direction by half a pixel.
-    vec2 currentUv = uv;
+    vec2 currentUv = screenPos;
     if(isHorizontal) currentUv.y += stepLength * 0.5;
     else currentUv.x += stepLength * 0.5;
 
@@ -95,8 +95,8 @@ vec3 textureFXAA(sampler2D aliased, vec2 uv, vec2 resolution){
     vec2 uv2 = currentUv + offset;
 
     // Read the lumas at both current extremities of the exploration segment, and compute the delta wrt to the local average luma.
-    float lumaEnd1 = getLuminance(texture2DLod(aliased, uv1, 0).rgb) - lumaLocalAverage;
-    float lumaEnd2 = getLuminance(texture2DLod(aliased, uv2, 0).rgb) - lumaLocalAverage;
+    float lumaEnd1 = getLuminance(texture2DLod(gcolor, uv1, 0).rgb) - lumaLocalAverage;
+    float lumaEnd2 = getLuminance(texture2DLod(gcolor, uv2, 0).rgb) - lumaLocalAverage;
 
     // If the luma deltas at the current extremities are larger than the local gradient, we have reached the side of the edge.
     bool reached1 = abs(lumaEnd1) >= gradientScaled;
@@ -112,13 +112,13 @@ vec3 textureFXAA(sampler2D aliased, vec2 uv, vec2 resolution){
         for(int i = 2; i < ITERATIONS; i++){
             // If needed, read luma in 1st direction, compute delta.
             if(!reached1){
-                lumaEnd1 = getLuminance(texture2DLod(aliased, uv1, 0).rgb);
+                lumaEnd1 = getLuminance(texture2DLod(gcolor, uv1, 0).rgb);
                 lumaEnd1 = lumaEnd1 - lumaLocalAverage;
             }
 
             // If needed, read luma in opposite direction, compute delta.
             if(!reached2){
-                lumaEnd2 = getLuminance(texture2DLod(aliased, uv2, 0).rgb);
+                lumaEnd2 = getLuminance(texture2DLod(gcolor, uv2, 0).rgb);
                 lumaEnd2 = lumaEnd2 - lumaLocalAverage;
             }
 
@@ -137,8 +137,8 @@ vec3 textureFXAA(sampler2D aliased, vec2 uv, vec2 resolution){
     }
 
     // Compute the distances to each extremity of the edge.
-    float distance1 = isHorizontal ? (uv.x - uv1.x) : (uv.y - uv1.y);
-    float distance2 = isHorizontal ? (uv2.x - uv.x) : (uv2.y - uv.y);
+    float distance1 = isHorizontal ? (screenPos.x - uv1.x) : (screenPos.y - uv1.y);
+    float distance2 = isHorizontal ? (uv2.x - screenPos.x) : (uv2.y - screenPos.y);
 
     // Is the luma at center smaller than the local average ?
     bool isLumaCenterSmaller = lumaCenter < lumaLocalAverage;
@@ -157,12 +157,12 @@ vec3 textureFXAA(sampler2D aliased, vec2 uv, vec2 resolution){
     float subPixelOffsetFinal = subPixelOffset2 * subPixelOffset2 * SUBPIXEL_QUALITY;
 
     // Compute the final UV coordinates.
-    vec2 finalUv = uv;
+    vec2 finalUv = screenPos;
 
     // UV offset: read in the direction of the closest side of the edge. If the luma variation is incorrect, do not offset. Pick the biggest of the two offsets.
     if(isHorizontal) finalUv.y += (correctVariation ? max(0.5 - min(distance1, distance2) / (distance1 + distance2), subPixelOffsetFinal) : subPixelOffsetFinal) * stepLength;
     else finalUv.x += (correctVariation ? max(0.5 - min(distance1, distance2) / (distance1 + distance2), subPixelOffsetFinal) : subPixelOffsetFinal) * stepLength;
 
     // Read the color at the new UV coordinates, and use it.
-    return texture2DLod(aliased, finalUv, 0).rgb;
+    return texture2DLod(gcolor, finalUv, 0).rgb;
 }
