@@ -6,9 +6,9 @@
 		// Return 0 if volumetric brightness is 0
 		if(VOL_LIGHT_BRIGHTNESS == 0) return vec3(0);
 
-		float totalFogDensity = WORLD_FOG_TOTAL_DENSITY * ((isEyeInWater + newRainStrength) * 2.56 + 1.0);
-
-		float nPlayerPosY = normalize(feetPlayerPos).y;
+		float totalFogDensity = FOG_TOTAL_DENSITY * ((isEyeInWater + rainStrength) * 2.56 + 1.0) * 0.5;
+		float heightFade = min(1.0, 1.0 - normalize(feetPlayerPos).y);
+		heightFade = heightFade * heightFade * (1.0 - rainStrength) + fastSqrt(heightFade) * rainStrength;
 
 		#if defined VOL_LIGHT && defined SHD_ENABLE
 			vec3 endPos = feetPlayerPos * 0.14285714;
@@ -16,16 +16,14 @@
 
 			vec3 rayData = vec3(0);
 			for(int x = 0; x < 7; x++){
-				rayData = mix(rayData, 
-					getShdTex(distort(mat3(shadowProjection) * (mat3(shadowModelView) * startPos + shadowModelView[3].xyz) + shadowProjection[3].xyz) * 0.5 + 0.5),
-					atmoFog(nPlayerPosY, startPos.y + cameraPosition.y, length(startPos), totalFogDensity, WORLD_FOG_VERTICAL_DENSITY)
-				);
+				rayData = mix(getShdTex(distort(mat3(shadowProjection) * (mat3(shadowModelView) * startPos + shadowModelView[3].xyz) + shadowProjection[3].xyz) * 0.5 + 0.5),
+					rayData, exp(-length(startPos) * totalFogDensity));
 				startPos += endPos;
 			}
 			
-			return rayData;
+			return rayData * heightFade;
 		#else
-			return vec3(atmoFog(nPlayerPosY, feetPlayerPos.y + cameraPosition.y, length(feetPlayerPos), totalFogDensity, WORLD_FOG_VERTICAL_DENSITY));
+			return vec3(heightFade * (1.0 - exp(-length(feetPlayerPos) * totalFogDensity)));
 		#endif
 	}
 #endif
