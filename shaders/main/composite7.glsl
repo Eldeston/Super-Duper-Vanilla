@@ -62,7 +62,7 @@ varying vec2 screenCoord;
                 gl_FragData[1] = vec4(color, texture2D(colortex6, screenCoord).a); //colortex6
             #else
             /* DRAWBUFFERS:06 */
-                gl_FragData[1] = vec4(color, 0); //colortex6
+                gl_FragData[1] = vec4(color, 1); //colortex6
             #endif
         #endif
     }

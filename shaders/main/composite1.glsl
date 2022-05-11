@@ -53,7 +53,7 @@ varying vec2 screenCoord;
             #if defined VOL_LIGHT && defined SHD_ENABLE
                 sceneCol += getVolLightBoxBlur(pixSize) * lightCol * (min(1.0, VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater)) * shdFade);
             #else
-                sceneCol += (isEyeInWater == 1 ? lightCol * fogColor : lightCol) * (texture2D(colortex4, screenCoord, 1.0).r * min(1.0, VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater)) * shdFade);
+                sceneCol += (isEyeInWater == 1 ? lightCol * fogColor : lightCol) * (texture2D(colortex4, screenCoord).r * min(1.0, VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater)) * shdFade);
             #endif
 
         /* DRAWBUFFERS:0 */

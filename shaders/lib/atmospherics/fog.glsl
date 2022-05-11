@@ -25,11 +25,11 @@ vec3 getFogRender(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY, b
         color = skyMask ? fogCol : color;
     #endif
 
-    float totalFogDensity = WORLD_FOG_TOTAL_DENSITY * ((isEyeInWater + newRainStrength) * 2.56 + 1.0);
+    float totalFogDensity = FOG_TOTAL_DENSITY * ((isEyeInWater + newRainStrength) * 2.56 + 1.0);
     float fogMult = min(1.0, MIST_GROUND_FOG_BRIGHTNESS * (1.0 + isEyeInWater));
 
     // Mist fog
-    float mistFog = atmoFog(normalize(eyePlayerPos).y, worldPosY, eyePlayerPosLength, totalFogDensity, WORLD_FOG_VERTICAL_DENSITY) * fogMult;
+    float mistFog = atmoFog(normalize(eyePlayerPos).y, worldPosY, eyePlayerPosLength, totalFogDensity, FOG_VERTICAL_DENSITY) * fogMult;
     color = color * (1.0 - mistFog) + fogCol * mistFog;
 
     // Blindness fog

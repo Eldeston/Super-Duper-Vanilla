@@ -128,62 +128,68 @@ screen.LAVA_SETTINGS=Lava material settings
     value.TIMELAPSE_MODE.1=Fragment
     value.TIMELAPSE_MODE.2=Full
 
-screen.CONFIGURE_COLORS=Configure colors
+#Configuration
+    #Overworld
+        screen.DIRECT_LIGHT_COLOR0=Direct light color
+            option.LIGHT0_DR=Day red
+            option.LIGHT0_DG=Day green
+            option.LIGHT0_DB=Day blue
+            option.LIGHT0_DI=Day intensity
 
-#Overworld
-    screen.DIRECT_LIGHT_COLOR0=Direct light color
-        option.LIGHT0_DR=Day red
-        option.LIGHT0_DG=Day green
-        option.LIGHT0_DB=Day blue
-        option.LIGHT0_DI=Day intensity
+            option.LIGHT0_NR=Night red
+            option.LIGHT0_NG=Night green
+            option.LIGHT0_NB=Night blue
+            option.LIGHT0_NI=Night intensity
 
-        option.LIGHT0_NR=Night red
-        option.LIGHT0_NG=Night green
-        option.LIGHT0_NB=Night blue
-        option.LIGHT0_NI=Night intensity
+            option.LIGHT0_DDR=Dawn/dusk red
+            option.LIGHT0_DDG=Dawn/dusk green
+            option.LIGHT0_DDB=Dawn/dusk blue
+            option.LIGHT0_DDI=Dawn/dusk intensity
 
-        option.LIGHT0_DDR=Dawn/dusk red
-        option.LIGHT0_DDG=Dawn/dusk green
-        option.LIGHT0_DDB=Dawn/dusk blue
-        option.LIGHT0_DDI=Dawn/dusk intensity
+        screen.SKY_COLOR0=Sky color
+            option.SKY0_DR=Day red
+            option.SKY0_DG=Day green
+            option.SKY0_DB=Day blue
+            option.SKY0_DI=Day intensity
 
-    screen.SKY_COLOR0=Sky color
-        option.SKY0_DR=Day red
-        option.SKY0_DG=Day green
-        option.SKY0_DB=Day blue
-        option.SKY0_DI=Day intensity
+            option.SKY0_NR=Night red
+            option.SKY0_NG=Night green
+            option.SKY0_NB=Night blue
+            option.SKY0_NI=Night intensity
 
-        option.SKY0_NR=Night red
-        option.SKY0_NG=Night green
-        option.SKY0_NB=Night blue
-        option.SKY0_NI=Night intensity
+            option.SKY0_DDR=Dawn/dusk red
+            option.SKY0_DDG=Dawn/dusk green
+            option.SKY0_DDB=Dawn/dusk blue
+            option.SKY0_DDI=Dawn/dusk intensity
 
-        option.SKY0_DDR=Dawn/dusk red
-        option.SKY0_DDG=Dawn/dusk green
-        option.SKY0_DDB=Dawn/dusk blue
-        option.SKY0_DDI=Dawn/dusk intensity
+    #Nether
+        option.WORLDn1_VANILLA_FOGCOLI=Fog color intensity
 
-#Nether
-    option.WORLDn1_VANILLA_FOGCOLI=Fog color intensity
+    #End
+        screen.DIRECT_LIGHT_COLOR1=Direct light color
+            option.WORLD1_CUSTOM_LIGHTCOLR=Light color red
+            option.WORLD1_CUSTOM_LIGHTCOLG=Light color green
+            option.WORLD1_CUSTOM_LIGHTCOLB=Light color blue
+            option.WORLD1_CUSTOM_LIGHTCOLI=Light color intensity
 
-#End
-    screen.DIRECT_LIGHT_COLOR1=Direct light color
-        option.WORLD1_CUSTOM_LIGHTCOLR=Light color red
-        option.WORLD1_CUSTOM_LIGHTCOLG=Light color green
-        option.WORLD1_CUSTOM_LIGHTCOLB=Light color blue
-        option.WORLD1_CUSTOM_LIGHTCOLI=Light color intensity
+        screen.SKY_COLOR1=Sky color
+            option.WORLD1_CUSTOM_FOGCOLR=Fog color red
+            option.WORLD1_CUSTOM_FOGCOLG=Fog color green
+            option.WORLD1_CUSTOM_FOGCOLB=Fog color blue
+            option.WORLD1_CUSTOM_FOGCOLI=Fog color intensity
 
-    screen.SKY_COLOR1=Sky color
-        option.WORLD1_CUSTOM_FOGCOLR=Fog color red
-        option.WORLD1_CUSTOM_FOGCOLG=Fog color green
-        option.WORLD1_CUSTOM_FOGCOLB=Fog color blue
-        option.WORLD1_CUSTOM_FOGCOLI=Fog color intensity
+    screen.BLOCK_LIGHT_COLOR=Block light color
+        option.BLOCKLIGHT_R=Block light red
+        option.BLOCKLIGHT_G=Block light green
+        option.BLOCKLIGHT_B=Block light blue
+        option.BLOCKLIGHT_I=Block light intensity
 
-screen.BLOCK_LIGHT_COLOR=Block light color
-    option.BLOCKLIGHT_R=Block light red
-    option.BLOCKLIGHT_G=Block light green
-    option.BLOCKLIGHT_B=Block light blue
-    option.BLOCKLIGHT_I=Block light intensity
+    option.WORLDn1_FOG_VERTICAL_DENSITY=Fog vertical density
+    option.WORLDn1_FOG_TOTAL_DENSITY=Fog total density
+    option.WORLD0_FOG_VERTICAL_DENSITY=Fog vertical density
+    option.WORLD0_FOG_TOTAL_DENSITY=Fog total density
+    option.WORLD1_FOG_VERTICAL_DENSITY=Fog vertical density
+    option.WORLD1_FOG_TOTAL_DENSITY=Fog total density
 
 screen.DEBUG=Super Duper Vanilla by Eldeston
     option.WHITE_MODE=White mode

@@ -19,5 +19,5 @@ vec3 textureTAA(vec2 screenPos, vec2 resolution){
     prevColor = clamp(prevColor, boxMin, boxMax);
 
     // Return temporal color
-    return mix(currColor, prevColor, 0.9);
+    return currColor * 0.1 + prevColor * 0.9;
 }

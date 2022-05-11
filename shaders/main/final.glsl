@@ -53,11 +53,11 @@ varying vec2 screenCoord;
         #endif
 
         #ifdef CHROMATIC_ABERRATION
-            vec2 chromaStrength = ABERRATION_PIX_SIZE / vec2(viewWidth, viewHeight);
+            vec2 chromaStrength = ((screenCoord - 0.5) * ABERRATION_PIX_SIZE) / vec2(viewWidth, viewHeight);
 
-            vec3 color = vec3(texture2D(gcolor, mix(screenCoord, vec2(0.5), chromaStrength)).r,
+            vec3 color = vec3(texture2D(gcolor, screenCoord - chromaStrength).r,
                 texture2D(gcolor, screenCoord).g,
-                texture2D(gcolor, mix(screenCoord, vec2(0.5), -chromaStrength)).b);
+                texture2D(gcolor, screenCoord + chromaStrength).b);
         #else
             vec3 color = texture2D(gcolor, screenCoord).rgb;
         #endif
