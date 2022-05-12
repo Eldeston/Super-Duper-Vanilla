@@ -12,8 +12,7 @@
 		// Fade VL
 		if(isEyeInWater != 1){
 			heightFade = fastSqrt(min(1.0, 1.0 - normalize(feetPlayerPos).y));
-			heightFade *= heightFade * heightFade;
-			heightFade *= heightFade;
+			heightFade *= heightFade * heightFade * heightFade;
 			heightFade = (1.0 - heightFade) * rainStrength * 0.25 + heightFade;
 		}
 
