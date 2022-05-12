@@ -11,7 +11,11 @@
 		heightFade = heightFade * heightFade * (1.0 - rainStrength) + fastSqrt(heightFade) * rainStrength;
 
 		#if defined VOL_LIGHT && defined SHD_ENABLE
-			vec3 endPos = feetPlayerPos * 0.14285714;
+			// Fix for rays going too far from scene
+			float dist = length(feetPlayerPos);
+			vec3 endPos = (feetPlayerPos / dist) * (min(far, dist) * 0.14285714);
+
+			// vec3 endPos = feetPlayerPos * 0.14285714;
 			vec3 startPos = endPos * dither;
 
 			vec3 rayData = vec3(0);

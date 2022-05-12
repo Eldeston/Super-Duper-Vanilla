@@ -30,7 +30,6 @@
         option.LENS_FLARE_BRIGHTNESS=Lens flare brightness
         option.MOTION_BLUR=Motion blur
         option.MOTION_BLUR_STRENGTH=Motion blur strength
-        screen.CAMERA.comment=Camera settings for tonemap, vignette, HDR, postprocessing etc.
 
 #Tonemap
     option.SATURATION=Saturation
@@ -42,7 +41,6 @@
     option.TINT_R=Red tint
     option.TINT_G=Green tint
     option.TINT_B=Blue tint
-    screen.TONEMAP.comment=Edit camera's tone settings for saturation, contrast etc.
 
 #Lighting
     option.SHD_COL=Shadow color
@@ -57,7 +55,6 @@
     value.UNDERWATER_CAUSTICS.2=Full
     option.AMBIENT_LIGHTING=Ambient lighting
     option.SUBSURFACE_SCATTERING=Subsurface scattering
-    screen.Lighting.comment=Lighting settings for shadow resolution, lightmap etc.
 
 #PBR
     option.DEFAULT_MAT=PBR mode
