@@ -7,8 +7,15 @@
 		if(VOL_LIGHT_BRIGHTNESS == 0) return vec3(0);
 
 		float totalFogDensity = FOG_TOTAL_DENSITY * ((isEyeInWater + rainStrength) * 2.56 + 1.0) * 0.5;
-		float heightFade = min(1.0, 1.0 - normalize(feetPlayerPos).y);
-		heightFade = heightFade * heightFade * (1.0 - rainStrength) + fastSqrt(heightFade) * rainStrength;
+		float heightFade = 1.0;
+
+		// Fade VL
+		if(isEyeInWater != 1){
+			heightFade = fastSqrt(min(1.0, 1.0 - normalize(feetPlayerPos).y));
+			heightFade *= heightFade * heightFade;
+			heightFade *= heightFade;
+			heightFade = (1.0 - heightFade) * rainStrength * 0.25 + heightFade;
+		}
 
 		#if defined VOL_LIGHT && defined SHD_ENABLE
 			// Fix for rays going too far from scene
