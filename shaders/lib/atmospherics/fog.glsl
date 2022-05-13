@@ -11,11 +11,11 @@ vec3 getFogRender(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY, b
     
     float eyePlayerPosLength = length(eyePlayerPos);
 
-    float totalFogDensity = FOG_TOTAL_DENSITY * ((isEyeInWater + newRainStrength) * 2.56 + 1.0);
+    float totalFogDensity = FOG_TOTAL_DENSITY * ((isEyeInWater + newRainStrength) * PI + 1.0);
     float fogMult = min(1.0, MIST_GROUND_FOG_BRIGHTNESS * (1.0 + isEyeInWater));
 
     // Mist fog
-    float mistFog = atmoFog(normalize(eyePlayerPos).y, worldPosY, eyePlayerPosLength, totalFogDensity, FOG_VERTICAL_DENSITY) * fogMult;
+    float mistFog = atmoFog(eyePlayerPos.y / eyePlayerPosLength, worldPosY, eyePlayerPosLength, totalFogDensity, FOG_VERTICAL_DENSITY) * fogMult;
     color = (fogCol - color) * mistFog + color;
 
     // Border fog
