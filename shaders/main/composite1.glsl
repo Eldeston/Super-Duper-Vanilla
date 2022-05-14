@@ -47,13 +47,10 @@ varying vec2 screenCoord;
         vec3 sceneCol = texture2D(gcolor, screenCoord).rgb + getSpectral(pixSize) * EMISSIVE_INTENSITY;
 
         #ifdef WORLD_LIGHT
-            // Get light color
-            vec3 lightCol = pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA));
-
             #if defined VOL_LIGHT && defined SHD_ENABLE
-                sceneCol += getVolLightBoxBlur(pixSize) * lightCol * (min(1.0, VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater)) * shdFade);
+                sceneCol += getVolLightBoxBlur(pixSize) * pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA)) * (min(1.0, VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater)) * shdFade);
             #else
-                sceneCol += (isEyeInWater == 1 ? lightCol * fogColor : lightCol) * (texture2D(colortex4, screenCoord).r * min(1.0, VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater)) * shdFade);
+                sceneCol += pow(isEyeInWater == 1 ? LIGHT_COL_DATA_BLOCK * fogColor : LIGHT_COL_DATA_BLOCK, vec3(GAMMA)) * (texture2D(colortex4, screenCoord).r * min(1.0, VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater)) * shdFade);
             #endif
 
         /* DRAWBUFFERS:0 */
