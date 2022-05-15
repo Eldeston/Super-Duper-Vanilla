@@ -117,7 +117,7 @@ uniform mat4 gbufferModelViewInverse;
 
         albedo.rgb = pow(albedo.rgb, vec3(GAMMA));
 
-        vec4 sceneCol = simpleShadingGbuffers(albedo, mat3(gbufferModelViewInverse) * toView(vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z)) + gbufferModelViewInverse[3].xyz);
+        vec4 sceneCol = simpleShadingGbuffers(albedo);
 
     /* DRAWBUFFERS:03 */
         gl_FragData[0] = sceneCol; // gcolor

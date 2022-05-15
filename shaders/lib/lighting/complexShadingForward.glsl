@@ -33,11 +33,18 @@ vec4 complexShadingGbuffers(matPBR material, vec3 eyePlayerPos, vec3 feetPlayerP
 				// Cave light leak fix
 				float caveFixShdFactor = isEyeInWater == 1 ? 1.0 : smoothstep(0.4, 0.8, lmCoord.y) * (1.0 - eyeBrightFact) + eyeBrightFact;
 
+				// Get shadow pos
 				vec3 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz;
+				
+				// Bias mutilplier, adjusts according to the current shadow distance and resolution
+				float biasAdjustMult = exp2(max(0.0, (shadowDistance - shadowMapResolution * 0.125) / shadowDistance));
 				float distortFactor = getDistortFactor(shdPos.xy);
-				shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * material.normal) * squared(exp2(max(0.0, (shadowDistance - shadowMapResolution * 0.125) / shadowDistance))) * distortFactor * 0.5;
+
+				// Apply bias according to normal in shadow space
+				shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * material.normal) * biasAdjustMult * biasAdjustMult * distortFactor * 0.5;
 				shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
 
+				// Sample shadows
 				#ifdef SHD_FILTER
 					#if ANTI_ALIASING == 2
 						shadowCol = getShdFilter(shdPos, toRandPerFrame(texture2D(noisetex, gl_FragCoord.xy * 0.03125).x, frameTimeCounter) * PI2) * caveFixShdFactor * shdFade * material.parallaxShd;
@@ -49,6 +56,7 @@ vec4 complexShadingGbuffers(matPBR material, vec3 eyePlayerPos, vec3 feetPlayerP
 				#endif
 			}
 		#else
+			// Sample fake shadows
 			float shadowCol = smoothstep(0.94, 0.96, lmCoord.y) * shdFade * material.parallaxShd;
 		#endif
 

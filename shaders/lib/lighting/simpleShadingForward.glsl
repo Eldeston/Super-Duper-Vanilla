@@ -3,7 +3,7 @@
 #endif
 
 #ifdef CLOUDS
-	vec4 simpleShadingGbuffers(vec4 albedo, vec3 feetPlayerPos){
+	vec4 simpleShadingGbuffers(vec4 albedo){
 		// Get lightmaps and add simple sky GI
 		vec3 totalDiffuse = pow(SKY_COL_DATA_BLOCK, vec3(GAMMA)) +
 			pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
@@ -22,23 +22,31 @@
 
 				// If the area isn't shaded, apply shadow mapping
 				if(NL > 0){
+					// Get shadow pos
+					vec3 feetPlayerPos = mat3(gbufferModelViewInverse) * toView(vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z)) + gbufferModelViewInverse[3].xyz;
 					vec3 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz;
+					
+					// Bias mutilplier, adjusts according to the current shadow distance and resolution
+					float biasAdjustMult = exp2(max(0.0, (shadowDistance - shadowMapResolution * 0.125) / shadowDistance));
 					float distortFactor = getDistortFactor(shdPos.xy);
-					shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * norm) * squared(exp2(max(0.0, (shadowDistance - shadowMapResolution * 0.125) / shadowDistance))) * distortFactor * 0.5;
+					
+					// Apply bias according to normal in shadow space
+					shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * norm) * biasAdjustMult * biasAdjustMult * distortFactor * 0.5;
 					shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
 
+					// Sample shadows
 					#ifdef SHD_FILTER
 						#if ANTI_ALIASING == 2
-							shadowCol = getShdFilter(shdPos, toRandPerFrame(texture2D(noisetex, gl_FragCoord.xy * 0.03125).x, frameTimeCounter) * PI2) * shdFade;
+							shadowCol = getShdFilter(shdPos, toRandPerFrame(texture2D(noisetex, gl_FragCoord.xy * 0.03125).x, frameTimeCounter) * PI2);
 						#else
-							shadowCol = getShdFilter(shdPos, texture2D(noisetex, gl_FragCoord.xy * 0.03125).x * PI2) * shdFade;
+							shadowCol = getShdFilter(shdPos, texture2D(noisetex, gl_FragCoord.xy * 0.03125).x * PI2);
 						#endif
 					#else
-						shadowCol = getShdTex(shdPos) * shdFade;
+						shadowCol = getShdTex(shdPos);
 					#endif
 				}
 
-				totalDiffuse += (NL * shadowCol * (1.0 - rainDiff) + rainDiff) * pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA));
+				totalDiffuse += (shadowCol * NL * (1.0 - rainDiff) + rainDiff) * pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA));
 			#else
 				totalDiffuse += (NL * (1.0 - rainDiff) + rainDiff) * pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA));
 			#endif
@@ -47,7 +55,7 @@
 		return vec4(albedo.rgb * totalDiffuse, albedo.a);
 	}
 #else
-	vec4 simpleShadingGbuffers(vec4 albedo, vec3 feetPlayerPos){
+	vec4 simpleShadingGbuffers(vec4 albedo){
 		// Get lightmaps and add simple sky GI
 		vec3 totalDiffuse = pow(SKY_COL_DATA_BLOCK * lmCoord.y, vec3(GAMMA)) +
 			pow((lmCoord.x * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B), vec3(GAMMA)) +
@@ -68,27 +76,36 @@
 					// Cave light leak fix
 					float caveFixShdFactor = isEyeInWater == 1 ? 1.0 : smoothstep(0.4, 0.8, lmCoord.y) * (1.0 - eyeBrightFact) + eyeBrightFact;
 
+					// Get shadow pos
+					vec3 feetPlayerPos = mat3(gbufferModelViewInverse) * toView(vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z)) + gbufferModelViewInverse[3].xyz;
 					vec3 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz;
+					
+					// Bias mutilplier, adjusts according to the current shadow distance and resolution
+					float biasAdjustMult = exp2(max(0.0, (shadowDistance - shadowMapResolution * 0.125) / shadowDistance));
 					float distortFactor = getDistortFactor(shdPos.xy);
-					shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * norm) * squared(exp2(max(0.0, (shadowDistance - shadowMapResolution * 0.125) / shadowDistance))) * distortFactor;
+
+					// Apply bias according to normal in shadow space
+					shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * norm) * biasAdjustMult * biasAdjustMult * distortFactor;
 					shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
 
+					// Sample shadows
 					#ifdef SHD_FILTER
 						#if ANTI_ALIASING == 2
-							shadowCol = getShdFilter(shdPos, toRandPerFrame(texture2D(noisetex, gl_FragCoord.xy * 0.03125).x, frameTimeCounter) * PI2) * shdFade;
+							shadowCol = getShdFilter(shdPos, toRandPerFrame(texture2D(noisetex, gl_FragCoord.xy * 0.03125).x, frameTimeCounter) * PI2);
 						#else
-							shadowCol = getShdFilter(shdPos, texture2D(noisetex, gl_FragCoord.xy * 0.03125).x * PI2) * shdFade;
+							shadowCol = getShdFilter(shdPos, texture2D(noisetex, gl_FragCoord.xy * 0.03125).x * PI2);
 						#endif
 					#else
-						shadowCol = getShdTex(shdPos) * caveFixShdFactor * shdFade;
+						shadowCol = getShdTex(shdPos) * caveFixShdFactor;
 					#endif
 				}
 			#else
-				float shadowCol = smoothstep(0.94, 0.96, lmCoord.y) * shdFade;
+				// Sample fake shadows
+				float shadowCol = smoothstep(0.94, 0.96, lmCoord.y);
 			#endif
 
 			float rainDiff = rainStrength * 0.5;
-			totalDiffuse += (NL * shadowCol * (1.0 - rainDiff) + lmCoord.y * lmCoord.y * rainDiff) * pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA));
+			totalDiffuse += (shadowCol * NL * shdFade * (1.0 - rainDiff) + lmCoord.y * lmCoord.y * rainDiff) * pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA));
 		#endif
 
 		return vec4(albedo.rgb * totalDiffuse, albedo.a);

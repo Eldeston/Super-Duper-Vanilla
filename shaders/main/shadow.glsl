@@ -82,7 +82,7 @@ varying vec3 glcolor;
             if(isEyeInWater == 1 && int(blockId + 0.5) == 10000) shdColor.rgb *= squared(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 4.0;
         #endif
 
-        shdColor.rgb = saturate(pow(shdColor.rgb * glcolor, vec3(GAMMA)));
+        shdColor.rgb = pow(shdColor.rgb * glcolor, vec3(GAMMA));
 
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = shdColor;
