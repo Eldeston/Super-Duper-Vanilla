@@ -1,5 +1,4 @@
 uniform float blindness;
-uniform float far;
 
 float atmoFog(float nPlayerPosY, float worldPosY, float playerPosLength, float totalDensity, float verticalFogDensity){
     return min(1.0, (totalDensity / verticalFogDensity) * exp(-max(worldPosY, 0.0) * verticalFogDensity) * (1.0 - exp(-playerPosLength * nPlayerPosY * verticalFogDensity)) / nPlayerPosY);
@@ -8,7 +7,7 @@ float atmoFog(float nPlayerPosY, float worldPosY, float playerPosLength, float t
 vec3 getFogRender(vec3 eyePlayerPos, vec3 color, vec3 fogCol, float worldPosY, bool skyMask){
     // If sky return fogCol
     if(skyMask) return fogCol * exp(-far * blindness * 0.375);
-    
+
     float eyePlayerPosLength = length(eyePlayerPos);
 
     float totalFogDensity = FOG_TOTAL_DENSITY * ((isEyeInWater + newRainStrength) * PI + 1.0);
