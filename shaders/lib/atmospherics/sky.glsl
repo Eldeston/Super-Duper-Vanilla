@@ -94,7 +94,7 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float LV, bool isSky){
         finalCol += lightColLinear * pow(max(LV, 0.0) * 0.75, abs(nPlayerPos.y) + 1.0) * shdFade;
     #endif
 
-    float voidGradient = smootherstep((nPlayerPos.y + eyeBrightFact - 0.81) * PI);
+    float voidGradient = saturate((nPlayerPos.y + eyeBrightFact - 1.0) * PI2);
     return finalCol * (isEyeInWater == 0 ? voidGradient * (1.0 - eyeBrightFact) + eyeBrightFact : voidGradient) + pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
 }
 
