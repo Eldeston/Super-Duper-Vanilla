@@ -93,7 +93,7 @@ varying vec2 screenCoord;
             eBloom *= 0.04166666;
 
             // Apply bloom
-            color = mix(color, eBloom, 0.2 * BLOOM_BRIGHTNESS);
+            color = mix(color, eBloom, 0.18 * BLOOM_BRIGHTNESS);
         #endif
 
         #if defined LENS_FLARE && defined WORLD_LIGHT
