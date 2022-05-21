@@ -90,7 +90,7 @@ varying vec2 screenCoord;
 
             // Average the total samples
             // eBloom *= 0.16666667 * 0.25;
-            eBloom *= 0.04166666;
+            eBloom *= 0.04166667;
 
             // Apply bloom
             color = mix(color, eBloom, 0.16 * BLOOM_BRIGHTNESS);
