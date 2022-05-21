@@ -1,4 +1,4 @@
-#version 120
+#version 130
 
 #define COMPOSITE7
 #define VERTEX

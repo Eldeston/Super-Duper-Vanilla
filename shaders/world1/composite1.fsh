@@ -1,4 +1,4 @@
-#version 120
+#version 130
 
 #define COMPOSITE1
 #define FRAGMENT

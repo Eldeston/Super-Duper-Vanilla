@@ -1,4 +1,4 @@
-#version 120
+#version 130
 
 #define DEFERRED1
 #define FRAGMENT

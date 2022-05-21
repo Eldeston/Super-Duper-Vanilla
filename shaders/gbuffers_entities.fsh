@@ -1,4 +1,4 @@
-#version 120
+#version 130
 
 // For the use of texture2DGradARB in PBR.glsl
 #extension GL_ARB_shader_texture_lod : enable
