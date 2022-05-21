@@ -52,7 +52,7 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float LV, bool isSky){
     #endif
 
     #ifdef WORLD_SKY_GROUND
-        vec3 finalCol = pow(SKY_COL_DATA_BLOCK, vec3(GAMMA)) * vec2(1.0 - smoothen((-nPlayerPos.y * 4.0) / (isEyeInWater * 2.56 + newRainStrength + 1.0)), 1).xxy;
+        vec3 finalCol = pow(SKY_COL_DATA_BLOCK, vec3(GAMMA)) * vec2(smoothstep(1.0, 0.0, (-nPlayerPos.y * 4.0) / (rainStrength * PI + 1.0)), 1).xxy;
     #else
         vec3 finalCol = pow(SKY_COL_DATA_BLOCK, vec3(GAMMA));
     #endif

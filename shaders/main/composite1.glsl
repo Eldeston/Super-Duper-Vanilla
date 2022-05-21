@@ -18,6 +18,9 @@ varying vec2 screenCoord;
 
         #include "/lib/universalVars.glsl"
 
+        // Get eye in water uniform
+        uniform int isEyeInWater;
+
         #if defined VOL_LIGHT && defined SHD_ENABLE
             vec3 getVolLightBoxBlur(vec2 pixSize){
                 // Apply simple box blur

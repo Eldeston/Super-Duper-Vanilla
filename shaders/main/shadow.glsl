@@ -55,12 +55,12 @@ varying vec3 glcolor;
 
 #ifdef FRAGMENT
     uniform sampler2D tex;
-
-    #if UNDERWATER_CAUSTICS == 1
-        uniform int isEyeInWater;
-    #endif
     
-    #if UNDERWATER_CAUSTICS != 0
+    #if UNDERWATER_CAUSTICS != 0 && defined SHD_COL
+        #if UNDERWATER_CAUSTICS == 1
+            uniform int isEyeInWater;
+        #endif
+
         #if TIMELAPSE_MODE != 0
             uniform float animationFrameTime;
 

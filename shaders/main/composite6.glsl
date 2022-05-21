@@ -60,6 +60,9 @@ varying vec2 screenCoord;
 
         #include "/lib/universalVars.glsl"
 
+        // Get eye in water uniform
+        uniform int isEyeInWater;
+
         #include "/lib/utility/convertScreenSpace.glsl"
         
         #include "/lib/post/lensFlare.glsl"

@@ -81,6 +81,9 @@ uniform mat4 gbufferModelViewInverse;
 
     #include "/lib/universalVars.glsl"
 
+    // Get eye in water uniform
+    uniform int isEyeInWater;
+
     // Get night vision
     uniform float nightVision;
 
