@@ -22,9 +22,7 @@ const float sunPathRotation = 30.0; // Light angle [-60.0 -55.0 -50.0 -45.0 -40.
 	vec3 getShdTex(vec3 shdPos){
 		#ifdef SHD_COL
 			float shd0 = shadow2D(shadowtex0, shdPos).x;
-			float shd1 = shadow2D(shadowtex1, shdPos).x - shd0;
-
-			return texture2D(shadowcolor0, shdPos.xy).rgb * (shd1 - shd1 * shd0) + shd0;
+			return texture2D(shadowcolor0, shdPos.xy).rgb * shadow2D(shadowtex1, shdPos).x * (1.0 - shd0) + shd0;
 		#else
 			return shadow2D(shadowtex0, shdPos).xxx;
 		#endif

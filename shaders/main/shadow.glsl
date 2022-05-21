@@ -74,17 +74,34 @@ varying vec3 glcolor;
     #endif
 
     void main(){
-        vec4 shdColor = texture2D(tex, texCoord);
+        #ifdef SHD_COL
+            vec4 shdAlbedo = texture2D(tex, texCoord);
 
-        #if UNDERWATER_CAUSTICS == 2
-            if(int(blockId + 0.5) == 10000) shdColor.rgb *= squared(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 4.0;
-        #elif UNDERWATER_CAUSTICS == 1
-            if(isEyeInWater == 1 && int(blockId + 0.5) == 10000) shdColor.rgb *= squared(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 4.0;
+            // Alpha test, discard immediately
+            if(shdAlbedo.a <= ALPHA_THRESHOLD) discard;
+
+            // If the object is not opaque, proceed with shadow coloring and caustics
+            if(shdAlbedo.a != 1){
+                #if UNDERWATER_CAUSTICS == 2
+                    if(int(blockId + 0.5) == 10000) shdAlbedo.rgb *= squared(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 4.0;
+                #elif UNDERWATER_CAUSTICS == 1
+                    if(isEyeInWater == 1 && int(blockId + 0.5) == 10000) shdAlbedo.rgb *= squared(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 4.0;
+                #endif
+
+                shdAlbedo.rgb = pow(shdAlbedo.rgb * glcolor, vec3(GAMMA));
+            // If the object is fully opaque, set to black. This fixes "smeared" filtered colored shadows
+            } else shdAlbedo.rgb = vec3(0);
+
+        /* DRAWBUFFERS:0 */
+            gl_FragData[0] = shdAlbedo;
+        #else
+            float shdAlbedoAlpha = texture2D(tex, texCoord).a;
+
+            // Alpha test, discard immediately
+            if(shdAlbedoAlpha <= ALPHA_THRESHOLD) discard;
+
+        /* DRAWBUFFERS:0 */
+            gl_FragData[0] = vec4(0, 0, 0, shdAlbedoAlpha);
         #endif
-
-        shdColor.rgb = pow(shdColor.rgb * glcolor, vec3(GAMMA));
-
-    /* DRAWBUFFERS:0 */
-        gl_FragData[0] = shdColor;
     }
 #endif
