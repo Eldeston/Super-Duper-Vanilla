@@ -193,7 +193,7 @@ uniform vec3 cameraPosition;
             #ifdef STYLIZED_WATER_ABSORPTION
                 if(isEyeInWater == 0){
                         float depthBrightness = exp(-waterDepth * 0.32);
-                        material.albedo.rgb = mix(material.albedo.rgb * waterNoise, saturate(toneSaturation(material.albedo.rgb, 2.0) * 2.0), depthBrightness);
+                        material.albedo.rgb = min(vec3(1), material.albedo.rgb * mix(waterNoise, 2.0, depthBrightness));
                         material.albedo.a = fastSqrt(material.albedo.a) * (1.0 - depthBrightness);
                 } else material.albedo.rgb *= waterNoise;
             #else
