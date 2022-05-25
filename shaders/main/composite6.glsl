@@ -60,7 +60,7 @@ varying vec2 screenCoord;
 
         #include "/lib/universalVars.glsl"
 
-        // Get eye in water uniform
+        // Get is eye in water
         uniform int isEyeInWater;
 
         #include "/lib/utility/convertScreenSpace.glsl"
@@ -88,7 +88,7 @@ varying vec2 screenCoord;
             eBloom += getBloomTile(pixSize, vec2(0.135, 0.3625), 6.0);
             eBloom += getBloomTile(pixSize, vec2(0.160625, 0.3625), 7.0);
 
-            // Average the total samples
+            // Average the total samples (1 / 6 bloom tiles multiplied by 1 / 4 samples used for the box blur)
             // eBloom *= 0.16666667 * 0.25;
             eBloom *= 0.04166667;
 

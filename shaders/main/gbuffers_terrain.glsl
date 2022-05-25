@@ -130,7 +130,7 @@ uniform vec3 cameraPosition;
 
     #include "/lib/universalVars.glsl"
 
-    // Get eye in water uniform
+    // Get is eye in water
     uniform int isEyeInWater;
 
     // Get night vision

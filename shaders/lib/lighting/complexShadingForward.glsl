@@ -31,7 +31,7 @@ vec4 complexShadingGbuffers(matPBR material, vec3 eyePlayerPos, vec3 feetPlayerP
 			// If the area isn't shaded, apply shadow mapping
 			if(dirLight > 0){
 				// Cave light leak fix
-				float caveFixShdFactor = isEyeInWater == 1 ? 1.0 : smoothstep(0.4, 0.8, lmCoord.y) * (1.0 - eyeBrightFact) + eyeBrightFact;
+				float caveFixShdFactor = isEyeInWater == 1 ? 1.0 : min(1.0, lmCoord.y * 2.0) * (1.0 - eyeBrightFact) + eyeBrightFact;
 
 				// Get shadow pos
 				vec3 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz;
