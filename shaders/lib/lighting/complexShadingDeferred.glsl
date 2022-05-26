@@ -5,8 +5,15 @@ vec3 complexShadingDeferred(vec3 sceneCol, vec3 sRGBLightCol, vec3 screenPos, ve
 	#endif
 
 	#ifdef SSGI
-		// Get SSGI
-		sceneCol += albedo * getSSGICol(viewPos, screenPos, gBMVNorm, dither.xy);
+		// Get SSGI coord
+		vec3 SSGIcoord = getSSGICoord(viewPos, screenPos, gBMVNorm, dither.xy);
+
+		// If sky don't do SSGI
+		#ifdef PREVIOUS_FRAME
+			if(SSGIcoord.z < 0.5) sceneCol += albedo * texture2D(colortex5, toPrevScreenPos(SSGIcoord.xy)).rgb;
+		#else
+			if(SSGIcoord.z < 0.5) sceneCol += albedo * texture2D(gcolor, SSGIcoord.xy).rgb;
+		#endif
 	#endif
 
 	// If smoothness is 0, don't do reflections
@@ -29,10 +36,16 @@ vec3 complexShadingDeferred(vec3 sceneCol, vec3 sRGBLightCol, vec3 screenPos, ve
 				normal = mat3(gbufferModelViewInverse) * gBMVNorm;
 			#endif
 
-			// Get SSR color
-			vec4 SSRCol = getSSRCol(viewPos, screenPos, gBMVNorm, dither.x);
-
-			vec3 reflectCol = SSRCol.a < 0.5 ? getSkyRender(vec3(0), sRGBLightCol, reflect(nEyePlayerPos, normal), true) : SSRCol.rgb;
+			// Get SSR coord
+			vec3 SSRCoord = getSSRCoord(viewPos, screenPos, gBMVNorm, dither.x);
+			
+			#ifdef PREVIOUS_FRAME
+				// Get reflections and check for sky
+				vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyRender(vec3(0), sRGBLightCol, reflect(nEyePlayerPos, normal), true) : texture2D(colortex5, toPrevScreenPos(SSRCoord.xy)).rgb;
+			#else
+				// Get reflections and check for sky
+				vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyRender(vec3(0), sRGBLightCol, reflect(nEyePlayerPos, normal), true) : texture2D(gcolor, SSRCoord.xy).rgb;
+			#endif
 		#else
 			vec3 reflectCol = getSkyRender(vec3(0), sRGBLightCol, reflect(nEyePlayerPos, normal), true);
 		#endif
