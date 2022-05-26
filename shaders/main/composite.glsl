@@ -99,14 +99,21 @@ varying vec2 screenCoord;
 
         // If the object is a transparent render separate lighting
         if(texture2D(depthtex1, screenCoord).x > screenPos.z){
+            // Get light color in sRGB
+            #ifdef WORLD_LIGHT
+                vec3 sRGBLightCol = LIGHT_COL_DATA_BLOCK;
+            #else
+                vec3 sRGBLightCol = vec3(0);
+            #endif
+
             // Declare and get materials
             vec2 matRaw0 = texture2D(colortex3, screenCoord).xy;
 
             // Apply deffered shading
-            sceneCol = complexShadingDeferred(screenPos, viewPos, eyePlayerPos, texture2D(colortex1, screenCoord).rgb * 2.0 - 1.0, texture2D(colortex2, screenCoord).rgb, sceneCol, matRaw0.x, matRaw0.y, dither);
+            sceneCol = complexShadingDeferred(sceneCol, sRGBLightCol, screenPos, viewPos, eyePlayerPos, texture2D(colortex1, screenCoord).rgb * 2.0 - 1.0, texture2D(colortex2, screenCoord).rgb, matRaw0.x, matRaw0.y, dither);
 
             // Fog and sky calculation
-            sceneCol = getFogRender(eyePlayerPos, sceneCol, getSkyRender(vec3(0), normalize(eyePlayerPos), false), feetPlayerPos.y + cameraPosition.y, false);
+            sceneCol = getFogRender(eyePlayerPos, sceneCol, getSkyRender(vec3(0), sRGBLightCol, normalize(eyePlayerPos), false), feetPlayerPos.y + cameraPosition.y, false);
         }
 
     /* DRAWBUFFERS:0 */

@@ -1,4 +1,4 @@
-vec3 complexShadingDeferred(vec3 screenPos, vec3 viewPos, vec3 eyePlayerPos, vec3 normal, vec3 albedo, vec3 sceneCol, float metallic, float smoothness, vec3 dither){
+vec3 complexShadingDeferred(vec3 sceneCol, vec3 sRGBLightCol, vec3 screenPos, vec3 viewPos, vec3 eyePlayerPos, vec3 normal, vec3 albedo, float metallic, float smoothness, vec3 dither){
 	#if defined SSGI || defined SSR
 		// Get model view normal
 		vec3 gBMVNorm = mat3(gbufferModelView) * normal;
@@ -13,8 +13,10 @@ vec3 complexShadingDeferred(vec3 screenPos, vec3 viewPos, vec3 eyePlayerPos, vec
 	if(smoothness > 0.005){
 		bool isMetal = metallic > 0.9;
 
+		// Get normalized eye player pos
+		vec3 nEyePlayerPos = normalize(eyePlayerPos);
 		// Get fresnel
-		vec3 fresnel = getFresnelSchlick(max(dot(normal, normalize(-eyePlayerPos)), 0.0),
+		vec3 fresnel = getFresnelSchlick(max(dot(normal, -nEyePlayerPos), 0.0),
 			isMetal ? albedo : vec3(metallic)) * smoothness;
 
 		// Get SSR
@@ -30,9 +32,9 @@ vec3 complexShadingDeferred(vec3 screenPos, vec3 viewPos, vec3 eyePlayerPos, vec
 			// Get SSR color
 			vec4 SSRCol = getSSRCol(viewPos, screenPos, gBMVNorm, dither.x);
 
-			vec3 reflectCol = SSRCol.a < 0.5 ? getSkyRender(vec3(0), normalize(reflect(eyePlayerPos, normal)), true) : SSRCol.rgb;
+			vec3 reflectCol = SSRCol.a < 0.5 ? getSkyRender(vec3(0), sRGBLightCol, reflect(nEyePlayerPos, normal), true) : SSRCol.rgb;
 		#else
-			vec3 reflectCol = getSkyRender(vec3(0), normalize(reflect(eyePlayerPos, normal)), true);
+			vec3 reflectCol = getSkyRender(vec3(0), sRGBLightCol, reflect(nEyePlayerPos, normal), true);
 		#endif
 
 		// Simplified and modified version of BSL's reflection PBR calculation
