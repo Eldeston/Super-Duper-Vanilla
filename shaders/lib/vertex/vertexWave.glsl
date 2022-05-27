@@ -34,7 +34,7 @@ void getWave(inout vec3 vertexPos, in vec3 worldPos, in vec2 texCoord, in vec2 m
 
 		if(CURRENT_SPEED > 0){
 			// Lava
-			if(id == 10001) vertexPos.y += currentWeight * 0.1;
+			if(id == 10001) vertexPos.y += currentWeight * 0.05;
 
 			// Single and doubles grounded and hanged underwater
 			else if(id >= 10009 && id <= 10012) vertexPos.x += currentWeight * 0.1;
