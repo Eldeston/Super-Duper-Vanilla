@@ -181,7 +181,7 @@ uniform sampler2D texture;
         material.porosity = SRPSSE.b < 0.252 ? SRPSSE.b * 3.984 : 0.0;
 
         // Assign SS
-        material.ss = SRPSSE.b > 0.252 ? (SRPSSE.b - 0.250980392) * 1.33507853 : 0.0;
+        material.ss = SRPSSE.b > 0.252 ? (SRPSSE.b - 0.2509804) * 1.3350785 : 0.0;
 
         // Assign smoothness
         material.smoothness = SRPSSE.r;
@@ -190,7 +190,7 @@ uniform sampler2D texture;
         material.metallic = SRPSSE.g;
 
         // Assign emissive
-        material.emissive = SRPSSE.a * float(SRPSSE.a != 1);
+        material.emissive = SRPSSE.a != 1 ? SRPSSE.a : 0.0;
 
         // Assign ambient
         #ifdef TERRAIN

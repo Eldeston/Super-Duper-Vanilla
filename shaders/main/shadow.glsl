@@ -89,7 +89,7 @@ varying vec3 glcolor;
                 #endif
 
                 shdAlbedo.rgb = pow(shdAlbedo.rgb * glcolor, vec3(GAMMA));
-            // If the object is fully opaque, set to black. This fixes "smeared" filtered colored shadows
+            // If the object is fully opaque, set to black. This fixes "color leaking" filtered shadows
             } else shdAlbedo.rgb = vec3(0);
 
         /* DRAWBUFFERS:0 */
