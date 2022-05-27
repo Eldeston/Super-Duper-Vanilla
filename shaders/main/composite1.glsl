@@ -57,10 +57,10 @@ varying vec2 screenCoord;
             #endif
 
         /* DRAWBUFFERS:0 */
-            gl_FragData[0] = vec4(sceneCol, 1); // gcolor
+            gl_FragData[0] = vec4(max(vec3(0), sceneCol), 1); // gcolor
         #else
         /* DRAWBUFFERS:0 */
-            gl_FragData[0] = vec4(sceneCol, 1); // gcolor
+            gl_FragData[0] = vec4(max(vec3(0), sceneCol), 1); // gcolor
         #endif
     }
 #endif

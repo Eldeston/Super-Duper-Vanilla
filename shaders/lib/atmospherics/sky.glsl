@@ -82,7 +82,7 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 skyCol, vec3 lightCol, vec3 nPlayerPos, fl
     }
 
     #if WORLD_SUN_MOON == 1 && defined WORLD_LIGHT
-        skyCol += lightCol * pow(max(LV, 0.0) * 0.75, abs(nPlayerPos.y) + 1.0) * shdFade;
+        skyCol += lightCol * pow(max(LV, 0.0) * 0.70710678, abs(nPlayerPos.y) + 1.0) * shdFade;
     #endif
 
     float voidGradient = saturate((nPlayerPos.y + eyeBrightFact - 1.0) * PI2);
