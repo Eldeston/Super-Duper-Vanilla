@@ -16,7 +16,7 @@ varying vec2 screenCoord;
     uniform sampler2D colortex1;
     uniform sampler2D colortex2;
     uniform sampler2D colortex3;
-    
+
     #if defined STORY_MODE_CLOUDS && !defined FORCE_DISABLE_CLOUDS
         uniform sampler2D colortex4;
     #endif
@@ -70,7 +70,7 @@ varying vec2 screenCoord;
     /* Time uniforms */
     // Get frame time
     uniform float frameTimeCounter;
-    
+
     #include "/lib/universalVars.glsl"
 
     // Get is eye in water
@@ -78,6 +78,10 @@ varying vec2 screenCoord;
 
     // Get night vision
     uniform float nightVision;
+
+	// Get far and near plane distance value
+	uniform float far;
+	uniform float near;
 
     #include "/lib/utility/convertViewSpace.glsl"
     #include "/lib/utility/convertScreenSpace.glsl"
@@ -100,7 +104,7 @@ varying vec2 screenCoord;
     void main(){
         // Declare and get positions
         vec3 screenPos = vec3(screenCoord, texture2D(depthtex0, screenCoord).x);
-        
+
         // Get sky mask
         bool skyMask = screenPos.z == 1;
 
@@ -108,7 +112,7 @@ varying vec2 screenCoord;
         #if ANTI_ALIASING == 2
             if(skyMask) screenPos.xy += jitterPos(-0.5);
         #endif
-        
+
         vec3 viewPos = toView(screenPos);
         vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
         vec3 feetPlayerPos = eyePlayerPos + gbufferModelViewInverse[3].xyz;

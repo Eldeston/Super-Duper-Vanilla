@@ -17,6 +17,11 @@ vec3 rayTraceScene(vec3 screenPos, vec3 viewPos, vec3 rayDir, float dither, int 
 		return vec3(handScreenPos, texture2D(depthtex0, handScreenPos).x != 1);
 	}
 
+	// Calculate where raytrace should start (fix screen-space reflection whole bug)
+	// 1.73205080757 is sqrt(3.0)
+	float rayLength = ((viewPos.z + rayDir.z * far * 1.73205080757) > -near) ? (-near - viewPos.z) / rayDir.z : far * 1.73205080757;
+	rayDir *= rayLength;
+
 	// Get screenspace rayDir
 	vec3 screenPosRayDir = normalize(toScreen(viewPos + rayDir) - screenPos) / steps;
 	// Add dithering to our "startPos"
@@ -34,6 +39,6 @@ vec3 rayTraceScene(vec3 screenPos, vec3 viewPos, vec3 rayDir, float dither, int 
 			return vec3(binarySearch(screenPosRayDir, screenPos, binarySearchSteps).xy, currDepth != 1);
 		}
 	}
-	
+
 	return vec3(0);
 }

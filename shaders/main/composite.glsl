@@ -14,7 +14,7 @@ varying vec2 screenCoord;
     uniform sampler2D colortex1;
     uniform sampler2D colortex2;
     uniform sampler2D colortex3;
-    
+
     #if defined STORY_MODE_CLOUDS && !defined FORCE_DISABLE_CLOUDS
         uniform sampler2D colortex4;
     #endif
@@ -64,6 +64,10 @@ varying vec2 screenCoord;
     // Get night vision
     uniform float nightVision;
 
+	// Get far and near plane distance value
+	uniform float far;
+	uniform float near;
+
     #include "/lib/lighting/shdDistort.glsl"
     #include "/lib/utility/convertViewSpace.glsl"
     #include "/lib/utility/convertScreenSpace.glsl"
@@ -80,7 +84,7 @@ varying vec2 screenCoord;
     #include "/lib/rayTracing/volLight.glsl"
 
     #include "/lib/lighting/complexShadingDeferred.glsl"
-    
+
     void main(){
         // Declare and get positions
         vec3 screenPos = vec3(screenCoord, texture2D(depthtex0, screenCoord).x);
@@ -124,7 +128,7 @@ varying vec2 screenCoord;
         #ifdef WORLD_LIGHT
         /* DRAWBUFFERS:04 */
             gl_FragData[1] = vec4(getGodRays(feetPlayerPos, dither.x), 1); //colortex4
-            
+
             #ifdef PREVIOUS_FRAME
             /* DRAWBUFFERS:045 */
                 gl_FragData[2] = vec4(sceneCol, 1); //colortex5
