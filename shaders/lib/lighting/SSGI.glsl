@@ -8,7 +8,7 @@ vec3 cosWeightedRandHemisphereDir(vec3 norm, vec2 seed){
     float rx = ra * cos(PI2 * r.x);
     float ry = ra * sin(PI2 * r.x);
     float rz = sqrt(1.0 - r.y);
-    vec3  rr = vec3(rx * uu + ry * vv + rz * norm);
+    vec3 rr = vec3(rx * uu + ry * vv + rz * norm);
 
     return normalize(rr);
 }

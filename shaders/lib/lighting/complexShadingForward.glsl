@@ -9,8 +9,8 @@ vec4 complexShadingGbuffers(matPBR material, vec3 eyePlayerPos, vec3 feetPlayerP
 		pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA)) * material.ambient;
 
 	#ifdef WORLD_LIGHT
-		// Get light color
-		vec3 lightCol = LIGHT_COL_DATA_BLOCK;
+		// Get sRGB light color
+		vec3 sRGBLightCol = LIGHT_COL_DATA_BLOCK;
 
 		float NL = max(0.0, dot(material.normal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)));
 		// also equivalent to:
@@ -61,7 +61,7 @@ vec4 complexShadingGbuffers(matPBR material, vec3 eyePlayerPos, vec3 feetPlayerP
 		#endif
 
 		float rainDiff = rainStrength * 0.5;
-		totalDiffuse += (dirLight * shadowCol * (1.0 - rainDiff) + lmCoord.y * lmCoord.y * material.ambient * rainDiff) * pow(lightCol, vec3(GAMMA));
+		totalDiffuse += (dirLight * shadowCol * (1.0 - rainDiff) + lmCoord.y * lmCoord.y * material.ambient * rainDiff) * pow(sRGBLightCol, vec3(GAMMA));
 	#endif
 
 	totalDiffuse = material.albedo.rgb * (totalDiffuse + material.emissive * EMISSIVE_INTENSITY);
@@ -70,7 +70,8 @@ vec4 complexShadingGbuffers(matPBR material, vec3 eyePlayerPos, vec3 feetPlayerP
 		if(NL > 0){
 			// Get specular GGX
 			vec3 specCol = getSpecBRDF(normalize(-eyePlayerPos), vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), NL, 1.0 - material.smoothness);
-			totalDiffuse += min(vec3(SUN_MOON_INTENSITY * SUN_MOON_INTENSITY), specCol) * lightCol * (1.0 - rainStrength) * shadowCol;
+			// Needs to multiplied twice in order for the speculars to look relatively "correct"
+			totalDiffuse += min(vec3(SUN_MOON_INTENSITY * SUN_MOON_INTENSITY), specCol) * sRGBLightCol * (1.0 - rainStrength) * shadowCol * 2.0;
 		}
 	#endif
 

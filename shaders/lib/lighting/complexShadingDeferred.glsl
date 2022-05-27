@@ -1,4 +1,4 @@
-vec3 complexShadingDeferred(vec3 sceneCol, vec3 sRGBLightCol, vec3 screenPos, vec3 viewPos, vec3 eyePlayerPos, vec3 normal, vec3 albedo, float metallic, float smoothness, vec3 dither){
+vec3 complexShadingDeferred(vec3 sceneCol, vec3 skyCol, vec3 sRGBLightCol, vec3 screenPos, vec3 viewPos, vec3 eyePlayerPos, vec3 normal, vec3 albedo, float metallic, float smoothness, vec3 dither){
 	#if defined SSGI || defined SSR
 		// Get model view normal
 		vec3 gBMVNorm = mat3(gbufferModelView) * normal;
@@ -41,13 +41,13 @@ vec3 complexShadingDeferred(vec3 sceneCol, vec3 sRGBLightCol, vec3 screenPos, ve
 			
 			#ifdef PREVIOUS_FRAME
 				// Get reflections and check for sky
-				vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyRender(vec3(0), sRGBLightCol, reflect(nEyePlayerPos, normal), true) : texture2D(colortex5, toPrevScreenPos(SSRCoord.xy)).rgb;
+				vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyRender(vec3(0), skyCol, sRGBLightCol, reflect(nEyePlayerPos, normal), true) : texture2D(colortex5, toPrevScreenPos(SSRCoord.xy)).rgb;
 			#else
 				// Get reflections and check for sky
-				vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyRender(vec3(0), sRGBLightCol, reflect(nEyePlayerPos, normal), true) : texture2D(gcolor, SSRCoord.xy).rgb;
+				vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyRender(vec3(0), skyCol, sRGBLightCol, reflect(nEyePlayerPos, normal), true) : texture2D(gcolor, SSRCoord.xy).rgb;
 			#endif
 		#else
-			vec3 reflectCol = getSkyRender(vec3(0), sRGBLightCol, reflect(nEyePlayerPos, normal), true);
+			vec3 reflectCol = getSkyRender(vec3(0), skyCol, sRGBLightCol, reflect(nEyePlayerPos, normal), true);
 		#endif
 
 		// Simplified and modified version of BSL's reflection PBR calculation
