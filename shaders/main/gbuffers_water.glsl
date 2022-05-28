@@ -200,8 +200,7 @@ uniform mat4 gbufferModelViewInverse;
             #endif
 
             #ifdef WATER_FOAM
-                float foam = min(1.0, exp((0.128 - waterDepth) * 10.0));
-                material.albedo = material.albedo * (1.0 - foam) + foam;
+                material.albedo = min(vec4(1), material.albedo + exp((0.1 - waterDepth) * 10.0));
             #endif
         }
 
