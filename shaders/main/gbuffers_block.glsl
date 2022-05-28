@@ -165,7 +165,7 @@ uniform mat4 gbufferModelViewInverse;
         
         material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
-        vec4 sceneCol = complexShadingGbuffers(material, eyePlayerPos, eyePlayerPos + gbufferModelViewInverse[3].xyz);
+        vec4 sceneCol = complexShadingGbuffers(material, eyePlayerPos);
 
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; // gcolor

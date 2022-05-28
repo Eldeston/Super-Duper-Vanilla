@@ -2,7 +2,7 @@
 	uniform float shdFade;
 #endif
 
-vec4 complexShadingGbuffers(matPBR material, vec3 eyePlayerPos, vec3 feetPlayerPos){
+vec4 complexShadingGbuffers(matPBR material, vec3 eyePlayerPos){
 	// Get lightmaps and add simple sky GI
 	vec3 totalDiffuse = (pow(SKY_COL_DATA_BLOCK * lmCoord.y, vec3(GAMMA)) +
 		pow((lmCoord.x * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B), vec3(GAMMA)) +
@@ -34,7 +34,7 @@ vec4 complexShadingGbuffers(matPBR material, vec3 eyePlayerPos, vec3 feetPlayerP
 				float caveFixShdFactor = isEyeInWater == 1 ? 1.0 : min(1.0, lmCoord.y * 2.0) * (1.0 - eyeBrightFact) + eyeBrightFact;
 
 				// Get shadow pos
-				vec3 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * feetPlayerPos + shadowModelView[3].xyz) + shadowProjection[3].xyz;
+				vec3 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * (eyePlayerPos + gbufferModelViewInverse[3].xyz) + shadowModelView[3].xyz) + shadowProjection[3].xyz;
 				
 				// Bias mutilplier, adjusts according to the current shadow distance and resolution
 				float biasAdjustMult = exp2(max(0.0, (shadowDistance - shadowMapResolution * 0.125) / shadowDistance));

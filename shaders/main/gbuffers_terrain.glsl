@@ -13,6 +13,7 @@ varying vec2 texCoord;
     varying vec2 vTexCoord;
 #endif
 
+varying vec3 worldPos;
 varying vec3 glcolor;
 
 varying mat3 TBN;
@@ -20,10 +21,10 @@ varying mat3 TBN;
 // View matrix uniforms
 uniform mat4 gbufferModelViewInverse;
 
-/* Position uniforms */
-uniform vec3 cameraPosition;
-
 #ifdef VERTEX
+    // Position uniforms
+    uniform vec3 cameraPosition;
+
     #if ANTI_ALIASING == 2
         /* Screen resolutions */
         uniform float viewWidth;
@@ -40,7 +41,7 @@ uniform vec3 cameraPosition;
         float newFrameTimeCounter = frameTimeCounter;
     #endif
     
-    #include "/lib/vertex/vertexWave.glsl"
+    #include "/lib/vertex/vertexAnimations.glsl"
 
     uniform mat4 gbufferModelView;
 
@@ -82,9 +83,10 @@ uniform vec3 cameraPosition;
 
         // Feet player pos
         vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+        worldPos = vertexPos.xyz + cameraPosition;
         
         #ifdef ANIMATE
-	        getWave(vertexPos.xyz, vertexPos.xyz + cameraPosition, texCoord, mc_midTexCoord.xy, mc_Entity.x, lmCoord.y);
+	        getVertexAnimations(vertexPos.xyz, worldPos, texCoord, mc_midTexCoord.xy, mc_Entity.x, lmCoord.y);
         #endif
 
         #ifdef WORLD_CURVATURE
@@ -157,9 +159,6 @@ uniform vec3 cameraPosition;
         int rBlockId = int(blockId + 0.5);
         getPBR(material, eyePlayerPos, rBlockId);
 
-        vec3 feetPlayerPos = eyePlayerPos + gbufferModelViewInverse[3].xyz;
-        vec3 worldPos = feetPlayerPos + cameraPosition;
-
         if(rBlockId == 10001){
             #ifdef LAVA_NOISE
                 vec2 lavaUv = (worldPos.yz * TBN[2].x + worldPos.xz * TBN[2].y + worldPos.xy * TBN[2].z) / LAVA_TILE_SIZE;
@@ -173,10 +172,10 @@ uniform vec3 cameraPosition;
         material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
         #if defined ENVIRO_MAT && !defined FORCE_DISABLE_WEATHER
-            if(rBlockId != 10001) enviroPBR(material, worldPos.xz);
+            if(rBlockId != 10001) enviroPBR(material);
         #endif
 
-        vec4 sceneCol = complexShadingGbuffers(material, eyePlayerPos, feetPlayerPos);
+        vec4 sceneCol = complexShadingGbuffers(material, eyePlayerPos);
 
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; // gcolor

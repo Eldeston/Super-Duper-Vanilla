@@ -10,8 +10,8 @@ float getWaterHeightBilinear(vec2 uv){
 }
 
 float getCellNoise(vec2 st){
-    float animateTime = CURRENT_SPEED * newFrameTimeCounter * 0.0625;
-    return (getWaterHeightBilinear(st + animateTime * 0.5) + getWaterHeightBilinear(animateTime - st)) * 0.5;
+    float animateTime = CURRENT_SPEED * newFrameTimeCounter * 0.05;
+    return (getWaterHeightBilinear(st + animateTime) + getWaterHeightBilinear(animateTime - st)) * 0.5;
 }
 
 // Convert height map of water to a normal map

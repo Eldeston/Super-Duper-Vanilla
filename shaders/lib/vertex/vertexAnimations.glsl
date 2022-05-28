@@ -1,5 +1,5 @@
 // Wave calculation function
-void getWave(inout vec3 vertexPos, in vec3 worldPos, in vec2 texCoord, in vec2 midTexCoord, in float id, in float outSide){
+void getVertexAnimations(inout vec3 vertexPos, in vec3 worldPos, in vec2 texCoord, in vec2 midTexCoord, in float id, in float outSide){
 	float windWeight = sin(worldPos.x + worldPos.z + newFrameTimeCounter * 1.32 * WIND_SPEED) * outSide;
 	float currentWeight = sin(worldPos.x + worldPos.z + newFrameTimeCounter * 1.64 * CURRENT_SPEED);
 
@@ -15,7 +15,7 @@ void getWave(inout vec3 vertexPos, in vec3 worldPos, in vec2 texCoord, in vec2 m
 		}
 
 		// For hanged objects
-		else if(id == 10014){
+		if(id == 10014){
 			float offSet = float(texCoord.y > midTexCoord.y);
 			
 			windWeight *= offSet;
@@ -23,7 +23,7 @@ void getWave(inout vec3 vertexPos, in vec3 worldPos, in vec2 texCoord, in vec2 m
 		}
 
 		// Lantern
-		else if(id == 10040){
+		if(id == 10040){
 			float offSet = 1.0 - fract(worldPos.y - 0.001);
 
 			windWeight *= offSet;
@@ -37,10 +37,10 @@ void getWave(inout vec3 vertexPos, in vec3 worldPos, in vec2 texCoord, in vec2 m
 			if(id == 10001) vertexPos.y += currentWeight * 0.05;
 
 			// Single and doubles grounded and hanged underwater
-			else if(id >= 10009 && id <= 10012) vertexPos.x += currentWeight * 0.1;
+			if(id >= 10009 && id <= 10012) vertexPos.x += currentWeight * 0.1;
 
 			// Floaters
-			else if(id == 10013) vertexPos.y += currentWeight * 0.1;
+			if(id == 10013) vertexPos.y += currentWeight * 0.1;
 		}
 
 		if(WIND_SPEED > 0){
@@ -48,12 +48,12 @@ void getWave(inout vec3 vertexPos, in vec3 worldPos, in vec2 texCoord, in vec2 m
 			if(id == 10003) vertexPos.xz += windWeight * 0.1;
 
 			// Single and doubles grounded and hanged land
-			else if((id >= 10004 && id <= 10007) || id == 10014 || id == 10033 || id == 10036) vertexPos.x += windWeight * 0.125;
+			if((id >= 10004 && id <= 10007) || id == 10014 || id == 10033 || id == 10036) vertexPos.x += windWeight * 0.125;
 			// Sided land
-			else if(id == 10008) vertexPos.x += windWeight * 0.05;
+			if(id == 10008) vertexPos.x += windWeight * 0.05;
 
 			// Lanterns
-			else if(id == 10040) vertexPos.xz += windWeight * 0.075;
+			if(id == 10040) vertexPos.xz += windWeight * 0.075;
 		}
 	#endif
 

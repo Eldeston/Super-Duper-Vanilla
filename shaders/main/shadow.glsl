@@ -8,6 +8,9 @@ varying vec3 worldPos;
 varying vec3 glcolor;
 
 #ifdef VERTEX
+    // Position uniforms
+    uniform vec3 cameraPosition;
+    
     #if TIMELAPSE_MODE == 2
         uniform float animationFrameTime;
 
@@ -20,12 +23,10 @@ varying vec3 glcolor;
     uniform mat4 shadowModelViewInverse;
     uniform mat4 shadowProjection;
     uniform mat4 shadowProjectionInverse;
-    
-    uniform vec3 cameraPosition;
 
     #include "/lib/lighting/shdDistort.glsl"
 
-    #include "/lib/vertex/vertexWave.glsl"
+    #include "/lib/vertex/vertexAnimations.glsl"
 
     attribute vec2 mc_midTexCoord;
     attribute vec4 mc_Entity;
@@ -38,7 +39,7 @@ varying vec3 glcolor;
         blockId = mc_Entity.x;
         
         #ifdef ANIMATE
-            getWave(vertexPos.xyz, worldPos, texCoord, mc_midTexCoord, mc_Entity.x, (gl_TextureMatrix[1] * gl_MultiTexCoord1).y);
+            getVertexAnimations(vertexPos.xyz, worldPos, texCoord, mc_midTexCoord, mc_Entity.x, (gl_TextureMatrix[1] * gl_MultiTexCoord1).y);
         #endif
 
         #ifdef WORLD_CURVATURE
