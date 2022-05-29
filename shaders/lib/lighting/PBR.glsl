@@ -36,7 +36,7 @@ uniform sampler2D texture;
     uniform float isPrecipitationRain;
     uniform float wetness;
 
-    vec2 getNoiseDataCubic(vec2 uv){
+    vec2 getNoiseDataSmooth(vec2 uv){
         float pixSize = 1.0 / noiseTextureResolution;
 
         float a = smoothen(fract(uv.x * noiseTextureResolution));
@@ -51,7 +51,7 @@ uniform sampler2D texture;
         float rainMatFact = fastSqrt(max(0.0, TBN[2].y) * smoothstep(0.8, 0.9, lmCoord.y) * wetness * isPrecipitationRain * (1.0 - material.porosity));
 
         if(rainMatFact > 0.005){
-            vec2 noiseData = getNoiseDataCubic(worldPos.xz * 0.001953125).xy;
+            vec2 noiseData = getNoiseDataSmooth(worldPos.xz * 0.001953125).xy;
             rainMatFact *= saturate(noiseData.y + noiseData.x - 0.25);
             
             material.normal = mix(material.normal, TBN[2], rainMatFact);
@@ -162,8 +162,13 @@ uniform sampler2D texture;
         // Assign albedo
         material.albedo = texture2DGradARB(texture, texUv, dcdx, dcdy);
 
-        // Alpha test, discard immediately
-        if(material.albedo.a <= ALPHA_THRESHOLD) discard;
+        #if defined ENTITIES || defined ENTITIES_GLOWING
+            // Alpha test, discard immediately excluding boats (water in boat fix)
+            if(id != 10100 && material.albedo.a <= ALPHA_THRESHOLD) discard;
+        #else
+            // Alpha test, discard immediately
+            if(material.albedo.a <= ALPHA_THRESHOLD) discard;
+        #endif
 
         // Assign default normal map
         material.normal = TBN[2];
@@ -246,7 +251,7 @@ uniform sampler2D texture;
 
         #if defined ENTITIES || defined ENTITIES_GLOWING
             // Experience orbs and fireballs
-            if(id == 10102 || id == 10103) material.emissive = 1.0;
+            if(id == 10102 || id == 10103) material.emissive = maxOf(material.albedo.rgb);
         #endif
 
         #if WHITE_MODE == 0
@@ -273,8 +278,13 @@ uniform sampler2D texture;
         // Assign albedo
         material.albedo = texture2DGradARB(texture, texCoord, dcdx, dcdy);
 
-        // Alpha test, discard immediately
-        if(material.albedo.a <= ALPHA_THRESHOLD) discard;
+        #if defined ENTITIES || defined ENTITIES_GLOWING
+            // Alpha test, discard immediately excluding boats (water in boat fix)
+            if(id != 10100 && material.albedo.a <= ALPHA_THRESHOLD) discard;
+        #else
+            // Alpha test, discard immediately
+            if(material.albedo.a <= ALPHA_THRESHOLD) discard;
+        #endif
 
         // Assign default normal map
         material.normal = TBN[2];
@@ -328,7 +338,7 @@ uniform sampler2D texture;
 
         #if defined ENTITIES || defined ENTITIES_GLOWING
             // Experience orbs and fireballs
-            if(id == 10102 || id == 10103) material.emissive = 1.0;
+            if(id == 10102 || id == 10103) material.emissive = maxOf(material.albedo.rgb);
         #endif
         
         #if DEFAULT_MAT == 1
