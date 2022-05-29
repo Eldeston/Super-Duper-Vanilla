@@ -89,14 +89,14 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 skyCol, vec3 lightCol, vec3 nPlayerPos, fl
     return skyCol * (isEyeInWater == 1 ? voidGradient : voidGradient * (1.0 - eyeBrightFact) + eyeBrightFact) + pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
 }
 
-vec3 getSkyRender(vec3 skyBoxCol, vec3 skyCol, vec3 sRGBLightCol, vec3 nPlayerPos, bool isSky){
-    return getSkyColor(skyBoxCol, skyCol, pow(sRGBLightCol, vec3(GAMMA)), nPlayerPos, dot(nPlayerPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), isSky);
+vec3 getSkyRender(vec3 skyBoxCol, vec3 skyCol, vec3 lightCol, vec3 nPlayerPos, bool isSky){
+    return getSkyColor(skyBoxCol, skyCol, lightCol, nPlayerPos, dot(nPlayerPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), isSky);
 }
 
-vec3 getSkyRender(vec3 skyBoxCol, vec3 skyCol, vec3 sRGBLightCol, vec3 nPlayerPos, bool isSky, bool isSunMoon){
+vec3 getSkyRender(vec3 skyBoxCol, vec3 skyCol, vec3 sRGBLightCol, vec3 lightCol, vec3 nPlayerPos, bool isSky, bool isSunMoon){
     vec3 nSkyPos = mat3(shadowModelView) * nPlayerPos;
 
-    vec3 finalCol = getSkyColor(skyBoxCol, skyCol, pow(sRGBLightCol, vec3(GAMMA)), nPlayerPos, nSkyPos.z, isSky);
+    vec3 finalCol = getSkyColor(skyBoxCol, skyCol, lightCol, nPlayerPos, nSkyPos.z, isSky);
 
     // If it's not the sky, return the base sky color
     if(!isSky) return finalCol;

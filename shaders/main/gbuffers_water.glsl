@@ -186,12 +186,12 @@ uniform mat4 gbufferModelViewInverse;
 
             #if defined STYLIZED_WATER_ABSORPTION || defined WATER_FOAM
                 // Water color and foam 
-                float waterDepth = viewPos.z - toView(texture2D(depthtex1, screenPos.xy).x);
+                float waterDepth = toView(texture2D(depthtex1, screenPos.xy).x) - viewPos.z;
             #endif
 
             #ifdef STYLIZED_WATER_ABSORPTION
                 if(isEyeInWater == 0){
-                        float depthBrightness = exp(-waterDepth * 0.32);
+                        float depthBrightness = exp(waterDepth * 0.32);
                         material.albedo.rgb = min(vec3(1), material.albedo.rgb * mix(waterNoise, 2.0, depthBrightness));
                         material.albedo.a = fastSqrt(material.albedo.a) * (1.0 - depthBrightness);
                 } else material.albedo.rgb *= waterNoise;
@@ -200,7 +200,7 @@ uniform mat4 gbufferModelViewInverse;
             #endif
 
             #ifdef WATER_FOAM
-                material.albedo = min(vec4(1), material.albedo + exp((0.1 - waterDepth) * 10.0));
+                material.albedo = min(vec4(1), material.albedo + exp((0.1 + waterDepth) * 10.0));
             #endif
         }
 

@@ -180,7 +180,8 @@ uniform sampler2D texture;
         // Decode and extract the materials
         // Extract normals
         vec3 normalMap = vec3(normalAOH.xy * 2.0 - 1.0, 0);
-        normalMap.z = sqrt(1.0 - dot(normalMap.xy, normalMap.xy));
+        // Get the z normal direction and clamp to 0.0 (NaN fix)
+        normalMap.z = max(0.0, sqrt(1.0 - dot(normalMap.xy, normalMap.xy)));
 
         // Assign porosity
         material.porosity = SRPSSE.b < 0.252 ? SRPSSE.b * 3.984 : 0.0;

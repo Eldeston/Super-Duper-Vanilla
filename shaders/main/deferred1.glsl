@@ -119,8 +119,10 @@ varying vec2 screenCoord;
         // Get sRGB light color
         #ifdef WORLD_LIGHT
             vec3 sRGBLightCol = LIGHT_COL_DATA_BLOCK;
+            vec3 lightCol = pow(sRGBLightCol, vec3(GAMMA));
         #else
             vec3 sRGBLightCol = vec3(0);
+            vec3 lightCol = vec3(0);
         #endif
         // Get linear sky color
         vec3 skyCol = pow(SKY_COL_DATA_BLOCK, vec3(GAMMA));
@@ -137,7 +139,7 @@ varying vec2 screenCoord;
             vec2 matRaw0 = texture2D(colortex3, screenCoord).xy;
 
             // Apply deffered shading
-            sceneCol = complexShadingDeferred(sceneCol, skyCol, sRGBLightCol, screenPos, viewPos, eyePlayerPos, texture2D(colortex1, screenCoord).rgb * 2.0 - 1.0, texture2D(colortex2, screenCoord).rgb, matRaw0.x, matRaw0.y, dither);
+            sceneCol = complexShadingDeferred(sceneCol, skyCol, lightCol, screenPos, viewPos, eyePlayerPos, texture2D(colortex1, screenCoord).rgb * 2.0 - 1.0, texture2D(colortex2, screenCoord).rgb, matRaw0.x, matRaw0.y, dither);
 
             #ifdef SSAO
                 // Apply ambient occlusion with simple blur
@@ -151,7 +153,7 @@ varying vec2 screenCoord;
         }
 
         // Fog and sky calculation
-        sceneCol = getFogRender(eyePlayerPos, sceneCol, getSkyRender(sceneCol, skyCol, sRGBLightCol, normalize(eyePlayerPos), skyMask, true), feetPlayerPos.y + cameraPosition.y, skyMask);
+        sceneCol = getFogRender(eyePlayerPos, sceneCol, getSkyRender(sceneCol, skyCol, sRGBLightCol, lightCol, normalize(eyePlayerPos), skyMask, true), feetPlayerPos.y + cameraPosition.y, skyMask);
 
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(sceneCol, 1); // gcolor
