@@ -1,5 +1,7 @@
 varying vec2 screenCoord;
 
+#define WATER_REFRACTION
+
 #ifdef VERTEX
     void main(){
         gl_Position = ftransform();
@@ -9,7 +11,6 @@ varying vec2 screenCoord;
 
 #ifdef FRAGMENT
     uniform sampler2D gcolor;
-    uniform sampler2D colortex3;
 
     #ifdef WORLD_LIGHT
         uniform sampler2D colortex4;
@@ -22,6 +23,10 @@ varying vec2 screenCoord;
         uniform int isEyeInWater;
 
         #if defined VOL_LIGHT && defined SHD_ENABLE
+            /* Screen resolutions */
+            uniform float viewWidth;
+            uniform float viewHeight;
+
             vec3 getVolLightBoxBlur(vec2 pixSize){
                 // Apply simple box blur
                 return (texture2D(colortex4, screenCoord - pixSize).rgb + texture2D(colortex4, screenCoord + pixSize).rgb +
@@ -29,38 +34,20 @@ varying vec2 screenCoord;
             }
         #endif
     #endif
-    
-    /* Screen resolutions */
-    uniform float viewWidth;
-    uniform float viewHeight;
-
-    float getSpectral(vec2 pixSize){
-        // Do a simple blur
-        float totalDepth = texture2D(colortex3, screenCoord + pixSize).z + texture2D(colortex3, screenCoord - pixSize).z +
-            texture2D(colortex3, screenCoord + vec2(pixSize.x, -pixSize.y)).z + texture2D(colortex3, screenCoord - vec2(pixSize.x, -pixSize.y)).z;
-
-        // Get the difference between the blurred samples and original
-        return abs(totalDepth * 0.25 - texture2D(colortex3, screenCoord).z);
-    }
 
     void main(){
-        // Get pixel size
-        vec2 pixSize = 1.0 / vec2(viewWidth, viewHeight);
-        // Spectral effect
-        vec3 sceneCol = texture2D(gcolor, screenCoord).rgb + getSpectral(pixSize) * EMISSIVE_INTENSITY;
+        // Get scene color, clamp to 0
+        vec3 sceneCol = max(vec3(0), texture2D(gcolor, screenCoord).rgb);
 
         #ifdef WORLD_LIGHT
             #if defined VOL_LIGHT && defined SHD_ENABLE
-                sceneCol += getVolLightBoxBlur(pixSize) * pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA)) * (min(1.0, VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater)) * shdFade);
+                sceneCol += getVolLightBoxBlur(1.0 / vec2(viewWidth, viewHeight)) * pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA)) * (min(1.0, VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater)) * shdFade);
             #else
                 sceneCol += pow(isEyeInWater == 1 ? LIGHT_COL_DATA_BLOCK * fogColor : LIGHT_COL_DATA_BLOCK, vec3(GAMMA)) * (texture2D(colortex4, screenCoord).r * min(1.0, VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater)) * shdFade);
             #endif
-
-        /* DRAWBUFFERS:0 */
-            gl_FragData[0] = vec4(max(vec3(0), sceneCol), 1); // gcolor
-        #else
-        /* DRAWBUFFERS:0 */
-            gl_FragData[0] = vec4(max(vec3(0), sceneCol), 1); // gcolor
         #endif
+
+    /* DRAWBUFFERS:0 */
+        gl_FragData[0] = vec4(sceneCol, 1); // gcolor
     }
 #endif

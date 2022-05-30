@@ -1,5 +1,8 @@
 #version 130
 
+// For the use of texture2DLod for DOF
+#extension GL_ARB_shader_texture_lod : enable
+
 #define COMPOSITE3
 #define FRAGMENT
 
