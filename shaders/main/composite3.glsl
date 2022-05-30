@@ -15,15 +15,14 @@ varying vec2 texCoord;
 
         uniform sampler2D depthtex1;
 
+        uniform mat4 gbufferProjection;
         uniform mat4 gbufferProjectionInverse;
         
         uniform float centerDepthSmooth;
         uniform float viewWidth;
         uniform float viewHeight;
 
-        #if ANTI_ALIASING == 2
-            uniform float frameTimeCounter;
-        #endif
+        float fovMult = gbufferProjection[1].y * 0.72794047;
 
         #include "/lib/utility/convertViewSpace.glsl"
     #endif
@@ -34,9 +33,10 @@ varying vec2 texCoord;
             float depth = min(1.0, abs(toView(texture2D(depthtex1, texCoord).r) - toView(centerDepthSmooth)) / FOCAL_RANGE);
 
             // We'll use 15 samples for this blur (1 / 15)
-            float blurRadius = max(viewWidth, viewHeight) * depth * 0.0625 * DOF_RADIUS;
+            float blurRadius = max(viewWidth, viewHeight) * fovMult * depth * DOF_RADIUS * 0.0666667;
             float currDofLOD = log2(blurRadius);
 
+            // Because we use 15 samples to rotate the sample offsets in the loop we divide by 15 (1 / 15)
             float blurStepSize = PI2 * 0.0666667;
             vec2 blurRes = blurRadius / vec2(viewWidth, viewHeight);
 
