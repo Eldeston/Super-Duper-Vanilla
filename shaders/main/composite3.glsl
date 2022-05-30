@@ -25,30 +25,37 @@ varying vec2 texCoord;
     #endif
 
     void main(){
+        // Original color
+        vec3 color = texture2D(gcolor, texCoord).rgb;
+
         #ifdef DOF
-            // CoC calculation by Capt Tatsu from BSL
-            float CoC = max(0.0, abs(texture2D(depthtex1, texCoord).r - centerDepthSmooth) * DOF_STRENGTH - 0.01);
-            CoC = CoC / sqrt(CoC * CoC + 0.1);
+            // Get depth
+            float depth = texture2D(depthtex1, texCoord).x;
 
-            // We'll use 15 samples for this blur (1 / 15)
-            float blurRadius = max(viewWidth, viewHeight) * fovMult * CoC * 0.0666667;
-            float currDofLOD = log2(blurRadius);
+            // If not hand, do DOF
+            if(depth > 0.56){
+                // CoC calculation by Capt Tatsu from BSL
+                float CoC = max(0.0, abs(depth - centerDepthSmooth) * DOF_STRENGTH - 0.01);
+                CoC = CoC / sqrt(CoC * CoC + 0.1);
 
-            // Because we use 15 samples to rotate the sample offsets in the loop we divide by 15 (1 / 15)
-            float blurStepSize = PI2 * 0.0666667;
-            vec2 blurRes = blurRadius / vec2(viewWidth, viewHeight);
+                // We'll use 15 samples for this blur (1 / 15)
+                float blurRadius = max(viewWidth, viewHeight) * fovMult * CoC * 0.0666667;
+                float currDofLOD = log2(blurRadius);
 
-            // Get center pixel color with LOD
-            vec3 color = texture2D(gcolor, texCoord, currDofLOD).rgb;
-            for(float x = 0.0; x < PI2; x += blurStepSize){
-                // Rotate offsets and sample
-                color += texture2D(gcolor, texCoord - vec2(cos(x), sin(x)) * blurRes, currDofLOD).rgb;
+                // Because we use 15 samples to rotate the sample offsets in the loop we divide by 15 (1 / 15)
+                float blurStepSize = PI2 * 0.0666667;
+                vec2 blurRes = blurRadius / vec2(viewWidth, viewHeight);
+
+                // Get center pixel color with LOD
+                vec3 dofColor = texture2D(gcolor, texCoord, currDofLOD).rgb;
+                for(float x = 0.0; x < PI2; x += blurStepSize){
+                    // Rotate offsets and sample
+                    dofColor += texture2D(gcolor, texCoord - vec2(cos(x), sin(x)) * blurRes, currDofLOD).rgb;
+                }
+
+                // 15 samples + 1 sample (1 / 16)
+                color = dofColor * 0.0625;
             }
-
-            // 15 samples + 1 sample (1 / 16)
-            color *= 0.0625;
-        #else
-            vec3 color = texture2D(gcolor, texCoord).rgb;
         #endif
 
     /* DRAWBUFFERS:0 */
