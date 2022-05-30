@@ -68,8 +68,8 @@ varying vec2 screenCoord;
                 float CoC = max(0.0, abs(depth - centerDepthSmooth) * DOF_STRENGTH - 0.01);
                 CoC = CoC / sqrt(CoC * CoC + 0.1);
 
-                // We'll use 12 samples for this blur (1 / 12)
-                float blurRadius = max(viewWidth, viewHeight) * fovMult * CoC * 0.0833333;
+                // We'll use a total of 13 samples for this blur (1 / 13)
+                float blurRadius = max(viewWidth, viewHeight) * fovMult * CoC * 0.0769231;
                 float currDofLOD = log2(blurRadius);
                 vec2 blurRes = blurRadius * pixSize;
 
@@ -80,7 +80,7 @@ varying vec2 screenCoord;
                     dofColor += texture2DLod(gcolor, screenCoord - dofOffSets[x] * blurRes, currDofLOD).rgb;
                 }
 
-                // 12 samples + 1 sample (1 / 13)
+                // 12 offsetted samples + 1 sample (1 / 13)
                 color = dofColor * 0.0769231;
             }
         #endif
