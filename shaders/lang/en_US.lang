@@ -18,8 +18,7 @@
 
     #Camera
         option.DOF=Depth of field
-        option.FOCAL_RANGE=Focal range
-        option.DOF_RADIUS=Depth of field radius
+        option.DOF_STRENGTH=Depth of field strength
         option.CHROMATIC_ABERRATION=Chromatic aberration
         option.ABERRATION_PIX_SIZE=Aberration pixel size
         option.VIGNETTE=Vignette
