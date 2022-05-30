@@ -16,24 +16,22 @@ varying vec2 texCoord;
         uniform sampler2D depthtex1;
 
         uniform mat4 gbufferProjection;
-        uniform mat4 gbufferProjectionInverse;
         
         uniform float centerDepthSmooth;
         uniform float viewWidth;
         uniform float viewHeight;
 
         float fovMult = gbufferProjection[1].y * 0.72794047;
-
-        #include "/lib/utility/convertViewSpace.glsl"
     #endif
 
     void main(){
         #ifdef DOF
-            // Get CoC
-            float depth = min(1.0, abs(toView(texture2D(depthtex1, texCoord).r) - toView(centerDepthSmooth)) / FOCAL_RANGE);
+            // CoC calculation by Capt Tatsu from BSL
+            float CoC = max(0.0, abs(texture2D(depthtex1, texCoord).r - centerDepthSmooth) * DOF_STRENGTH - 0.01);
+            CoC = CoC / sqrt(CoC * CoC + 0.1);
 
             // We'll use 15 samples for this blur (1 / 15)
-            float blurRadius = max(viewWidth, viewHeight) * fovMult * depth * DOF_RADIUS * 0.0666667;
+            float blurRadius = max(viewWidth, viewHeight) * fovMult * CoC * 0.0666667;
             float currDofLOD = log2(blurRadius);
 
             // Because we use 15 samples to rotate the sample offsets in the loop we divide by 15 (1 / 15)
