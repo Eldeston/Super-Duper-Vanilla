@@ -26,11 +26,21 @@ varying vec2 screenCoord;
 
         float fovMult = gbufferProjection[1].y * 0.72794047;
 
-        float getDepthBlur(vec2 pixSize){
-            // Apply simple box blur
-            return (texture2D(depthtex1, screenCoord - pixSize).x + texture2D(depthtex1, screenCoord + pixSize).x +
-                texture2D(depthtex1, screenCoord - vec2(pixSize.x, -pixSize.y)).x + texture2D(depthtex1, screenCoord + vec2(pixSize.x, -pixSize.y)).x) * 0.25;
-        }
+        // Precalculated dof offsets by vec2(cos(x), sin(x))
+        vec2 dofOffSets[12] = vec2[12](
+            vec2(0.8660254, 0.5),
+            vec2(0.5, 0.8660254),
+            vec2(0, 1),
+            vec2(-0.5, 0.8660254),
+            vec2(-0.8660254, 0.5),
+            vec2(-1, 0),
+            vec2(-0.8660254, -0.5),
+            vec2(-0.5, -0.8660254),
+            vec2(0, -1),
+            vec2(0.5, -0.8660254),
+            vec2(0.8660254, -0.5),
+            vec2(1, 0)
+        );
     #endif
 
     float getSpectral(vec2 pixSize){
@@ -61,16 +71,13 @@ varying vec2 screenCoord;
                 // We'll use 12 samples for this blur (1 / 12)
                 float blurRadius = max(viewWidth, viewHeight) * fovMult * CoC * 0.0833333;
                 float currDofLOD = log2(blurRadius);
-
-                // Because we use 12 samples to rotate the sample offsets in the loop we divide by 12 (1 / 12)
-                float blurStepSize = PI2 * 0.0833333;
                 vec2 blurRes = blurRadius * pixSize;
 
                 // Get center pixel color with LOD
                 vec3 dofColor = texture2DLod(gcolor, screenCoord, currDofLOD).rgb;
-                for(float x = 0.0; x < PI2; x += blurStepSize){
+                for(int x = 0; x < 12; x++){
                     // Rotate offsets and sample
-                    dofColor += texture2DLod(gcolor, screenCoord - vec2(cos(x), sin(x)) * blurRes, currDofLOD).rgb;
+                    dofColor += texture2DLod(gcolor, screenCoord - dofOffSets[x] * blurRes, currDofLOD).rgb;
                 }
 
                 // 12 samples + 1 sample (1 / 13)
