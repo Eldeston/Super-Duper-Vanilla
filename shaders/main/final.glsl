@@ -16,8 +16,8 @@ varying vec2 screenCoord;
     const int colortex2Format = RGBA8;
     const int colortex3Format = RGB8;
     const int colortex4Format = R11F_G11F_B10F;
-    const int colortex5Format = R11F_G11F_B10F;
-    const int colortex6Format = RGBA16F;
+    const int colortex5Format = RGBA16F;
+    const int colortex6Format = RGB8;
     const int colortex7Format = RGB8;
     */
 

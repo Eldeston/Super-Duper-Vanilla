@@ -25,7 +25,7 @@ varying vec2 texCoord;
         uniform mat4 gbufferProjection;
         uniform mat4 gbufferProjectionInverse;
         
-        #if ANTI_ALIASING == 2
+        #if ANTI_ALIASING >= 2
             // Get frame time
             uniform float frameTimeCounter;
         #endif

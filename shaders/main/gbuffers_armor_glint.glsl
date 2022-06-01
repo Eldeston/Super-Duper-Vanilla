@@ -1,7 +1,7 @@
 varying vec2 texCoord;
 
 #ifdef VERTEX
-    #if ANTI_ALIASING == 2
+    #if ANTI_ALIASING == 3
         /* Screen resolutions */
         uniform float viewWidth;
         uniform float viewHeight;
@@ -28,7 +28,7 @@ varying vec2 texCoord;
             gl_Position = ftransform();
         #endif
 
-        #if ANTI_ALIASING == 2
+        #if ANTI_ALIASING == 3
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
     }

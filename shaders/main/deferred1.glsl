@@ -8,6 +8,11 @@ varying vec2 screenCoord;
 #endif
 
 #ifdef FRAGMENT
+    #if ANTI_ALIASING >= 2 || defined PREVIOUS_FRAME || defined AUTO_EXPOSURE
+        // Disable buffer clear if TAA, previous frame reflections, or auto exposure is on
+        const bool colortex5Clear = false;
+    #endif
+    
     // Sky silhoutte fix
     const vec4 gcolorClearColor = vec4(0, 0, 0, 1);
 
@@ -39,7 +44,6 @@ varying vec2 screenCoord;
     #ifdef PREVIOUS_FRAME
         // Previous reflections
         uniform sampler2D colortex5;
-        const bool colortex5Clear = false;
 
         uniform mat4 gbufferPreviousModelView;
         uniform mat4 gbufferPreviousProjection;
@@ -49,7 +53,7 @@ varying vec2 screenCoord;
         #include "/lib/utility/convertPrevScreenSpace.glsl"
     #endif
 
-    #if defined SSAO || defined OUTLINES || ANTI_ALIASING == 2
+    #if defined SSAO || defined OUTLINES || ANTI_ALIASING == 3
         /* Screen uniforms */
         uniform float viewWidth;
         uniform float viewHeight;
@@ -63,7 +67,7 @@ varying vec2 screenCoord;
         }
     #endif
 
-    #if ANTI_ALIASING == 2
+    #if ANTI_ALIASING == 3
         #include "/lib/utility/taaJitter.glsl"
     #endif
 
@@ -105,7 +109,7 @@ varying vec2 screenCoord;
         bool skyMask = screenPos.z == 1;
 
         // Jitter the sky only
-        #if ANTI_ALIASING == 2
+        #if ANTI_ALIASING == 3
             if(skyMask) screenPos.xy += jitterPos(-0.5);
         #endif
         
@@ -129,7 +133,7 @@ varying vec2 screenCoord;
 
         // If sky, don't calculate lighting
         if(!skyMask){
-            #if ANTI_ALIASING == 2
+            #if ANTI_ALIASING >= 2
                 vec3 dither = toRandPerFrame(getRand3(gl_FragCoord.xy * 0.03125), frameTimeCounter);
             #else
                 vec3 dither = getRand3(gl_FragCoord.xy * 0.03125);
@@ -157,10 +161,5 @@ varying vec2 screenCoord;
 
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(sceneCol, 1); // gcolor
-
-        #ifdef PREVIOUS_FRAME
-        /* DRAWBUFFERS:05 */
-            gl_FragData[1] = vec4(sceneCol, 1); //colortex5
-        #endif
     }
 #endif

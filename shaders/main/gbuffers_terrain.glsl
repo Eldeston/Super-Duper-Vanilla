@@ -25,7 +25,7 @@ uniform mat4 gbufferModelViewInverse;
     // Position uniforms
     uniform vec3 cameraPosition;
 
-    #if ANTI_ALIASING == 2
+    #if ANTI_ALIASING == 3
         /* Screen resolutions */
         uniform float viewWidth;
         uniform float viewHeight;
@@ -95,7 +95,7 @@ uniform mat4 gbufferModelViewInverse;
         
 	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
 
-        #if ANTI_ALIASING == 2
+        #if ANTI_ALIASING == 3
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
 

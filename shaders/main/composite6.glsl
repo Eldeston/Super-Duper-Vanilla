@@ -10,19 +10,14 @@ varying vec2 screenCoord;
 #ifdef FRAGMENT
     uniform sampler2D gcolor;
 
-    #if ANTI_ALIASING == 2 || defined AUTO_EXPOSURE
-        // Needs to be false whenever auto exposure or TAA is on
-        const bool colortex6Clear = false;
+    #ifdef AUTO_EXPOSURE
+        // Needs to be true whenever auto exposure or TAA is on
+        const bool colortex5MipmapEnabled = true;
+        // Get previous frame color
+        uniform sampler2D colortex5;
 
-        #ifdef AUTO_EXPOSURE
-            // Needs to be true whenever auto exposure or TAA is on
-            const bool colortex6MipmapEnabled = true;
-            // Get previous frame color
-            uniform sampler2D colortex6;
-
-            // Get frame time
-            uniform float frameTime;
-        #endif
+        // Get frame time
+        uniform float frameTime;
     #endif
 
     #ifdef BLOOM
@@ -111,13 +106,13 @@ varying vec2 screenCoord;
             // Get center pixel current average scene luminance and mix previous and current pixel...
             vec3 centerPixCol = texture2D(gcolor, vec2(0.5), 10.0).rgb;
 
-            float tempPixLuminance = mix(centerPixCol.r + centerPixCol.g + centerPixCol.b, texture2D(colortex6, vec2(0)).a, exp2(-AUTO_EXPOSURE_SPEED * frameTime));
+            float tempPixLuminance = mix(centerPixCol.r + centerPixCol.g + centerPixCol.b, texture2D(colortex5, vec2(0)).a, exp2(-AUTO_EXPOSURE_SPEED * frameTime));
 
             // Apply auto exposure by dividing it by the pixel's luminance in sRGB
             color /= max(pow(tempPixLuminance, RCPGAMMA), MIN_EXPOSURE);
 
-            #if ANTI_ALIASING == 2
-                #define TAA_DATA texture2D(colortex6, screenCoord).rgb
+            #if defined PREVIOUS_FRAME || ANTI_ALIASING >= 2
+                #define TAA_DATA texture2D(colortex5, screenCoord).rgb
             #else
                 // vec4(0, 0, 0, tempPixLuminance)
                 #define TAA_DATA 0, 0, 0
@@ -143,13 +138,13 @@ varying vec2 screenCoord;
             gl_FragData[1] = vec4(eBloom, 1); //colortex4
 
             #ifdef AUTO_EXPOSURE
-            /* DRAWBUFFERS:046 */
-                gl_FragData[2] = vec4(TAA_DATA, tempPixLuminance); //colortex6
+            /* DRAWBUFFERS:045 */
+                gl_FragData[2] = vec4(TAA_DATA, tempPixLuminance); //colortex5
             #endif
         #else
             #ifdef AUTO_EXPOSURE
-            /* DRAWBUFFERS:06 */
-                gl_FragData[1] = vec4(TAA_DATA, tempPixLuminance); //colortex6
+            /* DRAWBUFFERS:05 */
+                gl_FragData[1] = vec4(TAA_DATA, tempPixLuminance); //colortex5
             #endif
         #endif
     }

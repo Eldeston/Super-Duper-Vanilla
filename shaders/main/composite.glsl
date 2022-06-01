@@ -42,7 +42,6 @@ varying vec2 screenCoord;
     #ifdef PREVIOUS_FRAME
         // Previous reflections
         uniform sampler2D colortex5;
-        const bool colortex5Clear = false;
 
         uniform mat4 gbufferPreviousModelView;
         uniform mat4 gbufferPreviousProjection;
@@ -91,7 +90,7 @@ varying vec2 screenCoord;
         // Get scene color
         vec3 sceneCol = texture2D(gcolor, screenCoord).rgb;
 
-        #if ANTI_ALIASING == 2
+        #if ANTI_ALIASING >= 2
             vec3 dither = toRandPerFrame(getRand3(gl_FragCoord.xy * 0.03125), frameTimeCounter);
         #else
             vec3 dither = getRand3(gl_FragCoord.xy * 0.03125);
@@ -124,16 +123,6 @@ varying vec2 screenCoord;
         #ifdef WORLD_LIGHT
         /* DRAWBUFFERS:04 */
             gl_FragData[1] = vec4(getGodRays(feetPlayerPos, dither.x), 1); //colortex4
-            
-            #ifdef PREVIOUS_FRAME
-            /* DRAWBUFFERS:045 */
-                gl_FragData[2] = vec4(sceneCol, 1); //colortex5
-            #endif
-        #else
-            #ifdef PREVIOUS_FRAME
-            /* DRAWBUFFERS:05 */
-                gl_FragData[1] = vec4(sceneCol, 1); //colortex5
-            #endif
         #endif
     }
 #endif

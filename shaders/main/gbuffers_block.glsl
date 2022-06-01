@@ -15,7 +15,7 @@ varying mat3 TBN;
 uniform mat4 gbufferModelViewInverse;
 
 #ifdef VERTEX
-    #if ANTI_ALIASING == 2
+    #if ANTI_ALIASING == 3
         /* Screen resolutions */
         uniform float viewWidth;
         uniform float viewHeight;
@@ -70,7 +70,7 @@ uniform mat4 gbufferModelViewInverse;
             gl_Position = ftransform();
         #endif
 
-        #if ANTI_ALIASING == 2
+        #if ANTI_ALIASING == 3
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
 

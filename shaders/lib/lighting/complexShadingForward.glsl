@@ -40,13 +40,13 @@ vec4 complexShadingGbuffers(matPBR material, vec3 eyePlayerPos){
 				float biasAdjustMult = exp2(max(0.0, shadowDistance - shadowMapResolution * 0.125) / shadowDistance);
 				float distortFactor = getDistortFactor(shdPos.xy);
 
-				// Apply bias according to normal in shadow space
+				// Apply bias according to normal in shadow space before
 				shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * material.normal) * biasAdjustMult * biasAdjustMult * distortFactor * 0.5;
 				shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
 
 				// Sample shadows
 				#ifdef SHD_FILTER
-					#if ANTI_ALIASING == 2
+					#if ANTI_ALIASING >= 2
 						shadowCol = getShdFilter(shdPos, toRandPerFrame(texture2D(noisetex, gl_FragCoord.xy * 0.03125).x, frameTimeCounter) * PI2) * caveFixShdFactor * shdFade * material.parallaxShd;
 					#else
 						shadowCol = getShdFilter(shdPos, texture2D(noisetex, gl_FragCoord.xy * 0.03125).x * PI2) * caveFixShdFactor * shdFade * material.parallaxShd;
