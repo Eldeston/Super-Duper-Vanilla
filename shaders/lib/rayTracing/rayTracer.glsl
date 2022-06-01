@@ -29,6 +29,7 @@ vec3 rayTraceScene(vec3 screenPos, vec3 viewPos, vec3 rayDir, float dither, int 
 		if(screenPos.x <= 0 || screenPos.y <= 0 || screenPos.x >= 1 || screenPos.y >= 1) return vec3(0);
 		float currDepth = texture2D(depthtex0, screenPos.xy).x;
 
+		// Check intersection
 		if(screenPos.z > currDepth && currDepth > 0.56){
 			if(binarySearchSteps == 0) return vec3(screenPos.xy, currDepth != 1);
 			return vec3(binarySearch(screenPosRayDir, screenPos, binarySearchSteps).xy, currDepth != 1);

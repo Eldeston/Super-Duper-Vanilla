@@ -1,15 +1,17 @@
 // Written by xirreal#0281 on ShaderLabs
 vec3 cosWeightedRandHemisphereDir(vec3 norm, vec2 seed){
+    // For TBN rotation
     vec3 uu = normalize(cross(norm, vec3(0, 1, 1)));
     vec3 vv = cross(uu, norm);
 
-    float ra = sqrt(seed.y);
-    float rx = ra * cos(PI2 * seed.x);
-    float ry = ra * sin(PI2 * seed.x);
-    float rz = sqrt(1.0 - seed.y);
-    vec3 rr = vec3(rx * uu + ry * vv + rz * norm);
+    float radius = sqrt(seed.y);
+    float xOffset = radius * cos(PI2 * seed.x);
+    float yOffset = radius * sin(PI2 * seed.x);
+    float zOffset = sqrt(1.0 - seed.y);
 
-    return normalize(rr);
+    // Return direction with TBN applied
+    // TBN * vec3(xOffset, yOffset, zOffset)
+    return normalize(vec3(xOffset * uu + yOffset * vv + zOffset * norm));
 }
 
 vec3 getSSGICoord(vec3 viewPos, vec3 screenPos, vec3 gBMVNorm, vec2 dither){
