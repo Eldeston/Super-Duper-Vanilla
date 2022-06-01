@@ -11,8 +11,8 @@ colortex1 - Normals : RGB16
 colortex2 - Raw albedo, SSAO : RGBA8
 colortex3 - Metallic, roughness, glowing entity : RGB8
 colortex4 - Clouds / Volumetric light / Bloom : R11F_G11F_B10F
-colortex5 - Reflections : R11F_G11F_B10F
-colortex6 - TAA, auto exposure : RGBA16F
+colortex5 - TAA / Previous reflections, Auto exposure : RGBA16F
+colortex6 - Empty : RGBA8
 colortex7 - Empty : RGBA8
 
 Custom defined macros (These are defined at the start of every .fsh and .vsh file):
