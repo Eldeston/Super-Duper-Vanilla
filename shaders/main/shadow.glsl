@@ -71,7 +71,7 @@ varying vec3 glcolor;
         #endif
 
         #include "/lib/utility/noiseFunctions.glsl"
-        #include "/lib/surface/caustics.glsl"
+        #include "/lib/surface/water.glsl"
     #endif
 
     void main(){

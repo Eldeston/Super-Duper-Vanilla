@@ -30,9 +30,9 @@
         vec2 end = start * 0.01;
         
         // Move towards west
-        start.x += time * 0.0004;
+        start.x += time * 0.125;
         for(int i = 0; i < 8; i++){
-            if(texture2D(colortex4, start).a > ALPHA_THRESHOLD) return 1.0 - i * 0.125;
+            if(texelFetch(colortex4, ivec2(start) & 255, 0).a > ALPHA_THRESHOLD) return 1.0 - i * 0.125;
             start += end;
         }
         
@@ -61,13 +61,13 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 skyCol, vec3 lightCol, vec3 nPlayerPos, fl
                 float cloudHeightFade = nPlayerPos.y - 0.125;
                 
                 if(cloudHeightFade > 0.005){
-                    vec2 planeUv = nPlayerPos.xz / (nPlayerPos.y * 48.0);
+                    vec2 planeUv = nPlayerPos.xz * (16.0 / (nPlayerPos.y * 3.0));
 
                     float clouds = cloudParallax(planeUv, ANIMATION_FRAMETIME);
 
                     #ifdef DYNAMIC_CLOUDS
                         float fade = smootherstep(sin(ANIMATION_FRAMETIME * FADE_SPEED) * 0.5 + 0.5);
-                        float clouds2 = cloudParallax(-planeUv, 1250.0 - ANIMATION_FRAMETIME);
+                        float clouds2 = cloudParallax(-planeUv, 1024.0 - ANIMATION_FRAMETIME);
                         clouds = mix(mix(clouds, clouds2, fade), max(clouds, clouds2), rainStrength);
                     #endif
 
@@ -117,7 +117,7 @@ vec3 getSkyRender(vec3 skyBoxCol, vec3 skyCol, vec3 sRGBLightCol, vec3 lightCol,
 
     #ifdef WORLD_STARS
         // Star field generation
-        vec2 starData = texture2D(noisetex, nSkyPos.xz / (abs(nSkyPos.y) + length(nSkyPos.xz))).xy;
+        vec2 starData = texelFetch(noisetex, ivec2((nSkyPos.xz * 256.0) / (abs(nSkyPos.y) + length(nSkyPos.xz))) & 255, 0).xy;
         if(starData.x * starData.y > 0.9) finalCol += (1.0 - rainStrength) * WORLD_STARS;
     #endif
 

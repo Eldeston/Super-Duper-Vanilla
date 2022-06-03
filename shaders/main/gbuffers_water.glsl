@@ -186,7 +186,7 @@ uniform mat4 gbufferModelViewInverse;
 
             #if defined STYLIZED_WATER_ABSORPTION || defined WATER_FOAM
                 // Water color and foam 
-                float waterDepth = toView(texture2D(depthtex1, screenPos.xy).x) - viewPos.z;
+                float waterDepth = toView(texelFetch(depthtex1, ivec2(gl_FragCoord.xy), 0).x) - viewPos.z;
             #endif
 
             #ifdef STYLIZED_WATER_ABSORPTION

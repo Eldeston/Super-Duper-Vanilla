@@ -9,7 +9,6 @@ varying vec2 screenCoord;
 
 #ifdef FRAGMENT
     uniform sampler2D gcolor;
-    uniform sampler2D colortex3;
 
     /* Screen resolutions */
     uniform float viewWidth;
@@ -43,24 +42,15 @@ varying vec2 screenCoord;
         );
     #endif
 
-    float getSpectral(vec2 pixSize){
-        // Do a simple blur
-        float totalDepth = texture2D(colortex3, screenCoord + pixSize).z + texture2D(colortex3, screenCoord - pixSize).z +
-            texture2D(colortex3, screenCoord + vec2(pixSize.x, -pixSize.y)).z + texture2D(colortex3, screenCoord - vec2(pixSize.x, -pixSize.y)).z;
-
-        // Get the difference between the blurred samples and original
-        return abs(totalDepth * 0.25 - texture2D(colortex3, screenCoord).z);
-    }
-
     void main(){
-        // Pixel size
-        vec2 pixSize = 1.0 / vec2(viewWidth, viewHeight);
+        // Screen texel coordinates
+        ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
         // Original color
-        vec3 color = texture2D(gcolor, screenCoord).rgb;
+        vec3 color = texelFetch(gcolor, screenTexelCoord, 0).rgb;
 
         #ifdef DOF
             // Get depth
-            float depth = texture2D(depthtex1, screenCoord).x;
+            float depth = texelFetch(depthtex1, screenTexelCoord, 0).x;
 
             // If not hand, do DOF
             if(depth > 0.56){
@@ -71,7 +61,7 @@ varying vec2 screenCoord;
                 // We'll use a total of 13 samples for this blur (1 / 13)
                 float blurRadius = max(viewWidth, viewHeight) * fovMult * CoC * 0.0769231;
                 float currDofLOD = log2(blurRadius);
-                vec2 blurRes = blurRadius * pixSize;
+                vec2 blurRes = blurRadius / vec2(viewWidth, viewHeight);
 
                 // Get center pixel color with LOD
                 vec3 dofColor = texture2DLod(gcolor, screenCoord, currDofLOD).rgb;
@@ -86,6 +76,6 @@ varying vec2 screenCoord;
         #endif
 
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(color + getSpectral(pixSize) * EMISSIVE_INTENSITY, 1); // gcolor
+        gl_FragData[0] = vec4(color, 1); // gcolor
     }
 #endif

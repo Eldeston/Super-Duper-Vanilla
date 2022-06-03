@@ -102,8 +102,10 @@ varying vec2 screenCoord;
     #include "/lib/lighting/complexShadingDeferred.glsl"
 
     void main(){
+        // Screen texel coordinates
+        ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
         // Declare and get positions
-        vec3 screenPos = vec3(screenCoord, texture2D(depthtex0, screenCoord).x);
+        vec3 screenPos = vec3(screenCoord, texelFetch(depthtex0, screenTexelCoord, 0).x);
         
         // Get sky mask
         bool skyMask = screenPos.z == 1;
@@ -118,7 +120,7 @@ varying vec2 screenCoord;
         vec3 feetPlayerPos = eyePlayerPos + gbufferModelViewInverse[3].xyz;
 
         // Get scene color
-        vec3 sceneCol = texture2D(gcolor, screenCoord).rgb;
+        vec3 sceneCol = texelFetch(gcolor, screenTexelCoord, 0).rgb;
 
         // Get sRGB light color
         #ifdef WORLD_LIGHT
@@ -134,16 +136,16 @@ varying vec2 screenCoord;
         // If sky, don't calculate lighting
         if(!skyMask){
             #if ANTI_ALIASING >= 2
-                vec3 dither = toRandPerFrame(getRand3(gl_FragCoord.xy * 0.03125), frameTimeCounter);
+                vec3 dither = toRandPerFrame(getRand3(screenTexelCoord & 255), frameTimeCounter);
             #else
-                vec3 dither = getRand3(gl_FragCoord.xy * 0.03125);
+                vec3 dither = getRand3(screenTexelCoord & 255);
             #endif
 
             // Declare and get materials
-            vec2 matRaw0 = texture2D(colortex3, screenCoord).xy;
+            vec2 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xy;
 
             // Apply deffered shading
-            sceneCol = complexShadingDeferred(sceneCol, skyCol, lightCol, screenPos, viewPos, eyePlayerPos, texture2D(colortex1, screenCoord).rgb * 2.0 - 1.0, texture2D(colortex2, screenCoord).rgb, matRaw0.x, matRaw0.y, dither);
+            sceneCol = complexShadingDeferred(sceneCol, skyCol, lightCol, screenPos, viewPos, eyePlayerPos, texelFetch(colortex1, screenTexelCoord, 0).rgb * 2.0 - 1.0, texelFetch(colortex2, screenTexelCoord, 0).rgb, matRaw0.x, matRaw0.y, dither);
 
             #ifdef SSAO
                 // Apply ambient occlusion with simple blur

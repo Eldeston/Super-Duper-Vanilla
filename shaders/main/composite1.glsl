@@ -88,7 +88,7 @@ varying vec2 screenCoord;
         #if ANTI_ALIASING >= 2 || defined PREVIOUS_FRAME
         /* DRAWBUFFERS:05 */
             #ifdef AUTO_EXPOSURE
-                gl_FragData[1] = vec4(sceneCol, texture2D(colortex5, vec2(0)).a); //colortex5
+                gl_FragData[1] = vec4(sceneCol, texelFetch(colortex5, ivec2(0), 0).a); //colortex5
             #else
                 gl_FragData[1] = vec4(sceneCol, 1); //colortex5
             #endif

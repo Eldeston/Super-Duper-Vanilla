@@ -39,14 +39,17 @@ varying vec2 texCoord;
 
     void main(){
         #ifdef SSAO
-            float ambientOcclusion = 1.0;
+            // Screen texel coordinates
+            ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
 
             // Declare and get positions
-            float depth = texture2D(depthtex0, texCoord).x;
+            float depth = texelFetch(depthtex0, screenTexelCoord, 0).x;
             
+            // Do SSAO
+            float ambientOcclusion = 1.0;
             // Check if sky and player hand
             if(depth > 0.56 && depth != 1){
-                vec3 normal = texture2D(colortex1, texCoord).xyz - 0.5;
+                vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz - 0.5;
 
                 // Check if normal has a direction
                 if(normal.x + normal.y + normal.z != 0)
@@ -54,10 +57,10 @@ varying vec2 texCoord;
             }
             
         /* DRAWBUFFERS:2 */
-            gl_FragData[0] = vec4(texture2D(colortex2, texCoord).rgb, ambientOcclusion); //colortex2
+            gl_FragData[0] = vec4(texelFetch(colortex2, screenTexelCoord, 0).rgb, ambientOcclusion); //colortex2
         #else
         /* DRAWBUFFERS:2 */
-            gl_FragData[0] = vec4(texture2D(colortex2, texCoord).rgb, 1); //colortex2
+            gl_FragData[0] = vec4(texelFetch(colortex2, ivec2(gl_FragCoord.xy), 0).rgb, 1); //colortex2
         #endif
     }
 #endif

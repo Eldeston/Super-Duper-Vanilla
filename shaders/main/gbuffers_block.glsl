@@ -145,7 +145,7 @@ uniform mat4 gbufferModelViewInverse;
             endStarField += texture2DGradARB(texture, (endStarCoord1 + endStarOffset) * 2.0, dcdx, dcdy).r;
             endStarField += texture2DGradARB(texture, (endStarOffset - endStarCoord1) * 4.0, dcdx, dcdy).r;
 
-            vec3 endPortalAlbedo = pow((endStarField + 0.125) * (getRand3(screenPos.xy * 0.5) * 0.5 + 0.5) * glcolor.rgb, vec3(GAMMA));
+            vec3 endPortalAlbedo = pow((endStarField + 0.125) * (getRand3(ivec2(screenPos.xy * 128.0) & 255) * 0.5 + 0.5) * glcolor.rgb, vec3(GAMMA));
             
             gl_FragData[0] = vec4(endPortalAlbedo * EMISSIVE_INTENSITY * EMISSIVE_INTENSITY, 1); // gcolor
 

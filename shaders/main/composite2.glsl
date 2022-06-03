@@ -34,12 +34,15 @@ varying vec2 screenCoord;
     #endif
 
     void main(){
-        vec3 sceneCol = texture2D(gcolor, screenCoord).rgb;
+        // Screen texel coordinates
+        ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
+        // Scene color
+        vec3 sceneCol = texelFetch(gcolor, screenTexelCoord, 0).rgb;
 
         #ifdef MOTION_BLUR
-            float depth = texture2D(depthtex0, screenCoord).x;
+            float depth = texelFetch(depthtex0, screenTexelCoord, 0).x;
 
-            if(depth > 0.56) sceneCol = motionBlur(sceneCol, screenCoord, depth, texture2D(noisetex, gl_FragCoord.xy * 0.03125).x);
+            if(depth > 0.56) sceneCol = motionBlur(sceneCol, screenCoord, depth, texelFetch(noisetex, screenTexelCoord & 255, 0).x);
         #endif
 
     /* DRAWBUFFERS:0 */

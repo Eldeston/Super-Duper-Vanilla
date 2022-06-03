@@ -36,22 +36,11 @@ uniform sampler2D texture;
     uniform float isPrecipitationRain;
     uniform float wetness;
 
-    vec2 getNoiseDataSmooth(vec2 uv){
-        float pixSize = 1.0 / noiseTextureResolution;
-
-        float a = smoothen(fract(uv.x * noiseTextureResolution));
-
-        vec2 horizontal0 = mix(texture2D(noisetex, uv).xy, texture2D(noisetex, uv + vec2(pixSize, 0)).xy, a);
-        vec2 horizontal1 = mix(texture2D(noisetex, uv + vec2(0, pixSize)).xy, texture2D(noisetex, uv + pixSize).xy, a);
-        
-        return mix(horizontal0, horizontal1, smoothen(fract(uv.y * noiseTextureResolution)));
-    }
-
     void enviroPBR(inout matPBR material){
         float rainMatFact = fastSqrt(max(0.0, TBN[2].y) * smoothstep(0.8, 0.9, lmCoord.y) * wetness * isPrecipitationRain * (1.0 - material.porosity));
 
         if(rainMatFact > 0.005){
-            vec2 noiseData = getNoiseDataSmooth(worldPos.xz * 0.001953125).xy;
+            vec2 noiseData = texture2D(noisetex, worldPos.xz * 0.001953125).xy;
             rainMatFact *= saturate(noiseData.y + noiseData.x - 0.25);
             
             material.normal = mix(material.normal, TBN[2], rainMatFact);

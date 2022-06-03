@@ -68,8 +68,10 @@ varying vec2 screenCoord;
     #include "/lib/post/tonemap.glsl"
 
     void main(){
+        // Screen texel coordinates
+        ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
         // Original scene color
-        vec3 color = texture2D(gcolor, screenCoord).rgb;
+        vec3 color = texelFetch(gcolor, screenTexelCoord, 0).rgb;
 
         #ifdef BLOOM
             // Get pixel size
@@ -113,7 +115,7 @@ varying vec2 screenCoord;
             color /= max(pow(tempPixLuminance, RCPGAMMA), MIN_EXPOSURE);
 
             #if defined PREVIOUS_FRAME || ANTI_ALIASING >= 2
-                #define TAA_DATA texture2D(colortex5, screenCoord).rgb
+                #define TAA_DATA texelFetch(colortex5, screenTexelCoord, 0).rgb
             #else
                 // vec4(0, 0, 0, tempPixLuminance)
                 #define TAA_DATA 0, 0, 0
@@ -129,7 +131,7 @@ varying vec2 screenCoord;
         #endif
 
         // Gamma correction, color saturation, contrast, etc. and film grain
-        color = toneA(pow(color, vec3(RCPGAMMA))) + (texture2D(noisetex, gl_FragCoord.xy * 0.03125).x - 0.5) * 0.00392156863;
+        color = toneA(pow(color, vec3(RCPGAMMA))) + (texelFetch(noisetex, screenTexelCoord & 255, 0).x - 0.5) * 0.00392156863;
 
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(color, 1); // gcolor
