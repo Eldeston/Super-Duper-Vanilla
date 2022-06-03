@@ -53,7 +53,7 @@ varying vec2 screenCoord;
         #include "/lib/utility/convertPrevScreenSpace.glsl"
     #endif
 
-    #if defined SSAO || defined OUTLINES || ANTI_ALIASING == 3
+    #if defined SSAO || ANTI_ALIASING == 3
         /* Screen uniforms */
         uniform float viewWidth;
         uniform float viewHeight;
@@ -154,7 +154,7 @@ varying vec2 screenCoord;
 
             #ifdef OUTLINES
                 // Outline calculation
-                sceneCol *= 1.0 + getOutline(screenPos, viewPos.z, OUTLINE_PIX_SIZE) * (OUTLINE_BRIGHTNESS - 1.0);
+                sceneCol *= 1.0 + getOutline(screenTexelCoord, viewPos.z, OUTLINE_PIX_SIZE) * (OUTLINE_BRIGHTNESS - 1.0);
             #endif
         }
 
