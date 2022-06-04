@@ -4,8 +4,8 @@ varying vec2 lmCoord;
 varying vec2 texCoord;
 
 #ifdef PARALLAX_OCCLUSION
-    varying vec2 vTexCoordScale;
-    varying vec2 vTexCoordPos;
+    flat varying vec2 vTexCoordScale;
+    flat varying vec2 vTexCoordPos;
     varying vec2 vTexCoord;
 #endif
 
