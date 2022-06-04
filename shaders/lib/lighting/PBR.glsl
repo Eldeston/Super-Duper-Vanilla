@@ -151,10 +151,7 @@ uniform sampler2D texture;
         // Assign albedo
         material.albedo = texture2DGradARB(texture, texUv, dcdx, dcdy);
 
-        #if defined ENTITIES || defined ENTITIES_GLOWING
-            // Alpha test, discard immediately excluding boats (water in boat fix)
-            if(id != 10100 && material.albedo.a <= ALPHA_THRESHOLD) discard;
-        #else
+        #if !(defined ENTITIES || defined ENTITIES_GLOWING)
             // Alpha test, discard immediately
             if(material.albedo.a <= ALPHA_THRESHOLD) discard;
         #endif
@@ -268,10 +265,7 @@ uniform sampler2D texture;
         // Assign albedo
         material.albedo = texture2DGradARB(texture, texCoord, dcdx, dcdy);
 
-        #if defined ENTITIES || defined ENTITIES_GLOWING
-            // Alpha test, discard immediately excluding boats (water in boat fix)
-            if(id != 10100 && material.albedo.a <= ALPHA_THRESHOLD) discard;
-        #else
+        #if !(defined ENTITIES || defined ENTITIES_GLOWING)
             // Alpha test, discard immediately
             if(material.albedo.a <= ALPHA_THRESHOLD) discard;
         #endif
