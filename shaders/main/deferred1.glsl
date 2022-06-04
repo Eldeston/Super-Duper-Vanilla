@@ -71,17 +71,21 @@ varying vec2 screenCoord;
         #include "/lib/utility/taaJitter.glsl"
     #endif
 
+    #ifdef WORLD_LIGHT
+        uniform float shdFade;
+    #endif
+
     /* Time uniforms */
     // Get frame time
     uniform float frameTimeCounter;
-    
-    #include "/lib/universalVars.glsl"
 
     // Get is eye in water
     uniform int isEyeInWater;
 
     // Get night vision
     uniform float nightVision;
+
+    #include "/lib/universalVars.glsl"
 
     #include "/lib/utility/convertViewSpace.glsl"
     #include "/lib/utility/convertScreenSpace.glsl"

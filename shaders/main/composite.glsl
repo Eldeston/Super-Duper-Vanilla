@@ -51,17 +51,21 @@ varying vec2 screenCoord;
         #include "/lib/utility/convertPrevScreenSpace.glsl"
     #endif
 
+    #ifdef WORLD_LIGHT
+        uniform float shdFade;
+    #endif
+
     /* Time uniforms */
     // Get frame time
     uniform float frameTimeCounter;
-
-    #include "/lib/universalVars.glsl"
 
     // Get is eye in water
     uniform int isEyeInWater;
 
     // Get night vision
     uniform float nightVision;
+
+    #include "/lib/universalVars.glsl"
 
     #include "/lib/lighting/shdDistort.glsl"
     #include "/lib/utility/convertViewSpace.glsl"
@@ -110,14 +114,15 @@ varying vec2 screenCoord;
         // Declare and get materials
         vec3 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xyz;
 
+        // Get sRGB light color
+        #ifdef WORLD_LIGHT
+            vec3 lightCol = pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA));
+        #else
+            vec3 lightCol = vec3(0);
+        #endif
+
         // If the object is a transparent render separate lighting
         if(texelFetch(depthtex1, screenTexelCoord, 0).x > screenPos.z){
-            // Get sRGB light color
-            #ifdef WORLD_LIGHT
-                vec3 lightCol = pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA));
-            #else
-                vec3 lightCol = vec3(0);
-            #endif
             // Get linear sky color
             vec3 skyCol = pow(SKY_COL_DATA_BLOCK, vec3(GAMMA));
 
@@ -131,12 +136,12 @@ varying vec2 screenCoord;
         // Apply spectral effect
         sceneCol += getSpectral(screenTexelCoord) * EMISSIVE_INTENSITY;
 
+        #ifdef WORLD_LIGHT
+            // Apply volumetric light
+            sceneCol += getGodRays(feetPlayerPos, lightCol, dither.x) * min(1.0, VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater) * shdFade);
+        #endif
+
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(sceneCol, 1); // gcolor
-
-        #ifdef WORLD_LIGHT
-        /* DRAWBUFFERS:04 */
-            gl_FragData[1] = vec4(getGodRays(feetPlayerPos, dither.x), 1); //colortex4
-        #endif
     }
 #endif

@@ -2,7 +2,7 @@
 #endif
 
 #ifdef WORLD_LIGHT
-	vec3 getGodRays(vec3 feetPlayerPos, float dither){
+	vec3 getGodRays(vec3 feetPlayerPos, vec3 lightCol, float dither){
 		// Return 0 if volumetric brightness is 0
 		if(VOL_LIGHT_BRIGHTNESS == 0) return vec3(0);
 
@@ -23,7 +23,7 @@
 			// Fix for rays going too far from scene
 			vec3 endPos = nFeetPlayerPos * (min(min(far, shadowDistance), dist) * 0.14285714);
 
-			// vec3 endPos = feetPlayerPos * 0.14285714;
+			// Apply dithering
 			vec3 startPos = endPos * dither;
 
 			vec3 rayData = vec3(0);
@@ -32,9 +32,10 @@
 				startPos += endPos;
 			}
 			
-			return rayData * ((1.0 - exp(-length(feetPlayerPos) * totalFogDensity)) * heightFade * 0.14285714);
+			return lightCol * rayData * ((1.0 - exp(-dist * totalFogDensity)) * heightFade * 0.14285714);
 		#else
-			return vec3(heightFade * (1.0 - exp(-length(feetPlayerPos) * totalFogDensity)));
+			if(isEyeInWater == 1) return lightCol * pow(fogColor, vec3(GAMMA)) * ((1.0 - exp(-dist * totalFogDensity)) * heightFade);
+			else return lightCol * ((1.0 - exp(-dist * totalFogDensity)) * heightFade);
 		#endif
 	}
 #endif

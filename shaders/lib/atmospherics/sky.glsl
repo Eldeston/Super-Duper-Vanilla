@@ -1,9 +1,3 @@
-#ifdef WORLD_LIGHT
-    #if WORLD_SUN_MOON == 1
-        uniform float shdFade;
-    #endif
-#endif
-
 #if WORLD_SUN_MOON != 0
     float getSunMoonShape(vec2 pos){
         #if SUN_MOON_TYPE == 1
