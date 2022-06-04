@@ -1,3 +1,5 @@
+flat varying mat3 TBN;
+
 varying vec2 lmCoord;
 varying vec2 texCoord;
 
@@ -8,8 +10,6 @@ varying vec2 texCoord;
 #endif
 
 varying vec3 glcolor;
-
-varying mat3 TBN;
 
 // View matrix uniforms
 uniform mat4 gbufferModelViewInverse;

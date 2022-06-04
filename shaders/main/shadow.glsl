@@ -1,11 +1,12 @@
-uniform float frameTimeCounter;
-
-varying float blockId;
+flat varying int blockId;
 
 varying vec2 texCoord;
 
 varying vec3 worldPos;
 varying vec3 glcolor;
+
+// Get frame time
+uniform float frameTimeCounter;
 
 #ifdef VERTEX
     // Position uniforms
@@ -36,7 +37,7 @@ varying vec3 glcolor;
         worldPos = vertexPos.xyz + cameraPosition;
 
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
-        blockId = mc_Entity.x;
+        blockId = int(mc_Entity.x);
         
         #ifdef ANIMATE
             getVertexAnimations(vertexPos.xyz, worldPos, texCoord, mc_midTexCoord, mc_Entity.x, (gl_TextureMatrix[1] * gl_MultiTexCoord1).y);
@@ -84,9 +85,9 @@ varying vec3 glcolor;
             // If the object is not opaque, proceed with shadow coloring and caustics
             if(shdAlbedo.a != 1){
                 #if UNDERWATER_CAUSTICS == 2
-                    if(int(blockId + 0.5) == 10000) shdAlbedo.rgb *= squared(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 4.0;
+                    if(blockId == 10000) shdAlbedo.rgb *= squared(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 4.0;
                 #elif UNDERWATER_CAUSTICS == 1
-                    if(isEyeInWater == 1 && int(blockId + 0.5) == 10000) shdAlbedo.rgb *= squared(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 4.0;
+                    if(isEyeInWater == 1 && blockId == 10000) shdAlbedo.rgb *= squared(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 4.0;
                 #endif
 
                 shdAlbedo.rgb = pow(shdAlbedo.rgb * glcolor, vec3(GAMMA));

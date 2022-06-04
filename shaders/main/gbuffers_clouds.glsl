@@ -1,6 +1,6 @@
-varying vec2 texCoord;
+flat varying vec3 norm;
 
-varying vec3 norm;
+varying vec2 texCoord;
 
 // View matrix uniforms
 uniform mat4 gbufferModelViewInverse;

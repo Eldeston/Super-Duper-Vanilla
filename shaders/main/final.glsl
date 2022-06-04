@@ -17,8 +17,6 @@ varying vec2 screenCoord;
     const int colortex3Format = RGB8;
     const int colortex4Format = R11F_G11F_B10F;
     const int colortex5Format = RGBA16F;
-    const int colortex6Format = RGB8;
-    const int colortex7Format = RGB8;
     */
 
     uniform sampler2D gcolor;

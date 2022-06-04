@@ -1,7 +1,6 @@
-// Get frame time
-uniform float frameTimeCounter;
+flat varying int blockId;
 
-varying float blockId;
+flat varying mat3 TBN;
 
 varying vec2 lmCoord;
 varying vec2 texCoord;
@@ -15,7 +14,8 @@ varying vec2 texCoord;
 varying vec3 worldPos;
 varying vec3 glcolor;
 
-varying mat3 TBN;
+// Get frame time
+uniform float frameTimeCounter;
 
 // View matrix uniforms
 uniform mat4 gbufferModelViewInverse;
@@ -63,7 +63,7 @@ uniform mat4 gbufferModelViewInverse;
         #endif
 
         // Get block id
-        blockId = mc_Entity.x;
+        blockId = int(mc_Entity.x);
 
         // Get TBN matrix
         vec3 tangent = normalize(gl_NormalMatrix * at_tangent.xyz);
@@ -160,11 +160,10 @@ uniform mat4 gbufferModelViewInverse;
 
 	    // Declare materials
 	    matPBR material;
-        int rBlockId = int(blockId + 0.5);
-        getPBR(material, eyePlayerPos, rBlockId);
+        getPBR(material, eyePlayerPos, blockId);
         
         // If water
-        if(rBlockId == 10000){
+        if(blockId == 10000){
             float waterNoise = WATER_BRIGHTNESS;
 
             #ifdef WORLD_WATERNORM
@@ -207,7 +206,7 @@ uniform mat4 gbufferModelViewInverse;
         material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
         #if defined ENVIRO_MAT && !defined FORCE_DISABLE_WEATHER
-            if(rBlockId != 10000) enviroPBR(material);
+            if(blockId != 10000) enviroPBR(material);
         #endif
 
         vec4 sceneCol = complexShadingGbuffers(material, eyePlayerPos);

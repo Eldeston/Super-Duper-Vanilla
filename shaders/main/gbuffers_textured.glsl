@@ -1,7 +1,8 @@
+flat varying vec3 norm;
+
 varying vec2 lmCoord;
 varying vec2 texCoord;
 
-varying vec3 norm;
 varying vec3 glcolor;
 
 // View matrix uniforms

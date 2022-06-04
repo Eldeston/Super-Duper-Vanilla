@@ -7,11 +7,6 @@
         #include "/lib/utility/taaJitter.glsl"
     #endif
 
-    #ifdef WORLD_CURVATURE
-        uniform mat4 gbufferModelView;
-        uniform mat4 gbufferModelViewInverse;
-    #endif
-
     const mat4 viewScale = mat4(
         0.99609375, 0, 0, 0,
         0, 0.99609375, 0, 0,
@@ -20,21 +15,9 @@
     );
 
     void main(){
-        #ifdef WORLD_CURVATURE
-            // Feet player pos
-            vec4 linePosStart = gbufferModelViewInverse * (gl_ModelViewMatrix * vec4(gl_Vertex.xyz, 1.0));
-            vec4 linePosEnd = gbufferModelViewInverse * (gl_ModelViewMatrix * vec4(gl_Vertex.xyz + gl_Normal.xyz, 1.0));
-
-            linePosStart.y -= dot(linePosStart.xz, linePosStart.xz) / WORLD_CURVATURE_SIZE;
-            linePosEnd.y -= dot(linePosEnd.xz, linePosEnd.xz) / WORLD_CURVATURE_SIZE;
-            
-            linePosStart = gbufferModelView * linePosStart;
-            linePosEnd = gbufferModelView * linePosEnd;
-        #else
-            // Feet player pos
-            vec4 linePosStart = gl_ModelViewMatrix * vec4(gl_Vertex.xyz, 1.0);
-            vec4 linePosEnd = gl_ModelViewMatrix * vec4(gl_Vertex.xyz + gl_Normal.xyz, 1.0);
-        #endif
+        // Feet player pos
+        vec4 linePosStart = gl_ModelViewMatrix * vec4(gl_Vertex.xyz, 1);
+        vec4 linePosEnd = gl_ModelViewMatrix * vec4(gl_Vertex.xyz + gl_Normal.xyz, 1);
 
         linePosStart = gl_ProjectionMatrix * viewScale * linePosStart;
         linePosEnd = gl_ProjectionMatrix * viewScale * linePosEnd;

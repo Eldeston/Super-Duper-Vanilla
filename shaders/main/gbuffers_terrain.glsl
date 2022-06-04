@@ -1,7 +1,7 @@
-// Get frame time
-uniform float frameTimeCounter;
+flat varying int blockId;
 
-varying float blockId;
+flat varying mat3 TBN;
+
 varying float glcolorAO;
 
 varying vec2 lmCoord;
@@ -16,7 +16,8 @@ varying vec2 texCoord;
 varying vec3 worldPos;
 varying vec3 glcolor;
 
-varying mat3 TBN;
+// Get frame time
+uniform float frameTimeCounter;
 
 // View matrix uniforms
 uniform mat4 gbufferModelViewInverse;
@@ -64,7 +65,7 @@ uniform mat4 gbufferModelViewInverse;
         #endif
 
         // Get block id
-        blockId = mc_Entity.x;
+        blockId = int(mc_Entity.x);
 
         // Get TBN matrix
         vec3 tangent = normalize(gl_NormalMatrix * at_tangent.xyz);
@@ -156,10 +157,9 @@ uniform mat4 gbufferModelViewInverse;
 
 	    // Declare materials
 	    matPBR material;
-        int rBlockId = int(blockId + 0.5);
-        getPBR(material, eyePlayerPos, rBlockId);
+        getPBR(material, eyePlayerPos, blockId);
 
-        if(rBlockId == 10001){
+        if(blockId == 10001){
             #ifdef LAVA_NOISE
                 vec2 lavaUv = (worldPos.yz * TBN[2].x + worldPos.xz * TBN[2].y + worldPos.xy * TBN[2].z) / LAVA_TILE_SIZE;
                 float lavaNoise = max(getLavaNoise(lavaUv), (material.albedo.r + material.albedo.g + material.albedo.b) * 0.33 + 0.01);
@@ -172,7 +172,7 @@ uniform mat4 gbufferModelViewInverse;
         material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
 
         #if defined ENVIRO_MAT && !defined FORCE_DISABLE_WEATHER
-            if(rBlockId != 10001) enviroPBR(material);
+            if(blockId != 10001) enviroPBR(material);
         #endif
 
         vec4 sceneCol = complexShadingGbuffers(material, eyePlayerPos);
