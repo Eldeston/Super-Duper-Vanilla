@@ -29,7 +29,7 @@ const float sunPathRotation = 30.0; // Light angle [-60.0 -55.0 -50.0 -45.0 -40.
 			// Sample opaque only shadows
 			float shd1 = shadow2D(shadowtex1, shdPos).x;
 			// If not in shadow return full shadow color
-			if(shd1 != 0) return texture2D(shadowcolor0, shdPos.xy).rgb * shd1 * (1.0 - shd0) + shd0;
+			if(shd1 != 0) return texelFetch(shadowcolor0, ivec2(shdPos.xy * shadowMapResolution), 0).rgb * shd1 * (1.0 - shd0) + shd0;
 			// Otherwise, return "black"
 			return vec3(0);
 		#else

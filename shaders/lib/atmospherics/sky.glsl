@@ -112,7 +112,7 @@ vec3 getSkyRender(vec3 skyBoxCol, vec3 skyCol, vec3 sRGBLightCol, vec3 lightCol,
     #ifdef WORLD_STARS
         // Star field generation
         vec2 starData = texelFetch(noisetex, ivec2((nSkyPos.xz * 256.0) / (abs(nSkyPos.y) + length(nSkyPos.xz))) & 255, 0).xy;
-        if(starData.x * starData.y > 0.9) finalCol += (1.0 - rainStrength) * WORLD_STARS;
+        if(starData.x * starData.y > 0.92) finalCol += (1.0 - rainStrength) * WORLD_STARS;
     #endif
 
     return finalCol;

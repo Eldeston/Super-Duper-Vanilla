@@ -8,10 +8,10 @@ vec3 getRand3(ivec2 iuv){
     return vec3(texelFetch(noisetex, iuv, 0).x, texelFetch(noisetex, ivec2(255 - iuv.x, iuv.y), 0).x, texelFetch(noisetex, ivec2(iuv.x, 255 - iuv.y), 0).x);
 }
 
-float toRandPerFrame(float rand, float time){
-    return fract(rand + time * NOISE_SPEED);
+float toRandPerFrame(float hash, float time){
+    return fract(hash + time * NOISE_SPEED);
 }
 
-vec3 toRandPerFrame(vec3 rand, float time){
-    return fract(rand + time * NOISE_SPEED);
+vec3 toRandPerFrame(vec3 hash, float time){
+    return fract(hash + time * NOISE_SPEED);
 }

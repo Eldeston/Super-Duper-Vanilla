@@ -14,7 +14,7 @@
 
 		// Fade VL, but do not apply to underwater VL
 		if(isEyeInWater != 1){
-			heightFade = fastSqrt(min(1.0, 1.0 - nFeetPlayerPos.y));
+			heightFade = 1.0 - nFeetPlayerPos.y * nFeetPlayerPos.y;
 			heightFade *= heightFade * heightFade * heightFade * heightFade;
 			heightFade = (1.0 - heightFade) * rainStrength * 0.25 + heightFade;
 		}
@@ -34,8 +34,8 @@
 			
 			return lightCol * rayData * ((1.0 - exp(-dist * totalFogDensity)) * heightFade * 0.14285714);
 		#else
-			if(isEyeInWater == 1) return lightCol * pow(fogColor, vec3(GAMMA)) * ((1.0 - exp(-dist * totalFogDensity)) * heightFade);
-			else return lightCol * ((1.0 - exp(-dist * totalFogDensity)) * heightFade);
+			if(isEyeInWater == 1) return lightCol * pow(fogColor, vec3(GAMMA)) * (heightFade - exp(-dist * totalFogDensity) * heightFade);
+			else return lightCol * (heightFade - exp(-dist * totalFogDensity) * heightFade);
 		#endif
 	}
 #endif
