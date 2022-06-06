@@ -37,6 +37,8 @@
 vec3 getSkyColor(vec3 skyBoxCol, vec3 skyCol, vec3 lightCol, vec3 nPlayerPos, float LV, bool isSky, bool isReflection){
     // If player is in lava, return fog color
     if(isEyeInWater == 2) return pow(fogColor, vec3(GAMMA));
+    // If player is in water, return nothing if it's not the sky
+    if(isEyeInWater == 1 && !isSky) return vec3(0);
 
     #ifdef WORLD_SKY_GROUND
         skyCol.rg *= smoothstep(1.0, 0.0, (-nPlayerPos.y * 4.0) / (rainStrength * PI + 1.0));
@@ -90,7 +92,7 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 skyCol, vec3 lightCol, vec3 nPlayerPos, fl
     #endif
 
     // Do a simple void gradient when underwater
-    if(isEyeInWater == 1) return skyCol * cubed(nPlayerPos.y * 0.5 + 0.5) + pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
+    if(isEyeInWater == 1) return (isReflection ? skyCol * saturate(nPlayerPos.y + eyeBrightFact - 1.0) : skyCol) * cubed(nPlayerPos.y * 0.5 + 0.5) + pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
     return skyCol * saturate((nPlayerPos.y + eyeBrightFact - 1.0) * (1.0 - eyeBrightFact) + eyeBrightFact) + pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
 }
 
