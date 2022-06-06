@@ -34,7 +34,7 @@
     }
 #endif
 
-vec3 getSkyColor(vec3 skyBoxCol, vec3 skyCol, vec3 lightCol, vec3 nPlayerPos, float LV, bool isSky){
+vec3 getSkyColor(vec3 skyBoxCol, vec3 skyCol, vec3 lightCol, vec3 nPlayerPos, float LV, bool isSky, bool isReflection){
     // If player is in lava, return fog color
     if(isEyeInWater == 2) return pow(fogColor, vec3(GAMMA));
 
@@ -75,22 +75,33 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 skyCol, vec3 lightCol, vec3 nPlayerPos, fl
         #endif
     }
 
-    #if WORLD_SUN_MOON == 1 && defined WORLD_LIGHT
-        skyCol += lightCol * pow(max(LV, 0.0) * 0.70710678, abs(nPlayerPos.y) + 1.0) * shdFade;
+    #ifdef WORLD_LIGHT
+        #if WORLD_SUN_MOON == 1
+            skyCol += lightCol * pow(max(LV, 0.0) * 0.70710678, abs(nPlayerPos.y) + 1.0) * shdFade;
+        #endif
+
+        // Fake VL reflection
+        if(isEyeInWater != 1 && isReflection){
+            float heightFade = 1.0 - squared(max(0.0, nPlayerPos.y));
+            heightFade = squared(squared(heightFade * heightFade));
+            heightFade = (1.0 - heightFade) * rainStrength * 0.25 + heightFade;
+            skyCol += lightCol * (heightFade * shdFade * VOL_LIGHT_BRIGHTNESS);
+        }
     #endif
 
-    float voidGradient = saturate((nPlayerPos.y + eyeBrightFact - 1.0) * PI2);
-    return skyCol * (isEyeInWater == 1 ? voidGradient : voidGradient * (1.0 - eyeBrightFact) + eyeBrightFact) + pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
+    // Do a simple void gradient when underwater
+    if(isEyeInWater == 1) return skyCol * cubed(nPlayerPos.y * 0.5 + 0.5) + pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
+    return skyCol * saturate((nPlayerPos.y + eyeBrightFact - 1.0) * (1.0 - eyeBrightFact) + eyeBrightFact) + pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
 }
 
-vec3 getSkyRender(vec3 skyBoxCol, vec3 skyCol, vec3 lightCol, vec3 nPlayerPos, bool isSky){
-    return getSkyColor(skyBoxCol, skyCol, lightCol, nPlayerPos, dot(nPlayerPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), isSky);
+vec3 getSkyRender(vec3 skyBoxCol, vec3 skyCol, vec3 lightCol, vec3 nPlayerPos, bool isSky, bool isReflection){
+    return getSkyColor(skyBoxCol, skyCol, lightCol, nPlayerPos, dot(nPlayerPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), isSky, isReflection);
 }
 
 vec3 getSkyRender(vec3 skyBoxCol, vec3 skyCol, vec3 sRGBLightCol, vec3 lightCol, vec3 nPlayerPos, bool isSky, bool isSunMoon){
     vec3 nSkyPos = mat3(shadowModelView) * nPlayerPos;
 
-    vec3 finalCol = getSkyColor(skyBoxCol, skyCol, lightCol, nPlayerPos, nSkyPos.z, isSky);
+    vec3 finalCol = getSkyColor(skyBoxCol, skyCol, lightCol, nPlayerPos, nSkyPos.z, isSky, false);
 
     // If it's not the sky, return the base sky color
     if(!isSky) return finalCol;
