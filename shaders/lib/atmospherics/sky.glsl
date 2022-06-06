@@ -92,7 +92,7 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 skyCol, vec3 lightCol, vec3 nPlayerPos, fl
     #endif
 
     // Do a simple void gradient when underwater
-    if(isEyeInWater == 1) return (isReflection ? skyCol * saturate(nPlayerPos.y + eyeBrightFact - 1.0) : skyCol) * cubed(nPlayerPos.y * 0.5 + 0.5) + pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
+    if(isEyeInWater == 1) return (isReflection ? skyCol * saturate(nPlayerPos.y + eyeBrightFact - 1.0) : skyCol) * smootherstep(nPlayerPos.y) + pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
     return skyCol * saturate((nPlayerPos.y + eyeBrightFact - 1.0) * (1.0 - eyeBrightFact) + eyeBrightFact) + pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
 }
 
