@@ -163,7 +163,7 @@ varying vec2 screenCoord;
         }
 
         // Fog and sky calculation
-        sceneCol = getFogRender(eyePlayerPos, sceneCol, getSkyRender(sceneCol, skyCol, sRGBLightCol, lightCol, normalize(eyePlayerPos), skyMask, true), feetPlayerPos.y + cameraPosition.y, skyMask);
+        sceneCol = getFogRender(eyePlayerPos, sceneCol, getSkyRender(sceneCol, skyCol, sRGBLightCol, lightCol, normalize(eyePlayerPos), skyMask), feetPlayerPos.y + cameraPosition.y, skyMask);
 
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(sceneCol, 1); // gcolor

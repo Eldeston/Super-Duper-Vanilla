@@ -47,7 +47,7 @@ vec3 complexShadingDeferred(vec3 sceneCol, vec3 skyCol, vec3 lightCol, vec3 scre
 				vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyRender(vec3(0), skyCol, lightCol, reflect(nEyePlayerPos, normal), true, true) : texture2D(gcolor, SSRCoord.xy).rgb;
 			#endif
 		#else
-			vec3 reflectCol = getSkyRender(vec3(0), skyCol, sRGBLightCol, reflect(nEyePlayerPos, normal), true);
+			vec3 reflectCol = getSkyRender(vec3(0), skyCol, lightCol, reflect(nEyePlayerPos, normal), true, true);
 		#endif
 
 		// Simplified and modified version of BSL's reflection PBR calculation

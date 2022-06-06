@@ -35,11 +35,6 @@
 #endif
 
 vec3 getSkyColor(vec3 skyBoxCol, vec3 skyCol, vec3 lightCol, vec3 nPlayerPos, float LV, bool isSky, bool isReflection){
-    // If player is in lava, return fog color
-    if(isEyeInWater == 2) return pow(fogColor, vec3(GAMMA));
-    // If player is in water, return nothing if it's not the sky
-    if(isEyeInWater == 1 && !isSky) return vec3(0);
-
     #ifdef WORLD_SKY_GROUND
         skyCol.rg *= smoothstep(1.0, 0.0, (-nPlayerPos.y * 4.0) / (rainStrength * PI + 1.0));
     #endif
@@ -97,10 +92,20 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 skyCol, vec3 lightCol, vec3 nPlayerPos, fl
 }
 
 vec3 getSkyRender(vec3 skyBoxCol, vec3 skyCol, vec3 lightCol, vec3 nPlayerPos, bool isSky, bool isReflection){
+    // If player is in water, return nothing if it's not the sky
+    if(isEyeInWater == 1 && !isSky) return vec3(0);
+    // If player is in lava, return fog color
+    if(isEyeInWater == 2) return pow(fogColor, vec3(GAMMA));
+
     return getSkyColor(skyBoxCol, skyCol, lightCol, nPlayerPos, dot(nPlayerPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), isSky, isReflection);
 }
 
-vec3 getSkyRender(vec3 skyBoxCol, vec3 skyCol, vec3 sRGBLightCol, vec3 lightCol, vec3 nPlayerPos, bool isSky, bool isSunMoon){
+vec3 getSkyRender(vec3 skyBoxCol, vec3 skyCol, vec3 sRGBLightCol, vec3 lightCol, vec3 nPlayerPos, bool isSky){
+    // If player is in water, return nothing if it's not the sky
+    if(isEyeInWater == 1 && !isSky) return vec3(0);
+    // If player is in lava, return fog color
+    if(isEyeInWater == 2) return pow(fogColor, vec3(GAMMA));
+    
     vec3 nSkyPos = mat3(shadowModelView) * nPlayerPos;
 
     vec3 finalCol = getSkyColor(skyBoxCol, skyCol, lightCol, nPlayerPos, nSkyPos.z, isSky, false);
@@ -110,15 +115,13 @@ vec3 getSkyRender(vec3 skyBoxCol, vec3 skyCol, vec3 sRGBLightCol, vec3 lightCol,
 
     #ifdef WORLD_LIGHT
         #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE != 2
-            if(isSunMoon) finalCol += (getSunMoonShape(nSkyPos.xy) * (1.0 - rainStrength) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY) * sRGBLightCol;
+            finalCol += (getSunMoonShape(nSkyPos.xy) * (1.0 - rainStrength) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY) * sRGBLightCol;
         #elif WORLD_SUN_MOON == 2
-            if(isSunMoon){
-                float blackHole = min(1.0, 0.005 / ((1.0 - nSkyPos.z) * 32.0 - 0.1));
-                if(blackHole <= 0) return vec3(0);
-                finalCol += blackHole * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * sRGBLightCol;
-                nPlayerPos = mix(nPlayerPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), blackHole);
-                nSkyPos = mix(nSkyPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), blackHole);
-            }
+            float blackHole = min(1.0, 0.005 / ((1.0 - nSkyPos.z) * 32.0 - 0.1));
+            if(blackHole <= 0) return vec3(0);
+            finalCol += blackHole * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * sRGBLightCol;
+            nPlayerPos = mix(nPlayerPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), blackHole);
+            nSkyPos = mix(nSkyPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), blackHole);
         #endif
     #endif
 
