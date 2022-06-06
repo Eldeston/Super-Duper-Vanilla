@@ -130,7 +130,7 @@ varying vec2 screenCoord;
             sceneCol = complexShadingDeferred(sceneCol, skyCol, lightCol, screenPos, viewPos, eyePlayerPos, texelFetch(colortex1, screenTexelCoord, 0).rgb * 2.0 - 1.0, texelFetch(colortex2, screenTexelCoord, 0).rgb, matRaw0.x, matRaw0.y, dither);
 
             // Fog and sky calculation
-            sceneCol = getFogRender(eyePlayerPos, sceneCol, getSkyRender(vec3(0), skyCol, lightCol, normalize(eyePlayerPos), false), feetPlayerPos.y + cameraPosition.y, false);
+            sceneCol = getFogRender(eyePlayerPos, sceneCol, getSkyRender(vec3(0), skyCol, lightCol, normalize(eyePlayerPos), false, false), feetPlayerPos.y + cameraPosition.y, false);
         }
 
         // Apply spectral effect
