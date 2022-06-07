@@ -10,7 +10,7 @@ varying vec2 screenCoord;
 #ifdef FRAGMENT
     uniform sampler2D gcolor;
 
-    #if ANTI_ALIASING >= 2 || (defined PREVIOUS_FRAME && defined SSR && defined SSGI)
+    #if ANTI_ALIASING >= 2 || (defined PREVIOUS_FRAME && (defined SSR || defined SSGI))
         uniform sampler2D colortex5;
     #endif
 
@@ -45,7 +45,7 @@ varying vec2 screenCoord;
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(sceneCol, 1); // gcolor
 
-        #if ANTI_ALIASING >= 2 || (defined PREVIOUS_FRAME && defined SSR && defined SSGI)
+        #if ANTI_ALIASING >= 2 || (defined PREVIOUS_FRAME && (defined SSR || defined SSGI))
         /* DRAWBUFFERS:05 */
             #ifdef AUTO_EXPOSURE
                 gl_FragData[1] = vec4(sceneCol, texelFetch(colortex5, ivec2(0), 0).a); // colortex5
