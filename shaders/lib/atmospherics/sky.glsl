@@ -82,7 +82,7 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 skyCol, vec3 lightCol, vec3 nPlayerPos, fl
             float heightFade = 1.0 - squared(max(0.0, nPlayerPos.y));
             heightFade = squared(squared(heightFade * heightFade));
             heightFade = (1.0 - heightFade) * rainStrength * 0.25 + heightFade;
-            skyCol += lightCol * (heightFade * shdFade * VOL_LIGHT_BRIGHTNESS);
+            skyCol += lightCol * (heightFade * shdFade * VOL_LIGHT_BRIGHTNESS * 0.5);
         }
     #endif
 
