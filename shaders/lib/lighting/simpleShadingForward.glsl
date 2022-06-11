@@ -85,7 +85,7 @@
 					float distortFactor = getDistortFactor(shdPos.xy);
 
 					// Apply bias according to normal in shadow space
-					shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * norm) * biasAdjustMult * biasAdjustMult * distortFactor;
+					shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * norm) * biasAdjustMult * biasAdjustMult * distortFactor * 0.5;
 					shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
 
 					// Sample shadows
