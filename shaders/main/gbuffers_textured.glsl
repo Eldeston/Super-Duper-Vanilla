@@ -99,6 +99,9 @@ uniform mat4 gbufferModelViewInverse;
     // Get night vision
     uniform float nightVision;
 
+    // Get atlas size
+    uniform ivec2 atlasSize;
+
     #include "/lib/lighting/shdDistort.glsl"
     #include "/lib/utility/convertViewSpace.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
@@ -113,10 +116,16 @@ uniform mat4 gbufferModelViewInverse;
 
         // Alpha test, discard immediately
         if(albedo.a <= ALPHA_THRESHOLD) discard;
-        
-        // World border fix
+
+        // World border fix + emissives
         if(renderStage == MC_RENDER_STAGE_WORLD_BORDER){
-            gl_FragData[0] = vec4(pow(albedo.rgb * vec3(0.5, 0.75, 1) * albedo.a, vec3(GAMMA)) * EMISSIVE_INTENSITY, 1); // gcolor
+            gl_FragData[0] = vec4(vec3(0.125, 0.25, 0.5) * EMISSIVE_INTENSITY, albedo.a); // gcolor
+            return; // Return immediately, no need for lighting calculation
+        }
+
+        // Particle emissives
+        if(((albedo.r + albedo.g + albedo.b) > 1.8 || (glcolor.r != glcolor.g && glcolor.g != glcolor.b)) && atlasSize.x <= 1024 && atlasSize.x > 0 && lmCoord.x == 1){
+            gl_FragData[0] = vec4(pow(albedo.rgb * glcolor, vec3(GAMMA)) * EMISSIVE_INTENSITY, albedo.a); // gcolor
             return; // Return immediately, no need for lighting calculation
         }
 
