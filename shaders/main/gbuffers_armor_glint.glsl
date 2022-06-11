@@ -50,6 +50,6 @@
         if(albedo.a <= ALPHA_THRESHOLD) discard;
 
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(pow(albedo.rgb, vec3(GAMMA)) * (1.0 + getLuminance(albedo.rgb) * EMISSIVE_INTENSITY), 1); // gcolor
+        gl_FragData[0] = vec4(pow(albedo.rgb, vec3(GAMMA)) * EMISSIVE_INTENSITY * 0.25, 1); // gcolor
     }
 #endif
