@@ -119,6 +119,6 @@ uniform mat4 gbufferModelViewInverse;
 
     /* DRAWBUFFERS:03 */
         gl_FragData[0] = sceneCol; // gcolor
-        gl_FragData[1] = vec4(0, 0, 0, 1); //colortex3
+        gl_FragData[1] = vec4(0, 0, 0, 1); // colortex3
     }
 #endif

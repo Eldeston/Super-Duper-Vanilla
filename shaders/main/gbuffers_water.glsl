@@ -174,8 +174,7 @@ uniform mat4 gbufferModelViewInverse;
 
     void main(){
         // Declare and get positions
-        vec3 screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
-	    vec3 viewPos = toView(screenPos);
+	    vec3 viewPos = toView(vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z));
         vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
 
 	    // Declare materials

@@ -50,14 +50,12 @@
     uniform sampler2D texture;
 
     void main(){
-        vec4 albedo = texture2D(texture, texCoord);
+        vec4 albedo = texture2D(texture, texCoord) * glcolor;
 
         // Alpha test, discard immediately
         if(albedo.a <= ALPHA_THRESHOLD) discard;
 
-        #if WHITE_MODE == 0
-            albedo.rgb *= glcolor.rgb;
-        #elif WHITE_MODE == 1
+        #if WHITE_MODE == 1
             albedo.rgb = vec3(1);
         #elif WHITE_MODE == 2
             albedo.rgb = vec3(0);
@@ -66,6 +64,6 @@
         #endif
 
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(pow(albedo.rgb, vec3(GAMMA)) * EMISSIVE_INTENSITY, albedo.a * glcolor.a); // gcolor
+        gl_FragData[0] = vec4(pow(albedo.rgb, vec3(GAMMA)) * EMISSIVE_INTENSITY, albedo.a); // gcolor
     }
 #endif
