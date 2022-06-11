@@ -1,13 +1,19 @@
-varying vec2 screenCoord;
+/// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
 
 #ifdef VERTEX
+    out vec2 screenCoord;
+
     void main(){
         gl_Position = ftransform();
         screenCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
     }
 #endif
 
+/// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
+
 #ifdef FRAGMENT
+    in vec2 screenCoord;
+
     uniform sampler2D gcolor;
 
     /* Screen resolutions */

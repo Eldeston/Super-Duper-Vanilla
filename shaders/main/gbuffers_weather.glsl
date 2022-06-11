@@ -1,8 +1,10 @@
-varying float lmCoordX;
-
-varying vec2 texCoord;
+/// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
 
 #ifdef VERTEX
+    out float lmCoordX;
+
+    out vec2 texCoord;
+
     #if ANTI_ALIASING == 3
         /* Screen resolutions */
         uniform float viewWidth;
@@ -25,7 +27,13 @@ varying vec2 texCoord;
     }
 #endif
 
+/// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
+
 #ifdef FRAGMENT
+    in float lmCoordX;
+
+    in vec2 texCoord;
+
     uniform sampler2D texture;
 
     #include "/lib/universalVars.glsl"

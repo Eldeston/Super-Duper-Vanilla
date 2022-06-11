@@ -1,22 +1,25 @@
-flat varying int blockId;
-
-varying vec2 texCoord;
-
-varying vec3 worldPos;
-varying vec3 glcolor;
-
-// Get frame time
-uniform float frameTimeCounter;
+/// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
 
 #ifdef VERTEX
+    flat out int blockId;
+
+    out vec2 texCoord;
+
+    out vec3 worldPos;
+    out vec3 glcolor;
+
     // Position uniforms
     uniform vec3 cameraPosition;
     
     #if TIMELAPSE_MODE == 2
+        // Get smoothed frame time
         uniform float animationFrameTime;
 
         float newFrameTimeCounter = animationFrameTime;
     #else
+        // Get frame time
+        uniform float frameTimeCounter;
+
         float newFrameTimeCounter = frameTimeCounter;
     #endif
 
@@ -55,7 +58,16 @@ uniform float frameTimeCounter;
     }
 #endif
 
+/// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
+
 #ifdef FRAGMENT
+    flat in int blockId;
+
+    in vec2 texCoord;
+
+    in vec3 worldPos;
+    in vec3 glcolor;
+
     uniform sampler2D tex;
     
     #if UNDERWATER_CAUSTICS != 0 && defined SHD_COL
@@ -64,10 +76,14 @@ uniform float frameTimeCounter;
         #endif
 
         #if TIMELAPSE_MODE != 0
+            // Get smoothed frame time
             uniform float animationFrameTime;
 
             float newFrameTimeCounter = animationFrameTime;
         #else
+            // Get frame time
+            uniform float frameTimeCounter;
+
             float newFrameTimeCounter = frameTimeCounter;
         #endif
 

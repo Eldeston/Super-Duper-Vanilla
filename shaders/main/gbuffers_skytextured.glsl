@@ -1,8 +1,10 @@
-varying vec2 texCoord;
-
-varying vec4 glcolor;
+/// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
 
 #ifdef VERTEX
+    out vec2 texCoord;
+
+    out vec4 glcolor;
+
     #if ANTI_ALIASING == 3
         /* Screen resolutions */
         uniform float viewWidth;
@@ -24,7 +26,13 @@ varying vec4 glcolor;
     }
 #endif
 
+/// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
+
 #ifdef FRAGMENT
+    in vec2 texCoord;
+
+    in vec4 glcolor;
+
     uniform sampler2D texture;
 
     uniform int renderStage;

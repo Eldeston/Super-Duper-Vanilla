@@ -1,14 +1,16 @@
-flat varying vec3 norm;
-
-varying vec2 lmCoord;
-varying vec2 texCoord;
-
-varying vec3 glcolor;
-
 // View matrix uniforms
 uniform mat4 gbufferModelViewInverse;
 
+/// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
+
 #ifdef VERTEX
+    flat out vec3 norm;
+
+    out vec2 lmCoord;
+    out vec2 texCoord;
+
+    out vec3 glcolor;
+
     #if ANTI_ALIASING == 3
         /* Screen resolutions */
         uniform float viewWidth;
@@ -53,7 +55,16 @@ uniform mat4 gbufferModelViewInverse;
     }
 #endif
 
+/// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
+
 #ifdef FRAGMENT
+    flat in vec3 norm;
+
+    in vec2 lmCoord;
+    in vec2 texCoord;
+
+    in vec3 glcolor;
+
     // Projection matrix uniforms
     uniform mat4 gbufferProjectionInverse;
 

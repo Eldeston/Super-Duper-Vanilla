@@ -1,13 +1,19 @@
-varying vec2 screenCoord;
+/// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
 
 #ifdef VERTEX
+    out vec2 screenCoord;
+
     void main(){
         gl_Position = ftransform();
         screenCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
     }
 #endif
 
+/// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
+
 #ifdef FRAGMENT
+    in vec2 screenCoord;
+
     #if ANTI_ALIASING >= 2 || defined PREVIOUS_FRAME || defined AUTO_EXPOSURE
         // Disable buffer clear if TAA, previous frame reflections, or auto exposure is on
         const bool colortex5Clear = false;

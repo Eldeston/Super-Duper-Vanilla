@@ -1,3 +1,5 @@
+/// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
+
 #ifdef VERTEX
     /* Screen resolutions */
     uniform float viewWidth;
@@ -55,6 +57,8 @@
         #endif
     }
 #endif
+
+/// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
 
 #ifdef FRAGMENT
     void main(){

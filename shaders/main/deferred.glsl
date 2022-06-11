@@ -1,13 +1,19 @@
-varying vec2 texCoord;
+/// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
 
 #ifdef VERTEX
+    out vec2 screenCoord;
+
     void main(){
         gl_Position = ftransform();
-        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        screenCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
     }
 #endif
 
+/// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
+
 #ifdef FRAGMENT
+    in vec2 screenCoord;
+
     // SSAO without normals fix for beacon
     const vec4 colortex1ClearColor = vec4(0.5, 0.5, 0.5, 1);
 
@@ -53,7 +59,7 @@ varying vec2 texCoord;
 
                 // Check if normal has a direction
                 if(normal.x + normal.y + normal.z != 0)
-                    ambientOcclusion = getSSAO(toView(vec3(texCoord, depth)), mat3(gbufferModelView) * (normal * 2.0));
+                    ambientOcclusion = getSSAO(toView(vec3(screenCoord, depth)), mat3(gbufferModelView) * (normal * 2.0));
             }
             
         /* DRAWBUFFERS:2 */

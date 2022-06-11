@@ -1,28 +1,30 @@
-flat varying int blockId;
-
-flat varying mat3 TBN;
-
-varying float glcolorAO;
-
-varying vec2 lmCoord;
-varying vec2 texCoord;
-
-#if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
-    flat varying vec2 vTexCoordScale;
-    flat varying vec2 vTexCoordPos;
-    varying vec2 vTexCoord;
-#endif
-
-varying vec3 worldPos;
-varying vec3 glcolor;
-
 // Get frame time
 uniform float frameTimeCounter;
 
 // View matrix uniforms
 uniform mat4 gbufferModelViewInverse;
 
+/// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
+
 #ifdef VERTEX
+    flat out int blockId;
+
+    flat out mat3 TBN;
+
+    out float glcolorAO;
+
+    out vec2 lmCoord;
+    out vec2 texCoord;
+
+    #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
+        flat out vec2 vTexCoordScale;
+        flat out vec2 vTexCoordPos;
+        out vec2 vTexCoord;
+    #endif
+
+    out vec3 worldPos;
+    out vec3 glcolor;
+
     // Position uniforms
     uniform vec3 cameraPosition;
 
@@ -105,7 +107,27 @@ uniform mat4 gbufferModelViewInverse;
     }
 #endif
 
+/// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
+
 #ifdef FRAGMENT
+    flat in int blockId;
+
+    flat in mat3 TBN;
+
+    in float glcolorAO;
+
+    in vec2 lmCoord;
+    in vec2 texCoord;
+
+    #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
+        flat in vec2 vTexCoordScale;
+        flat in vec2 vTexCoordPos;
+        in vec2 vTexCoord;
+    #endif
+
+    in vec3 worldPos;
+    in vec3 glcolor;
+
     // Projection matrix uniforms
     uniform mat4 gbufferProjectionInverse;
 

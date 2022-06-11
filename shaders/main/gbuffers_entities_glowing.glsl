@@ -1,20 +1,22 @@
-flat varying mat3 TBN;
-
-varying vec2 lmCoord;
-varying vec2 texCoord;
-
-#ifdef PARALLAX_OCCLUSION
-    flat varying vec2 vTexCoordScale;
-    flat varying vec2 vTexCoordPos;
-    varying vec2 vTexCoord;
-#endif
-
-varying vec3 glcolor;
-
 // View matrix uniforms
 uniform mat4 gbufferModelViewInverse;
 
+/// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
+
 #ifdef VERTEX
+    flat out mat3 TBN;
+
+    out vec2 lmCoord;
+    out vec2 texCoord;
+
+    #ifdef PARALLAX_OCCLUSION
+        flat out vec2 vTexCoordScale;
+        flat out vec2 vTexCoordPos;
+        out vec2 vTexCoord;
+    #endif
+
+    out vec3 glcolor;
+
     #if ANTI_ALIASING == 3
         /* Screen resolutions */
         uniform float viewWidth;
@@ -80,7 +82,22 @@ uniform mat4 gbufferModelViewInverse;
     }
 #endif
 
+/// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
+
 #ifdef FRAGMENT
+    flat in mat3 TBN;
+
+    in vec2 lmCoord;
+    in vec2 texCoord;
+
+    #ifdef PARALLAX_OCCLUSION
+        flat in vec2 vTexCoordScale;
+        flat in vec2 vTexCoordPos;
+        in vec2 vTexCoord;
+    #endif
+
+    in vec3 glcolor;
+
     // Projection matrix uniforms
     uniform mat4 gbufferProjectionInverse;
 
