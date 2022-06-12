@@ -2,10 +2,11 @@
 // Common utility functions goes here
 
 #define GAMMA 2.2
-#define RCPGAMMA 0.4545455
+#define RCPGAMMA 0.45454545
 
-#define PI 3.1415927
-#define PI2 6.2831853
+#define GOLDEN_RATIO 1.61803399
+#define PI 3.14159265
+#define PI2 6.28318531
 
 #define ALPHA_THRESHOLD 0.005
 
@@ -39,6 +40,10 @@ float minOf(vec4 x) { return min(min(x.x, x.y), min(x.z, x.w)); }
 float maxOf(vec2 x) { return max(x.x, x.y); }
 float maxOf(vec3 x) { return max(x.x, max(x.y, x.z)); }
 float maxOf(vec4 x) { return max(max(x.x, x.y), max(x.z, x.w)); }
+
+float sumOf(vec2 x) { return x.x + x.y; }
+float sumOf(vec3 x) { return x.x + x.y + x.z; }
+float sumOf(vec4 x) { return x.x + x.y + x.z + x.w; }
 
 // Hermite interpolation
 float hermiteMix(float a, float b, float x) { return saturate((x - a) / (b - a)); }
@@ -109,6 +114,12 @@ vec3 toneSaturation(vec3 col, float a){
 // Contrast function
 vec3 toneContrast(vec3 col, float a){
 	return saturate((col.rgb - 0.5) * a + 0.5);
+}
+
+// By Jessie#7257
+vec3 generateUnitVector(vec2 hash){
+    hash.x *= PI2; hash.y = hash.y * 2.0 - 1.0;
+    return vec3(vec2(sin(hash.x), cos(hash.x)) * sqrt(1.0 - hash.y * hash.y), hash.y);
 }
 
 // Rotation function

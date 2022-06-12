@@ -7,17 +7,22 @@ float getSSAO(vec3 viewPos, vec3 normal){
 
     float occlusion = 0.0;
 
-    for(int i = 0; i < 4; i++){
-        // Iterate by adding stepsize
-        dither += 0.25;
+    // Instead of iterating by adding stepSize and using fract every time, we swizzle + one fract instead for pleasant results
+    vec3 ditherSwizzle[4] = vec3[4](
+        dither.xyz,
+        dither.zxy,
+        dither.yzx,
+        fract(dither.zyx + GOLDEN_RATIO)
+        );
 
+    for(int i = 0; i < 4; i++){
         // Add new offsets to origin
-        vec3 samplePos = viewPos + (normal + fract(dither) - 0.5) * 0.5;
+        vec3 samplePos = viewPos + (normal + ditherSwizzle[i] - 0.5) * 0.5;
         // Sample new depth and linearize
         float sampleDepth = toView(texture2D(depthtex0, toScreen(samplePos).xy).x);
 
         // Check if the offset points are inside geometry or if the point is occluded
-        occlusion += sampleDepth > samplePos.z ? smoothen(0.5 / abs(viewPos.z - sampleDepth)) : 0.0;
+        if(sampleDepth > samplePos.z) occlusion += fastSqrt(min(1.0, 0.5 / abs(viewPos.z - sampleDepth)));
     }
     
     // Invert results and return
