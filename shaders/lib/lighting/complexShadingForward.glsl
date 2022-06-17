@@ -20,7 +20,7 @@ vec4 complexShadingGbuffers(matPBR material, vec3 eyePlayerPos){
 
 		#ifdef SUBSURFACE_SCATTERING
 			// Diffuse with simple SS approximation
-			float dirLight = NL * (1.0 - material.ss) + material.ss;
+			float dirLight = NL + (1.0 - NL) * material.ambient * material.ss * 0.5;
 		#else
 			#define dirLight NL
 		#endif
