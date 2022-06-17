@@ -14,9 +14,9 @@
 #ifdef FRAGMENT
     in vec2 screenCoord;
 
+    uniform sampler2D gcolor;
     uniform sampler2D depthtex0;
     uniform sampler2D depthtex1;
-    uniform sampler2D gcolor;
     uniform sampler2D colortex1;
     uniform sampler2D colortex2;
     uniform sampler2D colortex3;
@@ -156,6 +156,6 @@
         #endif
 
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(sceneCol, 1); // gcolor
+        gl_FragData[0] = vec4(saturate(sceneCol), 1); // gcolor
     }
 #endif
