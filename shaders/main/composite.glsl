@@ -141,7 +141,7 @@
             // Apply deffered shading
             sceneCol = complexShadingDeferred(sceneCol, skyCol, lightCol, screenPos, viewPos, nEyePlayerPos, normal, albedo, matRaw0.x, matRaw0.y, dither);
 
-            // Get fogCol
+            // Get skyCol as our fogCol. Do basic sky render.
             vec3 fogCol = getSkyRender(skyCol, lightCol, nEyePlayerPos, false, false);
             // Fog and sky calculation
             sceneCol = getFogRender(sceneCol, fogCol, viewDist, nEyePlayerPos.y, feetPlayerPos.y + cameraPosition.y);

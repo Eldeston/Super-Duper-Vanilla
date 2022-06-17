@@ -6,7 +6,7 @@ float atmoFog(float nPlayerPosY, float worldPosY, float playerPosLength, float t
 }
 
 vec3 getFogRender(vec3 color, vec3 fogCol, float viewDist, float nEyePlayerPosY, float worldPosY){
-    float totalFogDensity = FOG_TOTAL_DENSITY * ((isEyeInWater != 1 ? rainStrength * eyeBrightFact * PI : PI) + 1.0);
+    float totalFogDensity = FOG_TOTAL_DENSITY * ((isEyeInWater == 0 ? rainStrength * eyeBrightFact * PI : PI) + 1.0);
     float fogMult = min(1.0, MIST_GROUND_FOG_BRIGHTNESS * (1.0 + isEyeInWater));
 
     // Mist fog

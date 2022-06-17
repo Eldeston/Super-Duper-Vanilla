@@ -173,10 +173,10 @@
             #endif
         }
 
-        // Get fogCol
-        vec3 fogCol = getSkyRender(sceneCol, skyCol, sRGBLightCol, lightCol, nEyePlayerPos, skyMask);
         // Fog and sky calculation
-        sceneCol = skyMask ? fogCol * exp(-far * blindness * 0.375) : getFogRender(sceneCol, fogCol, viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
+        // Get skyCol as our fogCol. If sky, then do full sky render. Otherwise, do basic sky render.
+        if(skyMask) sceneCol = getSkyRender(sceneCol, skyCol, sRGBLightCol, lightCol, nEyePlayerPos, true) * exp(-far * blindness * 0.375);
+        else sceneCol = getFogRender(sceneCol, getSkyRender(skyCol, lightCol, nEyePlayerPos, false, false), viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
 
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(sceneCol, 1); // gcolor

@@ -6,7 +6,7 @@
 		// Return 0 if volumetric brightness is 0
 		if(VOL_LIGHT_BRIGHTNESS == 0) return vec3(0);
 
-		float totalFogDensity = FOG_TOTAL_DENSITY * ((isEyeInWater != 1 ? rainStrength * PI : PI) + 1.0);
+		float totalFogDensity = FOG_TOTAL_DENSITY * ((isEyeInWater == 0 ? rainStrength * PI : PI) + 1.0);
 		float dist = length(feetPlayerPos);
 		float heightFade = 1.0;
 
