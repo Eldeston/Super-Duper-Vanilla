@@ -117,9 +117,6 @@
             vec3 dither = getRand3(screenTexelCoord & 255);
         #endif
 
-        // Declare and get materials
-        vec3 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xyz;
-
         // Get sRGB light color
         #ifdef WORLD_LIGHT
             vec3 lightCol = pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA));
@@ -129,14 +126,25 @@
 
         // If the object is a transparent render separate lighting
         if(texelFetch(depthtex1, screenTexelCoord, 0).x > screenPos.z){
+            // Get view distance
+            float viewDist = length(viewPos);
+            // Get normalized eyePlayerPos
+            vec3 nEyePlayerPos = eyePlayerPos / viewDist;
             // Get linear sky color
             vec3 skyCol = pow(SKY_COL_DATA_BLOCK, vec3(GAMMA));
 
-            // Apply deffered shading
-            sceneCol = complexShadingDeferred(sceneCol, skyCol, lightCol, screenPos, viewPos, eyePlayerPos, texelFetch(colortex1, screenTexelCoord, 0).rgb * 2.0 - 1.0, texelFetch(colortex2, screenTexelCoord, 0).rgb, matRaw0.x, matRaw0.y, dither);
+            // Declare and get materials
+            vec2 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xy;
+            vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).rgb * 2.0 - 1.0;
+            vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
 
+            // Apply deffered shading
+            sceneCol = complexShadingDeferred(sceneCol, skyCol, lightCol, screenPos, viewPos, nEyePlayerPos, normal, albedo, matRaw0.x, matRaw0.y, dither);
+
+            // Get fogCol
+            vec3 fogCol = getSkyRender(skyCol, lightCol, nEyePlayerPos, false, false);
             // Fog and sky calculation
-            sceneCol = getFogRender(eyePlayerPos, sceneCol, getSkyRender(vec3(0), skyCol, lightCol, normalize(eyePlayerPos), false, false), feetPlayerPos.y + cameraPosition.y, false);
+            sceneCol = getFogRender(sceneCol, fogCol, viewDist, nEyePlayerPos.y, feetPlayerPos.y + cameraPosition.y);
         }
 
         // Apply spectral effect

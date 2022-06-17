@@ -66,10 +66,10 @@
     #endif
 
     #ifdef SSAO
-        float getSSAOBoxBlur(vec2 pixSize){
+        float getSSAOBoxBlur(ivec2 iUv){
             // Apply simple box blur
-            return (texture2D(colortex2, screenCoord - pixSize).a + texture2D(colortex2, screenCoord + pixSize).a +
-                texture2D(colortex2, screenCoord - vec2(pixSize.x, -pixSize.y)).a + texture2D(colortex2, screenCoord + vec2(pixSize.x, -pixSize.y)).a) * 0.25;
+            return (texelFetch(colortex2, iUv - 1, 0).a + texelFetch(colortex2, iUv + 1, 0).a +
+                texelFetch(colortex2, iUv - ivec2(1, -1), 0).a + texelFetch(colortex2, iUv + ivec2(1, -1), 0).a) * 0.25;
         }
     #endif
 
@@ -127,8 +127,11 @@
         
         vec3 viewPos = toView(screenPos);
         vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
-        vec3 feetPlayerPos = eyePlayerPos + gbufferModelViewInverse[3].xyz;
 
+        // Get view distance
+        float viewDist = length(viewPos);
+        // Get normalized eyePlayerPos
+        vec3 nEyePlayerPos = eyePlayerPos / viewDist;
         // Get scene color
         vec3 sceneCol = texelFetch(gcolor, screenTexelCoord, 0).rgb;
 
@@ -153,13 +156,15 @@
 
             // Declare and get materials
             vec2 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xy;
+            vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).rgb * 2.0 - 1.0;
+            vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
 
             // Apply deffered shading
-            sceneCol = complexShadingDeferred(sceneCol, skyCol, lightCol, screenPos, viewPos, eyePlayerPos, texelFetch(colortex1, screenTexelCoord, 0).rgb * 2.0 - 1.0, texelFetch(colortex2, screenTexelCoord, 0).rgb, matRaw0.x, matRaw0.y, dither);
+            sceneCol = complexShadingDeferred(sceneCol, skyCol, lightCol, screenPos, viewPos, nEyePlayerPos, normal, albedo, matRaw0.x, matRaw0.y, dither);
 
             #ifdef SSAO
                 // Apply ambient occlusion with simple blur
-                sceneCol *= getSSAOBoxBlur(1.0 / vec2(viewWidth, viewHeight));
+                sceneCol *= getSSAOBoxBlur(screenTexelCoord);
             #endif
 
             #ifdef OUTLINES
@@ -168,8 +173,10 @@
             #endif
         }
 
+        // Get fogCol
+        vec3 fogCol = getSkyRender(sceneCol, skyCol, sRGBLightCol, lightCol, nEyePlayerPos, skyMask);
         // Fog and sky calculation
-        sceneCol = getFogRender(eyePlayerPos, sceneCol, getSkyRender(sceneCol, skyCol, sRGBLightCol, lightCol, normalize(eyePlayerPos), skyMask), feetPlayerPos.y + cameraPosition.y, skyMask);
+        sceneCol = skyMask ? fogCol * exp(-far * blindness * 0.375) : getFogRender(sceneCol, fogCol, viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
 
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(sceneCol, 1); // gcolor
