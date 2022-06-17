@@ -156,6 +156,6 @@
         #endif
 
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(saturate(sceneCol), 1); // gcolor
+        gl_FragData[0] = vec4(max(sceneCol, vec3(0)), 1); // gcolor
     }
 #endif
