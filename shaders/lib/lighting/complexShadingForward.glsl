@@ -32,7 +32,6 @@ vec4 complexShadingGbuffers(matPBR material, vec3 eyePlayerPos){
 			if(dirLight > 0){
 				// Cave light leak fix
 				float caveFixShdFactor = isEyeInWater == 1 ? 1.0 : min(1.0, lmCoord.y * 2.0) * (1.0 - eyeBrightFact) + eyeBrightFact;
-				caveFixShdFactor = 1.0;
 
 				// Get shadow pos
 				vec3 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * (eyePlayerPos + gbufferModelViewInverse[3].xyz) + shadowModelView[3].xyz) + shadowProjection[3].xyz;
