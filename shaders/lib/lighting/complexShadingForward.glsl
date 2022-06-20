@@ -32,16 +32,17 @@ vec4 complexShadingGbuffers(matPBR material, vec3 eyePlayerPos){
 			if(dirLight > 0){
 				// Cave light leak fix
 				float caveFixShdFactor = isEyeInWater == 1 ? 1.0 : min(1.0, lmCoord.y * 2.0) * (1.0 - eyeBrightFact) + eyeBrightFact;
+				caveFixShdFactor = 1.0;
 
 				// Get shadow pos
 				vec3 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * (eyePlayerPos + gbufferModelViewInverse[3].xyz) + shadowModelView[3].xyz) + shadowProjection[3].xyz;
 				
 				// Bias mutilplier, adjusts according to the current shadow distance and resolution
-				float biasAdjustMult = exp2(max(0.0, shadowDistance - shadowMapResolution * 0.125) / shadowDistance);
+				float biasAdjustMult = log2(max(4.0, shadowDistance - shadowMapResolution * 0.125)) * 0.25;
 				float distortFactor = getDistortFactor(shdPos.xy);
 
 				// Apply bias according to normal in shadow space before
-				shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * material.normal) * biasAdjustMult * biasAdjustMult * distortFactor * 0.5;
+				shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * material.normal) * distortFactor * biasAdjustMult;
 				shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
 
 				// Sample shadows
