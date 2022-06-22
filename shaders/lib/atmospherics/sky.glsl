@@ -39,7 +39,7 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 skyCol, vec3 lightCol, vec3 nPlayerPos, fl
         skyCol.rg *= smoothstep(1.0, 0.0, (-nPlayerPos.y * 4.0) / (rainStrength * PI + 1.0));
     #endif
 
-    #ifdef WORLD_HORIZONCOL
+    #ifdef WORLD_HORIZON
         skyCol += squared(squared(lightCol)) * exp2(-abs(nPlayerPos.y) * 8.0);
     #endif
 
