@@ -10,6 +10,8 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 // #define WORLD_LIGHT
 // Enable sun/moon in your world. 1 for the standard sun and moon. 2 for the black hole.
 #define WORLD_SUN_MOON 0
+// Sun/moon size
+#define WORLD_SUN_MOON_SIZE 0.0
 // Enable sky ground
 // #define WORLD_SKY_GROUND
 // Enable water normals
