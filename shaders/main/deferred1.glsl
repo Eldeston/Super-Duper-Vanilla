@@ -105,9 +105,7 @@
     #include "/lib/lighting/SSR.glsl"
     #include "/lib/lighting/SSGI.glsl"
 
-    #ifdef OUTLINES
-        #include "/lib/post/outline.glsl"
-    #endif
+    #include "/lib/post/outline.glsl"
 
     #include "/lib/lighting/complexShadingDeferred.glsl"
 
@@ -167,7 +165,7 @@
                 sceneCol *= getSSAOBoxBlur(screenTexelCoord);
             #endif
 
-            #ifdef OUTLINES
+            #if OUTLINES != 0
                 // Outline calculation
                 sceneCol *= 1.0 + getOutline(screenTexelCoord, viewPos.z, OUTLINE_PIX_SIZE) * (OUTLINE_BRIGHTNESS - 1.0);
             #endif

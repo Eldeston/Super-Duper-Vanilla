@@ -1,19 +1,19 @@
-ivec2 edgeOffsets0[2] = ivec2[2](
-    ivec2(1),
-    ivec2(1, -1)
-);
-
 float getOutline(ivec2 iUv, float depthOrigin, int pixSize){
-    float totalDepth = 0.0;
+    ivec2 topRightCorner = iUv - pixSize;
+    ivec2 bottomLeftCorner = iUv + pixSize;
 
-    for(int i = 0; i < 2; i++){
-        ivec2 offSets = edgeOffsets0[i] * pixSize;
-        float depth0 = toView(texelFetch(depthtex0, iUv - offSets, 0).x);
-        float depth1 = toView(texelFetch(depthtex0, iUv + offSets, 0).x);
+    float depth0 = toView(texelFetch(depthtex0, topRightCorner, 0).x);
+    float depth1 = toView(texelFetch(depthtex0, bottomLeftCorner, 0).x);
+    float depth2 = toView(texelFetch(depthtex0, ivec2(topRightCorner.x, bottomLeftCorner.y), 0).x);
+    float depth3 = toView(texelFetch(depthtex0, ivec2(bottomLeftCorner.x, topRightCorner.y), 0).x);
 
-        totalDepth += depth0 + depth1;
-    }
+    float sumDepth = depth0 + depth1 + depth2 + depth3;
 
-    // Calculate the differences of the offsetted depths...
-    return smootherstep(totalDepth - depthOrigin * 4.0);
+    #if OUTLINES == 1
+        // Calculate standard outlines
+        return saturate(totalDepth - depthOrigin * 4.0);
+    #else
+        // Calculate dungeons outlines
+        return saturate((depthOrigin * 256.0 - sumDepth * 64.0) / -depthOrigin);
+    #endif
 }

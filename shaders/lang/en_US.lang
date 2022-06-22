@@ -7,6 +7,9 @@
 
 #Post
     option.OUTLINES=Outlines
+    value.OUTLINES.0=OFF
+    value.OUTLINES.1=Standard
+    value.OUTLINES.2=Dungeons
     option.OUTLINE_BRIGHTNESS=Outline brightness
     option.OUTLINE_PIX_SIZE=Outline pixel size
     option.ANTI_ALIASING=Anti aliasing

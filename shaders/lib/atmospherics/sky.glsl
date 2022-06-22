@@ -87,8 +87,8 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 skyCol, vec3 lightCol, vec3 nPlayerPos, fl
     #endif
 
     // Do a simple void gradient when underwater
-    if(isEyeInWater == 1) return (isReflection ? skyCol * saturate(nPlayerPos.y + eyeBrightFact - 1.0) : skyCol) * smootherstep(nPlayerPos.y) + pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
-    return skyCol * saturate((nPlayerPos.y + eyeBrightFact - 1.0) * (1.0 - eyeBrightFact) + eyeBrightFact) + pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
+    if(isEyeInWater == 1) return isReflection ? skyCol * max(0.0, nPlayerPos.y + eyeBrightFact - 1.0) : skyCol * smootherstep(nPlayerPos.y);
+    return skyCol * max(0.0, (nPlayerPos.y + eyeBrightFact - 1.0) * (1.0 - eyeBrightFact) + eyeBrightFact);
 }
 
 vec3 getSkyRender(vec3 skyCol, vec3 lightCol, vec3 nPlayerPos, bool isSky, bool isReflection){
@@ -97,7 +97,7 @@ vec3 getSkyRender(vec3 skyCol, vec3 lightCol, vec3 nPlayerPos, bool isSky, bool 
     // If player is in lava, return fog color
     if(isEyeInWater == 2) return fogColor;
 
-    return getSkyColor(vec3(0), skyCol, lightCol, nPlayerPos, dot(nPlayerPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), isSky, isReflection);
+    return getSkyColor(vec3(0), skyCol, lightCol, nPlayerPos, dot(nPlayerPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), isSky, isReflection) + pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
 }
 
 vec3 getSkyRender(vec3 skyBoxCol, vec3 skyCol, vec3 sRGBLightCol, vec3 lightCol, vec3 nPlayerPos, bool isSky){
@@ -108,7 +108,7 @@ vec3 getSkyRender(vec3 skyBoxCol, vec3 skyCol, vec3 sRGBLightCol, vec3 lightCol,
     
     vec3 nSkyPos = mat3(shadowModelView) * nPlayerPos;
 
-    vec3 finalCol = getSkyColor(skyBoxCol, skyCol, lightCol, nPlayerPos, nSkyPos.z, isSky, false);
+    vec3 finalCol = getSkyColor(skyBoxCol, skyCol, lightCol, nPlayerPos, nSkyPos.z, isSky, false) + pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
 
     #ifdef WORLD_LIGHT
         #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE != 2

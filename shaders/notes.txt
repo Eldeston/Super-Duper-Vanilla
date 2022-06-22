@@ -50,3 +50,10 @@ Custom defined macros (These are defined at the start of every .fsh and .vsh fil
     COMPOSITE
     COMPOSITE(1-15)
     FINAL
+
+End sky improvements
+Normal strength
+Albedo F0 brightness
+Hardcoded F0
+Star color setting
+Improve outline calculation
