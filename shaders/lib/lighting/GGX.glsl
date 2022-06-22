@@ -57,7 +57,7 @@ vec3 getSpecBRDF(vec3 V, vec3 L, vec3 N, vec3 F0, float NL, float roughness){
     float alphaSqrd = squared(roughness * roughness);
 
     // D
-    float NHSqr = getNoHSquared(0.1, NL, NV, LV);
+    float NHSqr = getNoHSquared(WORLD_SUN_MOON_SIZE, NL, NV, LV);
     float denominator = NHSqr * (alphaSqrd - 1.0) + 1.0;
     float distribution = alphaSqrd / (PI * denominator * denominator);
 
