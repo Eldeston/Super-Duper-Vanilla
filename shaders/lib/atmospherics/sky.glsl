@@ -10,15 +10,15 @@
     }
 #endif
 
-#if defined STORY_MODE_CLOUDS && !defined FORCE_DISABLE_CLOUDS
-    #if TIMELAPSE_MODE != 0
-        uniform float animationFrameTime;
-        
-        #define ANIMATION_FRAMETIME animationFrameTime
-    #else
-        #define ANIMATION_FRAMETIME frameTimeCounter
-    #endif
+#if TIMELAPSE_MODE != 0
+    uniform float animationFrameTime;
 
+    #define ANIMATION_FRAMETIME animationFrameTime
+#else
+    #define ANIMATION_FRAMETIME frameTimeCounter
+#endif
+
+#if defined STORY_MODE_CLOUDS && !defined FORCE_DISABLE_CLOUDS
     float cloudParallax(vec2 start, float time){
         // start * stepSize * depthSize = start * 0.125 * 0.08
         vec2 end = start * 0.01;
@@ -114,11 +114,11 @@ vec3 getSkyRender(vec3 skyBoxCol, vec3 skyCol, vec3 sRGBLightCol, vec3 lightCol,
         #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE != 2
             finalCol += (getSunMoonShape(nSkyPos.xy) * (1.0 - rainStrength) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY) * sRGBLightCol;
         #elif WORLD_SUN_MOON == 2
-            float blackHole = min(1.0, 0.005 / ((1.0 - nSkyPos.z) * 16.0 - WORLD_SUN_MOON_SIZE));
+            float blackHole = min(1.0, 0.0078125 / ((1.0 - nSkyPos.z) * 16.0 - WORLD_SUN_MOON_SIZE));
             if(blackHole <= 0) return vec3(0);
-            finalCol += blackHole * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * sRGBLightCol;
-            nPlayerPos = mix(nPlayerPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), blackHole);
             nSkyPos = mix(nSkyPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), blackHole);
+            float rings = texture2D(noisetex, rot2D(fract(frameTimeCounter * (blackHole * 0.0625 + 0.0625)) * PI2) * (nSkyPos.xy * blackHole)).x;
+            finalCol += ((rings * blackHole + blackHole) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * 0.5) * lightCol;
         #endif
     #endif
 
