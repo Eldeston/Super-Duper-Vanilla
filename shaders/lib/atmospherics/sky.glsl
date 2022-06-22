@@ -114,7 +114,7 @@ vec3 getSkyRender(vec3 skyBoxCol, vec3 skyCol, vec3 sRGBLightCol, vec3 lightCol,
         #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE != 2
             finalCol += (getSunMoonShape(nSkyPos.xy) * (1.0 - rainStrength) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY) * sRGBLightCol;
         #elif WORLD_SUN_MOON == 2
-            float blackHole = min(1.0, 0.0078125 / ((1.0 - nSkyPos.z) * 16.0 - WORLD_SUN_MOON_SIZE));
+            float blackHole = min(1.0, 0.015625 / ((1.0 - nSkyPos.z) * 16.0 - WORLD_SUN_MOON_SIZE));
             if(blackHole <= 0) return vec3(0);
             nSkyPos = mix(nSkyPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), blackHole);
             float rings = texture2D(noisetex, rot2D(fract(frameTimeCounter * (blackHole * 0.0625 + 0.0625)) * PI2) * (nSkyPos.xy * blackHole)).x;

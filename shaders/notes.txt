@@ -52,7 +52,6 @@ Custom defined macros (These are defined at the start of every .fsh and .vsh fil
     FINAL
 
 TO DO:
-    End sky improvements
     Normal strength
     Albedo F0 brightness
     Hardcoded F0
