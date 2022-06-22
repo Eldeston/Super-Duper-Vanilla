@@ -5,7 +5,7 @@
     uniform float viewWidth;
     uniform float viewHeight;
 
-    #if ANTI_ALIASING == 3
+    #if ANTI_ALIASING == 2
         #include "/lib/utility/taaJitter.glsl"
     #endif
 
@@ -52,7 +52,7 @@
         if(gl_VertexID % 2 == 0) gl_Position = vec4((ndc1 + vec3(lineOffset, 0.0)) * linePosStart.w, linePosStart.w);
         else gl_Position = vec4((ndc1 - vec3(lineOffset, 0.0)) * linePosStart.w, linePosStart.w);
 
-        #if ANTI_ALIASING == 3
+        #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
     }

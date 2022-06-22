@@ -16,7 +16,7 @@
 
     uniform sampler2D gcolor;
 
-    #if ANTI_ALIASING == 1 || ANTI_ALIASING == 2
+    #if ANTI_ALIASING == 1 || ANTI_ALIASING == 3
         const bool gcolorMipmapEnabled = true;
 
         uniform float viewWidth;
@@ -26,7 +26,7 @@
     #endif
 
     void main(){
-        #if ANTI_ALIASING == 1 || ANTI_ALIASING == 2
+        #if ANTI_ALIASING == 1 || ANTI_ALIASING == 3
             vec3 color = textureFXAA(screenCoord, vec2(viewWidth, viewHeight));
         #else
             vec3 color = texture2D(gcolor, screenCoord).rgb;

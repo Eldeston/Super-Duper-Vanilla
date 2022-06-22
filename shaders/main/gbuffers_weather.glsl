@@ -5,7 +5,7 @@
 
     out vec2 texCoord;
 
-    #if ANTI_ALIASING == 3
+    #if ANTI_ALIASING == 2
         /* Screen resolutions */
         uniform float viewWidth;
         uniform float viewHeight;
@@ -21,7 +21,7 @@
         
 	    gl_Position = ftransform();
 
-        #if ANTI_ALIASING == 3
+        #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
     }

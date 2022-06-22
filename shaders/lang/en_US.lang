@@ -15,8 +15,8 @@
     option.ANTI_ALIASING=Anti aliasing
     value.ANTI_ALIASING.0=OFF
     value.ANTI_ALIASING.1=FXAA
-    value.ANTI_ALIASING.2=Lite TAA + FXAA
-    value.ANTI_ALIASING.3=TAA
+    value.ANTI_ALIASING.2=TAA
+    value.ANTI_ALIASING.3=Lite TAA + FXAA
     option.SHARPEN_FILTER=Image sharpening
     option.RETRO_FILTER=Retro filter
 

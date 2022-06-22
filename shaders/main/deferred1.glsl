@@ -59,7 +59,7 @@
         #include "/lib/utility/convertPrevScreenSpace.glsl"
     #endif
 
-    #if defined SSAO || ANTI_ALIASING == 3
+    #if ANTI_ALIASING == 2
         /* Screen uniforms */
         uniform float viewWidth;
         uniform float viewHeight;
@@ -73,7 +73,7 @@
         }
     #endif
 
-    #if ANTI_ALIASING == 3
+    #if ANTI_ALIASING == 2
         #include "/lib/utility/taaJitter.glsl"
     #endif
 
@@ -105,7 +105,9 @@
     #include "/lib/lighting/SSR.glsl"
     #include "/lib/lighting/SSGI.glsl"
 
-    #include "/lib/post/outline.glsl"
+    #if OUTLINES != 0
+        #include "/lib/post/outline.glsl"
+    #endif
 
     #include "/lib/lighting/complexShadingDeferred.glsl"
 
@@ -119,7 +121,7 @@
         bool skyMask = screenPos.z == 1;
 
         // Jitter the sky only
-        #if ANTI_ALIASING == 3
+        #if ANTI_ALIASING == 2
             if(skyMask) screenPos.xy += jitterPos(-0.5);
         #endif
         

@@ -19,7 +19,7 @@ uniform mat4 gbufferModelViewInverse;
 
     out vec3 glcolor;
 
-    #if ANTI_ALIASING == 3
+    #if ANTI_ALIASING == 2
         /* Screen resolutions */
         uniform float viewWidth;
         uniform float viewHeight;
@@ -74,7 +74,7 @@ uniform mat4 gbufferModelViewInverse;
             gl_Position = ftransform();
         #endif
 
-        #if ANTI_ALIASING == 3
+        #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
 
