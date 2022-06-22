@@ -40,7 +40,7 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 skyCol, vec3 lightCol, vec3 nPlayerPos, fl
     #endif
 
     #ifdef WORLD_HORIZONCOL
-        skyCol += WORLD_HORIZONCOL * cubed(1.0 - abs(nPlayerPos.y));
+        skyCol += squared(squared(lightCol)) * exp2(-abs(nPlayerPos.y) * 8.0);
     #endif
 
     if(isSky){
