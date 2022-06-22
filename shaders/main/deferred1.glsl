@@ -67,9 +67,17 @@
 
     #ifdef SSAO
         float getSSAOBoxBlur(ivec2 iUv){
-            // Apply simple box blur
-            return (texelFetch(colortex2, iUv - 1, 0).a + texelFetch(colortex2, iUv + 1, 0).a +
-                texelFetch(colortex2, iUv - ivec2(1, -1), 0).a + texelFetch(colortex2, iUv + ivec2(1, -1), 0).a) * 0.25;
+            ivec2 topRightCorner = iUv - 1;
+            ivec2 bottomLeftCorner = iUv + 1;
+
+            float sample0 = texelFetch(colortex2, topRightCorner, 0).a;
+            float sample1 = texelFetch(colortex2, bottomLeftCorner, 0).a;
+            float sample2 = texelFetch(colortex2, ivec2(topRightCorner.x, bottomLeftCorner.y), 0).a;
+            float sample3 = texelFetch(colortex2, ivec2(bottomLeftCorner.x, topRightCorner.y), 0).a;
+
+            float sumDepth = sample0 + sample1 + sample2 + sample3;
+
+            return sumDepth * 0.25;
         }
     #endif
 
@@ -162,14 +170,14 @@
             // Apply deffered shading
             sceneCol = complexShadingDeferred(sceneCol, skyCol, lightCol, screenPos, viewPos, nEyePlayerPos, normal, albedo, matRaw0.x, matRaw0.y, dither);
 
-            #ifdef SSAO
-                // Apply ambient occlusion with simple blur
-                sceneCol *= getSSAOBoxBlur(screenTexelCoord);
-            #endif
-
             #if OUTLINES != 0
                 // Outline calculation
                 sceneCol *= 1.0 + getOutline(screenTexelCoord, viewPos.z, OUTLINE_PIX_SIZE) * (OUTLINE_BRIGHTNESS - 1.0);
+            #endif
+            
+            #ifdef SSAO
+                // Apply ambient occlusion with simple blur
+                sceneCol *= getSSAOBoxBlur(screenTexelCoord);
             #endif
         }
 

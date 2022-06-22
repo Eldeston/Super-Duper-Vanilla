@@ -21,13 +21,11 @@ vec3 chromaLens(vec2 centerCoord, vec2 lightDir, float chromaDist, float size, f
 }
 
 vec3 getLensFlare(vec2 centerCoord, vec2 lightDir){
-    float flareSizeHalf = WORLD_SUN_MOON_SIZE * 0.5;
-
-    float lens0 = lensFlareSimple(centerCoord, lightDir, WORLD_SUN_MOON_SIZE * 2.0, 0.75);
-    float lens1 = lensFlareSimple(centerCoord, lightDir, WORLD_SUN_MOON_SIZE, 0.5);
-    float lens2 = lensFlareSimple(centerCoord, lightDir, flareSizeHalf, 0.25);
+    float lens0 = lensFlareSimple(centerCoord, lightDir, 0.2, 0.75);
+    float lens1 = lensFlareSimple(centerCoord, lightDir, 0.1, 0.5);
+    float lens2 = lensFlareSimple(centerCoord, lightDir, 0.05, 0.25);
     
-    vec3 chromaLens = chromaLens(centerCoord, lightDir, flareSizeHalf, flareSizeHalf, -0.5);
+    vec3 chromaLens = chromaLens(centerCoord, lightDir, 0.05, 0.05, -0.5);
 
     #if WORLD_SUN_MOON == 2
         return (lens1 + (lens0 + lens2) * 0.125 + chromaLens) * LENS_FLARE_BRIGHTNESS * LIGHT_COL_DATA_BLOCK;
@@ -35,7 +33,7 @@ vec3 getLensFlare(vec2 centerCoord, vec2 lightDir){
         float rays = lensFlareRays(centerCoord, lightDir, 8.0, 0.05, -1.0);
         return (lens1 + (lens0 + lens2) * 0.125 + rays + chromaLens) * LENS_FLARE_BRIGHTNESS * LIGHT_COL_DATA_BLOCK;
     #else
-        float rays = lensFlareRays(centerCoord, lightDir, 8.0, WORLD_SUN_MOON_SIZE, -1.0);
+        float rays = lensFlareRays(centerCoord, lightDir, 8.0, 0.1, -1.0);
         return (lens1 + (lens0 + lens2) * 0.125 + rays + chromaLens) * LENS_FLARE_BRIGHTNESS * LIGHT_COL_DATA_BLOCK;
     #endif
 }

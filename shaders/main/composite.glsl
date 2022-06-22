@@ -91,12 +91,17 @@
     #include "/lib/lighting/complexShadingDeferred.glsl"
 
     float getSpectral(ivec2 iUv){
-        // Do a simple blur
-        float totalDepth = texelFetch(colortex3, iUv + 1, 0).z + texelFetch(colortex3, iUv - 1, 0).z +
-            texelFetch(colortex3, iUv + ivec2(1, -1), 0).z + texelFetch(colortex3, iUv - ivec2(1, -1), 0).z;
+        ivec2 topRightCorner = iUv - 1;
+        ivec2 bottomLeftCorner = iUv + 1;
 
-        // Get the difference between the blurred samples and original
-        return abs(totalDepth * 0.25 - texelFetch(colortex3, iUv, 0).z);
+        float sample0 = texelFetch(colortex3, topRightCorner, 0).z;
+        float sample1 = texelFetch(colortex3, bottomLeftCorner, 0).z;
+        float sample2 = texelFetch(colortex3, ivec2(topRightCorner.x, bottomLeftCorner.y), 0).z;
+        float sample3 = texelFetch(colortex3, ivec2(bottomLeftCorner.x, topRightCorner.y), 0).z;
+
+        float sumDepth = sample0 + sample1 + sample2 + sample3;
+
+        return abs(sumDepth * 0.25 - texelFetch(colortex3, iUv, 0).z);
     }
     
     void main(){
