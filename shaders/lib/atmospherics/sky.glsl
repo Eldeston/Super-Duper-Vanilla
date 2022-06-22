@@ -114,7 +114,7 @@ vec3 getSkyRender(vec3 skyBoxCol, vec3 skyCol, vec3 sRGBLightCol, vec3 lightCol,
         #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE != 2
             finalCol += (getSunMoonShape(nSkyPos.xy) * (1.0 - rainStrength) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY) * sRGBLightCol;
         #elif WORLD_SUN_MOON == 2
-            float blackHole = min(1.0, 0.005 / ((1.0 - nSkyPos.z) * 32.0 - WORLD_SUN_MOON_SIZE));
+            float blackHole = min(1.0, 0.005 / ((1.0 - nSkyPos.z) * 16.0 - WORLD_SUN_MOON_SIZE));
             if(blackHole <= 0) return vec3(0);
             finalCol += blackHole * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * sRGBLightCol;
             nPlayerPos = mix(nPlayerPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), blackHole);
