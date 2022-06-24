@@ -166,9 +166,7 @@ screen.LAVA_SETTINGS = Lava material settings
             option.FOG0_VERTICAL_DENSITY_D = Vertical density day
             option.FOG0_VERTICAL_DENSITY_N = Vertical density night
             option.FOG0_VERTICAL_DENSITY_DD = Vertical density dawn/dusk
-            option.FOG0_TOTAL_DENSITY_D = Total density day
-            option.FOG0_TOTAL_DENSITY_N = Total density night
-            option.FOG0_TOTAL_DENSITY_DD = Total density dawn/dusk
+            option.FOG0_TOTAL_DENSITY = Total density
 
     #Nether
         option.WORLDn1_VANILLA_FOGCOLI = Fog color intensity
