@@ -53,5 +53,3 @@ Custom defined macros (These are defined at the start of every .fsh and .vsh fil
 
 TO DO:
     Normal strength
-    Albedo F0 brightness
-    Hardcoded F0
