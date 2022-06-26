@@ -40,7 +40,7 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 skyCol, vec3 lightCol, vec3 nPlayerPos, fl
     #endif
 
     #ifdef WORLD_HORIZON
-        skyCol += squared(squared(lightCol)) * exp2(-abs(nPlayerPos.y) * 8.0);
+        skyCol += exp2(-(abs(nPlayerPos.y) + lightCol) * 8.0 - 8.0);
     #endif
 
     if(isSky){
@@ -114,12 +114,11 @@ vec3 getSkyRender(vec3 skyBoxCol, vec3 skyCol, vec3 sRGBLightCol, vec3 lightCol,
         #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE != 2
             finalCol += (getSunMoonShape(nSkyPos.xy) * (1.0 - rainStrength) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY) * sRGBLightCol;
         #elif WORLD_SUN_MOON == 2
-            float blackHole = min(1.0, 0.015625 / ((1.0 - nSkyPos.z) * 16.0 - WORLD_SUN_MOON_SIZE));
+            float blackHole = min(1.0, 0.015625 / (16.0 - nSkyPos.z * 16.0 - WORLD_SUN_MOON_SIZE));
             if(blackHole <= 0) return vec3(0);
 
-            float ringSpinSpeed = frameTimeCounter * 0.0625;
-            nSkyPos.xy = rot2D((16.0 * blackHole) * PI2) * nSkyPos.xy;
-            float rings = texture2D(noisetex, vec2(nSkyPos.x * blackHole, ringSpinSpeed * 0.015625)).x;
+            nSkyPos.xy = rot2D(blackHole * PI2 * 16.0) * nSkyPos.xy;
+            float rings = texture2D(noisetex, vec2(nSkyPos.x * blackHole, frameTimeCounter * 0.0009765625)).x;
 
             finalCol += ((rings * blackHole * 0.9 + blackHole * 0.1) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY) * lightCol;
         #endif
@@ -128,7 +127,7 @@ vec3 getSkyRender(vec3 skyBoxCol, vec3 skyCol, vec3 sRGBLightCol, vec3 lightCol,
     #ifdef WORLD_STARS
         // Star field generation
         vec2 starData = texelFetch(noisetex, ivec2((nSkyPos.xz * 256.0) / (abs(nSkyPos.y) + length(nSkyPos.xz))) & 255, 0).xy;
-        finalCol += exp(starData.x * starData.y * 64.0 - 64.0) * (1.0 - rainStrength) * WORLD_STARS;
+        finalCol += exp(starData.x * starData.y * 64.0 - 64.0 + WORLD_STARS) * (1.0 - rainStrength);
     #endif
 
     return finalCol;
