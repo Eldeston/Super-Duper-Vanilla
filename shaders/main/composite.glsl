@@ -140,8 +140,8 @@
 
             // Declare and get materials
             vec2 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xy;
-            vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).rgb * 2.0 - 1.0;
             vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
+            vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).rgb * 2.0 - 1.0;
 
             // Apply deffered shading
             sceneCol = complexShadingDeferred(sceneCol, skyCol, lightCol, screenPos, viewPos, nEyePlayerPos, normal, albedo, matRaw0.x, matRaw0.y, dither);
@@ -157,7 +157,7 @@
 
         #ifdef WORLD_LIGHT
             // Apply volumetric light
-            sceneCol += getGodRays(feetPlayerPos, lightCol, dither.x) * min(1.0, VOL_LIGHT_BRIGHTNESS * (1.0 + isEyeInWater) * shdFade);
+            sceneCol += getGodRays(feetPlayerPos, lightCol, dither.x) * min(1.0, VOL_LIGHT_BRIGHTNESS + VOL_LIGHT_BRIGHTNESS * isEyeInWater) * shdFade;
         #endif
 
     /* DRAWBUFFERS:0 */
