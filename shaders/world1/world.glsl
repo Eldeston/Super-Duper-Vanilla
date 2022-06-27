@@ -22,7 +22,7 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 #define FORCE_DISABLE_WEATHER
 
 // Enable stars in your world
-#define WORLD_STARS 3.05
+#define WORLD_STARS pow(4.0, GAMMA)
 // Enable horizon in your world
 #define WORLD_HORIZON
 
