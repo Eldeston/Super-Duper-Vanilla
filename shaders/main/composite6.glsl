@@ -92,11 +92,7 @@
             eBloom += getBloomTile(pixSize, vec2(0.160625, 0.3625), 7.0);
 
             // Average the total samples (1 / 6 bloom tiles multiplied by 1 / 4 samples used for the box blur)
-            // eBloom *= 0.16666667 * 0.25;
-            eBloom *= 0.04166667;
-
-            // Apply bloom
-            color = mix(color, eBloom, 0.16 * BLOOM_BRIGHTNESS);
+            color = mix(color, eBloom * 0.04166667, 0.16 * BLOOM_BRIGHTNESS);
         #endif
 
         #if defined LENS_FLARE && defined WORLD_LIGHT
@@ -144,16 +140,16 @@
 
         #ifdef BLOOM
         /* DRAWBUFFERS:04 */
-            gl_FragData[1] = vec4(eBloom, 1); //colortex4
+            gl_FragData[1] = vec4(eBloom, 1); // colortex4
 
             #ifdef AUTO_EXPOSURE
             /* DRAWBUFFERS:045 */
-                gl_FragData[2] = vec4(TAA_DATA, tempPixLuminance); //colortex5
+                gl_FragData[2] = vec4(TAA_DATA, tempPixLuminance); // colortex5
             #endif
         #else
             #ifdef AUTO_EXPOSURE
             /* DRAWBUFFERS:05 */
-                gl_FragData[1] = vec4(TAA_DATA, tempPixLuminance); //colortex5
+                gl_FragData[1] = vec4(TAA_DATA, tempPixLuminance); // colortex5
             #endif
         #endif
     }
