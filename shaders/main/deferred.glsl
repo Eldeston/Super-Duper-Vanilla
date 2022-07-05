@@ -15,7 +15,7 @@
     in vec2 screenCoord;
 
     // SSAO without normals fix for beacon
-    const vec4 colortex1ClearColor = vec4(0.5, 0.5, 0.5, 1);
+    const vec4 colortex1ClearColor = vec4(0, 0, 0, 1);
 
     uniform sampler2D colortex2;
 
@@ -55,18 +55,18 @@
             float ambientOcclusion = 1.0;
             // Check if sky and player hand
             if(depth > 0.56 && depth != 1){
-                vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz - 0.5;
+                vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
 
                 // Check if normal has a direction
                 if(normal.x + normal.y + normal.z != 0)
-                    ambientOcclusion = getSSAO(toView(vec3(screenCoord, depth)), mat3(gbufferModelView) * (normal * 2.0));
+                    ambientOcclusion = getSSAO(toView(vec3(screenCoord, depth)), mat3(gbufferModelView) * normal);
             }
             
         /* DRAWBUFFERS:2 */
-            gl_FragData[0] = vec4(texelFetch(colortex2, screenTexelCoord, 0).rgb, ambientOcclusion); //colortex2
+            gl_FragData[0] = vec4(texelFetch(colortex2, screenTexelCoord, 0).rgb, ambientOcclusion); // colortex2
         #else
         /* DRAWBUFFERS:2 */
-            gl_FragData[0] = vec4(texelFetch(colortex2, ivec2(gl_FragCoord.xy), 0).rgb, 1); //colortex2
+            gl_FragData[0] = vec4(texelFetch(colortex2, ivec2(gl_FragCoord.xy), 0).rgb, 1); // colortex2
         #endif
     }
 #endif

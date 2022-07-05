@@ -7,7 +7,7 @@ Goal:
 Framebuffers:
 
 gcolor - Main scene / Skybox, vanilla sun and moon : R11F_G11F_B10F
-colortex1 - Normals : RGB16
+colortex1 - Normals : RGB16_SNORM
 colortex2 - Raw albedo, SSAO : RGBA8
 colortex3 - Metallic, roughness, glowing entity : RGB8
 colortex4 - Clouds / Bloom : R11F_G11F_B10F

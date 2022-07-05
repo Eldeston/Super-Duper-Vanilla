@@ -141,7 +141,7 @@
             // Declare and get materials
             vec2 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xy;
             vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
-            vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).rgb * 2.0 - 1.0;
+            vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
 
             // Apply deffered shading
             sceneCol = complexShadingDeferred(sceneCol, skyCol, lightCol, screenPos, viewPos, nEyePlayerPos, normal, albedo, matRaw0.x, matRaw0.y, dither);
