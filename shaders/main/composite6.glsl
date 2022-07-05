@@ -17,8 +17,6 @@
     uniform sampler2D gcolor;
 
     #ifdef AUTO_EXPOSURE
-        // Needs to be true whenever auto exposure or TAA is on
-        const bool colortex5MipmapEnabled = true;
         // Get previous frame color
         uniform sampler2D colortex5;
 
@@ -37,8 +35,6 @@
             vec2 texCoord = screenCoord / exp2(LOD) + coords;
 
             // Apply box blur all tiles
-            // return (texture2D(colortex4, texCoord - pixSize).rgb + texture2D(colortex4, texCoord + pixSize).rgb +
-            //    texture2D(colortex4, texCoord - vec2(pixSize.x, -pixSize.y)).rgb + texture2D(colortex4, texCoord + vec2(pixSize.x, -pixSize.y)).rgb) * 0.25;
             return texture2D(colortex4, texCoord - pixSize).rgb + texture2D(colortex4, texCoord + pixSize).rgb +
                 texture2D(colortex4, texCoord - vec2(pixSize.x, -pixSize.y)).rgb + texture2D(colortex4, texCoord + vec2(pixSize.x, -pixSize.y)).rgb;
         }
@@ -108,7 +104,7 @@
 
         #ifdef AUTO_EXPOSURE
             // Get center pixel current average scene luminance and mix previous and current pixel...
-            vec3 centerPixCol = texture2D(gcolor, vec2(0.5), 10.0).rgb;
+            vec3 centerPixCol = texture2DLod(gcolor, vec2(0.5), 10).rgb;
 
             // Accumulate current luminance
             float tempPixLuminance = mix(centerPixCol.r + centerPixCol.g + centerPixCol.b, texelFetch(colortex5, ivec2(0), 0).a, exp2(-AUTO_EXPOSURE_SPEED * frameTime));

@@ -44,7 +44,7 @@
             vec3 blur = texture2D(gcolor, texCoord + pixSize).rgb + texture2D(gcolor, texCoord - pixSize).rgb +
                 texture2D(gcolor, texCoord + vec2(pixSize.x, -pixSize.y)).rgb + texture2D(gcolor, texCoord - vec2(pixSize.x, -pixSize.y)).rgb;
             
-            return (color - blur * 0.25) + color;
+            return color * 2.0 - blur * 0.25;
         }
     #endif
 
