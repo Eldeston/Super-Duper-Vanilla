@@ -14,10 +14,9 @@
 #define TIMELAPSE_MODE 0 // Enable timelapse mode. This smoothens the transition of animations of the sky, the foliage waving etc according to current world time instead of frame time. Set to fragment for water normals and sky only and full for the water normals, sky, and waves. This feature does not work on vanilla clouds, skybox, and the sun and moon. [0 1 2]
 // #define RETRO_FILTER // Enable retro filter. Works best at low render quality.
 
-// Off by default
 #define WHITE_MODE 0 // Enables white mode/textureless mode. White mode makes everything white. Black mode makes everything black. Foliage mode shows only foliage colors. Keeps materials on. [0 1 2 3]
 #define ANTI_ALIASING 2 // Enables anti-aliasing. FXAA is fast and works with screenshot sizes. TAA is slower, doesn't work with custom screenshots, but smooths noise. Disable anti-aliasing on your shader menu before using this feature! [0 1 2 3]
-#define SHARPEN_FILTER // Enables image sharpening. Use this with AA on if the image appears blurry.
+// #define SHARPEN_FILTER // Enables image sharpening. Use this with AA on if the image appears blurry.
 // #define VIGNETTE // Enables vignette
 #define VIGNETTE_INTENSITY 1 // Vignette intensity [1 2 3 4 5]
 // #define CHROMATIC_ABERRATION // Enable chromatic abberation.
