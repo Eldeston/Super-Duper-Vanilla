@@ -68,8 +68,14 @@
     // Get is eye in water
     uniform int isEyeInWater;
 
+    // Get blindness
+    uniform float blindness;
     // Get night vision
     uniform float nightVision;
+    // Get darkness effect
+    uniform float darknessFactor;
+    // Get darkness light factor
+    uniform float darknessLightFactor;
 
     #include "/lib/universalVars.glsl"
 
@@ -145,6 +151,8 @@
 
             // Apply deffered shading
             sceneCol = complexShadingDeferred(sceneCol, skyCol, lightCol, screenPos, viewPos, nEyePlayerPos, normal, albedo, matRaw0.x, matRaw0.y, dither);
+
+            sceneCol *= 1.0 - darknessLightFactor;
 
             // Get skyCol as our fogCol. Do basic sky render.
             vec3 fogCol = getSkyRender(skyCol, lightCol, nEyePlayerPos, false, false);

@@ -1,4 +1,3 @@
-uniform float blindness;
 uniform float far;
 
 float atmoFog(float nPlayerPosY, float worldPosY, float playerPosLength, float totalDensity, float verticalFogDensity){
@@ -21,5 +20,5 @@ vec3 getFogRender(vec3 color, vec3 fogCol, float viewDist, float nEyePlayerPosY,
     #endif
 
     // Blindness fog
-    return color * exp(-viewDist * blindness * 0.375);
+    return color * exp(-viewDist * max(blindness, darknessFactor * 0.125 + darknessLightFactor));
 }

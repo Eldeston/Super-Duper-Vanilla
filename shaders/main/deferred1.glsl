@@ -96,8 +96,14 @@
     // Get is eye in water
     uniform int isEyeInWater;
 
+    // Get blindness
+    uniform float blindness;
     // Get night vision
     uniform float nightVision;
+    // Get darkness effect
+    uniform float darknessFactor;
+    // Get darkness light factor
+    uniform float darknessLightFactor;
 
     #include "/lib/universalVars.glsl"
 
@@ -179,11 +185,13 @@
                 // Apply ambient occlusion with simple blur
                 sceneCol *= getSSAOBoxBlur(screenTexelCoord);
             #endif
+
+            sceneCol *= 1.0 - darknessLightFactor;
         }
 
         // Fog and sky calculation
         // Get skyCol as our fogCol. If sky, then do full sky render. Otherwise, do basic sky render.
-        if(skyMask) sceneCol = getSkyRender(sceneCol, skyCol, sRGBLightCol, lightCol, nEyePlayerPos, true) * exp(-far * blindness * 0.375);
+        if(skyMask) sceneCol = getSkyRender(sceneCol, skyCol, sRGBLightCol, lightCol, nEyePlayerPos, true) * exp(-far * max(blindness, darknessFactor * 0.125 + darknessLightFactor));
         else sceneCol = getFogRender(sceneCol, getSkyRender(skyCol, lightCol, nEyePlayerPos, false, false), viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
 
     /* DRAWBUFFERS:0 */
