@@ -57,7 +57,7 @@ vec4 complexShadingGbuffers(matPBR material, vec3 eyePlayerPos){
 			}
 		#else
 			// Sample fake shadows
-			float shadowCol = hermiteMix(0.96, 0.98, lmCoord.y) * shdFade * material.parallaxShd;
+			float shadowCol = saturate(hermiteMix(0.96, 0.98, lmCoord.y)) * shdFade * material.parallaxShd;
 		#endif
 
 		float rainDiff = rainStrength * 0.5;

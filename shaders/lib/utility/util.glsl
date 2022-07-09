@@ -46,13 +46,13 @@ float sumOf(vec3 x) { return x.x + x.y + x.z; }
 float sumOf(vec4 x) { return x.x + x.y + x.z + x.w; }
 
 // Hermite interpolation
-float hermiteMix(float a, float b, float x) { return saturate((x - a) / (b - a)); }
-vec2 hermiteMix(float a, float b, vec2 x) { return saturate((x - a) / (b - a)); }
-vec3 hermiteMix(float a, float b, vec3 x) { return saturate((x - a) / (b - a)); }
-vec4 hermiteMix(float a, float b, vec4 x) { return saturate((x - a) / (b - a)); }
-vec2 hermiteMix(vec2 a, vec2 b, vec2 x) { return saturate((x - a) / (b - a)); }
-vec3 hermiteMix(vec3 a, vec3 b, vec3 x) { return saturate((x - a) / (b - a)); }
-vec4 hermiteMix(vec4 a, vec4 b, vec4 x) { return saturate((x - a) / (b - a)); }
+float hermiteMix(float a, float b, float x) { return (x - a) / (b - a); }
+vec2 hermiteMix(float a, float b, vec2 x) { return (x - a) / (b - a); }
+vec3 hermiteMix(float a, float b, vec3 x) { return (x - a) / (b - a); }
+vec4 hermiteMix(float a, float b, vec4 x) { return (x - a) / (b - a); }
+vec2 hermiteMix(vec2 a, vec2 b, vec2 x) { return (x - a) / (b - a); }
+vec3 hermiteMix(vec3 a, vec3 b, vec3 x) { return (x - a) / (b - a); }
+vec4 hermiteMix(vec4 a, vec4 b, vec4 x) { return (x - a) / (b - a); }
 
 float fastSqrt(float x){ return x * (2.0 - x); }
 vec2 fastSqrt(vec2 x){ return x * (2.0 - x); }
@@ -61,45 +61,37 @@ vec4 fastSqrt(vec4 x){ return x * (2.0 - x); }
 
 // Smoothstep functions
 float smoothen(float x){
-	x = saturate(x);
 	return x * x * (3.0 - 2.0 * x);
-	}
+}
 
 vec2 smoothen(vec2 x){
-	x = saturate(x);
 	return x * x * (3.0 - 2.0 * x);
-	}
+}
 
 vec3 smoothen(vec3 x){
-	x = saturate(x);
 	return x * x * (3.0 - 2.0 * x);
-	}
+}
 
 vec4 smoothen(vec4 x){
-	x = saturate(x);
 	return x * x * (3.0 - 2.0 * x);
-	}
+}
 
 // Smootherstep functions
 float smootherstep(float x){
-	x = saturate(x);
 	return x * x * x * (x * (x * 6.0 - 15.0) + 10.0);
 	}
 
 vec2 smootherstep(vec2 x){
-	x = saturate(x);
 	return x * x * x * (x * (x * 6.0 - 15.0) + 10.0);
-	}
+}
 
 vec3 smootherstep(vec3 x){
-	x = saturate(x);
 	return x * x * x * (x * (x * 6.0 - 15.0) + 10.0);
-	}
+}
 
 vec4 smootherstep(vec4 x){
-	x = saturate(x);
 	return x * x * x * (x * (x * 6.0 - 15.0) + 10.0);
-	}
+}
 
 float getLuminance(vec3 col){
 	return col.r * 0.2125 + col.g * 0.7154 + col.b * 0.0721;
