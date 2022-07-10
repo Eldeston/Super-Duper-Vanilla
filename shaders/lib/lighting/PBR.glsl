@@ -356,7 +356,7 @@ uniform sampler2D texture;
 
                 // Redstone block
                 if(id == 10042){
-                    material.emissive = 1.0;
+                    material.emissive = 0.9;
                     material.smoothness = 0.9 * material.albedo.r;
                     material.metallic = 1.0;
                 }
