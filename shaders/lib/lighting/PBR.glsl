@@ -37,7 +37,7 @@ uniform sampler2D texture;
     uniform float wetness;
 
     void enviroPBR(inout matPBR material){
-        float rainMatFact = fastSqrt(max(0.0, TBN[2].y) * smoothstep(0.8, 0.9, lmCoord.y) * wetness * isPrecipitationRain * (1.0 - material.porosity));
+        float rainMatFact = fastSqrt(max(0.0, TBN[2].y) * smoothen(saturate((lmCoord.y - 0.8) * 10.0)) * wetness * isPrecipitationRain * (1.0 - material.porosity));
 
         if(rainMatFact > 0.005){
             vec2 noiseData = texture2D(noisetex, worldPos.xz * 0.001953125).xy;

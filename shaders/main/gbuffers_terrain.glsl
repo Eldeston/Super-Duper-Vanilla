@@ -102,7 +102,7 @@ uniform mat4 gbufferModelViewInverse;
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
 
-        glcolorAO = smoothstep(0.2, 0.8, gl_Color.a);
+        glcolorAO = (gl_Color.a - 0.2) * 1.66666667;
         glcolor = gl_Color.rgb;
     }
 #endif
@@ -188,7 +188,7 @@ uniform mat4 gbufferModelViewInverse;
             #ifdef LAVA_NOISE
                 vec2 lavaUv = (worldPos.yz * TBN[2].x + worldPos.xz * TBN[2].y + worldPos.xy * TBN[2].z) / LAVA_TILE_SIZE;
                 float lavaNoise = max(getLavaNoise(lavaUv), (material.albedo.r + material.albedo.g + material.albedo.b) * 0.33 + 0.01);
-                material.albedo.rgb = floor(material.albedo.rgb * smoothstep(0.25, 0.75, lavaNoise) * LAVA_BRIGHTNESS * 16.0) * 0.0625;
+                material.albedo.rgb = floor(material.albedo.rgb * smoothen(saturate((lavaNoise - 0.25) * 2.0)) * LAVA_BRIGHTNESS * 16.0) * 0.0625;
             #else
                 material.albedo.rgb = material.albedo.rgb * LAVA_BRIGHTNESS;
             #endif

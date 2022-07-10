@@ -36,7 +36,7 @@
 
 vec3 getSkyColor(vec3 skyBoxCol, vec3 skyCol, vec3 lightCol, vec3 nPlayerPos, float LV, bool isSky, bool isReflection){
     #ifdef WORLD_SKY_GROUND
-        skyCol.rg *= smoothstep(1.0, 0.0, (-nPlayerPos.y * 4.0) / (rainStrength * PI + 1.0));
+        skyCol.rg *= smoothen(saturate(1.0 + (nPlayerPos.y * 4.0) / (rainStrength * PI + 1.0)));
     #endif
 
     #ifdef WORLD_HORIZON
