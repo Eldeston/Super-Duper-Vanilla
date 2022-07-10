@@ -5,7 +5,7 @@
             return min(1.0, exp2(-(length(pos) - WORLD_SUN_MOON_SIZE) * 256.0));
         #else
             // Default sun and moon
-            return min(1.0, exp2(-(pow(abs(pos.x * pos.x * pos.x) + abs(pos.y * pos.y * pos.y), 0.333) - WORLD_SUN_MOON_SIZE) * 256.0));
+            return min(1.0, exp2(-(pow(abs(pos.x * pos.x * pos.x) + abs(pos.y * pos.y * pos.y), 0.33333333) - WORLD_SUN_MOON_SIZE) * 256.0));
         #endif
     }
 #endif

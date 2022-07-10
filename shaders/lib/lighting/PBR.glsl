@@ -340,6 +340,9 @@ uniform sampler2D texture;
                 // Fungus
                 if(id == 10036) material.emissive = maxOf(material.albedo.rg) > 0.8 ? 0.72 : material.emissive;
 
+                // Sculk
+                if(id == 10037) material.emissive = cubed(max(0.0, material.albedo.b - material.albedo.r));
+
                 // Emissives
                 if(id == 10038) material.emissive = smoothstep(0.88, 1.0, maxOf(material.albedo.rgb));
                 if(id == 10039 || id == 10040) material.emissive = smoothstep(0.64, 0.8, maxOf(material.albedo.rgb));
