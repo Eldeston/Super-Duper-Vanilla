@@ -151,6 +151,7 @@ uniform mat4 gbufferModelViewInverse;
         // Lightning fix, materials need to be specified due to glitching issues
         if(entityId == 10101){
             gl_FragData[0] = vec4(vec3(0.25, 0.5, 1) * EMISSIVE_INTENSITY, glcoloralpha); // gcolor
+            gl_FragData[1] = vec4(0, 0, 0, 1); // colortex1
             gl_FragData[3] = vec4(0, 0, 0, 1); // colortex3
             return;
         }
