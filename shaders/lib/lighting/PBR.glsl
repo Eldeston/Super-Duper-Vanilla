@@ -340,29 +340,32 @@ uniform sampler2D texture;
                 // Fungus
                 if(id == 10036) material.emissive = maxOf(material.albedo.rg) > 0.8 ? 0.72 : material.emissive;
 
+                // Light emitting blocks
+                if(id == 10048) material.emissive = saturate(sumOf(material.albedo.rgb) * 1.33333332 - 2.0);
+                if(id == 10049) material.emissive = cubed(max(0.0, sumOf(material.albedo.rgb) * 1.33333332 - 3.0));
+                if(id == 10050 || id == 10051) material.emissive = squared(squared(saturate(sumOf(material.albedo.rgb) * 0.83333333 - 1)));
+                if(id == 10052) material.emissive = smoothen(max(0.0, maxOf(material.albedo.rgb) - 0.75) * 4.0);
+                if(id == 10053) material.emissive = exp(sumOf(material.albedo.rgb) * 2.66666664 - 8.0);
+                
                 // Sculk
-                if(id == 10048) material.emissive = cubed(max(0.0, material.albedo.b - material.albedo.r));
-
-                // Emissives
-                if(id == 10049) material.emissive = smoothstep(0.88, 1.0, maxOf(material.albedo.rgb));
-                if(id == 10050 || id == 10051) material.emissive = smoothstep(0.64, 0.8, maxOf(material.albedo.rgb));
+                if(id == 10057) material.emissive = cubed(max(0.0, material.albedo.b - material.albedo.r));
 
                 // Redstone stuff
-                if((id == 10052 || id == 10100) && material.albedo.r > material.albedo.b * 2.4){
+                if((id == 10054 || id == 10100) && material.albedo.r > material.albedo.b * 2.4){
                     material.emissive = float(material.albedo.r > 0.5);
                     material.smoothness = 0.9;
                     material.metallic = 1.0;
                 }
 
                 // Redstone block
-                if(id == 10053){
-                    material.emissive = 0.8;
+                if(id == 10055){
+                    material.emissive = 0.45;
                     material.smoothness = 0.9 * material.albedo.r;
                     material.metallic = 1.0;
                 }
 
                 // End portal frame
-                if(id == 10054 && material.albedo.g + material.albedo.b > material.albedo.r * 2.0) material.emissive = smoothstep(0.0, 0.5, material.albedo.g - material.albedo.b);
+                if(id == 10056 && material.albedo.g + material.albedo.b > material.albedo.r * 2.0) material.emissive = smoothstep(0.0, 0.5, material.albedo.g - material.albedo.b);
 
                 // Gem ores
                 if(id == 10080 && (material.albedo.r > material.albedo.g || material.albedo.r != material.albedo.b || material.albedo.g > material.albedo.b) && length(material.albedo.rgb) > 0.45){
