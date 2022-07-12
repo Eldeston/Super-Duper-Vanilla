@@ -238,7 +238,7 @@ uniform sampler2D texture;
 
         #if defined ENTITIES || defined ENTITIES_GLOWING
             // Experience orbs and fireballs
-            if(id == 10102 || id == 10103) material.emissive = maxOf(material.albedo.rgb);
+            if(id == 10130 || id == 10131) material.emissive = maxOf(material.albedo.rgb);
         #endif
 
         #if WHITE_MODE == 0
@@ -322,7 +322,7 @@ uniform sampler2D texture;
 
         #if defined ENTITIES || defined ENTITIES_GLOWING
             // Experience orbs and fireballs
-            if(id == 10102 || id == 10103) material.emissive = maxOf(material.albedo.rgb);
+            if(id == 10130 || id == 10131) material.emissive = maxOf(material.albedo.rgb);
         #endif
         
         #if DEFAULT_MAT == 1
@@ -341,104 +341,104 @@ uniform sampler2D texture;
                 if(id == 10036) material.emissive = maxOf(material.albedo.rg) > 0.8 ? 0.72 : material.emissive;
 
                 // Sculk
-                if(id == 10037) material.emissive = cubed(max(0.0, material.albedo.b - material.albedo.r));
+                if(id == 10048) material.emissive = cubed(max(0.0, material.albedo.b - material.albedo.r));
 
                 // Emissives
-                if(id == 10038) material.emissive = smoothstep(0.88, 1.0, maxOf(material.albedo.rgb));
-                if(id == 10039 || id == 10040) material.emissive = smoothstep(0.64, 0.8, maxOf(material.albedo.rgb));
+                if(id == 10049) material.emissive = smoothstep(0.88, 1.0, maxOf(material.albedo.rgb));
+                if(id == 10050 || id == 10051) material.emissive = smoothstep(0.64, 0.8, maxOf(material.albedo.rgb));
 
                 // Redstone stuff
-                if((id == 10041 || id == 10068) && material.albedo.r > material.albedo.b * 2.4){
+                if((id == 10052 || id == 10100) && material.albedo.r > material.albedo.b * 2.4){
                     material.emissive = float(material.albedo.r > 0.5);
                     material.smoothness = 0.9;
                     material.metallic = 1.0;
                 }
 
                 // Redstone block
-                if(id == 10042){
-                    material.emissive = 0.9;
+                if(id == 10053){
+                    material.emissive = 0.8;
                     material.smoothness = 0.9 * material.albedo.r;
                     material.metallic = 1.0;
                 }
 
                 // End portal frame
-                if(id == 10043 && material.albedo.g + material.albedo.b > material.albedo.r * 2.0) material.emissive = smoothstep(0.0, 0.5, material.albedo.g - material.albedo.b);
+                if(id == 10054 && material.albedo.g + material.albedo.b > material.albedo.r * 2.0) material.emissive = smoothstep(0.0, 0.5, material.albedo.g - material.albedo.b);
 
                 // Gem ores
-                if(id == 10048 && (material.albedo.r > material.albedo.g || material.albedo.r != material.albedo.b || material.albedo.g > material.albedo.b) && length(material.albedo.rgb) > 0.45){
+                if(id == 10080 && (material.albedo.r > material.albedo.g || material.albedo.r != material.albedo.b || material.albedo.g > material.albedo.b) && length(material.albedo.rgb) > 0.45){
                     material.smoothness = min(0.93, material.albedo.r + material.albedo.g + material.albedo.b);
                     material.metallic = 0.17;
                 }
 
                 // Gem blocks
-                if(id == 10050){
+                if(id == 10082){
                     material.smoothness = fastSqrt(min(0.8, material.albedo.r + material.albedo.g + material.albedo.b));
                     material.metallic = 0.17;
                 }
 
                 // Crying obsidian
-                if(id == 10051){
+                if(id == 10083){
                     material.smoothness = fastSqrt(min(0.8, material.albedo.r + material.albedo.g + material.albedo.b));
                     material.emissive = cubed(maxOf(material.albedo.rgb));
                     material.metallic = 0.17;
                 }
 
                 // Amethyst
-                if(id == 10052 || id == 10053){
+                if(id == 10084 || id == 10085){
                     material.smoothness = (material.albedo.r + material.albedo.g + material.albedo.b) * 0.333;
-                    material.emissive = material.smoothness * material.smoothness * material.smoothness * material.smoothness * (id == 10053 ? material.smoothness * material.smoothness * material.smoothness * material.smoothness * material.smoothness * material.smoothness : material.smoothness);
+                    material.emissive = material.smoothness * material.smoothness * material.smoothness * material.smoothness * (id == 10085 ? material.smoothness * material.smoothness * material.smoothness * material.smoothness * material.smoothness * material.smoothness : material.smoothness);
                     material.metallic = 0.17;
                 }
 
                 // Netherack gem ores
-                if(id == 10049 && material.albedo.r < material.albedo.g * 1.6 && material.albedo.r < material.albedo.b * 1.6){
+                if(id == 10081 && material.albedo.r < material.albedo.g * 1.6 && material.albedo.r < material.albedo.b * 1.6){
                     material.smoothness = min(0.93, material.albedo.r + material.albedo.g + material.albedo.b);
                     material.metallic = 0.17;
                 }
 
                 // Metal ores
-                if(id == 10064 && (material.albedo.r > material.albedo.g || material.albedo.r != material.albedo.b || material.albedo.g > material.albedo.b) && length(material.albedo.rgb) > 0.45){
+                if(id == 10096 && (material.albedo.r > material.albedo.g || material.albedo.r != material.albedo.b || material.albedo.g > material.albedo.b) && length(material.albedo.rgb) > 0.45){
                     material.smoothness = (material.albedo.r + material.albedo.g + material.albedo.b) * 0.333;
                     material.metallic = 1.0;
                 }
 
                 // Netherack metal ores
-                if(id == 10065 && maxOf(material.albedo.rg) > 0.6){
+                if(id == 10097 && maxOf(material.albedo.rg) > 0.6){
                     material.smoothness = (material.albedo.r + material.albedo.g + material.albedo.b) * 0.333;
                     material.metallic = 1.0;
                 }
 
                 // Metal blocks
-                if(id == 10066){
+                if(id == 10098){
                     material.smoothness = (material.albedo.r + material.albedo.g + material.albedo.b) * 0.333;
                     material.metallic = 1.0;
                 }
 
                 // Dark metals
-                if(id == 10067){
+                if(id == 10099){
                     material.smoothness = (material.albedo.r + material.albedo.g + material.albedo.b) * 0.1998 + 0.4;
                     material.metallic = 1.0;
                 }
 
                 // Rails
-                if(id == 10068 && material.albedo.r < material.albedo.g * 1.6 && material.albedo.r < material.albedo.b * 1.6){
+                if(id == 10100 && material.albedo.r < material.albedo.g * 1.6 && material.albedo.r < material.albedo.b * 1.6){
                     material.smoothness = (material.albedo.r + material.albedo.g + material.albedo.b) * 0.333;
                     material.metallic = 1.0;
                 }
 
                 // Polished blocks
-                if(id == 10080) material.smoothness = (material.albedo.r + material.albedo.g + material.albedo.b) * 0.1998 + 0.4;
+                if(id == 10112) material.smoothness = (material.albedo.r + material.albedo.g + material.albedo.b) * 0.1998 + 0.4;
             
                 // Packed ice
-                if(id == 10045) material.smoothness = 0.96;
+                if(id == 10065) material.smoothness = 0.96;
             #endif
 
             #ifdef WATER
                 // Glass and ice
-                if(id == 10044 || id == 10045) material.smoothness = 0.96;
+                if(id == 10064 || id == 10065) material.smoothness = 0.96;
 
                 // Gelatin
-                if(id == 10046) material.smoothness = 0.96;
+                if(id == 10066) material.smoothness = 0.96;
             #endif
         #endif
 

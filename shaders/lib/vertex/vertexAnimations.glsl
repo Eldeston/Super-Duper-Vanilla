@@ -23,7 +23,7 @@ void getVertexAnimations(inout vec3 vertexPos, in vec3 worldPos, in vec2 texCoor
 		}
 
 		// Lantern
-		if(id == 10040){
+		if(id == 10051){
 			float offSet = 1.0 - fract(worldPos.y - 0.001);
 
 			windWeight *= offSet;
@@ -53,7 +53,7 @@ void getVertexAnimations(inout vec3 vertexPos, in vec3 worldPos, in vec2 texCoor
 			if(id == 10008) vertexPos.x += windWeight * 0.05;
 
 			// Lanterns
-			if(id == 10040) vertexPos.xz += windWeight * 0.075;
+			if(id == 10051) vertexPos.xz += windWeight * 0.075;
 		}
 	#endif
 
