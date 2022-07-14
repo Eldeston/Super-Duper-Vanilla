@@ -162,7 +162,7 @@ uniform mat4 gbufferModelViewInverse;
             endStarField += texture2D(texture, (endStarCoord1 + endStarOffset) * 2.0).r;
             endStarField += texture2D(texture, (endStarOffset - endStarCoord1) * 4.0).r;
 
-            vec3 endPortalAlbedo = pow((endStarField + 0.1) * (getRand3(ivec2(screenPos.xy * 128.0) & 255) * 0.5 + 0.5) * glcolor.rgb, vec3(GAMMA));
+            vec3 endPortalAlbedo = toLinear((endStarField + 0.1) * (getRand3(ivec2(screenPos.xy * 128.0) & 255) * 0.5 + 0.5) * glcolor.rgb);
             
             gl_FragData[0] = vec4(endPortalAlbedo * EMISSIVE_INTENSITY * EMISSIVE_INTENSITY, 1); // gcolor
 
@@ -179,7 +179,7 @@ uniform mat4 gbufferModelViewInverse;
 	    matPBR material;
         getPBR(material, eyePlayerPos, blockEntityId);
         
-        material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
+        material.albedo.rgb = toLinear(material.albedo.rgb);
 
         vec4 sceneCol = complexShadingGbuffers(material, eyePlayerPos);
 

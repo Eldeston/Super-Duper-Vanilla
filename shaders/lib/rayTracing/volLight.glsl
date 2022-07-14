@@ -34,7 +34,7 @@
 			
 			return lightCol * rayData * ((1.0 - exp(-dist * totalFogDensity)) * heightFade * 0.14285714);
 		#else
-			if(isEyeInWater == 1) return lightCol * pow(fogColor, vec3(GAMMA)) * (heightFade - exp(-dist * totalFogDensity) * heightFade);
+			if(isEyeInWater == 1) return lightCol * toLinear(fogColor) * (heightFade - exp(-dist * totalFogDensity) * heightFade);
 			else return lightCol * (heightFade - exp(-dist * totalFogDensity) * heightFade) * eyeBrightFact;
 		#endif
 	}

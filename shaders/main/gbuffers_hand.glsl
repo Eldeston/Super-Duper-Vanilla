@@ -139,7 +139,7 @@ uniform mat4 gbufferModelViewInverse;
 
         material.albedo.rgb = mix(material.albedo.rgb, entityColor.rgb, entityColor.a);
 
-        material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
+        material.albedo.rgb = toLinear(material.albedo.rgb);
 
         vec4 sceneCol = complexShadingGbuffers(material, eyePlayerPos);
 

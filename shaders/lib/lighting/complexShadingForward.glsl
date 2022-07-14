@@ -4,9 +4,9 @@
 
 vec4 complexShadingGbuffers(matPBR material, vec3 eyePlayerPos){
 	// Get lightmaps and add simple sky GI
-	vec3 totalDiffuse = (pow(SKY_COL_DATA_BLOCK * lmCoord.y, vec3(GAMMA)) +
-		pow((lmCoord.x * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B), vec3(GAMMA)) +
-		pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA)) * material.ambient;
+	vec3 totalDiffuse = (toLinear(SKY_COL_DATA_BLOCK * lmCoord.y) +
+		toLinear((lmCoord.x * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B)) +
+		toLinear(AMBIENT_LIGHTING + nightVision * 0.5)) * material.ambient;
 
 	#ifdef WORLD_LIGHT
 		// Get sRGB light color
@@ -61,7 +61,7 @@ vec4 complexShadingGbuffers(matPBR material, vec3 eyePlayerPos){
 		#endif
 
 		float rainDiff = rainStrength * 0.5;
-		totalDiffuse += (dirLight * shadowCol * (1.0 - rainDiff) + lmCoord.y * lmCoord.y * material.ambient * rainDiff) * pow(sRGBLightCol, vec3(GAMMA));
+		totalDiffuse += (dirLight * shadowCol * (1.0 - rainDiff) + lmCoord.y * lmCoord.y * material.ambient * rainDiff) * toLinear(sRGBLightCol);
 	#endif
 
 	totalDiffuse = material.albedo.rgb * (totalDiffuse + material.emissive * EMISSIVE_INTENSITY);

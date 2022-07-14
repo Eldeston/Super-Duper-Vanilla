@@ -52,6 +52,6 @@
         if(albedo.a <= ALPHA_THRESHOLD) discard;
 
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(pow(albedo.rgb, vec3(GAMMA)), albedo.a); // gcolor
+        gl_FragData[0] = vec4(toLinear(albedo.rgb), albedo.a); // gcolor
     }
 #endif

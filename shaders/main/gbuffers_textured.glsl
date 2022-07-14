@@ -125,7 +125,7 @@ uniform mat4 gbufferModelViewInverse;
 
         // Particle emissives
         if((glcolor.r * 0.5 > glcolor.g + glcolor.b || (glcolor.r + glcolor.b > glcolor.g * 2.0 && abs(glcolor.r - glcolor.b) < 0.2) || ((albedo.r + albedo.g + albedo.b > 1.6 || (glcolor.r != glcolor.g && glcolor.g != glcolor.b)) && lmCoord.x == 1)) && atlasSize.x <= 1024 && atlasSize.x > 0){
-            gl_FragData[0] = vec4(pow(albedo.rgb * glcolor, vec3(GAMMA)) * EMISSIVE_INTENSITY, albedo.a); // gcolor
+            gl_FragData[0] = vec4(toLinear(albedo.rgb * glcolor) * EMISSIVE_INTENSITY, albedo.a); // gcolor
             return; // Return immediately, no need for lighting calculation
         }
 
@@ -139,7 +139,7 @@ uniform mat4 gbufferModelViewInverse;
             albedo.rgb = glcolor;
         #endif
 
-        albedo.rgb = pow(albedo.rgb, vec3(GAMMA));
+        albedo.rgb = toLinear(albedo.rgb);
 
         vec4 sceneCol = simpleShadingGbuffers(albedo);
 

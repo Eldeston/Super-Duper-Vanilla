@@ -48,6 +48,6 @@
         if(albedo.a <= ALPHA_THRESHOLD) discard;
 
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(pow(albedo.rgb, vec3(GAMMA)) * (pow(SKY_COL_DATA_BLOCK, vec3(GAMMA)) + pow((lmCoordX * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B), vec3(GAMMA)) + pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA)), albedo.a); // gcolor
+        gl_FragData[0] = vec4(toLinear(albedo.rgb) * (toLinear(SKY_COL_DATA_BLOCK) + toLinear((lmCoordX * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B)) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5)), albedo.a); // gcolor
     }
 #endif

@@ -97,7 +97,7 @@ vec3 getSkyRender(vec3 skyCol, vec3 lightCol, vec3 nPlayerPos, bool isSky, bool 
     // If player is in lava, return fog color
     if(isEyeInWater == 2) return fogColor;
 
-    return getSkyColor(vec3(0), skyCol, lightCol, nPlayerPos, dot(nPlayerPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), isSky, isReflection) + pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
+    return getSkyColor(vec3(0), skyCol, lightCol, nPlayerPos, dot(nPlayerPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), isSky, isReflection) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 }
 
 vec3 getSkyRender(vec3 skyBoxCol, vec3 skyCol, vec3 sRGBLightCol, vec3 lightCol, vec3 nPlayerPos, bool isSky){
@@ -108,7 +108,7 @@ vec3 getSkyRender(vec3 skyBoxCol, vec3 skyCol, vec3 sRGBLightCol, vec3 lightCol,
     
     vec3 nSkyPos = mat3(shadowModelView) * nPlayerPos;
 
-    vec3 finalCol = getSkyColor(skyBoxCol, skyCol, lightCol, nPlayerPos, nSkyPos.z, isSky, false) + pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
+    vec3 finalCol = getSkyColor(skyBoxCol, skyCol, lightCol, nPlayerPos, nSkyPos.z, isSky, false) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 
     #ifdef WORLD_LIGHT
         #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE != 2

@@ -1,9 +1,6 @@
 // --------------- Code Library ---------------- //
 // Common utility functions goes here
 
-#define GAMMA 2.2
-#define RCPGAMMA 0.45454545
-
 #define GOLDEN_RATIO 1.61803399
 #define PI 3.14159265
 #define PI2 6.28318531
@@ -115,6 +112,12 @@ vec3 generateUnitVector(vec2 hash){
 }
 
 // Rotation function
-mat2 rot2D(float x){
-    return mat2(cos(x),-sin(x), sin(x),cos(x));
-}
+mat2 rot2D(float x){ return mat2(cos(x), -sin(x), sin(x), cos(x)); }
+
+// SRGB to linear
+vec3 toLinear(vec3 x){ return x * x; }
+float toLinear(float x){ return x * x; }
+
+// Linear to sRGB
+vec3 toSRGB(vec3 x){ return sqrt(x); }
+float toSRGB(float x){ return sqrt(x); }

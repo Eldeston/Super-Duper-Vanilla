@@ -152,13 +152,13 @@
         // Get sRGB light color
         #ifdef WORLD_LIGHT
             vec3 sRGBLightCol = LIGHT_COL_DATA_BLOCK;
-            vec3 lightCol = pow(sRGBLightCol, vec3(GAMMA));
+            vec3 lightCol = toLinear(sRGBLightCol);
         #else
             vec3 sRGBLightCol = vec3(0);
             vec3 lightCol = vec3(0);
         #endif
         // Get linear sky color
-        vec3 skyCol = pow(SKY_COL_DATA_BLOCK, vec3(GAMMA));
+        vec3 skyCol = toLinear(SKY_COL_DATA_BLOCK);
 
         // If sky, don't calculate lighting
         if(!skyMask){

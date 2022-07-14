@@ -222,7 +222,7 @@ uniform mat4 gbufferModelViewInverse;
             #endif
         }
 
-        material.albedo.rgb = pow(material.albedo.rgb, vec3(GAMMA));
+        material.albedo.rgb = toLinear(material.albedo.rgb);
 
         #if defined ENVIRO_MAT && !defined FORCE_DISABLE_WEATHER
             if(blockId != 10000) enviroPBR(material);

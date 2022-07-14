@@ -110,7 +110,7 @@
             float tempPixLuminance = mix(centerPixCol.r + centerPixCol.g + centerPixCol.b, texelFetch(colortex5, ivec2(0), 0).a, exp2(-AUTO_EXPOSURE_SPEED * frameTime));
 
             // Apply auto exposure by dividing it by the pixel's luminance in sRGB
-            color /= max(pow(tempPixLuminance, RCPGAMMA), MIN_EXPOSURE);
+            color /= max(toSRGB(tempPixLuminance), MIN_EXPOSURE);
 
             #if defined PREVIOUS_FRAME || ANTI_ALIASING >= 2
                 #define TAA_DATA texelFetch(colortex5, screenTexelCoord, 0).rgb
@@ -129,7 +129,7 @@
         #endif
 
         // Gamma correction, color saturation, contrast, etc. and film grain
-        color = toneA(pow(color, vec3(RCPGAMMA))) + (texelFetch(noisetex, screenTexelCoord & 255, 0).x - 0.5) * 0.00392156863;
+        color = toneA(toSRGB(color)) + (texelFetch(noisetex, screenTexelCoord & 255, 0).x - 0.5) * 0.00392156863;
 
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(color, 1); // gcolor

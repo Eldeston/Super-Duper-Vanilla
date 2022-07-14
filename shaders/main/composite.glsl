@@ -130,7 +130,7 @@
 
         // Get sRGB light color
         #ifdef WORLD_LIGHT
-            vec3 lightCol = pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA));
+            vec3 lightCol = toLinear(LIGHT_COL_DATA_BLOCK);
         #else
             vec3 lightCol = vec3(0);
         #endif
@@ -142,7 +142,7 @@
             // Get normalized eyePlayerPos
             vec3 nEyePlayerPos = eyePlayerPos / viewDist;
             // Get linear sky color
-            vec3 skyCol = pow(SKY_COL_DATA_BLOCK, vec3(GAMMA));
+            vec3 skyCol = toLinear(SKY_COL_DATA_BLOCK);
 
             // Declare and get materials
             vec2 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xy;

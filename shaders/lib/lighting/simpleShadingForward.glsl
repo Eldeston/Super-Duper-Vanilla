@@ -5,8 +5,8 @@
 #ifdef CLOUDS
 	vec4 simpleShadingGbuffers(vec4 albedo){
 		// Get lightmaps and add simple sky GI
-		vec3 totalDiffuse = pow(SKY_COL_DATA_BLOCK, vec3(GAMMA)) +
-			pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
+		vec3 totalDiffuse = toLinear(SKY_COL_DATA_BLOCK) +
+			toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 
 		#ifdef WORLD_LIGHT
 			float NL = max(0.0, dot(norm, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z))) * 0.6 + 0.4;
@@ -46,9 +46,9 @@
 					#endif
 				}
 
-				totalDiffuse += (shadowCol * NL * (1.0 - rainDiff) + rainDiff) * pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA));
+				totalDiffuse += (shadowCol * NL * (1.0 - rainDiff) + rainDiff) * toLinear(LIGHT_COL_DATA_BLOCK);
 			#else
-				totalDiffuse += (NL * (1.0 - rainDiff) + rainDiff) * pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA));
+				totalDiffuse += (NL * (1.0 - rainDiff) + rainDiff) * toLinear(LIGHT_COL_DATA_BLOCK);
 			#endif
 		#endif
 
@@ -57,9 +57,9 @@
 #else
 	vec4 simpleShadingGbuffers(vec4 albedo){
 		// Get lightmaps and add simple sky GI
-		vec3 totalDiffuse = pow(SKY_COL_DATA_BLOCK * lmCoord.y, vec3(GAMMA)) +
-			pow((lmCoord.x * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B), vec3(GAMMA)) +
-			pow(AMBIENT_LIGHTING + nightVision * 0.5, GAMMA);
+		vec3 totalDiffuse = toLinear(SKY_COL_DATA_BLOCK * lmCoord.y) +
+			toLinear((lmCoord.x * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B)) +
+			toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 
 		#ifdef WORLD_LIGHT
 			float NL = max(0.0, dot(norm, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)));
@@ -105,7 +105,7 @@
 			#endif
 
 			float rainDiff = rainStrength * 0.5;
-			totalDiffuse += (shadowCol * NL * shdFade * (1.0 - rainDiff) + lmCoord.y * lmCoord.y * rainDiff) * pow(LIGHT_COL_DATA_BLOCK, vec3(GAMMA));
+			totalDiffuse += (shadowCol * NL * shdFade * (1.0 - rainDiff) + lmCoord.y * lmCoord.y * rainDiff) * toLinear(LIGHT_COL_DATA_BLOCK);
 		#endif
 
 		return vec4(albedo.rgb * totalDiffuse, albedo.a);

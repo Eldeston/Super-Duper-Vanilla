@@ -106,7 +106,7 @@
                     if(isEyeInWater == 1 && blockId == 10000) shdAlbedo.rgb *= squared(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 4.0;
                 #endif
 
-                shdAlbedo.rgb = pow(shdAlbedo.rgb * glcolor, vec3(GAMMA));
+                shdAlbedo.rgb = toLinear(shdAlbedo.rgb * glcolor);
             // If the object is fully opaque, set to black. This fixes "color leaking" filtered shadows
             } else shdAlbedo.rgb = vec3(0);
 

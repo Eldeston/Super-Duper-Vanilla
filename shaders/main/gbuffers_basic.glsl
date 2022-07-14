@@ -113,7 +113,7 @@ uniform mat4 gbufferModelViewInverse;
             albedo.rgb = vec3(0);
         #endif
 
-        albedo.rgb = pow(albedo.rgb, vec3(GAMMA));
+        albedo.rgb = toLinear(albedo.rgb);
 
         vec4 sceneCol = simpleShadingGbuffers(albedo);
 
