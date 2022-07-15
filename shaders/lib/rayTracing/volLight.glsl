@@ -15,7 +15,7 @@
 		// Fade VL, but do not apply to underwater VL
 		if(isEyeInWater != 1){
 			heightFade = 1.0 - squared(max(0.0, nFeetPlayerPos.y));
-			heightFade = isSky ? squared(squared(heightFade * heightFade)) : squared(heightFade * heightFade);
+			heightFade = isSky ? squared(squared(heightFade * heightFade)) : heightFade * heightFade;
 			heightFade = (1.0 - heightFade) * rainStrength * 0.25 + heightFade;
 		}
 
