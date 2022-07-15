@@ -2,7 +2,7 @@
 #endif
 
 #ifdef WORLD_LIGHT
-	vec3 getGodRays(vec3 feetPlayerPos, vec3 lightCol, float dither){
+	vec3 getGodRays(vec3 feetPlayerPos, vec3 lightCol, float dither, bool isSky){
 		// Return 0 if volumetric brightness is 0
 		if(VOL_LIGHT_BRIGHTNESS == 0) return vec3(0);
 
@@ -15,7 +15,7 @@
 		// Fade VL, but do not apply to underwater VL
 		if(isEyeInWater != 1){
 			heightFade = 1.0 - squared(max(0.0, nFeetPlayerPos.y));
-			heightFade = squared(squared(heightFade * heightFade));
+			heightFade = isSky ? squared(squared(heightFade * heightFade)) : squared(heightFade * heightFade);
 			heightFade = (1.0 - heightFade) * rainStrength * 0.25 + heightFade;
 		}
 
