@@ -165,7 +165,7 @@
 
         #ifdef WORLD_LIGHT
             // Apply volumetric light
-            sceneCol += getGodRays(feetPlayerPos, lightCol, dither.x) * min(1.0, VOL_LIGHT_BRIGHTNESS + VOL_LIGHT_BRIGHTNESS * isEyeInWater) * shdFade;
+            sceneCol += getGodRays(feetPlayerPos, lightCol, dither.x, screenPos.z == 1) * min(1.0, VOL_LIGHT_BRIGHTNESS + VOL_LIGHT_BRIGHTNESS * isEyeInWater) * shdFade;
         #endif
 
     /* DRAWBUFFERS:0 */
