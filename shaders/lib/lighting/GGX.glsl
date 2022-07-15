@@ -1,6 +1,6 @@
 vec3 getFresnelSchlick(float cosTheta, vec3 F0){
     // Fast and more but not totally accurate fresnel
-	return F0 + (1.0 - F0) * exp2(-9.28 * cosTheta);
+	return F0 + (1.0 - F0) * exp2(-9.0 * cosTheta);
 }
 
 // Source: https://www.guerrilla-games.com/read/decima-engine-advances-in-lighting-and-aa
