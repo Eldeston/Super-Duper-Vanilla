@@ -14,6 +14,7 @@
 #define TIMELAPSE_MODE 0 // Enable timelapse mode. This smoothens the transition of animations of the sky, the foliage waving etc according to current world time instead of frame time. Set to fragment for water normals and sky only and full for the water normals, sky, and waves. This feature does not work on vanilla clouds, skybox, and the sun and moon. [0 1 2]
 // #define RETRO_FILTER // Enable retro filter. Works best at low render quality.
 
+#define NOISE_SPEED 8 // The speed in which the noise randomises each frame. Useful for TAA. This effect is visible only when TAA is enabled. [2 4 8 16 32]
 #define WHITE_MODE 0 // Enables white mode/textureless mode. White mode makes everything white. Black mode makes everything black. Foliage mode shows only foliage colors. Keeps materials on. [0 1 2 3]
 #define ANTI_ALIASING 2 // Enables anti-aliasing. FXAA is fast and works with screenshot sizes. TAA is slower, doesn't work with custom screenshots, but smooths noise. Disable anti-aliasing on your shader menu before using this feature! [0 1 2 3]
 // #define SHARPEN_FILTER // Enables image sharpening. Use this with AA on if the image appears blurry.
@@ -77,8 +78,6 @@
 #define ENVIRO_MAT // Enables enviroment materials. Environment materials affects your surrounding according to your environment such as rain.
 // #define AUTO_GEN_NORM // Enables auto generated normals. Works if Default PBR is on. Works mostly on vanilla resource packs.
 #define EMISSIVE_INTENSITY 8 // Emissive maps intensity. Does not affect lightmaps and requires PBR on. [2 4 8 16 32]
-#define NOISE_SPEED 8 // The speed in which the noise randomises each frame. Useful for TAA. This effect is visible only when TAA is enabled. [2 4 8 16 32]
-
 // #define PARALLAX_OCCLUSION // Enables parallax occlusion. Requires LabPBR on and a resource pack with LabPBR enabled materials.
 #define PARALLAX_DEPTH 0.25 // Parallax occlusion depth amount. Increase for more depth. [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50]
 #define PARALLAX_STEPS 128 // Parallax occlusion step ammount. Increase for improved POM quality. [16 32 64 128 256 512]
@@ -87,6 +86,7 @@
 #define PARALLAX_SHD_STEPS 32 // Parallax self shadowing step ammount. Increase for improved self shadowing quality. [16 32 64 128 256 512]
 
 // #define SLOPE_NORMALS // Enables slope normals. Disable this feature if you're using a high resolution pack with normal maps. Thanks @Null!
+#define NORMAL_STRENGTH 1.00 // Normal map strength. Effective only if PBR is on with the RP normals, and slope normals is off. [0.00 0.01 0.02 0.03 0.04 0.05 0.06 0.07 0.08 0.09 0.10 0.11 0.12 0.13 0.14 0.15 0.16 0.17 0.18 0.19 0.20 0.21 0.22 0.23 0.24 0.25 0.26 0.27 0.28 0.29 0.30 0.31 0.32 0.33 0.34 0.35 0.36 0.37 0.38 0.39 0.40 0.41 0.42 0.43 0.44 0.45 0.46 0.47 0.48 0.49 0.50 0.51 0.52 0.53 0.54 0.55 0.56 0.57 0.58 0.59 0.60 0.61 0.62 0.63 0.64 0.65 0.66 0.67 0.68 0.69 0.70 0.71 0.72 0.73 0.74 0.75 0.76 0.77 0.78 0.79 0.80 0.81 0.82 0.83 0.84 0.85 0.86 0.87 0.88 0.89 0.90 0.91 0.92 0.93 0.94 0.95 0.96 0.97 0.98 0.99 1.00]
 
 #define STORY_MODE_CLOUDS // Uses procedurally generated clouds (a.k.a. aerogel clouds) instead of vanilla clouds. Disable vanilla clouds for proper results.
 // #define DOUBLE_VANILLA_CLOUDS // Adds another layer of vanilla clouds (does not apply to story mode clouds), may use up performance.

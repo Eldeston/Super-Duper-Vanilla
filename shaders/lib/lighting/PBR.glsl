@@ -221,6 +221,9 @@ uniform sampler2D texture;
         // Assign normal
         material.normal = TBN * normalize(normalMap);
 
+        // Calculate normal strength
+        material.normal = mix(TBN[2], material.normal, NORMAL_STRENGTH);
+
         #ifdef WATER
             // If water
             if(id == 10000){
@@ -281,6 +284,9 @@ uniform sampler2D texture;
                 float d2 = sumOf(texture2DGradARB(texture, fract(vec2(vTexCoord.x, vTexCoord.y + 0.015625)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
 
                 material.normal = TBN * normalize(vec3(d0 - d1, d0 - d2, 0.25));
+
+                // Calculate normal strength
+                material.normal = mix(TBN[2], material.normal, NORMAL_STRENGTH);
             }
         #endif
 
