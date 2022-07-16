@@ -102,7 +102,7 @@ uniform mat4 gbufferModelViewInverse;
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
 
-        glcolorAO = (gl_Color.a - 0.2) * 1.66666667;
+        glcolorAO = gl_Color.a;
         glcolor = gl_Color.rgb;
     }
 #endif
