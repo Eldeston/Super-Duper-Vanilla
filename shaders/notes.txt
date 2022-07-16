@@ -50,6 +50,3 @@ Custom defined macros (These are defined at the start of every .fsh and .vsh fil
     COMPOSITE
     COMPOSITE(1-15)
     FINAL
-
-TO DO:
-    Normal strength

@@ -115,9 +115,27 @@ vec3 generateUnitVector(vec2 hash){
 mat2 rot2D(float x){ return mat2(cos(x), -sin(x), sin(x), cos(x)); }
 
 // SRGB to linear
-vec3 toLinear(vec3 x){ return x * x; }
 float toLinear(float x){ return x * x; }
+vec3 toLinear(vec3 x){ return x * x; }
 
 // Linear to sRGB
-vec3 toSRGB(vec3 x){ return sqrt(x); }
 float toSRGB(float x){ return sqrt(x); }
+vec3 toSRGB(vec3 x){ return sqrt(x); }
+
+/*
+// SRGB to linear
+float toLinear(float x){ return pow(x, vec3(2.2)); }
+vec3 toLinear(vec3 x){ return pow(x, 2.2); }
+
+// Linear to sRGB
+float toSRGB(float x){ return pow(x, vec3(1.0 / 2.2)); }
+vec3 toSRGB(vec3 x){ return pow(x, 1.0 / 2.2); }
+
+// SRGB to linear
+float toLinear(float x){ return 0.315206 * x * ((2.10545 + x) * (0.0231872 + x)); }
+vec3 toLinear(vec3 x){ return 0.315206 * x * ((2.10545 + x) * (0.0231872 + x)); }
+
+// Linear to SRGB
+float toSRGB(float x){ return 1.14374 * (-0.126893 * x + sqrt(x)); }
+vec3 toSRGB(vec3 x){ return 1.14374 * (-0.126893 * x + sqrt(x)); }
+*/
