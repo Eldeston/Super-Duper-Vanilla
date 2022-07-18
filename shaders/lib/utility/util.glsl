@@ -136,6 +136,6 @@ float toLinear(float x){ return 0.315206 * x * ((2.10545 + x) * (0.0231872 + x))
 vec3 toLinear(vec3 x){ return 0.315206 * x * ((2.10545 + x) * (0.0231872 + x)); }
 
 // Linear to SRGB
-float toSRGB(float x){ return 1.14374 * (-0.126893 * x + sqrt(x)); }
-vec3 toSRGB(vec3 x){ return 1.14374 * (-0.126893 * x + sqrt(x)); }
+float toSRGB(float x){ return 1.14374 * (sqrt(x) - 0.126893 * x); }
+vec3 toSRGB(vec3 x){ return 1.14374 * (sqrt(x) - 0.126893 * x); }
 */

@@ -22,7 +22,7 @@ float getSSAO(vec3 viewPos, vec3 normal){
         float sampleDepth = toView(texture2D(depthtex0, toScreen(samplePos).xy).x);
 
         // Check if the offset points are inside geometry or if the point is occluded
-        if(sampleDepth > samplePos.z) occlusion += fastSqrt(min(1.0, 0.5 / abs(viewPos.z - sampleDepth)));
+        if(sampleDepth > samplePos.z) occlusion += min(1.0 / (sampleDepth - viewPos.z), 1.0);
     }
     
     // Invert results and return
