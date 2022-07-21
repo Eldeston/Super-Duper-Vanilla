@@ -88,7 +88,7 @@
             eBloom += getBloomTile(pixSize, vec2(0.160625, 0.3625), 7.0);
 
             // Average the total samples (1 / 6 bloom tiles multiplied by 1 / 4 samples used for the box blur)
-            color = mix(color, eBloom * 0.04166667, 0.16 * BLOOM_BRIGHTNESS);
+            color = mix(color, eBloom * 0.04166667, BLOOM_AMOUNT);
         #endif
 
         #if defined LENS_FLARE && defined WORLD_LIGHT

@@ -28,7 +28,7 @@
         option.VIGNETTE = Vignette
         option.VIGNETTE_INTENSITY = Vignette intensity
         option.BLOOM = Bloom
-        option.BLOOM_BRIGHTNESS = Bloom brightness
+        option.BLOOM_AMOUNT = Bloom amount
         option.LENS_FLARE = Lens flare
         option.LENS_FLARE_BRIGHTNESS = Lens flare brightness
         option.MOTION_BLUR = Motion blur
