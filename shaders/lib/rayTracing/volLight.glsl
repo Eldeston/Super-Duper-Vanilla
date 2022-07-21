@@ -19,6 +19,14 @@
 			heightFade = (1.0 - heightFade) * rainStrength * 0.25 + heightFade;
 		}
 
+		// Border fog
+		// Complementary's border fog calculation, thanks Emin!
+		#ifdef BORDER_FOG
+			float volumetricFogDensity = 1.0 - exp(-dist * totalFogDensity) * exp(-0.1 * pow(dist / far * 1.5, 10.0));
+		#else
+			float volumetricFogDensity = 1.0 - exp(-dist * totalFogDensity);
+		#endif
+
 		#if defined VOL_LIGHT && defined SHD_ENABLE
 			// Fix for rays going too far from scene
 			vec3 endPos = nFeetPlayerPos * (min(min(far, shadowDistance), dist) * 0.14285714);
@@ -32,10 +40,10 @@
 				startPos += endPos;
 			}
 			
-			return lightCol * rayData * ((1.0 - exp(-dist * totalFogDensity)) * heightFade * 0.14285714);
+			return lightCol * rayData * (volumetricFogDensity * heightFade * 0.14285714);
 		#else
-			if(isEyeInWater == 1) return lightCol * toLinear(fogColor) * (heightFade - exp(-dist * totalFogDensity) * heightFade);
-			else return lightCol * (heightFade - exp(-dist * totalFogDensity) * heightFade) * eyeBrightFact;
+			if(isEyeInWater == 1) return lightCol * toLinear(fogColor) * (volumetricFogDensity * heightFade);
+			else return lightCol * (volumetricFogDensity * heightFade * eyeBrightFact);
 		#endif
 	}
 #endif
