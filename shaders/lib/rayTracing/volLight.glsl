@@ -20,9 +20,9 @@
 		}
 
 		// Border fog
-		// Complementary's border fog calculation, thanks Emin!
+		// Modified Complementary border fog calculation, thanks Emin!
 		#ifdef BORDER_FOG
-			float volumetricFogDensity = 1.0 - exp(-dist * totalFogDensity - 0.1 * pow(dist / far * 1.5, 10.0));
+			float volumetricFogDensity = 1.0 - exp(-dist * totalFogDensity - exp2(dist / far * 16.0 - 14.0));
 		#else
 			float volumetricFogDensity = 1.0 - exp(-dist * totalFogDensity);
 		#endif

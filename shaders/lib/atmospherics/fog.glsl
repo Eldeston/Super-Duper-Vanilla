@@ -15,8 +15,8 @@ vec3 getFogRender(vec3 color, vec3 fogCol, float viewDist, float nEyePlayerPosY,
 
     // Border fog
     #ifdef BORDER_FOG
-        // Complementary's border fog calculation, thanks Emin!
-        color = (color - fogCol) * exp(-0.1 * pow(viewDist / far * 1.5, 10.0)) + fogCol;
+        // Modified Complementary border fog calculation, thanks Emin!
+        color = (color - fogCol) * exp(-exp2(viewDist / far * 16.0 - 14.0)) + fogCol;
     #endif
 
     // Blindness fog
