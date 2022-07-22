@@ -278,7 +278,7 @@ uniform sampler2D texture;
 
         // Generate bumped normals
         #if (defined TERRAIN || defined WATER || defined BLOCK) && defined AUTO_GEN_NORM
-            if(id != 10018){
+            if(id != 10000 || id != 10018){
                 float d0 = sumOf(material.albedo.rgb);
                 float d1 = sumOf(texture2DGradARB(texture, fract(vec2(vTexCoord.x + 0.015625, vTexCoord.y)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
                 float d2 = sumOf(texture2DGradARB(texture, fract(vec2(vTexCoord.x, vTexCoord.y + 0.015625)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);

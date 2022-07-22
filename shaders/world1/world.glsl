@@ -14,8 +14,6 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 #define WORLD_SUN_MOON_SIZE 0.4
 // Enable sky ground
 #define WORLD_SKY_GROUND
-// Enable water normals
-// #define WORLD_WATERNORM
 // Force disable any clouds
 #define FORCE_DISABLE_CLOUDS
 // Force disable weather

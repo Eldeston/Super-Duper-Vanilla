@@ -185,20 +185,18 @@ uniform mat4 gbufferModelViewInverse;
         if(blockId == 10000){
             float waterNoise = WATER_BRIGHTNESS;
 
-            #ifdef WORLD_WATERNORM
-                #ifdef WATER_NORM
-                    vec4 waterData = H2NWater(worldPos.xz);
-                    material.normal = TBN * waterData.xyz;
+            #ifdef WATER_NORM
+                vec4 waterData = H2NWater(worldPos.xz);
+                material.normal = TBN * waterData.xyz;
 
-                    #ifdef WATER_NOISE
-                        waterNoise *= squared(0.128 + waterData.w);
-                    #endif
-                #else
-                    float waterData = getCellNoise(worldPos.xz / WATER_TILE_SIZE);
+                #ifdef WATER_NOISE
+                    waterNoise *= squared(0.128 + waterData.w);
+                #endif
+            #else
+                float waterData = getCellNoise(worldPos.xz / WATER_TILE_SIZE);
 
-                    #ifdef WATER_NOISE
-                        waterNoise *= squared(0.128 + waterData);
-                    #endif
+                #ifdef WATER_NOISE
+                    waterNoise *= squared(0.128 + waterData);
                 #endif
             #endif
 

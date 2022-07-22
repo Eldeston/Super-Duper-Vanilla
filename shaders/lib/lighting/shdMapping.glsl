@@ -41,7 +41,7 @@
 		}
 
 		vec3 getShdFilter(vec3 shdPos, float dither){
-			vec2 randVec = vec2(sin(dither), cos(dither)) / shadowMapResolution;
+			vec2 randVec = vec2(cos(dither), sin(dither)) / shadowMapResolution;
 			return (getShdTex(vec3(shdPos.xy + randVec, shdPos.z)) + getShdTex(vec3(shdPos.xy - randVec, shdPos.z))) * 0.5;
 		}
 	#endif
