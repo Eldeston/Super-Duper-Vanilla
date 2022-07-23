@@ -32,18 +32,14 @@
         float fovMult = gbufferProjection[1].y * 0.72794047;
 
         // Precalculated dof offsets by vec2(cos(x), sin(x))
-        vec2 dofOffSets[12] = vec2[12](
-            vec2(0.8660254, 0.5),
-            vec2(0.5, 0.8660254),
+        vec2 dofOffSets[8] = vec2[8](
+            vec2(0.707106781187),
             vec2(0, 1),
-            vec2(-0.5, 0.8660254),
-            vec2(-0.8660254, 0.5),
+            vec2(-0.707106781187, 0.707106781187),
             vec2(-1, 0),
-            vec2(-0.8660254, -0.5),
-            vec2(-0.5, -0.8660254),
+            vec2(-0.707106781187),
             vec2(0, -1),
-            vec2(0.5, -0.8660254),
-            vec2(0.8660254, -0.5),
+            vec2(0.707106781187, -0.707106781187),
             vec2(1, 0)
         );
     #endif
@@ -64,20 +60,20 @@
                 float CoC = max(0.0, abs(depth - centerDepthSmooth) * DOF_STRENGTH - 0.01);
                 CoC = CoC / sqrt(CoC * CoC + 0.1);
 
-                // We'll use a total of 13 samples for this blur (1 / 13)
-                float blurRadius = max(viewWidth, viewHeight) * fovMult * CoC * 0.0769231;
+                // We'll use a total of 12 samples for this blur (1 / 8)
+                float blurRadius = max(viewWidth, viewHeight) * fovMult * CoC * 0.125;
                 float currDofLOD = log2(blurRadius);
                 vec2 blurRes = blurRadius / vec2(viewWidth, viewHeight);
 
                 // Get center pixel color with LOD
-                vec3 dofColor = texture2DLod(gcolor, screenCoord, currDofLOD).rgb;
-                for(int x = 0; x < 12; x++){
+                vec3 dofColor = vec3(0);
+                for(int x = 0; x < 8; x++){
                     // Rotate offsets and sample
                     dofColor += texture2DLod(gcolor, screenCoord - dofOffSets[x] * blurRes, currDofLOD).rgb;
                 }
 
-                // 12 offsetted samples + 1 sample (1 / 13)
-                color = dofColor * 0.0769231;
+                // 12 offsetted samples (1 / 8)
+                color = dofColor * 0.125;
             }
         #endif
 
