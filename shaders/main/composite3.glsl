@@ -32,14 +32,15 @@
         float fovMult = gbufferProjection[1].y * 0.72794047;
 
         // Precalculated dof offsets by vec2(cos(x), sin(x))
-        vec2 dofOffSets[8] = vec2[8](
-            vec2(0.707106781187),
-            vec2(0, 1),
-            vec2(-0.707106781187, 0.707106781187),
-            vec2(-1, 0),
-            vec2(-0.707106781187),
-            vec2(0, -1),
-            vec2(0.707106781187, -0.707106781187),
+        vec2 dofOffSets[9] = vec2[9](
+            vec2(0.766044443119, 0.642787609687),
+            vec2(0.173648177667, 0.984807753012),
+            vec2(-0.5, 0.866025403784),
+            vec2(-0.939692620786, 0.342020143326),
+            vec2(-0.939692620786, -0.342020143326),
+            vec2(-0.5, -0.866025403784),
+            vec2(0.173648177667, -0.984807753012),
+            vec2(0.766044443119, -0.642787609687),
             vec2(1, 0)
         );
     #endif
@@ -60,20 +61,20 @@
                 float CoC = max(0.0, abs(depth - centerDepthSmooth) * DOF_STRENGTH - 0.01);
                 CoC = CoC / sqrt(CoC * CoC + 0.1);
 
-                // We'll use a total of 12 samples for this blur (1 / 8)
-                float blurRadius = max(viewWidth, viewHeight) * fovMult * CoC * 0.125;
+                // We'll use a total of 10 samples for this blur (1 / 10)
+                float blurRadius = max(viewWidth, viewHeight) * fovMult * CoC * 0.1;
                 float currDofLOD = log2(blurRadius);
                 vec2 blurRes = blurRadius / vec2(viewWidth, viewHeight);
 
                 // Get center pixel color with LOD
-                vec3 dofColor = vec3(0);
-                for(int x = 0; x < 8; x++){
+                vec3 dofColor = texture2DLod(gcolor, screenCoord, currDofLOD).rgb;
+                for(int x = 0; x < 9; x++){
                     // Rotate offsets and sample
                     dofColor += texture2DLod(gcolor, screenCoord - dofOffSets[x] * blurRes, currDofLOD).rgb;
                 }
 
-                // 12 offsetted samples (1 / 8)
-                color = dofColor * 0.125;
+                // 9 offsetted samples + 1 sample (1 / 10)
+                color = dofColor * 0.1;
             }
         #endif
 
