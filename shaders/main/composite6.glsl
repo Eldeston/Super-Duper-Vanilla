@@ -104,7 +104,7 @@
 
         #ifdef AUTO_EXPOSURE
             // Get center pixel current average scene luminance and mix previous and current pixel...
-            vec3 centerPixCol = texture2DLod(gcolor, vec2(0.5), 10).rgb;
+            vec3 centerPixCol = texture2DLod(gcolor, vec2(0.5), 9).rgb;
 
             // Accumulate current luminance
             float tempPixLuminance = mix(centerPixCol.r + centerPixCol.g + centerPixCol.b, texelFetch(colortex5, ivec2(0), 0).a, exp2(-AUTO_EXPOSURE_SPEED * frameTime));
