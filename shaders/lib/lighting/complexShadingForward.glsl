@@ -3,10 +3,20 @@
 #endif
 
 vec4 complexShadingGbuffers(matPBR material, vec3 eyePlayerPos){
-	// Get lightmaps and add simple sky GI
-	vec3 totalDiffuse = (toLinear(SKY_COL_DATA_BLOCK * lmCoord.y) +
-		toLinear((lmCoord.x * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B)) +
-		toLinear(AMBIENT_LIGHTING + nightVision * 0.5)) * material.ambient;
+	#ifdef DIRECTIONAL_LIGHTMAPS
+		vec3 dirLightMapCoord = dFdx(eyePlayerPos) * dFdx(lmCoord.x) + dFdy(eyePlayerPos) * dFdy(lmCoord.x);
+		float dirLightMap = min(1.0, max(0.0, dot(normalize(dirLightMapCoord), material.normal)) * lmCoord.x * DIRECTIONAL_LIGHTMAP_STRENGTH + lmCoord.x);
+
+		// Get lightmaps and add simple sky GI
+		vec3 totalDiffuse = (toLinear(SKY_COL_DATA_BLOCK * lmCoord.y) +
+			toLinear((dirLightMap * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B)) +
+			toLinear(AMBIENT_LIGHTING + nightVision * 0.5)) * material.ambient;
+	#else
+		// Get lightmaps and add simple sky GI
+		vec3 totalDiffuse = (toLinear(SKY_COL_DATA_BLOCK * lmCoord.y) +
+			toLinear((lmCoord.x * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B)) +
+			toLinear(AMBIENT_LIGHTING + nightVision * 0.5)) * material.ambient;
+	#endif
 
 	#ifdef WORLD_LIGHT
 		// Get sRGB light color

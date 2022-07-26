@@ -65,6 +65,8 @@
     option.AUTO_GEN_NORM = Auto generated normals
     option.EMISSIVE_INTENSITY = Emissive intensity
     option.NORMAL_STRENGTH = Normal strength
+    option.DIRECTIONAL_LIGHTMAPS = Directional lightmaps
+    option.DIRECTIONAL_LIGHTMAP_STRENGTH = Directional lightmap strength
     option.SLOPE_NORMALS = Slope normals
     value.DEFAULT_MAT.0 = OFF
     value.DEFAULT_MAT.1 = Default PBR
