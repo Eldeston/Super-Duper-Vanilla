@@ -278,12 +278,15 @@ uniform sampler2D texture;
 
         // Generate bumped normals
         #if (defined TERRAIN || defined WATER || defined BLOCK) && defined AUTO_GEN_NORM
-            if(id != 10000 || id != 10018){
-                float d0 = sumOf(material.albedo.rgb);
-                float d1 = sumOf(texture2DGradARB(texture, fract(vec2(vTexCoord.x + 0.015625, vTexCoord.y)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
-                float d2 = sumOf(texture2DGradARB(texture, fract(vec2(vTexCoord.x, vTexCoord.y + 0.015625)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
+            if(id != 10000 && id != 10018){
+                const float autoGenNormPixSize = 2.0 / AUTO_GEN_NORM_RES;
+                vec2 texCoordPixCenter = vTexCoord - autoGenNormPixSize * 0.5;
 
-                material.normal = TBN * normalize(vec3(d0 - d1, d0 - d2, 0.25));
+                float d0 = sumOf(texture2DGradARB(texture, fract(texCoordPixCenter) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
+                float d1 = sumOf(texture2DGradARB(texture, fract(vec2(texCoordPixCenter.x + autoGenNormPixSize, texCoordPixCenter.y)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
+                float d2 = sumOf(texture2DGradARB(texture, fract(vec2(texCoordPixCenter.x, texCoordPixCenter.y + autoGenNormPixSize)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
+
+                material.normal = TBN * normalize(vec3(d0 - d1, d0 - d2, 1));
 
                 // Calculate normal strength
                 material.normal = mix(TBN[2], material.normal, NORMAL_STRENGTH);

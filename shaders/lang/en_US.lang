@@ -62,7 +62,8 @@
 #PBR
     option.DEFAULT_MAT = PBR mode
     option.ENVIRO_MAT = Enviro PBR materials
-    option.AUTO_GEN_NORM = Auto generated normals
+    option.AUTO_GEN_NORM = Auto gen normals
+    option.AUTO_GEN_NORM_RES = Auto gen normal resolution
     option.EMISSIVE_INTENSITY = Emissive intensity
     option.NORMAL_STRENGTH = Normal strength
     option.DIRECTIONAL_LIGHTMAPS = Directional lightmaps
