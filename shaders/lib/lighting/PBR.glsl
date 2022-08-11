@@ -357,7 +357,10 @@ uniform sampler2D texture;
                 if(id == 10053) material.emissive = exp(sumOf(material.albedo.rgb) * 2.66666664 - 8.0);
                 
                 // Sculk
-                if(id == 10057) material.emissive = cubed(max(0.0, material.albedo.b - material.albedo.r));
+                if(id == 10057){
+                    material.emissive = cubed(max(0.0, material.albedo.b - material.albedo.r));
+                    material.smoothness = 0.6;
+                }
 
                 // Redstone stuff
                 if(id == 10054 || id == 10100){
