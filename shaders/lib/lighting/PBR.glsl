@@ -349,9 +349,19 @@ uniform sampler2D texture;
                 // Fungus
                 if(id == 10036) material.emissive = float(sumOf(material.albedo.rg) > 1.0);
 
+                // Reflective light emitting blocks and redstone lamps
+                if(id == 10048){
+                    material.emissive = saturate(sumOf(material.albedo.rgb) * 1.33333332 - 2.0);
+                    material.smoothness = 0.9;
+                }
+
+                // Frog lights
+                if(id == 10049){
+                    material.emissive = cubed(max(0.0, sumOf(material.albedo.rgb) * 1.33333332 - 3.0));
+                    material.smoothness = 0.9;
+                }
+                
                 // Light emitting blocks
-                if(id == 10048) material.emissive = saturate(sumOf(material.albedo.rgb) * 1.33333332 - 2.0);
-                if(id == 10049) material.emissive = cubed(max(0.0, sumOf(material.albedo.rgb) * 1.33333332 - 3.0));
                 if(id == 10050 || id == 10051) material.emissive = squared(squared(saturate(sumOf(material.albedo.rgb) * 0.83333333 - 1)));
                 if(id == 10052) material.emissive = smoothen(max(0.0, maxOf(material.albedo.rgb) - 0.75) * 4.0);
                 if(id == 10053) material.emissive = exp(sumOf(material.albedo.rgb) * 2.66666664 - 8.0);
