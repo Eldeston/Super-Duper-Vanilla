@@ -11,5 +11,5 @@ vec2 toPrevScreenPos(vec2 currScreenPos, float depth){
 }
 
 vec2 toPrevScreenPos(vec2 currScreenPos){
-	return toPrevScreenPos(currScreenPos, texture2D(depthtex0, currScreenPos.xy).x);
+	return toPrevScreenPos(currScreenPos, texture2DLod(depthtex0, currScreenPos.xy, 0).x);
 }

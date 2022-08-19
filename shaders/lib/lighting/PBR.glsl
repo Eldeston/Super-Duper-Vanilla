@@ -40,7 +40,7 @@ uniform sampler2D texture;
         float rainMatFact = fastSqrt(max(0.0, TBN[2].y) * smoothen(saturate((lmCoord.y - 0.8) * 10.0)) * wetness * isPrecipitationRain * (1.0 - material.porosity));
 
         if(rainMatFact > 0.005){
-            vec2 noiseData = texture2D(noisetex, worldPos.xz * 0.001953125).xy;
+            vec2 noiseData = texture2DLod(noisetex, worldPos.xz * 0.001953125, 0).xy;
             rainMatFact *= saturate(noiseData.y + noiseData.x - 0.25);
             
             material.normal = mix(material.normal, TBN[2], rainMatFact);

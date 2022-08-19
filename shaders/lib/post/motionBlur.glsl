@@ -6,7 +6,7 @@ vec3 motionBlur(vec3 currColor, vec2 currScreenPos, float depth, float dither){
     
     for(int i = 0; i < 4; i++){
         currScreenPos += prevPosition;
-        currColor += texture2D(gcolor, saturate(currScreenPos)).rgb;
+        currColor += texture2DLod(gcolor, saturate(currScreenPos), 0).rgb;
     }
 
     return currColor * 0.2;

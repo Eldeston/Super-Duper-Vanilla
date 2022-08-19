@@ -35,8 +35,8 @@
             vec2 texCoord = screenCoord / exp2(LOD) + coords;
 
             // Apply box blur all tiles
-            return texture2D(colortex4, texCoord - pixSize).rgb + texture2D(colortex4, texCoord + pixSize).rgb +
-                texture2D(colortex4, texCoord - vec2(pixSize.x, -pixSize.y)).rgb + texture2D(colortex4, texCoord + vec2(pixSize.x, -pixSize.y)).rgb;
+            return texture2DLod(colortex4, texCoord - pixSize, 0).rgb + texture2DLod(colortex4, texCoord + pixSize, 0).rgb +
+                texture2DLod(colortex4, texCoord - vec2(pixSize.x, -pixSize.y), 0).rgb + texture2DLod(colortex4, texCoord + vec2(pixSize.x, -pixSize.y), 0).rgb;
         }
     #endif
 
@@ -98,7 +98,7 @@
             // shadowLightPosition is broken in other dimensions. The current is equivalent to:
             // normalize(mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz)
             
-            if(texture2D(depthtex0, lightDir).x == 1 && isEyeInWater == 0)
+            if(texture2DLod(depthtex0, lightDir, 0).x == 1 && isEyeInWater == 0)
                 color += getLensFlare(screenCoord - 0.5, lightDir - 0.5) * (1.0 - blindness) * (1.0 - rainStrength);
         #endif
 

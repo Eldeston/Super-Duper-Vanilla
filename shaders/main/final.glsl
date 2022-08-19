@@ -41,8 +41,8 @@
         vec3 sharpenFilter(vec3 color, vec2 texCoord){
             vec2 pixSize = 1.0 / vec2(viewWidth, viewHeight);
 
-            vec3 blur = texture2D(gcolor, texCoord + pixSize).rgb + texture2D(gcolor, texCoord - pixSize).rgb +
-                texture2D(gcolor, texCoord + vec2(pixSize.x, -pixSize.y)).rgb + texture2D(gcolor, texCoord - vec2(pixSize.x, -pixSize.y)).rgb;
+            vec3 blur = texture2DLod(gcolor, texCoord + pixSize, 0).rgb + texture2DLod(gcolor, texCoord - pixSize, 0).rgb +
+                texture2DLod(gcolor, texCoord + vec2(pixSize.x, -pixSize.y), 0).rgb + texture2DLod(gcolor, texCoord - vec2(pixSize.x, -pixSize.y), 0).rgb;
             
             return color * 2.0 - blur * 0.25;
         }
@@ -59,11 +59,11 @@
         #ifdef CHROMATIC_ABERRATION
             vec2 chromaStrength = ((screenCoord - 0.5) * ABERRATION_PIX_SIZE) / vec2(viewWidth, viewHeight);
 
-            vec3 color = vec3(texture2D(gcolor, screenCoord - chromaStrength).r,
-                texture2D(gcolor, screenCoord).g,
-                texture2D(gcolor, screenCoord + chromaStrength).b);
+            vec3 color = vec3(texture2DLod(gcolor, screenCoord - chromaStrength, 0).r,
+                texture2DLod(gcolor, screenCoord, 0).g,
+                texture2DLod(gcolor, screenCoord + chromaStrength, 0).b);
         #else
-            vec3 color = texture2D(gcolor, screenCoord).rgb;
+            vec3 color = texture2DLod(gcolor, screenCoord, 0).rgb;
         #endif
 
         #if ANTI_ALIASING != 0 && defined SHARPEN_FILTER
