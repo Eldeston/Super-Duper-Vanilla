@@ -50,7 +50,7 @@
 
     void main(){
         #ifdef RETRO_FILTER
-            vec2 retroResolution = vec2(viewWidth, viewHeight) * 0.5;
+            vec2 retroResolution = vec2(viewWidth, viewHeight) * 0.5 / MC_RENDER_QUALITY;
             vec2 retroCoord = floor(screenCoord * retroResolution) / retroResolution;
 
             #define screenCoord retroCoord

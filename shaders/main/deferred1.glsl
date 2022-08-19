@@ -66,9 +66,9 @@
     #endif
 
     #ifdef SSAO
-        float getSSAOBoxBlur(ivec2 iUv){
-            ivec2 topRightCorner = iUv - 1;
-            ivec2 bottomLeftCorner = iUv + 1;
+        float getSSAOBoxBlur(ivec2 screenTexelCoord){
+            ivec2 topRightCorner = screenTexelCoord + 1;
+            ivec2 bottomLeftCorner = screenTexelCoord - 1;
 
             float sample0 = texelFetch(colortex2, topRightCorner, 0).a;
             float sample1 = texelFetch(colortex2, bottomLeftCorner, 0).a;

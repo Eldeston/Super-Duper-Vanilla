@@ -8,25 +8,29 @@
 float quality[12] = float[12](1.0, 1.0, 1.0, 1.0, 1.0, 1.5, 2.0, 2.0, 2.0, 2.0, 4.0, 8.0);
 
 // http://blog.simonrodriguez.fr/articles/30-07-2016_implementing_fxaa.html
-vec3 textureFXAA(vec2 screenPos, vec2 resolution){
+vec3 textureFXAA(vec2 screenPos, vec2 resolution, ivec2 screenTexelCoord){
     // Pixel size
     vec2 pixSize = 1.0 / resolution.xy;
 
+    // Offsetted screen texel coords
+    ivec2 topRightCorner = screenTexelCoord + 1;
+    ivec2 bottomLeftCorner = screenTexelCoord - 1;
+
     // Aliased texture
-    vec3 colorCenter = texture2DLod(gcolor, screenPos, 0).rgb;
+    vec3 colorCenter = texelFetch(gcolor, screenTexelCoord, 0).rgb;
 
     // Luma at the current fragment
     float lumaCenter = getLuminance(colorCenter);
 
     // Luma at the four direct neighbours of the current fragment.
-    float lumaUp = getLuminance(texture2DLod(gcolor, screenPos + vec2(0, pixSize.y), 0).rgb);
-    float lumaDown = getLuminance(texture2DLod(gcolor, screenPos - vec2(0, pixSize.y), 0).rgb);
-    float lumaLeft = getLuminance(texture2DLod(gcolor, screenPos - vec2(pixSize.x, 0), 0).rgb);
-    float lumaRight = getLuminance(texture2DLod(gcolor, screenPos + vec2(pixSize.x, 0), 0).rgb);
+    float lumaTop = getLuminance(texelFetch(gcolor, ivec2(screenTexelCoord.x, topRightCorner.y), 0).rgb);
+    float lumaBottom = getLuminance(texelFetch(gcolor, ivec2(screenTexelCoord.x, bottomLeftCorner.y), 0).rgb);
+    float lumaLeft = getLuminance(texelFetch(gcolor, ivec2(bottomLeftCorner.x, screenTexelCoord.y), 0).rgb);
+    float lumaRight = getLuminance(texelFetch(gcolor, ivec2(topRightCorner.x, screenTexelCoord.y), 0).rgb);
 
     // Find the maximum and minimum luma around the current fragment.
-    float lumaMin = min(lumaCenter, min(min(lumaDown, lumaUp), min(lumaLeft, lumaRight)));
-    float lumaMax = max(lumaCenter, max(max(lumaDown, lumaUp), max(lumaLeft, lumaRight)));
+    float lumaMin = min(lumaCenter, min(min(lumaBottom, lumaTop), min(lumaLeft, lumaRight)));
+    float lumaMax = max(lumaCenter, max(max(lumaBottom, lumaTop), max(lumaLeft, lumaRight)));
 
     // Compute the delta.
     float lumaRange = lumaMax - lumaMin;
@@ -34,37 +38,37 @@ vec3 textureFXAA(vec2 screenPos, vec2 resolution){
     if(lumaRange < max(EDGE_THRESHOLD_MIN, lumaMax * EDGE_THRESHOLD_MAX)) return colorCenter;
 
     // Query the 4 remaining corners lumas.
-    float lumaUpRight = getLuminance(texture2DLod(gcolor, screenPos + pixSize, 0).rgb);
-    float lumaDownLeft = getLuminance(texture2DLod(gcolor, screenPos - pixSize, 0).rgb);
-    float lumaUpLeft = getLuminance(texture2DLod(gcolor, screenPos - vec2(pixSize.x, -pixSize.y), 0).rgb);
-    float lumaDownRight = getLuminance(texture2DLod(gcolor, screenPos + vec2(pixSize.x, -pixSize.y), 0).rgb);
+    float lumaTopRight = getLuminance(texelFetch(gcolor, topRightCorner, 0).rgb);
+    float lumaBottomLeft = getLuminance(texelFetch(gcolor, bottomLeftCorner, 0).rgb);
+    float lumaTopLeft = getLuminance(texelFetch(gcolor, ivec2(bottomLeftCorner.x, topRightCorner.y), 0).rgb);
+    float lumaBottomRight = getLuminance(texelFetch(gcolor, ivec2(topRightCorner.x, bottomLeftCorner.y), 0).rgb);
 
     // Combine the four edges lumas (using intermediary variables for future computations with the same values).
-    float lumaDownUp = lumaDown + lumaUp;
+    float lumaBottomTop = lumaBottom + lumaTop;
     float lumaLeftRight = lumaLeft + lumaRight;
 
     // Same for corners
-    float lumaLeftCorners = lumaDownLeft + lumaUpLeft;
-    float lumaDownCorners = lumaDownLeft + lumaDownRight;
-    float lumaRightCorners = lumaDownRight + lumaUpRight;
-    float lumaUpCorners = lumaUpRight + lumaUpLeft;
+    float lumaLeftCorners = lumaBottomLeft + lumaTopLeft;
+    float lumaBottomCorners = lumaBottomLeft + lumaBottomRight;
+    float lumaRightCorners = lumaBottomRight + lumaTopRight;
+    float lumaTopCorners = lumaTopRight + lumaTopLeft;
 
     // Compute an estimation of the gradient along the horizontal and vertical axis.
-    float edgeHorizontal = abs(lumaLeftCorners - 2.0 * lumaLeft) + abs(lumaDownUp - 2.0 * lumaCenter) * 2.0 + abs(lumaRightCorners - 2.0 * lumaRight);
-    float edgeVertical = abs(lumaUpCorners - 2.0 * lumaUp) + abs(lumaLeftRight - 2.0 * lumaCenter) * 2.0 + abs(lumaDownCorners - 2.0 * lumaDown);
+    float edgeHorizontal = abs(lumaLeftCorners - 2.0 * lumaLeft) + abs(lumaBottomTop - 2.0 * lumaCenter) * 2.0 + abs(lumaRightCorners - 2.0 * lumaRight);
+    float edgeVertical = abs(lumaTopCorners - 2.0 * lumaTop) + abs(lumaLeftRight - 2.0 * lumaCenter) * 2.0 + abs(lumaBottomCorners - 2.0 * lumaBottom);
 
     // Is the local edge horizontal or vertical ?
     bool isHorizontal = (edgeHorizontal >= edgeVertical);
 
     // Select the two neighboring texels lumas in the opposite direction to the local edge.
-    float luma1 = isHorizontal ? lumaDown : lumaLeft;
-    float luma2 = isHorizontal ? lumaUp : lumaRight;
+    float luma1 = isHorizontal ? lumaBottom : lumaLeft;
+    float luma2 = isHorizontal ? lumaTop : lumaRight;
     // Compute gradients in this direction.
     float gradient1 = luma1 - lumaCenter;
     float gradient2 = luma2 - lumaCenter;
 
     // Which direction is the steepest ?
-    bool is1Steepest = abs(gradient1) >= abs(gradient2);
+    bool isSteepest = abs(gradient1) >= abs(gradient2);
 
     // Gradient in the corresponding direction, normalized.
     float gradientScaled = 0.25 * max(abs(gradient1), abs(gradient2));
@@ -75,7 +79,7 @@ vec3 textureFXAA(vec2 screenPos, vec2 resolution){
     // Average luma in the correct direction.
     float lumaLocalAverage = 0.0;
 
-    if(is1Steepest){
+    if(isSteepest){
         // Switch the direction
         stepLength = -stepLength;
         lumaLocalAverage = 0.5 * (luma1 + lumaCenter);
@@ -149,7 +153,7 @@ vec3 textureFXAA(vec2 screenPos, vec2 resolution){
 
     // Sub-pixel shifting
     // Full weighted average of the luma over the 3x3 neighborhood.
-    float lumaAverage = (2.0 * (lumaDownUp + lumaLeftRight) + lumaLeftCorners + lumaRightCorners) * 0.0833333;
+    float lumaAverage = (2.0 * (lumaBottomTop + lumaLeftRight) + lumaLeftCorners + lumaRightCorners) * 0.0833333;
     // Ratio of the delta between the global average and the center luma, over the luma range in the 3x3 neighborhood.
     float subPixelOffset1 = clamp(abs(lumaAverage - lumaCenter) / lumaRange, 0.0, 1.0);
     float subPixelOffset2 = subPixelOffset1 * subPixelOffset1 * (3.0 - 2.0 * subPixelOffset1);

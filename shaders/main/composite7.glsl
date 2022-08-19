@@ -27,9 +27,9 @@
 
     void main(){
         #if ANTI_ALIASING == 1 || ANTI_ALIASING == 3
-            vec3 color = textureFXAA(screenCoord, vec2(viewWidth, viewHeight));
+            vec3 color = textureFXAA(screenCoord, vec2(viewWidth, viewHeight), ivec2(gl_FragCoord.xy));
         #else
-            vec3 color = texture2D(gcolor, screenCoord).rgb;
+            vec3 color = texelFetch(gcolor, ivec2(gl_FragCoord.xy), 0).rgb;
         #endif
         
     /* DRAWBUFFERS:0 */
