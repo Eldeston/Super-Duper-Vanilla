@@ -18,7 +18,7 @@ vec3 rayTraceScene(vec3 screenPos, vec3 viewPos, vec3 rayDir, float dither, int 
 	}
 
 	// Fix for the blob when player is near a surface. From Bálint#1673
-	if(rayDir.z > 0 && rayDir.z >= -viewPos.z) return vec3(0);
+	if(rayDir.z > -viewPos.z) return vec3(0);
 
 	// Get screenspace rayDir
 	vec3 screenPosRayDir = normalize(toScreen(viewPos + rayDir) - screenPos) / steps;
