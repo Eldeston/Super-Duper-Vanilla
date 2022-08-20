@@ -17,8 +17,6 @@
     uniform sampler2D gcolor;
 
     #if ANTI_ALIASING == 1 || ANTI_ALIASING == 3
-        const bool gcolorMipmapEnabled = true;
-
         uniform float viewWidth;
         uniform float viewHeight;
 

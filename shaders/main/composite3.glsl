@@ -21,6 +21,7 @@
     uniform float viewHeight;
 
     #ifdef DOF
+        // Needs to be enabled by force to be able to use LOD fully even with texture2DLod
         const bool gcolorMipmapEnabled = true;
 
         uniform sampler2D depthtex1;

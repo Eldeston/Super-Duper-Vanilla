@@ -15,6 +15,7 @@
     in vec2 screenCoord;
 
     #ifdef BLOOM
+        // Needs to be enabled by force to be able to use LOD fully even with texture2DLod
         const bool gcolorMipmapEnabled = true;
         
         uniform sampler2D gcolor;
@@ -29,12 +30,14 @@
             if(abs(bloomUv.x - 0.5) < padding && abs(bloomUv.y - 0.5) < padding){
                 // Get pixel size
                 float pixSize = scale / viewWidth;
+                
+                vec3 sample0 = texture2DLod(gcolor, bloomUv + vec2(pixSize * 2.0, 0), LOD).rgb +
+                    texture2DLod(gcolor, bloomUv - vec2(pixSize * 2.0, 0), LOD).rgb;
+                vec3 sample1 = texture2DLod(gcolor, bloomUv + vec2(pixSize, 0), LOD).rgb +
+                    texture2DLod(gcolor, bloomUv - vec2(pixSize, 0), LOD).rgb;
+                vec3 sample2 = texture2DLod(gcolor, bloomUv, LOD).rgb;
 
-                vec3 eBloom = (texture2D(gcolor, bloomUv + vec2(pixSize * 2.0, 0)).rgb +
-                    texture2D(gcolor, bloomUv - vec2(pixSize * 2.0, 0)).rgb) * 0.0625;
-                eBloom += (texture2D(gcolor, bloomUv + vec2(pixSize, 0)).rgb +
-                    texture2D(gcolor, bloomUv - vec2(pixSize, 0)).rgb) * 0.25;
-                return eBloom + texture2D(gcolor, bloomUv).rgb * 0.375;
+                return sample0 * 0.0625 + sample1 * 0.25 + sample2 * 0.375;
             }
             
             return vec3(0);
