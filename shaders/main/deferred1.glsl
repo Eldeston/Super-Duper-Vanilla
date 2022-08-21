@@ -96,6 +96,8 @@
     // Get is eye in water
     uniform int isEyeInWater;
 
+    // Get far
+    uniform float far;
     // Get blindness
     uniform float blindness;
     // Get night vision
@@ -110,14 +112,15 @@
     #include "/lib/utility/convertViewSpace.glsl"
     #include "/lib/utility/convertScreenSpace.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
+
+    #include "/lib/lighting/GGX.glsl"
+    
     #include "/lib/rayTracing/rayTracer.glsl"
+    #include "/lib/rayTracing/SSGI.glsl"
+    #include "/lib/rayTracing/SSR.glsl"
 
     #include "/lib/atmospherics/fog.glsl"
     #include "/lib/atmospherics/sky.glsl"
-
-    #include "/lib/lighting/GGX.glsl"
-    #include "/lib/lighting/SSR.glsl"
-    #include "/lib/lighting/SSGI.glsl"
 
     #if OUTLINES != 0
         #include "/lib/post/outline.glsl"

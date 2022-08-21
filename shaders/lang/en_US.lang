@@ -26,7 +26,7 @@
         option.CHROMATIC_ABERRATION = Chromatic aberration
         option.ABERRATION_PIX_SIZE = Aberration pixel size
         option.VIGNETTE = Vignette
-        option.VIGNETTE_INTENSITY = Vignette intensity
+        option.VIGNETTE_AMOUNT = Vignette amount
         option.BLOOM = Bloom
         option.BLOOM_AMOUNT = Bloom amount
         option.LENS_FLARE = Lens flare

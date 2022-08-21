@@ -10,7 +10,7 @@
 
 #ifdef FRAGMENT
     #ifdef BLOOM
-        // No need to enable mipmapping to use LOD for texture2DLod as we're only using 0 LOD anyway
+        // No need to use mipmapping in this 2nd bloom pass, so we'll utilize texelFetch for some sweet, sweet performance
         uniform sampler2D colortex4;
     #endif
 

@@ -120,19 +120,20 @@
             #endif
         #endif
 
-        // Exposeure, tint, and tonemap
+        // Exposure, tint, and tonemap
         color = whitePreservingLumaBasedReinhardToneMapping(color * vec3(TINT_R, TINT_G, TINT_B) * (0.00392156863 * EXPOSURE));
 
         #ifdef VIGNETTE
             // BSL's vignette, modified to control intensity
-            color *= max(0.0, 1.0 - length(screenCoord - 0.5) * VIGNETTE_INTENSITY * (1.0 - getLuminance(color)));
+            color *= 1.0 - lengthSquared(screenCoord - 0.5) * VIGNETTE_AMOUNT * (3.0 - sumOf(color));
         #endif
 
         // Gamma correction, color saturation, contrast, etc. and film grain
         color = toneA(toSRGB(color)) + (texelFetch(noisetex, screenTexelCoord & 255, 0).x - 0.5) * 0.00392156863;
 
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(color, 1); // gcolor
+        // Clamp final color
+        gl_FragData[0] = vec4(saturate(color), 1); // gcolor
 
         #ifdef BLOOM
         /* DRAWBUFFERS:04 */

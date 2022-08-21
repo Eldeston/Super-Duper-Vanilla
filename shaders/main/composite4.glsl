@@ -28,7 +28,7 @@
             float padding = 0.5 + 0.005 * scale;
 
             if(abs(bloomUv.x - 0.5) < padding && abs(bloomUv.y - 0.5) < padding){
-                // Get pixel size
+                // Get pixel size based on bloom tile scale
                 float pixSize = scale / viewWidth;
                 
                 vec3 sample0 = texture2DLod(gcolor, bloomUv + vec2(pixSize * 2.0, 0), LOD).rgb +

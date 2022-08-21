@@ -102,7 +102,7 @@ vec3 toneSaturation(vec3 col, float a){
 
 // Contrast function
 vec3 toneContrast(vec3 col, float a){
-	return saturate((col.rgb - 0.5) * a + 0.5);
+	return (col.rgb - 0.5) * a + 0.5;
 }
 
 // By Jessie#7257
@@ -112,7 +112,11 @@ vec3 generateUnitVector(vec2 hash){
 }
 
 // Rotation function
-mat2 rot2D(float x){ return mat2(cos(x), -sin(x), sin(x), cos(x)); }
+mat2 rot2D(float x){
+	float cosX = cos(x);
+  	float sinX = sin(x);
+	return mat2(cosX, -sinX, sinX, cosX);
+}
 
 // SRGB to linear
 float toLinear(float x){ return x * x; }

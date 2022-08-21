@@ -124,7 +124,7 @@ uniform mat4 gbufferModelViewInverse;
 
     #include "/lib/lighting/GGX.glsl"
 
-    #include "/lib/lighting/PBR.glsl"
+    #include "/lib/pbr/PBR.glsl"
 
     #include "/lib/lighting/complexShadingForward.glsl"
     
