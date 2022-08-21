@@ -43,6 +43,7 @@
 #ifdef FRAGMENT
     in vec2 texCoord;
 
+    // Get albedo texture
     uniform sampler2D texture;
 
     void main(){

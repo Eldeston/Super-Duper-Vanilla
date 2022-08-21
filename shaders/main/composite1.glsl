@@ -16,7 +16,7 @@
 
     uniform sampler2D gcolor;
 
-    #if ANTI_ALIASING >= 2 || (defined PREVIOUS_FRAME && (defined SSR || defined SSGI))
+    #if ANTI_ALIASING >= 2 || (defined PREVIOUS_FRAME && defined AUTO_EXPOSURE && (defined SSR || defined SSGI))
         uniform sampler2D colortex5;
     #endif
 

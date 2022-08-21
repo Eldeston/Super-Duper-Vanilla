@@ -65,6 +65,7 @@ uniform mat4 gbufferModelViewInverse;
 
     in vec3 glcolor;
 
+    // Get albedo texture
     uniform sampler2D texture;
 
     // Projection matrix uniforms
@@ -102,11 +103,11 @@ uniform mat4 gbufferModelViewInverse;
     // Get atlas size
     uniform ivec2 atlasSize;
 
-    #include "/lib/lighting/shdDistort.glsl"
     #include "/lib/utility/convertViewSpace.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
 
     #include "/lib/lighting/shdMapping.glsl"
+    #include "/lib/lighting/shdDistort.glsl"
 
     #include "/lib/lighting/simpleShadingForward.glsl"
 

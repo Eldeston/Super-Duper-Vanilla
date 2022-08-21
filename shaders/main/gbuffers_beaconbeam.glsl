@@ -47,6 +47,7 @@
 
     in vec4 glcolor;
 
+    // Get albedo texture
     uniform sampler2D texture;
 
     void main(){

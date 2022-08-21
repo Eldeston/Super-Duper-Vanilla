@@ -131,6 +131,9 @@ uniform mat4 gbufferModelViewInverse;
     // Enable full vanilla AO
     const float ambientOcclusionLevel = 1.0;
 
+    // Get albedo texture
+    uniform sampler2D texture;
+
     // Projection matrix uniforms
     uniform mat4 gbufferProjectionInverse;
 
@@ -164,15 +167,30 @@ uniform mat4 gbufferModelViewInverse;
     // Get night vision
     uniform float nightVision;
 
-    #include "/lib/lighting/shdDistort.glsl"
+    // Derivatives
+    vec2 dcdx = dFdx(texCoord);
+    vec2 dcdy = dFdy(texCoord);
+
     #include "/lib/utility/convertViewSpace.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
-    #include "/lib/surface/lava.glsl"
 
     #include "/lib/lighting/shdMapping.glsl"
+    #include "/lib/lighting/shdDistort.glsl"
     #include "/lib/lighting/GGX.glsl"
 
-    #include "/lib/pbr/PBR.glsl"
+    #include "/lib/surface/lava.glsl"
+
+    #include "/lib/PBR/structPBR.glsl"
+
+    #if PBR_MODE <= 1
+        #include "/lib/PBR/defaultPBR.glsl"
+    #else
+        #include "/lib/PBR/labPBR.glsl"
+    #endif
+
+    #if defined ENVIRO_PBR && !defined FORCE_DISABLE_WEATHER
+        #include "/lib/PBR/enviroPBR.glsl"
+    #endif
 
     #include "/lib/lighting/complexShadingForward.glsl"
 
@@ -181,7 +199,7 @@ uniform mat4 gbufferModelViewInverse;
         vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * toView(vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z));
 
 	    // Declare materials
-	    matPBR material;
+	    structPBR material;
         getPBR(material, eyePlayerPos, blockId);
 
         if(blockId == 10001){
@@ -196,7 +214,7 @@ uniform mat4 gbufferModelViewInverse;
 
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
-        #if defined ENVIRO_MAT && !defined FORCE_DISABLE_WEATHER
+        #if defined ENVIRO_PBR && !defined FORCE_DISABLE_WEATHER
             if(blockId != 10001) enviroPBR(material);
         #endif
 

@@ -33,6 +33,7 @@
 
     in vec4 glcolor;
 
+    // Get albedo texture
     uniform sampler2D texture;
 
     uniform int renderStage;

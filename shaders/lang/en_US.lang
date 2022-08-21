@@ -60,8 +60,8 @@
     option.SUBSURFACE_SCATTERING = Subsurface scattering
 
 #PBR
-    option.DEFAULT_MAT = PBR mode
-    option.ENVIRO_MAT = Enviro PBR materials
+    option.PBR_MODE = PBR mode
+    option.ENVIRO_PBR = Enviro PBR materials
     option.AUTO_GEN_NORM = Auto gen normals
     option.AUTO_GEN_NORM_RES = Auto gen normal resolution
     option.EMISSIVE_INTENSITY = Emissive intensity
@@ -69,9 +69,9 @@
     option.DIRECTIONAL_LIGHTMAPS = Directional lightmaps
     option.DIRECTIONAL_LIGHTMAP_STRENGTH = Directional lightmap strength
     option.SLOPE_NORMALS = Slope normals
-    value.DEFAULT_MAT.0 = OFF
-    value.DEFAULT_MAT.1 = Default PBR
-    value.DEFAULT_MAT.2 = Lab PBR 1.3
+    value.PBR_MODE.0 = OFF
+    value.PBR_MODE.1 = Default PBR
+    value.PBR_MODE.2 = Lab PBR 1.3
 
 screen.POM_SETTINGS = Parallax occlusion settings
     option.PARALLAX_OCCLUSION = Parallax occlusion
@@ -96,8 +96,9 @@ screen.WATER_SETTINGS = Water material settings
     option.WATER_DEPTH_SIZE = Water normal map depth size
     option.WATER_TILE_SIZE = Water tile size
     option.WATER_NORM = Water normals
-    option.STYLIZED_WATER_ABSORPTION = Stylized water absorption
+    option.WATER_STYLIZE_ABSORPTION = Stylized water absorption
     option.WATER_FOAM = Water foam
+    option.WATER_FLAT = Flat water albedo
 
 screen.LAVA_SETTINGS = Lava material settings
     option.LAVA_BRIGHTNESS = Lava brightness
@@ -107,7 +108,7 @@ screen.LAVA_SETTINGS = Lava material settings
 #Atmospherics
     option.VOL_LIGHT_BRIGHTNESS = Volumetric light amount
     option.VOL_LIGHT = Volumetric lighting
-    option.MIST_GROUND_FOG_BRIGHTNESS = Ground fog amount
+    option.GROUND_FOG_AMOUNT = Ground fog amount
     option.BORDER_FOG = Border fog
     option.STORY_MODE_CLOUDS = Story mode clouds
     option.DOUBLE_VANILLA_CLOUDS = Double vanilla clouds

@@ -123,6 +123,9 @@ uniform mat4 gbufferModelViewInverse;
     in vec3 worldPos;
     in vec3 glcolor;
 
+    // Get albedo texture
+    uniform sampler2D texture;
+
     // Projection matrix uniforms
     uniform mat4 gbufferProjectionInverse;
 
@@ -148,7 +151,7 @@ uniform mat4 gbufferModelViewInverse;
     uniform float viewWidth;
     uniform float viewHeight;
 
-    #if defined STYLIZED_WATER_ABSORPTION || defined WATER_FOAM
+    #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
         uniform sampler2D depthtex1;
     #endif
     
@@ -159,16 +162,31 @@ uniform mat4 gbufferModelViewInverse;
 
     // Get night vision
     uniform float nightVision;
+
+    // Derivatives
+    vec2 dcdx = dFdx(texCoord);
+    vec2 dcdy = dFdy(texCoord);
     
-    #include "/lib/lighting/shdDistort.glsl"
     #include "/lib/utility/convertViewSpace.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
-    #include "/lib/surface/water.glsl"
 
     #include "/lib/lighting/shdMapping.glsl"
+    #include "/lib/lighting/shdDistort.glsl"
     #include "/lib/lighting/GGX.glsl"
+
+    #include "/lib/surface/water.glsl"
     
-    #include "/lib/pbr/PBR.glsl"
+    #include "/lib/PBR/structPBR.glsl"
+
+    #if PBR_MODE <= 1
+        #include "/lib/PBR/defaultPBR.glsl"
+    #else
+        #include "/lib/PBR/labPBR.glsl"
+    #endif
+
+    #if defined ENVIRO_PBR && !defined FORCE_DISABLE_WEATHER
+        #include "/lib/PBR/enviroPBR.glsl"
+    #endif
 
     #include "/lib/lighting/complexShadingForward.glsl"
 
@@ -178,7 +196,7 @@ uniform mat4 gbufferModelViewInverse;
         vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
 
 	    // Declare materials
-	    matPBR material;
+	    structPBR material;
         getPBR(material, eyePlayerPos, blockId);
         
         // If water
@@ -200,12 +218,12 @@ uniform mat4 gbufferModelViewInverse;
                 #endif
             #endif
 
-            #if defined STYLIZED_WATER_ABSORPTION || defined WATER_FOAM
+            #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
                 // Water color and foam 
                 float waterDepth = toView(texelFetch(depthtex1, ivec2(gl_FragCoord.xy), 0).x) - viewPos.z;
             #endif
 
-            #ifdef STYLIZED_WATER_ABSORPTION
+            #ifdef WATER_STYLIZE_ABSORPTION
                 if(isEyeInWater == 0){
                         float depthBrightness = exp(waterDepth * 0.32);
                         material.albedo.rgb = min(vec3(1), material.albedo.rgb * mix(waterNoise, 2.0, depthBrightness));
@@ -222,7 +240,7 @@ uniform mat4 gbufferModelViewInverse;
 
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
-        #if defined ENVIRO_MAT && !defined FORCE_DISABLE_WEATHER
+        #if defined ENVIRO_PBR && !defined FORCE_DISABLE_WEATHER
             if(blockId != 10000) enviroPBR(material);
         #endif
 

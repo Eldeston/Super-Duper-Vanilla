@@ -54,6 +54,7 @@ uniform mat4 gbufferModelViewInverse;
 
     in vec2 texCoord;
 
+    // Get albedo texture
     uniform sampler2D texture;
 
     // Projection matrix uniforms
@@ -83,11 +84,11 @@ uniform mat4 gbufferModelViewInverse;
     // Get night vision
     uniform float nightVision;
 
-    #include "/lib/lighting/shdDistort.glsl"
     #include "/lib/utility/convertViewSpace.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
 
     #include "/lib/lighting/shdMapping.glsl"
+    #include "/lib/lighting/shdDistort.glsl"
 
     #include "/lib/lighting/simpleShadingForward.glsl"
 

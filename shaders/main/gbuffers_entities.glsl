@@ -101,6 +101,9 @@ uniform mat4 gbufferModelViewInverse;
 
     in vec3 glcolor;
 
+    // Get albedo texture
+    uniform sampler2D texture;
+
     // Projection matrix uniforms
     uniform mat4 gbufferProjectionInverse;
 
@@ -136,14 +139,24 @@ uniform mat4 gbufferModelViewInverse;
     // Get night vision
     uniform float nightVision;
 
-    #include "/lib/lighting/shdDistort.glsl"
+    // Derivatives
+    vec2 dcdx = dFdx(texCoord);
+    vec2 dcdy = dFdy(texCoord);
+
     #include "/lib/utility/convertViewSpace.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
 
     #include "/lib/lighting/shdMapping.glsl"
+    #include "/lib/lighting/shdDistort.glsl"
     #include "/lib/lighting/GGX.glsl"
 
-    #include "/lib/pbr/PBR.glsl"
+    #include "/lib/PBR/structPBR.glsl"
+
+    #if PBR_MODE <= 1
+        #include "/lib/PBR/defaultPBR.glsl"
+    #else
+        #include "/lib/PBR/labPBR.glsl"
+    #endif
 
     #include "/lib/lighting/complexShadingForward.glsl"
     
@@ -160,7 +173,7 @@ uniform mat4 gbufferModelViewInverse;
         vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * toView(vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z));
 
 	    // Declare materials
-	    matPBR material;
+	    structPBR material;
         getPBR(material, eyePlayerPos, entityId);
 
         material.albedo.rgb = mix(material.albedo.rgb, entityColor.rgb, entityColor.a);

@@ -91,7 +91,7 @@ vec4 smootherstep(vec4 x){
 }
 
 float getLuminance(vec3 col){
-	return col.r * 0.2125 + col.g * 0.7154 + col.b * 0.0721;
+	return dot(col, vec3(0.299, 0.587, 0.114));
 }
 
 // Saturation function
