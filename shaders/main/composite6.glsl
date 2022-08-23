@@ -52,13 +52,15 @@
         // Shadow view matrix uniforms
         uniform mat4 shadowModelView;
 
+        // Get blindess
         uniform float blindness;
+        // Get darkness effect
+        uniform float darknessFactor;
+
+        // Get screen aspect ratio
         uniform float aspectRatio;
 
         #include "/lib/universalVars.glsl"
-
-        // Get is eye in water
-        uniform int isEyeInWater;
 
         #include "/lib/utility/convertScreenSpace.glsl"
         
@@ -98,8 +100,8 @@
             // shadowLightPosition is broken in other dimensions. The current is equivalent to:
             // normalize(mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz)
             
-            if(texture2DLod(depthtex0, lightDir, 0).x == 1 && isEyeInWater == 0)
-                color += getLensFlare(screenCoord - 0.5, lightDir - 0.5) * (1.0 - blindness) * (1.0 - rainStrength);
+            if(texture2DLod(depthtex0, lightDir, 0).x == 1)
+                color += getLensFlare(screenCoord - 0.5, lightDir - 0.5) * (1.0 - blindness) * (1.0 - darknessFactor) * (1.0 - rainStrength);
         #endif
 
         #ifdef AUTO_EXPOSURE
