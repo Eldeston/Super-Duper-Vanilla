@@ -34,9 +34,9 @@ void getPBR(inout structPBR material, in vec3 eyePlayerPos, in int id){
     #endif
 
     // Default material if not specified
-    material.metallic = 0.04; material.emissive = 0.0;
-    material.smoothness = 0.0; material.ss = 0.0;
-    material.parallaxShd = 1.0; material.porosity = 0.0;
+    material.smoothness = 0.0; material.emissive = 0.0;
+    material.metallic = 0.04; material.porosity = 0.0;
+    material.ss = 0.0; material.parallaxShd = 1.0;
 
     #ifdef TERRAIN
         // Apply vanilla AO with it in terrain
@@ -91,7 +91,7 @@ void getPBR(inout structPBR material, in vec3 eyePlayerPos, in int id){
             if(id == 10035) material.emissive = material.albedo.b < 0.16 && material.albedo.r > 0.4 ? maxOf(material.albedo.rgb) * 0.72 : material.emissive;
 
             // Fungus
-            if(id == 10036) material.emissive = float(sumOf(material.albedo.rg) > 1.0);
+            if(id == 10036) material.emissive = float(sumOf(material.albedo.rg) > 1);
 
             // Reflective light emitting blocks and redstone lamps
             if(id == 10048){
@@ -162,9 +162,11 @@ void getPBR(inout structPBR material, in vec3 eyePlayerPos, in int id){
             }
 
             // Netherack gem ores
-            if(id == 10081 && material.albedo.r < material.albedo.g * 1.6 && material.albedo.r < material.albedo.b * 1.6){
-                material.smoothness = min(0.93, sumOf(material.albedo.rgb));
-                material.metallic = 0.17;
+            if(id == 10081){
+                if(material.albedo.r < material.albedo.g * 1.6 && material.albedo.r < material.albedo.b * 1.6){
+                    material.smoothness = min(0.93, sumOf(material.albedo.rgb));
+                    material.metallic = 0.17;
+                }
             }
 
             // Metal ores
