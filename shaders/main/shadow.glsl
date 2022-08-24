@@ -24,11 +24,6 @@
             float newFrameTimeCounter = frameTimeCounter;
         #endif
 
-        uniform mat4 shadowModelView;
-        uniform mat4 shadowModelViewInverse;
-        uniform mat4 shadowProjection;
-        uniform mat4 shadowProjectionInverse;
-
         #include "/lib/lighting/shdDistort.glsl"
 
         #include "/lib/vertex/vertexAnimations.glsl"
@@ -37,7 +32,9 @@
         attribute vec4 mc_Entity;
 
         void main(){
-            vec4 vertexPos = shadowModelViewInverse * (shadowProjectionInverse * ftransform());
+            // Feet player pos
+            vec4 vertexPos = gl_Vertex;
+            // World pos
             worldPos = vertexPos.xyz + cameraPosition;
 
             texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
@@ -51,7 +48,8 @@
                 vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
             #endif
 
-            gl_Position = shadowProjection * (shadowModelView * vertexPos);
+            // Shadow clip pos
+            gl_Position = gl_ProjectionMatrix * (gl_ModelViewMatrix * vertexPos);
 
             gl_Position.xyz = distort(gl_Position.xyz);
 

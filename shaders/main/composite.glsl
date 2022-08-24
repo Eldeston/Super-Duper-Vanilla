@@ -1,9 +1,24 @@
 /// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
 
 #ifdef VERTEX
+    flat out vec3 lightCol;
+    flat out vec3 skyCol;
+    
     out vec2 screenCoord;
 
+    #include "/lib/universalVars.glsl"
+
     void main(){
+        // Get sRGB light color
+        #ifdef WORLD_LIGHT
+            lightCol = toLinear(LIGHT_COL_DATA_BLOCK);
+        #else
+            lightCol = vec3(0);
+        #endif
+
+        // Get linear sky color
+        skyCol = toLinear(SKY_COL_DATA_BLOCK);
+
         gl_Position = ftransform();
         screenCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
     }
@@ -12,6 +27,9 @@
 /// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
 
 #ifdef FRAGMENT
+    flat in vec3 lightCol;
+    flat in vec3 skyCol;
+
     in vec2 screenCoord;
 
     uniform sampler2D gcolor;
@@ -131,21 +149,12 @@
             vec3 dither = getRand3(screenTexelCoord & 255);
         #endif
 
-        // Get sRGB light color
-        #ifdef WORLD_LIGHT
-            vec3 lightCol = toLinear(LIGHT_COL_DATA_BLOCK);
-        #else
-            vec3 lightCol = vec3(0);
-        #endif
-
         // If the object is a transparent render separate lighting
         if(texelFetch(depthtex1, screenTexelCoord, 0).x > screenPos.z){
             // Get view distance
             float viewDist = length(viewPos);
             // Get normalized eyePlayerPos
             vec3 nEyePlayerPos = eyePlayerPos / viewDist;
-            // Get linear sky color
-            vec3 skyCol = toLinear(SKY_COL_DATA_BLOCK);
 
             // Declare and get materials
             vec2 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xy;

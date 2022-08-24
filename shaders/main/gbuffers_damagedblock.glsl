@@ -11,23 +11,18 @@
         #include "/lib/utility/taaJitter.glsl"
     #endif
 
-    #ifdef WORLD_CURVATURE
-        uniform mat4 gbufferModelView;
-    #endif
-    
-    uniform mat4 gbufferModelViewInverse;
-
     void main(){
         // Get texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         
 	    #ifdef WORLD_CURVATURE
             // Feet player pos
-            vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+            vec4 vertexPos = gl_Vertex;
 
             vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
             
-            gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
+            // Clip pos
+            gl_Position = gl_ProjectionMatrix * (gl_ModelViewMatrix * vertexPos);
         #else
             gl_Position = ftransform();
         #endif

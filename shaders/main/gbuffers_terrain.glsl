@@ -46,8 +46,6 @@ uniform mat4 gbufferModelViewInverse;
     
     #include "/lib/vertex/vertexAnimations.glsl"
 
-    uniform mat4 gbufferModelView;
-
     #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION || defined ANIMATE
         attribute vec4 mc_midTexCoord;
     #endif
@@ -85,7 +83,8 @@ uniform mat4 gbufferModelViewInverse;
         #endif
 
         // Feet player pos
-        vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+        vec4 vertexPos = gl_Vertex;
+        // World pos
         worldPos = vertexPos.xyz + cameraPosition;
         
         #ifdef ANIMATE
@@ -96,7 +95,8 @@ uniform mat4 gbufferModelViewInverse;
             vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
         #endif
         
-	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
+        // Clip pos
+	    gl_Position = gl_ProjectionMatrix * (gl_ModelViewMatrix * vertexPos);
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);

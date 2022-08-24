@@ -15,8 +15,6 @@ uniform mat4 gbufferModelViewInverse;
 
         #include "/lib/utility/taaJitter.glsl"
     #endif
-    
-    uniform mat4 gbufferModelView;
 
     #if defined DOUBLE_VANILLA_CLOUDS
         uniform int instanceId;
@@ -26,7 +24,7 @@ uniform mat4 gbufferModelViewInverse;
     
     void main(){
         // Feet player pos
-        vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+        vec4 vertexPos = gl_Vertex;
 
         vec2 coord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
 
@@ -39,7 +37,8 @@ uniform mat4 gbufferModelViewInverse;
 
 	    norm = mat3(gbufferModelViewInverse) * normalize(gl_NormalMatrix * gl_Normal);
         
-	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
+        // Clip pos
+	    gl_Position = gl_ProjectionMatrix * (gl_ModelViewMatrix * vertexPos);
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);

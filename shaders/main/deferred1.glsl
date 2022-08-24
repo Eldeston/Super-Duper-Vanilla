@@ -1,9 +1,27 @@
 /// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
 
 #ifdef VERTEX
+    flat out vec3 sRGBLightCol;
+    flat out vec3 lightCol;
+    flat out vec3 skyCol;
+    
     out vec2 screenCoord;
 
+    #include "/lib/universalVars.glsl"
+
     void main(){
+        // Get sRGB light color
+        #ifdef WORLD_LIGHT
+            sRGBLightCol = LIGHT_COL_DATA_BLOCK;
+            lightCol = toLinear(sRGBLightCol);
+        #else
+            sRGBLightCol = vec3(0);
+            lightCol = vec3(0);
+        #endif
+
+        // Get linear sky color
+        skyCol = toLinear(SKY_COL_DATA_BLOCK);
+
         gl_Position = ftransform();
         screenCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
     }
@@ -12,6 +30,10 @@
 /// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
 
 #ifdef FRAGMENT
+    flat in vec3 sRGBLightCol;
+    flat in vec3 lightCol;
+    flat in vec3 skyCol;
+
     in vec2 screenCoord;
 
     #if ANTI_ALIASING >= 2 || defined PREVIOUS_FRAME || defined AUTO_EXPOSURE
@@ -151,17 +173,6 @@
         vec3 nEyePlayerPos = eyePlayerPos / viewDist;
         // Get scene color
         vec3 sceneCol = texelFetch(gcolor, screenTexelCoord, 0).rgb;
-
-        // Get sRGB light color
-        #ifdef WORLD_LIGHT
-            vec3 sRGBLightCol = LIGHT_COL_DATA_BLOCK;
-            vec3 lightCol = toLinear(sRGBLightCol);
-        #else
-            vec3 sRGBLightCol = vec3(0);
-            vec3 lightCol = vec3(0);
-        #endif
-        // Get linear sky color
-        vec3 skyCol = toLinear(SKY_COL_DATA_BLOCK);
 
         // If sky, don't calculate lighting
         if(!skyMask){

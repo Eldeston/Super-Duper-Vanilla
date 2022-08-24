@@ -25,10 +25,6 @@ uniform mat4 gbufferModelViewInverse;
         #include "/lib/utility/taaJitter.glsl"
     #endif
 
-    #ifdef WORLD_CURVATURE
-        uniform mat4 gbufferModelView;
-    #endif
-
     #ifdef PARALLAX_OCCLUSION
         attribute vec4 mc_midTexCoord;
     #endif
@@ -63,20 +59,22 @@ uniform mat4 gbufferModelViewInverse;
 
         #ifdef WORLD_CURVATURE
             // Feet player pos
-            vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+            vec4 vertexPos = gl_Vertex;
 
             vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
             
-            gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
+            // Clip pos
+            gl_Position = gl_ProjectionMatrix * (gl_ModelViewMatrix * vertexPos);
         #else
             gl_Position = ftransform();
         #endif
 
-        gl_Position.z *= 0.01;
-
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
+
+        // For the glowing effect to work
+        gl_Position.z *= 0.01;
 
         glcolor = gl_Color.rgb;
     }
