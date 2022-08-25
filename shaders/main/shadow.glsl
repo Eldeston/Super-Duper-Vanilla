@@ -7,7 +7,11 @@
         out vec2 texCoord;
 
         out vec3 worldPos;
-        out vec3 glcolor;
+        out vec3 glColor;
+
+        // View matrix uniforms
+        uniform mat4 shadowModelView;
+        uniform mat4 shadowModelViewInverse;
 
         // Position uniforms
         uniform vec3 cameraPosition;
@@ -33,7 +37,7 @@
 
         void main(){
             // Feet player pos
-            vec4 vertexPos = gl_Vertex;
+            vec4 vertexPos = shadowModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
             // World pos
             worldPos = vertexPos.xyz + cameraPosition;
 
@@ -49,11 +53,11 @@
             #endif
 
             // Shadow clip pos
-            gl_Position = gl_ProjectionMatrix * (gl_ModelViewMatrix * vertexPos);
+            gl_Position = gl_ProjectionMatrix * (shadowModelView * vertexPos);
 
             gl_Position.xyz = distort(gl_Position.xyz);
 
-            glcolor = gl_Color.rgb;
+            glColor = gl_Color.rgb;
         }
     #else
         void main(){
@@ -71,7 +75,7 @@
         in vec2 texCoord;
 
         in vec3 worldPos;
-        in vec3 glcolor;
+        in vec3 glColor;
 
         uniform sampler2D tex;
         
@@ -111,7 +115,7 @@
                         if(isEyeInWater == 1 && blockId == 10000) shdAlbedo.rgb *= squared(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 4.0;
                     #endif
 
-                    shdAlbedo.rgb = toLinear(shdAlbedo.rgb * glcolor);
+                    shdAlbedo.rgb = toLinear(shdAlbedo.rgb * glColor);
                 // If the object is fully opaque, set to black. This fixes "color leaking" filtered shadows
                 } else shdAlbedo.rgb = vec3(0);
 

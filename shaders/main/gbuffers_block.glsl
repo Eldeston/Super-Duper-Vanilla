@@ -1,6 +1,3 @@
-// View matrix uniforms
-uniform mat4 gbufferModelViewInverse;
-
 /// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
 
 #ifdef VERTEX
@@ -15,7 +12,13 @@ uniform mat4 gbufferModelViewInverse;
         out vec2 vTexCoord;
     #endif
 
-    out vec3 glcolor;
+    out vec3 glColor;
+
+    out vec4 vertexPos;
+
+    // View matrix uniforms
+    uniform mat4 gbufferModelView;
+    uniform mat4 gbufferModelViewInverse;
 
     #if ANTI_ALIASING == 2
         /* Screen resolutions */
@@ -42,11 +45,14 @@ uniform mat4 gbufferModelViewInverse;
             lmCoord = saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).xy - 0.03125) * 1.06667);
         #endif
 
-        // Get TBN matrix
-        vec3 tangent = normalize(gl_NormalMatrix * at_tangent.xyz);
-        vec3 normal = normalize(gl_NormalMatrix * gl_Normal);
+        // Calculate TBN matrix
+        vec3 tangent = normalize(at_tangent.xyz);
+        vec3 normal = normalize(gl_Normal);
 
-	    TBN = mat3(gbufferModelViewInverse) * mat3(tangent, cross(tangent, normal), normal);
+	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(tangent, cross(tangent, normal), normal));
+
+        // Feet player pos
+        vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
 
         #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
             vec2 midCoord = (gl_TextureMatrix[0] * mc_midTexCoord).xy;
@@ -58,13 +64,10 @@ uniform mat4 gbufferModelViewInverse;
         #endif
         
 	    #ifdef WORLD_CURVATURE
-            // Feet player pos
-            vec4 vertexPos = gl_Vertex;
-
             vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
             
             // Clip pos
-            gl_Position = gl_ProjectionMatrix * (gl_ModelViewMatrix * vertexPos);
+            gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
         #else
             gl_Position = ftransform();
         #endif
@@ -73,7 +76,7 @@ uniform mat4 gbufferModelViewInverse;
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
 
-        glcolor = gl_Color.rgb;
+        glColor = gl_Color.rgb;
     }
 #endif
 
@@ -91,13 +94,12 @@ uniform mat4 gbufferModelViewInverse;
         in vec2 vTexCoord;
     #endif
 
-    in vec3 glcolor;
+    in vec3 glColor;
+
+    in vec4 vertexPos;
 
     // Get albedo texture
     uniform sampler2D texture;
-
-    // Projection matrix uniforms
-    uniform mat4 gbufferProjectionInverse;
 
     #ifdef WORLD_LIGHT
         // Shadow view matrix uniforms
@@ -139,7 +141,6 @@ uniform mat4 gbufferModelViewInverse;
     vec2 dcdx = dFdx(texCoord);
     vec2 dcdy = dFdy(texCoord);
     
-    #include "/lib/utility/convertViewSpace.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
 
     #include "/lib/lighting/shdMapping.glsl"
@@ -157,22 +158,22 @@ uniform mat4 gbufferModelViewInverse;
     #include "/lib/lighting/complexShadingForward.glsl"
 
     void main(){
-        // Declare and get positions
-        vec3 screenPos = vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z);
-
         // End portal
         if(blockEntityId == 10016){
+            // End star uv
+            vec2 screenPos = gl_FragCoord.xy / vec2(viewWidth, viewHeight);
+
             vec2 endStarOffset = vec2(0, newFrameTimeCounter * 0.01);
             float endStarField = texture2D(texture, (screenPos.yx + endStarOffset) * 0.5).r;
-            endStarField += texture2D(texture, screenPos.xy + endStarOffset).r;
-            endStarField += texture2D(texture, (endStarOffset - screenPos.xy) * 2.0).r;
+            endStarField += texture2D(texture, screenPos + endStarOffset).r;
+            endStarField += texture2D(texture, (endStarOffset - screenPos) * 2.0).r;
             
-            vec2 endStarCoord1 = screenPos.xy * rot2D(0.78539816);
+            vec2 endStarCoord1 = screenPos * rot2D(0.78539816);
             endStarField += texture2D(texture, endStarCoord1.yx + endStarOffset).r;
             endStarField += texture2D(texture, (endStarCoord1 + endStarOffset) * 2.0).r;
             endStarField += texture2D(texture, (endStarOffset - endStarCoord1) * 4.0).r;
 
-            vec3 endPortalAlbedo = toLinear((endStarField + 0.1) * (getRand3(ivec2(screenPos.xy * 128.0) & 255) * 0.5 + 0.5) * glcolor.rgb);
+            vec3 endPortalAlbedo = toLinear((endStarField + 0.1) * (getRand3(ivec2(screenPos * 128.0) & 255) * 0.5 + 0.5) * glColor.rgb);
             
             gl_FragData[0] = vec4(endPortalAlbedo * EMISSIVE_INTENSITY * EMISSIVE_INTENSITY, 1); // gcolor
 
@@ -183,15 +184,13 @@ uniform mat4 gbufferModelViewInverse;
             return; // Return immediately, no need for lighting calculation
         }
 
-        vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * toView(screenPos);
-
 	    // Declare materials
 	    structPBR material;
-        getPBR(material, eyePlayerPos, blockEntityId);
+        getPBR(material, blockEntityId);
         
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
-        vec4 sceneCol = complexShadingGbuffers(material, eyePlayerPos);
+        vec4 sceneCol = complexShadingGbuffers(material);
 
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; // gcolor

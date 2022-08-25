@@ -1,6 +1,3 @@
-// View matrix uniforms
-uniform mat4 gbufferModelViewInverse;
-
 /// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
 
 #ifdef VERTEX
@@ -17,7 +14,13 @@ uniform mat4 gbufferModelViewInverse;
         out vec2 vTexCoord;
     #endif
 
-    out vec3 glcolor;
+    out vec3 glColor;
+
+    out vec4 vertexPos;
+
+    // View matrix uniforms
+    uniform mat4 gbufferModelView;
+    uniform mat4 gbufferModelViewInverse;
 
     #if ANTI_ALIASING == 2
         /* Screen resolutions */
@@ -44,11 +47,14 @@ uniform mat4 gbufferModelViewInverse;
             lmCoord = saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).xy - 0.03125) * 1.06667);
         #endif
 
-        // Get TBN matrix
-        vec3 tangent = normalize(gl_NormalMatrix * at_tangent.xyz);
-        vec3 normal = normalize(gl_NormalMatrix * gl_Normal);
+        // Calculate TBN matrix
+        vec3 tangent = normalize(at_tangent.xyz);
+        vec3 normal = normalize(gl_Normal);
 
-	    TBN = mat3(gbufferModelViewInverse) * mat3(tangent, cross(tangent, normal), normal);
+	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(tangent, cross(tangent, normal), normal));
+
+        // Feet player pos
+        vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
 
         #ifdef PARALLAX_OCCLUSION
             vec2 midCoord = (gl_TextureMatrix[0] * mc_midTexCoord).xy;
@@ -60,13 +66,10 @@ uniform mat4 gbufferModelViewInverse;
         #endif
 
         #ifdef WORLD_CURVATURE
-            // Feet player pos
-            vec4 vertexPos = gl_Vertex;
-
             vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
             
             // Clip pos
-            gl_Position = gl_ProjectionMatrix * (gl_ModelViewMatrix * vertexPos);
+            gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
         #else
             gl_Position = ftransform();
         #endif
@@ -76,7 +79,7 @@ uniform mat4 gbufferModelViewInverse;
         #endif
 
         glcoloralpha = gl_Color.a;
-        glcolor = gl_Color.rgb;
+        glColor = gl_Color.rgb;
     }
 #endif
 
@@ -96,13 +99,12 @@ uniform mat4 gbufferModelViewInverse;
         in vec2 vTexCoord;
     #endif
 
-    in vec3 glcolor;
+    in vec3 glColor;
+
+    in vec4 vertexPos;
 
     // Get albedo texture
     uniform sampler2D texture;
-
-    // Projection matrix uniforms
-    uniform mat4 gbufferProjectionInverse;
 
     #ifdef WORLD_LIGHT
         // Shadow view matrix uniforms
@@ -116,10 +118,6 @@ uniform mat4 gbufferModelViewInverse;
 
     // Get entity id
     uniform int entityId;
-
-    /* Screen resolutions */
-    uniform float viewWidth;
-    uniform float viewHeight;
 
     #if ANTI_ALIASING >= 2
         // Get frame time
@@ -140,7 +138,6 @@ uniform mat4 gbufferModelViewInverse;
     vec2 dcdx = dFdx(texCoord);
     vec2 dcdy = dFdy(texCoord);
 
-    #include "/lib/utility/convertViewSpace.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
 
     #include "/lib/lighting/shdMapping.glsl"
@@ -166,18 +163,15 @@ uniform mat4 gbufferModelViewInverse;
             return;
         }
 
-        // Declare and get positions
-        vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * toView(vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z));
-
-	    // Declare materials
+        // Declare materials
 	    structPBR material;
-        getPBR(material, eyePlayerPos, entityId);
+        getPBR(material, entityId);
 
         material.albedo.rgb = mix(material.albedo.rgb, entityColor.rgb, entityColor.a);
 
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
-        vec4 sceneCol = complexShadingGbuffers(material, eyePlayerPos);
+        vec4 sceneCol = complexShadingGbuffers(material);
 
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; // gcolor

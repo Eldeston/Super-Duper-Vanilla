@@ -1,9 +1,6 @@
 // Get frame time
 uniform float frameTimeCounter;
 
-// View matrix uniforms
-uniform mat4 gbufferModelViewInverse;
-
 /// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
 
 #ifdef VERTEX
@@ -21,7 +18,13 @@ uniform mat4 gbufferModelViewInverse;
     #endif
 
     out vec3 worldPos;
-    out vec3 glcolor;
+    out vec3 glColor;
+
+    out vec4 vertexPos;
+
+    // View matrix uniforms
+    uniform mat4 gbufferModelView;
+    uniform mat4 gbufferModelViewInverse;
 
     // Position uniforms
     uniform vec3 cameraPosition;
@@ -65,11 +68,11 @@ uniform mat4 gbufferModelViewInverse;
         // Get block id
         blockId = int(mc_Entity.x);
 
-        // Get TBN matrix
-        vec3 tangent = normalize(gl_NormalMatrix * at_tangent.xyz);
-        vec3 normal = normalize(gl_NormalMatrix * gl_Normal);
+        // Calculate TBN matrix
+        vec3 tangent = normalize(at_tangent.xyz);
+        vec3 normal = normalize(gl_Normal);
 
-	    TBN = mat3(gbufferModelViewInverse) * mat3(tangent, cross(tangent, normal), normal);
+	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(tangent, cross(tangent, normal), normal));
 
         #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
             vec2 midCoord = (gl_TextureMatrix[0] * mc_midTexCoord).xy;
@@ -81,7 +84,7 @@ uniform mat4 gbufferModelViewInverse;
         #endif
 
         // Feet player pos
-        vec4 vertexPos = gl_Vertex;
+        vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
         // World pos
         worldPos = vertexPos.xyz + cameraPosition;
 
@@ -94,13 +97,13 @@ uniform mat4 gbufferModelViewInverse;
         #endif
         
         // Clip pos
-	    gl_Position = gl_ProjectionMatrix * (gl_ModelViewMatrix * vertexPos);
+	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
 
-        glcolor = gl_Color.rgb;
+        glColor = gl_Color.rgb;
     }
 #endif
 
@@ -121,7 +124,9 @@ uniform mat4 gbufferModelViewInverse;
     #endif
 
     in vec3 worldPos;
-    in vec3 glcolor;
+    in vec3 glColor;
+
+    in vec4 vertexPos;
 
     // Get albedo texture
     uniform sampler2D texture;
@@ -146,10 +151,6 @@ uniform mat4 gbufferModelViewInverse;
     #else
         float newFrameTimeCounter = frameTimeCounter;
     #endif
-
-    /* Screen resolutions */
-    uniform float viewWidth;
-    uniform float viewHeight;
 
     #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
         uniform sampler2D depthtex1;
@@ -191,13 +192,9 @@ uniform mat4 gbufferModelViewInverse;
     #include "/lib/lighting/complexShadingForward.glsl"
 
     void main(){
-        // Declare and get positions
-	    vec3 viewPos = toView(vec3(gl_FragCoord.xy / vec2(viewWidth, viewHeight), gl_FragCoord.z));
-        vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
-
 	    // Declare materials
 	    structPBR material;
-        getPBR(material, eyePlayerPos, blockId);
+        getPBR(material, blockId);
         
         // If water
         if(blockId == 10000){
@@ -220,7 +217,7 @@ uniform mat4 gbufferModelViewInverse;
 
             #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
                 // Water color and foam 
-                float waterDepth = toView(texelFetch(depthtex1, ivec2(gl_FragCoord.xy), 0).x) - viewPos.z;
+                float waterDepth = toView(texelFetch(depthtex1, ivec2(gl_FragCoord.xy), 0).x) - toView(gl_FragCoord.z);
             #endif
 
             #ifdef WATER_STYLIZE_ABSORPTION
@@ -244,7 +241,7 @@ uniform mat4 gbufferModelViewInverse;
             if(blockId != 10000) enviroPBR(material);
         #endif
 
-        vec4 sceneCol = complexShadingGbuffers(material, eyePlayerPos);
+        vec4 sceneCol = complexShadingGbuffers(material);
 
     /* DRAWBUFFERS:0123 */
         gl_FragData[0] = sceneCol; // gcolor

@@ -1,12 +1,15 @@
-// View matrix uniforms
-uniform mat4 gbufferModelViewInverse;
-
 /// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
 
 #ifdef VERTEX
     flat out vec3 norm;
 
     out vec2 texCoord;
+
+    out vec4 vertexPos;
+
+    // View matrix uniforms
+    uniform mat4 gbufferModelView;
+    uniform mat4 gbufferModelViewInverse;
 
     #if ANTI_ALIASING == 2
         /* Screen resolutions */
@@ -24,7 +27,7 @@ uniform mat4 gbufferModelViewInverse;
     
     void main(){
         // Feet player pos
-        vec4 vertexPos = gl_Vertex;
+        vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
 
         vec2 coord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
 
@@ -38,7 +41,7 @@ uniform mat4 gbufferModelViewInverse;
 	    norm = mat3(gbufferModelViewInverse) * normalize(gl_NormalMatrix * gl_Normal);
         
         // Clip pos
-	    gl_Position = gl_ProjectionMatrix * (gl_ModelViewMatrix * vertexPos);
+	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
@@ -52,12 +55,11 @@ uniform mat4 gbufferModelViewInverse;
     flat in vec3 norm;
 
     in vec2 texCoord;
+    
+    in vec4 vertexPos;
 
     // Get albedo texture
     uniform sampler2D texture;
-
-    // Projection matrix uniforms
-    uniform mat4 gbufferProjectionInverse;
 
     #ifdef WORLD_LIGHT
         // Shadow view matrix uniforms
@@ -69,10 +71,6 @@ uniform mat4 gbufferModelViewInverse;
         #endif
     #endif
 
-    /* Screen resolutions */
-    uniform float viewWidth;
-    uniform float viewHeight;
-
     #if defined DYNAMIC_CLOUDS || ANTI_ALIASING >= 2
         // Get frame time
         uniform float frameTimeCounter;
@@ -83,7 +81,6 @@ uniform mat4 gbufferModelViewInverse;
     // Get night vision
     uniform float nightVision;
 
-    #include "/lib/utility/convertViewSpace.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
 
     #include "/lib/lighting/shdMapping.glsl"

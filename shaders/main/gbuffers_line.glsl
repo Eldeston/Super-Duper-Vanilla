@@ -5,36 +5,35 @@
     uniform float viewWidth;
     uniform float viewHeight;
 
+    #ifdef WORLD_CURVATURE
+        uniform mat4 gbufferModelView;
+        uniform mat4 gbufferModelViewInverse;
+    #endif
+
     #if ANTI_ALIASING == 2
         #include "/lib/utility/taaJitter.glsl"
     #endif
 
-    const mat4 viewScale = mat4(
-        0.99609375, 0, 0, 0,
-        0, 0.99609375, 0, 0,
-        0, 0, 0.99609375, 0,
-        0, 0, 0, 1
-    );
-
     void main(){
         #ifdef WORLD_CURVATURE
             // Feet player pos
-            vec4 linePosStart = vec4(gl_Vertex.xyz, 1);
-            vec4 linePosEnd = vec4(gl_Vertex.xyz + gl_Normal.xyz, 1);
+            vec4 linePosStart = gbufferModelViewInverse * (gl_ModelViewMatrix * vec4(gl_Vertex.xyz, 1));
+            vec4 linePosEnd = gbufferModelViewInverse * (gl_ModelViewMatrix * vec4(gl_Vertex.xyz + gl_Normal.xyz, 1));
 
             linePosStart.y -= dot(linePosStart.xz, linePosStart.xz) / WORLD_CURVATURE_SIZE;
             linePosEnd.y -= dot(linePosEnd.xz, linePosEnd.xz) / WORLD_CURVATURE_SIZE;
             
-            linePosStart = gl_ModelViewMatrix * linePosStart;
-            linePosEnd = gl_ModelViewMatrix * linePosEnd;
+            linePosStart = gbufferModelView * linePosStart;
+            linePosEnd = gbufferModelView * linePosEnd;
         #else
             // Feet player pos
-            vec4 linePosStart = gl_ModelViewMatrix * vec4(gl_Vertex.xyz, 1.0);
-            vec4 linePosEnd = gl_ModelViewMatrix * vec4(gl_Vertex.xyz + gl_Normal.xyz, 1.0);
+            vec4 linePosStart = gl_ModelViewMatrix * vec4(gl_Vertex.xyz, 1);
+            vec4 linePosEnd = gl_ModelViewMatrix * vec4(gl_Vertex.xyz + gl_Normal.xyz, 1);
         #endif
 
-        linePosStart = gl_ProjectionMatrix * viewScale * linePosStart;
-        linePosEnd = gl_ProjectionMatrix * viewScale * linePosEnd;
+        // 1.0 - (1.0 / 256.0) = 0.99609375
+        linePosStart = gl_ProjectionMatrix * vec4(linePosStart.xyz * 0.99609375, linePosStart.w);
+        linePosEnd = gl_ProjectionMatrix * vec4(linePosEnd.xyz * 0.99609375, linePosEnd.w);
 
         vec3 ndc1 = linePosStart.xyz / linePosStart.w;
         vec3 ndc2 = linePosEnd.xyz / linePosEnd.w;

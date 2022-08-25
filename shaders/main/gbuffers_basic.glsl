@@ -1,6 +1,3 @@
-// View matrix uniforms
-uniform mat4 gbufferModelViewInverse;
-
 /// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
 
 #ifdef VERTEX
@@ -9,7 +6,13 @@ uniform mat4 gbufferModelViewInverse;
     out vec2 lmCoord;
     out vec2 texCoord;
 
-    out vec3 glcolor;
+    out vec3 glColor;
+
+    out vec4 vertexPos;
+
+    // View matrix uniforms
+    uniform mat4 gbufferModelView;
+    uniform mat4 gbufferModelViewInverse;
 
     #if ANTI_ALIASING == 2
         /* Screen resolutions */
@@ -31,15 +34,15 @@ uniform mat4 gbufferModelViewInverse;
         #endif
 
 	    norm = mat3(gbufferModelViewInverse) * normalize(gl_NormalMatrix * gl_Normal);
+
+        // Feet player pos
+        vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
         
 	    #ifdef WORLD_CURVATURE
-            // Feet player pos
-            vec4 vertexPos = gl_Vertex;
-
             vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
             
             // Clip pos
-            gl_Position = gl_ProjectionMatrix * (gl_ModelViewMatrix * vertexPos);
+            gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
         #else
             gl_Position = ftransform();
         #endif
@@ -48,7 +51,7 @@ uniform mat4 gbufferModelViewInverse;
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
 
-        glcolor = gl_Color.rgb;
+        glColor = gl_Color.rgb;
     }
 #endif
 
@@ -60,10 +63,9 @@ uniform mat4 gbufferModelViewInverse;
     in vec2 lmCoord;
     in vec2 texCoord;
 
-    in vec3 glcolor;
+    in vec3 glColor;
 
-    // Projection matrix uniforms
-    uniform mat4 gbufferProjectionInverse;
+    in vec4 vertexPos;
 
     #ifdef WORLD_LIGHT
         // Shadow view matrix uniforms
@@ -74,10 +76,6 @@ uniform mat4 gbufferModelViewInverse;
             uniform mat4 shadowProjection;
         #endif
     #endif
-
-    /* Screen resolutions */
-    uniform float viewWidth;
-    uniform float viewHeight;
 
     #if ANTI_ALIASING >= 2
         // Get frame time
@@ -92,7 +90,6 @@ uniform mat4 gbufferModelViewInverse;
     // Get night vision
     uniform float nightVision;
 
-    #include "/lib/utility/convertViewSpace.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
 
     #include "/lib/lighting/shdMapping.glsl"
@@ -102,7 +99,7 @@ uniform mat4 gbufferModelViewInverse;
 
     void main(){
         // Get albedo
-        vec4 albedo = vec4(glcolor, 1);
+        vec4 albedo = vec4(glColor, 1);
 
         #if WHITE_MODE == 1
             albedo.rgb = vec3(1);

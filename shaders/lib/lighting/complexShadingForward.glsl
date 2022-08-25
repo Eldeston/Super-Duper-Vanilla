@@ -2,9 +2,9 @@
 	uniform float shdFade;
 #endif
 
-vec4 complexShadingGbuffers(structPBR material, vec3 eyePlayerPos){
+vec4 complexShadingGbuffers(structPBR material){
 	#ifdef DIRECTIONAL_LIGHTMAPS
-		vec3 dirLightMapCoord = dFdx(eyePlayerPos) * dFdx(lmCoord.x) + dFdy(eyePlayerPos) * dFdy(lmCoord.x);
+		vec3 dirLightMapCoord = dFdx(vertexPos.xyz) * dFdx(lmCoord.x) + dFdy(vertexPos.xyz) * dFdy(lmCoord.x);
 		float dirLightMap = min(1.0, max(0.0, dot(normalize(dirLightMapCoord), material.normal)) * lmCoord.x * DIRECTIONAL_LIGHTMAP_STRENGTH + lmCoord.x);
 
 		// Get lightmaps and add simple sky GI
@@ -44,7 +44,7 @@ vec4 complexShadingGbuffers(structPBR material, vec3 eyePlayerPos){
 				float caveFixShdFactor = isEyeInWater == 1 ? 1.0 : min(1.0, lmCoord.y * 2.0) * (1.0 - eyeBrightFact) + eyeBrightFact;
 
 				// Get shadow pos
-				vec3 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * (eyePlayerPos + gbufferModelViewInverse[3].xyz) + shadowModelView[3].xyz) + shadowProjection[3].xyz;
+				vec3 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz) + shadowProjection[3].xyz;
 				
 				// Bias mutilplier, adjusts according to the current shadow distance and resolution
 				float biasAdjustMult = log2(max(4.0, shadowDistance - shadowMapResolution * 0.125)) * 0.25;
@@ -79,7 +79,7 @@ vec4 complexShadingGbuffers(structPBR material, vec3 eyePlayerPos){
 	#ifdef WORLD_LIGHT
 		if(NL > 0){
 			// Get specular GGX
-			vec3 specCol = getSpecBRDF(normalize(-eyePlayerPos), vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), NL, 1.0 - material.smoothness);
+			vec3 specCol = getSpecBRDF(normalize(-vertexPos.xyz), vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), NL, 1.0 - material.smoothness);
 			// Needs to multiplied twice in order for the speculars to look relatively "correct"
 			totalDiffuse += min(vec3(SUN_MOON_INTENSITY * SUN_MOON_INTENSITY), specCol) * sRGBLightCol * (1.0 - rainStrength) * shadowCol * 2.0;
 		}

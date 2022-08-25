@@ -80,11 +80,11 @@ uniform sampler2D specular;
 #endif
 
 // The lab PBR standard 1.3
-void getPBR(inout structPBR material, in vec3 eyePlayerPos, in int id){
+void getPBR(inout structPBR material, in int id){
     vec2 texUv = texCoord;
 
     #ifdef PARALLAX_OCCLUSION
-        vec3 viewDir = -eyePlayerPos * TBN;
+        vec3 viewDir = -vertexPos.xyz * TBN;
 
         vec3 currPos;
 
@@ -202,12 +202,12 @@ void getPBR(inout structPBR material, in vec3 eyePlayerPos, in int id){
     material.normal = mix(TBN[2], material.normal, NORMAL_STRENGTH);
 
     #if WHITE_MODE == 0
-        material.albedo.rgb *= glcolor;
+        material.albedo.rgb *= glColor;
     #elif WHITE_MODE == 1
         material.albedo.rgb = vec3(1);
     #elif WHITE_MODE == 2
         material.albedo.rgb = vec3(0);
     #elif WHITE_MODE == 3
-        material.albedo.rgb = glcolor;
+        material.albedo.rgb = glColor;
     #endif
 }

@@ -2,7 +2,7 @@
 #endif
 
 // The default PBR calculation
-void getPBR(inout structPBR material, in vec3 eyePlayerPos, in int id){
+void getPBR(inout structPBR material, in int id){
     // Assign albedo
     material.albedo = texture2DGradARB(texture, texCoord, dcdx, dcdy);
 
@@ -216,12 +216,12 @@ void getPBR(inout structPBR material, in vec3 eyePlayerPos, in int id){
     #endif
 
     #if WHITE_MODE == 0
-        material.albedo.rgb *= glcolor;
+        material.albedo.rgb *= glColor;
     #elif WHITE_MODE == 1
         material.albedo.rgb = vec3(1);
     #elif WHITE_MODE == 2
         material.albedo.rgb = vec3(0);
     #elif WHITE_MODE == 3
-        material.albedo.rgb = glcolor;
+        material.albedo.rgb = glColor;
     #endif
 }

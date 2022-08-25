@@ -1,6 +1,3 @@
-// View matrix uniforms
-uniform mat4 gbufferModelViewInverse;
-
 /// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
 
 #ifdef VERTEX
@@ -9,7 +6,13 @@ uniform mat4 gbufferModelViewInverse;
     out vec2 lmCoord;
     out vec2 texCoord;
 
-    out vec3 glcolor;
+    out vec3 glColor;
+
+    out vec4 vertexPos;
+
+    // View matrix uniforms
+    uniform mat4 gbufferModelView;
+    uniform mat4 gbufferModelViewInverse;
 
     #if ANTI_ALIASING == 2
         /* Screen resolutions */
@@ -31,15 +34,15 @@ uniform mat4 gbufferModelViewInverse;
         #endif
 
 	    norm = mat3(gbufferModelViewInverse) * normalize(gl_NormalMatrix * gl_Normal);
+
+        // Feet player pos
+        vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
         
 	    #ifdef WORLD_CURVATURE
-            // Feet player pos
-            vec4 vertexPos = gl_Vertex;
-
             vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
             
             // Clip pos
-            gl_Position = gl_ProjectionMatrix * (gl_ModelViewMatrix * vertexPos);
+            gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
         #else
             gl_Position = ftransform();
         #endif
@@ -48,7 +51,7 @@ uniform mat4 gbufferModelViewInverse;
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
 
-        glcolor = gl_Color.rgb;
+        glColor = gl_Color.rgb;
     }
 #endif
 
@@ -60,13 +63,12 @@ uniform mat4 gbufferModelViewInverse;
     in vec2 lmCoord;
     in vec2 texCoord;
 
-    in vec3 glcolor;
+    in vec3 glColor;
+
+    in vec4 vertexPos;
 
     // Get albedo texture
     uniform sampler2D texture;
-
-    // Projection matrix uniforms
-    uniform mat4 gbufferProjectionInverse;
 
     #ifdef WORLD_LIGHT
         // Shadow view matrix uniforms
@@ -79,10 +81,6 @@ uniform mat4 gbufferModelViewInverse;
     #endif
 
     uniform int renderStage;
-
-    /* Screen resolutions */
-    uniform float viewWidth;
-    uniform float viewHeight;
 
     #if ANTI_ALIASING >= 2
         // Get frame time
@@ -100,7 +98,6 @@ uniform mat4 gbufferModelViewInverse;
     // Get atlas size
     uniform ivec2 atlasSize;
 
-    #include "/lib/utility/convertViewSpace.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
 
     #include "/lib/lighting/shdMapping.glsl"
@@ -122,19 +119,19 @@ uniform mat4 gbufferModelViewInverse;
         }
 
         // Particle emissives
-        if((glcolor.r * 0.5 > glcolor.g + glcolor.b || (glcolor.r + glcolor.b > glcolor.g * 2.0 && abs(glcolor.r - glcolor.b) < 0.2) || ((albedo.r + albedo.g + albedo.b > 1.6 || (glcolor.r != glcolor.g && glcolor.g != glcolor.b)) && lmCoord.x == 1)) && atlasSize.x <= 1024 && atlasSize.x > 0){
-            gl_FragData[0] = vec4(toLinear(albedo.rgb * glcolor) * EMISSIVE_INTENSITY, albedo.a); // gcolor
+        if((glColor.r * 0.5 > glColor.g + glColor.b || (glColor.r + glColor.b > glColor.g * 2.0 && abs(glColor.r - glColor.b) < 0.2) || ((albedo.r + albedo.g + albedo.b > 1.6 || (glColor.r != glColor.g && glColor.g != glColor.b)) && lmCoord.x == 1)) && atlasSize.x <= 1024 && atlasSize.x > 0){
+            gl_FragData[0] = vec4(toLinear(albedo.rgb * glColor) * EMISSIVE_INTENSITY, albedo.a); // gcolor
             return; // Return immediately, no need for lighting calculation
         }
 
         #if WHITE_MODE == 0
-            albedo.rgb *= glcolor;
+            albedo.rgb *= glColor;
         #elif WHITE_MODE == 1
             albedo.rgb = vec3(1);
         #elif WHITE_MODE == 2
             albedo.rgb = vec3(0);
         #elif WHITE_MODE == 3
-            albedo.rgb = glcolor;
+            albedo.rgb = glColor;
         #endif
 
         albedo.rgb = toLinear(albedo.rgb);
