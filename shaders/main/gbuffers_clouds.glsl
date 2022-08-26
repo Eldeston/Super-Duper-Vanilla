@@ -1,7 +1,7 @@
 /// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
 
 #ifdef VERTEX
-    flat out vec3 norm;
+    flat out vec3 vertexNormal;
 
     out vec2 texCoord;
 
@@ -19,26 +19,32 @@
         #include "/lib/utility/taaJitter.glsl"
     #endif
 
-    #if defined DOUBLE_VANILLA_CLOUDS
-        uniform int instanceId;
-
+    #ifdef DOUBLE_VANILLA_CLOUDS
+        // Set the amount of instances, we'll use 2 for now
         const int countInstances = 2;
+
+        // Get current instance id
+        uniform int instanceId;
     #endif
     
     void main(){
-        // Feet player pos
+        // Get texture coordinates
+        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        // Get vertex normal
+        vertexNormal = mat3(gbufferModelViewInverse) * normalize(gl_NormalMatrix * gl_Normal);
+
+        // Get vertex position (feet player pos)
         vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
 
-        vec2 coord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
-
         #ifdef DOUBLE_VANILLA_CLOUDS
-            texCoord = instanceId == 1 ? coord : -coord;
-            if(instanceId > 0) vertexPos.y += SECOND_CLOUD_HEIGHT * instanceId;
-        #else
-            texCoord = coord;
+            // May need to work on this to add more than 2 clouds in the future.
+            if(instanceId == 2){
+                // If second instance, invert texture coordinates.
+                texCoord = -texCoord;
+                // Increase cloud height for the second instance.
+                vertexPos.y += SECOND_CLOUD_HEIGHT;
+            }
         #endif
-
-	    norm = mat3(gbufferModelViewInverse) * normalize(gl_NormalMatrix * gl_Normal);
         
         // Clip pos
 	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
@@ -52,7 +58,7 @@
 /// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
 
 #ifdef FRAGMENT
-    flat in vec3 norm;
+    flat in vec3 vertexNormal;
 
     in vec2 texCoord;
     
@@ -71,15 +77,15 @@
         #endif
     #endif
 
+    // Get night vision
+    uniform float nightVision;
+
     #if defined DYNAMIC_CLOUDS || ANTI_ALIASING >= 2
         // Get frame time
         uniform float frameTimeCounter;
     #endif
 
     #include "/lib/universalVars.glsl"
-
-    // Get night vision
-    uniform float nightVision;
 
     #include "/lib/utility/noiseFunctions.glsl"
 

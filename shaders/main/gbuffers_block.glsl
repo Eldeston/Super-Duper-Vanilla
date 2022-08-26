@@ -12,7 +12,7 @@
         out vec2 vTexCoord;
     #endif
 
-    out vec3 glColor;
+    out vec3 vertexColor;
 
     out vec4 vertexPos;
 
@@ -76,7 +76,7 @@
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
 
-        glColor = gl_Color.rgb;
+        vertexColor = gl_Color.rgb;
     }
 #endif
 
@@ -94,7 +94,7 @@
         in vec2 vTexCoord;
     #endif
 
-    in vec3 glColor;
+    in vec3 vertexColor;
 
     in vec4 vertexPos;
 
@@ -173,7 +173,7 @@
             endStarField += texture2D(texture, (endStarCoord1 + endStarOffset) * 2.0).r;
             endStarField += texture2D(texture, (endStarOffset - endStarCoord1) * 4.0).r;
 
-            vec3 endPortalAlbedo = toLinear((endStarField + 0.1) * (getRand3(ivec2(screenPos * 128.0) & 255) * 0.5 + 0.5) * glColor.rgb);
+            vec3 endPortalAlbedo = toLinear((endStarField + 0.1) * (getRand3(ivec2(screenPos * 128.0) & 255) * 0.5 + 0.5) * vertexColor.rgb);
             
             gl_FragData[0] = vec4(endPortalAlbedo * EMISSIVE_INTENSITY * EMISSIVE_INTENSITY, 1); // gcolor
 

@@ -3,6 +3,8 @@
 #ifdef VERTEX
     flat out mat3 TBN;
 
+    flat out vec3 vertexColor;
+
     out vec2 lmCoord;
     out vec2 texCoord;
 
@@ -11,8 +13,6 @@
         flat out vec2 vTexCoordPos;
         out vec2 vTexCoord;
     #endif
-
-    out vec3 glColor;
 
     out vec4 vertexPos;
 
@@ -28,15 +28,28 @@
         #include "/lib/utility/taaJitter.glsl"
     #endif
 
+    attribute vec4 at_tangent;
+
     #ifdef PARALLAX_OCCLUSION
         attribute vec4 mc_midTexCoord;
     #endif
-    
-    attribute vec4 at_tangent;
 
     void main(){
         // Get texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        // Get vertex color
+        vertexColor = gl_Color.rgb;
+        
+        // Get vertex tangent
+        vec3 vertexTangent = normalize(at_tangent.xyz);
+        // Get vertex normal
+        vec3 vertexNormal = normalize(gl_Normal);
+
+        // Get vertex position (feet player pos)
+        vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+
+        // Calculate TBN matrix
+	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal), vertexNormal));
 
         // Lightmap fix for mods
         #ifdef WORLD_SKYLIGHT
@@ -44,15 +57,6 @@
         #else
             lmCoord = saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).xy - 0.03125) * 1.06667);
         #endif
-
-        // Calculate TBN matrix
-        vec3 tangent = normalize(at_tangent.xyz);
-        vec3 normal = normalize(gl_Normal);
-
-	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(tangent, cross(tangent, normal), normal));
-
-        // Feet player pos
-        vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
 
         #ifdef PARALLAX_OCCLUSION
             vec2 midCoord = (gl_TextureMatrix[0] * mc_midTexCoord).xy;
@@ -78,8 +82,6 @@
 
         // For the glowing effect to work
         gl_Position.z *= 0.01;
-
-        glColor = gl_Color.rgb;
     }
 #endif
 
@@ -87,6 +89,8 @@
 
 #ifdef FRAGMENT
     flat in mat3 TBN;
+
+    flat in vec3 vertexColor;
 
     in vec2 lmCoord;
     in vec2 texCoord;
@@ -96,8 +100,6 @@
         flat in vec2 vTexCoordPos;
         in vec2 vTexCoord;
     #endif
-
-    in vec3 glColor;
 
     in vec4 vertexPos;
 
@@ -112,16 +114,17 @@
     // Get entity id
     uniform int entityId;
 
-    uniform vec4 entityColor;
-    
-    #include "/lib/universalVars.glsl"
-
     // Get night vision
     uniform float nightVision;
 
-    // Derivatives
+    // Get entity color
+    uniform vec4 entityColor;
+
+    // Texture coordinate derivatives
     vec2 dcdx = dFdx(texCoord);
     vec2 dcdy = dFdy(texCoord);
+
+    #include "/lib/universalVars.glsl"
 
     #include "/lib/lighting/GGX.glsl"
 

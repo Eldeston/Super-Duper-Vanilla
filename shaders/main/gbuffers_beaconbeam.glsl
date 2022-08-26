@@ -1,9 +1,9 @@
 /// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
 
 #ifdef VERTEX
-    out vec2 texCoord;
+    flat out vec4 vertexColor;
 
-    out vec4 glColor;
+    out vec2 texCoord;
 
     #ifdef WORLD_CURVATURE
         uniform mat4 gbufferModelView;
@@ -19,10 +19,13 @@
     #endif
 
     void main(){
+        // Get texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        // Get vertex color
+        vertexColor = gl_Color;
         
 	    #ifdef WORLD_CURVATURE
-            // Feet player pos
+            // Get vertex position (feet player pos)
             vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
 
             vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
@@ -36,23 +39,21 @@
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
-
-        glColor = gl_Color;
     }
 #endif
 
 /// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
 
 #ifdef FRAGMENT
-    in vec2 texCoord;
+    flat in vec4 vertexColor;
 
-    in vec4 glColor;
+    in vec2 texCoord;
 
     // Get albedo texture
     uniform sampler2D texture;
 
     void main(){
-        vec4 albedo = texture2D(texture, texCoord) * glColor;
+        vec4 albedo = texture2D(texture, texCoord) * vertexColor;
 
         // Alpha test, discard immediately
         if(albedo.a <= ALPHA_THRESHOLD) discard;
@@ -62,7 +63,7 @@
         #elif WHITE_MODE == 2
             albedo.rgb = vec3(0);
         #elif WHITE_MODE == 3
-            albedo.rgb = glColor.rgb;
+            albedo.rgb = vertexColor.rgb;
         #endif
 
     /* DRAWBUFFERS:0 */

@@ -40,7 +40,7 @@ void getPBR(inout structPBR material, in int id){
 
     #ifdef TERRAIN
         // Apply vanilla AO with it in terrain
-        material.ambient = glcolorAO;
+        material.ambient = vertexAO;
     #else
         // For others, don't use vanilla AO
         material.ambient = 1.0;
@@ -216,12 +216,12 @@ void getPBR(inout structPBR material, in int id){
     #endif
 
     #if WHITE_MODE == 0
-        material.albedo.rgb *= glColor;
+        material.albedo.rgb *= vertexColor;
     #elif WHITE_MODE == 1
         material.albedo.rgb = vec3(1);
     #elif WHITE_MODE == 2
         material.albedo.rgb = vec3(0);
     #elif WHITE_MODE == 3
-        material.albedo.rgb = glColor;
+        material.albedo.rgb = vertexColor;
     #endif
 }

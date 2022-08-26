@@ -3,7 +3,9 @@
 #ifdef VERTEX
     flat out mat3 TBN;
 
-    out float glcoloralpha;
+    flat out float vertexAlpha;
+
+    flat out vec3 vertexColor;
 
     out vec2 lmCoord;
     out vec2 texCoord;
@@ -13,8 +15,6 @@
         flat out vec2 vTexCoordPos;
         out vec2 vTexCoord;
     #endif
-
-    out vec3 glColor;
 
     out vec4 vertexPos;
 
@@ -29,16 +29,31 @@
 
         #include "/lib/utility/taaJitter.glsl"
     #endif
+
+    attribute vec4 at_tangent;
     
     #ifdef PARALLAX_OCCLUSION
         attribute vec4 mc_midTexCoord;
     #endif
 
-    attribute vec4 at_tangent;
-
     void main(){
+        // Get vertex color alpha
+        vertexAlpha = gl_Color.a;
         // Get texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        // Get vertex color
+        vertexColor = gl_Color.rgb;
+        
+        // Get vertex tangent
+        vec3 vertexTangent = normalize(at_tangent.xyz);
+        // Get vertex normal
+        vec3 vertexNormal = normalize(gl_Normal);
+
+        // Get vertex position (feet player pos)
+        vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+
+        // Calculate TBN matrix
+	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal), vertexNormal));
 
         // Lightmap fix for mods
         #ifdef WORLD_SKYLIGHT
@@ -46,15 +61,6 @@
         #else
             lmCoord = saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).xy - 0.03125) * 1.06667);
         #endif
-
-        // Calculate TBN matrix
-        vec3 tangent = normalize(at_tangent.xyz);
-        vec3 normal = normalize(gl_Normal);
-
-	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(tangent, cross(tangent, normal), normal));
-
-        // Feet player pos
-        vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
 
         #ifdef PARALLAX_OCCLUSION
             vec2 midCoord = (gl_TextureMatrix[0] * mc_midTexCoord).xy;
@@ -77,9 +83,6 @@
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
-
-        glcoloralpha = gl_Color.a;
-        glColor = gl_Color.rgb;
     }
 #endif
 
@@ -88,7 +91,9 @@
 #ifdef FRAGMENT
     flat in mat3 TBN;
 
-    in float glcoloralpha;
+    flat in float vertexAlpha;
+
+    flat in vec3 vertexColor;
 
     in vec2 lmCoord;
     in vec2 texCoord;
@@ -98,8 +103,6 @@
         flat in vec2 vTexCoordPos;
         in vec2 vTexCoord;
     #endif
-
-    in vec3 glColor;
 
     in vec4 vertexPos;
 
@@ -119,24 +122,25 @@
     // Get entity id
     uniform int entityId;
 
-    #if ANTI_ALIASING >= 2
-        // Get frame time
-        uniform float frameTimeCounter;
-    #endif
-
-    uniform vec4 entityColor;
-
-    #include "/lib/universalVars.glsl"
-
     // Get is eye in water
     uniform int isEyeInWater;
 
     // Get night vision
     uniform float nightVision;
 
-    // Derivatives
+    #if ANTI_ALIASING >= 2
+        // Get frame time
+        uniform float frameTimeCounter;
+    #endif
+
+    // Get entity color
+    uniform vec4 entityColor;
+
+    // Texture coordinate derivatives
     vec2 dcdx = dFdx(texCoord);
     vec2 dcdy = dFdy(texCoord);
+
+    #include "/lib/universalVars.glsl"
 
     #include "/lib/utility/noiseFunctions.glsl"
 
@@ -157,7 +161,7 @@
     void main(){
         // Lightning fix, materials need to be specified due to glitching issues
         if(entityId == 10129){
-            gl_FragData[0] = vec4(vec3(0.25, 0.5, 1) * EMISSIVE_INTENSITY, glcoloralpha); // gcolor
+            gl_FragData[0] = vec4(vec3(0.25, 0.5, 1) * EMISSIVE_INTENSITY, vertexAlpha); // gcolor
             gl_FragData[1] = vec4(0, 0, 0, 1); // colortex1
             gl_FragData[3] = vec4(0, 0, 0, 1); // colortex3
             return;

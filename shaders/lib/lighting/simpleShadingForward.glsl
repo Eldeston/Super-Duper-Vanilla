@@ -9,7 +9,7 @@
 			toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 
 		#ifdef WORLD_LIGHT
-			float NL = max(0.0, dot(norm, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z))) * 0.6 + 0.4;
+			float NL = max(0.0, dot(vertexNormal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z))) * 0.6 + 0.4;
 			// also equivalent to:
 			// vec3(0, 0, 1) * mat3(shadowModelView) = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)
 			// shadowLightPosition is broken in other dimensions. The current is equivalent to:
@@ -30,7 +30,7 @@
 					float distortFactor = getDistortFactor(shdPos.xy);
 					
 					// Apply bias according to normal in shadow space
-					shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * norm) * distortFactor * biasAdjustMult;
+					shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * vertexNormal) * distortFactor * biasAdjustMult;
 					shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
 
 					// Sample shadows
@@ -61,7 +61,7 @@
 			toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 
 		#ifdef WORLD_LIGHT
-			float NL = max(0.0, dot(norm, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)));
+			float NL = max(0.0, dot(vertexNormal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)));
 			// also equivalent to:
 			// vec3(0, 0, 1) * mat3(shadowModelView) = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)
 			// shadowLightPosition is broken in other dimensions. The current is equivalent to:
@@ -83,7 +83,7 @@
 					float distortFactor = getDistortFactor(shdPos.xy);
 
 					// Apply bias according to normal in shadow space
-					shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * norm) * distortFactor * biasAdjustMult;
+					shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * vertexNormal) * distortFactor * biasAdjustMult;
 					shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
 
 					// Sample shadows

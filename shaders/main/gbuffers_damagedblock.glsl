@@ -21,7 +21,7 @@
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         
 	    #ifdef WORLD_CURVATURE
-            // Feet player pos
+            // Get vertex position (feet player pos)
             vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
 
             vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;

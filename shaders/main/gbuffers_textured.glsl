@@ -1,12 +1,11 @@
 /// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
 
 #ifdef VERTEX
-    flat out vec3 norm;
+    flat out vec3 vertexColor;
+    flat out vec3 vertexNormal;
 
     out vec2 lmCoord;
     out vec2 texCoord;
-
-    out vec3 glColor;
 
     out vec4 vertexPos;
 
@@ -25,6 +24,14 @@
     void main(){
         // Get texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        // Get vertex color
+        vertexColor = gl_Color.rgb;
+
+        // Get vertex normal
+        vertexNormal = mat3(gbufferModelViewInverse) * normalize(gl_NormalMatrix * gl_Normal);
+        
+        // Get vertex position (feet player pos)
+        vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
 
         // Lightmap fix for mods
         #ifdef WORLD_SKYLIGHT
@@ -32,11 +39,6 @@
         #else
             lmCoord = saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).xy - 0.03125) * 1.06667);
         #endif
-
-	    norm = mat3(gbufferModelViewInverse) * normalize(gl_NormalMatrix * gl_Normal);
-
-        // Feet player pos
-        vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
         
 	    #ifdef WORLD_CURVATURE
             vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
@@ -50,20 +52,17 @@
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
-
-        glColor = gl_Color.rgb;
     }
 #endif
 
 /// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
 
 #ifdef FRAGMENT
-    flat in vec3 norm;
+    flat in vec3 vertexColor;
+    flat in vec3 vertexNormal;
 
     in vec2 lmCoord;
     in vec2 texCoord;
-
-    in vec3 glColor;
 
     in vec4 vertexPos;
 
@@ -80,14 +79,8 @@
         #endif
     #endif
 
+    // Get current render stage
     uniform int renderStage;
-
-    #if ANTI_ALIASING >= 2
-        // Get frame time
-        uniform float frameTimeCounter;
-    #endif
-
-    #include "/lib/universalVars.glsl"
 
     // Get is eye in water
     uniform int isEyeInWater;
@@ -95,8 +88,15 @@
     // Get night vision
     uniform float nightVision;
 
+    #if ANTI_ALIASING >= 2
+        // Get frame time
+        uniform float frameTimeCounter;
+    #endif
+
     // Get atlas size
     uniform ivec2 atlasSize;
+
+    #include "/lib/universalVars.glsl"
 
     #include "/lib/utility/noiseFunctions.glsl"
 
@@ -119,19 +119,19 @@
         }
 
         // Particle emissives
-        if((glColor.r * 0.5 > glColor.g + glColor.b || (glColor.r + glColor.b > glColor.g * 2.0 && abs(glColor.r - glColor.b) < 0.2) || ((albedo.r + albedo.g + albedo.b > 1.6 || (glColor.r != glColor.g && glColor.g != glColor.b)) && lmCoord.x == 1)) && atlasSize.x <= 1024 && atlasSize.x > 0){
-            gl_FragData[0] = vec4(toLinear(albedo.rgb * glColor) * EMISSIVE_INTENSITY, albedo.a); // gcolor
+        if((vertexColor.r * 0.5 > vertexColor.g + vertexColor.b || (vertexColor.r + vertexColor.b > vertexColor.g * 2.0 && abs(vertexColor.r - vertexColor.b) < 0.2) || ((albedo.r + albedo.g + albedo.b > 1.6 || (vertexColor.r != vertexColor.g && vertexColor.g != vertexColor.b)) && lmCoord.x == 1)) && atlasSize.x <= 1024 && atlasSize.x > 0){
+            gl_FragData[0] = vec4(toLinear(albedo.rgb * vertexColor) * EMISSIVE_INTENSITY, albedo.a); // gcolor
             return; // Return immediately, no need for lighting calculation
         }
 
         #if WHITE_MODE == 0
-            albedo.rgb *= glColor;
+            albedo.rgb *= vertexColor;
         #elif WHITE_MODE == 1
             albedo.rgb = vec3(1);
         #elif WHITE_MODE == 2
             albedo.rgb = vec3(0);
         #elif WHITE_MODE == 3
-            albedo.rgb = glColor;
+            albedo.rgb = vertexColor;
         #endif
 
         albedo.rgb = toLinear(albedo.rgb);

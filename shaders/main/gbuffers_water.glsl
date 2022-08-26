@@ -4,9 +4,11 @@ uniform float frameTimeCounter;
 /// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
 
 #ifdef VERTEX
+    flat out mat3 TBN;
+
     flat out int blockId;
 
-    flat out mat3 TBN;
+    flat out vec3 vertexColor;
 
     out vec2 lmCoord;
     out vec2 texCoord;
@@ -18,7 +20,6 @@ uniform float frameTimeCounter;
     #endif
 
     out vec3 worldPos;
-    out vec3 glColor;
 
     out vec4 vertexPos;
 
@@ -45,18 +46,35 @@ uniform float frameTimeCounter;
         float newFrameTimeCounter = frameTimeCounter;
     #endif
 
-    #include "/lib/vertex/vertexAnimations.glsl"
+    attribute vec4 mc_Entity;
+    attribute vec4 at_tangent;
 
     #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION || defined ANIMATE
         attribute vec4 mc_midTexCoord;
     #endif
 
-    attribute vec4 mc_Entity;
-    attribute vec4 at_tangent;
+    #include "/lib/vertex/vertexAnimations.glsl"
 
     void main(){
+        // Get block id
+        blockId = int(mc_Entity.x);
         // Get texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        // Get vertex color
+        vertexColor = gl_Color.rgb;
+
+        // Get vertex tangent
+        vec3 vertexTangent = normalize(at_tangent.xyz);
+        // Get vertex normal
+        vec3 vertexNormal = normalize(gl_Normal);
+
+        // Get vertex position (feet player pos)
+        vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+        // Get world position
+        worldPos = vertexPos.xyz + cameraPosition;
+
+        // Calculate TBN matrix
+	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal), vertexNormal));
 
         // Lightmap fix for mods
         #ifdef WORLD_SKYLIGHT
@@ -64,15 +82,6 @@ uniform float frameTimeCounter;
         #else
             lmCoord = saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).xy - 0.03125) * 1.06667);
         #endif
-
-        // Get block id
-        blockId = int(mc_Entity.x);
-
-        // Calculate TBN matrix
-        vec3 tangent = normalize(at_tangent.xyz);
-        vec3 normal = normalize(gl_Normal);
-
-	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(tangent, cross(tangent, normal), normal));
 
         #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
             vec2 midCoord = (gl_TextureMatrix[0] * mc_midTexCoord).xy;
@@ -82,11 +91,6 @@ uniform float frameTimeCounter;
             vTexCoordPos = min(texCoord, midCoord - texMinMidCoord);
             vTexCoord = sign(texMinMidCoord) * 0.5 + 0.5;
         #endif
-
-        // Feet player pos
-        vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
-        // World pos
-        worldPos = vertexPos.xyz + cameraPosition;
 
         #ifdef ANIMATE
 	        getVertexAnimations(vertexPos.xyz, worldPos, texCoord, mc_midTexCoord.xy, mc_Entity.x, lmCoord.y);
@@ -102,17 +106,17 @@ uniform float frameTimeCounter;
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
-
-        glColor = gl_Color.rgb;
     }
 #endif
 
 /// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
 
 #ifdef FRAGMENT
+    flat in mat3 TBN;
+    
     flat in int blockId;
 
-    flat in mat3 TBN;
+    flat in vec3 vertexColor;
 
     in vec2 lmCoord;
     in vec2 texCoord;
@@ -124,7 +128,6 @@ uniform float frameTimeCounter;
     #endif
 
     in vec3 worldPos;
-    in vec3 glColor;
 
     in vec4 vertexPos;
 
@@ -144,6 +147,16 @@ uniform float frameTimeCounter;
         #endif
     #endif
 
+    #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
+        uniform sampler2D depthtex1;
+    #endif
+
+    // Get is eye in water
+    uniform int isEyeInWater;
+
+    // Get night vision
+    uniform float nightVision;
+
     #if TIMELAPSE_MODE != 0
         uniform float animationFrameTime;
 
@@ -152,21 +165,11 @@ uniform float frameTimeCounter;
         float newFrameTimeCounter = frameTimeCounter;
     #endif
 
-    #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
-        uniform sampler2D depthtex1;
-    #endif
-    
-    #include "/lib/universalVars.glsl"
-
-    // Get is eye in water
-    uniform int isEyeInWater;
-
-    // Get night vision
-    uniform float nightVision;
-
-    // Derivatives
+    // Texture coordinate derivatives
     vec2 dcdx = dFdx(texCoord);
     vec2 dcdy = dFdy(texCoord);
+
+    #include "/lib/universalVars.glsl"
     
     #include "/lib/utility/convertViewSpace.glsl"
     #include "/lib/utility/noiseFunctions.glsl"

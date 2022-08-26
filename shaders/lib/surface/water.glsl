@@ -9,8 +9,8 @@ vec4 H2NWater(vec2 uv){
 	vec2 waterUv = uv / WATER_TILE_SIZE;
 
 	float d0 = getCellNoise(waterUv);
-	float d1 = getCellNoise(waterUv + vec2(waterPixel, 0));
-	float d2 = getCellNoise(waterUv + vec2(0, waterPixel));
+	float d1 = getCellNoise(vec2(waterUv.x + waterPixel, waterUv.y));
+	float d2 = getCellNoise(vec2(waterUv.x, waterUv.y + waterPixel));
     
     return vec4(normalize(vec3(d0 - d1, d0 - d2, waterPixel * WATER_DEPTH_SIZE)), d0);
 }

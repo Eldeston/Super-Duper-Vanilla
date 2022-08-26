@@ -3,7 +3,7 @@
 #ifdef VERTEX
     out vec2 texCoord;
 
-    out vec4 glColor;
+    out vec4 vertexColor;
 
     #if ANTI_ALIASING == 2
         /* Screen resolutions */
@@ -22,7 +22,7 @@
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
 
-        glColor = gl_Color;
+        vertexColor = gl_Color;
     }
 #endif
 
@@ -31,7 +31,7 @@
 #ifdef FRAGMENT
     in vec2 texCoord;
 
-    in vec4 glColor;
+    in vec4 vertexColor;
 
     // Get albedo texture
     uniform sampler2D texture;
@@ -52,11 +52,11 @@
         // Detect and calculate the sun and moon
         if(renderStage == MC_RENDER_STAGE_SUN || renderStage == MC_RENDER_STAGE_MOON)
             #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT
-                gl_FragData[0] = vec4(toLinear(albedo.rgb * glColor.rgb) * albedo.a * glColor.a * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * LIGHT_COL_DATA_BLOCK, 1);
+                gl_FragData[0] = vec4(toLinear(albedo.rgb * vertexColor.rgb) * albedo.a * vertexColor.a * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * LIGHT_COL_DATA_BLOCK, 1);
             #else
                 discard;
             #endif
         // Otherwise, calculate skybox
-        else gl_FragData[0] = vec4(toLinear(albedo.rgb * glColor.rgb) * albedo.a * glColor.a * SKYBOX_BRIGHTNESS, 1);
+        else gl_FragData[0] = vec4(toLinear(albedo.rgb * vertexColor.rgb) * albedo.a * vertexColor.a * SKYBOX_BRIGHTNESS, 1);
     }
 #endif

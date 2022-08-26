@@ -1,12 +1,11 @@
 /// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
 
 #ifdef VERTEX
-    flat out vec3 norm;
+    flat out vec3 vertexColor;
+    flat out vec3 vertexNormal;
 
     out vec2 lmCoord;
     out vec2 texCoord;
-
-    out vec3 glColor;
 
     out vec4 vertexPos;
 
@@ -25,6 +24,10 @@
     void main(){
         // Get texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        // Get vertex color
+        vertexColor = gl_Color.rgb;
+        // Get vertex normal
+        vertexNormal = mat3(gbufferModelViewInverse) * normalize(gl_NormalMatrix * gl_Normal);
 
         // Lightmap fix for mods
         #ifdef WORLD_SKYLIGHT
@@ -33,9 +36,7 @@
             lmCoord = saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).xy - 0.03125) * 1.06667);
         #endif
 
-	    norm = mat3(gbufferModelViewInverse) * normalize(gl_NormalMatrix * gl_Normal);
-
-        // Feet player pos
+        // Get vertex position (feet player pos)
         vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
         
 	    #ifdef WORLD_CURVATURE
@@ -50,20 +51,17 @@
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
-
-        glColor = gl_Color.rgb;
     }
 #endif
 
 /// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
 
 #ifdef FRAGMENT
-    flat in vec3 norm;
+    flat in vec3 vertexColor;
+    flat in vec3 vertexNormal;
 
     in vec2 lmCoord;
     in vec2 texCoord;
-
-    in vec3 glColor;
 
     in vec4 vertexPos;
 
@@ -77,18 +75,18 @@
         #endif
     #endif
 
+    // Get is eye in water
+    uniform int isEyeInWater;
+
+    // Get night vision
+    uniform float nightVision;
+
     #if ANTI_ALIASING >= 2
         // Get frame time
         uniform float frameTimeCounter;
     #endif
 
     #include "/lib/universalVars.glsl"
-
-    // Get is eye in water
-    uniform int isEyeInWater;
-
-    // Get night vision
-    uniform float nightVision;
 
     #include "/lib/utility/noiseFunctions.glsl"
 
@@ -99,7 +97,7 @@
 
     void main(){
         // Get albedo
-        vec4 albedo = vec4(glColor, 1);
+        vec4 albedo = vec4(vertexColor, 1);
 
         #if WHITE_MODE == 1
             albedo.rgb = vec3(1);
