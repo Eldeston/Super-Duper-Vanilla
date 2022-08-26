@@ -13,9 +13,6 @@
         // View matrix uniforms
         uniform mat4 shadowModelView;
         uniform mat4 shadowModelViewInverse;
-
-        // Position uniforms
-        uniform vec3 cameraPosition;
         
         #if TIMELAPSE_MODE == 2
             // Get smoothed frame time
@@ -28,6 +25,9 @@
 
             float newFrameTimeCounter = frameTimeCounter;
         #endif
+
+        // Position uniforms
+        uniform vec3 cameraPosition;
 
         #include "/lib/lighting/shdDistort.glsl"
 
@@ -59,6 +59,7 @@
 
             // Shadow clip pos
             gl_Position = gl_ProjectionMatrix * (shadowModelView * vertexPos);
+
             // Apply shadow distortion
             gl_Position.xyz = distort(gl_Position.xyz);
         }

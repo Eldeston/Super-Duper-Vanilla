@@ -88,8 +88,8 @@ void getPBR(inout structPBR material, in int id){
 
         vec3 currPos;
 
-        // Exclude signs, due to a missing text bug
-        if(id != 10000 && id != 10018) texUv = fract(parallaxUv(vTexCoord, viewDir.xy / -viewDir.z, currPos)) * vTexCoordScale + vTexCoordPos;
+        // Exclude signs, due to a missing text bug. We'll also include water and lava in the meantime.
+        if(id != 10000 && id != 10001 && id != 10018) texUv = fract(parallaxUv(vTexCoord, viewDir.xy / -viewDir.z, currPos)) * vTexCoordScale + vTexCoordPos;
     #endif
 
     // Assign albedo
@@ -182,7 +182,7 @@ void getPBR(inout structPBR material, in int id){
     material.parallaxShd = 1.0;
 
     #ifdef PARALLAX_OCCLUSION
-        if(id != 10000 && id != 10018){
+        if(id != 10000 && id != 10001 && id != 10018){
             #ifdef SLOPE_NORMALS
                 if(texture2DGradARB(normals, texUv, dcdx, dcdy).a > currPos.z) normalMap = vec3(getSlopeNormals(-viewDir, texUv, currPos.z), 0);
             #endif
