@@ -45,15 +45,15 @@
         vertexColor = gl_Color.rgb;
         
         // Get vertex tangent
-        vec3 vertexTangent = normalize(at_tangent.xyz);
+        vec3 vertexTangent = normalize(gl_NormalMatrix * at_tangent.xyz);
         // Get vertex normal
-        vec3 vertexNormal = normalize(gl_Normal);
+        vec3 vertexNormal = normalize(gl_NormalMatrix * gl_Normal);
 
         // Get vertex position (feet player pos)
         vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
 
         // Calculate TBN matrix
-	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal), vertexNormal));
+	    TBN = mat3(gbufferModelViewInverse) * mat3(vertexTangent, cross(vertexTangent, vertexNormal), vertexNormal);
 
         // Lightmap fix for mods
         #ifdef WORLD_SKYLIGHT
@@ -83,6 +83,9 @@
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
+
+        // Remove background nametag/floating text
+        if(gl_Color.a >= 0.24 && gl_Color.a < 0.255) gl_Position = vec4(0);
     }
 #endif
 
