@@ -83,13 +83,15 @@ uniform sampler2D specular;
 void getPBR(inout structPBR material, in int id){
     vec2 texUv = texCoord;
 
+    // Exclude signs and floating texts. We'll also include water and lava in the meantime.
+    bool hasNormal = id != 10000 && id != 10001 && abs(sumOf(texture2DGradARB(normals, texCoord, dcdx, dcdy).xy)) >= 0.01;
+
     #ifdef PARALLAX_OCCLUSION
         vec3 viewDir = -vertexPos.xyz * TBN;
 
         vec3 currPos;
 
-        // Exclude signs, due to a missing text bug. We'll also include water and lava in the meantime.
-        if(id != 10000 && id != 10001 && id != 10018) texUv = fract(parallaxUv(vTexCoord, viewDir.xy / -viewDir.z, currPos)) * vTexCoordScale + vTexCoordPos;
+        if(hasNormal) texUv = fract(parallaxUv(vTexCoord, viewDir.xy / -viewDir.z, currPos)) * vTexCoordScale + vTexCoordPos;
     #endif
 
     // Assign albedo
@@ -182,7 +184,7 @@ void getPBR(inout structPBR material, in int id){
     material.parallaxShd = 1.0;
 
     #ifdef PARALLAX_OCCLUSION
-        if(id != 10000 && id != 10001 && id != 10018){
+        if(hasNormal){
             #ifdef SLOPE_NORMALS
                 if(texture2DGradARB(normals, texUv, dcdx, dcdy).a > currPos.z) normalMap = vec3(getSlopeNormals(-viewDir, texUv, currPos.z), 0);
             #endif
@@ -196,7 +198,7 @@ void getPBR(inout structPBR material, in int id){
     #endif
 
     // Assign normal
-    material.normal = TBN * normalize(normalMap);
+    if(hasNormal) material.normal = TBN * normalize(normalMap);
 
     // Calculate normal strength
     material.normal = mix(TBN[2], material.normal, NORMAL_STRENGTH);
