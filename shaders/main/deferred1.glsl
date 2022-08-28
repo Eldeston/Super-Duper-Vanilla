@@ -107,14 +107,6 @@
         #include "/lib/utility/taaJitter.glsl"
     #endif
 
-    #ifdef WORLD_LIGHT
-        uniform float shdFade;
-    #endif
-
-    /* Time uniforms */
-    // Get frame time
-    uniform float frameTimeCounter;
-
     // Get is eye in water
     uniform int isEyeInWater;
 
@@ -128,6 +120,14 @@
     uniform float darknessFactor;
     // Get darkness light factor
     uniform float darknessLightFactor;
+
+    /* Time uniforms */
+    // Get frame time
+    uniform float frameTimeCounter;
+
+    #ifdef WORLD_LIGHT
+        uniform float shdFade;
+    #endif
 
     #include "/lib/universalVars.glsl"
 

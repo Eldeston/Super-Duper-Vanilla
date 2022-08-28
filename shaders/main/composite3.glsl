@@ -16,24 +16,12 @@
 
     uniform sampler2D gcolor;
 
-    /* Screen resolutions */
-    uniform float viewWidth;
-    uniform float viewHeight;
-
     #ifdef DOF
         // Needs to be enabled by force to be able to use LOD fully even with texture2DLod
         const bool gcolorMipmapEnabled = true;
 
-        uniform sampler2D depthtex1;
-
-        uniform mat4 gbufferProjection;
-        
-        uniform float centerDepthSmooth;
-
-        float fovMult = gbufferProjection[1].y * 0.72794047;
-
         // Precalculated dof offsets by vec2(cos(x), sin(x))
-        vec2 dofOffSets[9] = vec2[9](
+        const vec2 dofOffSets[9] = vec2[9](
             vec2(0.76604444, 0.64278761),
             vec2(0.17364818, 0.98480775),
             vec2(-0.5, 0.86602540),
@@ -44,6 +32,18 @@
             vec2(0.76604444, -0.64278761),
             vec2(1, 0)
         );
+
+        uniform sampler2D depthtex1;
+
+        uniform mat4 gbufferProjection;
+        
+        uniform float centerDepthSmooth;
+
+        /* Screen resolutions */
+        uniform float viewWidth;
+        uniform float viewHeight;
+
+        float fovMult = gbufferProjection[1].y * 0.72794047;
     #endif
 
     void main(){

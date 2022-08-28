@@ -3,6 +3,8 @@
 #ifdef VERTEX
     flat out mat3 TBN;
 
+    flat out vec3 vertexColor;
+
     out vec2 lmCoord;
     out vec2 texCoord;
 
@@ -11,8 +13,6 @@
         flat out vec2 vTexCoordPos;
         out vec2 vTexCoord;
     #endif
-
-    out vec3 vertexColor;
 
     out vec4 vertexPos;
 
@@ -37,6 +37,19 @@
     void main(){
         // Get texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        // Get vertex color
+        vertexColor = gl_Color.rgb;
+        
+        // Get vertex tangent
+        vec3 vertexTangent = normalize(at_tangent.xyz);
+        // Get vertex normal
+        vec3 vertexNormal = normalize(gl_Normal);
+
+        // Get vertex position (feet player pos)
+        vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+
+        // Calculate TBN matrix
+	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal), vertexNormal));
 
         // Lightmap fix for mods
         #ifdef WORLD_SKYLIGHT
@@ -45,16 +58,7 @@
             lmCoord = saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).xy - 0.03125) * 1.06667);
         #endif
 
-        // Calculate TBN matrix
-        vec3 tangent = normalize(at_tangent.xyz);
-        vec3 normal = normalize(gl_Normal);
-
-	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(tangent, cross(tangent, normal), normal));
-
-        // Feet player pos
-        vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
-
-        #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
+        #ifdef PARALLAX_OCCLUSION
             vec2 midCoord = (gl_TextureMatrix[0] * mc_midTexCoord).xy;
             vec2 texMinMidCoord = texCoord - midCoord;
 
@@ -62,8 +66,8 @@
             vTexCoordPos = min(texCoord, midCoord - texMinMidCoord);
             vTexCoord = sign(texMinMidCoord) * 0.5 + 0.5;
         #endif
-        
-	    #ifdef WORLD_CURVATURE
+
+        #ifdef WORLD_CURVATURE
             vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
             
             // Clip pos
@@ -75,8 +79,6 @@
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
-
-        vertexColor = gl_Color.rgb;
     }
 #endif
 
@@ -84,6 +86,8 @@
 
 #ifdef FRAGMENT
     flat in mat3 TBN;
+
+    flat in vec3 vertexColor;
 
     in vec2 lmCoord;
     in vec2 texCoord;
@@ -93,8 +97,6 @@
         flat in vec2 vTexCoordPos;
         in vec2 vTexCoord;
     #endif
-
-    in vec3 vertexColor;
 
     in vec4 vertexPos;
 
@@ -114,12 +116,18 @@
     // Get entity id
     uniform int blockEntityId;
 
-    /* Screen resolutions */
-    uniform float viewWidth;
-    uniform float viewHeight;
+    // Get is eye in water
+    uniform int isEyeInWater;
+
+    // Get night vision
+    uniform float nightVision;
 
     // Get frame time
     uniform float frameTimeCounter;
+
+    /* Screen resolutions */
+    uniform float viewWidth;
+    uniform float viewHeight;
 
     #if TIMELAPSE_MODE != 0
         uniform float animationFrameTime;
@@ -129,17 +137,11 @@
         float newFrameTimeCounter = frameTimeCounter;
     #endif
 
-    #include "/lib/universalVars.glsl"
-
-    // Get is eye in water
-    uniform int isEyeInWater;
-
-    // Get night vision
-    uniform float nightVision;
-
     // Derivatives
     vec2 dcdx = dFdx(texCoord);
     vec2 dcdy = dFdy(texCoord);
+
+    #include "/lib/universalVars.glsl"
     
     #include "/lib/utility/noiseFunctions.glsl"
 
@@ -162,16 +164,16 @@
         if(blockEntityId == 10016){
             // End star uv
             vec2 screenPos = gl_FragCoord.xy / vec2(viewWidth, viewHeight);
+            float starSpeed = newFrameTimeCounter * 0.0078125;
 
-            vec2 endStarOffset = vec2(0, newFrameTimeCounter * 0.01);
-            float endStarField = texture2D(texture, (screenPos.yx + endStarOffset) * 0.5).r;
-            endStarField += texture2D(texture, screenPos + endStarOffset).r;
-            endStarField += texture2D(texture, (endStarOffset - screenPos) * 2.0).r;
+            float endStarField = texture2D(texture, vec2(screenPos.y, screenPos.x + starSpeed) * 0.5).r;
+            endStarField += texture2D(texture, vec2(screenPos.x, screenPos.y + starSpeed)).r;
+            endStarField += texture2D(texture, vec2(-screenPos.x, starSpeed - screenPos.y) * 2.0).r;
             
-            vec2 endStarCoord1 = screenPos * rot2D(0.78539816);
-            endStarField += texture2D(texture, endStarCoord1.yx + endStarOffset).r;
-            endStarField += texture2D(texture, (endStarCoord1 + endStarOffset) * 2.0).r;
-            endStarField += texture2D(texture, (endStarOffset - endStarCoord1) * 4.0).r;
+            vec2 endStarCoord1 = vec2(screenPos.x - screenPos.y, screenPos.y + screenPos.x);
+            endStarField += texture2D(texture, vec2(endStarCoord1.y, endStarCoord1.x + starSpeed) * 0.5).r;
+            endStarField += texture2D(texture, vec2(endStarCoord1.x, endStarCoord1.y + starSpeed)).r;
+            endStarField += texture2D(texture, vec2(-endStarCoord1.x, starSpeed - endStarCoord1.y) * 2.0).r;
 
             vec3 endPortalAlbedo = toLinear((endStarField + 0.1) * (getRand3(ivec2(screenPos * 128.0) & 255) * 0.5 + 0.5) * vertexColor.rgb);
             
