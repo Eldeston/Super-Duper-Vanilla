@@ -28,12 +28,12 @@ vec3 getLensFlare(vec2 centerCoord, vec2 lightDir){
     vec3 chromaLens = chromaLens(centerCoord, lightDir, 0.05, 0.05, -0.5);
 
     #if WORLD_SUN_MOON == 2
-        return (lens1 + (lens0 + lens2) * 0.125 + chromaLens) * LENS_FLARE_BRIGHTNESS * LIGHT_COL_DATA_BLOCK;
+        return (lens1 + (lens0 + lens2) * 0.125 + chromaLens) * LENS_FLARE_BRIGHTNESS * sRGBLightCol;
     #elif SUN_MOON_TYPE == 2
         float rays = lensFlareRays(centerCoord, lightDir, 8.0, 0.05, -1.0);
-        return (lens1 + (lens0 + lens2) * 0.125 + rays + chromaLens) * LENS_FLARE_BRIGHTNESS * LIGHT_COL_DATA_BLOCK;
+        return (lens1 + (lens0 + lens2) * 0.125 + rays + chromaLens) * LENS_FLARE_BRIGHTNESS * sRGBLightCol;
     #else
         float rays = lensFlareRays(centerCoord, lightDir, 8.0, 0.1, -1.0);
-        return (lens1 + (lens0 + lens2) * 0.125 + rays + chromaLens) * LENS_FLARE_BRIGHTNESS * LIGHT_COL_DATA_BLOCK;
+        return (lens1 + (lens0 + lens2) * 0.125 + rays + chromaLens) * LENS_FLARE_BRIGHTNESS * sRGBLightCol;
     #endif
 }

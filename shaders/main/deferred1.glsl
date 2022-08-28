@@ -1,9 +1,12 @@
 /// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
 
 #ifdef VERTEX
-    flat out vec3 sRGBLightCol;
-    flat out vec3 lightCol;
     flat out vec3 skyCol;
+
+    #ifdef WORLD_LIGHT
+        flat out vec3 sRGBLightCol;
+        flat out vec3 lightCol;
+    #endif
     
     out vec2 screenCoord;
 
@@ -14,25 +17,26 @@
         #ifdef WORLD_LIGHT
             sRGBLightCol = LIGHT_COL_DATA_BLOCK;
             lightCol = toLinear(sRGBLightCol);
-        #else
-            sRGBLightCol = vec3(0);
-            lightCol = vec3(0);
         #endif
 
         // Get linear sky color
         skyCol = toLinear(SKY_COL_DATA_BLOCK);
 
-        gl_Position = ftransform();
         screenCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        
+        gl_Position = ftransform();
     }
 #endif
 
 /// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
 
 #ifdef FRAGMENT
-    flat in vec3 sRGBLightCol;
-    flat in vec3 lightCol;
     flat in vec3 skyCol;
+
+    #ifdef WORLD_LIGHT
+        flat in vec3 sRGBLightCol;
+        flat in vec3 lightCol;
+    #endif
 
     in vec2 screenCoord;
 
@@ -188,7 +192,7 @@
             vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
 
             // Apply deffered shading
-            sceneCol = complexShadingDeferred(sceneCol, skyCol, lightCol, screenPos, viewPos, nEyePlayerPos, normal, albedo, matRaw0.x, matRaw0.y, dither);
+            sceneCol = complexShadingDeferred(sceneCol, screenPos, viewPos, nEyePlayerPos, normal, albedo, matRaw0.x, matRaw0.y, dither);
 
             #if OUTLINES != 0
                 // Outline calculation
@@ -205,8 +209,8 @@
 
         // Fog and sky calculation
         // Get skyCol as our fogCol. If sky, then do full sky render. Otherwise, do basic sky render.
-        if(skyMask) sceneCol = getSkyRender(sceneCol, skyCol, sRGBLightCol, lightCol, nEyePlayerPos, true) * exp(-far * (blindness + darknessFactor));
-        else sceneCol = getFogRender(sceneCol, getSkyRender(skyCol, lightCol, nEyePlayerPos, false, false), viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
+        if(skyMask) sceneCol = getSkyRender(sceneCol, nEyePlayerPos, true) * exp(-far * (blindness + darknessFactor));
+        else sceneCol = getFogRender(sceneCol, getSkyRender(nEyePlayerPos, false, false), viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
 
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(sceneCol, 1); // gcolor

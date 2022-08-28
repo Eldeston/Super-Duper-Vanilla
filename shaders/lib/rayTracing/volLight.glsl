@@ -2,7 +2,7 @@
 #endif
 
 #ifdef WORLD_LIGHT
-	vec3 getGodRays(vec3 feetPlayerPos, vec3 lightCol, float dither, bool isSky){
+	vec3 getVolumetricLight(vec3 feetPlayerPos, float dither, bool isSky){
 		// Return 0 if volumetric brightness is 0
 		if(VOL_LIGHT_BRIGHTNESS == 0) return vec3(0);
 

@@ -1,17 +1,46 @@
 /// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
 
 #ifdef VERTEX
+    #if defined LENS_FLARE && defined WORLD_LIGHT
+        flat out vec3 sRGBLightCol;
+        flat out vec3 shdLightViewDir;
+    #endif
+
     out vec2 screenCoord;
 
+    #if defined LENS_FLARE && defined WORLD_LIGHT
+        // Model view matrix
+        uniform mat4 gbufferModelView;
+
+        // Shadow model view matrix
+        uniform mat4 shadowModelView;
+
+        #include "/lib/universalVars.glsl"
+    #endif
+
     void main(){
-        gl_Position = ftransform();
         screenCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+
+        #if defined LENS_FLARE && defined WORLD_LIGHT
+            // Get sRGB light color
+            sRGBLightCol = LIGHT_COL_DATA_BLOCK;
+
+            // Get shadow light view direction
+            shdLightViewDir = mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
+        #endif
+
+        gl_Position = ftransform();
     }
 #endif
 
 /// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
 
 #ifdef FRAGMENT
+    #if defined LENS_FLARE && defined WORLD_LIGHT
+        flat in vec3 sRGBLightCol;
+        flat in vec3 shdLightViewDir;
+    #endif
+
     in vec2 screenCoord;
 
     uniform sampler2D gcolor;
@@ -46,11 +75,8 @@
     #if defined LENS_FLARE && defined WORLD_LIGHT
         uniform sampler2D depthtex0;
 
+        // Projection matrix uniforms
         uniform mat4 gbufferProjection;
-        uniform mat4 gbufferModelView;
-
-        // Shadow view matrix uniforms
-        uniform mat4 shadowModelView;
 
         // Get blindess
         uniform float blindness;
@@ -60,7 +86,12 @@
         // Get screen aspect ratio
         uniform float aspectRatio;
 
-        #include "/lib/universalVars.glsl"
+        // Get rain strength
+        #ifdef FORCE_DISABLE_WEATHER
+            const float rainStrength = 0.0;
+        #else
+            uniform float rainStrength;
+        #endif
 
         #include "/lib/utility/convertScreenSpace.glsl"
         
@@ -94,7 +125,7 @@
         #endif
 
         #if defined LENS_FLARE && defined WORLD_LIGHT
-            vec2 lightDir = toScreen(mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)).xy;
+            vec2 lightDir = toScreen(shdLightViewDir).xy;
             // also equivalent to:
             // vec3(0, 0, 1) * mat3(shadowModelView) = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)
             // shadowLightPosition is broken in other dimensions. The current is equivalent to:
