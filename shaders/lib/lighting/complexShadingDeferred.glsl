@@ -1,4 +1,4 @@
-vec3 complexShadingDeferred(vec3 sceneCol, vec3 screenPos, vec3 viewPos, vec3 nViewPos, vec3 normal, vec3 albedo, float metallic, float smoothness, vec3 dither){
+vec3 complexShadingDeferred(vec3 sceneCol, vec3 screenPos, vec3 viewPos, vec3 normal, vec3 albedo, float viewDist, float metallic, float smoothness, vec3 dither){
 	#if defined SSGI || defined SSR
 		// Get model view normal
 		normal = mat3(gbufferModelView) * normal;
@@ -20,6 +20,8 @@ vec3 complexShadingDeferred(vec3 sceneCol, vec3 screenPos, vec3 viewPos, vec3 nV
 	// If smoothness is 0, don't do reflections
 	if(smoothness > 0.005){
 		bool isMetal = metallic > 0.9;
+
+		vec3 nViewPos = viewPos / viewDist;
 
 		// Get fresnel
 		vec3 fresnel = getFresnelSchlick(max(dot(normal, -nViewPos), 0.0),

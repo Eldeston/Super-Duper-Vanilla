@@ -168,7 +168,7 @@
             vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
 
             // Apply deffered shading
-            sceneCol = complexShadingDeferred(sceneCol, screenPos, viewPos, viewPos / viewDist, normal, albedo, matRaw0.x, matRaw0.y, dither);
+            sceneCol = complexShadingDeferred(sceneCol, screenPos, viewPos, normal, albedo, viewDist, matRaw0.x, matRaw0.y, dither);
 
             sceneCol *= 1.0 - darknessLightFactor;
 
