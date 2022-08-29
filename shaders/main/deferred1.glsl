@@ -201,8 +201,6 @@
                 // Apply ambient occlusion with simple blur
                 sceneCol *= getSSAOBoxBlur(screenTexelCoord);
             #endif
-
-            sceneCol *= 1.0 - darknessLightFactor;
         }
 
         // Fog and sky calculation
