@@ -13,6 +13,8 @@
     #include "/lib/universalVars.glsl"
 
     void main(){
+        screenCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+
         // Get sRGB light color
         #ifdef WORLD_LIGHT
             sRGBLightCol = LIGHT_COL_DATA_BLOCK;
@@ -21,8 +23,6 @@
 
         // Get linear sky color
         skyCol = toLinear(SKY_COL_DATA_BLOCK);
-
-        screenCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         
         gl_Position = ftransform();
     }
@@ -142,8 +142,6 @@
     #include "/lib/lighting/GGX.glsl"
     
     #include "/lib/rayTracing/rayTracer.glsl"
-    #include "/lib/rayTracing/SSGI.glsl"
-    #include "/lib/rayTracing/SSR.glsl"
 
     #include "/lib/atmospherics/fog.glsl"
     #include "/lib/atmospherics/sky.glsl"
@@ -192,7 +190,7 @@
             vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
 
             // Apply deffered shading
-            sceneCol = complexShadingDeferred(sceneCol, screenPos, viewPos, nEyePlayerPos, normal, albedo, matRaw0.x, matRaw0.y, dither);
+            sceneCol = complexShadingDeferred(sceneCol, screenPos, viewPos, viewPos / viewDist, normal, albedo, matRaw0.x, matRaw0.y, dither);
 
             #if OUTLINES != 0
                 // Outline calculation
