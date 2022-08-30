@@ -3,7 +3,7 @@
 
 #ifdef VERTEX
     void main(){
-        gl_Position = vec4(0);
+        gl_Position = vec4(-10);
     }
 #endif
 

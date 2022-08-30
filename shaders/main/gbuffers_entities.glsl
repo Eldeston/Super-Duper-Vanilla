@@ -85,7 +85,7 @@
         #endif
 
         // Remove background nametag/floating text
-        if(gl_Color.a >= 0.24 && gl_Color.a < 0.255) gl_Position = vec4(0);
+        if(gl_Color.a >= 0.24 && gl_Color.a < 0.255) gl_Position = vec4(-10);
     }
 #endif
 
