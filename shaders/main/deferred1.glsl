@@ -205,7 +205,7 @@
 
         // Fog and sky calculation
         // Get skyCol as our fogCol. If sky, then do full sky render. Otherwise, do basic sky render.
-        if(skyMask) sceneCol = getSkyRender(sceneCol, nEyePlayerPos, true) * exp(-far * (blindness + darknessFactor));
+        if(skyMask) sceneCol = getSkyRender(sceneCol, nEyePlayerPos, true) * exp2(-far * (blindness + darknessFactor));
         else sceneCol = getFogRender(sceneCol, getSkyRender(nEyePlayerPos, false, false), viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
 
     /* DRAWBUFFERS:0 */

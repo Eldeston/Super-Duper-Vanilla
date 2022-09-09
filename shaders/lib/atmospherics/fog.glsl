@@ -1,5 +1,5 @@
 float atmoFog(float nPlayerPosY, float worldPosY, float playerPosLength, float totalDensity, float verticalFogDensity){
-    return min(1.0, (totalDensity / verticalFogDensity) * exp(-max(worldPosY, 0.0) * verticalFogDensity) * (1.0 - exp(-playerPosLength * nPlayerPosY * verticalFogDensity)) / nPlayerPosY);
+    return min(1.0, (totalDensity / verticalFogDensity) * exp2(-max(worldPosY, 0.0) * verticalFogDensity) * (1.0 - exp2(-playerPosLength * nPlayerPosY * verticalFogDensity)) / nPlayerPosY);
 }
 
 vec3 getFogRender(vec3 color, vec3 fogCol, float viewDist, float nEyePlayerPosY, float worldPosY){
@@ -14,9 +14,9 @@ vec3 getFogRender(vec3 color, vec3 fogCol, float viewDist, float nEyePlayerPosY,
     // Border fog
     #ifdef BORDER_FOG
         // Modified Complementary border fog calculation, thanks Emin!
-        color = (color - fogCol) * exp(-exp2(viewDist / far * 16.0 - 14.0)) + fogCol;
+        color = (color - fogCol) * exp2(-exp2(viewDist / far * 21.0 - 18.0)) + fogCol;
     #endif
 
     // Blindness fog
-    return color * exp(-viewDist * max(blindness, darknessFactor * 0.125 + darknessLightFactor));
+    return color * exp2(-viewDist * max(blindness, darknessFactor * 0.125 + darknessLightFactor));
 }

@@ -22,9 +22,9 @@
 		// Border fog
 		// Modified Complementary border fog calculation, thanks Emin!
 		#ifdef BORDER_FOG
-			float volumetricFogDensity = 1.0 - exp(-dist * totalFogDensity - exp2(dist / far * 16.0 - 14.0));
+			float volumetricFogDensity = 1.0 - exp2(-dist * totalFogDensity - exp2(dist / far * 21.0 - 18.0));
 		#else
-			float volumetricFogDensity = 1.0 - exp(-dist * totalFogDensity);
+			float volumetricFogDensity = 1.0 - exp2(-dist * totalFogDensity);
 		#endif
 
 		#if defined VOL_LIGHT && defined SHD_ENABLE
