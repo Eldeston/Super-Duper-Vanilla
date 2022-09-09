@@ -1,6 +1,10 @@
 /// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
 
 #ifdef VERTEX
+    #ifdef WORLD_LIGHT
+        flat out mat3 shdVertexView;
+    #endif
+
     flat out mat3 TBN;
 
     flat out float vertexAlpha;
@@ -17,10 +21,16 @@
     #endif
 
     out vec4 vertexPos;
+    out vec4 feetPlayerPos;
 
     // View matrix uniforms
     uniform mat4 gbufferModelView;
     uniform mat4 gbufferModelViewInverse;
+
+    #ifdef WORLD_LIGHT
+        // Shadow view matrix uniforms
+        uniform mat4 shadowModelView;
+    #endif
 
     #if ANTI_ALIASING == 2
         /* Screen resolutions */
@@ -45,15 +55,22 @@
         vertexColor = gl_Color.rgb;
         
         // Get vertex tangent
-        vec3 vertexTangent = normalize(gl_NormalMatrix * at_tangent.xyz);
+        vec3 vertexTangent = normalize(at_tangent.xyz);
         // Get vertex normal
-        vec3 vertexNormal = normalize(gl_NormalMatrix * gl_Normal);
+        vec3 vertexNormal = normalize(gl_Normal);
 
-        // Get vertex position (feet player pos)
-        vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+        // Get vertex position (view player pos)
+        vertexPos = gl_ModelViewMatrix * gl_Vertex;
+        // Get feet player pos
+        feetPlayerPos = gbufferModelViewInverse * vertexPos;
 
         // Calculate TBN matrix
-	    TBN = mat3(gbufferModelViewInverse) * mat3(vertexTangent, cross(vertexTangent, vertexNormal), vertexNormal);
+	    TBN = gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal), vertexNormal);
+
+        #ifdef WORLD_LIGHT
+            // Shadow light view matrix
+            shdVertexView = mat3(shadowModelView) * mat3(gbufferModelViewInverse);
+        #endif
 
         // Lightmap fix for mods
         #ifdef WORLD_SKYLIGHT
@@ -72,10 +89,10 @@
         #endif
 
         #ifdef WORLD_CURVATURE
-            vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
+            feetPlayerPos.y -= dot(feetPlayerPos.xz, feetPlayerPos.xz) / WORLD_CURVATURE_SIZE;
             
             // Clip pos
-            gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
+            gl_Position = gl_ProjectionMatrix * (gbufferModelView * feetPlayerPos);
         #else
             gl_Position = ftransform();
         #endif
@@ -92,6 +109,10 @@
 /// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
 
 #ifdef FRAGMENT
+    #ifdef WORLD_LIGHT
+        flat in mat3 shdVertexView;
+    #endif
+
     flat in mat3 TBN;
 
     flat in float vertexAlpha;
@@ -108,6 +129,7 @@
     #endif
 
     in vec4 vertexPos;
+    in vec4 feetPlayerPos;
 
     // Get albedo texture
     uniform sampler2D texture;

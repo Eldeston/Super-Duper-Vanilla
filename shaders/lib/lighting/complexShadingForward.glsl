@@ -22,7 +22,7 @@ vec4 complexShadingGbuffers(structPBR material){
 		// Get sRGB light color
 		vec3 sRGBLightCol = LIGHT_COL_DATA_BLOCK;
 
-		float NL = max(0.0, dot(material.normal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)));
+		float NL = max(0.0, dot(material.normal, vec3(shdVertexView[0].z, shdVertexView[1].z, shdVertexView[2].z)));
 		// also equivalent to:
 		// vec3(0, 0, 1) * mat3(shadowModelView) = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)
     	// shadowLightPosition is broken in other dimensions. The current is equivalent to:
@@ -44,14 +44,14 @@ vec4 complexShadingGbuffers(structPBR material){
 				float caveFixShdFactor = isEyeInWater == 1 ? 1.0 : min(1.0, lmCoord.y * 2.0) * (1.0 - eyeBrightFact) + eyeBrightFact;
 
 				// Get shadow pos
-				vec3 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz) + shadowProjection[3].xyz;
+				vec3 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * feetPlayerPos.xyz + shadowModelView[3].xyz) + shadowProjection[3].xyz;
 				
 				// Bias mutilplier, adjusts according to the current shadow distance and resolution
 				float biasAdjustMult = log2(max(4.0, shadowDistance - shadowMapResolution * 0.125)) * 0.25;
 				float distortFactor = getDistortFactor(shdPos.xy);
 
 				// Apply bias according to normal in shadow space before
-				shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * material.normal) * distortFactor * biasAdjustMult;
+				shdPos += (mat3(shadowProjection) * (shdVertexView * material.normal)) * distortFactor * biasAdjustMult;
 				shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
 
 				// Sample shadows
@@ -79,7 +79,7 @@ vec4 complexShadingGbuffers(structPBR material){
 	#ifdef WORLD_LIGHT
 		if(NL > 0){
 			// Get specular GGX
-			vec3 specCol = getSpecBRDF(normalize(-vertexPos.xyz), vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), NL, 1.0 - material.smoothness);
+			vec3 specCol = getSpecBRDF(normalize(-vertexPos.xyz), vec3(shdVertexView[0].z, shdVertexView[1].z, shdVertexView[2].z), material.normal, material.metallic > 0.9 ? material.albedo.rgb : vec3(material.metallic), NL, 1.0 - material.smoothness);
 			// Needs to multiplied twice in order for the speculars to look relatively "correct"
 			totalDiffuse += min(vec3(SUN_MOON_INTENSITY * SUN_MOON_INTENSITY), specCol) * sRGBLightCol * (1.0 - rainStrength) * shadowCol * 2.0;
 		}

@@ -1,9 +1,4 @@
 vec3 complexShadingDeferred(vec3 sceneCol, vec3 screenPos, vec3 viewPos, vec3 normal, vec3 albedo, float viewDist, float metallic, float smoothness, vec3 dither){
-	#if defined SSGI || defined SSR
-		// Get model view normal
-		normal = mat3(gbufferModelView) * normal;
-	#endif
-
 	// Calculate SSGI
 	#ifdef SSGI
 		// Get SSGI screen coordinates

@@ -44,21 +44,21 @@
             // Get vertex color
             vertexColor = gl_Color.rgb;
 
-            // Get vertex position (feet player pos)
-            vec4 vertexPos = shadowModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+            // Get feet player pos
+            vec4 feetPlayerPos = shadowModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
             // Get world position
-            worldPos = vertexPos.xyz + cameraPosition;
+            worldPos = feetPlayerPos.xyz + cameraPosition;
             
             #ifdef ANIMATE
-                getVertexAnimations(vertexPos.xyz, worldPos, texCoord, mc_midTexCoord, mc_Entity.x, (gl_TextureMatrix[1] * gl_MultiTexCoord1).y);
+                getVertexAnimations(feetPlayerPos.xyz, worldPos, texCoord, mc_midTexCoord, mc_Entity.x, (gl_TextureMatrix[1] * gl_MultiTexCoord1).y);
             #endif
 
             #ifdef WORLD_CURVATURE
-                vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
+                feetPlayerPos.y -= dot(feetPlayerPos.xz, feetPlayerPos.xz) / WORLD_CURVATURE_SIZE;
             #endif
 
             // Shadow clip pos
-            gl_Position = gl_ProjectionMatrix * (shadowModelView * vertexPos);
+            gl_Position = gl_ProjectionMatrix * (shadowModelView * feetPlayerPos);
 
             // Apply shadow distortion
             gl_Position.xyz = distort(gl_Position.xyz);
