@@ -16,6 +16,6 @@ void enviroPBR(inout structPBR material){
         material.normal = mix(material.normal, TBN[2], rainMatFact);
         material.metallic = max(0.02 * rainMatFact, material.metallic);
         material.smoothness = mix(material.smoothness, 0.96, rainMatFact);
-        material.albedo.rgb *= 1.0 - rainMatFact * 0.5;
+        material.albedo.rgb *= 1.0 - rainMatFact * 0.75;
     }
 }
