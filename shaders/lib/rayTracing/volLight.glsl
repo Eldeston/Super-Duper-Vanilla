@@ -34,9 +34,13 @@
 			// Apply dithering
 			vec3 startPos = endPos * dither;
 
+			// Pre calculate the full shadow clip space conversion matrix
+			mat4 shdClipSpace = shadowProjection * shadowModelView;
+			
 			vec3 rayData = vec3(0);
 			for(int x = 0; x < 7; x++){
-				rayData += getShdTex(distort(mat3(shadowProjection) * (mat3(shadowModelView) * startPos + shadowModelView[3].xyz) + shadowProjection[3].xyz) * 0.5 + 0.5);
+				// No need to multiply 2 matrices and a vector every loop and just do a matrix times vector multiplication
+				rayData += getShdTex(distort(mat3(shdClipSpace) * startPos + shdClipSpace[3].xyz) * 0.5 + 0.5);
 				startPos += endPos;
 			}
 			
