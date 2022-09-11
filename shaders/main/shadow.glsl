@@ -114,11 +114,22 @@
 
                 // If the object is not opaque, proceed with shadow coloring and caustics
                 if(shdAlbedo.a != 1){
-                    #if UNDERWATER_CAUSTICS == 2
-                        if(blockId == 10000) shdAlbedo.rgb *= squared(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 4.0;
-                    #elif UNDERWATER_CAUSTICS == 1
-                        if(isEyeInWater == 1 && blockId == 10000) shdAlbedo.rgb *= squared(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 4.0;
-                    #endif
+                    if(blockId == 10000){
+                        #ifdef WATER_FLAT
+                            #if UNDERWATER_CAUSTICS == 2
+                                shdAlbedo.rgb = vec3(squared(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 3.2);
+                            #elif UNDERWATER_CAUSTICS == 1
+                                shdAlbedo.rgb = vec3(0.8);
+                                if(isEyeInWater == 1) shdAlbedo.rgb *= squared(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 4.0;
+                            #endif
+                        #else
+                            #if UNDERWATER_CAUSTICS == 2
+                                shdAlbedo.rgb *= squared(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 4.0;
+                            #elif UNDERWATER_CAUSTICS == 1
+                                if(isEyeInWater == 1) shdAlbedo.rgb *= squared(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 4.0;
+                            #endif
+                        #endif
+                    }
 
                     shdAlbedo.rgb = toLinear(shdAlbedo.rgb * vertexColor);
                 // If the object is fully opaque, set to black. This fixes "color leaking" filtered shadows
