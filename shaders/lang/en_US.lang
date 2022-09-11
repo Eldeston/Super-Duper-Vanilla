@@ -134,38 +134,39 @@ screen.LAVA_SETTINGS = Lava material settings
     value.TIMELAPSE_MODE.2 = Full
 
 #Configuration
-    #Overworld
-        screen.DIRECT_LIGHT_COLOR0 = Direct light color
-            option.LIGHT0_DR = Day red
-            option.LIGHT0_DG = Day green
-            option.LIGHT0_DB = Day blue
-            option.LIGHT0_DI = Day intensity
+    screen.OVERWORLD_SETTINGS = Overworld settings
+        screen.DAY_SETTINGS = Day settings
+            option.LIGHT0_DR = Light red
+            option.LIGHT0_DG = Light green
+            option.LIGHT0_DB = Light blue
+            option.LIGHT0_DI = Light intensity
 
-            option.LIGHT0_NR = Night red
-            option.LIGHT0_NG = Night green
-            option.LIGHT0_NB = Night blue
-            option.LIGHT0_NI = Night intensity
+            option.SKY0_DR = Sky red
+            option.SKY0_DG = Sky green
+            option.SKY0_DB = Sky blue
+            option.SKY0_DI = Sky intensity
 
-            option.LIGHT0_DDR = Dawn/dusk red
-            option.LIGHT0_DDG = Dawn/dusk green
-            option.LIGHT0_DDB = Dawn/dusk blue
-            option.LIGHT0_DDI = Dawn/dusk intensity
+        screen.NIGHT_SETTINGS = Night settings
+            option.LIGHT0_NR = Light red
+            option.LIGHT0_NG = Light green
+            option.LIGHT0_NB = Light blue
+            option.LIGHT0_NI = Light intensity
 
-        screen.SKY_COLOR0 = Sky color
-            option.SKY0_DR = Day red
-            option.SKY0_DG = Day green
-            option.SKY0_DB = Day blue
-            option.SKY0_DI = Day intensity
+            option.SKY0_NR = Sky red
+            option.SKY0_NG = Sky green
+            option.SKY0_NB = Sky blue
+            option.SKY0_NI = Sky intensity
 
-            option.SKY0_NR = Night red
-            option.SKY0_NG = Night green
-            option.SKY0_NB = Night blue
-            option.SKY0_NI = Night intensity
+        screen.DAWN_DUSK_SETTINGS = Dawn/dusk settings
+            option.LIGHT0_DDR = Light red
+            option.LIGHT0_DDG = Light green
+            option.LIGHT0_DDB = Light blue
+            option.LIGHT0_DDI = Light intensity
 
-            option.SKY0_DDR = Dawn/dusk red
-            option.SKY0_DDG = Dawn/dusk green
-            option.SKY0_DDB = Dawn/dusk blue
-            option.SKY0_DDI = Dawn/dusk intensity
+            option.SKY0_DDR = Sky red
+            option.SKY0_DDG = Sky green
+            option.SKY0_DDB = Sky blue
+            option.SKY0_DDI = Sky intensity
 
         screen.FOG_SETTINGS0 = Fog settings
             option.FOG0_VERTICAL_DENSITY_D = Vertical density day
@@ -173,31 +174,27 @@ screen.LAVA_SETTINGS = Lava material settings
             option.FOG0_VERTICAL_DENSITY_DD = Vertical density dawn/dusk
             option.FOG0_TOTAL_DENSITY = Total density
 
-    #Nether
+    screen.NETHER_SETTINGS = Nether settings
+        option.FOGn1_VERTICAL_DENSITY = Vertical density
+        option.FOGn1_TOTAL_DENSITY = Total density
+
         option.WORLDn1_VANILLA_FOGCOLI = Fog color intensity
 
-        screen.FOG_SETTINGSn1 = Fog settings
-            option.FOGn1_VERTICAL_DENSITY = Vertical density
-            option.FOGn1_TOTAL_DENSITY = Total density
+    screen.END_SETTINGS = End settings
+        option.WORLD1_CUSTOM_LIGHTCOLR = Light red
+        option.WORLD1_CUSTOM_LIGHTCOLG = Light green
+        option.WORLD1_CUSTOM_LIGHTCOLB = Light blue
+        option.WORLD1_CUSTOM_LIGHTCOLI = Light intensity
 
-    #End
-        screen.DIRECT_LIGHT_COLOR1 = Direct light color
-            option.WORLD1_CUSTOM_LIGHTCOLR = Light color red
-            option.WORLD1_CUSTOM_LIGHTCOLG = Light color green
-            option.WORLD1_CUSTOM_LIGHTCOLB = Light color blue
-            option.WORLD1_CUSTOM_LIGHTCOLI = Light color intensity
+        option.WORLD1_CUSTOM_FOGCOLR = Sky red
+        option.WORLD1_CUSTOM_FOGCOLG = Sky green
+        option.WORLD1_CUSTOM_FOGCOLB = Sky blue
+        option.WORLD1_CUSTOM_FOGCOLI = Sky intensity
 
-        screen.SKY_COLOR1 = Sky color
-            option.WORLD1_CUSTOM_FOGCOLR = Fog color red
-            option.WORLD1_CUSTOM_FOGCOLG = Fog color green
-            option.WORLD1_CUSTOM_FOGCOLB = Fog color blue
-            option.WORLD1_CUSTOM_FOGCOLI = Fog color intensity
+        option.FOG1_VERTICAL_DENSITY = Vertical density
+        option.FOG1_TOTAL_DENSITY = Total density
 
-        screen.FOG_SETTINGS1 = Fog settings
-            option.FOG1_VERTICAL_DENSITY = Vertical density
-            option.FOG1_TOTAL_DENSITY = Total density
-
-    screen.BLOCK_LIGHT_COLOR = Block light color
+    screen.BLOCK_LIGHT_COLOR = Block light colors
         option.BLOCKLIGHT_R = Block light red
         option.BLOCKLIGHT_G = Block light green
         option.BLOCKLIGHT_B = Block light blue
