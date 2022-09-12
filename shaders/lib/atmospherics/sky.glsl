@@ -41,7 +41,7 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float LV, bool isSky, bool isR
     vec3 finalCol = skyCol;
 
     #ifdef WORLD_SKY_GROUND
-        finalCol.rg *= smoothen(saturate(1.0 + (nPlayerPos.y * 4.0) / (rainStrength * PI + 1.0)));
+        finalCol.rg *= smoothen(saturate(1.0 + nPlayerPos.y * 4.0));
     #endif
 
     #if defined WORLD_HORIZON && defined WORLD_LIGHT
@@ -54,23 +54,23 @@ vec3 getSkyColor(vec3 skyBoxCol, vec3 nPlayerPos, float LV, bool isSky, bool isR
 
         #ifdef STORY_MODE_CLOUDS
             #ifndef FORCE_DISABLE_CLOUDS
-                float cloudHeightFade = nPlayerPos.y - 0.125;
+                float cloudHeightFade = nPlayerPos.y - 0.125 - rainStrength * 0.175;
                 
                 if(cloudHeightFade > 0.005){
-                    vec2 planeUv = nPlayerPos.xz * (16.0 / (nPlayerPos.y * 3.0));
+                    vec2 planeUv = nPlayerPos.xz * (5.33333333 / nPlayerPos.y);
 
                     float clouds = cloudParallax(planeUv, ANIMATION_FRAMETIME);
 
                     #ifdef DYNAMIC_CLOUDS
                         float fade = smootherstep(sin(ANIMATION_FRAMETIME * FADE_SPEED) * 0.5 + 0.5);
-                        float clouds2 = cloudParallax(-planeUv, 1024.0 - ANIMATION_FRAMETIME);
+                        float clouds2 = cloudParallax(-planeUv, -ANIMATION_FRAMETIME);
                         clouds = mix(mix(clouds, clouds2, fade), max(clouds, clouds2), rainStrength);
                     #endif
 
                     #ifdef WORLD_LIGHT
-                        finalCol += lightCol * (clouds * min(1.0, cloudHeightFade * 4.0));
+                        finalCol += lightCol * (clouds * min(1.0, cloudHeightFade * (4.0 - rainStrength * 3.2)));
                     #else
-                        finalCol += clouds * min(1.0, cloudHeightFade * 4.0);
+                        finalCol += clouds * min(1.0, cloudHeightFade * (4.0 - rainStrength * 3.2));
                     #endif
                 }
             #endif
