@@ -146,6 +146,10 @@
         vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
         vec3 feetPlayerPos = eyePlayerPos + gbufferModelViewInverse[3].xyz;
 
+        // Get view distance
+        float viewDist = length(viewPos);
+        // Get normalized eyePlayerPos
+        vec3 nEyePlayerPos = eyePlayerPos / viewDist;
         // Get scene color
         vec3 sceneCol = texelFetch(gcolor, screenTexelCoord, 0).rgb;
 
@@ -157,11 +161,6 @@
 
         // If the object is a transparent render separate lighting
         if(texelFetch(depthtex1, screenTexelCoord, 0).x > screenPos.z){
-            // Get view distance
-            float viewDist = length(viewPos);
-            // Get normalized eyePlayerPos
-            vec3 nEyePlayerPos = eyePlayerPos / viewDist;
-
             // Declare and get materials
             vec2 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xy;
             vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
@@ -184,7 +183,7 @@
 
         #ifdef WORLD_LIGHT
             // Apply volumetric light
-            sceneCol += getVolumetricLight(feetPlayerPos, dither.x, screenPos.z == 1) * min(1.0, VOL_LIGHT_BRIGHTNESS + VOL_LIGHT_BRIGHTNESS * isEyeInWater) * shdFade;
+            sceneCol += getVolumetricLight(nEyePlayerPos, viewDist, screenPos.z, dither.x) * min(1.0, VOL_LIGHT_BRIGHTNESS + VOL_LIGHT_BRIGHTNESS * isEyeInWater) * shdFade;
         #endif
 
     /* DRAWBUFFERS:0 */

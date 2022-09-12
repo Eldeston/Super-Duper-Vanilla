@@ -2,45 +2,40 @@
 #endif
 
 #ifdef WORLD_LIGHT
-	vec3 getVolumetricLight(vec3 feetPlayerPos, float dither, bool isSky){
+	vec3 getVolumetricLight(vec3 nEyePlayerPos, float viewDist, float depth, float dither){
 		// Return 0 if volumetric brightness is 0
 		if(VOL_LIGHT_BRIGHTNESS == 0) return vec3(0);
 
 		float totalFogDensity = FOG_TOTAL_DENSITY * ((isEyeInWater == 0 ? rainStrength * PI : PI) + 1.0);
-		float dist = length(feetPlayerPos);
 		float heightFade = 1.0;
-
-		vec3 nFeetPlayerPos = feetPlayerPos / dist;
 
 		// Fade VL, but do not apply to underwater VL
 		if(isEyeInWater != 1){
-			heightFade = 1.0 - squared(max(0.0, nFeetPlayerPos.y));
-			heightFade = isSky ? squared(squared(heightFade * heightFade)) : heightFade * heightFade;
+			heightFade = 1.0 - squared(max(0.0, nEyePlayerPos.y));
+			heightFade = depth == 1 ? squared(squared(heightFade * heightFade)) : heightFade * heightFade;
 			heightFade += (1.0 - heightFade) * rainStrength * 0.5;
 		}
 
 		// Border fog
 		// Modified Complementary border fog calculation, thanks Emin!
 		#ifdef BORDER_FOG
-			float volumetricFogDensity = 1.0 - exp2(-dist * totalFogDensity - exp2(dist / far * 21.0 - 18.0));
+			float volumetricFogDensity = 1.0 - exp2(-viewDist * totalFogDensity - exp2(viewDist / far * 21.0 - 18.0));
 		#else
-			float volumetricFogDensity = 1.0 - exp2(-dist * totalFogDensity);
+			float volumetricFogDensity = 1.0 - exp2(-viewDist * totalFogDensity);
 		#endif
 
 		#if defined VOL_LIGHT && defined SHD_ENABLE
-			// Fix for rays going too far from scene
-			vec3 endPos = nFeetPlayerPos * (min(min(far, shadowDistance), dist) * 0.14285714);
+			// Normalize then unormalize with viewDist and clamping it at minimum distance between far and current shadowDistance
+			vec3 endPos = mat3(shadowProjection) * (mat3(shadowModelView) * (nEyePlayerPos * min(min(far, shadowDistance), viewDist))) * 0.14285714;
 
-			// Apply dithering
-			vec3 startPos = endPos * dither;
-
-			// Pre calculate the full shadow clip space conversion matrix
-			mat4 shdClipSpace = shadowProjection * shadowModelView;
+			// Apply dithering added to the eyePlayerPos "camera" position converted to shadow clip space
+			vec3 startPos = mat3(shadowProjection) * shadowModelView[3].xyz + shadowProjection[3].xyz + endPos * dither;
 			
 			vec3 rayData = vec3(0);
 			for(int x = 0; x < 7; x++){
-				// No need to multiply 2 matrices and a vector every loop and just do a matrix times vector multiplication
-				rayData += getShdTex(distort(mat3(shdClipSpace) * startPos + shdClipSpace[3].xyz) * 0.5 + 0.5);
+				// No need to do anymore fancy matrix multiplications during the loop
+				rayData += getShdTex(distort(startPos) * 0.5 + 0.5);
+				// We continue tracing!
 				startPos += endPos;
 			}
 			
