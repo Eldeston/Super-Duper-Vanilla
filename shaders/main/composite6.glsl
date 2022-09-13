@@ -63,9 +63,12 @@
             // Remap to bloom tile texture coordinates
             vec2 texCoord = screenCoord / exp2(LOD) + coords;
 
+            vec2 topRightCorner = texCoord + pixSize;
+            vec2 bottomLeftCorner = texCoord - pixSize;
+
             // Apply box blur all tiles
-            return texture2DLod(colortex4, texCoord - pixSize, 0).rgb + texture2DLod(colortex4, texCoord + pixSize, 0).rgb +
-                texture2DLod(colortex4, texCoord - vec2(pixSize.x, -pixSize.y), 0).rgb + texture2DLod(colortex4, texCoord + vec2(pixSize.x, -pixSize.y), 0).rgb;
+            return texture2DLod(colortex4, bottomLeftCorner, 0).rgb + texture2DLod(colortex4, topRightCorner, 0).rgb +
+                texture2DLod(colortex4, vec2(bottomLeftCorner.x, topRightCorner.y), 0).rgb + texture2DLod(colortex4, vec2(topRightCorner.x, bottomLeftCorner.y), 0).rgb;
         }
     #endif
 
@@ -137,10 +140,10 @@
 
         #ifdef AUTO_EXPOSURE
             // Get center pixel current average scene luminance and mix previous and current pixel...
-            vec3 centerPixCol = texture2DLod(gcolor, vec2(0.5), 9).rgb;
+            float centerPixLuminance = sumOf(texture2DLod(gcolor, vec2(0.5), 9).rgb);
 
             // Accumulate current luminance
-            float tempPixLuminance = mix(centerPixCol.r + centerPixCol.g + centerPixCol.b, texelFetch(colortex5, ivec2(0), 0).a, exp2(-AUTO_EXPOSURE_SPEED * frameTime));
+            float tempPixLuminance = mix(centerPixLuminance, texelFetch(colortex5, ivec2(1), 0).a, exp2(-AUTO_EXPOSURE_SPEED * frameTime));
 
             // Apply auto exposure by dividing it by the pixel's luminance in sRGB
             color /= max(sqrt(tempPixLuminance), MIN_EXPOSURE);

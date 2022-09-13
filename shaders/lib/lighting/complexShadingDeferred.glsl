@@ -52,9 +52,7 @@ vec3 complexShadingDeferred(vec3 sceneCol, vec3 screenPos, vec3 viewPos, vec3 no
 		#endif
 
 		// Simplified and modified version of BSL's reflection PBR calculation
-		if(isMetal) sceneCol *= 1.0 - smoothness;
-		else sceneCol *= 1.0 - fresnel;
-		
+		sceneCol *= isMetal ? vec3(1.0 - smoothness) : 1.0 - fresnel;
 		sceneCol += reflectCol * fresnel;
 	}
 

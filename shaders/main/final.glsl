@@ -41,8 +41,11 @@
         vec3 sharpenFilter(vec3 color, vec2 texCoord){
             vec2 pixSize = 1.0 / vec2(viewWidth, viewHeight);
 
-            vec3 blur = texture2DLod(gcolor, texCoord + pixSize, 0).rgb + texture2DLod(gcolor, texCoord - pixSize, 0).rgb +
-                texture2DLod(gcolor, texCoord + vec2(pixSize.x, -pixSize.y), 0).rgb + texture2DLod(gcolor, texCoord - vec2(pixSize.x, -pixSize.y), 0).rgb;
+            vec2 topRightCorner = texCoord + pixSize;
+            vec2 bottomLeftCorner = texCoord - pixSize;
+
+            vec3 blur = texture2DLod(gcolor, bottomLeftCorner, 0).rgb + texture2DLod(gcolor, topRightCorner, 0).rgb +
+                texture2DLod(gcolor, vec2(bottomLeftCorner.x, topRightCorner.y), 0).rgb + texture2DLod(gcolor, vec2(topRightCorner.x, bottomLeftCorner.y), 0).rgb;
             
             return color * 2.0 - blur * 0.25;
         }
