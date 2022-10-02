@@ -33,6 +33,9 @@
 ## Official CurseForge Page
    Super Duper Vanilla just happen to be on CurseForge! Stable and latest releases will always be available there. Check it out [here](https://www.curseforge.com/minecraft/customization/super-duper-vanilla-shaders) and show your support by clicking on one of the download links there!
 
+## Super Duper Vanilla Installer
+   Alternatively, you can use this installer developed by @Steb allowing you to install either the release versions of SDV or the development versions. While the installer's task is relatively simple, it's still a WIP. [Use this link to go to the installer repository](https://github.com/steb-git/super-duper-vanilla-installer).
+
 ## About Creator
    Try out my other shader for Minecraft Bedrock, ESTN Shaders, on McpeDL!
    [![img](https://github.com/Eldeston/ESTN-Shaders/blob/master/textures/ui/title.png)](https://mcpedl.com/estn-shaders/?cookie_check=1)
