@@ -167,7 +167,7 @@
             vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
 
             // Apply deffered shading
-            sceneCol = complexShadingDeferred(sceneCol, screenPos, viewPos, normal, albedo, viewDist, matRaw0.x, matRaw0.y, dither);
+            sceneCol = complexShadingDeferred(sceneCol, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, viewDist, matRaw0.x, matRaw0.y, dither);
 
             // Get skyCol as our fogCol. Do basic sky render.
             vec3 fogCol = getSkyRender(nEyePlayerPos, false, false);

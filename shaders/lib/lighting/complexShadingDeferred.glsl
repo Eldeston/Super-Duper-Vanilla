@@ -1,13 +1,10 @@
 vec3 complexShadingDeferred(vec3 sceneCol, vec3 screenPos, vec3 viewPos, vec3 normal, vec3 albedo, float viewDist, float metallic, float smoothness, vec3 dither){
-	#if defined SSGI || defined SSR
-		// Get model view normal
-		normal = mat3(gbufferModelView) * normal;
-	#endif
-
+	vec3 noiseUnitVector = generateUnitVector(dither.xy);
+	
 	// Calculate SSGI
 	#ifdef SSGI
 		// Get SSGI screen coordinates
-		vec3 SSGIcoord = rayTraceScene(screenPos, viewPos, normalize(normal + generateUnitVector(dither.xy)), dither.z, SSGI_STEPS, SSGI_BISTEPS);
+		vec3 SSGIcoord = rayTraceScene(screenPos, viewPos, normalize(normal + noiseUnitVector), dither.z, SSGI_STEPS, SSGI_BISTEPS);
 
 		// If sky don't do SSGI
 		#ifdef PREVIOUS_FRAME
@@ -27,12 +24,10 @@ vec3 complexShadingDeferred(vec3 sceneCol, vec3 screenPos, vec3 viewPos, vec3 no
 		vec3 fresnel = getFresnelSchlick(max(dot(normal, -nViewPos), 0.0),
 			isMetal ? albedo : vec3(metallic)) * smoothness;
 
-		// Calculate SSR and sky reflections
-		#ifdef SSR
-			#ifdef ROUGH_REFLECTIONS
-				// Rough the normals with noise
-				normal = normalize(normal + (dither - 0.5) * squared(1.0 - smoothness) * 0.8);
-			#endif
+		#ifdef ROUGH_REFLECTIONS
+			// Rough the normals with noise
+			normal = normalize(normal + noiseUnitVector * squared(1.0 - smoothness) * 0.5);
+		#endif
 
 		// Get reflected view direction
 		vec3 reflectedViewDir = reflect(nViewPos, normal);
