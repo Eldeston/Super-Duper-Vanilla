@@ -202,7 +202,7 @@
             gl_FragData[0] = vec4(endPortalAlbedo * EMISSIVE_INTENSITY * EMISSIVE_INTENSITY, 1); // gcolor
 
             // End portal fix
-            gl_FragData[1] = vec4(TBN[2], 1); // colortex1
+            gl_FragData[1] = vec4(0, 0, 1, 1); // colortex1
             gl_FragData[3] = vec4(0, 0, 0, 1); // colortex3
 
             return; // Return immediately, no need for lighting calculation
