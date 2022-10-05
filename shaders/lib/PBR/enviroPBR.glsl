@@ -11,7 +11,7 @@ void enviroPBR(inout structPBR material){
 
     if(rainMatFact > 0.005){
         vec2 noiseData = texture2DLod(noisetex, worldPos.xz * 0.001953125, 0).xy;
-        rainMatFact *= saturate(noiseData.y + noiseData.x - 0.25);
+        rainMatFact *= saturate(noiseData.y + noiseData.x - 0.5);
 
         material.normal = mix(material.normal, TBN[2], rainMatFact);
         material.metallic = max(0.04 * rainMatFact, material.metallic);
