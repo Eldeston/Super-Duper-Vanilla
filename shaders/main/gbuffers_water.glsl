@@ -4,6 +4,10 @@ uniform float frameTimeCounter;
 /// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
 
 #ifdef VERTEX
+    #ifdef WORLD_LIGHT
+        flat out mat3 shdVertexView;
+    #endif
+
     flat out mat3 TBN;
 
     flat out int blockId;
@@ -22,10 +26,16 @@ uniform float frameTimeCounter;
     out vec3 worldPos;
 
     out vec4 vertexPos;
+    out vec4 feetPlayerPos;
 
     // View matrix uniforms
     uniform mat4 gbufferModelView;
     uniform mat4 gbufferModelViewInverse;
+
+    #ifdef WORLD_LIGHT
+        // Shadow view matrix uniforms
+        uniform mat4 shadowModelView;
+    #endif
 
     // Position uniforms
     uniform vec3 cameraPosition;
@@ -68,13 +78,20 @@ uniform float frameTimeCounter;
         // Get vertex normal
         vec3 vertexNormal = normalize(gl_Normal);
 
-        // Get vertex position (feet player pos)
-        vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+        // Get vertex position (view player pos)
+        vertexPos = gl_ModelViewMatrix * gl_Vertex;
+        // Get feet player pos
+        feetPlayerPos = gbufferModelViewInverse * vertexPos;
         // Get world position
-        worldPos = vertexPos.xyz + cameraPosition;
+        worldPos = feetPlayerPos.xyz + cameraPosition;
 
         // Calculate TBN matrix
-	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal), vertexNormal));
+	    TBN = gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal), vertexNormal);
+
+        #ifdef WORLD_LIGHT
+            // Shadow light view matrix
+            shdVertexView = mat3(shadowModelView) * mat3(gbufferModelViewInverse);
+        #endif
 
         // Lightmap fix for mods
         #ifdef WORLD_SKYLIGHT
@@ -93,15 +110,15 @@ uniform float frameTimeCounter;
         #endif
 
         #ifdef ANIMATE
-	        getVertexAnimations(vertexPos.xyz, worldPos, texCoord, mc_midTexCoord.xy, mc_Entity.x, lmCoord.y);
+	        getVertexAnimations(feetPlayerPos.xyz, worldPos, texCoord, mc_midTexCoord.xy, mc_Entity.x, lmCoord.y);
         #endif
 
         #ifdef WORLD_CURVATURE
-            vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
+            feetPlayerPos.y -= dot(feetPlayerPos.xz, feetPlayerPos.xz) / WORLD_CURVATURE_SIZE;
         #endif
         
         // Clip pos
-	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
+	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * feetPlayerPos);
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
@@ -112,6 +129,10 @@ uniform float frameTimeCounter;
 /// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
 
 #ifdef FRAGMENT
+    #ifdef WORLD_LIGHT
+        flat in mat3 shdVertexView;
+    #endif
+
     flat in mat3 TBN;
     
     flat in int blockId;
@@ -130,6 +151,7 @@ uniform float frameTimeCounter;
     in vec3 worldPos;
 
     in vec4 vertexPos;
+    in vec4 feetPlayerPos;
 
     // Get albedo texture
     uniform sampler2D texture;
@@ -220,7 +242,7 @@ uniform float frameTimeCounter;
 
             #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
                 // Water color and foam 
-                float waterDepth = toView(texelFetch(depthtex1, ivec2(gl_FragCoord.xy), 0).x) - toView(gl_FragCoord.z);
+                float waterDepth = toView(texelFetch(depthtex1, ivec2(gl_FragCoord.xy), 0).x) - vertexPos.z;
             #endif
 
             #ifdef WATER_STYLIZE_ABSORPTION

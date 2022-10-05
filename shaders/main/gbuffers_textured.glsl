@@ -1,19 +1,25 @@
 /// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
 
 #ifdef VERTEX
+    #ifdef WORLD_LIGHT
+        flat out mat3 shdVertexView;
+    #endif
+
     flat out vec3 vertexColor;
     flat out vec3 vertexNormal;
 
     out vec2 lmCoord;
     out vec2 texCoord;
 
-    out vec4 vertexPos;
+    out vec4 feetPlayerPos;
 
     // View matrix uniforms
+    uniform mat4 gbufferModelView;
     uniform mat4 gbufferModelViewInverse;
 
-    #ifdef WORLD_CURVATURE
-        uniform mat4 gbufferModelView;
+    #ifdef WORLD_LIGHT
+        // Shadow view matrix uniforms
+        uniform mat4 shadowModelView;
     #endif
 
     #if ANTI_ALIASING == 2
@@ -30,11 +36,16 @@
         // Get vertex color
         vertexColor = gl_Color.rgb;
 
-        // Get vertex normal
-        vertexNormal = mat3(gbufferModelViewInverse) * normalize(gl_NormalMatrix * gl_Normal);
+        // Get vertex normal (view space)
+        vertexNormal = normalize(gl_NormalMatrix * gl_Normal);
         
-        // Get vertex position (feet player pos)
-        vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+        // Get feet player pos
+        feetPlayerPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+
+        #ifdef WORLD_LIGHT
+            // Shadow light view matrix
+            shdVertexView = mat3(shadowModelView) * mat3(gbufferModelViewInverse);
+        #endif
 
         // Lightmap fix for mods
         #ifdef WORLD_SKYLIGHT
@@ -44,10 +55,10 @@
         #endif
         
 	    #ifdef WORLD_CURVATURE
-            vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
+            feetPlayerPos.y -= dot(feetPlayerPos.xz, feetPlayerPos.xz) / WORLD_CURVATURE_SIZE;
             
             // Clip pos
-            gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
+            gl_Position = gl_ProjectionMatrix * (gbufferModelView * feetPlayerPos);
         #else
             gl_Position = ftransform();
         #endif
@@ -61,13 +72,17 @@
 /// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
 
 #ifdef FRAGMENT
+    #ifdef WORLD_LIGHT
+        flat in mat3 shdVertexView;
+    #endif
+
     flat in vec3 vertexColor;
     flat in vec3 vertexNormal;
 
     in vec2 lmCoord;
     in vec2 texCoord;
 
-    in vec4 vertexPos;
+    in vec4 feetPlayerPos;
 
     // Get albedo texture
     uniform sampler2D texture;

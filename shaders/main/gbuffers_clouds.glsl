@@ -1,15 +1,24 @@
 /// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
 
 #ifdef VERTEX
+    #ifdef WORLD_LIGHT
+        flat out mat3 shdVertexView;
+    #endif
+
     flat out vec3 vertexNormal;
 
     out vec2 texCoord;
 
-    out vec4 vertexPos;
+    out vec4 feetPlayerPos;
 
     // View matrix uniforms
     uniform mat4 gbufferModelView;
     uniform mat4 gbufferModelViewInverse;
+
+    #ifdef WORLD_LIGHT
+        // Shadow view matrix uniforms
+        uniform mat4 shadowModelView;
+    #endif
 
     #if ANTI_ALIASING == 2
         /* Screen resolutions */
@@ -30,11 +39,17 @@
     void main(){
         // Get texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
-        // Get vertex normal
-        vertexNormal = mat3(gbufferModelViewInverse) * normalize(gl_NormalMatrix * gl_Normal);
 
-        // Get vertex position (feet player pos)
-        vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+        // Get vertex normal (view space)
+        vertexNormal = normalize(gl_NormalMatrix * gl_Normal);
+
+        // Get feet player pos
+        feetPlayerPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+
+        #ifdef WORLD_LIGHT
+            // Shadow light view matrix
+            shdVertexView = mat3(shadowModelView) * mat3(gbufferModelViewInverse);
+        #endif
 
         #ifdef DOUBLE_VANILLA_CLOUDS
             // May need to work on this to add more than 2 clouds in the future.
@@ -42,12 +57,12 @@
                 // If second instance, invert texture coordinates.
                 texCoord = -texCoord;
                 // Increase cloud height for the second instance.
-                vertexPos.y += SECOND_CLOUD_HEIGHT;
+                feetPlayerPos.y += SECOND_CLOUD_HEIGHT;
             }
         #endif
         
         // Clip pos
-	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
+	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * feetPlayerPos);
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
@@ -58,11 +73,15 @@
 /// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
 
 #ifdef FRAGMENT
+    #ifdef WORLD_LIGHT
+        flat in mat3 shdVertexView;
+    #endif
+
     flat in vec3 vertexNormal;
 
     in vec2 texCoord;
-    
-    in vec4 vertexPos;
+
+    in vec4 feetPlayerPos;
 
     // Get albedo texture
     uniform sampler2D texture;

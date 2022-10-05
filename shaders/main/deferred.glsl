@@ -23,10 +23,6 @@
         uniform sampler2D depthtex0;
         uniform sampler2D colortex1;
 
-        /* Matrix uniforms */
-        // View matrix uniforms
-        uniform mat4 gbufferModelView;
-
         // Projection matrix uniforms
         uniform mat4 gbufferProjection;
         uniform mat4 gbufferProjectionInverse;
@@ -59,7 +55,7 @@
 
                 // Check if normal has a direction
                 if(normal.x + normal.y + normal.z != 0)
-                    ambientOcclusion = getSSAO(toView(vec3(screenCoord, depth)), mat3(gbufferModelView) * normal);
+                    ambientOcclusion = getSSAO(toView(vec3(screenCoord, depth)), normal);
             }
             
         /* DRAWBUFFERS:2 */
