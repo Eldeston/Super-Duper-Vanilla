@@ -3,13 +3,16 @@
 #ifdef VERTEX
     #ifdef WORLD_LIGHT
         flat out mat3 shdVertexView;
+
+        #ifdef SHD_ENABLE
+            out vec3 shdPos;
+        #endif
     #endif
 
     flat out vec3 vertexNormal;
 
     out vec2 texCoord;
 
-    out vec4 feetPlayerPos;
 
     // View matrix uniforms
     uniform mat4 gbufferModelView;
@@ -18,6 +21,11 @@
     #ifdef WORLD_LIGHT
         // Shadow view matrix uniforms
         uniform mat4 shadowModelView;
+
+        #ifdef SHD_ENABLE
+            // Shadow projection matrix uniforms
+            uniform mat4 shadowProjection;
+        #endif
     #endif
 
     #if ANTI_ALIASING == 2
@@ -44,11 +52,16 @@
         vertexNormal = normalize(gl_NormalMatrix * gl_Normal);
 
         // Get feet player pos
-        feetPlayerPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+        vec4 feetPlayerPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
 
         #ifdef WORLD_LIGHT
             // Shadow light view matrix
             shdVertexView = mat3(shadowModelView) * mat3(gbufferModelViewInverse);
+
+            #ifdef SHD_ENABLE
+                // Get shadow clip space pos
+                shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * feetPlayerPos.xyz + shadowModelView[3].xyz) + shadowProjection[3].xyz;
+            #endif
         #endif
 
         #ifdef DOUBLE_VANILLA_CLOUDS
@@ -75,21 +88,20 @@
 #ifdef FRAGMENT
     #ifdef WORLD_LIGHT
         flat in mat3 shdVertexView;
+
+        #ifdef SHD_ENABLE
+            in vec3 shdPos;
+        #endif
     #endif
 
     flat in vec3 vertexNormal;
 
     in vec2 texCoord;
 
-    in vec4 feetPlayerPos;
-
     // Get albedo texture
     uniform sampler2D texture;
 
     #ifdef WORLD_LIGHT
-        // Shadow view matrix uniforms
-        uniform mat4 shadowModelView;
-
         #ifdef SHD_ENABLE
             // Shadow projection matrix uniforms
             uniform mat4 shadowProjection;

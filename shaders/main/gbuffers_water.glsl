@@ -6,6 +6,10 @@ uniform float frameTimeCounter;
 #ifdef VERTEX
     #ifdef WORLD_LIGHT
         flat out mat3 shdVertexView;
+
+        #ifdef SHD_ENABLE
+            out vec3 shdPos;
+        #endif
     #endif
 
     flat out mat3 TBN;
@@ -26,7 +30,6 @@ uniform float frameTimeCounter;
     out vec3 worldPos;
 
     out vec4 vertexPos;
-    out vec4 feetPlayerPos;
 
     // View matrix uniforms
     uniform mat4 gbufferModelView;
@@ -35,6 +38,11 @@ uniform float frameTimeCounter;
     #ifdef WORLD_LIGHT
         // Shadow view matrix uniforms
         uniform mat4 shadowModelView;
+
+        #ifdef SHD_ENABLE
+            // Shadow projection matrix uniforms
+            uniform mat4 shadowProjection;
+        #endif
     #endif
 
     // Position uniforms
@@ -81,7 +89,7 @@ uniform float frameTimeCounter;
         // Get vertex position (view player pos)
         vertexPos = gl_ModelViewMatrix * gl_Vertex;
         // Get feet player pos
-        feetPlayerPos = gbufferModelViewInverse * vertexPos;
+        vec4 feetPlayerPos = gbufferModelViewInverse * vertexPos;
         // Get world position
         worldPos = feetPlayerPos.xyz + cameraPosition;
 
@@ -91,6 +99,11 @@ uniform float frameTimeCounter;
         #ifdef WORLD_LIGHT
             // Shadow light view matrix
             shdVertexView = mat3(shadowModelView) * mat3(gbufferModelViewInverse);
+
+            #ifdef SHD_ENABLE
+                // Get shadow clip space pos
+                shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * feetPlayerPos.xyz + shadowModelView[3].xyz) + shadowProjection[3].xyz;
+            #endif
         #endif
 
         // Lightmap fix for mods
@@ -131,6 +144,10 @@ uniform float frameTimeCounter;
 #ifdef FRAGMENT
     #ifdef WORLD_LIGHT
         flat in mat3 shdVertexView;
+
+        #ifdef SHD_ENABLE
+            in vec3 shdPos;
+        #endif
     #endif
 
     flat in mat3 TBN;
@@ -151,7 +168,6 @@ uniform float frameTimeCounter;
     in vec3 worldPos;
 
     in vec4 vertexPos;
-    in vec4 feetPlayerPos;
 
     // Get albedo texture
     uniform sampler2D texture;
@@ -160,9 +176,6 @@ uniform float frameTimeCounter;
     uniform mat4 gbufferProjectionInverse;
 
     #ifdef WORLD_LIGHT
-        // Shadow view matrix uniforms
-        uniform mat4 shadowModelView;
-
         #ifdef SHD_ENABLE
             // Shadow projection matrix uniforms
             uniform mat4 shadowProjection;

@@ -43,26 +43,25 @@ vec4 complexShadingGbuffers(structPBR material){
 				// Cave light leak fix
 				float caveFixShdFactor = isEyeInWater == 1 ? 1.0 : min(1.0, lmCoord.y * 2.0) * (1.0 - eyeBrightFact) + eyeBrightFact;
 
-				// Get shadow pos
-				vec3 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * feetPlayerPos.xyz + shadowModelView[3].xyz) + shadowProjection[3].xyz;
+				// We already have shadow pos calculated in vertex so we'll use it
 				
 				// Bias mutilplier, adjusts according to the current shadow distance and resolution
 				float biasAdjustMult = log2(max(4.0, shadowDistance - shadowMapResolution * 0.125)) * 0.25;
 				float distortFactor = getDistortFactor(shdPos.xy);
 
 				// Apply bias according to normal in shadow space before
-				shdPos += (mat3(shadowProjection) * (shdVertexView * material.normal)) * distortFactor * biasAdjustMult;
-				shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
+				vec3 newShdPos = shdPos + (mat3(shadowProjection) * (shdVertexView * material.normal)) * distortFactor * biasAdjustMult;
+				newShdPos = distort(newShdPos, distortFactor) * 0.5 + 0.5;
 
 				// Sample shadows
 				#ifdef SHD_FILTER
 					#if ANTI_ALIASING >= 2
-						shadowCol = getShdFilter(shdPos, toRandPerFrame(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x, frameTimeCounter) * PI2) * caveFixShdFactor * shdFade * material.parallaxShd;
+						shadowCol = getShdFilter(newShdPos, toRandPerFrame(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x, frameTimeCounter) * PI2) * caveFixShdFactor * shdFade * material.parallaxShd;
 					#else
-						shadowCol = getShdFilter(shdPos, texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x * PI2) * caveFixShdFactor * shdFade * material.parallaxShd;
+						shadowCol = getShdFilter(newShdPos, texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x * PI2) * caveFixShdFactor * shdFade * material.parallaxShd;
 					#endif
 				#else
-					shadowCol = getShdTex(shdPos) * caveFixShdFactor * shdFade * material.parallaxShd;
+					shadowCol = getShdTex(newShdPos) * caveFixShdFactor * shdFade * material.parallaxShd;
 				#endif
 			}
 		#else

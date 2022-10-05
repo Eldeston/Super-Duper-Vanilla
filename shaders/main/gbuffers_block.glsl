@@ -3,6 +3,10 @@
 #ifdef VERTEX
     #ifdef WORLD_LIGHT
         flat out mat3 shdVertexView;
+
+        #ifdef SHD_ENABLE
+            out vec3 shdPos;
+        #endif
     #endif
 
     flat out mat3 TBN;
@@ -19,7 +23,6 @@
     #endif
 
     out vec4 vertexPos;
-    out vec4 feetPlayerPos;
 
     // View matrix uniforms
     uniform mat4 gbufferModelView;
@@ -28,6 +31,11 @@
     #ifdef WORLD_LIGHT
         // Shadow view matrix uniforms
         uniform mat4 shadowModelView;
+
+        #ifdef SHD_ENABLE
+            // Shadow projection matrix uniforms
+            uniform mat4 shadowProjection;
+        #endif
     #endif
 
     #if ANTI_ALIASING == 2
@@ -58,7 +66,7 @@
         // Get vertex position (view player pos)
         vertexPos = gl_ModelViewMatrix * gl_Vertex;
         // Get feet player pos
-        feetPlayerPos = gbufferModelViewInverse * vertexPos;
+        vec4 feetPlayerPos = gbufferModelViewInverse * vertexPos;
 
         // Calculate TBN matrix
 	    TBN = gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal), vertexNormal);
@@ -66,6 +74,11 @@
         #ifdef WORLD_LIGHT
             // Shadow light view matrix
             shdVertexView = mat3(shadowModelView) * mat3(gbufferModelViewInverse);
+
+            #ifdef SHD_ENABLE
+                // Get shadow clip space pos
+                shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * feetPlayerPos.xyz + shadowModelView[3].xyz) + shadowProjection[3].xyz;
+            #endif
         #endif
 
         // Lightmap fix for mods
@@ -104,6 +117,10 @@
 #ifdef FRAGMENT
     #ifdef WORLD_LIGHT
         flat in mat3 shdVertexView;
+
+        #ifdef SHD_ENABLE
+            in vec3 shdPos;
+        #endif
     #endif
 
     flat in mat3 TBN;
@@ -120,15 +137,11 @@
     #endif
 
     in vec4 vertexPos;
-    in vec4 feetPlayerPos;
 
     // Get albedo texture
     uniform sampler2D texture;
 
     #ifdef WORLD_LIGHT
-        // Shadow view matrix uniforms
-        uniform mat4 shadowModelView;
-
         #ifdef SHD_ENABLE
             // Shadow projection matrix uniforms
             uniform mat4 shadowProjection;
