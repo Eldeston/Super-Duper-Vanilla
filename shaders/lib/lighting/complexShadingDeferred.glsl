@@ -34,9 +34,11 @@ vec3 complexShadingDeferred(vec3 sceneCol, vec3 screenPos, vec3 viewPos, vec3 no
 				normal = normalize(normal + (dither - 0.5) * squared(1.0 - smoothness) * 0.8);
 			#endif
 
-			// Get reflected view direction
-			vec3 reflectedViewDir = reflect(nViewPos, normal);
+		// Get reflected view direction
+		vec3 reflectedViewDir = reflect(nViewPos, normal);
 
+		// Calculate SSR and sky reflections
+		#ifdef SSR
 			// Get SSR screen coordinates
 			vec3 SSRCoord = rayTraceScene(screenPos, viewPos, reflectedViewDir, dither.z, SSR_STEPS, SSR_BISTEPS);
 			
