@@ -1,6 +1,11 @@
-vec3 getFresnelSchlick(float cosTheta, vec3 F0){
+vec3 getFresnelSchlick(vec3 F0, float cosTheta){
     // Fast and more but not totally accurate fresnel
-	return F0 + (1.0 - F0) * exp2(-9.0 * cosTheta);
+	return F0 + (1.0 - F0) * cosTheta;
+}
+
+float getFresnelSchlick(float F0, float cosTheta){
+    // Fast and more but not totally accurate fresnel
+	return F0 + (1.0 - F0) * cosTheta;
 }
 
 // Source: https://www.guerrilla-games.com/read/decima-engine-advances-in-lighting-and-aa
@@ -41,7 +46,7 @@ float getNoHSquared(float radiusTan, float NoL, float NoV, float VoL){
 }
 
 // Thanks for LVutner#5199 for his code!
-vec3 getSpecBRDF(vec3 V, vec3 L, vec3 N, vec3 F0, float NL, float roughness){
+vec3 getSpecBRDF(vec3 V, vec3 L, vec3 N, vec3 albedo, float NL, float metallic, float roughness){
     // Halfway vector
     vec3 H = normalize(L + V);
     
@@ -49,9 +54,6 @@ vec3 getSpecBRDF(vec3 V, vec3 L, vec3 N, vec3 F0, float NL, float roughness){
     float NV = max(0.0, dot(N, V));
     float LH = max(0.0, dot(L, H));
     float LV = dot(L, V);
-
-    // Fresnel
-    vec3 fresnel = getFresnelSchlick(LH, F0);
     
     // Roughness remapping
     float alphaSqrd = squared(roughness * roughness);
@@ -64,6 +66,8 @@ vec3 getSpecBRDF(vec3 V, vec3 L, vec3 N, vec3 F0, float NL, float roughness){
     // V
     float visibility = 1.0 / (LH + (1.0 / roughness));
     
-    // Specular
-    return fresnel * (distribution * visibility * NL);
+    // Calculate and apply fresnel and return final specular
+    float cosTheta = exp2(-9.0 * LH);
+    if(metallic > 0.9) return getFresnelSchlick(albedo, cosTheta) * (distribution * visibility * NL);
+    return vec3(getFresnelSchlick(metallic, cosTheta) * distribution * visibility * NL);
 }

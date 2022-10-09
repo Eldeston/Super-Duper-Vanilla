@@ -1,5 +1,7 @@
 vec3 complexShadingDeferred(vec3 sceneCol, vec3 screenPos, vec3 viewPos, vec3 normal, vec3 albedo, float viewDist, float metallic, float smoothness, vec3 dither){
-	vec3 noiseUnitVector = generateUnitVector(dither.xy);
+	#if defined ROUGH_REFLECTIONS || defined SSGI
+		vec3 noiseUnitVector = generateUnitVector(dither.xy);
+	#endif
 	
 	// Calculate SSGI
 	#ifdef SSGI
@@ -20,9 +22,7 @@ vec3 complexShadingDeferred(vec3 sceneCol, vec3 screenPos, vec3 viewPos, vec3 no
 
 		vec3 nViewPos = viewPos / viewDist;
 
-		// Get fresnel
-		vec3 fresnel = getFresnelSchlick(max(dot(normal, -nViewPos), 0.0),
-			isMetal ? albedo : vec3(metallic)) * smoothness;
+		float cosTheta = exp2(-9.0 * max(dot(normal, -nViewPos), 0.0));
 
 		#ifdef ROUGH_REFLECTIONS
 			// Rough the normals with noise
@@ -48,9 +48,14 @@ vec3 complexShadingDeferred(vec3 sceneCol, vec3 screenPos, vec3 viewPos, vec3 no
 			vec3 reflectCol = getSkyRender(mat3(gbufferModelViewInverse) * reflectedViewDir, true, true);
 		#endif
 
-		// Simplified and modified version of BSL's reflection PBR calculation
-		sceneCol *= isMetal ? vec3(1.0 - smoothness) : 1.0 - fresnel;
-		sceneCol += reflectCol * fresnel;
+		// Modified version of BSL's reflection PBR calculation
+		if(isMetal){
+			vec3 fresnel = getFresnelSchlick(albedo, cosTheta) * smoothness;
+			sceneCol = sceneCol * (1.0 - smoothness) + reflectCol * fresnel;
+		}else{
+			float fresnel = getFresnelSchlick(metallic, cosTheta) * smoothness;
+			sceneCol = sceneCol * (1.0 - fresnel) + reflectCol * fresnel;
+		}
 	}
 
 	return sceneCol;
