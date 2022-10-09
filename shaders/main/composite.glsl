@@ -111,8 +111,8 @@
     #include "/lib/utility/convertScreenSpace.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
 
-    #include "/lib/lighting/shdMapping.glsl"
     #include "/lib/lighting/shdDistort.glsl"
+    #include "/lib/lighting/shdMapping.glsl"
     #include "/lib/lighting/GGX.glsl"
     
     #include "/lib/rayTracing/rayTracer.glsl"

@@ -2,10 +2,12 @@
 
 #ifdef VERTEX
     #ifdef WORLD_LIGHT
-        flat out mat3 shdVertexView;
+        flat out vec3 shdLightView;
 
         #ifdef SHD_ENABLE
             out vec3 shdPos;
+
+            out float distortFactor;
         #endif
     #endif
 
@@ -35,6 +37,8 @@
         #ifdef SHD_ENABLE
             // Shadow projection matrix uniforms
             uniform mat4 shadowProjection;
+
+            #include "/lib/lighting/shdDistort.glsl"
         #endif
     #endif
 
@@ -73,11 +77,19 @@
 
         #ifdef WORLD_LIGHT
             // Shadow light view matrix
-            shdVertexView = mat3(shadowModelView) * mat3(gbufferModelViewInverse);
+            shdLightView = mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
 
             #ifdef SHD_ENABLE
                 // Get shadow clip space pos
                 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * feetPlayerPos.xyz + shadowModelView[3].xyz) + shadowProjection[3].xyz;
+                // Get distortion factor
+                distortFactor = getDistortFactor(shdPos.xy);
+
+                // Bias mutilplier, adjusts according to the current shadow distance and resolution
+				float biasAdjustMult = log2(max(4.0, shadowDistance - shadowMapResolution * 0.125)) * 0.25;
+
+                // Apply shadow bias
+                shdPos += (mat3(shadowProjection) * (mat3(shadowModelView) * (mat3(gbufferModelViewInverse) * TBN[2]))) * distortFactor * biasAdjustMult;
             #endif
         #endif
 
@@ -109,10 +121,12 @@
 
 #ifdef FRAGMENT
     #ifdef WORLD_LIGHT
-        flat in mat3 shdVertexView;
+        flat in vec3 shdLightView;
 
         #ifdef SHD_ENABLE
             in vec3 shdPos;
+
+            in float distortFactor;
         #endif
     #endif
 
@@ -136,13 +150,6 @@
 
     // Projection matrix uniforms
     uniform mat4 gbufferProjectionInverse;
-
-    #ifdef WORLD_LIGHT
-        #ifdef SHD_ENABLE
-            // Shadow projection matrix uniforms
-            uniform mat4 shadowProjection;
-        #endif
-    #endif
     
     // Get entity id
     uniform int entityId;
@@ -170,8 +177,8 @@
     #include "/lib/utility/convertViewSpace.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
 
-    #include "/lib/lighting/shdMapping.glsl"
     #include "/lib/lighting/shdDistort.glsl"
+    #include "/lib/lighting/shdMapping.glsl"
     #include "/lib/lighting/GGX.glsl"
 
     #include "/lib/PBR/structPBR.glsl"

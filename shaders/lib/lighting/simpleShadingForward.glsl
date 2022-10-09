@@ -9,7 +9,7 @@
 			toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 
 		#ifdef WORLD_LIGHT
-			float NL = max(0.0, dot(vertexNormal, vec3(shdVertexView[0].z, shdVertexView[1].z, shdVertexView[2].z))) * 0.6 + 0.4;
+			float NL = max(0.0, dot(vertexNormal, shdLightView)) * 0.6 + 0.4;
 
 			float rainDiff = rainStrength * 0.5;
 
@@ -18,25 +18,16 @@
 
 				// If the area isn't shaded, apply shadow mapping
 				if(NL > 0){
-					// We already have shadow pos calculated in vertex so we'll use it
-					
-					// Bias mutilplier, adjusts according to the current shadow distance and resolution
-					float biasAdjustMult = log2(max(4.0, shadowDistance - shadowMapResolution * 0.125)) * 0.25;
-					float distortFactor = getDistortFactor(shdPos.xy);
-					
-					// Apply bias according to normal in shadow space
-					vec3 newShdPos = shdPos + (mat3(shadowProjection) * (shdVertexView * vertexNormal)) * distortFactor * biasAdjustMult;
-					newShdPos = distort(newShdPos, distortFactor) * 0.5 + 0.5;
-
+					// Most of shadow pos is already calculated in vertex
 					// Sample shadows
 					#ifdef SHD_FILTER
 						#if ANTI_ALIASING >= 2
-							shadowCol = getShdFilter(newShdPos, toRandPerFrame(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x, frameTimeCounter) * PI2);
+							shadowCol = getShdFilter(distort(shdPos, distortFactor) * 0.5 + 0.5, toRandPerFrame(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x, frameTimeCounter) * PI2);
 						#else
-							shadowCol = getShdFilter(newShdPos, texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x * PI2);
+							shadowCol = getShdFilter(distort(shdPos, distortFactor) * 0.5 + 0.5, texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x * PI2);
 						#endif
 					#else
-						shadowCol = getShdTex(newShdPos);
+						shadowCol = getShdTex(distort(shdPos, distortFactor) * 0.5 + 0.5);
 					#endif
 				}
 
@@ -56,7 +47,7 @@
 			toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 
 		#ifdef WORLD_LIGHT
-			float NL = max(0.0, dot(vertexNormal, vec3(shdVertexView[0].z, shdVertexView[1].z, shdVertexView[2].z)));
+			float NL = max(0.0, dot(vertexNormal, shdLightView));
 			// also equivalent to:
 			// vec3(0, 0, 1) * mat3(shadowModelView) = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)
 			// shadowLightPosition is broken in other dimensions. The current is equivalent to:
@@ -70,26 +61,19 @@
 					// Cave light leak fix
 					float caveFixShdFactor = isEyeInWater == 1 ? 1.0 : min(1.0, lmCoord.y * 2.0) * (1.0 - eyeBrightFact) + eyeBrightFact;
 
-					// We already have shadow pos calculated in vertex so we'll use it
-					
-					// Bias mutilplier, adjusts according to the current shadow distance and resolution
-					float biasAdjustMult = log2(max(4.0, shadowDistance - shadowMapResolution * 0.125)) * 0.25;
-					float distortFactor = getDistortFactor(shdPos.xy);
-
-					// Apply bias according to normal in shadow space
-					vec3 newShdPos = shdPos + mat3(shadowProjection) * (shdVertexView * vertexNormal) * distortFactor * biasAdjustMult;
-					newShdPos = distort(newShdPos, distortFactor) * 0.5 + 0.5;
-
+					// Most of shadow pos is already calculated in vertex
 					// Sample shadows
 					#ifdef SHD_FILTER
 						#if ANTI_ALIASING >= 2
-							shadowCol = getShdFilter(newShdPos, toRandPerFrame(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x, frameTimeCounter) * PI2);
+							shadowCol = getShdFilter(distort(shdPos, distortFactor) * 0.5 + 0.5, toRandPerFrame(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x, frameTimeCounter) * PI2);
 						#else
-							shadowCol = getShdFilter(newShdPos, texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x * PI2);
+							shadowCol = getShdFilter(distort(shdPos, distortFactor) * 0.5 + 0.5, texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x * PI2);
 						#endif
 					#else
-						shadowCol = getShdTex(newShdPos) * caveFixShdFactor;
+						shadowCol = getShdTex(distort(shdPos, distortFactor) * 0.5 + 0.5);
 					#endif
+
+					shadowCol *= caveFixShdFactor;
 				}
 			#else
 				// Sample fake shadows
