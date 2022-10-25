@@ -18,8 +18,6 @@ vec3 complexShadingDeferred(vec3 sceneCol, vec3 screenPos, vec3 viewPos, vec3 no
 
 	// If smoothness is 0, don't do reflections
 	if(smoothness > 0.005){
-		bool isMetal = metallic > 0.9;
-
 		vec3 nViewPos = viewPos / viewDist;
 
 		float cosTheta = exp2(-9.0 * max(dot(normal, -nViewPos), 0.0));
@@ -49,7 +47,7 @@ vec3 complexShadingDeferred(vec3 sceneCol, vec3 screenPos, vec3 viewPos, vec3 no
 		#endif
 
 		// Modified version of BSL's reflection PBR calculation
-		if(isMetal){
+		if(metallic > 0.9){
 			vec3 fresnel = getFresnelSchlick(albedo, cosTheta) * smoothness;
 			sceneCol = sceneCol * (1.0 - smoothness) + reflectCol * fresnel;
 		}else{

@@ -7,8 +7,7 @@
         flat out vec3 vertexColor;
 
         out vec2 texCoord;
-
-        out vec3 worldPos;
+        out vec2 waterNoiseUv;
 
         // View matrix uniforms
         uniform mat4 shadowModelView;
@@ -47,7 +46,9 @@
             // Get vertex position (feet player pos)
             vec4 vertexPos = shadowModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
             // Get world position
-            worldPos = vertexPos.xyz + cameraPosition;
+            vec3 worldPos = vertexPos.xyz + cameraPosition;
+            // Get water noise uv position
+            waterNoiseUv = worldPos.xz / WATER_TILE_SIZE;
             
             #ifdef ANIMATE
                 getVertexAnimations(vertexPos.xyz, worldPos, texCoord, mc_midTexCoord, mc_Entity.x, (gl_TextureMatrix[1] * gl_MultiTexCoord1).y);
@@ -79,8 +80,7 @@
         flat in vec3 vertexColor;
 
         in vec2 texCoord;
-
-        in vec3 worldPos;
+        in vec2 waterNoiseUv;
 
         uniform sampler2D tex;
         
@@ -117,16 +117,16 @@
                     if(blockId == 10000){
                         #ifdef WATER_FLAT
                             #if UNDERWATER_CAUSTICS == 2
-                                shdAlbedo.rgb = vec3(squared(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 3.2);
+                                shdAlbedo.rgb = vec3(squared(0.128 + getCellNoise(waterNoiseUv)) * 3.2);
                             #elif UNDERWATER_CAUSTICS == 1
                                 shdAlbedo.rgb = vec3(0.8);
-                                if(isEyeInWater == 1) shdAlbedo.rgb *= squared(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 4.0;
+                                if(isEyeInWater == 1) shdAlbedo.rgb *= squared(0.128 + getCellNoise(waterNoiseUv)) * 4.0;
                             #endif
                         #else
                             #if UNDERWATER_CAUSTICS == 2
-                                shdAlbedo.rgb *= squared(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 4.0;
+                                shdAlbedo.rgb *= squared(0.128 + getCellNoise(waterNoiseUv)) * 4.0;
                             #elif UNDERWATER_CAUSTICS == 1
-                                if(isEyeInWater == 1) shdAlbedo.rgb *= squared(0.128 + getCellNoise(worldPos.xz / WATER_TILE_SIZE)) * 4.0;
+                                if(isEyeInWater == 1) shdAlbedo.rgb *= squared(0.128 + getCellNoise(waterNoiseUv)) * 4.0;
                             #endif
                         #endif
                     }

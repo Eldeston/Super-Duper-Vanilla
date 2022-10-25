@@ -58,12 +58,12 @@ vec3 getSpecBRDF(vec3 V, vec3 L, vec3 N, vec3 albedo, float NL, float metallic, 
     // Roughness remapping
     float alphaSqrd = squared(roughness * roughness);
 
-    // D
+    // Distribution
     float NHSqr = getNoHSquared(WORLD_SUN_MOON_SIZE, NL, NV, LV);
     float denominator = NHSqr * (alphaSqrd - 1.0) + 1.0;
     float distribution = alphaSqrd / (PI * denominator * denominator);
 
-    // V
+    // Visibility
     float visibility = 1.0 / (LH + (1.0 / roughness));
     
     // Calculate and apply fresnel and return final specular
