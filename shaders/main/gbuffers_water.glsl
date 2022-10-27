@@ -204,7 +204,7 @@ uniform float frameTimeCounter;
             float waterNoise = WATER_BRIGHTNESS;
 
             #ifdef WATER_NORM
-                vec4 waterData = H2NWater(worldPos.xz);
+                vec4 waterData = H2NWater(worldPos.xz / WATER_TILE_SIZE);
                 material.normal = TBN * waterData.xyz;
 
                 #ifdef WATER_NOISE
@@ -225,16 +225,16 @@ uniform float frameTimeCounter;
 
             #ifdef WATER_STYLIZE_ABSORPTION
                 if(isEyeInWater == 0){
-                        float depthBrightness = exp(waterDepth * 0.32);
-                        material.albedo.rgb = min(vec3(1), material.albedo.rgb * mix(waterNoise, 2.0, depthBrightness));
+                        float depthBrightness = exp2(waterDepth * 0.5);
+                        material.albedo.rgb = material.albedo.rgb * (waterNoise * (1.0 - depthBrightness) + depthBrightness);
                         material.albedo.a = fastSqrt(material.albedo.a) * (1.0 - depthBrightness);
-                } else material.albedo.rgb *= waterNoise;
+                }else material.albedo.rgb *= waterNoise;
             #else
                 material.albedo.rgb *= waterNoise;
             #endif
 
             #ifdef WATER_FOAM
-                material.albedo = min(vec4(1), material.albedo + exp((0.1 + waterDepth) * 10.0));
+                material.albedo = min(vec4(1), material.albedo + exp2((0.1 + waterDepth) * 10.0));
             #endif
         }
 

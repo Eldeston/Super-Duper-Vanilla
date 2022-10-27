@@ -129,12 +129,10 @@
                                 if(isEyeInWater == 1) shdAlbedo.rgb *= squared(0.128 + getCellNoise(waterNoiseUv)) * 4.0;
                             #endif
                         #endif
-                    }
+                    // To give white colored glass some proper shadows except water
+                    }else shdAlbedo.rgb *= 1.0 - shdAlbedo.a * shdAlbedo.a;
 
                     shdAlbedo.rgb = toLinear(shdAlbedo.rgb * vertexColor);
-
-                    // To give white colored glass some proper shadows except water
-                    if(blockId != 10000) shdAlbedo.rgb *= 1.0 - shdAlbedo.a;
                 // If the object is fully opaque, set to black. This fixes "color leaking" filtered shadows
                 }else shdAlbedo.rgb = vec3(0);
 
