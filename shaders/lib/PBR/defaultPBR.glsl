@@ -58,6 +58,7 @@ void getPBR(inout structPBR material, in int id){
         // If water
         if(id == 10000){
             material.smoothness = 0.96;
+            material.metallic = 0.02;
 
             #ifdef WATER_FLAT
                 material.albedo.rgb = vec3(0.8);

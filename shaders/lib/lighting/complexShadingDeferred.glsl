@@ -20,7 +20,7 @@ vec3 complexShadingDeferred(vec3 sceneCol, vec3 screenPos, vec3 viewPos, vec3 no
 	if(smoothness > 0.005){
 		vec3 nViewPos = viewPos / viewDist;
 
-		float cosTheta = exp2(-9.0 * max(dot(normal, -nViewPos), 0.0));
+		float cosTheta = exp2(-9.28 * max(dot(normal, -nViewPos), 0.0));
 
 		#ifdef ROUGH_REFLECTIONS
 			// Rough the normals with noise
