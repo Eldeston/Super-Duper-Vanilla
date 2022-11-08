@@ -17,12 +17,12 @@
     /* Buffer settings */
 
     /*
-    int gcolorFormat = R11F_G11F_B10F;
-    int colortex1Format = RGB16_SNORM;
-    int colortex2Format = RGBA8;
-    int colortex3Format = RGB8;
-    int colortex4Format = R11F_G11F_B10F;
-    int colortex5Format = RGBA16F;
+    const int gcolorFormat = R11F_G11F_B10F;
+    const int colortex1Format = RGB16_SNORM;
+    const int colortex2Format = RGBA8;
+    const int colortex3Format = RGB8;
+    const int colortex4Format = R11F_G11F_B10F;
+    const int colortex5Format = RGBA16F;
     */
 
     uniform sampler2D gcolor;
