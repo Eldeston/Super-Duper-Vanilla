@@ -1,5 +1,5 @@
 // https://sugulee.wordpress.com/2021/06/21/temporal-anti-aliasingtaa-tutorial/
-vec3 textureTAA(ivec2 screenTexelCoord, vec2 screenPos){
+vec3 textureTAA(in ivec2 screenTexelCoord, in vec2 screenPos){
     // Current color
     vec3 currColor = texelFetch(gcolor, screenTexelCoord, 0).rgb;
     // Previous color

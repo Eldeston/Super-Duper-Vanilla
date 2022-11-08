@@ -123,7 +123,7 @@
 
     #include "/lib/lighting/complexShadingDeferred.glsl"
 
-    float getSpectral(ivec2 iUv){
+    float getSpectral(in ivec2 iUv){
         ivec2 topRightCorner = iUv - 1;
         ivec2 bottomLeftCorner = iUv + 1;
 

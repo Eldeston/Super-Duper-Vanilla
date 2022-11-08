@@ -1,15 +1,15 @@
-vec3 getFresnelSchlick(vec3 F0, float cosTheta){
+vec3 getFresnelSchlick(in vec3 F0, in float cosTheta){
     // Fast and more but not totally accurate fresnel
 	return F0 + (1.0 - F0) * cosTheta;
 }
 
-float getFresnelSchlick(float F0, float cosTheta){
+float getFresnelSchlick(in float F0, in float cosTheta){
     // Fast and more but not totally accurate fresnel
 	return F0 + (1.0 - F0) * cosTheta;
 }
 
 // Source: https://www.guerrilla-games.com/read/decima-engine-advances-in-lighting-and-aa
-float getNoHSquared(float radiusTan, float NoL, float NoV, float VoL){
+float getNoHSquared(in float radiusTan, in float NoL, in float NoV, in float VoL){
     // radiusCos can be precalculated if radiusTan is a directional light
     float radiusCos = 1.0 / sqrt(1.0 + radiusTan * radiusTan);
     
@@ -46,7 +46,7 @@ float getNoHSquared(float radiusTan, float NoL, float NoV, float VoL){
 }
 
 // Thanks for LVutner#5199 for his code!
-vec3 getSpecBRDF(vec3 V, vec3 L, vec3 N, vec3 albedo, float NL, float metallic, float roughness){
+vec3 getSpecBRDF(in vec3 V, in vec3 L, in vec3 N, in vec3 albedo, in float NL, in float metallic, in float roughness){
     // Halfway vector
     vec3 H = normalize(L + V);
     

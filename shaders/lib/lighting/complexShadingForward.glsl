@@ -2,7 +2,7 @@
 	uniform float shdFade;
 #endif
 
-vec4 complexShadingGbuffers(structPBR material){
+vec4 complexShadingGbuffers(in structPBR material){
 	#ifdef DIRECTIONAL_LIGHTMAPS
 		vec3 dirLightMapCoord = dFdx(vertexPos.xyz) * dFdx(lmCoord.x) + dFdy(vertexPos.xyz) * dFdy(lmCoord.x);
 		float dirLightMap = min(1.0, max(0.0, dot(normalize(dirLightMapCoord), material.normal)) * lmCoord.x * DIRECTIONAL_LIGHTMAP_STRENGTH + lmCoord.x);

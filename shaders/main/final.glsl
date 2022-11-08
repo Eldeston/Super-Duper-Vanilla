@@ -17,12 +17,12 @@
     /* Buffer settings */
 
     /*
-    const int gcolorFormat = R11F_G11F_B10F;
-    const int colortex1Format = RGB16_SNORM;
-    const int colortex2Format = RGBA8;
-    const int colortex3Format = RGB8;
-    const int colortex4Format = R11F_G11F_B10F;
-    const int colortex5Format = RGBA16F;
+    int gcolorFormat = R11F_G11F_B10F;
+    int colortex1Format = RGB16_SNORM;
+    int colortex2Format = RGBA8;
+    int colortex3Format = RGB8;
+    int colortex4Format = R11F_G11F_B10F;
+    int colortex5Format = RGBA16F;
     */
 
     uniform sampler2D gcolor;
@@ -38,7 +38,7 @@
 
     #if ANTI_ALIASING != 0 && defined SHARPEN_FILTER
         // https://www.shadertoy.com/view/lslGRr
-        vec3 sharpenFilter(vec3 color, vec2 texCoord){
+        vec3 sharpenFilter(in vec3 color, in vec2 texCoord){
             vec2 pixSize = 1.0 / vec2(viewWidth, viewHeight);
 
             vec2 topRightCorner = texCoord + pixSize;

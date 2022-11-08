@@ -59,7 +59,7 @@
         uniform float viewWidth;
         uniform float viewHeight;
 
-        vec3 getBloomTile(vec2 pixSize, vec2 coords, float LOD){
+        vec3 getBloomTile(in vec2 pixSize, in vec2 coords, in float LOD){
             // Remap to bloom tile texture coordinates
             vec2 texCoord = screenCoord / exp2(LOD) + coords;
 

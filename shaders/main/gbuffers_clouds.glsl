@@ -21,7 +21,7 @@
 
     #ifdef DOUBLE_VANILLA_CLOUDS
         // Set the amount of instances, we'll use 2 for now
-        const int countInstances = 2;
+        int countInstances = 2;
 
         // Get current instance id
         uniform int instanceId;

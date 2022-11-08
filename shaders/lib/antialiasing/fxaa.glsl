@@ -5,10 +5,10 @@
 
 #define SUBPIXEL_QUALITY 0.75
 
-float quality[12] = float[12](1.0, 1.0, 1.0, 1.0, 1.0, 1.5, 2.0, 2.0, 2.0, 2.0, 4.0, 8.0);
+const float quality[12] = float[12](1.0, 1.0, 1.0, 1.0, 1.0, 1.5, 2.0, 2.0, 2.0, 2.0, 4.0, 8.0);
 
 // http://blog.simonrodriguez.fr/articles/30-07-2016_implementing_fxaa.html
-vec3 textureFXAA(vec2 screenPos, vec2 resolution, ivec2 screenTexelCoord){
+vec3 textureFXAA(in vec2 screenPos, in vec2 resolution, in ivec2 screenTexelCoord){
     // Pixel size
     vec2 pixSize = 1.0 / resolution.xy;
 

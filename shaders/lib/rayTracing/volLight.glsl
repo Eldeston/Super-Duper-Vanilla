@@ -2,7 +2,7 @@
 #endif
 
 #ifdef WORLD_LIGHT
-	vec3 getVolumetricLight(vec3 nEyePlayerPos, float viewDist, float depth, float dither){
+	vec3 getVolumetricLight(in vec3 nEyePlayerPos, in float viewDist, in float depth, in float dither){
 		// Return 0 if volumetric brightness is 0
 		if(VOL_LIGHT_BRIGHTNESS == 0) return vec3(0);
 

@@ -3,7 +3,7 @@
 #endif
 
 #ifdef CLOUDS
-	vec4 simpleShadingGbuffers(vec4 albedo){
+	vec4 simpleShadingGbuffers(in vec4 albedo){
 		// Get lightmaps and add simple sky GI
 		vec3 totalDiffuse = toLinear(SKY_COL_DATA_BLOCK) +
 			toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
@@ -54,7 +54,7 @@
 		return vec4(albedo.rgb * totalDiffuse, albedo.a);
 	}
 #else
-	vec4 simpleShadingGbuffers(vec4 albedo){
+	vec4 simpleShadingGbuffers(in vec4 albedo){
 		// Get lightmaps and add simple sky GI
 		vec3 totalDiffuse = toLinear(SKY_COL_DATA_BLOCK * lmCoord.y) +
 			toLinear((lmCoord.x * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B)) +

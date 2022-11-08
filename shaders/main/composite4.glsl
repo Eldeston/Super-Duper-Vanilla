@@ -22,7 +22,7 @@
 
         uniform float viewWidth;
 
-        vec3 bloomTile(vec2 coords, float LOD){
+        vec3 bloomTile(in vec2 coords, in float LOD){
             float scale = exp2(LOD);
             vec2 bloomUv = (screenCoord - coords) * scale;
             float padding = 0.5 + 0.005 * scale;

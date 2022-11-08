@@ -1,4 +1,4 @@
-vec3 complexShadingDeferred(vec3 sceneCol, vec3 screenPos, vec3 viewPos, vec3 normal, vec3 albedo, float viewDist, float metallic, float smoothness, vec3 dither){
+vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos, in vec3 normal, in vec3 albedo, in float viewDist, in float metallic, in float smoothness, in vec3 dither){
 	#if defined ROUGH_REFLECTIONS || defined SSGI
 		vec3 noiseUnitVector = generateUnitVector(dither.xy);
 	#endif

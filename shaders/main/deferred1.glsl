@@ -92,7 +92,7 @@
     #endif
 
     #ifdef SSAO
-        float getSSAOBoxBlur(ivec2 screenTexelCoord){
+        float getSSAOBoxBlur(in ivec2 screenTexelCoord){
             ivec2 topRightCorner = screenTexelCoord + 1;
             ivec2 bottomLeftCorner = screenTexelCoord - 1;
 

@@ -8,9 +8,9 @@ uniform sampler2D specular;
 #endif
 
 #ifdef PARALLAX_OCCLUSION
-    vec2 getParallaxOffset(vec3 dirT){ return dirT.xy * (PARALLAX_DEPTH / dirT.z); }
+    vec2 getParallaxOffset(in vec3 dirT){ return dirT.xy * (PARALLAX_DEPTH / dirT.z); }
 
-    vec2 parallaxUv(vec2 startUv, vec2 endUv, out vec3 currPos){
+    vec2 parallaxUv(in vec2 startUv, in vec2 endUv, out vec3 currPos){
         float stepSize = 1.0 / PARALLAX_STEPS;
         endUv *= stepSize * PARALLAX_DEPTH;
 
@@ -29,7 +29,7 @@ uniform sampler2D specular;
     }
 
     #if defined PARALLAX_SHADOWS && defined WORLD_LIGHT
-        float parallaxShadow(vec3 currPos, vec2 lightDir) {
+        float parallaxShadow(in vec3 currPos, in vec2 lightDir) {
             float stepSize = 1.0 / PARALLAX_SHD_STEPS;
             vec2 stepOffset = stepSize * lightDir;
 
@@ -50,7 +50,7 @@ uniform sampler2D specular;
     #ifdef SLOPE_NORMALS
         uniform ivec2 atlasSize;
 
-        vec2 getSlopeNormals(vec3 viewT, vec2 texUv, float traceDepth){
+        vec2 getSlopeNormals(in vec3 viewT, in vec2 texUv, in float traceDepth){
             vec2 texPixSize = 1.0 / atlasSize;
 
             vec2 texSnapped = floor(texUv * atlasSize) * texPixSize;

@@ -1,4 +1,4 @@
-float getSSAO(vec3 viewPos, vec3 normal){
+float getSSAO(in vec3 viewPos, in vec3 normal){
     #if ANTI_ALIASING >= 2
         vec3 dither = toRandPerFrame(getRand3(ivec2(gl_FragCoord.xy) & 255), frameTimeCounter);
     #else

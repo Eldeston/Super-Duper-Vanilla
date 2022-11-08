@@ -1,4 +1,4 @@
-float getOutline(ivec2 iUv, float depthOrigin, int pixSize){
+float getOutline(in ivec2 iUv, in float depthOrigin, in int pixSize){
     ivec2 topRightCorner = iUv - pixSize;
     ivec2 bottomLeftCorner = iUv + pixSize;
 

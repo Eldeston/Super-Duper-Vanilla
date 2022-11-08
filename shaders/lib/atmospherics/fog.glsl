@@ -1,8 +1,8 @@
-float atmoFog(float nPlayerPosY, float worldPosY, float playerPosLength, float totalDensity, float verticalFogDensity){
+float atmoFog(in float nPlayerPosY, in float worldPosY, in float playerPosLength, in float totalDensity, in float verticalFogDensity){
     return min(1.0, (totalDensity / verticalFogDensity) * exp2(-max(worldPosY, 0.0) * verticalFogDensity) * (1.0 - exp2(-playerPosLength * nPlayerPosY * verticalFogDensity)) / nPlayerPosY);
 }
 
-vec3 getFogRender(vec3 color, vec3 fogCol, float viewDist, float nEyePlayerPosY, float worldPosY){
+vec3 getFogRender(in vec3 color, in vec3 fogCol, in float viewDist, in float nEyePlayerPosY, in float worldPosY){
     float verticalFogDensity = isEyeInWater == 0 ? FOG_VERTICAL_DENSITY - FOG_VERTICAL_DENSITY * rainStrength * 0.8 : FOG_VERTICAL_DENSITY * 0.2;
     float totalFogDensity = FOG_TOTAL_DENSITY * (isEyeInWater == 0 ? rainStrength * eyeBrightFact * PI + 1.0 : PI2);
     float fogMult = min(1.0, GROUND_FOG_AMOUNT + GROUND_FOG_AMOUNT * isEyeInWater);

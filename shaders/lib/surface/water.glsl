@@ -1,10 +1,10 @@
-float getCellNoise(vec2 uv){
+float getCellNoise(in vec2 uv){
     float animateTime = CURRENT_SPEED * newFrameTimeCounter * 0.05;
     return (texture2DLod(noisetex, uv + animateTime, 0).z + texture2DLod(noisetex, animateTime - uv, 0).z) * 0.5;
 }
 
 // Convert height map of water to a normal map
-vec4 H2NWater(vec2 uv){
+vec4 H2NWater(in vec2 uv){
     float waterPixel = WATER_BLUR_SIZE * 0.00390625;
 
 	float d0 = getCellNoise(uv);

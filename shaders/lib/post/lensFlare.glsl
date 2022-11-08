@@ -1,18 +1,18 @@
 float fovMult = gbufferProjection[1].y * 0.72794047;
 
-float lensFlareSimple(vec2 centerCoord, vec2 lightDir, float size, float dist){
+float lensFlareSimple(in vec2 centerCoord, in vec2 lightDir, in float size, in float dist){
     vec2 flareCoord = (centerCoord + lightDir * dist) * vec2(aspectRatio, 1);
     return squared(squared(max(0.0, 1.0 - length(flareCoord) / (size * fovMult))));
 }
 
-float lensFlareRays(vec2 centerCoord, vec2 lightDir, float rayBeam, float size, float dist){
+float lensFlareRays(in vec2 centerCoord, in vec2 lightDir, in float rayBeam, in float size, in float dist){
     vec2 flareCoord = (centerCoord + lightDir * dist) * vec2(aspectRatio, 1);
     float rays = max(0.0, sin(atan(flareCoord.x, flareCoord.y) * rayBeam));
     float lens = lensFlareSimple(centerCoord, lightDir, size, dist);
     return rays * lens + lens;
 }
 
-vec3 chromaLens(vec2 centerCoord, vec2 lightDir, float chromaDist, float size, float dist){
+vec3 chromaLens(in vec2 centerCoord, in vec2 lightDir, in float chromaDist, in float size, in float dist){
     return vec3(
         lensFlareSimple(centerCoord, lightDir, size, dist),
         lensFlareSimple(centerCoord, lightDir, size, dist * (1.0 - chromaDist)),
@@ -20,7 +20,7 @@ vec3 chromaLens(vec2 centerCoord, vec2 lightDir, float chromaDist, float size, f
         );
 }
 
-vec3 getLensFlare(vec2 centerCoord, vec2 lightDir){
+vec3 getLensFlare(in vec2 centerCoord, in vec2 lightDir){
     float lens0 = lensFlareSimple(centerCoord, lightDir, 0.2, 0.75);
     float lens1 = lensFlareSimple(centerCoord, lightDir, 0.1, 0.5);
     float lens2 = lensFlareSimple(centerCoord, lightDir, 0.05, 0.25);
