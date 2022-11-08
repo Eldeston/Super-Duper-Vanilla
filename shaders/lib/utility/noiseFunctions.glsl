@@ -1,5 +1,5 @@
 // Default noise resolution
-int noiseTextureResolution = 256;
+const int noiseTextureResolution = 256;
 
 // Noise sample, r for blue noise, g for white noise, and b for cell noise
 uniform sampler2D noisetex;
