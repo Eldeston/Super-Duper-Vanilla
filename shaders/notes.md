@@ -3,7 +3,7 @@
 - Minimize resources and maximize performance.
 - Keep the code squeaky clean, understandable, and portable.
 
-## Used Framebuffers:
+## Used Framebuffers
    Current shader pipeline uses 6 framebuffers to minimize resources used and maximize performance.
 - gcolor - Main scene / Skybox, vanilla sun and moon : R11F_G11F_B10F
 - colortex1 - Normals : RGB16_SNORM
