@@ -37,7 +37,7 @@
     }
 #endif
 
-vec3 getSkyColor(in vec3 skyBoxCol, in vec3 nPlayerPos, in float LV, in bool isSky, in bool isReflection){
+vec3 getSkyColor(in vec3 skyBoxCol, in vec3 nPlayerPos, in vec3 skyPos, in bool isSky, in bool isReflection){
     vec3 finalCol = skyCol;
 
     #ifdef WORLD_SKY_GROUND
@@ -75,11 +75,17 @@ vec3 getSkyColor(in vec3 skyBoxCol, in vec3 nPlayerPos, in float LV, in bool isS
                 }
             #endif
         #endif
+
+        #ifdef WORLD_STARS
+            // Star field generation
+            vec2 starData = texelFetch(noisetex, ivec2((skyPos.xz * 256.0) / (abs(skyPos.y) + length(skyPos.xz))) & 255, 0).xy;
+            finalCol += exp(starData.x * starData.y * 64.0 - 64.0) * (1.0 - rainStrength) * WORLD_STARS;
+        #endif
     }
 
     #ifdef WORLD_LIGHT
         #if WORLD_SUN_MOON == 1
-            finalCol += lightCol * pow(max(LV, 0.0) * 0.70710678, abs(nPlayerPos.y) + 1.0) * shdFade;
+            finalCol += lightCol * pow(max(skyPos.z, 0.0) * 0.70710678, abs(nPlayerPos.y) + 1.0) * shdFade;
         #endif
 
         // Fake VL reflection
@@ -102,7 +108,7 @@ vec3 getSkyRender(in vec3 nPlayerPos, in bool isSky, in bool isReflection){
     // If player is in lava, return fog color
     if(isEyeInWater == 2) return fogColor;
 
-    return getSkyColor(vec3(0), nPlayerPos, dot(nPlayerPos, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), isSky, isReflection) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
+    return getSkyColor(vec3(0), nPlayerPos, mat3(shadowModelView) * nPlayerPos, isSky, isReflection) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 }
 
 vec3 getSkyRender(in vec3 skyBoxCol, in vec3 nPlayerPos, in bool isSky){
@@ -111,28 +117,22 @@ vec3 getSkyRender(in vec3 skyBoxCol, in vec3 nPlayerPos, in bool isSky){
     // If player is in lava, return fog color
     if(isEyeInWater == 2) return fogColor;
     
-    vec3 nSkyPos = mat3(shadowModelView) * nPlayerPos;
+    vec3 skyPos = mat3(shadowModelView) * nPlayerPos;
 
-    vec3 finalCol = getSkyColor(skyBoxCol, nPlayerPos, nSkyPos.z, isSky, false) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
+    vec3 finalCol = getSkyColor(skyBoxCol, nPlayerPos, skyPos, isSky, false) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 
     #ifdef WORLD_LIGHT
         #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE != 2
-            finalCol += (getSunMoonShape(nSkyPos.xy) * (1.0 - rainStrength) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY) * sRGBLightCol;
+            finalCol += (getSunMoonShape(skyPos.xy) * (1.0 - rainStrength) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY) * sRGBLightCol;
         #elif WORLD_SUN_MOON == 2
-            float blackHole = min(1.0, 0.015625 / (16.0 - nSkyPos.z * 16.0 - WORLD_SUN_MOON_SIZE));
+            float blackHole = min(1.0, 0.015625 / (16.0 - skyPos.z * 16.0 - WORLD_SUN_MOON_SIZE));
             if(blackHole <= 0) return vec3(0);
 
-            nSkyPos.xy = rot2D(blackHole * PI2 * 16.0) * nSkyPos.xy;
-            float rings = texture2DLod(noisetex, vec2(nSkyPos.x * blackHole, frameTimeCounter * 0.0009765625), 0).x;
+            skyPos.xy = rot2D(blackHole * PI2 * 16.0) * skyPos.xy;
+            float rings = texture2DLod(noisetex, vec2(skyPos.x * blackHole, frameTimeCounter * 0.0009765625), 0).x;
 
             finalCol += ((rings * blackHole * 0.9 + blackHole * 0.1) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY) * lightCol;
         #endif
-    #endif
-
-    #ifdef WORLD_STARS
-        // Star field generation
-        vec2 starData = texelFetch(noisetex, ivec2((nSkyPos.xz * 256.0) / (abs(nSkyPos.y) + length(nSkyPos.xz))) & 255, 0).xy;
-        finalCol += exp(starData.x * starData.y * 64.0 - 64.0) * (1.0 - rainStrength) * WORLD_STARS;
     #endif
 
     return finalCol;
