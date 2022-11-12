@@ -85,7 +85,7 @@ vec3 getSkyColor(in vec3 skyBoxCol, in vec3 nPlayerPos, in vec3 skyPos, in bool 
 
     #ifdef WORLD_LIGHT
         #if WORLD_SUN_MOON == 1
-            finalCol += lightCol * pow(max(skyPos.z, 0.0) * 0.70710678, abs(nPlayerPos.y) + 1.0) * shdFade;
+            if(skyPos.z > 0) finalCol += lightCol * pow(skyPos.z * 0.70710678, abs(nPlayerPos.y) + 1.0) * shdFade;
         #endif
 
         // Fake VL reflection
@@ -99,7 +99,7 @@ vec3 getSkyColor(in vec3 skyBoxCol, in vec3 nPlayerPos, in vec3 skyPos, in bool 
 
     // Do a simple void gradient when underwater
     if(isEyeInWater == 1) return isReflection ? finalCol * max(0.0, nPlayerPos.y + eyeBrightFact - 1.0) : finalCol * smootherstep(max(0.0, nPlayerPos.y));
-    return finalCol * max(0.0, (nPlayerPos.y + eyeBrightFact - 1.0) * (1.0 - eyeBrightFact) + eyeBrightFact);
+    return finalCol * saturate(nPlayerPos.y + eyeBrightFact * 2.0 - 1.0);
 }
 
 vec3 getSkyRender(in vec3 nPlayerPos, in bool isSky, in bool isReflection){
@@ -128,7 +128,7 @@ vec3 getSkyRender(in vec3 skyBoxCol, in vec3 nPlayerPos, in bool isSky){
             float blackHole = min(1.0, 0.015625 / (16.0 - skyPos.z * 16.0 - WORLD_SUN_MOON_SIZE));
             if(blackHole <= 0) return vec3(0);
 
-            skyPos.xy = rot2D(blackHole * PI2 * 16.0) * skyPos.xy;
+            skyPos.xy = rot2D(blackHole * TAU * 16.0) * skyPos.xy;
             float rings = texture2DLod(noisetex, vec2(skyPos.x * blackHole, frameTimeCounter * 0.0009765625), 0).x;
 
             finalCol += ((rings * blackHole * 0.9 + blackHole * 0.1) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY) * lightCol;

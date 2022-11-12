@@ -6,7 +6,7 @@
 		// Return 0 if volumetric brightness is 0
 		if(VOL_LIGHT_BRIGHTNESS == 0) return vec3(0);
 
-		float totalFogDensity = FOG_TOTAL_DENSITY * (isEyeInWater == 0 ? rainStrength * PI + 1.0 : PI2);
+		float totalFogDensity = FOG_TOTAL_DENSITY * (isEyeInWater == 0 ? rainStrength * PI + 1.0 : TAU);
 		float heightFade = 1.0;
 
 		// Fade VL, but do not apply to underwater VL

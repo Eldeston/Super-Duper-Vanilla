@@ -26,7 +26,7 @@ void getPBR(inout structPBR material, in int id){
 
             vec2 difference = d0 - vec2(d1, d2);
             // TBN * normalize(vec3(difference, 1))
-            material.normal = TBN * (vec3(difference, 1) / sqrt(lengthSquared(difference) + 1.0));
+            material.normal = TBN * (vec3(difference, 1) * inversesqrt(lengthSquared(difference) + 1.0));
 
             // Calculate normal strength
             material.normal = mix(TBN[2], material.normal, NORMAL_STRENGTH);
@@ -135,9 +135,12 @@ void getPBR(inout structPBR material, in int id){
             if(id == 10056) material.emissive = material.albedo.g + material.albedo.b > material.albedo.r * 2.0 ? squared(saturate((material.albedo.g - material.albedo.b) * 4.0)) : 0.0;
 
             // Gem ores
-            if(id == 10080 && (material.albedo.r > material.albedo.g || material.albedo.r != material.albedo.b || material.albedo.g > material.albedo.b) && length(material.albedo.rgb) > 0.45){
-                material.smoothness = min(0.93, sumOf(material.albedo.rgb));
-                material.metallic = 0.17;
+            if(id == 10080 && (material.albedo.r > material.albedo.g || material.albedo.r != material.albedo.b || material.albedo.g > material.albedo.b)){
+                float gemOreColSum = sumOf(material.albedo.rgb);
+                if(gemOreColSum > 0.75){
+                    material.smoothness = min(0.93, gemOreColSum);
+                    material.metallic = 0.17;
+                }
             }
 
             // Gem blocks
@@ -169,9 +172,12 @@ void getPBR(inout structPBR material, in int id){
             }
 
             // Metal ores
-            if(id == 10096 && (material.albedo.r > material.albedo.g || material.albedo.r != material.albedo.b || material.albedo.g > material.albedo.b) && length(material.albedo.rgb) > 0.45){
-                material.smoothness = sumOf(material.albedo.rgb) * 0.333;
-                material.metallic = 1.0;
+            if(id == 10096 && (material.albedo.r > material.albedo.g || material.albedo.r != material.albedo.b || material.albedo.g > material.albedo.b)){
+                float metalOreColSum = sumOf(material.albedo.rgb);
+                if(metalOreColSum > 0.75){
+                    material.smoothness = metalOreColSum * 0.333;
+                    material.metallic = 1.0;
+                }
             }
 
             // Netherack metal ores

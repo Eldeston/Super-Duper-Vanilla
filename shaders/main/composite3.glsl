@@ -60,7 +60,7 @@
             if(depth > 0.56){
                 // CoC calculation by Capt Tatsu from BSL
                 float CoC = max(0.0, abs(depth - centerDepthSmooth) * DOF_STRENGTH - 0.01);
-                CoC = CoC / sqrt(CoC * CoC + 0.1);
+                CoC = CoC * inversesqrt(CoC * CoC + 0.1);
 
                 // We'll use a total of 10 samples for this blur (1 / 10)
                 float blurRadius = max(viewWidth, viewHeight) * fovMult * CoC * 0.1;

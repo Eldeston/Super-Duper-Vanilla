@@ -57,9 +57,9 @@ vec4 complexShadingGbuffers(in structPBR material){
 				// Sample shadows
 				#ifdef SHD_FILTER
 					#if ANTI_ALIASING >= 2
-						shadowCol = getShdFilter(shdPos, toRandPerFrame(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x, frameTimeCounter) * PI2) * caveFixShdFactor * shdFade * material.parallaxShd;
+						shadowCol = getShdFilter(shdPos, toRandPerFrame(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x, frameTimeCounter) * TAU) * caveFixShdFactor * shdFade * material.parallaxShd;
 					#else
-						shadowCol = getShdFilter(shdPos, texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x * PI2) * caveFixShdFactor * shdFade * material.parallaxShd;
+						shadowCol = getShdFilter(shdPos, texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x * TAU) * caveFixShdFactor * shdFade * material.parallaxShd;
 					#endif
 				#else
 					shadowCol = getShdTex(shdPos) * caveFixShdFactor * shdFade * material.parallaxShd;

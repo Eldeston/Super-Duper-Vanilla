@@ -6,7 +6,7 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
 	// Calculate SSGI
 	#ifdef SSGI
 		// Get SSGI screen coordinates
-		vec3 SSGIcoord = rayTraceScene(screenPos, viewPos, normalize(normal + noiseUnitVector), dither.z, SSGI_STEPS, SSGI_BISTEPS);
+		vec3 SSGIcoord = rayTraceScene(screenPos, viewPos, generateCosineVector(normal, noiseUnitVector), dither.z, SSGI_STEPS, SSGI_BISTEPS);
 
 		// If sky don't do SSGI
 		#ifdef PREVIOUS_FRAME
@@ -24,7 +24,7 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
 
 		#ifdef ROUGH_REFLECTIONS
 			// Rough the normals with noise
-			normal = normalize(normal + noiseUnitVector * squared(1.0 - smoothness) * 0.5);
+			normal = generateCosineVector(normal, noiseUnitVector * squared(1.0 - smoothness) * 0.5);
 		#endif
 
 		// Get reflected view direction

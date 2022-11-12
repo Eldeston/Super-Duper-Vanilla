@@ -11,13 +11,13 @@ float getFresnelSchlick(in float F0, in float cosTheta){
 // Source: https://www.guerrilla-games.com/read/decima-engine-advances-in-lighting-and-aa
 float getNoHSquared(in float radiusTan, in float NoL, in float NoV, in float VoL){
     // radiusCos can be precalculated if radiusTan is a directional light
-    float radiusCos = 1.0 / sqrt(1.0 + radiusTan * radiusTan);
+    float radiusCos = 1.0 * inversesqrt(1.0 + radiusTan * radiusTan);
     
     // Early out if R falls within the disc
     float RoL = 2.0 * NoL * NoV - VoL;
     if(RoL >= radiusCos) return 1.0;
 
-    float rOverLengthT = radiusCos * radiusTan / sqrt(1.0 - RoL * RoL);
+    float rOverLengthT = radiusCos * radiusTan * inversesqrt(1.0 - RoL * RoL);
     float NoTr = rOverLengthT * (NoV - RoL * NoL);
     float VoTr = rOverLengthT * (2.0 * NoV * NoV - 1.0 - RoL * VoL);
 

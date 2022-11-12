@@ -1,9 +1,9 @@
 // --------------- Code Library ---------------- //
 // Common utility functions goes here
 
-#define GOLDEN_RATIO 1.61803399
 #define PI 3.14159265
-#define PI2 6.28318531
+#define TAU 6.28318531
+#define GOLDEN_RATIO 1.61803399
 
 #define ALPHA_THRESHOLD 0.005
 
@@ -25,6 +25,7 @@ vec2 cubed(in vec2 x) { return x * x * x; }
 vec3 cubed(in vec3 x) { return x * x * x; }
 vec4 cubed(in vec4 x) { return x * x * x; }
 
+// Length squared
 float lengthSquared(in vec2 x){ return dot(x, x); }
 float lengthSquared(in vec3 x){ return dot(x, x); }
 
@@ -38,6 +39,7 @@ float maxOf(in vec2 x) { return max(x.x, x.y); }
 float maxOf(in vec3 x) { return max(x.x, max(x.y, x.z)); }
 float maxOf(in vec4 x) { return max(max(x.x, x.y), max(x.z, x.w)); }
 
+// Sum functions
 float sumOf(in vec2 x) { return x.x + x.y; }
 float sumOf(in vec3 x) { return x.x + x.y + x.z; }
 float sumOf(in vec4 x) { return x.x + x.y + x.z + x.w; }
@@ -51,44 +53,23 @@ vec2 hermiteMix(in vec2 a, in vec2 b, in vec2 x) { return (x - a) / (b - a); }
 vec3 hermiteMix(in vec3 a, in vec3 b, in vec3 x) { return (x - a) / (b - a); }
 vec4 hermiteMix(in vec4 a, in vec4 b, in vec4 x) { return (x - a) / (b - a); }
 
+// Fast approximate sqrt for 0-1 range
 float fastSqrt(in float x){ return x * (2.0 - x); }
 vec2 fastSqrt(in vec2 x){ return x * (2.0 - x); }
 vec3 fastSqrt(in vec3 x){ return x * (2.0 - x); }
 vec4 fastSqrt(in vec4 x){ return x * (2.0 - x); }
 
 // Smoothstep functions
-float smoothen(in float x){
-	return x * x * (3.0 - 2.0 * x);
-}
-
-vec2 smoothen(in vec2 x){
-	return x * x * (3.0 - 2.0 * x);
-}
-
-vec3 smoothen(in vec3 x){
-	return x * x * (3.0 - 2.0 * x);
-}
-
-vec4 smoothen(in vec4 x){
-	return x * x * (3.0 - 2.0 * x);
-}
+float smoothen(in float x){ return x * x * (3.0 - 2.0 * x); }
+vec2 smoothen(in vec2 x){ return x * x * (3.0 - 2.0 * x); }
+vec3 smoothen(in vec3 x){ return x * x * (3.0 - 2.0 * x); }
+vec4 smoothen(in vec4 x){ return x * x * (3.0 - 2.0 * x); }
 
 // Smootherstep functions
-float smootherstep(in float x){
-	return x * x * x * (x * (x * 6.0 - 15.0) + 10.0);
-	}
-
-vec2 smootherstep(in vec2 x){
-	return x * x * x * (x * (x * 6.0 - 15.0) + 10.0);
-}
-
-vec3 smootherstep(in vec3 x){
-	return x * x * x * (x * (x * 6.0 - 15.0) + 10.0);
-}
-
-vec4 smootherstep(in vec4 x){
-	return x * x * x * (x * (x * 6.0 - 15.0) + 10.0);
-}
+float smootherstep(in float x){ return x * x * x * (x * (x * 6.0 - 15.0) + 10.0); }
+vec2 smootherstep(in vec2 x){ return x * x * x * (x * (x * 6.0 - 15.0) + 10.0); }
+vec3 smootherstep(in vec3 x){ return x * x * x * (x * (x * 6.0 - 15.0) + 10.0); }
+vec4 smootherstep(in vec4 x){ return x * x * x * (x * (x * 6.0 - 15.0) + 10.0); }
 
 float getLuminance(in vec3 col){
 	return dot(col, vec3(0.299, 0.587, 0.114));
@@ -107,8 +88,14 @@ vec3 toneContrast(in vec3 col, in float a){
 
 // By Jessie#7257
 vec3 generateUnitVector(in vec2 hash){
-    hash.x *= PI2; hash.y = hash.y * 2.0 - 1.0;
+    hash.x *= TAU; hash.y = hash.y * 2.0 - 1.0;
     return vec3(vec2(sin(hash.x), cos(hash.x)) * sqrt(1.0 - hash.y * hash.y), hash.y);
+}
+
+vec3 generateCosineVector(in vec3 vector, in vec3 noiseUnitVector){
+	vec3 vectorDir = vector + noiseUnitVector;
+	if(sumOf(vectorDir) == 0) return vector;
+    return normalize(vectorDir);
 }
 
 // Rotation function
