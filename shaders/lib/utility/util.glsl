@@ -8,50 +8,56 @@
 #define ALPHA_THRESHOLD 0.005
 
 // Saturate/clamp functions
-float saturate(in float x) { return clamp(x, 0.0, 1.0); }
-vec2 saturate(in vec2 x) { return clamp(x, vec2(0), vec2(1)); }
-vec3 saturate(in vec3 x) { return clamp(x, vec3(0), vec3(1)); }
-vec4 saturate(in vec4 x) { return clamp(x, vec4(0), vec4(1)); }
+float saturate(in float x){ return clamp(x, 0.0, 1.0); }
+vec2 saturate(in vec2 x){ return clamp(x, vec2(0), vec2(1)); }
+vec3 saturate(in vec3 x){ return clamp(x, vec3(0), vec3(1)); }
+vec4 saturate(in vec4 x){ return clamp(x, vec4(0), vec4(1)); }
 
 // Squared functions x ^ 2
-float squared(in float x) { return x * x; }
-vec2 squared(in vec2 x) { return x * x; }
-vec3 squared(in vec3 x) { return x * x; }
-vec4 squared(in vec4 x) { return x * x; }
+float squared(in float x){ return x * x; }
+vec2 squared(in vec2 x){ return x * x; }
+vec3 squared(in vec3 x){ return x * x; }
+vec4 squared(in vec4 x){ return x * x; }
 
 // Cubed functions x^3
-float cubed(in float x) { return x * x * x; }
-vec2 cubed(in vec2 x) { return x * x * x; }
-vec3 cubed(in vec3 x) { return x * x * x; }
-vec4 cubed(in vec4 x) { return x * x * x; }
+float cubed(in float x){ return x * x * x; }
+vec2 cubed(in vec2 x){ return x * x * x; }
+vec3 cubed(in vec3 x){ return x * x * x; }
+vec4 cubed(in vec4 x){ return x * x * x; }
 
 // Length squared
 float lengthSquared(in vec2 x){ return dot(x, x); }
 float lengthSquared(in vec3 x){ return dot(x, x); }
+float lengthSquared(in vec4 x){ return dot(x, x); }
+
+// Faster normalize using inversesqrt()
+vec2 fastNormalize(in vec2 x){ return x * inversesqrt(lengthSquared(x)); }
+vec3 fastNormalize(in vec3 x){ return x * inversesqrt(lengthSquared(x)); }
+vec4 fastNormalize(in vec4 x){ return x * inversesqrt(lengthSquared(x)); }
 
 // Min functions
-float minOf(in vec2 x) { return min(x.x, x.y); }
-float minOf(in vec3 x) { return min(x.x, min(x.y, x.z)); }
-float minOf(in vec4 x) { return min(min(x.x, x.y), min(x.z, x.w)); }
+float minOf(in vec2 x){ return min(x.x, x.y); }
+float minOf(in vec3 x){ return min(x.x, min(x.y, x.z)); }
+float minOf(in vec4 x){ return min(min(x.x, x.y), min(x.z, x.w)); }
 
 // Max functions
-float maxOf(in vec2 x) { return max(x.x, x.y); }
-float maxOf(in vec3 x) { return max(x.x, max(x.y, x.z)); }
-float maxOf(in vec4 x) { return max(max(x.x, x.y), max(x.z, x.w)); }
+float maxOf(in vec2 x){ return max(x.x, x.y); }
+float maxOf(in vec3 x){ return max(x.x, max(x.y, x.z)); }
+float maxOf(in vec4 x){ return max(max(x.x, x.y), max(x.z, x.w)); }
 
 // Sum functions
-float sumOf(in vec2 x) { return x.x + x.y; }
-float sumOf(in vec3 x) { return x.x + x.y + x.z; }
-float sumOf(in vec4 x) { return x.x + x.y + x.z + x.w; }
+float sumOf(in vec2 x){ return x.x + x.y; }
+float sumOf(in vec3 x){ return x.x + x.y + x.z; }
+float sumOf(in vec4 x){ return x.x + x.y + x.z + x.w; }
 
 // Hermite interpolation
-float hermiteMix(in float a, in float b, in float x) { return (x - a) / (b - a); }
-vec2 hermiteMix(in float a, in float b, in vec2 x) { return (x - a) / (b - a); }
-vec3 hermiteMix(in float a, in float b, in vec3 x) { return (x - a) / (b - a); }
-vec4 hermiteMix(in float a, in float b, in vec4 x) { return (x - a) / (b - a); }
-vec2 hermiteMix(in vec2 a, in vec2 b, in vec2 x) { return (x - a) / (b - a); }
-vec3 hermiteMix(in vec3 a, in vec3 b, in vec3 x) { return (x - a) / (b - a); }
-vec4 hermiteMix(in vec4 a, in vec4 b, in vec4 x) { return (x - a) / (b - a); }
+float hermiteMix(in float a, in float b, in float x){ return (x - a) / (b - a); }
+vec2 hermiteMix(in float a, in float b, in vec2 x){ return (x - a) / (b - a); }
+vec3 hermiteMix(in float a, in float b, in vec3 x){ return (x - a) / (b - a); }
+vec4 hermiteMix(in float a, in float b, in vec4 x){ return (x - a) / (b - a); }
+vec2 hermiteMix(in vec2 a, in vec2 b, in vec2 x){ return (x - a) / (b - a); }
+vec3 hermiteMix(in vec3 a, in vec3 b, in vec3 x){ return (x - a) / (b - a); }
+vec4 hermiteMix(in vec4 a, in vec4 b, in vec4 x){ return (x - a) / (b - a); }
 
 // Fast approximate sqrt for 0-1 range
 float fastSqrt(in float x){ return x * (2.0 - x); }
@@ -71,19 +77,18 @@ vec2 smootherstep(in vec2 x){ return x * x * x * (x * (x * 6.0 - 15.0) + 10.0); 
 vec3 smootherstep(in vec3 x){ return x * x * x * (x * (x * 6.0 - 15.0) + 10.0); }
 vec4 smootherstep(in vec4 x){ return x * x * x * (x * (x * 6.0 - 15.0) + 10.0); }
 
-float getLuminance(in vec3 col){
-	return dot(col, vec3(0.299, 0.587, 0.114));
-}
+// Luminance function
+float getLuminance(in vec3 col){ return dot(col, vec3(0.299, 0.587, 0.114)); }
 
 // Saturation function
 vec3 toneSaturation(in vec3 col, in float a){
-	// Algorithm from Chapter 16 of OpenGL Shading Language
-	return getLuminance(col) * (1.0 - a) + col * a;
+	float luma = getLuminance(col);
+	return (col - luma) * a + luma;
 }
 
 // Contrast function
 vec3 toneContrast(in vec3 col, in float a){
-	return (col.rgb - 0.5) * a + 0.5;
+	return (col - 0.5) * a + 0.5;
 }
 
 // By Jessie#7257
@@ -95,7 +100,7 @@ vec3 generateUnitVector(in vec2 hash){
 vec3 generateCosineVector(in vec3 vector, in vec3 noiseUnitVector){
 	vec3 vectorDir = vector + noiseUnitVector;
 	if(sumOf(vectorDir) == 0) return vector;
-    return normalize(vectorDir);
+    return fastNormalize(vectorDir);
 }
 
 // Rotation function
@@ -110,8 +115,8 @@ float toLinear(in float x){ return x * x; }
 vec3 toLinear(in vec3 x){ return x * x; }
 
 // Linear to sRGB
-float toSRGB(in float x){ return sqrt(x); }
-vec3 toSRGB(in vec3 x){ return sqrt(x); }
+float toSRGB(in float x){ return x * inversesqrt(x); }
+vec3 toSRGB(in vec3 x){ return x * inversesqrt(x); }
 
 /*
 // SRGB to linear

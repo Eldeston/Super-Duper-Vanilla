@@ -38,7 +38,7 @@
         vec3 ndc1 = linePosStart.xyz / linePosStart.w;
         vec3 ndc2 = linePosEnd.xyz / linePosEnd.w;
 
-        vec2 lineScreenDirection = normalize((ndc2.xy - ndc1.xy) * vec2(viewWidth, viewHeight));
+        vec2 lineScreenDirection = fastNormalize((ndc2.xy - ndc1.xy) * vec2(viewWidth, viewHeight));
         vec2 lineOffset = vec2(-lineScreenDirection.y, lineScreenDirection.x) * (2.0 / vec2(viewWidth, viewHeight));
 
         if(lineOffset.x < 0.0) lineOffset *= -1.0;

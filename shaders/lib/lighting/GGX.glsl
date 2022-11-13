@@ -48,7 +48,7 @@ float getNoHSquared(in float radiusTan, in float NoL, in float NoV, in float VoL
 // Thanks for LVutner#5199 for his code!
 vec3 getSpecBRDF(in vec3 V, in vec3 L, in vec3 N, in vec3 albedo, in float NL, in float metallic, in float roughness){
     // Halfway vector
-    vec3 H = normalize(L + V);
+    vec3 H = fastNormalize(L + V);
     
     // Dot products
     float NV = max(0.0, dot(N, V));

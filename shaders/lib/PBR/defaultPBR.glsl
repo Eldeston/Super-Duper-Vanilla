@@ -25,7 +25,7 @@ void getPBR(inout structPBR material, in int id){
             float d2 = sumOf(texture2DGradARB(texture, fract(vec2(texCoordPixCenter.x, texCoordPixCenter.y + autoGenNormPixSize)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
 
             vec2 difference = d0 - vec2(d1, d2);
-            // TBN * normalize(vec3(difference, 1))
+            // TBN * fastNormalize(vec3(difference, 1))
             material.normal = TBN * (vec3(difference, 1) * inversesqrt(lengthSquared(difference) + 1.0));
 
             // Calculate normal strength

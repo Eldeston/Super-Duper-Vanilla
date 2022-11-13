@@ -21,7 +21,7 @@ vec3 rayTraceScene(in vec3 screenPos, in vec3 viewPos, in vec3 rayDir, in float 
 	if(rayDir.z > -viewPos.z) return vec3(0);
 
 	// Get screenspace rayDir
-	vec3 screenPosRayDir = normalize(toScreen(viewPos + rayDir) - screenPos) / steps;
+	vec3 screenPosRayDir = fastNormalize(toScreen(viewPos + rayDir) - screenPos) / steps;
 	// Add dithering to our "startPos"
 	screenPos += screenPosRayDir * dither;
 

@@ -40,9 +40,9 @@
         vertexColor = gl_Color.rgb;
 
         // Get vertex tangent
-        vec3 vertexTangent = normalize(at_tangent.xyz);
+        vec3 vertexTangent = fastNormalize(at_tangent.xyz);
         // Get vertex normal
-        vec3 vertexNormal = normalize(gl_Normal);
+        vec3 vertexNormal = fastNormalize(gl_Normal);
 
         // Get vertex position (feet player pos)
         vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);

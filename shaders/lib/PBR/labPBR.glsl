@@ -198,7 +198,7 @@ void getPBR(inout structPBR material, in int id){
     #endif
 
     // Assign normal
-    if(hasNormal) material.normal = TBN * normalize(normalMap);
+    if(hasNormal) material.normal = TBN * fastNormalize(normalMap);
 
     // Calculate normal strength
     material.normal = mix(TBN[2], material.normal, NORMAL_STRENGTH);
