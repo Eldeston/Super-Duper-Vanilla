@@ -26,10 +26,10 @@
 
 		#if defined VOL_LIGHT && defined SHD_ENABLE
 			// Normalize then unormalize with viewDist and clamping it at minimum distance between far and current shadowDistance
-			vec3 endPos = mat3(shadowProjection) * (mat3(shadowModelView) * (nEyePlayerPos * min(min(far, shadowDistance), viewDist))) * 0.14285714;
+			vec3 endPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * (nEyePlayerPos * min(min(far, shadowDistance), viewDist))) * 0.14285714;
 
 			// Apply dithering added to the eyePlayerPos "camera" position converted to shadow clip space
-			vec3 startPos = mat3(shadowProjection) * shadowModelView[3].xyz + shadowProjection[3].xyz + endPos * dither;
+			vec3 startPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * shadowModelView[3].xyz + shadowProjection[3].xyz + endPos * dither;
 			
 			vec3 rayData = vec3(0);
 			for(int x = 0; x < 7; x++){

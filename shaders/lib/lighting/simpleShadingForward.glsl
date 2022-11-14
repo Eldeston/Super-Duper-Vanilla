@@ -23,14 +23,14 @@
 				// If the area isn't shaded, apply shadow mapping
 				if(NL > 0){
 					// Get shadow pos
-					vec3 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz) + shadowProjection[3].xyz;
+					vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz) + shadowProjection[3].xyz;
 					
 					// Bias mutilplier, adjusts according to the current shadow distance and resolution
 					float biasAdjustMult = log2(max(4.0, shadowDistance - shadowMapResolution * 0.125)) * 0.25;
 					float distortFactor = getDistortFactor(shdPos.xy);
 					
 					// Apply bias according to normal in shadow space
-					shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * vertexNormal) * distortFactor * biasAdjustMult;
+					shdPos += vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexNormal) * distortFactor * biasAdjustMult;
 					shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
 
 					// Sample shadows
@@ -76,14 +76,14 @@
 					float caveFixShdFactor = isEyeInWater == 1 ? 1.0 : min(1.0, lmCoord.y * 2.0) * (1.0 - eyeBrightFact) + eyeBrightFact;
 
 					// Get shadow pos
-					vec3 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz) + shadowProjection[3].xyz;
+					vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz) + shadowProjection[3].xyz;
 					
 					// Bias mutilplier, adjusts according to the current shadow distance and resolution
 					float biasAdjustMult = log2(max(4.0, shadowDistance - shadowMapResolution * 0.125)) * 0.25;
 					float distortFactor = getDistortFactor(shdPos.xy);
 
 					// Apply bias according to normal in shadow space
-					shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * vertexNormal) * distortFactor * biasAdjustMult;
+					shdPos += vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexNormal) * distortFactor * biasAdjustMult;
 					shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
 
 					// Sample shadows

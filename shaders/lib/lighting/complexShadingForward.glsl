@@ -44,14 +44,14 @@ vec4 complexShadingGbuffers(in structPBR material){
 				float caveFixShdFactor = isEyeInWater == 1 ? 1.0 : min(1.0, lmCoord.y * 2.0) * (1.0 - eyeBrightFact) + eyeBrightFact;
 
 				// Get shadow pos
-				vec3 shdPos = mat3(shadowProjection) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz) + shadowProjection[3].xyz;
+				vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz) + shadowProjection[3].xyz;
 				
 				// Bias mutilplier, adjusts according to the current shadow distance and resolution
 				float biasAdjustMult = log2(max(4.0, shadowDistance - shadowMapResolution * 0.125)) * 0.25;
 				float distortFactor = getDistortFactor(shdPos.xy);
 
 				// Apply bias according to normal in shadow space before
-				shdPos += mat3(shadowProjection) * (mat3(shadowModelView) * material.normal) * distortFactor * biasAdjustMult;
+				shdPos += vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * material.normal) * distortFactor * biasAdjustMult;
 				shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
 
 				// Sample shadows
