@@ -22,19 +22,19 @@
 		vec3 getShdTex(in vec3 shdPos){
 			#ifdef SHD_COL
 				// Sample shadows
-				float shd0 = shadow2DLod(shadowtex0, shdPos, 0).x;
+				float shd0 = textureLod(shadowtex0, shdPos, 0);
 				// If not in shadow, return "white"
 				if(shd0 == 1) return vec3(1);
 
 				// Sample opaque only shadows
-				float shd1 = shadow2DLod(shadowtex1, shdPos, 0).x;
+				float shd1 = textureLod(shadowtex1, shdPos, 0);
 				// If not in shadow return full shadow color
 				if(shd1 != 0) return texelFetch(shadowcolor0, ivec2(shdPos.xy * shadowMapResolution), 0).rgb * shd1 * (1.0 - shd0) + shd0;
 				// Otherwise, return "black"
 				return vec3(0);
 			#else
 				// Sample shadows and return directly
-				return shadow2DLod(shadowtex0, shdPos, 0).xxx;
+				return vec3(textureLod(shadowtex0, shdPos, 0));
 			#endif
 		}
 

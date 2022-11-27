@@ -35,7 +35,7 @@
     in vec2 texCoord;
 
     // Get albedo texture
-    uniform sampler2D texture;
+    uniform sampler2D tex;
 
     #include "/lib/universalVars.glsl"
 
@@ -43,7 +43,7 @@
     uniform float nightVision;
     
     void main(){
-        vec4 albedo = texture2D(texture, texCoord);
+        vec4 albedo = texture(tex, texCoord);
 
         // Alpha test, discard immediately
         if(albedo.a <= ALPHA_THRESHOLD) discard;

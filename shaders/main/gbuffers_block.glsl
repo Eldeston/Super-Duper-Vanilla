@@ -101,7 +101,7 @@
     in vec4 vertexPos;
 
     // Get albedo texture
-    uniform sampler2D texture;
+    uniform sampler2D tex;
 
     #ifdef WORLD_LIGHT
         // Shadow view matrix uniforms
@@ -166,14 +166,14 @@
             vec2 screenPos = gl_FragCoord.xy / vec2(viewWidth, viewHeight);
             float starSpeed = newFrameTimeCounter * 0.0078125;
 
-            float endStarField = texture2D(texture, vec2(screenPos.y, screenPos.x + starSpeed) * 0.5).r;
-            endStarField += texture2D(texture, vec2(screenPos.x, screenPos.y + starSpeed)).r;
-            endStarField += texture2D(texture, vec2(-screenPos.x, starSpeed - screenPos.y) * 2.0).r;
+            float endStarField = texture(tex, vec2(screenPos.y, screenPos.x + starSpeed) * 0.5).r;
+            endStarField += texture(tex, vec2(screenPos.x, screenPos.y + starSpeed)).r;
+            endStarField += texture(tex, vec2(-screenPos.x, starSpeed - screenPos.y) * 2.0).r;
             
             vec2 endStarCoord1 = vec2(screenPos.x - screenPos.y, screenPos.y + screenPos.x);
-            endStarField += texture2D(texture, vec2(endStarCoord1.y, endStarCoord1.x + starSpeed) * 0.5).r;
-            endStarField += texture2D(texture, vec2(endStarCoord1.x, endStarCoord1.y + starSpeed)).r;
-            endStarField += texture2D(texture, vec2(-endStarCoord1.x, starSpeed - endStarCoord1.y) * 2.0).r;
+            endStarField += texture(tex, vec2(endStarCoord1.y, endStarCoord1.x + starSpeed) * 0.5).r;
+            endStarField += texture(tex, vec2(endStarCoord1.x, endStarCoord1.y + starSpeed)).r;
+            endStarField += texture(tex, vec2(-endStarCoord1.x, starSpeed - endStarCoord1.y) * 2.0).r;
 
             vec3 endPortalAlbedo = toLinear((endStarField + 0.1) * (getRand3(ivec2(screenPos * 128.0) & 255) * 0.5 + 0.5) * vertexColor.rgb);
             

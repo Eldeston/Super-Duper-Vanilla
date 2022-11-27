@@ -1,7 +1,7 @@
 vec2 binarySearch(in vec3 screenPosRayDir, in vec3 startPos, in int binarySearchSteps){
 	for(int i = 0; i < binarySearchSteps; i++){
 		screenPosRayDir *= 0.5;
-		startPos += texture2DLod(depthtex0, startPos.xy, 0).x < startPos.z ? -screenPosRayDir : screenPosRayDir;
+		startPos += textureLod(depthtex0, startPos.xy, 0).x < startPos.z ? -screenPosRayDir : screenPosRayDir;
 	}
 
 	return startPos.xy;
@@ -14,7 +14,7 @@ vec3 rayTraceScene(in vec3 screenPos, in vec3 viewPos, in vec3 rayDir, in float 
 	// If hand, do simple, flipped reflections
 	if(screenPos.z < 0.56){
 		vec2 handScreenPos = toScreen(viewPos + rayDir * 128.0).xy;
-		return vec3(handScreenPos, texture2DLod(depthtex0, handScreenPos, 0).x != 1);
+		return vec3(handScreenPos, textureLod(depthtex0, handScreenPos, 0).x != 1);
 	}
 
 	// Fix for the blob when player is near a surface. From Bálint#1673
@@ -29,8 +29,8 @@ vec3 rayTraceScene(in vec3 screenPos, in vec3 viewPos, in vec3 rayDir, in float 
 	for(int i = 0; i < steps; i++){
 		// We raytrace here
 		screenPos += screenPosRayDir;
-		if(screenPos.x <= 0 || screenPos.y <= 0 || screenPos.x >= 1 || screenPos.y >= 1) return vec3(0);
-		float currDepth = texture2DLod(depthtex0, screenPos.xy, 0).x;
+		if(screenPos.x < 0 || screenPos.y < 0 || screenPos.x > 1 || screenPos.y > 1) return vec3(0);
+		float currDepth = textureLod(depthtex0, screenPos.xy, 0).x;
 
 		// Check intersection
 		if(screenPos.z > currDepth && currDepth > 0.56){

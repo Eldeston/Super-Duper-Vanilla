@@ -14,14 +14,14 @@ uniform sampler2D specular;
         float stepSize = 1.0 / PARALLAX_STEPS;
         endUv *= stepSize * PARALLAX_DEPTH;
 
-        float texDepth = texture2DGradARB(normals, fract(startUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
+        float texDepth = textureGrad(normals, fract(startUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
         float traceDepth = 1.0;
 
         for(int i = 0; i < PARALLAX_STEPS; i++){
             if(texDepth >= traceDepth) break;
             startUv += endUv;
             traceDepth -= stepSize;
-            texDepth = texture2DGradARB(normals, fract(startUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
+            texDepth = textureGrad(normals, fract(startUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
         }
 
         currPos = vec3(startUv - endUv, traceDepth + stepSize);
@@ -37,8 +37,8 @@ uniform sampler2D specular;
             vec2 traceUv = currPos.xy;
 
             for(int i = int(traceDepth * PARALLAX_SHD_STEPS); i < PARALLAX_SHD_STEPS; i++){
-                if(texture2DGradARB(normals, fract(traceUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a >= traceDepth) return pow(i * stepSize, 16.0);
-                // if(texture2DGradARB(normals, fract(traceUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a >= traceDepth) return 0.0;
+                if(textureGrad(normals, fract(traceUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a >= traceDepth) return pow(i * stepSize, 16.0);
+                // if(textureGrad(normals, fract(traceUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a >= traceDepth) return 0.0;
                 traceUv += stepOffset;
                 traceDepth += stepSize;
             }
@@ -58,11 +58,11 @@ uniform sampler2D specular;
             vec2 stepSign = sign(-viewT.xy);
 
             vec2 texX = texSnapped + vec2(texPixSize.x * stepSign.x, 0);
-            float heightX = texture2DGradARB(normals, texX, dcdx, dcdy).a;
+            float heightX = textureGrad(normals, texX, dcdx, dcdy).a;
             bool hasX = traceDepth > heightX && sign(texOffset.x) == stepSign.x;
 
             vec2 texY = texSnapped + vec2(0, texPixSize.y * stepSign.y);
-            float heightY = texture2DGradARB(normals, texY, dcdx, dcdy).a;
+            float heightY = textureGrad(normals, texY, dcdx, dcdy).a;
             bool hasY = traceDepth > heightY && sign(texOffset.y) == stepSign.y;
 
             if(abs(texOffset.x) < abs(texOffset.y)){
@@ -84,7 +84,7 @@ void getPBR(inout structPBR material, in int id){
     vec2 texUv = texCoord;
 
     // Exclude signs and floating texts. We'll also include water and lava in the meantime.
-    bool hasNormal = id != 10000 && id != 10001 && abs(sumOf(texture2DGradARB(normals, texCoord, dcdx, dcdy).xy)) >= 0.01;
+    bool hasNormal = id != 10000 && id != 10001 && abs(sumOf(textureGrad(normals, texCoord, dcdx, dcdy).xy)) >= 0.01;
 
     #ifdef PARALLAX_OCCLUSION
         vec3 viewDir = -vertexPos.xyz * TBN;
@@ -95,7 +95,7 @@ void getPBR(inout structPBR material, in int id){
     #endif
 
     // Assign albedo
-    material.albedo = texture2DGradARB(texture, texUv, dcdx, dcdy);
+    material.albedo = textureGrad(tex, texUv, dcdx, dcdy);
 
     #if !(defined ENTITIES || defined ENTITIES_GLOWING)
         // Alpha test, discard immediately
@@ -106,8 +106,8 @@ void getPBR(inout structPBR material, in int id){
     material.normal = TBN[2];
 
     // Get raw textures
-    vec4 normalAOH = texture2DGradARB(normals, texUv, dcdx, dcdy);
-    vec4 SRPSSE = texture2DGradARB(specular, texUv, dcdx, dcdy);
+    vec4 normalAOH = textureGrad(normals, texUv, dcdx, dcdy);
+    vec4 SRPSSE = textureGrad(specular, texUv, dcdx, dcdy);
 
     // Decode and extract the materials
     // Extract normals
@@ -186,7 +186,7 @@ void getPBR(inout structPBR material, in int id){
     #ifdef PARALLAX_OCCLUSION
         if(hasNormal){
             #ifdef SLOPE_NORMALS
-                if(texture2DGradARB(normals, texUv, dcdx, dcdy).a > currPos.z) normalMap = vec3(getSlopeNormals(-viewDir, texUv, currPos.z), 0);
+                if(textureGrad(normals, texUv, dcdx, dcdy).a > currPos.z) normalMap = vec3(getSlopeNormals(-viewDir, texUv, currPos.z), 0);
             #endif
 
             #if defined PARALLAX_SHADOWS && defined WORLD_LIGHT

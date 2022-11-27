@@ -67,8 +67,8 @@
             vec2 bottomLeftCorner = texCoord - pixSize;
 
             // Apply box blur all tiles
-            return texture2DLod(colortex4, bottomLeftCorner, 0).rgb + texture2DLod(colortex4, topRightCorner, 0).rgb +
-                texture2DLod(colortex4, vec2(bottomLeftCorner.x, topRightCorner.y), 0).rgb + texture2DLod(colortex4, vec2(topRightCorner.x, bottomLeftCorner.y), 0).rgb;
+            return textureLod(colortex4, bottomLeftCorner, 0).rgb + textureLod(colortex4, topRightCorner, 0).rgb +
+                textureLod(colortex4, vec2(bottomLeftCorner.x, topRightCorner.y), 0).rgb + textureLod(colortex4, vec2(topRightCorner.x, bottomLeftCorner.y), 0).rgb;
         }
     #endif
 
@@ -134,13 +134,13 @@
             // shadowLightPosition is broken in other dimensions. The current is equivalent to:
             // fastNormalize(mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz)
             
-            if(texture2DLod(depthtex0, lightDir, 0).x == 1)
+            if(textureLod(depthtex0, lightDir, 0).x == 1)
                 color += getLensFlare(screenCoord - 0.5, lightDir - 0.5) * (1.0 - blindness) * (1.0 - darknessFactor) * (1.0 - rainStrength);
         #endif
 
         #ifdef AUTO_EXPOSURE
             // Get center pixel current average scene luminance and mix previous and current pixel...
-            float centerPixLuminance = sumOf(texture2DLod(gcolor, vec2(0.5), 9).rgb);
+            float centerPixLuminance = sumOf(textureLod(gcolor, vec2(0.5), 9).rgb);
 
             // Accumulate current luminance
             float tempPixLuminance = mix(centerPixLuminance, texelFetch(colortex5, ivec2(1), 0).a, exp2(-AUTO_EXPOSURE_SPEED * frameTime));

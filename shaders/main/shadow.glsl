@@ -107,7 +107,7 @@
 
         void main(){
             #ifdef SHD_COL
-                vec4 shdAlbedo = texture2D(tex, texCoord);
+                vec4 shdAlbedo = texture(tex, texCoord);
 
                 // Alpha test, discard immediately
                 if(shdAlbedo.a <= ALPHA_THRESHOLD) discard;
@@ -139,7 +139,7 @@
             /* DRAWBUFFERS:0 */
                 gl_FragData[0] = shdAlbedo;
             #else
-                float shdAlbedoAlpha = texture2D(tex, texCoord).a;
+                float shdAlbedoAlpha = texture(tex, texCoord).a;
 
                 // Alpha test, discard immediately
                 if(shdAlbedoAlpha <= ALPHA_THRESHOLD) discard;

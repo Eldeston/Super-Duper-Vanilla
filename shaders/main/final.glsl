@@ -44,8 +44,8 @@
             vec2 topRightCorner = texCoord + pixSize;
             vec2 bottomLeftCorner = texCoord - pixSize;
 
-            vec3 blur = texture2DLod(gcolor, bottomLeftCorner, 0).rgb + texture2DLod(gcolor, topRightCorner, 0).rgb +
-                texture2DLod(gcolor, vec2(bottomLeftCorner.x, topRightCorner.y), 0).rgb + texture2DLod(gcolor, vec2(topRightCorner.x, bottomLeftCorner.y), 0).rgb;
+            vec3 blur = textureLod(gcolor, bottomLeftCorner, 0).rgb + textureLod(gcolor, topRightCorner, 0).rgb +
+                textureLod(gcolor, vec2(bottomLeftCorner.x, topRightCorner.y), 0).rgb + textureLod(gcolor, vec2(topRightCorner.x, bottomLeftCorner.y), 0).rgb;
             
             return color * 2.0 - blur * 0.25;
         }
@@ -62,11 +62,11 @@
         #ifdef CHROMATIC_ABERRATION
             vec2 chromaStrength = ((screenCoord - 0.5) * ABERRATION_PIX_SIZE) / vec2(viewWidth, viewHeight);
 
-            vec3 color = vec3(texture2DLod(gcolor, screenCoord - chromaStrength, 0).r,
-                texture2DLod(gcolor, screenCoord, 0).g,
-                texture2DLod(gcolor, screenCoord + chromaStrength, 0).b);
+            vec3 color = vec3(textureLod(gcolor, screenCoord - chromaStrength, 0).r,
+                textureLod(gcolor, screenCoord, 0).g,
+                textureLod(gcolor, screenCoord + chromaStrength, 0).b);
         #else
-            vec3 color = texture2DLod(gcolor, screenCoord, 0).rgb;
+            vec3 color = textureLod(gcolor, screenCoord, 0).rgb;
         #endif
 
         #if ANTI_ALIASING != 0 && defined SHARPEN_FILTER

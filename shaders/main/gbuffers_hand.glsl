@@ -93,7 +93,7 @@
     in vec4 vertexPos;
 
     // Get albedo texture
-    uniform sampler2D texture;
+    uniform sampler2D tex;
 
     // Projection matrix uniforms
     uniform mat4 gbufferProjectionInverse;

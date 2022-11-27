@@ -19,7 +19,7 @@ float getSSAO(in vec3 viewPos, in vec3 normal){
         // Add new offsets to origin
         vec3 samplePos = viewPos + (normal + ditherSwizzle[i] - 0.5) * 0.5;
         // Sample new depth and linearize
-        float sampleDepth = toView(texture2DLod(depthtex0, toScreen(samplePos).xy, 0).x);
+        float sampleDepth = toView(textureLod(depthtex0, toScreen(samplePos).xy, 0).x);
 
         // Check if the offset points are inside geometry or if the point is occluded
         if(sampleDepth > samplePos.z) occlusion += min(1.0 / (sampleDepth - viewPos.z), 1.0);

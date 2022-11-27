@@ -15,7 +15,7 @@
     in vec2 screenCoord;
 
     #ifdef BLOOM
-        // Needs to be enabled by force to be able to use LOD fully even with texture2DLod
+        // Needs to be enabled by force to be able to use LOD fully even with textureLod
         const bool gcolorMipmapEnabled = true;
         
         uniform sampler2D gcolor;
@@ -31,11 +31,11 @@
                 // Get pixel size based on bloom tile scale
                 float pixSize = scale / viewWidth;
                 
-                vec3 sample0 = texture2DLod(gcolor, bloomUv + vec2(pixSize * 2.0, 0), LOD).rgb +
-                    texture2DLod(gcolor, bloomUv - vec2(pixSize * 2.0, 0), LOD).rgb;
-                vec3 sample1 = texture2DLod(gcolor, bloomUv + vec2(pixSize, 0), LOD).rgb +
-                    texture2DLod(gcolor, bloomUv - vec2(pixSize, 0), LOD).rgb;
-                vec3 sample2 = texture2DLod(gcolor, bloomUv, LOD).rgb;
+                vec3 sample0 = textureLod(gcolor, bloomUv + vec2(pixSize * 2.0, 0), LOD).rgb +
+                    textureLod(gcolor, bloomUv - vec2(pixSize * 2.0, 0), LOD).rgb;
+                vec3 sample1 = textureLod(gcolor, bloomUv + vec2(pixSize, 0), LOD).rgb +
+                    textureLod(gcolor, bloomUv - vec2(pixSize, 0), LOD).rgb;
+                vec3 sample2 = textureLod(gcolor, bloomUv, LOD).rgb;
 
                 return sample0 * 0.0625 + sample1 * 0.25 + sample2 * 0.375;
             }

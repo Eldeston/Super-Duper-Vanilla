@@ -3,7 +3,7 @@ vec3 textureTAA(in ivec2 screenTexelCoord, in vec2 screenPos){
     // Current color
     vec3 currColor = texelFetch(gcolor, screenTexelCoord, 0).rgb;
     // Previous color
-    vec3 prevColor = texture2DLod(colortex5, toPrevScreenPos(screenPos, texelFetch(depthtex0, screenTexelCoord, 0).x), 0).rgb;
+    vec3 prevColor = textureLod(colortex5, toPrevScreenPos(screenPos, texelFetch(depthtex0, screenTexelCoord, 0).x), 0).rgb;
 
     // Apply clamping on the history color.
     vec3 nearCol0 = texelFetch(gcolor, ivec2(screenTexelCoord.x - 1, screenTexelCoord.y), 0).rgb;

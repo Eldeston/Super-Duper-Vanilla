@@ -99,8 +99,8 @@ vec3 textureFXAA(in vec2 screenPos, in vec2 resolution, in ivec2 screenTexelCoor
     vec2 uv2 = currentUv + offset;
 
     // Read the lumas at both current extremities of the exploration segment, and compute the delta wrt to the local average luma.
-    float lumaEnd1 = getLuminance(texture2DLod(gcolor, uv1, 0).rgb) - lumaLocalAverage;
-    float lumaEnd2 = getLuminance(texture2DLod(gcolor, uv2, 0).rgb) - lumaLocalAverage;
+    float lumaEnd1 = getLuminance(textureLod(gcolor, uv1, 0).rgb) - lumaLocalAverage;
+    float lumaEnd2 = getLuminance(textureLod(gcolor, uv2, 0).rgb) - lumaLocalAverage;
 
     // If the luma deltas at the current extremities are larger than the local gradient, we have reached the side of the edge.
     bool reached1 = abs(lumaEnd1) >= gradientScaled;
@@ -116,13 +116,13 @@ vec3 textureFXAA(in vec2 screenPos, in vec2 resolution, in ivec2 screenTexelCoor
         for(int i = 2; i < ITERATIONS; i++){
             // If needed, read luma in 1st direction, compute delta.
             if(!reached1){
-                lumaEnd1 = getLuminance(texture2DLod(gcolor, uv1, 0).rgb);
+                lumaEnd1 = getLuminance(textureLod(gcolor, uv1, 0).rgb);
                 lumaEnd1 = lumaEnd1 - lumaLocalAverage;
             }
 
             // If needed, read luma in opposite direction, compute delta.
             if(!reached2){
-                lumaEnd2 = getLuminance(texture2DLod(gcolor, uv2, 0).rgb);
+                lumaEnd2 = getLuminance(textureLod(gcolor, uv2, 0).rgb);
                 lumaEnd2 = lumaEnd2 - lumaLocalAverage;
             }
 
@@ -168,5 +168,5 @@ vec3 textureFXAA(in vec2 screenPos, in vec2 resolution, in ivec2 screenTexelCoor
     else finalUv.x += (correctVariation ? max(0.5 - min(distance1, distance2) / (distance1 + distance2), subPixelOffsetFinal) : subPixelOffsetFinal) * stepLength;
 
     // Read the color at the new UV coordinates, and use it.
-    return texture2DLod(gcolor, finalUv, 0).rgb;
+    return textureLod(gcolor, finalUv, 0).rgb;
 }

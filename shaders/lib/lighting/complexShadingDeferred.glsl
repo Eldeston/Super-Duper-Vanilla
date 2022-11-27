@@ -10,9 +10,9 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
 
 		// If sky don't do SSGI
 		#ifdef PREVIOUS_FRAME
-			if(SSGIcoord.z > 0.5) sceneCol += albedo * texture2DLod(colortex5, toPrevScreenPos(SSGIcoord.xy), 0).rgb;
+			if(SSGIcoord.z > 0.5) sceneCol += albedo * textureLod(colortex5, toPrevScreenPos(SSGIcoord.xy), 0).rgb;
 		#else
-			if(SSGIcoord.z > 0.5) sceneCol += albedo * texture2DLod(gcolor, SSGIcoord.xy, 0).rgb;
+			if(SSGIcoord.z > 0.5) sceneCol += albedo * textureLod(gcolor, SSGIcoord.xy, 0).rgb;
 		#endif
 	#endif
 
@@ -37,10 +37,10 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
 			
 			#ifdef PREVIOUS_FRAME
 				// Get reflections and check for sky
-				vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyRender(mat3(gbufferModelViewInverse) * reflectedViewDir, true, true) : texture2DLod(colortex5, toPrevScreenPos(SSRCoord.xy), 0).rgb;
+				vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyRender(mat3(gbufferModelViewInverse) * reflectedViewDir, true, true) : textureLod(colortex5, toPrevScreenPos(SSRCoord.xy), 0).rgb;
 			#else
 				// Get reflections and check for sky
-				vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyRender(mat3(gbufferModelViewInverse) * reflectedViewDir, true, true) : texture2DLod(gcolor, SSRCoord.xy, 0).rgb;
+				vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyRender(mat3(gbufferModelViewInverse) * reflectedViewDir, true, true) : textureLod(gcolor, SSRCoord.xy, 0).rgb;
 			#endif
 		#else
 			vec3 reflectCol = getSkyRender(mat3(gbufferModelViewInverse) * reflectedViewDir, true, true);

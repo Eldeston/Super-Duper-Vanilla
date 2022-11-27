@@ -70,7 +70,7 @@
     in vec4 vertexPos;
 
     // Get albedo texture
-    uniform sampler2D texture;
+    uniform sampler2D tex;
 
     #ifdef WORLD_LIGHT
         // Shadow view matrix uniforms
@@ -110,7 +110,7 @@
 
     void main(){
         // Get albedo
-        vec4 albedo = texture2D(texture, texCoord);
+        vec4 albedo = texture(tex, texCoord);
 
         // Alpha test, discard immediately
         if(albedo.a <= ALPHA_THRESHOLD) discard;

@@ -4,7 +4,7 @@
 // The default PBR calculation
 void getPBR(inout structPBR material, in int id){
     // Assign albedo
-    material.albedo = texture2DGradARB(texture, texCoord, dcdx, dcdy);
+    material.albedo = textureGrad(tex, texCoord, dcdx, dcdy);
 
     #if !(defined ENTITIES || defined ENTITIES_GLOWING)
         // Alpha test, discard immediately
@@ -20,9 +20,9 @@ void getPBR(inout structPBR material, in int id){
             const float autoGenNormPixSize = 2.0 / AUTO_GEN_NORM_RES;
             vec2 texCoordPixCenter = vTexCoord - autoGenNormPixSize * 0.5;
 
-            float d0 = sumOf(texture2DGradARB(texture, fract(texCoordPixCenter) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
-            float d1 = sumOf(texture2DGradARB(texture, fract(vec2(texCoordPixCenter.x + autoGenNormPixSize, texCoordPixCenter.y)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
-            float d2 = sumOf(texture2DGradARB(texture, fract(vec2(texCoordPixCenter.x, texCoordPixCenter.y + autoGenNormPixSize)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
+            float d0 = sumOf(textureGrad(tex, fract(texCoordPixCenter) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
+            float d1 = sumOf(textureGrad(tex, fract(vec2(texCoordPixCenter.x + autoGenNormPixSize, texCoordPixCenter.y)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
+            float d2 = sumOf(textureGrad(tex, fract(vec2(texCoordPixCenter.x, texCoordPixCenter.y + autoGenNormPixSize)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
 
             vec2 difference = d0 - vec2(d1, d2);
             // TBN * fastNormalize(vec3(difference, 1))

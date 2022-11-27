@@ -34,7 +34,7 @@
     in vec4 vertexColor;
 
     // Get albedo texture
-    uniform sampler2D texture;
+    uniform sampler2D tex;
 
     uniform int renderStage;
 
@@ -43,7 +43,7 @@
     #endif
     
     void main(){
-        vec4 albedo = texture2D(texture, texCoord);
+        vec4 albedo = texture(tex, texCoord);
 
         // Alpha test, discard immediately
         if(albedo.a <= ALPHA_THRESHOLD) discard;

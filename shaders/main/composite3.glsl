@@ -17,7 +17,7 @@
     uniform sampler2D gcolor;
 
     #ifdef DOF
-        // Needs to be enabled by force to be able to use LOD fully even with texture2DLod
+        // Needs to be enabled by force to be able to use LOD fully even with textureLod
         const bool gcolorMipmapEnabled = true;
 
         // Precalculated dof offsets by vec2(cos(x), sin(x))
@@ -68,10 +68,10 @@
                 vec2 blurRes = blurRadius / vec2(viewWidth, viewHeight);
 
                 // Get center pixel color with LOD
-                vec3 dofColor = texture2DLod(gcolor, screenCoord, currDofLOD).rgb;
+                vec3 dofColor = textureLod(gcolor, screenCoord, currDofLOD).rgb;
                 for(int x = 0; x < 9; x++){
                     // Rotate offsets and sample
-                    dofColor += texture2DLod(gcolor, screenCoord - dofOffSets[x] * blurRes, currDofLOD).rgb;
+                    dofColor += textureLod(gcolor, screenCoord - dofOffSets[x] * blurRes, currDofLOD).rgb;
                 }
 
                 // 9 offsetted samples + 1 sample (1 / 10)

@@ -10,8 +10,8 @@
 		float heightFade = 1.0;
 
 		// Fade VL, but do not apply to underwater VL
-		if(isEyeInWater != 1){
-			heightFade = 1.0 - squared(max(0.0, nEyePlayerPos.y));
+		if(isEyeInWater != 1 && nEyePlayerPos.y > 0){
+			heightFade = 1.0 - squared(nEyePlayerPos.y);
 			heightFade = depth == 1 ? squared(squared(heightFade * heightFade)) : heightFade * heightFade;
 			heightFade += (1.0 - heightFade) * rainStrength * 0.5;
 		}

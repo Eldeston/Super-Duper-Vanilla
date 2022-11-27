@@ -129,7 +129,7 @@ vec3 getSkyRender(in vec3 skyBoxCol, in vec3 nPlayerPos, in bool isSky){
             if(blackHole <= 0) return vec3(0);
 
             skyPos.xy = rot2D(blackHole * TAU * 16.0) * skyPos.xy;
-            float rings = texture2DLod(noisetex, vec2(skyPos.x * blackHole, frameTimeCounter * 0.0009765625), 0).x;
+            float rings = textureLod(noisetex, vec2(skyPos.x * blackHole, frameTimeCounter * 0.0009765625), 0).x;
 
             finalCol += ((rings * blackHole * 0.9 + blackHole * 0.1) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY) * lightCol;
         #endif

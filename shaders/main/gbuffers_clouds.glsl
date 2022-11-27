@@ -65,7 +65,7 @@
     in vec4 vertexPos;
 
     // Get albedo texture
-    uniform sampler2D texture;
+    uniform sampler2D tex;
 
     #ifdef WORLD_LIGHT
         // Shadow view matrix uniforms
@@ -96,11 +96,11 @@
 
     void main(){
         // Get albedo alpha
-        float albedoAlpha = texture2D(texture, texCoord).a;
+        float albedoAlpha = texture(tex, texCoord).a;
 
         #ifdef DYNAMIC_CLOUDS
             float fade = smootherstep(sin(frameTimeCounter * FADE_SPEED) * 0.5 + 0.5);
-            float albedoAlpha2 = texture2D(texture, 0.5 - texCoord).a;
+            float albedoAlpha2 = texture(tex, 0.5 - texCoord).a;
             albedoAlpha = mix(mix(albedoAlpha, albedoAlpha2, fade), max(albedoAlpha, albedoAlpha2), rainStrength);
         #endif
 
