@@ -119,7 +119,8 @@ vec3 getSkyRender(in vec3 skyBoxCol, in vec3 nPlayerPos, in bool isSky){
     
     vec3 skyPos = mat3(shadowModelView) * nPlayerPos;
 
-    vec3 finalCol = getSkyColor(skyBoxCol, nPlayerPos, skyPos, isSky, false) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
+    // Begin with ambient lighting
+    vec3 finalCol = vec3(toLinear(AMBIENT_LIGHTING + nightVision * 0.5));
 
     #ifdef WORLD_LIGHT
         #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE != 2
@@ -134,6 +135,9 @@ vec3 getSkyRender(in vec3 skyBoxCol, in vec3 nPlayerPos, in bool isSky){
             finalCol += ((rings * blackHole * 0.9 + blackHole * 0.1) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY) * lightCol;
         #endif
     #endif
+
+    // Apply the rest of the sky color with the warped positions
+    finalCol += getSkyColor(skyBoxCol, nPlayerPos, skyPos, isSky, false);
 
     return finalCol;
 }
