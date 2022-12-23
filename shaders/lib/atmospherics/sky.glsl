@@ -1,4 +1,4 @@
-#ifdef WORLD_HORIZON
+#ifdef WORLD_AETHER
 #endif
 
 #if WORLD_SUN_MOON != 0
@@ -44,8 +44,24 @@ vec3 getSkyColor(in vec3 skyBoxCol, in vec3 nPlayerPos, in vec3 skyPos, in bool 
         finalCol.rg *= smoothen(saturate(1.0 + nPlayerPos.y * 4.0));
     #endif
 
-    #if defined WORLD_HORIZON && defined WORLD_LIGHT
-        finalCol += exp2((lightCol - abs(nPlayerPos.y) - 1.0) * 8.0);
+    #if (defined WORLD_AETHER && defined WORLD_LIGHT) || defined WORLD_STARS
+        // Scaled by noise resolution
+        vec3 skyCoordScale = skyPos * 256.0;
+    #endif
+
+    #if defined WORLD_AETHER && defined WORLD_LIGHT
+        int aetherAnimationSpeed = int(frameTimeCounter * 8.0);
+
+        ivec2 mainAetherTexelCoord = ivec2(skyCoordScale.xy);
+        ivec2 aetherTexelCoord0 = (mainAetherTexelCoord + aetherAnimationSpeed - 128) & 255;
+        ivec2 aetherTexelCoord1 = (mainAetherTexelCoord - aetherAnimationSpeed + 128) & 255;
+
+        float aether0 = texelFetch(noisetex, aetherTexelCoord0, 0).z;
+        float aether1 = texelFetch(noisetex, ivec2(aetherTexelCoord1.y, aetherTexelCoord0.x), 0).z;
+        float aether2 = texelFetch(noisetex, aetherTexelCoord1, 0).z;
+
+        vec3 aetherNoise = vec3(aether0 + aether1, aether1 + aether2, aether2 + aether0);
+        finalCol += exp2(-abs(nPlayerPos.y) * 8.0) * cubed(aetherNoise * lightCol * 0.5 + sumOf(aetherNoise) * 0.33333333) * lightCol;
     #endif
 
     if(isSky){
@@ -78,7 +94,7 @@ vec3 getSkyColor(in vec3 skyBoxCol, in vec3 nPlayerPos, in vec3 skyPos, in bool 
 
         #ifdef WORLD_STARS
             // Star field generation
-            vec2 starData = texelFetch(noisetex, ivec2((skyPos.xz * 256.0) / (abs(skyPos.y) + length(skyPos.xz))) & 255, 0).xy;
+            vec2 starData = texelFetch(noisetex, ivec2(skyCoordScale.xz / (abs(skyPos.y) + length(skyPos.xz))) & 255, 0).xy;
             finalCol += exp(starData.x * starData.y * 64.0 - 64.0) * (1.0 - rainStrength) * WORLD_STARS;
         #endif
     }
