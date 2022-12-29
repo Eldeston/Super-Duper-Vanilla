@@ -176,8 +176,11 @@
         // Get scene color
         vec3 sceneCol = texelFetch(gcolor, screenTexelCoord, 0).rgb;
 
-        // If sky, don't calculate lighting
-        if(!skyMask){
+        // If sky, do full sky render
+        if(skyMask){
+            sceneCol = getSkyRender(sceneCol, nEyePlayerPos, true) * exp2(-far * (blindness + darknessFactor));
+        // Else, calculate reflection and fog
+        }else{
             #if ANTI_ALIASING >= 2
                 vec3 dither = toRandPerFrame(getRand3(screenTexelCoord & 255), frameTimeCounter);
             #else
@@ -201,12 +204,10 @@
                 // Apply ambient occlusion with simple blur
                 sceneCol *= getSSAOBoxBlur(screenTexelCoord);
             #endif
-        }
 
-        // Fog and sky calculation
-        // Get skyCol as our fogCol. If sky, then do full sky render. Otherwise, do basic sky render.
-        if(skyMask) sceneCol = getSkyRender(sceneCol, nEyePlayerPos, true) * exp2(-far * (blindness + darknessFactor));
-        else sceneCol = getFogRender(sceneCol, getSkyRender(nEyePlayerPos, false, false), viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
+            // Do basic sky render and use it as fog color
+            sceneCol = getFogRender(sceneCol, getSkyRender(nEyePlayerPos, false, false), viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
+        }
 
     /* DRAWBUFFERS:0 */
         gl_FragData[0] = vec4(sceneCol, 1); // gcolor

@@ -144,7 +144,6 @@
         vec3 screenPos = vec3(screenCoord, texelFetch(depthtex0, screenTexelCoord, 0).x);
         vec3 viewPos = toView(screenPos);
         vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
-        vec3 feetPlayerPos = eyePlayerPos + gbufferModelViewInverse[3].xyz;
 
         // Get view distance
         float viewDist = length(viewPos);
@@ -172,7 +171,7 @@
             // Get skyCol as our fogCol. Do basic sky render.
             vec3 fogCol = getSkyRender(nEyePlayerPos, false, false);
             // Fog and sky calculation
-            sceneCol = getFogRender(sceneCol, fogCol, viewDist, nEyePlayerPos.y, feetPlayerPos.y + cameraPosition.y);
+            sceneCol = getFogRender(sceneCol, fogCol, viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
         }
 
         // Apply darkness pulsing effect
