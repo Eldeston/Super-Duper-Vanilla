@@ -2,9 +2,9 @@ float fovMult = gbufferProjection[1].y * 0.72794047;
 
 float lensShape(in vec2 lensCoord){
     #if WORLD_SUN_MOON == 2
-        return abs(length(lensCoord) - 0.03125);
+        return abs(length(lensCoord) - cubed(WORLD_SUN_MOON_SIZE));
     #else
-        return length(lensCoord);
+        return length(lensCoord) - cubed(WORLD_SUN_MOON_SIZE);
     #endif
 }
 
