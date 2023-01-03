@@ -5,7 +5,7 @@ float getCellNoise(in vec2 uv){
 
 // Convert height map of water to a normal map
 vec4 H2NWater(in vec2 uv){
-    float waterPixel = WATER_BLUR_SIZE * 0.00390625;
+    const float waterPixel = WATER_BLUR_SIZE * 0.00390625;
 
 	float d0 = getCellNoise(uv);
 	float d1 = getCellNoise(vec2(uv.x + waterPixel, uv.y));

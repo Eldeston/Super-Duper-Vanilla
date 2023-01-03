@@ -26,7 +26,7 @@
 					vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz) + shadowProjection[3].xyz;
 					
 					// Bias mutilplier, adjusts according to the current shadow distance and resolution
-					float biasAdjustMult = log2(max(4.0, shadowDistance - shadowMapResolution * 0.125)) * 0.25;
+					const float biasAdjustMult = log2(max(4.0, shadowDistance - shadowMapResolution * 0.125)) * 0.25;
 					float distortFactor = getDistortFactor(shdPos.xy);
 					
 					// Apply bias according to normal in shadow space
@@ -79,7 +79,7 @@
 					vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz) + shadowProjection[3].xyz;
 					
 					// Bias mutilplier, adjusts according to the current shadow distance and resolution
-					float biasAdjustMult = log2(max(4.0, shadowDistance - shadowMapResolution * 0.125)) * 0.25;
+					const float biasAdjustMult = log2(max(4.0, shadowDistance - shadowMapResolution * 0.125)) * 0.25;
 					float distortFactor = getDistortFactor(shdPos.xy);
 
 					// Apply bias according to normal in shadow space
