@@ -1,4 +1,23 @@
-/// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
+/*
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+
+    Developed by Eldeston, presented by FlameRender Studios.
+
+    Copyright (C) 2020 Eldeston
+
+
+    By downloading this you have agreed to the license and terms of use.
+    These can be found inside the included license-file.
+
+    Violating these terms may be penalized with actions according to the Digital Millennium Copyright Act (DMCA),
+    the Information Society Directive and/or similar laws depending on your country.
+
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+*/
+
+/// Buffer features: TAA jittering, and world curvature
+
+/// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
     /* Screen resolutions */
@@ -20,8 +39,8 @@
             vec4 linePosStart = gbufferModelViewInverse * (gl_ModelViewMatrix * vec4(gl_Vertex.xyz, 1));
             vec4 linePosEnd = gbufferModelViewInverse * (gl_ModelViewMatrix * vec4(gl_Vertex.xyz + gl_Normal.xyz, 1));
 
-            linePosStart.y -= dot(linePosStart.xz, linePosStart.xz) / WORLD_CURVATURE_SIZE;
-            linePosEnd.y -= dot(linePosEnd.xz, linePosEnd.xz) / WORLD_CURVATURE_SIZE;
+            linePosStart.y -= lengthSquared(linePosStart.xz) / WORLD_CURVATURE_SIZE;
+            linePosEnd.y -= lengthSquared(linePosEnd.xz) / WORLD_CURVATURE_SIZE;
             
             linePosStart = gbufferModelView * linePosStart;
             linePosEnd = gbufferModelView * linePosEnd;
@@ -43,8 +62,8 @@
 
         if(lineOffset.x < 0.0) lineOffset *= -1.0;
 
-        if(gl_VertexID % 2 == 0) gl_Position = vec4((ndc1 + vec3(lineOffset, 0.0)) * linePosStart.w, linePosStart.w);
-        else gl_Position = vec4((ndc1 - vec3(lineOffset, 0.0)) * linePosStart.w, linePosStart.w);
+        if(gl_VertexID % 2 == 0) gl_Position = vec4(vec3(ndc1.xy + lineOffset, ndc1.z) * linePosStart.w, linePosStart.w);
+        else gl_Position = vec4(vec3(ndc1.xy - lineOffset, ndc1.z) * linePosStart.w, linePosStart.w);
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
@@ -52,7 +71,7 @@
     }
 #endif
 
-/// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
+/// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
     void main(){

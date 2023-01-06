@@ -1,4 +1,23 @@
-/// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
+/*
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+
+    Developed by Eldeston, presented by FlameRender Studios.
+
+    Copyright (C) 2020 Eldeston
+
+
+    By downloading this you have agreed to the license and terms of use.
+    These can be found inside the included license-file.
+
+    Violating these terms may be penalized with actions according to the Digital Millennium Copyright Act (DMCA),
+    the Information Society Directive and/or similar laws depending on your country.
+
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+*/
+
+/// Buffer features: TAA jittering, direct shading, and world curvature
+
+/// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
     out vec2 texCoord;
@@ -17,16 +36,17 @@
     #endif
 
     void main(){
-        // Get texture coordinates
+        // Get buffer texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         
 	    #ifdef WORLD_CURVATURE
             // Get vertex position (feet player pos)
             vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
 
-            vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
+            // Apply curvature distortion
+            vertexPos.y -= lengthSquared(vertexPos.xz) / WORLD_CURVATURE_SIZE;
             
-            // Clip pos
+            // Convert to clip pos and output as position
             gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
         #else
             gl_Position = ftransform();
@@ -38,7 +58,7 @@
     }
 #endif
 
-/// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
+/// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
     in vec2 texCoord;
@@ -47,12 +67,16 @@
     uniform sampler2D tex;
 
     void main(){
-        vec4 albedo = texture(tex, texCoord);
+        // Get albedo color
+        vec4 albedo = textureLod(tex, texCoord, 0);
 
         // Alpha test, discard immediately
         if(albedo.a <= ALPHA_THRESHOLD) discard;
 
+        // Convert to linear space
+        albedo.rgb = toLinear(albedo.rgb);
+
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(toLinear(albedo.rgb) * EMISSIVE_INTENSITY * 0.25, 1); // gcolor
+        gl_FragData[0] = vec4(albedo.rgb * EMISSIVE_INTENSITY * 0.25, albedo.a); // gcolor
     }
 #endif
