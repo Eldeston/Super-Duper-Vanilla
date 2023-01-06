@@ -1,4 +1,23 @@
-/// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
+/*
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+
+    Developed by Eldeston, presented by FlameRender Studios.
+
+    Copyright (C) 2020 Eldeston
+
+
+    By downloading this you have agreed to the license and terms of use.
+    These can be found inside the included license-file.
+
+    Violating these terms may be penalized with actions according to the Digital Millennium Copyright Act (DMCA),
+    the Information Society Directive and/or similar laws depending on your country.
+
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+*/
+
+/// Buffer features: TAA jittering, simple shading, and dynamic clouds
+
+/// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
     flat out vec3 vertexNormal;
@@ -20,7 +39,7 @@
     #endif
 
     #ifdef DOUBLE_VANILLA_CLOUDS
-        // Set the amount of instances, we'll use 2 for now
+        // Set the amount of instances, we'll use 2 for now for performance
         const int countInstances = 2;
 
         // Get current instance id
@@ -28,7 +47,7 @@
     #endif
     
     void main(){
-        // Get texture coordinates
+        // Get buffer texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         // Get vertex normal
         vertexNormal = mat3(gbufferModelViewInverse) * fastNormalize(gl_NormalMatrix * gl_Normal);
@@ -38,16 +57,18 @@
 
         #ifdef DOUBLE_VANILLA_CLOUDS
             // May need to work on this to add more than 2 clouds in the future.
-            if(instanceId == 2){
+            if(instanceId == 1){
                 // If second instance, invert texture coordinates.
                 texCoord = -texCoord;
                 // Increase cloud height for the second instance.
                 vertexPos.y += SECOND_CLOUD_HEIGHT;
             }
+
+            // Convert to clip pos and output as position
+	        gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
+        #else
+            gl_Position = ftransform();
         #endif
-        
-        // Clip pos
-	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
@@ -55,7 +76,7 @@
     }
 #endif
 
-/// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
+/// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
     flat in vec3 vertexNormal;
@@ -80,6 +101,9 @@
     // Get night vision
     uniform float nightVision;
 
+    // Get shadow fade
+    uniform float shdFade;
+
     #if defined DYNAMIC_CLOUDS || ANTI_ALIASING >= 2
         // Get frame time
         uniform float frameTimeCounter;
@@ -96,23 +120,24 @@
 
     void main(){
         // Get albedo alpha
-        float albedoAlpha = texture(tex, texCoord).a;
+        float albedoAlpha = textureLod(tex, texCoord, 0).a;
 
         #ifdef DYNAMIC_CLOUDS
             float fade = smootherstep(sin(frameTimeCounter * FADE_SPEED) * 0.5 + 0.5);
-            float albedoAlpha2 = texture(tex, 0.5 - texCoord).a;
+            float albedoAlpha2 = textureLod(tex, 0.5 - texCoord, 0).a;
             albedoAlpha = mix(mix(albedoAlpha, albedoAlpha2, fade), max(albedoAlpha, albedoAlpha2), rainStrength);
         #endif
 
         // Alpha test, discard immediately
         if(albedoAlpha <= ALPHA_THRESHOLD) discard;
 
-        #if WHITE_MODE == 2
+        #if COLOR_MODE == 2
             vec4 albedo = vec4(0, 0, 0, albedoAlpha);
         #else
             vec4 albedo = vec4(1, 1, 1, albedoAlpha);
         #endif
 
+        // Apply simple shading
         vec4 sceneCol = simpleShadingGbuffers(albedo);
 
     /* DRAWBUFFERS:03 */
