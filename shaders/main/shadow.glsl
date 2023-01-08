@@ -1,4 +1,23 @@
-/// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
+/*
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+
+    Developed by Eldeston, presented by FlameRender Studios.
+
+    Copyright (C) 2020 Eldeston
+
+
+    By downloading this you have agreed to the license and terms of use.
+    These can be found inside the included license-file.
+
+    Violating these terms may be penalized with actions according to the Digital Millennium Copyright Act (DMCA),
+    the Information Society Directive and/or similar laws depending on your country.
+
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+*/
+
+/// Buffer features: Water caustics, direct shading, animation, and world curvature
+
+/// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
     #ifdef WORLD_LIGHT
@@ -12,33 +31,35 @@
         // View matrix uniforms
         uniform mat4 shadowModelView;
         uniform mat4 shadowModelViewInverse;
-        
-        #if TIMELAPSE_MODE == 2
-            // Get smoothed frame time
-            uniform float animationFrameTime;
-
-            float newFrameTimeCounter = animationFrameTime;
-        #else
-            // Get frame time
-            uniform float frameTimeCounter;
-
-            float newFrameTimeCounter = frameTimeCounter;
-        #endif
 
         // Position uniforms
         uniform vec3 cameraPosition;
 
+        attribute vec3 mc_Entity;
+
+        #if defined TERRAIN_ANIMATION || defined TERRAIN_ANIMATION
+            #if TIMELAPSE_MODE == 2
+                uniform float animationFrameTime;
+
+                float newFrameTimeCounter = animationFrameTime;
+            #else
+                // Get frame time
+                uniform float frameTimeCounter;
+
+                float newFrameTimeCounter = frameTimeCounter;
+            #endif
+
+            attribute vec2 mc_midTexCoord;
+
+            #include "/lib/vertex/terrainWave.glsl"
+        #endif
+
         #include "/lib/lighting/shdDistort.glsl"
-
-        #include "/lib/vertex/vertexAnimations.glsl"
-
-        attribute vec2 mc_midTexCoord;
-        attribute vec4 mc_Entity;
 
         void main(){
             // Get block id
             blockId = int(mc_Entity.x);
-            // Get texture coordinates
+            // Get buffer texture coordinates
             texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
             // Get vertex color
             vertexColor = gl_Color.rgb;
@@ -50,16 +71,22 @@
             // Get water noise uv position
             waterNoiseUv = worldPos.xz / WATER_TILE_SIZE;
             
-            #ifdef ANIMATE
-                getVertexAnimations(vertexPos.xyz, worldPos, texCoord, mc_midTexCoord, mc_Entity.x, (gl_TextureMatrix[1] * gl_MultiTexCoord1).y);
-            #endif
+            #if defined TERRAIN_ANIMATION || defined TERRAIN_ANIMATION || defined WORLD_CURVATURE
+                #if defined TERRAIN_ANIMATION || defined TERRAIN_ANIMATION
+                    // Apply terrain wave animation
+                    vertexPos.xyz = getTerrainWave(vertexPos.xyz, worldPos, texCoord.y, mc_midTexCoord.y, mc_Entity.x, saturate(gl_MultiTexCoord1.y * 0.00416667));
+                #endif
 
-            #ifdef WORLD_CURVATURE
-                vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
-            #endif
+                #ifdef WORLD_CURVATURE
+                    // Apply curvature distortion
+                    vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
+                #endif
 
-            // Shadow clip pos
-            gl_Position = gl_ProjectionMatrix * (shadowModelView * vertexPos);
+                // Convert to clip pos and output as position
+                gl_Position = gl_ProjectionMatrix * (shadowModelView * vertexPos);
+            #else
+                gl_Position = ftransform();
+            #endif
 
             // Apply shadow distortion
             gl_Position.xyz = distort(gl_Position.xyz);
@@ -71,7 +98,7 @@
     #endif
 #endif
 
-/// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
+/// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
     #ifdef WORLD_LIGHT
@@ -107,14 +134,14 @@
 
         void main(){
             #ifdef SHD_COL
-                vec4 shdAlbedo = texture(tex, texCoord);
+                vec4 shdAlbedo = textureLod(tex, texCoord, 0);
 
                 // Alpha test, discard immediately
                 if(shdAlbedo.a <= ALPHA_THRESHOLD) discard;
 
                 // If the object is not opaque, proceed with shadow coloring and caustics
                 if(shdAlbedo.a != 1){
-                    if(blockId == 10000){
+                    if(blockId == 10015){
                         #ifdef WATER_FLAT
                             #if UNDERWATER_CAUSTICS == 2
                                 shdAlbedo.rgb = vec3(squared(0.128 + getCellNoise(waterNoiseUv)) * 3.2);
@@ -129,17 +156,19 @@
                                 if(isEyeInWater == 1) shdAlbedo.rgb *= squared(0.128 + getCellNoise(waterNoiseUv)) * 4.0;
                             #endif
                         #endif
-                    // To give white colored glass some proper shadows except water
-                    }else shdAlbedo.rgb *= 1.0 - shdAlbedo.a * shdAlbedo.a;
 
-                    shdAlbedo.rgb = toLinear(shdAlbedo.rgb * vertexColor);
+                        shdAlbedo.rgb = toLinear(shdAlbedo.rgb * vertexColor);
+                    }
+                    // To give white colored glass some proper shadows except water
+                    else shdAlbedo.rgb = toLinear(shdAlbedo.rgb * vertexColor) * (1.0 - shdAlbedo.a * shdAlbedo.a);
+                }
                 // If the object is fully opaque, set to black. This fixes "color leaking" filtered shadows
-                }else shdAlbedo.rgb = vec3(0);
+                else shdAlbedo.rgb = vec3(0);
 
             /* DRAWBUFFERS:0 */
                 gl_FragData[0] = shdAlbedo;
             #else
-                float shdAlbedoAlpha = texture(tex, texCoord).a;
+                float shdAlbedoAlpha = textureLod(tex, texCoord, 0).a;
 
                 // Alpha test, discard immediately
                 if(shdAlbedoAlpha <= ALPHA_THRESHOLD) discard;

@@ -6,7 +6,6 @@
 #define SSAO // Enables screenspace ambient occlusion.
 #define AMBIENT_LIGHTING 0.10 // Overall ambient lighting value. Increase if you dislike the pitch black darkness, higher values may make lighting unrealistic. Set it to zero for a more realistic approach if you have SSGI enabled. Set it to 0.50 for nightvision. [0.00 0.01 0.02 0.03 0.04 0.05 0.06 0.07 0.08 0.09 0.10 0.11 0.12 0.13 0.14 0.15 0.16 0.17 0.18 0.19 0.20 0.21 0.22 0.23 0.24 0.25 0.26 0.27 0.28 0.29 0.30 0.31 0.32 0.33 0.34 0.35 0.36 0.37 0.38 0.39 0.40 0.41 0.42 0.43 0.44 0.45 0.46 0.47 0.48 0.49 0.50]
 
-#define ANIMATE // Enables foliage animations, water animations etc.
 #define CURRENT_SPEED 1.00 // Adjust liquid and under water flow speed. Affects underwater plants and liquids. [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.05 1.10 1.15 1.20 1.25 1.30 1.35 1.40 1.45 1.50 1.55 1.60 1.65 1.70 1.75 1.80 1.85 1.90 1.95 2.00 2.05 2.10 2.15 2.20 2.25 2.30 2.35 2.40 2.45 2.50 2.55 2.60 2.65 2.70 2.75 2.80 2.85 2.90 2.95 3.00 3.05 3.10 3.15 3.20 3.25 3.30 3.35 3.40 3.45 3.50 3.55 3.60 3.65 3.70 3.75 3.80 3.85 3.90 3.95 4.00]
 #define WIND_SPEED 1.00 // Adjust wind speed. Affects plants and swinging objects. [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.05 1.10 1.15 1.20 1.25 1.30 1.35 1.40 1.45 1.50 1.55 1.60 1.65 1.70 1.75 1.80 1.85 1.90 1.95 2.00 2.05 2.10 2.15 2.20 2.25 2.30 2.35 2.40 2.45 2.50 2.55 2.60 2.65 2.70 2.75 2.80 2.85 2.90 2.95 3.00 3.05 3.10 3.15 3.20 3.25 3.30 3.35 3.40 3.45 3.50 3.55 3.60 3.65 3.70 3.75 3.80 3.85 3.90 3.95 4.00]
 // #define WORLD_CURVATURE // Enable world curvature
@@ -14,8 +13,12 @@
 #define TIMELAPSE_MODE 0 // Enable timelapse mode. This smoothens the transition of animations of the sky, the foliage waving etc according to current world time instead of frame time. Set to fragment for water normals and sky only and full for the water normals, sky, and waves. This feature does not work on vanilla clouds, skybox, and the sun and moon. [0 1 2]
 // #define RETRO_FILTER // Enable retro filter. Works best at low render quality.
 
+#define TERRAIN_ANIMATION // Enables terrain waving animation.
+#define WATER_ANIMATION // Enables water waving animation.
+#define WEATHER_ANIMATION // Enables rain waving animation.
+
 #define NOISE_SPEED 8 // The speed in which the noise randomises each frame. Useful for TAA. This effect is visible only when TAA is enabled. [2 4 8 16 32]
-#define WHITE_MODE 0 // Enables white mode/textureless mode. White mode makes everything white. Black mode makes everything black. Foliage mode shows only foliage colors. Keeps materials on. [0 1 2 3]
+#define COLOR_MODE 0 // Enables white mode/textureless mode. White mode makes everything white. Black mode makes everything black. Foliage mode shows only foliage colors. Keeps materials on. [0 1 2 3]
 #define ANTI_ALIASING 2 // Enables anti-aliasing. FXAA is fast and works with screenshot sizes. TAA is slower, doesn't work with custom screenshots, but smooths noise. Disable anti-aliasing on your shader menu before using this feature! [0 1 2 3]
 // #define SHARPEN_FILTER // Enables image sharpening. Use this with AA on if the image appears blurry.
 // #define VIGNETTE // Enables vignette

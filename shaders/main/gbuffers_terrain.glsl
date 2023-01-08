@@ -1,7 +1,23 @@
-// Get frame time
-uniform float frameTimeCounter;
+/*
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
 
-/// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
+    Developed by Eldeston, presented by FlameRender Studios.
+
+    Copyright (C) 2020 Eldeston
+
+
+    By downloading this you have agreed to the license and terms of use.
+    These can be found inside the included license-file.
+
+    Violating these terms may be penalized with actions according to the Digital Millennium Copyright Act (DMCA),
+    the Information Society Directive and/or similar laws depending on your country.
+
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+*/
+
+/// Buffer features: TAA jittering, complex shading, animation, lava noise, PBR, and world curvature
+
+/// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
     flat out mat3 TBN;
@@ -40,29 +56,34 @@ uniform float frameTimeCounter;
         #include "/lib/utility/taaJitter.glsl"
     #endif
 
-    #if TIMELAPSE_MODE == 2
-        uniform float animationFrameTime;
+    attribute vec3 mc_Entity;
 
-        float newFrameTimeCounter = animationFrameTime;
-    #else
-        float newFrameTimeCounter = frameTimeCounter;
-    #endif
-
-    attribute vec4 mc_Entity;
     attribute vec4 at_tangent;
 
-    #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION || defined ANIMATE
-        attribute vec4 mc_midTexCoord;
+    #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION || defined TERRAIN_ANIMATION
+        attribute vec2 mc_midTexCoord;
     #endif
 
-    #include "/lib/vertex/vertexAnimations.glsl"
+    #ifdef TERRAIN_ANIMATION
+        #if TIMELAPSE_MODE == 2
+            uniform float animationFrameTime;
+
+            float newFrameTimeCounter = animationFrameTime;
+        #else
+            uniform float frameTimeCounter;
+
+            float newFrameTimeCounter = frameTimeCounter;
+        #endif
+
+        #include "/lib/vertex/terrainWave.glsl"
+    #endif
 
     void main(){
         // Get block id
         blockId = int(mc_Entity.x);
         // Get vertex AO
         vertexAO = gl_Color.a;
-        // Get texture coordinates
+        // Get buffer texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         // Get vertex color
         vertexColor = gl_Color.rgb;
@@ -82,30 +103,36 @@ uniform float frameTimeCounter;
 
         // Lightmap fix for mods
         #ifdef WORLD_SKYLIGHT
-            lmCoord = vec2(saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).x - 0.03125) * 1.06667), WORLD_SKYLIGHT);
+            lmCoord = vec2(saturate(gl_MultiTexCoord1.x * 0.00416667), WORLD_SKYLIGHT);
         #else
-            lmCoord = saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).xy - 0.03125) * 1.06667);
+            lmCoord = saturate(gl_MultiTexCoord1.xy * 0.00416667);
         #endif
 
         #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
-            vec2 midCoord = (gl_TextureMatrix[0] * mc_midTexCoord).xy;
-            vec2 texMinMidCoord = texCoord - midCoord;
+            vec2 midTexCoord = (gl_TextureMatrix[0] * vec4(mc_midTexCoord, 0, 0)).xy;
+            vec2 texMinMidTexCoord = texCoord - midTexCoord;
 
-            vTexCoordScale = abs(texMinMidCoord) * 2.0;
-            vTexCoordPos = min(texCoord, midCoord - texMinMidCoord);
-            vTexCoord = sign(texMinMidCoord) * 0.5 + 0.5;
+            vTexCoordScale = abs(texMinMidTexCoord) * 2.0;
+            vTexCoordPos = min(texCoord, midTexCoord - texMinMidTexCoord);
+            vTexCoord = sign(texMinMidTexCoord) * 0.5 + 0.5;
         #endif
 
-        #ifdef ANIMATE
-	        getVertexAnimations(vertexPos.xyz, worldPos, texCoord, mc_midTexCoord.xy, mc_Entity.x, lmCoord.y);
-        #endif
+        #if defined TERRAIN_ANIMATION || defined WORLD_CURVATURE
+            #ifdef TERRAIN_ANIMATION
+                // Apply terrain wave animation
+                vertexPos.xyz = getTerrainWave(vertexPos.xyz, worldPos, texCoord.y, mc_midTexCoord.y, mc_Entity.x, lmCoord.y);
+            #endif
 
-        #ifdef WORLD_CURVATURE
-            vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
+            #ifdef WORLD_CURVATURE
+                // Apply curvature distortion
+                vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
+            #endif
+
+            // Convert to clip pos and output as position
+            gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
+        #else
+            gl_Position = ftransform();
         #endif
-        
-        // Clip pos
-	    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
@@ -113,7 +140,7 @@ uniform float frameTimeCounter;
     }
 #endif
 
-/// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
+/// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
     flat in mat3 TBN;
@@ -164,6 +191,8 @@ uniform float frameTimeCounter;
 
         float newFrameTimeCounter = animationFrameTime;
     #else
+        uniform float frameTimeCounter;
+        
         float newFrameTimeCounter = frameTimeCounter;
     #endif
 
@@ -200,7 +229,7 @@ uniform float frameTimeCounter;
 	    structPBR material;
         getPBR(material, blockId);
 
-        if(blockId == 10001){
+        if(blockId == 10016){
             #ifdef LAVA_NOISE
                 vec2 lavaUv = (worldPos.yz * TBN[2].x + worldPos.xz * TBN[2].y + worldPos.xy * TBN[2].z) / LAVA_TILE_SIZE;
                 float lavaNoise = max(getLavaNoise(lavaUv), sumOf(material.albedo.rgb) * 0.33333333);
@@ -213,7 +242,7 @@ uniform float frameTimeCounter;
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         #if defined ENVIRO_PBR && !defined FORCE_DISABLE_WEATHER
-            if(blockId != 10001) enviroPBR(material);
+            if(blockId != 10016) enviroPBR(material);
         #endif
 
         vec4 sceneCol = complexShadingGbuffers(material);

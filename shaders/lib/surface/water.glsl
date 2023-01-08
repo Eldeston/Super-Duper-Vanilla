@@ -1,5 +1,5 @@
 float getCellNoise(in vec2 uv){
-    float animateTime = CURRENT_SPEED * newFrameTimeCounter * 0.05;
+    float animateTime = CURRENT_SPEED * newFrameTimeCounter * 0.0625;
     return (textureLod(noisetex, uv + animateTime, 0).z + textureLod(noisetex, animateTime - uv, 0).z) * 0.5;
 }
 

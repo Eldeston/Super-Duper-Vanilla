@@ -11,7 +11,7 @@ uniform sampler2D specular;
     vec2 getParallaxOffset(in vec3 dirT){ return dirT.xy * (PARALLAX_DEPTH / dirT.z); }
 
     vec2 parallaxUv(in vec2 startUv, in vec2 endUv, out vec3 currPos){
-        float stepSize = 1.0 / PARALLAX_STEPS;
+        const float stepSize = 1.0 / PARALLAX_STEPS;
         endUv *= stepSize * PARALLAX_DEPTH;
 
         float texDepth = textureGrad(normals, fract(startUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
@@ -30,17 +30,15 @@ uniform sampler2D specular;
 
     #if defined PARALLAX_SHADOWS && defined WORLD_LIGHT
         float parallaxShadow(in vec3 currPos, in vec2 lightDir) {
-            float stepSize = 1.0 / PARALLAX_SHD_STEPS;
+            const float stepSize = 1.0 / PARALLAX_SHD_STEPS;
             vec2 stepOffset = stepSize * lightDir;
 
             float traceDepth = currPos.z;
             vec2 traceUv = currPos.xy;
-
             for(int i = int(traceDepth * PARALLAX_SHD_STEPS); i < PARALLAX_SHD_STEPS; i++){
-                if(textureGrad(normals, fract(traceUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a >= traceDepth) return pow(i * stepSize, 16.0);
-                // if(textureGrad(normals, fract(traceUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a >= traceDepth) return 0.0;
-                traceUv += stepOffset;
+                if(textureGrad(normals, fract(traceUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a >= traceDepth) return exp2(i - PARALLAX_SHD_STEPS);
                 traceDepth += stepSize;
+                traceUv += stepOffset;
             }
 
             return 1.0;
@@ -84,7 +82,7 @@ void getPBR(inout structPBR material, in int id){
     vec2 texUv = texCoord;
 
     // Exclude signs and floating texts. We'll also include water and lava in the meantime.
-    bool hasNormal = id != 10000 && id != 10001 && abs(sumOf(textureGrad(normals, texCoord, dcdx, dcdy).xy)) >= 0.01;
+    bool hasNormal = id != 10015 && id != 10016 && abs(sumOf(textureGrad(normals, texCoord, dcdx, dcdy).xy)) > 0.005;
 
     #ifdef PARALLAX_OCCLUSION
         vec3 viewDir = -vertexPos.xyz * TBN;
@@ -141,15 +139,15 @@ void getPBR(inout structPBR material, in int id){
 
     #ifdef TERRAIN
         // If lava and fire
-        if(id == 10001 || id == 10002) material.emissive = 1.0;
+        if(id == 10000 || id == 10016) material.emissive = 1.0;
 
         // Foliage and corals
-        if((id >= 10003 && id <= 10014) || id == 10033 || id == 10036) material.ss = 1.0;
+        else if((id >= 10001 && id <= 10014) || id == 10033 || id == 10036) material.ss = 1.0;
     #endif
 
     #ifdef WATER
         // If water
-        if(id == 10000){
+        if(id == 10015){
             material.smoothness = 0.96;
             material.metallic = 0.02;
 
@@ -159,7 +157,7 @@ void getPBR(inout structPBR material, in int id){
         }
             
         // Nether portal
-        if(id == 10017){
+        else if(id == 10021){
             material.smoothness = 0.96;
             material.metallic = 0.04;
             material.emissive = maxOf(material.albedo.rgb);
@@ -177,7 +175,7 @@ void getPBR(inout structPBR material, in int id){
     #endif
 
     #ifdef BLOCK
-        if(id == 10018) material.ambient = 1.0;
+        if(id == 10022) material.ambient = 1.0;
     #endif
 
     // Get parallax shadows
@@ -203,13 +201,13 @@ void getPBR(inout structPBR material, in int id){
     // Calculate normal strength
     material.normal = mix(TBN[2], material.normal, NORMAL_STRENGTH);
 
-    #if WHITE_MODE == 0
+    #if COLOR_MODE == 0
         material.albedo.rgb *= vertexColor;
-    #elif WHITE_MODE == 1
+    #elif COLOR_MODE == 1
         material.albedo.rgb = vec3(1);
-    #elif WHITE_MODE == 2
+    #elif COLOR_MODE == 2
         material.albedo.rgb = vec3(0);
-    #elif WHITE_MODE == 3
+    #elif COLOR_MODE == 3
         material.albedo.rgb = vertexColor;
     #endif
 }

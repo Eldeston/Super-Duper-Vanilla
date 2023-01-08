@@ -123,12 +123,14 @@ screen.LAVA_SETTINGS = Lava material settings
     value.SUN_MOON_TYPE.2 = Vanilla
 
 #World
-    option.ANIMATE = Animation
-    option.CURRENT_SPEED = Current speed
+    option.TERRAIN_ANIMATION = Terrain animation
+    option.WATER_ANIMATION = Water animation
+    option.WEATHER_ANIMATION = Weather animation
     option.WIND_SPEED = Wind speed
+    option.CURRENT_SPEED = Current speed
+    option.TIMELAPSE_MODE = Timelapse mode
     option.WORLD_CURVATURE = World curvature
     option.WORLD_CURVATURE_SIZE = World curvature size
-    option.TIMELAPSE_MODE = Timelapse mode
     value.TIMELAPSE_MODE.0 = OFF
     value.TIMELAPSE_MODE.1 = Fragment
     value.TIMELAPSE_MODE.2 = Full
@@ -201,10 +203,10 @@ screen.LAVA_SETTINGS = Lava material settings
         option.BLOCKLIGHT_I = Block light intensity
 
 screen.DEBUG = Super Duper Vanilla by Eldeston
-    option.WHITE_MODE = White mode
+    option.COLOR_MODE = Color mode
     option.NOISE_SPEED = Noise speed
-    value.WHITE_MODE.0 = OFF
-    value.WHITE_MODE.1 = White Mode
-    value.WHITE_MODE.2 = Black Mode
-    value.WHITE_MODE.3 = Foliage Mode
+    value.COLOR_MODE.0 = OFF
+    value.COLOR_MODE.1 = White Mode
+    value.COLOR_MODE.2 = Black Mode
+    value.COLOR_MODE.3 = Foliage Mode
     screen.DEBUG.comment = Developed by §2Eldeston§f§r, produced by §9FlameRender §9Studios. §eClick me to open shader debug settings!
