@@ -1,7 +1,8 @@
 ![thumbnail](/shaders/textures/thumbCF.png)
 ![titleLogo](/shaders/textures/title.png)
-[![Discord](https://img.shields.io/discord/604061216779796492.svg?logo=discord&logoColor=white&logoWidth=20&labelColor=7289DA&label=Discord)](https://discord.gg/UE85W5ynCg)
-[![Twitter Follow](https://img.shields.io/twitter/follow/eldeston?color=dark&label=Follow&logoColor=dark)](https://twitter.com/eldeston)
+[![Discord](https://img.shields.io/discord/604061216779796492.svg?label=FlameRender%E2%84%A2%20Studios&logo=discord&logoColor=white&logoWidth=20&labelColor=7289DA&style=for-the-badge)](https://discord.gg/UE85W5ynCg)
+[![Twitter Follow](https://img.shields.io/twitter/follow/eldeston?color=1DA1F2&logo=Twitter&logoColor=white&style=for-the-badge)](https://twitter.com/eldeston)
+[![YouTube Channel Subscribers](https://img.shields.io/youtube/channel/subscribers/UCQCkkFh25ydxZwCqpBhJJlg?color=FF0000&label=Eldeston&logo=YouTube&style=for-the-badge)](https://www.youtube.com/channel/UCQCkkFh25ydxZwCqpBhJJlg)
 
 ## Description
    A shader pack created to convey the style of the cancelled __Super Duper Graphics Pack__ and other popular Minecraft titles. Developed by @Eldeston, and presented by __FlameRender Studios__.
@@ -36,10 +37,7 @@
 ## Super Duper Vanilla Installer
    Alternatively, you can use this installer developed by @Steb allowing you to install either the release versions of SDV or the development versions. While the installer's task is relatively simple, it's still a WIP. [Use this link to go to the installer repository](https://github.com/steb-git/super-duper-vanilla-installer).
 
-## About Creator
-   Try out my other shader for Minecraft Bedrock, ESTN Shaders, on McpeDL!
-   [![img](https://github.com/Eldeston/ESTN-Shaders/blob/master/textures/ui/title.png)](https://mcpedl.com/estn-shaders/?cookie_check=1)
-   
+## Social Links
    Come join my Discord server to talk about other developments made by our studio-community!
    * [Flamerender Studios Discord](https://discord.gg/UE85W5ynCg)
    
@@ -49,3 +47,6 @@
 
    You can become a supporter by doing any of the above, or donate through paypal
    * [@Paypal donation](https://www.paypal.com/donate?hosted_button_id=4XLQ4WE296JKW)
+
+   Try out my other shader for Minecraft Bedrock, ESTN Shaders, on McpeDL!
+   [![img](https://github.com/Eldeston/ESTN-Shaders/blob/master/textures/ui/title.png)](https://mcpedl.com/estn-shaders/?cookie_check=1)
