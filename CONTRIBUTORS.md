@@ -2,6 +2,4 @@
 
 ## Contributors
     Eldeston
-    LVutner
     Null
-    Steb
