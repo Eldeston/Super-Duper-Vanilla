@@ -34,7 +34,7 @@
 			vec3 rayData = vec3(0);
 			for(int x = 0; x < 7; x++){
 				// No need to do anymore fancy matrix multiplications during the loop
-				rayData += getShdTex(distort(startPos) * 0.5 + 0.5);
+				rayData += getShdCol(distort(startPos) * 0.5 + 0.5);
 				// We continue tracing!
 				startPos += endPos;
 			}

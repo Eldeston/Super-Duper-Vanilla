@@ -1,16 +1,12 @@
 /*
 ================================ /// Super Duper Vanilla v1.3.3 /// ================================
 
-    Developed by Eldeston, presented by FlameRender Studios.
+    Developed by Eldeston, presented by FlameRender (TM) Studios.
 
-    Copyright (C) 2020 Eldeston
+    Copyright (C) 2020 Eldeston | FlameRender (TM) Studios License
 
 
-    By downloading this you have agreed to the license and terms of use.
-    These can be found inside the included license-file.
-
-    Violating these terms may be penalized with actions according to the Digital Millennium Copyright Act (DMCA),
-    the Information Society Directive and/or similar laws depending on your country.
+    By downloading this content you have agreed to the license and its terms of use.
 
 ================================ /// Super Duper Vanilla v1.3.3 /// ================================
 */
@@ -21,7 +17,6 @@
 
 #ifdef VERTEX
     flat out vec3 vertexColor;
-    flat out vec3 vertexNormal;
 
     out vec2 lmCoord;
     out vec2 texCoord;
@@ -48,17 +43,15 @@
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         // Get vertex color
         vertexColor = gl_Color.rgb;
-        // Get vertex normal
-        vertexNormal = mat3(gbufferModelViewInverse) * fastNormalize(gl_NormalMatrix * gl_Normal);
 
         // Get vertex position (feet player pos)
         vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
         
         // Lightmap fix for mods
         #ifdef WORLD_SKYLIGHT
-            lmCoord = vec2(saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).x - 0.03125) * 1.06667), WORLD_SKYLIGHT);
+            lmCoord = vec2(saturate(gl_MultiTexCoord1.x * 0.00416667), WORLD_SKYLIGHT);
         #else
-            lmCoord = saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).xy - 0.03125) * 1.06667);
+            lmCoord = saturate(gl_MultiTexCoord1.xy * 0.00416667);
         #endif
         
 	    #ifdef WORLD_CURVATURE
@@ -81,7 +74,6 @@
 
 #ifdef FRAGMENT
     flat in vec3 vertexColor;
-    flat in vec3 vertexNormal;
 
     in vec2 lmCoord;
     in vec2 texCoord;
@@ -106,6 +98,11 @@
 
     // Get shadow fade
     uniform float shdFade;
+
+    #ifndef FORCE_DISABLE_WEATHER
+        // Get rain strength
+        uniform float rainStrength;
+    #endif
 
     #if ANTI_ALIASING >= 2
         // Get frame time

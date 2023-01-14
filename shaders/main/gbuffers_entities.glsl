@@ -1,4 +1,4 @@
-/// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
+/// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
     flat out mat3 TBN;
@@ -33,13 +33,13 @@
     attribute vec4 at_tangent;
     
     #ifdef PARALLAX_OCCLUSION
-        attribute vec4 mc_midTexCoord;
+        attribute vec2 mc_midTexCoord;
     #endif
 
     void main(){
         // Get vertex color alpha
         vertexAlpha = gl_Color.a;
-        // Get texture coordinates
+        // Get buffer texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         // Get vertex color
         vertexColor = gl_Color.rgb;
@@ -57,13 +57,13 @@
 
         // Lightmap fix for mods
         #ifdef WORLD_SKYLIGHT
-            lmCoord = vec2(saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).x - 0.03125) * 1.06667), WORLD_SKYLIGHT);
+            lmCoord = vec2(saturate(gl_MultiTexCoord1.x * 0.00416667), WORLD_SKYLIGHT);
         #else
-            lmCoord = saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).xy - 0.03125) * 1.06667);
+            lmCoord = saturate(gl_MultiTexCoord1.xy * 0.00416667);
         #endif
 
         #ifdef PARALLAX_OCCLUSION
-            vec2 midCoord = (gl_TextureMatrix[0] * mc_midTexCoord).xy;
+            vec2 midCoord = (gl_TextureMatrix[0] * vec4(mc_midTexCoord, 0, 0)).xy;
             vec2 texMinMidCoord = texCoord - midCoord;
 
             vTexCoordScale = abs(texMinMidCoord) * 2.0;
@@ -89,7 +89,7 @@
     }
 #endif
 
-/// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
+/// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
     flat in mat3 TBN;
@@ -130,6 +130,11 @@
 
     // Get night vision
     uniform float nightVision;
+
+    #ifndef FORCE_DISABLE_WEATHER
+        // Get rain strength
+        uniform float rainStrength;
+    #endif
 
     #if ANTI_ALIASING >= 2
         // Get frame time

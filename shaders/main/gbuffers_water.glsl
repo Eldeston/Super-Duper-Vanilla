@@ -1,16 +1,12 @@
 /*
 ================================ /// Super Duper Vanilla v1.3.3 /// ================================
 
-    Developed by Eldeston, presented by FlameRender Studios.
+    Developed by Eldeston, presented by FlameRender (TM) Studios.
 
-    Copyright (C) 2020 Eldeston
+    Copyright (C) 2020 Eldeston | FlameRender (TM) Studios License
 
 
-    By downloading this you have agreed to the license and terms of use.
-    These can be found inside the included license-file.
-
-    Violating these terms may be penalized with actions according to the Digital Millennium Copyright Act (DMCA),
-    the Information Society Directive and/or similar laws depending on your country.
+    By downloading this content you have agreed to the license and its terms of use.
 
 ================================ /// Super Duper Vanilla v1.3.3 /// ================================
 */
@@ -183,6 +179,11 @@
 
     // Get night vision
     uniform float nightVision;
+
+    #ifndef FORCE_DISABLE_WEATHER
+        // Get rain strength
+        uniform float rainStrength;
+    #endif
 
     #if TIMELAPSE_MODE != 0
         uniform float animationFrameTime;

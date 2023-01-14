@@ -26,7 +26,7 @@ vec4 complexShadingGbuffers(in structPBR material){
 		// also equivalent to:
 		// vec3(0, 0, 1) * mat3(shadowModelView) = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)
     	// shadowLightPosition is broken in other dimensions. The current is equivalent to:
-    	// fastNormalize(mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz)
+    	// (mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz) * 0.01
 
 		#ifdef SUBSURFACE_SCATTERING
 			// Diffuse with simple SS approximation
@@ -40,9 +40,6 @@ vec4 complexShadingGbuffers(in structPBR material){
 
 			// If the area isn't shaded, apply shadow mapping
 			if(dirLight > 0){
-				// Cave light leak fix
-				float caveFixShdFactor = isEyeInWater == 1 ? 1.0 : min(1.0, lmCoord.y * 2.0) * (1.0 - eyeBrightFact) + eyeBrightFact;
-
 				// Get shadow pos
 				vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz) + shadowProjection[3].xyz;
 				
@@ -57,21 +54,46 @@ vec4 complexShadingGbuffers(in structPBR material){
 				// Sample shadows
 				#ifdef SHD_FILTER
 					#if ANTI_ALIASING >= 2
-						shadowCol = getShdFilter(shdPos, toRandPerFrame(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x, frameTimeCounter) * TAU) * caveFixShdFactor * shdFade * material.parallaxShd;
+						shadowCol = getShdCol(shdPos, toRandPerFrame(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x, frameTimeCounter) * TAU);
 					#else
-						shadowCol = getShdFilter(shdPos, texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x * TAU) * caveFixShdFactor * shdFade * material.parallaxShd;
+						shadowCol = getShdCol(shdPos, texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x * TAU);
 					#endif
 				#else
-					shadowCol = getShdTex(shdPos) * caveFixShdFactor * shdFade * material.parallaxShd;
+					shadowCol = getShdCol(shdPos);
+				#endif
+
+				// Cave light leak fix
+				float caveFixShdFactor = isEyeInWater == 1 ? shdFade : (min(1.0, lmCoord.y * 2.0) * (1.0 - eyeBrightFact) + eyeBrightFact) * shdFade;
+				
+				#if defined PARALLAX_OCCLUSION && defined PARALLAX_SHADOWS
+					shadowCol *= material.parallaxShd * caveFixShdFactor;
+				#else
+					shadowCol *= caveFixShdFactor;
 				#endif
 			}
 		#else
 			// Sample fake shadows
-			float shadowCol = saturate(hermiteMix(0.96, 0.98, lmCoord.y)) * shdFade * material.parallaxShd;
+			float shadowCol = saturate(hermiteMix(0.96, 0.98, lmCoord.y)) * shdFade;
+
+			#if defined PARALLAX_OCCLUSION && defined PARALLAX_SHADOWS
+				shadowCol *= material.parallaxShd;
+			#endif
 		#endif
 
-		float rainDiff = rainStrength * 0.5;
-		totalDiffuse += (dirLight * shadowCol * (1.0 - rainDiff) + lmCoord.y * lmCoord.y * material.ambient * rainDiff) * toLinear(sRGBLightCol);
+		#ifndef FORCE_DISABLE_WEATHER
+			// Approximate rain diffusing light shadow
+			float rainDiffuseAmount = rainStrength * 0.5;
+			shadowCol *= shdFade * (1.0 - rainDiffuseAmount);
+
+			#ifdef CLOUDS
+				shadowCol += rainDiffuseAmount;
+			#else
+				shadowCol += material.ambient * lmCoord.y * lmCoord.y * rainDiffuseAmount;
+			#endif
+		#endif
+		
+		// Calculate and add shadow diffuse
+		totalDiffuse += toLinear(sRGBLightCol) * shadowCol * dirLight;
 	#endif
 
 	totalDiffuse = material.albedo.rgb * (totalDiffuse + material.emissive * EMISSIVE_INTENSITY);

@@ -23,7 +23,7 @@
    If you plan to contribute to this project, see [**CONTRIBUTION**](CONTRIBUTION.md) for more info.
 
 ## Mod Compatibility
-   If you want to request mod compatibility with this shader, make a pull request in this repository with the mod that you want to enable compatibility via linking. If you're planning to add mod compatibility by coding it yourself, see [**CONTRIBUTION**](CONTRIBUTION.md). Whilst SDV support for Iris has arrived (Iris 1.2.5), some features or options do not work on Iris such as timelapse mode, please note this issue needs to be fixed on Iris' end and not on this shader.
+   If you want to request mod compatibility with this shader, make a pull request in this repository with the mod that you want to enable compatibility via linking. If you're planning to add mod compatibility by coding it yourself, see [**CONTRIBUTION**](CONTRIBUTION.md). Whilst full SDV support for Iris has arrived (Iris 1.2.5), some features may not work on older versions of Iris.
 
 ## License 
    This shader uses the **FlameRender (TM) Studios License**. See [**LICENSE**](LICENSE) for more info.

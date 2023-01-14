@@ -17,9 +17,3 @@ uniform vec3 fogColor;
     
     float eyeBrightFact = eyeBrightnessSmooth.y * 0.00416667;
 #endif
-
-#ifdef FORCE_DISABLE_WEATHER
-    const float rainStrength = 0.0;
-#else
-    uniform float rainStrength;
-#endif

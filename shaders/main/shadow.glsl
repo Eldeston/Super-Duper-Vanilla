@@ -1,16 +1,12 @@
 /*
 ================================ /// Super Duper Vanilla v1.3.3 /// ================================
 
-    Developed by Eldeston, presented by FlameRender Studios.
+    Developed by Eldeston, presented by FlameRender (TM) Studios.
 
-    Copyright (C) 2020 Eldeston
+    Copyright (C) 2020 Eldeston | FlameRender (TM) Studios License
 
 
-    By downloading this you have agreed to the license and terms of use.
-    These can be found inside the included license-file.
-
-    Violating these terms may be penalized with actions according to the Digital Millennium Copyright Act (DMCA),
-    the Information Society Directive and/or similar laws depending on your country.
+    By downloading this content you have agreed to the license and its terms of use.
 
 ================================ /// Super Duper Vanilla v1.3.3 /// ================================
 */
@@ -49,9 +45,9 @@
                 float newFrameTimeCounter = frameTimeCounter;
             #endif
 
-            attribute vec2 mc_midTexCoord;
+            attribute vec3 at_midBlock;
 
-            #include "/lib/vertex/terrainWave.glsl"
+            #include "/lib/vertex/shadowWave.glsl"
         #endif
 
         #include "/lib/lighting/shdDistort.glsl"
@@ -74,7 +70,7 @@
             #if defined TERRAIN_ANIMATION || defined TERRAIN_ANIMATION || defined WORLD_CURVATURE
                 #if defined TERRAIN_ANIMATION || defined TERRAIN_ANIMATION
                     // Apply terrain wave animation
-                    vertexPos.xyz = getTerrainWave(vertexPos.xyz, worldPos, texCoord.y, mc_midTexCoord.y, mc_Entity.x, saturate(gl_MultiTexCoord1.y * 0.00416667));
+                    vertexPos.xyz = getShadowWave(vertexPos.xyz, worldPos, at_midBlock, mc_Entity.x, saturate(gl_MultiTexCoord1.y * 0.00416667));
                 #endif
 
                 #ifdef WORLD_CURVATURE
