@@ -1,10 +1,11 @@
-![thumbnail](/shaders/textures/thumbCF.png)
-![titleLogo](/shaders/textures/title.png)
-[![Discord](https://img.shields.io/discord/604061216779796492.svg?logo=discord&logoColor=white&logoWidth=20&labelColor=7289DA&label=Discord)](https://discord.gg/UE85W5ynCg)
-[![Twitter Follow](https://img.shields.io/twitter/follow/eldeston?color=dark&label=Follow&logoColor=dark)](https://twitter.com/eldeston)
+![Thumbnail](/shaders/textures/thumbCF.png)
+![Title Logo](/shaders/textures/title.png)
+[![Discord](https://img.shields.io/discord/604061216779796492.svg?label=FlameRender%E2%84%A2%20Studios&logo=discord&logoColor=white&logoWidth=16&labelColor=7289DA&style=for-the-badge)](https://discord.gg/UE85W5ynCg)
+[![Twitter Follow](https://img.shields.io/twitter/follow/eldeston?color=1DA1F2&logoWidth=16&logo=Twitter&logoColor=white&style=for-the-badge)](https://twitter.com/eldeston)
+[![YouTube Channel Subscribers](https://img.shields.io/youtube/channel/subscribers/UCQCkkFh25ydxZwCqpBhJJlg?color=FF0000&logoWidth=16&label=Eldeston&logo=YouTube&style=for-the-badge)](https://www.youtube.com/channel/UCQCkkFh25ydxZwCqpBhJJlg)
 
 ## Description
-   A shader pack created to convey the style of the cancelled __Super Duper Graphics Pack__ and other popular Minecraft titles. Developed by @Eldeston, and presented by __FlameRender Studios__.
+   A shader pack created to convey the style of the cancelled __Super Duper Graphics Pack__ and other popular Minecraft titles. Developed by [@Eldeston](https://github.com/Eldeston), and presented by __FlameRender Studios__.
 
 ## Screenshots
 ![2022-06-28_19 28 13](https://user-images.githubusercontent.com/59617287/177016623-808d5ce2-4b2e-4ae9-a0ec-31352780b4e7.png)
@@ -25,21 +26,18 @@
    If you want to request mod compatibility with this shader, make a pull request in this repository with the mod that you want to enable compatibility via linking. If you're planning to add mod compatibility by coding it yourself, see [**CONTRIBUTION**](CONTRIBUTION.md). Whilst SDV support for Iris has arrived (Iris 1.2.5), some features or options do not work on Iris such as timelapse mode, please note this issue needs to be fixed on Iris' end and not on this shader.
 
 ## License 
-   This shader uses the **GNU GPL 3.0** license. See [**LICENSE**](LICENSE) for more info.
+   This shader uses the **FlameRender (TM) Studios License**. See [**LICENSE**](LICENSE) for more info.
 
 ## Releases
    See all available releases [here](https://github.com/Eldeston/Super-Duper-Vanilla/releases), and get the latest build [here](https://github.com/Eldeston/Super-Duper-Vanilla/archive/refs/heads/master.zip), this build will always be the latest build by default. Latests builds and pre-release versions are expected to be unstable, please report any issues or bugs anytime. Feedback is much appreciated.
 
 ## Official CurseForge Page
-   Super Duper Vanilla just happen to be on CurseForge! Stable and latest releases will always be available there. Check it out [here](https://www.curseforge.com/minecraft/customization/super-duper-vanilla-shaders) and show your support by clicking on one of the download links there!
+   Super Duper Vanilla just happen to be on CurseForge! Stable and latest releases will always be available there. Check it out [here](https://www.curseforge.com/minecraft/customization/super-duper-vanilla-shaders) and support me by using on one of the download links there!
 
 ## Super Duper Vanilla Installer
-   Alternatively, you can use this installer developed by @Steb allowing you to install either the release versions of SDV or the development versions. While the installer's task is relatively simple, it's still a WIP. [Use this link to go to the installer repository](https://github.com/steb-git/super-duper-vanilla-installer).
+   Alternatively, you can use this installer developed by [@steb-git](https://github.com/steb-git) allowing you to install either the release versions of SDV or the development versions. While the installer's task is relatively simple, it's still a WIP. [Use this link to go to the installer repository](https://github.com/steb-git/super-duper-vanilla-installer).
 
-## About Creator
-   Try out my other shader for Minecraft Bedrock, ESTN Shaders, on McpeDL!
-   [![img](https://github.com/Eldeston/ESTN-Shaders/blob/master/textures/ui/title.png)](https://mcpedl.com/estn-shaders/?cookie_check=1)
-   
+## Social Links
    Come join my Discord server to talk about other developments made by our studio-community!
    * [Flamerender Studios Discord](https://discord.gg/UE85W5ynCg)
    
@@ -49,3 +47,6 @@
 
    You can become a supporter by doing any of the above, or donate through paypal
    * [@Paypal donation](https://www.paypal.com/donate?hosted_button_id=4XLQ4WE296JKW)
+
+   Try out my other shader for Minecraft Bedrock, ESTN Shaders, on McpeDL!
+   [![img](https://github.com/Eldeston/ESTN-Shaders/blob/master/textures/ui/title.png)](https://mcpedl.com/estn-shaders/?cookie_check=1)
