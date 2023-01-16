@@ -14,7 +14,7 @@ vec4 simpleShadingGbuffers(in vec4 albedo){
 			vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz) + shadowProjection[3].xyz;
 
 			// Bias mutilplier, adjusts according to the current shadow distance and resolution
-			const float biasAdjustMult = log2(max(4.0, shadowDistance - shadowMapResolution * 0.125)) * 0.25;
+			const float biasAdjustMult = (shadowDistance / shadowMapResolution) * 4.0;
 			float distortFactor = getDistortFactor(shdPos.xy);
 
 			#ifdef CLOUDS
@@ -40,25 +40,25 @@ vec4 simpleShadingGbuffers(in vec4 albedo){
 
 			#ifdef CLOUDS
 				// Apply simple diffuse for clouds
-				shadowCol *= max(0.0, dot(vertexNormal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) * 0.6 + 0.4);
+				shadowCol *= max(0.0, dot(vertexNormal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) * 0.6 + 0.4) * shdFade;
 			#else
 				// Cave light leak fix
-				if(isEyeInWater != 1) shadowCol *= min(1.0, lmCoord.y * 2.0) * (1.0 - eyeBrightFact) + eyeBrightFact;
+				shadowCol *= isEyeInWater == 1 ? shdFade : (min(1.0, lmCoord.y * 2.0) * (1.0 - eyeBrightFact) + eyeBrightFact) * shdFade;
 			#endif
 		#else
 			#ifdef CLOUDS
 				// Apply simple diffuse for clouds
-				float shadowCol = max(0.0, dot(vertexNormal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) * 0.6 + 0.4);
+				float shadowCol = max(0.0, dot(vertexNormal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) * 0.6 + 0.4) * shdFade;
 			#else
 				// Sample fake shadows
-				float shadowCol = saturate(hermiteMix(0.96, 0.98, lmCoord.y));
+				float shadowCol = saturate(hermiteMix(0.96, 0.98, lmCoord.y)) * shdFade;
 			#endif
 		#endif
 
 		#ifndef FORCE_DISABLE_WEATHER
 			// Approximate rain diffusing light shadow
 			float rainDiffuseAmount = rainStrength * 0.5;
-			shadowCol *= shdFade * (1.0 - rainDiffuseAmount);
+			shadowCol *= 1.0 - rainDiffuseAmount;
 
 			#ifdef CLOUDS
 				shadowCol += rainDiffuseAmount;

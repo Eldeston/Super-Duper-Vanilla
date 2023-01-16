@@ -1,49 +1,77 @@
-/// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
+/*
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+
+    Developed by Eldeston, presented by FlameRender (TM) Studios.
+
+    Copyright (C) 2020 Eldeston | FlameRender (TM) Studios License
+
+
+    By downloading this content you have agreed to the license and its terms of use.
+
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+*/
+
+/// Buffer features: Lens flare, applied bloom, auto exposure, tonemapping, vignette and color grading
+
+/// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
     #if defined LENS_FLARE && defined WORLD_LIGHT
         flat out vec3 sRGBLightCol;
-        flat out vec3 shdLightViewDir;
+        flat out vec3 shdLightDirScreenSpace;
     #endif
 
-    out vec2 screenCoord;
+    out vec2 texCoord;
 
     #if defined LENS_FLARE && defined WORLD_LIGHT
+        // Projection matrix uniforms
+        uniform mat4 gbufferProjection;
+
         // Model view matrix
         uniform mat4 gbufferModelView;
 
         // Shadow model view matrix
         uniform mat4 shadowModelView;
 
+        #ifndef FORCE_DISABLE_WEATHER
+            // Get rain strength
+            uniform float rainStrength;
+        #endif
+
         #include "/lib/universalVars.glsl"
+
+        #include "/lib/utility/convertScreenSpace.glsl"
     #endif
 
     void main(){
-        screenCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
 
         #if defined LENS_FLARE && defined WORLD_LIGHT
             // Get sRGB light color
             sRGBLightCol = LIGHT_COL_DATA_BLOCK;
 
-            // Get shadow light view direction
-            shdLightViewDir = mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
+            // Get shadow light view direction in screen space
+            shdLightDirScreenSpace = vec3(toScreen(mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)).xy, gbufferProjection[1].y * 0.72794047);
         #endif
 
         gl_Position = ftransform();
     }
 #endif
 
-/// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
+/// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
     #if defined LENS_FLARE && defined WORLD_LIGHT
         flat in vec3 sRGBLightCol;
-        flat in vec3 shdLightViewDir;
+        flat in vec3 shdLightDirScreenSpace;
     #endif
 
-    in vec2 screenCoord;
+    in vec2 texCoord;
 
     uniform sampler2D gcolor;
+
+    #ifdef LENS_FLARE
+    #endif
 
     #ifdef AUTO_EXPOSURE
         // Get previous frame color
@@ -61,7 +89,7 @@
 
         vec3 getBloomTile(in vec2 pixSize, in vec2 coords, in float LOD){
             // Remap to bloom tile texture coordinates
-            vec2 texCoord = screenCoord / exp2(LOD) + coords;
+            vec2 texCoord = texCoord / exp2(LOD) + coords;
 
             vec2 topRightCorner = texCoord + pixSize;
             vec2 bottomLeftCorner = texCoord - pixSize;
@@ -72,14 +100,8 @@
         }
     #endif
 
-    #ifdef LENS_FLARE
-    #endif
-
     #if defined LENS_FLARE && defined WORLD_LIGHT
         uniform sampler2D depthtex0;
-
-        // Projection matrix uniforms
-        uniform mat4 gbufferProjection;
 
         // Get blindess
         uniform float blindness;
@@ -89,14 +111,10 @@
         // Get screen aspect ratio
         uniform float aspectRatio;
 
-        // Get rain strength
-        #ifdef FORCE_DISABLE_WEATHER
-            const float rainStrength = 0.0;
-        #else
+        #ifndef FORCE_DISABLE_WEATHER
+            // Get rain strength
             uniform float rainStrength;
         #endif
-
-        #include "/lib/utility/convertScreenSpace.glsl"
         
         #include "/lib/post/lensFlare.glsl"
     #endif
@@ -124,18 +142,18 @@
             eBloom += getBloomTile(pixSize, vec2(0.160625, 0.3625), 7.0);
 
             // Average the total samples (1 / 6 bloom tiles multiplied by 1 / 4 samples used for the box blur)
-            color = mix(color, eBloom * 0.04166667, BLOOM_AMOUNT);
+            eBloom *= 0.04166667;
+            // Apply bloom by BLOOM_AMOUNT
+            color = mix(color, eBloom, BLOOM_AMOUNT);
         #endif
 
         #if defined LENS_FLARE && defined WORLD_LIGHT
-            vec2 lightDir = toScreen(shdLightViewDir).xy;
-            // also equivalent to:
-            // vec3(0, 0, 1) * mat3(shadowModelView) = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)
-            // shadowLightPosition is broken in other dimensions. The current is equivalent to:
-            // fastNormalize(mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz)
-            
-            if(textureLod(depthtex0, lightDir, 0).x == 1)
-                color += getLensFlare(screenCoord - 0.5, lightDir - 0.5) * (1.0 - blindness) * (1.0 - darknessFactor) * (1.0 - rainStrength);
+            if(textureLod(depthtex0, shdLightDirScreenSpace.xy, 0).x == 1)
+                #ifdef FORCE_DISABLE_WEATHER
+                    color += getLensFlare(texCoord - 0.5, shdLightDirScreenSpace.xy - 0.5) * (1.0 - blindness) * (1.0 - darknessFactor);
+                #else
+                    color += getLensFlare(texCoord - 0.5, shdLightDirScreenSpace.xy - 0.5) * (1.0 - blindness) * (1.0 - darknessFactor) * (1.0 - rainStrength);
+                #endif
         #endif
 
         #ifdef AUTO_EXPOSURE
@@ -157,11 +175,11 @@
         #endif
 
         // Exposure, tint, and tonemap
-        color = whitePreservingLumaBasedReinhardToneMapping(color * vec3(TINT_R, TINT_G, TINT_B) * (0.00392156863 * EXPOSURE));
+        color = color * vec3(TINT_R, TINT_G, TINT_B) * (0.00392156863 * EXPOSURE);
 
         #ifdef VIGNETTE
             // BSL's vignette, modified to control intensity
-            color *= 1.0 - lengthSquared(screenCoord - 0.5) * VIGNETTE_AMOUNT * (3.0 - sumOf(color));
+            color *= 1.0 - lengthSquared(texCoord - 0.5) * VIGNETTE_AMOUNT * (3.0 - sumOf(color));
         #endif
 
         // Gamma correction, color saturation, contrast, etc. and film grain

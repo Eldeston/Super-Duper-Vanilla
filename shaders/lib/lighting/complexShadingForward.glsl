@@ -1,7 +1,3 @@
-#ifdef WORLD_LIGHT
-	uniform float shdFade;
-#endif
-
 vec4 complexShadingGbuffers(in structPBR material){
 	#ifdef DIRECTIONAL_LIGHTMAPS
 		vec3 dirLightMapCoord = dFdx(vertexPos.xyz) * dFdx(lmCoord.x) + dFdy(vertexPos.xyz) * dFdy(lmCoord.x);
@@ -44,7 +40,7 @@ vec4 complexShadingGbuffers(in structPBR material){
 				vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz) + shadowProjection[3].xyz;
 				
 				// Bias mutilplier, adjusts according to the current shadow distance and resolution
-				const float biasAdjustMult = log2(max(4.0, shadowDistance - shadowMapResolution * 0.125)) * 0.25;
+				const float biasAdjustMult = (shadowDistance / shadowMapResolution) * 4.0;
 				float distortFactor = getDistortFactor(shdPos.xy);
 
 				// Apply bias according to normal in shadow space before
@@ -83,7 +79,7 @@ vec4 complexShadingGbuffers(in structPBR material){
 		#ifndef FORCE_DISABLE_WEATHER
 			// Approximate rain diffusing light shadow
 			float rainDiffuseAmount = rainStrength * 0.5;
-			shadowCol *= shdFade * (1.0 - rainDiffuseAmount);
+			shadowCol *= 1.0 - rainDiffuseAmount;
 
 			#ifdef CLOUDS
 				shadowCol += rainDiffuseAmount;
@@ -103,7 +99,11 @@ vec4 complexShadingGbuffers(in structPBR material){
 			// Get specular GGX
 			vec3 specCol = getSpecBRDF(fastNormalize(-vertexPos.xyz), vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), material.normal, material.albedo.rgb, NL, material.metallic, 1.0 - material.smoothness);
 			// Needs to multiplied twice in order for the speculars to look relatively "correct"
-			totalDiffuse += min(vec3(SUN_MOON_INTENSITY * SUN_MOON_INTENSITY), specCol) * sRGBLightCol * (1.0 - rainStrength) * shadowCol * 2.0;
+			#ifdef FORCE_DISABLE_WEATHER
+				totalDiffuse += min(vec3(SUN_MOON_INTENSITY * SUN_MOON_INTENSITY), specCol) * sRGBLightCol * shadowCol * 2.0;
+			#else
+				totalDiffuse += min(vec3(SUN_MOON_INTENSITY * SUN_MOON_INTENSITY), specCol) * sRGBLightCol * shadowCol * (2.0 - rainStrength * 2.0);
+			#endif
 		}
 	#endif
 

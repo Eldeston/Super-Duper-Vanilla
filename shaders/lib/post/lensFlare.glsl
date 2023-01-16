@@ -1,5 +1,3 @@
-float fovMult = gbufferProjection[1].y * 0.72794047;
-
 float lensShape(in vec2 lensCoord){
     #if WORLD_SUN_MOON == 2
         return abs(length(lensCoord) - cubed(WORLD_SUN_MOON_SIZE));
@@ -10,7 +8,7 @@ float lensShape(in vec2 lensCoord){
 
 float lensFlareSimple(in vec2 centerCoord, in vec2 lightDir, in float size, in float dist){
     vec2 flareCoord = (centerCoord + lightDir * dist) * vec2(aspectRatio, 1);
-    return squared(squared(max(0.0, 1.0 - lensShape(flareCoord) / (size * fovMult))));
+    return squared(squared(max(0.0, 1.0 - lensShape(flareCoord) / (size * shdLightDirScreenSpace.z))));
 }
 
 float lensFlareRays(in vec2 centerCoord, in vec2 lightDir, in float rayBeam, in float size, in float dist){
