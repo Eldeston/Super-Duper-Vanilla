@@ -210,7 +210,8 @@
 	    // Declare materials
 	    structPBR material;
         getPBR(material, blockEntityId);
-        
+
+        // Convert to linear space
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         vec4 sceneCol = complexShadingGbuffers(material);

@@ -178,7 +178,7 @@
     #endif
 
     #include "/lib/lighting/complexShadingForward.glsl"
-    
+
     void main(){
         // Lightning fix, materials need to be specified due to glitching issues
         if(entityId == 10129){
@@ -192,8 +192,10 @@
 	    structPBR material;
         getPBR(material, entityId);
 
+        // Apply entity color tint
         material.albedo.rgb = mix(material.albedo.rgb, entityColor.rgb, entityColor.a);
 
+        // Convert to linear space
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         vec4 sceneCol = complexShadingGbuffers(material);
