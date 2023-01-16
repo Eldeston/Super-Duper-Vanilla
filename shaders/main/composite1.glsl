@@ -1,18 +1,34 @@
-/// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
+/*
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+
+    Developed by Eldeston, presented by FlameRender (TM) Studios.
+
+    Copyright (C) 2020 Eldeston | FlameRender (TM) Studios License
+
+
+    By downloading this content you have agreed to the license and its terms of use.
+
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+*/
+
+/// Buffer features: Temporal Anti-Aliasing (TAA)
+
+/// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    out vec2 screenCoord;
+    out vec2 texCoord;
 
     void main(){
+        // Get buffer texture coordinates
+        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         gl_Position = ftransform();
-        screenCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
     }
 #endif
 
-/// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
+/// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    in vec2 screenCoord;
+    in vec2 texCoord;
 
     uniform sampler2D gcolor;
 
@@ -21,7 +37,9 @@
     #endif
 
     #if ANTI_ALIASING >= 2
-        uniform sampler2D depthtex0;
+        /* Position uniforms */
+        uniform vec3 cameraPosition;
+        uniform vec3 previousCameraPosition;
 
         /* Matrix uniforms */
         // View matrix uniforms
@@ -32,9 +50,7 @@
         uniform mat4 gbufferProjectionInverse;
         uniform mat4 gbufferPreviousProjection;
 
-        /* Position uniforms */
-        uniform vec3 cameraPosition;
-        uniform vec3 previousCameraPosition;
+        uniform sampler2D depthtex0;
 
         #include "/lib/utility/convertPrevScreenSpace.glsl"
 
@@ -43,7 +59,7 @@
 
     void main(){
         #if ANTI_ALIASING >= 2
-            vec3 sceneCol = textureTAA(ivec2(gl_FragCoord.xy), screenCoord);
+            vec3 sceneCol = textureTAA(ivec2(gl_FragCoord.xy), texCoord);
         #else
             vec3 sceneCol = texelFetch(gcolor, ivec2(gl_FragCoord.xy), 0).rgb;
         #endif
