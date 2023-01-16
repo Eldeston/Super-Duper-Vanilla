@@ -16,16 +16,20 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    flat out mat3 TBN;
-    
     flat out int blockId;
 
     flat out vec3 vertexColor;
+
+    flat out mat3 TBN;
 
     out float vertexAO;
 
     out vec2 lmCoord;
     out vec2 texCoord;
+
+    out vec3 worldPos;
+
+    out vec4 vertexPos;
 
     #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
         flat out vec2 vTexCoordScale;
@@ -33,16 +37,12 @@
         out vec2 vTexCoord;
     #endif
 
-    out vec3 worldPos;
-
-    out vec4 vertexPos;
+    // Position uniforms
+    uniform vec3 cameraPosition;
 
     // View matrix uniforms
     uniform mat4 gbufferModelView;
     uniform mat4 gbufferModelViewInverse;
-
-    // Position uniforms
-    uniform vec3 cameraPosition;
 
     #if ANTI_ALIASING == 2
         /* Screen resolutions */
@@ -50,14 +50,6 @@
         uniform float viewHeight;
 
         #include "/lib/utility/taaJitter.glsl"
-    #endif
-
-    attribute vec3 mc_Entity;
-
-    attribute vec4 at_tangent;
-
-    #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION || defined TERRAIN_ANIMATION
-        attribute vec2 mc_midTexCoord;
     #endif
 
     #ifdef TERRAIN_ANIMATION
@@ -74,6 +66,14 @@
         attribute vec3 at_midBlock;
 
         #include "/lib/vertex/terrainWave.glsl"
+    #endif
+
+    attribute vec3 mc_Entity;
+
+    attribute vec4 at_tangent;
+
+    #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION || defined TERRAIN_ANIMATION
+        attribute vec2 mc_midTexCoord;
     #endif
 
     void main(){
@@ -141,16 +141,20 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    flat in mat3 TBN;
-
     flat in int blockId;
 
     flat in vec3 vertexColor;
+
+    flat in mat3 TBN;
 
     in float vertexAO;
 
     in vec2 lmCoord;
     in vec2 texCoord;
+
+    in vec3 worldPos;
+
+    in vec4 vertexPos;
 
     #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
         flat in vec2 vTexCoordScale;
@@ -158,31 +162,21 @@
         in vec2 vTexCoord;
     #endif
 
-    in vec3 worldPos;
-
-    in vec4 vertexPos;
-
     // Enable full vanilla AO
     const float ambientOcclusionLevel = 1.0;
-
-    // Get albedo texture
-    uniform sampler2D tex;
-
-    #ifdef WORLD_LIGHT
-        // Shadow view matrix uniforms
-        uniform mat4 shadowModelView;
-
-        #ifdef SHD_ENABLE
-            // Shadow projection matrix uniforms
-            uniform mat4 shadowProjection;
-        #endif
-    #endif
 
     // Get is eye in water
     uniform int isEyeInWater;
 
     // Get night vision
     uniform float nightVision;
+
+    // Get albedo texture
+    uniform sampler2D tex;
+
+    // Texture coordinate derivatives
+    vec2 dcdx = dFdx(texCoord);
+    vec2 dcdy = dFdy(texCoord);
 
     #ifndef FORCE_DISABLE_WEATHER
         // Get rain strength
@@ -199,19 +193,23 @@
         float newFrameTimeCounter = frameTimeCounter;
     #endif
 
-    // Texture coordinate derivatives
-    vec2 dcdx = dFdx(texCoord);
-    vec2 dcdy = dFdy(texCoord);
+    #ifdef WORLD_LIGHT
+        // Shadow fade uniform
+        uniform float shdFade;
 
-    #include "/lib/universalVars.glsl"
+        // Shadow view matrix uniforms
+        uniform mat4 shadowModelView;
 
-    #include "/lib/utility/noiseFunctions.glsl"
+        #ifdef SHD_ENABLE
+            // Shadow projection matrix uniforms
+            uniform mat4 shadowProjection;
 
-    #include "/lib/lighting/shdMapping.glsl"
-    #include "/lib/lighting/shdDistort.glsl"
-    #include "/lib/lighting/GGX.glsl"
+            #include "/lib/lighting/shdMapping.glsl"
+            #include "/lib/lighting/shdDistort.glsl"
+        #endif
 
-    #include "/lib/surface/lava.glsl"
+        #include "/lib/lighting/GGX.glsl"
+    #endif
 
     #include "/lib/PBR/structPBR.glsl"
 
@@ -221,9 +219,15 @@
         #include "/lib/PBR/labPBR.glsl"
     #endif
 
+    #include "/lib/utility/noiseFunctions.glsl"
+
     #if defined ENVIRO_PBR && !defined FORCE_DISABLE_WEATHER
         #include "/lib/PBR/enviroPBR.glsl"
     #endif
+
+    #include "/lib/universalVars.glsl"
+
+    #include "/lib/surface/lava.glsl"
 
     #include "/lib/lighting/complexShadingForward.glsl"
 
@@ -232,7 +236,7 @@
 	    structPBR material;
         getPBR(material, blockId);
 
-        if(blockId == 10016){
+        if(blockId == 20500){
             #ifdef LAVA_NOISE
                 vec2 lavaUv = (worldPos.yz * TBN[2].x + worldPos.xz * TBN[2].y + worldPos.xy * TBN[2].z) / LAVA_TILE_SIZE;
                 float lavaNoise = max(getLavaNoise(lavaUv), sumOf(material.albedo.rgb) * 0.33333333);
@@ -245,7 +249,7 @@
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         #if defined ENVIRO_PBR && !defined FORCE_DISABLE_WEATHER
-            if(blockId != 10016) enviroPBR(material);
+            if(blockId != 20500) enviroPBR(material);
         #endif
 
         vec4 sceneCol = complexShadingGbuffers(material);

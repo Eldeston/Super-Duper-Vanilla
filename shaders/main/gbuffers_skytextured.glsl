@@ -49,10 +49,10 @@
 
     in vec2 texCoord;
 
+    uniform int renderStage;
+
     // Get albedo texture
     uniform sampler2D tex;
-
-    uniform int renderStage;
 
     #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT
         #include "/lib/universalVars.glsl"

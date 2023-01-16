@@ -1,20 +1,35 @@
+/*
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+
+    Developed by Eldeston, presented by FlameRender (TM) Studios.
+
+    Copyright (C) 2020 Eldeston | FlameRender (TM) Studios License
+
+
+    By downloading this content you have agreed to the license and its terms of use.
+
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+*/
+
+/// Buffer features: TAA jittering, complex shading, PBR, glowing effect, and world curvature
+
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    flat out mat3 TBN;
-
     flat out vec3 vertexColor;
+    
+    flat out mat3 TBN;
 
     out vec2 lmCoord;
     out vec2 texCoord;
+
+    out vec4 vertexPos;
 
     #ifdef PARALLAX_OCCLUSION
         flat out vec2 vTexCoordScale;
         flat out vec2 vTexCoordPos;
         out vec2 vTexCoord;
     #endif
-
-    out vec4 vertexPos;
 
     // View matrix uniforms
     uniform mat4 gbufferModelView;
@@ -64,6 +79,7 @@
 
             vTexCoordScale = abs(texMinMidCoord) * 2.0;
             vTexCoordPos = min(texCoord, midCoord - texMinMidCoord);
+
             vTexCoord = sign(texMinMidCoord) * 0.5 + 0.5;
         #endif
 
@@ -88,27 +104,20 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    flat in mat3 TBN;
-
     flat in vec3 vertexColor;
+
+    flat in mat3 TBN;
 
     in vec2 lmCoord;
     in vec2 texCoord;
 
+    in vec4 vertexPos;
+
     #ifdef PARALLAX_OCCLUSION
         flat in vec2 vTexCoordScale;
         flat in vec2 vTexCoordPos;
+        
         in vec2 vTexCoord;
-    #endif
-
-    in vec4 vertexPos;
-
-    // Get albedo texture
-    uniform sampler2D tex;
-
-    #ifdef WORLD_LIGHT
-        // Shadow view matrix uniforms
-        uniform mat4 shadowModelView;
     #endif
 
     // Get entity id
@@ -117,21 +126,32 @@
     // Get night vision
     uniform float nightVision;
 
-    #ifndef FORCE_DISABLE_WEATHER
-        // Get rain strength
-        uniform float rainStrength;
-    #endif
-
     // Get entity color
     uniform vec4 entityColor;
+
+    // Get albedo texture
+    uniform sampler2D tex;
 
     // Texture coordinate derivatives
     vec2 dcdx = dFdx(texCoord);
     vec2 dcdy = dFdy(texCoord);
 
-    #include "/lib/universalVars.glsl"
+    #ifndef FORCE_DISABLE_WEATHER
+        // Get rain strength
+        uniform float rainStrength;
+    #endif
 
-    #include "/lib/lighting/GGX.glsl"
+    #ifdef WORLD_LIGHT
+        // Shadow fade uniform
+        uniform float shdFade;
+        
+        // Shadow view matrix uniforms
+        uniform mat4 shadowModelView;
+
+        #include "/lib/lighting/GGX.glsl"
+    #endif
+
+    #include "/lib/universalVars.glsl"
 
     #include "/lib/PBR/structPBR.glsl"
 

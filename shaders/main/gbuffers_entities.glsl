@@ -1,25 +1,40 @@
+/*
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+
+    Developed by Eldeston, presented by FlameRender (TM) Studios.
+
+    Copyright (C) 2020 Eldeston | FlameRender (TM) Studios License
+
+
+    By downloading this content you have agreed to the license and its terms of use.
+
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+*/
+
+/// Buffer features: TAA jittering, complex shading, PBR, lightning, and world curvature
+
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    flat out mat3 TBN;
-
     flat out float vertexAlpha;
 
     flat out vec3 vertexColor;
 
+    flat out mat3 TBN;
+
     out vec2 lmCoord;
     out vec2 texCoord;
+
+    out vec4 vertexPos;
 
     #ifdef PARALLAX_OCCLUSION
         flat out vec2 vTexCoordScale;
         flat out vec2 vTexCoordPos;
+
         out vec2 vTexCoord;
     #endif
 
-    out vec4 vertexPos;
-
     // View matrix uniforms
-    uniform mat4 gbufferModelView;
     uniform mat4 gbufferModelViewInverse;
 
     #if ANTI_ALIASING == 2
@@ -31,29 +46,29 @@
     #endif
 
     attribute vec4 at_tangent;
-    
+
     #ifdef PARALLAX_OCCLUSION
         attribute vec2 mc_midTexCoord;
     #endif
 
     void main(){
-        // Get vertex color alpha
-        vertexAlpha = gl_Color.a;
         // Get buffer texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        // Get vertex alpha
+        vertexAlpha = gl_Color.a;
         // Get vertex color
         vertexColor = gl_Color.rgb;
-        
+
         // Get vertex tangent
-        vec3 vertexTangent = fastNormalize(gl_NormalMatrix * at_tangent.xyz);
+        vec3 vertexTangent = fastNormalize(at_tangent.xyz);
         // Get vertex normal
-        vec3 vertexNormal = fastNormalize(gl_NormalMatrix * gl_Normal);
+        vec3 vertexNormal = fastNormalize(gl_Normal);
 
         // Get vertex position (feet player pos)
         vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
 
         // Calculate TBN matrix
-	    TBN = mat3(gbufferModelViewInverse) * mat3(vertexTangent, cross(vertexTangent, vertexNormal), vertexNormal);
+	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal), vertexNormal));
 
         // Lightmap fix for mods
         #ifdef WORLD_SKYLIGHT
@@ -68,60 +83,39 @@
 
             vTexCoordScale = abs(texMinMidCoord) * 2.0;
             vTexCoordPos = min(texCoord, midCoord - texMinMidCoord);
+
             vTexCoord = sign(texMinMidCoord) * 0.5 + 0.5;
         #endif
 
-        #ifdef WORLD_CURVATURE
-            vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
-            
-            // Clip pos
-            gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
-        #else
-            gl_Position = ftransform();
-        #endif
+        gl_Position = ftransform();
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
-
-        // Remove background nametag/floating text
-        if(gl_Color.a >= 0.24 && gl_Color.a < 0.255) gl_Position = vec4(-10);
     }
 #endif
 
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    flat in mat3 TBN;
-
     flat in float vertexAlpha;
 
     flat in vec3 vertexColor;
 
+    flat in mat3 TBN;
+
     in vec2 lmCoord;
     in vec2 texCoord;
+
+    in vec4 vertexPos;
 
     #ifdef PARALLAX_OCCLUSION
         flat in vec2 vTexCoordScale;
         flat in vec2 vTexCoordPos;
+
         in vec2 vTexCoord;
     #endif
-
-    in vec4 vertexPos;
-
-    // Get albedo texture
-    uniform sampler2D tex;
-
-    #ifdef WORLD_LIGHT
-        // Shadow view matrix uniforms
-        uniform mat4 shadowModelView;
-
-        #ifdef SHD_ENABLE
-            // Shadow projection matrix uniforms
-            uniform mat4 shadowProjection;
-        #endif
-    #endif
-
+    
     // Get entity id
     uniform int entityId;
 
@@ -130,6 +124,16 @@
 
     // Get night vision
     uniform float nightVision;
+
+    // Get entity color
+    uniform vec4 entityColor;
+
+    // Get albedo texture
+    uniform sampler2D tex;
+
+    // Texture coordinate derivatives
+    vec2 dcdx = dFdx(texCoord);
+    vec2 dcdy = dFdy(texCoord);
 
     #ifndef FORCE_DISABLE_WEATHER
         // Get rain strength
@@ -141,20 +145,29 @@
         uniform float frameTimeCounter;
     #endif
 
-    // Get entity color
-    uniform vec4 entityColor;
+    #ifdef WORLD_LIGHT
+        // Shadow fade uniform
+        uniform float shdFade;
 
-    // Texture coordinate derivatives
-    vec2 dcdx = dFdx(texCoord);
-    vec2 dcdy = dFdy(texCoord);
+        // Shadow view matrix uniforms
+        uniform mat4 shadowModelView;
+
+        #ifdef SHD_ENABLE
+            // Shadow projection matrix uniforms
+            uniform mat4 shadowProjection;
+
+            #ifdef SHD_FILTER
+                #include "/lib/utility/noiseFunctions.glsl"
+            #endif
+
+            #include "/lib/lighting/shdMapping.glsl"
+            #include "/lib/lighting/shdDistort.glsl"
+        #endif
+
+        #include "/lib/lighting/GGX.glsl"
+    #endif
 
     #include "/lib/universalVars.glsl"
-
-    #include "/lib/utility/noiseFunctions.glsl"
-
-    #include "/lib/lighting/shdMapping.glsl"
-    #include "/lib/lighting/shdDistort.glsl"
-    #include "/lib/lighting/GGX.glsl"
 
     #include "/lib/PBR/structPBR.glsl"
 

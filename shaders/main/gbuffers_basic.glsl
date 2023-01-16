@@ -80,24 +80,11 @@
 
     in vec4 vertexPos;
 
-    #ifdef WORLD_LIGHT
-        // Shadow view matrix uniforms
-        uniform mat4 shadowModelView;
-
-        #ifdef SHD_ENABLE
-            // Shadow projection matrix uniforms
-            uniform mat4 shadowProjection;
-        #endif
-    #endif
-
     // Get is eye in water
     uniform int isEyeInWater;
 
     // Get night vision
     uniform float nightVision;
-
-    // Get shadow fade
-    uniform float shdFade;
 
     #ifndef FORCE_DISABLE_WEATHER
         // Get rain strength
@@ -109,12 +96,27 @@
         uniform float frameTimeCounter;
     #endif
 
+    #ifdef WORLD_LIGHT
+        // Get shadow fade
+        uniform float shdFade;
+
+        // Shadow view matrix uniforms
+        uniform mat4 shadowModelView;
+
+        #ifdef SHD_ENABLE
+            // Shadow projection matrix uniforms
+            uniform mat4 shadowProjection;
+
+            #ifdef SHD_FILTER
+                #include "/lib/utility/noiseFunctions.glsl"
+            #endif
+
+            #include "/lib/lighting/shdMapping.glsl"
+            #include "/lib/lighting/shdDistort.glsl"
+        #endif
+    #endif
+
     #include "/lib/universalVars.glsl"
-
-    #include "/lib/utility/noiseFunctions.glsl"
-
-    #include "/lib/lighting/shdMapping.glsl"
-    #include "/lib/lighting/shdDistort.glsl"
 
     #include "/lib/lighting/simpleShadingForward.glsl"
 

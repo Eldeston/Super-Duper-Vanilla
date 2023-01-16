@@ -80,19 +80,6 @@
 
     in vec4 vertexPos;
 
-    // Get albedo texture
-    uniform sampler2D tex;
-
-    #ifdef WORLD_LIGHT
-        // Shadow view matrix uniforms
-        uniform mat4 shadowModelView;
-
-        #ifdef SHD_ENABLE
-            // Shadow projection matrix uniforms
-            uniform mat4 shadowProjection;
-        #endif
-    #endif
-
     // Get current render stage
     uniform int renderStage;
 
@@ -102,8 +89,11 @@
     // Get night vision
     uniform float nightVision;
 
-    // Get shadow fade
-    uniform float shdFade;
+    // Get atlas size
+    uniform ivec2 atlasSize;
+
+    // Get albedo texture
+    uniform sampler2D tex;
 
     #ifndef FORCE_DISABLE_WEATHER
         // Get rain strength
@@ -115,15 +105,27 @@
         uniform float frameTimeCounter;
     #endif
 
-    // Get atlas size
-    uniform ivec2 atlasSize;
+    #ifdef WORLD_LIGHT
+        // Get shadow fade
+        uniform float shdFade;
+
+        // Shadow view matrix uniforms
+        uniform mat4 shadowModelView;
+
+        #ifdef SHD_ENABLE
+            // Shadow projection matrix uniforms
+            uniform mat4 shadowProjection;
+
+            #ifdef SHD_FILTER
+                #include "/lib/utility/noiseFunctions.glsl"
+            #endif
+
+            #include "/lib/lighting/shdMapping.glsl"
+            #include "/lib/lighting/shdDistort.glsl"
+        #endif
+    #endif
 
     #include "/lib/universalVars.glsl"
-
-    #include "/lib/utility/noiseFunctions.glsl"
-
-    #include "/lib/lighting/shdMapping.glsl"
-    #include "/lib/lighting/shdDistort.glsl"
 
     #include "/lib/lighting/simpleShadingForward.glsl"
 

@@ -16,20 +16,21 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    flat out mat3 TBN;
-
     flat out vec3 vertexColor;
+
+    flat out mat3 TBN;
 
     out vec2 lmCoord;
     out vec2 texCoord;
 
+    out vec4 vertexPos;
+
     #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
         flat out vec2 vTexCoordScale;
         flat out vec2 vTexCoordPos;
+
         out vec2 vTexCoord;
     #endif
-
-    out vec4 vertexPos;
 
     // View matrix uniforms
     uniform mat4 gbufferModelView;
@@ -42,12 +43,12 @@
 
         #include "/lib/utility/taaJitter.glsl"
     #endif
+
+    attribute vec4 at_tangent;
     
     #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
         attribute vec2 mc_midTexCoord;
     #endif
-
-    attribute vec4 at_tangent;
 
     void main(){
         // Get buffer texture coordinates
@@ -101,32 +102,20 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    flat in mat3 TBN;
-
     flat in vec3 vertexColor;
+    
+    flat in mat3 TBN;
 
     in vec2 lmCoord;
     in vec2 texCoord;
 
+    in vec4 vertexPos;
+
     #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
         flat in vec2 vTexCoordScale;
         flat in vec2 vTexCoordPos;
+
         in vec2 vTexCoord;
-    #endif
-
-    in vec4 vertexPos;
-
-    // Get albedo texture
-    uniform sampler2D tex;
-
-    #ifdef WORLD_LIGHT
-        // Shadow view matrix uniforms
-        uniform mat4 shadowModelView;
-
-        #ifdef SHD_ENABLE
-            // Shadow projection matrix uniforms
-            uniform mat4 shadowProjection;
-        #endif
     #endif
 
     // Get entity id
@@ -145,22 +134,39 @@
     uniform float viewWidth;
     uniform float viewHeight;
 
-    #ifndef FORCE_DISABLE_WEATHER
-        // Get rain strength
-        uniform float rainStrength;
-    #endif
+    // Get albedo texture
+    uniform sampler2D tex;
 
     // Derivatives
     vec2 dcdx = dFdx(texCoord);
     vec2 dcdy = dFdy(texCoord);
 
-    #include "/lib/universalVars.glsl"
-    
-    #include "/lib/utility/noiseFunctions.glsl"
+    #ifndef FORCE_DISABLE_WEATHER
+        // Get rain strength
+        uniform float rainStrength;
+    #endif
 
-    #include "/lib/lighting/shdMapping.glsl"
-    #include "/lib/lighting/shdDistort.glsl"
-    #include "/lib/lighting/GGX.glsl"
+    #ifdef WORLD_LIGHT
+        // Shadow fade uniform
+        uniform float shdFade;
+
+        // Shadow view matrix uniforms
+        uniform mat4 shadowModelView;
+
+        #ifdef SHD_ENABLE
+            // Shadow projection matrix uniforms
+            uniform mat4 shadowProjection;
+
+            #ifdef SHD_FILTER
+                #include "/lib/utility/noiseFunctions.glsl"
+            #endif
+
+            #include "/lib/lighting/shdMapping.glsl"
+            #include "/lib/lighting/shdDistort.glsl"
+        #endif
+
+        #include "/lib/lighting/GGX.glsl"
+    #endif
 
     #include "/lib/PBR/structPBR.glsl"
 
@@ -170,11 +176,13 @@
         #include "/lib/PBR/labPBR.glsl"
     #endif
 
+    #include "/lib/universalVars.glsl"
+
     #include "/lib/lighting/complexShadingForward.glsl"
 
     void main(){
         // End portal
-        if(blockEntityId == 10020){
+        if(blockEntityId == 30000){
             // End star uv
             vec2 screenPos = gl_FragCoord.xy / vec2(viewWidth, viewHeight);
             float starSpeed = frameTimeCounter * 0.0078125;

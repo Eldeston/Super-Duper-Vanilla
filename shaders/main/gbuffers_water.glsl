@@ -16,31 +16,32 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    flat out mat3 TBN;
-
     flat out int blockId;
 
     flat out vec3 vertexColor;
 
+    flat out mat3 TBN;
+
     out vec2 lmCoord;
     out vec2 texCoord;
-
-    #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
-        flat out vec2 vTexCoordScale;
-        flat out vec2 vTexCoordPos;
-        out vec2 vTexCoord;
-    #endif
 
     out vec3 worldPos;
 
     out vec4 vertexPos;
 
-    // View matrix uniforms
-    uniform mat4 gbufferModelView;
-    uniform mat4 gbufferModelViewInverse;
+    #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
+        flat out vec2 vTexCoordScale;
+        flat out vec2 vTexCoordPos;
+
+        out vec2 vTexCoord;
+    #endif
 
     // Position uniforms
     uniform vec3 cameraPosition;
+
+    // View matrix uniforms
+    uniform mat4 gbufferModelView;
+    uniform mat4 gbufferModelViewInverse;
     
     #if ANTI_ALIASING == 2
         /* Screen resolutions */
@@ -48,14 +49,6 @@
         uniform float viewHeight;
 
         #include "/lib/utility/taaJitter.glsl"
-    #endif
-
-    attribute vec3 mc_Entity;
-
-    attribute vec4 at_tangent;
-
-    #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
-        attribute vec2 mc_midTexCoord;
     #endif
 
     #ifdef WATER_ANIMATION
@@ -70,6 +63,14 @@
         #endif
 
         #include "/lib/vertex/waterWave.glsl"
+    #endif
+
+    attribute vec3 mc_Entity;
+
+    attribute vec4 at_tangent;
+
+    #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
+        attribute vec2 mc_midTexCoord;
     #endif
 
     void main(){
@@ -112,7 +113,7 @@
         #if defined WATER_ANIMATION || defined WORLD_CURVATURE
             #ifdef WATER_ANIMATION
                 // Apply water wave animation
-                if(mc_Entity.x == 10015) vertexPos.y = getWaterWave(worldPos.xz, vertexPos.y);
+                if(mc_Entity.x == 20502) vertexPos.y = getWaterWave(worldPos.xz, vertexPos.y);
             #endif
 
             #ifdef WORLD_CURVATURE
@@ -135,43 +136,24 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    flat in mat3 TBN;
-    
     flat in int blockId;
 
     flat in vec3 vertexColor;
 
+    flat in mat3 TBN;
+
     in vec2 lmCoord;
     in vec2 texCoord;
-
-    #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
-        flat in vec2 vTexCoordScale;
-        flat in vec2 vTexCoordPos;
-        in vec2 vTexCoord;
-    #endif
 
     in vec3 worldPos;
 
     in vec4 vertexPos;
 
-    // Get albedo texture
-    uniform sampler2D tex;
+    #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
+        flat in vec2 vTexCoordScale;
+        flat in vec2 vTexCoordPos;
 
-    // Projection matrix uniforms
-    uniform mat4 gbufferProjectionInverse;
-
-    #ifdef WORLD_LIGHT
-        // Shadow view matrix uniforms
-        uniform mat4 shadowModelView;
-
-        #ifdef SHD_ENABLE
-            // Shadow projection matrix uniforms
-            uniform mat4 shadowProjection;
-        #endif
-    #endif
-
-    #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
-        uniform sampler2D depthtex1;
+        in vec2 vTexCoord;
     #endif
 
     // Get is eye in water
@@ -180,9 +162,25 @@
     // Get night vision
     uniform float nightVision;
 
+    // Get albedo texture
+    uniform sampler2D tex;
+
+    // Texture coordinate derivatives
+    vec2 dcdx = dFdx(texCoord);
+    vec2 dcdy = dFdy(texCoord);
+
     #ifndef FORCE_DISABLE_WEATHER
         // Get rain strength
         uniform float rainStrength;
+    #endif
+
+    #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
+        // Projection matrix uniforms
+        uniform mat4 gbufferProjectionInverse;
+
+        uniform sampler2D depthtex1;
+
+        #include "/lib/utility/convertViewSpace.glsl"
     #endif
 
     #if TIMELAPSE_MODE != 0
@@ -195,21 +193,24 @@
         float newFrameTimeCounter = frameTimeCounter;
     #endif
 
-    // Texture coordinate derivatives
-    vec2 dcdx = dFdx(texCoord);
-    vec2 dcdy = dFdy(texCoord);
+    #ifdef WORLD_LIGHT
+        // Shadow fade uniform
+        uniform float shdFade;
 
-    #include "/lib/universalVars.glsl"
-    
-    #include "/lib/utility/convertViewSpace.glsl"
-    #include "/lib/utility/noiseFunctions.glsl"
+        // Shadow view matrix uniforms
+        uniform mat4 shadowModelView;
 
-    #include "/lib/lighting/shdMapping.glsl"
-    #include "/lib/lighting/shdDistort.glsl"
-    #include "/lib/lighting/GGX.glsl"
+        #ifdef SHD_ENABLE
+            // Shadow projection matrix uniforms
+            uniform mat4 shadowProjection;
 
-    #include "/lib/surface/water.glsl"
-    
+            #include "/lib/lighting/shdMapping.glsl"
+            #include "/lib/lighting/shdDistort.glsl"
+        #endif
+
+        #include "/lib/lighting/GGX.glsl"
+    #endif
+
     #include "/lib/PBR/structPBR.glsl"
 
     #if PBR_MODE <= 1
@@ -218,9 +219,15 @@
         #include "/lib/PBR/labPBR.glsl"
     #endif
 
+    #include "/lib/utility/noiseFunctions.glsl"
+
     #if defined ENVIRO_PBR && !defined FORCE_DISABLE_WEATHER
         #include "/lib/PBR/enviroPBR.glsl"
     #endif
+
+    #include "/lib/universalVars.glsl"
+
+    #include "/lib/surface/water.glsl"
 
     #include "/lib/lighting/complexShadingForward.glsl"
 
@@ -230,7 +237,7 @@
         getPBR(material, blockId);
         
         // If water
-        if(blockId == 10015){
+        if(blockId == 20502){
             float waterNoise = WATER_BRIGHTNESS;
 
             #ifdef WATER_NORM
@@ -240,12 +247,10 @@
                 #ifdef WATER_NOISE
                     waterNoise *= squared(0.128 + waterData.w);
                 #endif
-            #else
+            #elif WATER_NOISE
                 float waterData = getCellNoise(worldPos.xz / WATER_TILE_SIZE);
 
-                #ifdef WATER_NOISE
-                    waterNoise *= squared(0.128 + waterData);
-                #endif
+                waterNoise *= squared(0.128 + waterData);
             #endif
 
             #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
@@ -271,7 +276,7 @@
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         #if defined ENVIRO_PBR && !defined FORCE_DISABLE_WEATHER
-            if(blockId != 10015) enviroPBR(material);
+            if(blockId != 20502) enviroPBR(material);
         #endif
 
         vec4 sceneCol = complexShadingGbuffers(material);

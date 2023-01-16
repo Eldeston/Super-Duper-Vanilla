@@ -18,7 +18,7 @@
 #ifdef VERTEX
     #ifdef FORCE_DISABLE_WEATHER
         void main(){
-            gl_Vertex = vec4(-10);
+            gl_Position = vec4(-10);
         }
     #else
         out float lmCoordX;
@@ -38,6 +38,12 @@
             uniform mat4 gbufferModelView;
             uniform mat4 gbufferModelViewInverse;
 
+            // Position uniforms
+            uniform vec3 cameraPosition;
+
+            // Get rain strength
+            uniform float rainStrength;
+
             #if TIMELAPSE_MODE == 2
                 // Get smoothed frame time
                 uniform float animationFrameTime;
@@ -49,12 +55,6 @@
 
                 float newFrameTimeCounter = frameTimeCounter;
             #endif
-
-            // Position uniforms
-            uniform vec3 cameraPosition;
-
-            // Get rain strength
-            uniform float rainStrength;
 
             #include "/lib/vertex/weatherWave.glsl"
         #endif
@@ -100,14 +100,14 @@
 
         in vec2 texCoord;
 
-        // Get albedo texture
-        uniform sampler2D tex;
-
         // Get night vision
         uniform float nightVision;
 
         // Get rain strength
         uniform float rainStrength;
+
+        // Get albedo texture
+        uniform sampler2D tex;
 
         #include "/lib/universalVars.glsl"
         

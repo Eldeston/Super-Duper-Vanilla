@@ -24,14 +24,12 @@
         out vec2 texCoord;
         out vec2 waterNoiseUv;
 
-        // View matrix uniforms
-        uniform mat4 shadowModelView;
-        uniform mat4 shadowModelViewInverse;
-
         // Position uniforms
         uniform vec3 cameraPosition;
 
-        attribute vec3 mc_Entity;
+        // View matrix uniforms
+        uniform mat4 shadowModelView;
+        uniform mat4 shadowModelViewInverse;
 
         #if defined TERRAIN_ANIMATION || defined TERRAIN_ANIMATION
             #if TIMELAPSE_MODE == 2
@@ -49,6 +47,8 @@
 
             #include "/lib/vertex/shadowWave.glsl"
         #endif
+
+        attribute vec3 mc_Entity;
 
         #include "/lib/lighting/shdDistort.glsl"
 
@@ -137,7 +137,7 @@
 
                 // If the object is not opaque, proceed with shadow coloring and caustics
                 if(shdAlbedo.a != 1){
-                    if(blockId == 10015){
+                    if(blockId == 20502){
                         #ifdef WATER_FLAT
                             #if UNDERWATER_CAUSTICS == 2
                                 shdAlbedo.rgb = vec3(squared(0.128 + getCellNoise(waterNoiseUv)) * 3.2);
