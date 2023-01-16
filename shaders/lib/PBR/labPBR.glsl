@@ -48,6 +48,7 @@ uniform sampler2D specular;
     #ifdef SLOPE_NORMALS
         uniform ivec2 atlasSize;
 
+        // Slope normals by @null511
         vec2 getSlopeNormals(in vec3 viewT, in vec2 texUv, in float traceDepth){
             vec2 texPixSize = 1.0 / atlasSize;
 
@@ -82,7 +83,7 @@ void getPBR(inout structPBR material, in int id){
     vec2 texUv = texCoord;
 
     // Exclude signs and floating texts. We'll also include water and lava in the meantime.
-    bool hasNormal = id != 10015 && id != 10016 && abs(sumOf(textureGrad(normals, texCoord, dcdx, dcdy).xy)) > 0.005;
+    bool hasNormal = id != 20500 && id != 20502 && abs(sumOf(textureGrad(normals, texCoord, dcdx, dcdy).xy)) > 0.005;
 
     #ifdef PARALLAX_OCCLUSION
         vec3 viewDir = -vertexPos.xyz * TBN;
@@ -139,15 +140,15 @@ void getPBR(inout structPBR material, in int id){
 
     #ifdef TERRAIN
         // If lava and fire
-        if(id == 10000 || id == 10016) material.emissive = 1.0;
+        if(id == 20500 || id == 31001) material.emissive = 1.0;
 
         // Foliage and corals
-        else if((id >= 10001 && id <= 10014) || id == 10033 || id == 10036) material.ss = 1.0;
+        else if((id >= 10000 && id <= 13000) || id == 14000) material.ss = 1.0;
     #endif
 
     #ifdef WATER
         // If water
-        if(id == 10015){
+        if(id == 20502){
             material.smoothness = 0.96;
             material.metallic = 0.02;
 
@@ -157,7 +158,7 @@ void getPBR(inout structPBR material, in int id){
         }
             
         // Nether portal
-        else if(id == 10021){
+        else if(id == 31000){
             material.smoothness = 0.96;
             material.metallic = 0.04;
             material.emissive = maxOf(material.albedo.rgb);
@@ -169,13 +170,13 @@ void getPBR(inout structPBR material, in int id){
         if(id == 10130 || id == 10131) material.emissive = cubed(sumOf(material.albedo.rgb) * 0.33333333);
     #endif
 
-    // Ambient occlusion fix
     #if defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER
+        // Ambient occlusion fix
         if(id <= 0) material.ambient = 1.0;
     #endif
 
     #ifdef BLOCK
-        if(id == 10022) material.ambient = 1.0;
+        if(id == 30001) material.ambient = 1.0;
     #endif
 
     // Get parallax shadows

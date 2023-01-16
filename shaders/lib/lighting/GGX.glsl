@@ -45,21 +45,18 @@ float getNoHSquared(in float radiusTan, in float NoL, in float NoV, in float VoL
     return saturate(NoH * NoH / HoH);
 }
 
-// Thanks for LVutner#5199 for his code!
+// Thanks for LVutner#5199 for sharing his code!
 vec3 getSpecBRDF(in vec3 V, in vec3 L, in vec3 N, in vec3 albedo, in float NL, in float metallic, in float roughness){
     // Halfway vector
     vec3 H = fastNormalize(L + V);
-    
-    // Dot products
-    float NV = max(0.0, dot(N, V));
+    // Light dot halfway vector
     float LH = max(0.0, dot(L, H));
-    float LV = dot(L, V);
     
     // Roughness remapping
     float alphaSqrd = squared(roughness * roughness);
 
     // Distribution
-    float NHSqr = getNoHSquared(WORLD_SUN_MOON_SIZE, NL, NV, LV);
+    float NHSqr = getNoHSquared(WORLD_SUN_MOON_SIZE, NL, max(0.0, dot(N, V)), dot(L, V));
     float denominator = NHSqr * (alphaSqrd - 1.0) + 1.0;
     float distribution = alphaSqrd / (PI * denominator * denominator);
 

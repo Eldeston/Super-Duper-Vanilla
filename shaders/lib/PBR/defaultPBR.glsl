@@ -16,7 +16,7 @@ void getPBR(inout structPBR material, in int id){
 
     // Generate bumped normals
     #if (defined TERRAIN || defined WATER || defined BLOCK) && defined AUTO_GEN_NORM
-        if(id != 10015 && id != 10016 && id != 10022){
+        if(id != 20500 && id != 20502 && id != 30001){
             const float autoGenNormPixSize = 2.0 / AUTO_GEN_NORM_RES;
             vec2 texCoordPixCenter = vTexCoord - autoGenNormPixSize * 0.5;
 
@@ -48,15 +48,15 @@ void getPBR(inout structPBR material, in int id){
 
     #ifdef TERRAIN
         // If lava and fire
-        if(id == 10000 || id == 10016) material.emissive = 1.0;
+        if(id == 20500 || id == 31001) material.emissive = 1.0;
 
         // Foliage and corals
-        else if((id >= 10001 && id <= 10014) || id == 10033 || id == 10036) material.ss = 1.0;
+        else if((id >= 10000 && id <= 13000) || id == 14000) material.ss = 1.0;
     #endif
 
     #ifdef WATER
         // If water
-        if(id == 10015){
+        if(id == 20502){
             material.smoothness = 0.96;
             material.metallic = 0.02;
 
@@ -64,9 +64,9 @@ void getPBR(inout structPBR material, in int id){
                 material.albedo.rgb = vec3(0.8);
             #endif
         }
-
+            
         // Nether portal
-        else if(id == 10021){
+        else if(id == 31000){
             material.smoothness = 0.96;
             material.emissive = maxOf(material.albedo.rgb);
         }
