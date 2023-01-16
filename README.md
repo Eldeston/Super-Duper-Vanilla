@@ -19,14 +19,14 @@
 ![2022-07-04_20 42 13](https://user-images.githubusercontent.com/59617287/177194825-b8783a5c-14d0-4aed-8f2f-94b46065327a.png)
 ![2022-07-04_20 49 54](https://user-images.githubusercontent.com/59617287/177194827-dba1fc2f-c86f-4b9a-89cd-ef77c36369c0.png)
 
-## Contribution
-   If you plan to contribute to this project, see [**CONTRIBUTION**](CONTRIBUTION.md) for more info.
+## License 
+   This shader now uses the **FlameRender (TM) Studios License**. See [**LICENSE**](LICENSE) for more info.
 
 ## Mod Compatibility
    If you want to request mod compatibility with this shader, make a pull request in this repository with the mod that you want to enable compatibility via linking. If you're planning to add mod compatibility by coding it yourself, see [**CONTRIBUTION**](CONTRIBUTION.md). Whilst full SDV support for Iris has arrived (Iris 1.2.5), some features may not work on older versions of Iris.
 
-## License 
-   This shader uses the **FlameRender (TM) Studios License**. See [**LICENSE**](LICENSE) for more info.
+## Contribution
+   If you plan to contribute to this project, see [**CONTRIBUTION**](CONTRIBUTION.md) for more info.
 
 ## Releases
    See all available releases [here](https://github.com/Eldeston/Super-Duper-Vanilla/releases), and get the latest build [here](https://github.com/Eldeston/Super-Duper-Vanilla/archive/refs/heads/master.zip), this build will always be the latest build by default. Latests builds and pre-release versions are expected to be unstable, please report any issues or bugs anytime. Feedback is much appreciated.
