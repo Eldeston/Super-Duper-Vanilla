@@ -74,11 +74,11 @@
         // Detect and calculate the sun and moon
         if(renderStage == MC_RENDER_STAGE_SUN || renderStage == MC_RENDER_STAGE_MOON)
             #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT
-                gl_FragData[0] = vec4(toLinear(albedo.rgb) * vertexAlpha * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * LIGHT_COL_DATA_BLOCK, albedo.a);
+                gl_FragData[0] = vec4((SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * vertexAlpha) * toLinear(albedo.rgb) * LIGHT_COL_DATA_BLOCK, albedo.a);
             #else
                 discard;
             #endif
         // Otherwise, calculate skybox
-        else gl_FragData[0] = vec4(toLinear(albedo.rgb) * vertexAlpha * SKYBOX_BRIGHTNESS, albedo.a);
+        else gl_FragData[0] = vec4(toLinear(albedo.rgb) * (SKYBOX_BRIGHTNESS * vertexAlpha), albedo.a);
     }
 #endif
