@@ -2,16 +2,20 @@
 #endif
 
 #ifdef WORLD_LIGHT
-	vec3 getVolumetricLight(in vec3 nEyePlayerPos, in float viewDist, in float depth, in float dither){
+	vec3 getVolumetricLight(in vec3 feetPlayerPos, in float depth, in float dither){
 		// Return 0 if volumetric brightness is 0
 		if(VOL_LIGHT_BRIGHTNESS == 0) return vec3(0);
+
+		float feetPlayerDist = length(feetPlayerPos);
+
+		vec3 nFeetPlayerPos = feetPlayerPos / feetPlayerDist;
 
 		float totalFogDensity = FOG_TOTAL_DENSITY * (isEyeInWater == 0 ? rainStrength * PI + 1.0 : TAU);
 		float heightFade = 1.0;
 
 		// Fade VL, but do not apply to underwater VL
-		if(isEyeInWater != 1 && nEyePlayerPos.y > 0){
-			heightFade = 1.0 - squared(nEyePlayerPos.y);
+		if(isEyeInWater != 1 && nFeetPlayerPos.y > 0){
+			heightFade = 1.0 - squared(nFeetPlayerPos.y);
 			heightFade = depth == 1 ? squared(squared(heightFade * heightFade)) : heightFade * heightFade;
 			heightFade += (1.0 - heightFade) * rainStrength * 0.5;
 		}
@@ -19,14 +23,14 @@
 		// Border fog
 		// Modified Complementary border fog calculation, thanks Emin!
 		#ifdef BORDER_FOG
-			float volumetricFogDensity = 1.0 - exp2(-viewDist * totalFogDensity - exp2(viewDist / far * 21.0 - 18.0));
+			float volumetricFogDensity = 1.0 - exp2(-feetPlayerDist * totalFogDensity - exp2(feetPlayerDist / far * 21.0 - 18.0));
 		#else
-			float volumetricFogDensity = 1.0 - exp2(-viewDist * totalFogDensity);
+			float volumetricFogDensity = 1.0 - exp2(-feetPlayerDist * totalFogDensity);
 		#endif
 
 		#if defined VOL_LIGHT && defined SHD_ENABLE
-			// Normalize then unormalize with viewDist and clamping it at minimum distance between far and current shadowDistance
-			vec3 endPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * (nEyePlayerPos * min(min(far, shadowDistance), viewDist))) * 0.14285714;
+			// Normalize then unormalize with feetPlayerDist and clamping it at minimum distance between far and current shadowDistance
+			vec3 endPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * (nFeetPlayerPos * min(min(far, shadowDistance), feetPlayerDist))) * 0.14285714;
 
 			// Apply dithering added to the eyePlayerPos "camera" position converted to shadow clip space
 			vec3 startPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * shadowModelView[3].xyz + shadowProjection[3].xyz + endPos * dither;

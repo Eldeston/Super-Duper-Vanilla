@@ -151,12 +151,8 @@
         vec3 viewPos = toView(screenPos);
         // Get eye player pos
         vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
-
-        // Get view distance
-        float viewDist = length(viewPos);
-
-        // Get normalized eyePlayerPos
-        vec3 nEyePlayerPos = eyePlayerPos / viewDist;
+        // Get feet player pos
+        vec3 feetPlayerPos = eyePlayerPos + gbufferModelViewInverse[3].xyz;
 
         // Get scene color
         vec3 sceneCol = texelFetch(gcolor, screenTexelCoord, 0).rgb;
@@ -169,6 +165,12 @@
 
         // If the object is a transparent render separate lighting
         if(texelFetch(depthtex1, screenTexelCoord, 0).x > screenPos.z){
+            // Get view distance
+            float viewDist = length(viewPos);
+
+            // Get normalized eyePlayerPos
+            vec3 nEyePlayerPos = eyePlayerPos / viewDist;
+
             // Get skyCol as our fogCol. Do basic sky render.
             vec3 fogCol = getSkyRender(nEyePlayerPos, false, false);
             // Fog and sky calculation
@@ -183,7 +185,7 @@
 
         #ifdef WORLD_LIGHT
             // Apply volumetric light
-            sceneCol += getVolumetricLight(nEyePlayerPos, viewDist, screenPos.z, dither.x) * min(1.0, VOL_LIGHT_BRIGHTNESS + VOL_LIGHT_BRIGHTNESS * isEyeInWater) * shdFade;
+            sceneCol += getVolumetricLight(feetPlayerPos, screenPos.z, dither.x) * min(1.0, VOL_LIGHT_BRIGHTNESS + VOL_LIGHT_BRIGHTNESS * isEyeInWater) * shdFade;
         #endif
 
         // Clamp scene color to prevent negative/NaN values
