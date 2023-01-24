@@ -14,6 +14,9 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 #define WORLD_SUN_MOON_SIZE 0.1
 // Enable sky ground
 #define WORLD_SKY_GROUND
+// If the world utilizes vanilla sky color
+// #define WORLD_VANILLA_FOG_COLOR
+
 // Force disable any clouds
 // #define FORCE_DISABLE_CLOUDS
 // Force disable weather
@@ -22,7 +25,7 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 // #define FORCE_DISABLE_DAY_CYCLE
 
 // Enable stars in your world
-#define WORLD_STARS toLinear(4.0 - day * 4.0)
+#define WORLD_STARS toLinear(4.0 - dayCycleAdjust * 2.0)
 // Enable aether particles in your world
 // #define WORLD_AETHER
 // Use a sky light amount if your world has an undefined sky lighting environment like The End or the Nether
@@ -81,5 +84,5 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 #define SKY_DD vec3(SKY0_DDR, SKY0_DDG, SKY0_DDB) * SKY0_DDI
 
 // Holds the data on how the light will change according to multiple environmental factors
-#define LIGHT_COL_DATA_BLOCK toneSaturation(mix(mix(LIGHT_N, LIGHT_D, day), LIGHT_DD, dawnDusk) * 0.00392156863, 1.0 - rainStrength * 0.5)
-#define SKY_COL_DATA_BLOCK toneSaturation(mix(mix(SKY_N, SKY_D, day), SKY_DD, dawnDusk) * 0.00392156863, 1.0 - rainStrength * 0.5)
+#define LIGHT_COL_DATA_BLOCK toneSaturation(mix(LIGHT_N, LIGHT_DD, LIGHT_D, dayCycleAdjust) * 0.00392156863, 1.0 - rainStrength * 0.5)
+#define SKY_COL_DATA_BLOCK toneSaturation(mix(SKY_N, SKY_DD, SKY_D, dayCycleAdjust) * 0.00392156863, 1.0 - rainStrength * 0.5)

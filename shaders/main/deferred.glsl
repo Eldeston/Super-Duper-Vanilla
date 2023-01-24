@@ -36,19 +36,16 @@
     uniform sampler2D colortex2;
 
     #ifdef SSAO
-        uniform sampler2D colortex1;
-        uniform sampler2D depthtex0;
-
-        /* Matrix uniforms */
-        // View matrix uniforms
         uniform mat4 gbufferModelView;
 
-        // Projection matrix uniforms
         uniform mat4 gbufferProjection;
         uniform mat4 gbufferProjectionInverse;
-        
+
+        uniform sampler2D colortex1;
+
+        uniform sampler2D depthtex0;
+
         #if ANTI_ALIASING >= 2
-            // Get frame time
             uniform float frameTimeCounter;
         #endif
 

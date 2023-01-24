@@ -31,6 +31,7 @@
     in vec2 texCoord;
 
     uniform sampler2D gcolor;
+
     uniform sampler2D depthtex0;
     uniform sampler2D depthtex1;
     

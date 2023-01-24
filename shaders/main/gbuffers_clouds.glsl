@@ -29,12 +29,10 @@
 
         out vec4 vertexPos;
 
-        // View matrix uniforms
         uniform mat4 gbufferModelView;
         uniform mat4 gbufferModelViewInverse;
 
         #if ANTI_ALIASING == 2
-            /* Screen resolutions */
             uniform float viewWidth;
             uniform float viewHeight;
 
@@ -45,7 +43,6 @@
             // Set the amount of instances, we'll use 2 for now for performance
             const int countInstances = 2;
 
-            // Get current instance id
             uniform int instanceId;
         #endif
         
@@ -99,31 +96,32 @@
         
         in vec4 vertexPos;
 
-        // Get night vision
         uniform float nightVision;
 
-        // Get albedo texture
         uniform sampler2D tex;
 
         #ifndef FORCE_DISABLE_WEATHER
-            // Get rain strength
             uniform float rainStrength;
         #endif
 
         #if defined DYNAMIC_CLOUDS || ANTI_ALIASING >= 2
-            // Get frame time
             uniform float frameTimeCounter;
         #endif
 
+        #ifndef FORCE_DISABLE_DAY_CYCLE
+            uniform float dayCycleAdjust;
+        #endif
+
+        #ifdef WORLD_VANILLA_FOG_COLOR
+            uniform vec3 fogColor;
+        #endif
+
         #ifdef WORLD_LIGHT
-            // Get shadow fade
             uniform float shdFade;
 
-            // Shadow view matrix uniforms
             uniform mat4 shadowModelView;
 
             #ifdef SHD_ENABLE
-                // Shadow projection matrix uniforms
                 uniform mat4 shadowProjection;
 
                 #ifdef SHD_FILTER
@@ -134,8 +132,6 @@
                 #include "/lib/lighting/shdDistort.glsl"
             #endif
         #endif
-
-        #include "/lib/universalVars.glsl"
 
         #include "/lib/lighting/simpleShadingForward.glsl"
 

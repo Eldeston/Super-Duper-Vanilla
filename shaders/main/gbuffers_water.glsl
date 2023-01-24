@@ -36,15 +36,12 @@
         out vec2 vTexCoord;
     #endif
 
-    // Position uniforms
     uniform vec3 cameraPosition;
 
-    // View matrix uniforms
     uniform mat4 gbufferModelView;
     uniform mat4 gbufferModelViewInverse;
     
     #if ANTI_ALIASING == 2
-        /* Screen resolutions */
         uniform float viewWidth;
         uniform float viewHeight;
 
@@ -156,13 +153,10 @@
         in vec2 vTexCoord;
     #endif
 
-    // Get is eye in water
     uniform int isEyeInWater;
 
-    // Get night vision
     uniform float nightVision;
 
-    // Get albedo texture
     uniform sampler2D tex;
 
     // Texture coordinate derivatives
@@ -170,12 +164,10 @@
     vec2 dcdy = dFdy(texCoord);
 
     #ifndef FORCE_DISABLE_WEATHER
-        // Get rain strength
         uniform float rainStrength;
     #endif
 
     #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
-        // Projection matrix uniforms
         uniform mat4 gbufferProjectionInverse;
 
         uniform sampler2D depthtex1;
@@ -183,25 +175,40 @@
         #include "/lib/utility/convertViewSpace.glsl"
     #endif
 
+    #if (defined SHD_FILTER && ANTI_ALIASING >= 2) || TIMELAPSE_MODE != 0
+        uniform float frameTimeCounter;
+    #endif
+
+    #ifndef FORCE_DISABLE_DAY_CYCLE
+        uniform float dayCycleAdjust;
+    #endif
+
+    #ifdef WORLD_VANILLA_FOG_COLOR
+        uniform vec3 fogColor;
+    #endif
+
+    #ifdef WORLD_SKYLIGHT
+        const float eyeBrightFact = WORLD_SKYLIGHT;
+    #else
+        uniform ivec2 eyeBrightnessSmooth;
+        
+        float eyeBrightFact = eyeBrightnessSmooth.y * 0.00416667;
+    #endif
+
     #if TIMELAPSE_MODE != 0
         uniform float animationFrameTime;
 
         float newFrameTimeCounter = animationFrameTime;
     #else
-        uniform float frameTimeCounter;
-
         float newFrameTimeCounter = frameTimeCounter;
     #endif
 
     #ifdef WORLD_LIGHT
-        // Shadow fade uniform
         uniform float shdFade;
 
-        // Shadow view matrix uniforms
         uniform mat4 shadowModelView;
 
         #ifdef SHD_ENABLE
-            // Shadow projection matrix uniforms
             uniform mat4 shadowProjection;
 
             #include "/lib/lighting/shdMapping.glsl"
@@ -224,8 +231,6 @@
     #if defined ENVIRO_PBR && !defined FORCE_DISABLE_WEATHER
         #include "/lib/PBR/enviroPBR.glsl"
     #endif
-
-    #include "/lib/universalVars.glsl"
 
     #include "/lib/surface/water.glsl"
 

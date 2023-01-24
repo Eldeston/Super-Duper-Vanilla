@@ -185,15 +185,15 @@ screen.LAVA_SETTINGS = Lava material settings
         option.WORLDn1_VANILLA_FOGCOLI = Fog color intensity
 
     screen.END_SETTINGS = End settings
-        option.WORLD1_CUSTOM_LIGHTCOLR = Light red
-        option.WORLD1_CUSTOM_LIGHTCOLG = Light green
-        option.WORLD1_CUSTOM_LIGHTCOLB = Light blue
-        option.WORLD1_CUSTOM_LIGHTCOLI = Light intensity
+        option.LIGHT1_CR = Light red
+        option.LIGHT1_CG = Light green
+        option.LIGHT1_CB = Light blue
+        option.LIGHT1_CI = Light intensity
 
-        option.WORLD1_CUSTOM_FOGCOLR = Sky red
-        option.WORLD1_CUSTOM_FOGCOLG = Sky green
-        option.WORLD1_CUSTOM_FOGCOLB = Sky blue
-        option.WORLD1_CUSTOM_FOGCOLI = Sky intensity
+        option.SKY1_CR = Sky red
+        option.SKY1_CG = Sky green
+        option.SKY1_CB = Sky blue
+        option.SKY1_CI = Sky intensity
 
         option.FOG1_VERTICAL_DENSITY = Vertical density
         option.FOG1_TOTAL_DENSITY = Total density

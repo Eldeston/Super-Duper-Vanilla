@@ -50,6 +50,12 @@ float sumOf(in vec2 x){ return x.x + x.y; }
 float sumOf(in vec3 x){ return x.x + x.y + x.z; }
 float sumOf(in vec4 x){ return x.x + x.y + x.z + x.w; }
 
+// Linear interpolation functions
+vec3 mix(vec3 a, vec3 b, vec3 c, float d){
+	if(d < 1) return mix(a, b, d);
+    return mix(b, c, d - 1.0);
+}
+
 // Hermite interpolation
 float hermiteMix(in float a, in float b, in float x){ return (x - a) / (b - a); }
 vec2 hermiteMix(in float a, in float b, in vec2 x){ return (x - a) / (b - a); }

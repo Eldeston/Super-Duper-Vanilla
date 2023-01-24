@@ -24,10 +24,8 @@
         out vec2 texCoord;
         out vec2 waterNoiseUv;
 
-        // Position uniforms
         uniform vec3 cameraPosition;
 
-        // View matrix uniforms
         uniform mat4 shadowModelView;
         uniform mat4 shadowModelViewInverse;
 
@@ -37,7 +35,6 @@
 
                 float newFrameTimeCounter = animationFrameTime;
             #else
-                // Get frame time
                 uniform float frameTimeCounter;
 
                 float newFrameTimeCounter = frameTimeCounter;
@@ -113,12 +110,10 @@
             #endif
 
             #if TIMELAPSE_MODE != 0
-                // Get smoothed frame time
                 uniform float animationFrameTime;
 
                 float newFrameTimeCounter = animationFrameTime;
             #else
-                // Get frame time
                 uniform float frameTimeCounter;
 
                 float newFrameTimeCounter = frameTimeCounter;

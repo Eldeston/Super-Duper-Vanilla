@@ -26,7 +26,6 @@
         out vec2 texCoord;
 
         #if ANTI_ALIASING == 2
-            /* Screen resolutions */
             uniform float viewWidth;
             uniform float viewHeight;
 
@@ -34,23 +33,18 @@
         #endif
 
         #ifdef WEATHER_ANIMATION
-            // View matrix uniforms
             uniform mat4 gbufferModelView;
             uniform mat4 gbufferModelViewInverse;
 
-            // Position uniforms
             uniform vec3 cameraPosition;
 
-            // Get rain strength
             uniform float rainStrength;
 
             #if TIMELAPSE_MODE == 2
-                // Get smoothed frame time
                 uniform float animationFrameTime;
 
                 float newFrameTimeCounter = animationFrameTime;
             #else
-                // Get frame time
                 uniform float frameTimeCounter;
 
                 float newFrameTimeCounter = frameTimeCounter;
@@ -100,16 +94,19 @@
 
         in vec2 texCoord;
 
-        // Get night vision
         uniform float nightVision;
 
-        // Get rain strength
         uniform float rainStrength;
 
-        // Get albedo texture
         uniform sampler2D tex;
 
-        #include "/lib/universalVars.glsl"
+        #ifndef FORCE_DISABLE_DAY_CYCLE
+            uniform float dayCycleAdjust;
+        #endif
+
+        #ifdef WORLD_VANILLA_FOG_COLOR
+            uniform vec3 fogColor;
+        #endif
         
         void main(){
             // Get albedo color

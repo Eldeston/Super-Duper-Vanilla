@@ -37,16 +37,12 @@
     #endif
 
     #if ANTI_ALIASING >= 2
-        /* Position uniforms */
         uniform vec3 cameraPosition;
         uniform vec3 previousCameraPosition;
 
-        /* Matrix uniforms */
-        // View matrix uniforms
         uniform mat4 gbufferModelViewInverse;
         uniform mat4 gbufferPreviousModelView;
 
-        // Projection matrix uniforms
         uniform mat4 gbufferProjectionInverse;
         uniform mat4 gbufferPreviousProjection;
 

@@ -21,7 +21,6 @@
     out vec2 texCoord;
 
     #if ANTI_ALIASING == 2
-        /* Screen resolutions */
         uniform float viewWidth;
         uniform float viewHeight;
 
@@ -51,16 +50,14 @@
 
     uniform int renderStage;
 
-    // Get albedo texture
     uniform sampler2D tex;
 
     #ifndef FORCE_DISABLE_WEATHER
-        // Get rain strength
         uniform float rainStrength;
     #endif
 
-    #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT
-        #include "/lib/universalVars.glsl"
+    #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
+        uniform float dayCycleAdjust;
     #endif
     
     void main(){

@@ -24,21 +24,19 @@
     out vec2 texCoord;
 
     #if defined LENS_FLARE && defined WORLD_LIGHT
-        // Projection matrix uniforms
         uniform mat4 gbufferProjection;
 
-        // Model view matrix
         uniform mat4 gbufferModelView;
 
-        // Shadow model view matrix
         uniform mat4 shadowModelView;
 
         #ifndef FORCE_DISABLE_WEATHER
-            // Get rain strength
             uniform float rainStrength;
         #endif
 
-        #include "/lib/universalVars.glsl"
+        #ifndef FORCE_DISABLE_DAY_CYCLE
+            uniform float dayCycleAdjust;
+        #endif
 
         #include "/lib/utility/convertScreenSpace.glsl"
     #endif
@@ -74,10 +72,8 @@
     #endif
 
     #ifdef AUTO_EXPOSURE
-        // Get previous frame color
         uniform sampler2D colortex5;
 
-        // Get frame time
         uniform float frameTime;
     #endif
 
@@ -175,7 +171,7 @@
         #endif
 
         // Exposure, tint, and tonemap
-        color = color * vec3(TINT_R, TINT_G, TINT_B) * (0.00392156863 * EXPOSURE);
+        color = whitePreservingLumaBasedReinhardToneMapping(color * vec3(TINT_R, TINT_G, TINT_B) * (0.00392156863 * EXPOSURE));
 
         #ifdef VIGNETTE
             // BSL's vignette, modified to control intensity
