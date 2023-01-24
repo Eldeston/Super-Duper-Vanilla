@@ -18,9 +18,36 @@
 #ifdef VERTEX
     out vec2 texCoord;
 
+    out vec3 skyCol;
+
+    #ifdef WORLD_LIGHT
+        out vec3 sRGBLightCol;
+        out vec3 lightCol;
+    #endif
+
+    #ifndef FORCE_DISABLE_WEATHER
+        uniform float rainStrength;
+    #endif
+
+    #ifndef FORCE_DISABLE_DAY_CYCLE
+        uniform float dayCycleAdjust;
+    #endif
+
+    #ifdef WORLD_VANILLA_FOG_COLOR
+        uniform vec3 fogColor;
+    #endif
+
     void main(){
         // Get buffer texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+
+        skyCol = toLinear(SKY_COL_DATA_BLOCK);
+
+        #ifdef WORLD_LIGHT
+            sRGBLightCol = LIGHT_COL_DATA_BLOCK;
+            lightCol = toLinear(sRGBLightCol);
+        #endif
+
         gl_Position = ftransform();
     }
 #endif
@@ -29,14 +56,60 @@
 
 #ifdef FRAGMENT
     in vec2 texCoord;
+
+    in vec3 skyCol;
+
+    #ifdef WORLD_LIGHT
+        in vec3 sRGBLightCol;
+        in vec3 lightCol;
+    #endif
     
     // Sky silhoutte fix
     const vec4 gcolorClearColor = vec4(0, 0, 0, 1);
 
+    uniform int isEyeInWater;
+
+    uniform float far;
+
+    uniform float blindness;
+    uniform float nightVision;
+    uniform float darknessFactor;
+
+    uniform float frameTimeCounter;
+
+    uniform vec3 fogColor;
+
+    uniform mat4 gbufferProjectionInverse;
+
+    uniform mat4 gbufferModelViewInverse;
+
+    uniform mat4 shadowModelView;
+
     uniform sampler2D gcolor;
     uniform sampler2D colortex2;
+    uniform sampler2D colortex4;
     
     uniform sampler2D depthtex0;
+
+    #ifdef WORLD_LIGHT
+        uniform float shdFade;
+    #endif
+
+    #ifndef FORCE_DISABLE_WEATHER
+        uniform float rainStrength;
+    #endif
+
+    #ifndef FORCE_DISABLE_DAY_CYCLE
+        uniform float dayCycleAdjust;
+    #endif
+
+    #ifdef WORLD_SKYLIGHT
+        const float eyeBrightFact = WORLD_SKYLIGHT;
+    #else
+        uniform ivec2 eyeBrightnessSmooth;
+        
+        float eyeBrightFact = eyeBrightnessSmooth.y * 0.00416667;
+    #endif
 
     #ifdef SSAO
         float getSSAOBoxBlur(in ivec2 screenTexelCoord){
@@ -54,11 +127,23 @@
         }
     #endif
 
+    #include "/lib/utility/convertViewSpace.glsl"
+
+    #include "/lib/utility/noiseFunctions.glsl"
+
+    #include "/lib/atmospherics/skyRender.glsl"
+
     void main(){
         // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
         // Declare and get positions
         vec3 screenPos = vec3(texCoord, texelFetch(depthtex0, screenTexelCoord, 0).x);
+        vec3 viewPos = toView(screenPos);
+        vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
+
+        float viewDist = length(viewPos);
+
+        vec3 nEyePlayerPos = eyePlayerPos / viewDist;
         
         // Get sky mask
         bool skyMask = screenPos.z == 1;
@@ -68,7 +153,7 @@
 
         // If sky, do full sky render
         if(skyMask){
-            
+            sceneCol = getSkyRender(sceneCol, nEyePlayerPos, true) * exp2(-far * (blindness + darknessFactor));
         }
         // Else, calculate reflection and fog
         else{
