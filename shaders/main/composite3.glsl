@@ -16,11 +16,18 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
+    flat out float fovMult;
+
     out vec2 texCoord;
+
+    uniform mat4 gbufferProjection;
 
     void main(){
         // Get buffer texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+
+        fovMult = gbufferProjection[1].y * 0.72794047;
+
         gl_Position = ftransform();
     }
 #endif
@@ -28,6 +35,8 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
+    flat in float fovMult;
+
     in vec2 texCoord;
 
     uniform sampler2D gcolor;
@@ -54,11 +63,7 @@
         uniform float viewWidth;
         uniform float viewHeight;
 
-        uniform mat4 gbufferProjection;
-
         uniform sampler2D depthtex1;
-
-        float fovMult = gbufferProjection[1].y * 0.72794047;
     #endif
 
     void main(){

@@ -18,11 +18,11 @@
 #ifdef VERTEX
     out vec2 texCoord;
 
-    out vec3 skyCol;
+    flat out vec3 skyCol;
 
     #ifdef WORLD_LIGHT
-        out vec3 sRGBLightCol;
-        out vec3 lightCol;
+        flat out vec3 sRGBLightCol;
+        flat out vec3 lightCol;
     #endif
 
     #ifndef FORCE_DISABLE_WEATHER
@@ -57,11 +57,11 @@
 #ifdef FRAGMENT
     in vec2 texCoord;
 
-    in vec3 skyCol;
+    flat in vec3 skyCol;
 
     #ifdef WORLD_LIGHT
-        in vec3 sRGBLightCol;
-        in vec3 lightCol;
+        flat in vec3 sRGBLightCol;
+        flat in vec3 lightCol;
     #endif
     
     // Sky silhoutte fix
@@ -74,10 +74,16 @@
     uniform float blindness;
     uniform float nightVision;
     uniform float darknessFactor;
+    uniform float darknessLightFactor;
 
     uniform float frameTimeCounter;
 
+    uniform float viewWidth;
+    uniform float viewHeight;
+
     uniform vec3 fogColor;
+
+    uniform vec3 cameraPosition;
 
     uniform mat4 gbufferProjectionInverse;
 
@@ -127,26 +133,45 @@
         }
     #endif
 
+    #if ANTI_ALIASING == 2
+        #include "/lib/utility/taaJitter.glsl"
+    #endif
+
     #include "/lib/utility/convertViewSpace.glsl"
+
+    #if OUTLINES != 0
+        #include "/lib/post/outline.glsl"
+    #endif
 
     #include "/lib/utility/noiseFunctions.glsl"
 
     #include "/lib/atmospherics/skyRender.glsl"
+    #include "/lib/atmospherics/fogRender.glsl"
 
     void main(){
         // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
-        // Declare and get positions
+        // Get screen pos
         vec3 screenPos = vec3(texCoord, texelFetch(depthtex0, screenTexelCoord, 0).x);
-        vec3 viewPos = toView(screenPos);
-        vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
-
-        float viewDist = length(viewPos);
-
-        vec3 nEyePlayerPos = eyePlayerPos / viewDist;
         
         // Get sky mask
         bool skyMask = screenPos.z == 1;
+
+        // Jitter the sky only
+        #if ANTI_ALIASING == 2
+            if(skyMask) screenPos.xy += jitterPos(-0.5);
+        #endif
+
+        // Get view pos
+        vec3 viewPos = toView(screenPos);
+        // Get eye player pos
+        vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
+
+        // Get view distance
+        float viewDist = length(viewPos);
+
+        // Get normalized eyePlayerPos
+        vec3 nEyePlayerPos = eyePlayerPos / viewDist;
 
         // Get scene color
         vec3 sceneCol = texelFetch(gcolor, screenTexelCoord, 0).rgb;
@@ -157,10 +182,18 @@
         }
         // Else, calculate reflection and fog
         else{
+            #if OUTLINES != 0
+                // Outline calculation
+                sceneCol *= 1.0 + getOutline(screenTexelCoord, viewPos.z, OUTLINE_PIX_SIZE) * (OUTLINE_BRIGHTNESS - 1.0);
+            #endif
+
             #ifdef SSAO
                 // Apply ambient occlusion with simple blur
                 sceneCol *= getSSAOBoxBlur(screenTexelCoord);
             #endif
+
+            // Do basic sky render and use it as fog color
+            sceneCol = getFogRender(sceneCol, getSkyRender(nEyePlayerPos, false, false), viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
         }
 
     /* DRAWBUFFERS:0 */

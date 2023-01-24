@@ -51,6 +51,11 @@ float sumOf(in vec3 x){ return x.x + x.y + x.z; }
 float sumOf(in vec4 x){ return x.x + x.y + x.z + x.w; }
 
 // Linear interpolation functions
+float mix(float a, float b, float c, float d){
+	if(d < 1) return mix(a, b, d);
+    return mix(b, c, d - 1.0);
+}
+
 vec3 mix(vec3 a, vec3 b, vec3 c, float d){
 	if(d < 1) return mix(a, b, d);
     return mix(b, c, d - 1.0);
