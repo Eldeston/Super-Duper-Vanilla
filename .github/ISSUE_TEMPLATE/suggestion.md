@@ -1,8 +1,8 @@
 ---
-name: "[Suggestion] Title"
+name: Suggestion
 about: Suggest an idea for this project
-title: ''
-labels: ''
+title: "[Suggestion] Issue Title"
+labels: suggestion
 assignees: ''
 
 ---
