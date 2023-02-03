@@ -1,5 +1,5 @@
 ---
-name: Suggestion
+name: "[Suggestion] Title"
 about: Suggest an idea for this project
 title: ''
 labels: ''
