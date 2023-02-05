@@ -68,7 +68,7 @@
             float depth = texelFetch(depthtex0, screenTexelCoord, 0).x;
             
             // Do SSAO
-            float ambientOcclusion = 1.0;
+            float ambientOcclusion = 0.25;
             // Check if sky and player hand
             if(depth > 0.56 && depth != 1){
                 vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;

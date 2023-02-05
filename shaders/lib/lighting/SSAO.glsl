@@ -30,5 +30,5 @@ float getSSAO(in vec3 viewPos, in vec3 viewNormal){
     }
 
     // Remap results and return
-    return occlusion * 0.25;
+    return occlusion * 0.0625;
 }
