@@ -35,7 +35,8 @@
         #endif
 
         #ifndef FORCE_DISABLE_DAY_CYCLE
-            uniform float dayCycleAdjust;
+            uniform float dayCycle;
+            uniform float zenithPhase;
         #endif
 
         #include "/lib/utility/convertScreenSpace.glsl"

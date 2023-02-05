@@ -30,7 +30,8 @@
     #endif
 
     #ifndef FORCE_DISABLE_DAY_CYCLE
-        uniform float dayCycleAdjust;
+        uniform float dayCycle;
+        uniform float zenithPhase;
     #endif
 
     #ifdef WORLD_VANILLA_FOG_COLOR
@@ -106,7 +107,8 @@
     #endif
 
     #ifndef FORCE_DISABLE_DAY_CYCLE
-        uniform float dayCycleAdjust;
+        uniform float dayCycle;
+        uniform float zenithPhase;
     #endif
 
     #ifdef WORLD_SKYLIGHT
@@ -127,9 +129,7 @@
             float sample2 = texelFetch(colortex2, ivec2(topRightCorner.x, bottomLeftCorner.y), 0).a;
             float sample3 = texelFetch(colortex2, ivec2(bottomLeftCorner.x, topRightCorner.y), 0).a;
 
-            float sumDepth = sample0 + sample1 + sample2 + sample3;
-
-            return sumDepth * 0.25;
+            return sample0 + sample1 + sample2 + sample3;
         }
     #endif
 

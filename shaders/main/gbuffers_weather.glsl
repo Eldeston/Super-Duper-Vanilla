@@ -101,7 +101,8 @@
         uniform sampler2D tex;
 
         #ifndef FORCE_DISABLE_DAY_CYCLE
-            uniform float dayCycleAdjust;
+            uniform float dayCycle;
+            uniform float zenithPhase;
         #endif
 
         #ifdef WORLD_VANILLA_FOG_COLOR

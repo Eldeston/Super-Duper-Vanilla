@@ -135,15 +135,21 @@ vec3 getSkyRender(in vec3 skyBoxCol, in vec3 nPlayerPos, in bool isSky){
     // If player is in lava, return fog color
     if(isEyeInWater == 2) return fogColor;
     
+    // Rotate normalized player pos to shadow space
     vec3 skyPos = mat3(shadowModelView) * nPlayerPos;
+    // Flip if the sun has gone below the horizon
+    // Thus completely transforming the coordinate to follow the sky rotation
+    if(dayCycle < 0.5) skyPos = -skyPos;
 
     // Begin with ambient lighting
     vec3 finalCol = vec3(toLinear(AMBIENT_LIGHTING + nightVision * 0.5));
 
     #ifdef WORLD_LIGHT
         #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE != 2
+            // If current world uses shader sun and moon but not vanilla sun and moon
             finalCol += (getSunMoonShape(skyPos.xy) * (1.0 - rainStrength) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY) * sRGBLightCol;
         #elif WORLD_SUN_MOON == 2
+            // If current world uses shader black hole
             float blackHole = min(1.0, 0.015625 / (16.0 - skyPos.z * 16.0 - WORLD_SUN_MOON_SIZE));
             if(blackHole <= 0) return vec3(0);
 

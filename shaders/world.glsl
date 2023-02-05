@@ -25,7 +25,7 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 // #define FORCE_DISABLE_DAY_CYCLE
 
 // Enable stars in your world
-#define WORLD_STARS toLinear(4.0 - dayCycleAdjust * 2.0)
+#define WORLD_STARS toLinear(4.0 - dayCycle * 2.0)
 // Enable aether particles in your world
 // #define WORLD_AETHER
 // Use a sky light amount if your world has an undefined sky lighting environment like The End or the Nether
@@ -41,7 +41,7 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 #define FOG0_TOTAL_DENSITY 0.005 // Total density falloff, larger means thicker fog [0.005 0.010 0.015 0.020 0.025 0.030 0.035 0.040 0.045 0.050 0.055 0.060 0.065 0.070 0.075 0.080 0.085 0.090 0.095 0.100 0.105 0.110 0.115 0.120 0.125 0.130 0.135 0.140 0.145 0.150 0.155 0.160 0.165 0.170 0.175 0.180 0.185 0.190 0.195 0.200 0.205 0.210 0.215 0.220 0.225 0.230 0.235 0.240 0.245 0.250 0.255 0.260 0.265 0.270 0.275 0.280 0.285 0.290 0.295 0.300 0.305 0.310 0.315 0.320 0.325 0.330 0.335 0.340 0.345 0.350 0.355 0.360 0.365 0.370 0.375 0.380 0.385 0.390 0.395 0.40 0.405 0.410 0.415 0.420 0.425 0.430 0.435 0.440 0.445 0.450 0.455 0.460 0.465 0.470 0.475 0.480 0.485 0.490 0.495 0.500]
 
 // For the shader to read
-#define FOG_VERTICAL_DENSITY lerp(FOG0_VERTICAL_DENSITY_N, FOG0_VERTICAL_DENSITY_DD, FOG0_VERTICAL_DENSITY_D, dayCycleAdjust)
+#define FOG_VERTICAL_DENSITY lerp(FOG0_VERTICAL_DENSITY_N, FOG0_VERTICAL_DENSITY_DD, FOG0_VERTICAL_DENSITY_D, dayCycle)
 #define FOG_TOTAL_DENSITY FOG0_TOTAL_DENSITY
 
 // Day colors
@@ -84,5 +84,8 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 #define SKY_DD vec3(SKY0_DDR, SKY0_DDG, SKY0_DDB) * SKY0_DDI
 
 // Holds the data on how the light will change according to multiple environmental factors
-#define LIGHT_COL_DATA_BLOCK toneSaturation(lerp(LIGHT_N, LIGHT_DD, LIGHT_D, dayCycleAdjust) * 0.00392156863, 1.0 - rainStrength * 0.5)
-#define SKY_COL_DATA_BLOCK toneSaturation(lerp(SKY_N, SKY_DD, SKY_D, dayCycleAdjust) * 0.00392156863, 1.0 - rainStrength * 0.5)
+#define SUN_COL_DATA_BLOCK mix(LIGHT_DD, LIGHT_D, zenithPhase) * 0.00392156863
+#define MOON_COL_DATA_BLOCK LIGHT_N * 0.00392156863
+
+#define LIGHT_COL_DATA_BLOCK toneSaturation((dayCycle > 1.0 ? SUN_COL_DATA_BLOCK : MOON_COL_DATA_BLOCK), 1.0 - rainStrength * 0.5)
+#define SKY_COL_DATA_BLOCK toneSaturation(lerp(SKY_N, SKY_DD, SKY_D, dayCycle) * 0.00392156863, 1.0 - rainStrength * 0.5)

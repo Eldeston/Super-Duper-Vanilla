@@ -57,7 +57,7 @@
     #endif
 
     #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
-        uniform float dayCycleAdjust;
+        uniform float dayCycle;
     #endif
     
     void main(){
