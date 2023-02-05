@@ -88,10 +88,10 @@
                 vec2 blurRes = blurRadius / vec2(viewWidth, viewHeight);
 
                 // Get center pixel color with LOD
-                vec3 dofColor = textureLod(gcolor, screenCoord, currDofLOD).rgb;
+                vec3 dofColor = textureLod(gcolor, texCoord, currDofLOD).rgb;
                 for(int x = 0; x < 9; x++){
                     // Rotate offsets and sample
-                    dofColor += textureLod(gcolor, screenCoord - dofOffSets[x] * blurRes, currDofLOD).rgb;
+                    dofColor += textureLod(gcolor, texCoord - dofOffSets[x] * blurRes, currDofLOD).rgb;
                 }
 
                 // 9 offsetted samples + 1 sample (1 / 10)
