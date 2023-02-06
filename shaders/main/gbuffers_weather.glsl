@@ -96,13 +96,10 @@
 
         uniform float nightVision;
 
-        uniform float rainStrength;
-
         uniform sampler2D tex;
 
         #ifndef FORCE_DISABLE_DAY_CYCLE
             uniform float dayCycle;
-            uniform float twilightPhase;
         #endif
 
         #ifdef WORLD_VANILLA_FOG_COLOR
@@ -120,7 +117,7 @@
             albedo.rgb = toLinear(albedo.rgb);
 
         /* DRAWBUFFERS:0 */
-            gl_FragData[0] = vec4(albedo.rgb * (toLinear(SKY_COL_DATA_BLOCK) + toLinear((lmCoordX * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B)) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5)), albedo.a); // gcolor
+            gl_FragData[0] = vec4(albedo.rgb * (toLinear(toneSaturation(SKY_COL_DATA_BLOCK, 0.5)) + toLinear((lmCoordX * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B)) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5)), albedo.a); // gcolor
         }
     #endif
 #endif
