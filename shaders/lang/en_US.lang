@@ -161,16 +161,16 @@ screen.LAVA_SETTINGS = Lava material settings
             option.SKY0_NB = Sky blue
             option.SKY0_NI = Sky intensity
 
-        screen.DAWN_DUSK_SETTINGS = Dawn/dusk settings
-            option.LIGHT0_DDR = Light red
-            option.LIGHT0_DDG = Light green
-            option.LIGHT0_DDB = Light blue
-            option.LIGHT0_DDI = Light intensity
+        screen.DAWN_DUSK_SETTINGS = Twilight settings
+            option.LIGHT0_TR = Light red
+            option.LIGHT0_TG = Light green
+            option.LIGHT0_TB = Light blue
+            option.LIGHT0_TI = Light intensity
 
-            option.SKY0_DDR = Sky red
-            option.SKY0_DDG = Sky green
-            option.SKY0_DDB = Sky blue
-            option.SKY0_DDI = Sky intensity
+            option.SKY0_TR = Sky red
+            option.SKY0_TG = Sky green
+            option.SKY0_TB = Sky blue
+            option.SKY0_TI = Sky intensity
 
         screen.FOG_SETTINGS0 = Fog settings
             option.FOG0_VERTICAL_DENSITY_D = Vertical density day

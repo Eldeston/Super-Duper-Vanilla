@@ -57,5 +57,5 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 #define FOG_TOTAL_DENSITY FOG1_TOTAL_DENSITY
 
 // Holds the data on how the light will change according to multiple environmental factors
-#define LIGHT_COL_DATA_BLOCK LIGHT_C * (LIGHT1_CI * 0.00392156863)
+#define LIGHT_COL_DATA_BLOCK0 LIGHT_C * (LIGHT1_CI * 0.00392156863)
 #define SKY_COL_DATA_BLOCK SKY_C * (SKY1_CI * 0.00392156863)
