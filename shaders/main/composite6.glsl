@@ -36,7 +36,7 @@
 
         #ifndef FORCE_DISABLE_DAY_CYCLE
             uniform float dayCycle;
-            uniform float zenithPhase;
+            uniform float twilightPhase;
         #endif
 
         #include "/lib/utility/convertScreenSpace.glsl"
@@ -47,7 +47,7 @@
 
         #if defined LENS_FLARE && defined WORLD_LIGHT
             // Get sRGB light color
-            sRGBLightCol = LIGHT_COL_DATA_BLOCK;
+            sRGBLightCol = LIGHT_COL_DATA_BLOCK0;
 
             // Get shadow light view direction in screen space
             shdLightDirScreenSpace = vec3(toScreen(mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)).xy, gbufferProjection[1].y * 0.72794047);

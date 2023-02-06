@@ -92,7 +92,7 @@
 
     #ifndef FORCE_DISABLE_DAY_CYCLE
         uniform float dayCycle;
-        uniform float zenithPhase;
+        uniform float twilightPhase;
     #endif
 
     #ifdef WORLD_VANILLA_FOG_COLOR

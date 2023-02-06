@@ -68,7 +68,7 @@ vec4 simpleShadingGbuffers(in vec4 albedo){
 		#endif
 
 		// Calculate and add shadow diffuse
-		totalDiffuse += shadowCol * toLinear(LIGHT_COL_DATA_BLOCK);
+		totalDiffuse += shadowCol * toLinear(LIGHT_COL_DATA_BLOCK0);
 	#endif
 
 	// Return final result

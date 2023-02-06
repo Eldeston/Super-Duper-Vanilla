@@ -16,7 +16,7 @@ vec4 complexShadingGbuffers(in structPBR material){
 
 	#ifdef WORLD_LIGHT
 		// Get sRGB light color
-		vec3 sRGBLightCol = LIGHT_COL_DATA_BLOCK;
+		vec3 sRGBLightCol = LIGHT_COL_DATA_BLOCK0;
 
 		float NL = max(0.0, dot(material.normal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)));
 		// also equivalent to:

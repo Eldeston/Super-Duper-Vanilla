@@ -50,12 +50,12 @@
     #endif
 
     void main(){
-        // Get buffer texture coordinates
-        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         // Get vertex alpha
         vertexAlpha = gl_Color.a;
         // Get vertex color
         vertexColor = gl_Color.rgb;
+        // Get buffer texture coordinates
+        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
 
         // Get vertex tangent
         vec3 vertexTangent = fastNormalize(at_tangent.xyz);
@@ -138,7 +138,7 @@
 
     #ifndef FORCE_DISABLE_DAY_CYCLE
         uniform float dayCycle;
-        uniform float zenithPhase;
+        uniform float twilightPhase;
     #endif
 
     #ifdef WORLD_VANILLA_FOG_COLOR

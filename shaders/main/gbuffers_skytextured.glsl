@@ -18,6 +18,8 @@
 #ifdef VERTEX
     flat out float vertexAlpha;
 
+    flat out vec3 vertexColor;
+
     out vec2 texCoord;
 
     #if ANTI_ALIASING == 2
@@ -28,6 +30,10 @@
     #endif
 
     void main(){
+        // Get vertex alpha
+        vertexAlpha = gl_Color.a;
+        // Get vertex color
+        vertexColor = gl_Color.rgb;
         // Get buffer texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
 
@@ -36,8 +42,6 @@
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
-
-        vertexAlpha = gl_Color.a;
     }
 #endif
 
@@ -46,15 +50,13 @@
 #ifdef FRAGMENT
     flat in float vertexAlpha;
 
+    flat in vec3 vertexColor;
+
     in vec2 texCoord;
 
     uniform int renderStage;
 
     uniform sampler2D tex;
-
-    #ifndef FORCE_DISABLE_WEATHER
-        uniform float rainStrength;
-    #endif
 
     #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
         uniform float dayCycle;
@@ -69,13 +71,19 @@
 
     /* DRAWBUFFERS:0 */
         // Detect and calculate the sun and moon
-        if(renderStage == MC_RENDER_STAGE_SUN || renderStage == MC_RENDER_STAGE_MOON)
+        if(renderStage == MC_RENDER_STAGE_SUN)
             #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT
-                gl_FragData[0] = vec4((SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * vertexAlpha) * toLinear(albedo.rgb) * LIGHT_COL_DATA_BLOCK, albedo.a);
+                gl_FragData[0] = vec4(toLinear(albedo.rgb * vertexColor * (SUN_MOON_INTENSITY * vertexAlpha)) * SUN_COL_DATA_BLOCK, albedo.a);
+            #else
+                discard;
+            #endif
+        else if(renderStage == MC_RENDER_STAGE_MOON)
+            #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT
+                gl_FragData[0] = vec4(toLinear(albedo.rgb * vertexColor * (SUN_MOON_INTENSITY * vertexAlpha)) * MOON_COL_DATA_BLOCK, albedo.a);
             #else
                 discard;
             #endif
         // Otherwise, calculate skybox
-        else gl_FragData[0] = vec4(toLinear(albedo.rgb) * (SKYBOX_BRIGHTNESS * vertexAlpha), albedo.a);
+        else gl_FragData[0] = vec4(toLinear(albedo.rgb * vertexColor * (SKYBOX_BRIGHTNESS * vertexAlpha)), albedo.a);
     }
 #endif

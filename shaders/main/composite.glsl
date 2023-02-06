@@ -31,7 +31,7 @@
 
     #ifndef FORCE_DISABLE_DAY_CYCLE
         uniform float dayCycle;
-        uniform float zenithPhase;
+        uniform float twilightPhase;
     #endif
 
     #ifdef WORLD_VANILLA_FOG_COLOR
@@ -45,7 +45,7 @@
         skyCol = toLinear(SKY_COL_DATA_BLOCK);
 
         #ifdef WORLD_LIGHT
-            sRGBLightCol = LIGHT_COL_DATA_BLOCK;
+            sRGBLightCol = LIGHT_COL_DATA_BLOCK0;
             lightCol = toLinear(sRGBLightCol);
         #endif
 
@@ -88,7 +88,6 @@
 
     uniform sampler2D gcolor;
     uniform sampler2D colortex3;
-    uniform sampler2D colortex4;
 
     uniform sampler2D depthtex0;
     uniform sampler2D depthtex1;
@@ -99,7 +98,11 @@
 
     #ifndef FORCE_DISABLE_DAY_CYCLE
         uniform float dayCycle;
-        uniform float zenithPhase;
+        uniform float twilightPhase;
+    #endif
+
+    #if defined STORY_MODE_CLOUDS && !defined FORCE_DISABLE_CLOUDS
+        uniform sampler2D colortex4;
     #endif
 
     #ifdef WORLD_SKYLIGHT
@@ -174,7 +177,7 @@
             vec3 nEyePlayerPos = eyePlayerPos / viewDist;
 
             // Get skyCol as our fogCol. Do basic sky render.
-            vec3 fogCol = getSkyRender(nEyePlayerPos, false, false);
+            vec3 fogCol = getSkyRender(nEyePlayerPos);
             // Fog and sky calculation
             sceneCol = getFogRender(sceneCol, fogCol, viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
         }
