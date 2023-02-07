@@ -107,7 +107,6 @@
 
     #ifndef FORCE_DISABLE_DAY_CYCLE
         uniform float dayCycle;
-        uniform float twilightPhase;
     #endif
 
     #if defined STORY_MODE_CLOUDS && !defined FORCE_DISABLE_CLOUDS

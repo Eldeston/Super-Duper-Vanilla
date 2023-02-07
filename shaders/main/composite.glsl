@@ -98,7 +98,6 @@
 
     #ifndef FORCE_DISABLE_DAY_CYCLE
         uniform float dayCycle;
-        uniform float twilightPhase;
     #endif
 
     #if defined STORY_MODE_CLOUDS && !defined FORCE_DISABLE_CLOUDS
@@ -179,7 +178,7 @@
             // Get skyCol as our fogCol. Do basic sky render.
             vec3 fogCol = getSkyRender(nEyePlayerPos);
             // Fog and sky calculation
-            sceneCol = getFogRender(sceneCol, fogCol, viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
+            sceneCol = getFogRender(sceneCol, fogCol, viewDist, nEyePlayerPos.y, feetPlayerPos.y + cameraPosition.y);
         }
 
         // Apply darkness pulsing effect
