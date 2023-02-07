@@ -189,7 +189,7 @@
 
         #ifdef WORLD_LIGHT
             // Apply volumetric light
-            sceneCol += getVolumetricLight(feetPlayerPos, screenPos.z, dither.x) * min(1.0, VOL_LIGHT_BRIGHTNESS + VOL_LIGHT_BRIGHTNESS * isEyeInWater) * shdFade;
+            sceneCol += getVolumetricLight(feetPlayerPos, screenPos.z, dither.x);
         #endif
 
         // Clamp scene color to prevent negative/NaN values

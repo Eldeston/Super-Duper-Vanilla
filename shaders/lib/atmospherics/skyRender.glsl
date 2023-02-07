@@ -66,14 +66,17 @@ vec3 getSkyBasic(in vec3 nEyePlayerPos, in vec2 skyCoordScale, in float skyPosZ,
 
         // Fake VL reflection
         if(isEyeInWater != 1 && isReflection){
-            float heightFade = 1.0 - squared(max(0.0, nEyePlayerPos.y));
-            heightFade = squared(squared(heightFade * heightFade));
+            if(nEyePlayerPos.y > 0){
+                float heightFade = 1.0 - squared(nEyePlayerPos.y);
+                heightFade = squared(squared(heightFade * heightFade));
 
-            #ifndef FORCE_DISABLE_WEATHER
-                heightFade = (1.0 - heightFade) * rainStrength * 0.25 + heightFade;
-            #endif
+                #ifndef FORCE_DISABLE_WEATHER
+                    heightFade += (1.0 - heightFade) * rainStrength * 0.5;
+                #endif
 
-            finalCol += lightCol * (heightFade * shdFade * VOL_LIGHT_BRIGHTNESS * 0.5);
+                finalCol += lightCol * (heightFade * shdFade * VOL_LIGHT_BRIGHTNESS * 0.5);
+            }
+            else finalCol += lightCol * (shdFade * VOL_LIGHT_BRIGHTNESS * 0.5);
         }
 
         #if WORLD_SUN_MOON == 1

@@ -50,9 +50,9 @@ vec3 getVolumetricLight(in vec3 feetPlayerPos, in float depth, in float dither){
 			startPos += endPos;
 		}
 		
-		return lightCol * rayData * (volumetricFogDensity * heightFade * 0.14285714);
+		return lightCol * rayData * (min(1.0, VOL_LIGHT_BRIGHTNESS + VOL_LIGHT_BRIGHTNESS * isEyeInWater) * volumetricFogDensity * heightFade * shdFade * 0.14285714);
 	#else
-		if(isEyeInWater == 1) return lightCol * toLinear(fogColor) * (volumetricFogDensity * heightFade);
-		else return lightCol * (volumetricFogDensity * heightFade * eyeBrightFact);
+		if(isEyeInWater == 1) return lightCol * toLinear(fogColor) * (min(1.0, VOL_LIGHT_BRIGHTNESS * 2.0) * volumetricFogDensity * heightFade * shdFade);
+		else return lightCol * (volumetricFogDensity * heightFade * eyeBrightFact * shdFade * VOL_LIGHT_BRIGHTNESS);
 	#endif
 }
