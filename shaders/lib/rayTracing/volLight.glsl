@@ -2,9 +2,6 @@
 #endif
 
 vec3 getVolumetricLight(in vec3 feetPlayerPos, in float depth, in float dither){
-	// Return 0 if volumetric brightness is 0
-	if(VOL_LIGHT_BRIGHTNESS == 0) return vec3(0);
-
 	float feetPlayerDist = length(feetPlayerPos);
 
 	vec3 nFeetPlayerPos = feetPlayerPos / feetPlayerDist;
@@ -41,7 +38,7 @@ vec3 getVolumetricLight(in vec3 feetPlayerPos, in float depth, in float dither){
 
 		// Apply dithering added to the eyePlayerPos "camera" position converted to shadow clip space
 		vec3 startPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * shadowModelView[3].xyz + shadowProjection[3].xyz + endPos * dither;
-		
+
 		vec3 rayData = vec3(0);
 		for(int x = 0; x < 7; x++){
 			// No need to do anymore fancy matrix multiplications during the loop
@@ -49,7 +46,7 @@ vec3 getVolumetricLight(in vec3 feetPlayerPos, in float depth, in float dither){
 			// We continue tracing!
 			startPos += endPos;
 		}
-		
+
 		return lightCol * rayData * (min(1.0, VOL_LIGHT_BRIGHTNESS + VOL_LIGHT_BRIGHTNESS * isEyeInWater) * volumetricFogDensity * heightFade * shdFade * 0.14285714);
 	#else
 		if(isEyeInWater == 1) return lightCol * toLinear(fogColor) * (min(1.0, VOL_LIGHT_BRIGHTNESS * 2.0) * volumetricFogDensity * heightFade * shdFade);

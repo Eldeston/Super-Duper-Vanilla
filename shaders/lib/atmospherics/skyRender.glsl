@@ -80,7 +80,13 @@ vec3 getSkyBasic(in vec3 nEyePlayerPos, in vec2 skyCoordScale, in float skyPosZ,
         }
 
         #if WORLD_SUN_MOON == 1
-            if(skyPosZ > 0) finalCol += lightCol * pow(skyPosZ * skyPosZ, abs(nEyePlayerPos.y) + 1.0) * shdFade;
+            float lightDiffuse = pow(skyPosZ * skyPosZ, abs(nEyePlayerPos.y) + 1.0);
+
+            #ifdef FORCE_DISABLE_DAY_CYCLE
+                if(skyPosZ > 0) finalCol += lightCol * lightDiffuse;
+            #else
+                finalCol += skyPosZ > 0 ? sunCol * (dayCycleAdjust * lightDiffuse) : moonCol * ((1.0 - dayCycleAdjust) * lightDiffuse);
+            #endif
         #endif
     #endif
 
@@ -130,7 +136,11 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 skyBoxCol, in boo
                 #endif
 
                 #ifdef WORLD_LIGHT
-                    finalCol += lightCol * (clouds * min(1.0, cloudHeightFade));
+                    #ifdef FORCE_DISABLE_DAY_CYCLE
+                        finalCol += lightCol * (clouds * min(1.0, cloudHeightFade));
+                    #else
+                        finalCol += mix(moonCol, sunCol, dayCycleAdjust) * (clouds * min(1.0, cloudHeightFade));
+                    #endif
                 #else
                     finalCol += clouds * min(1.0, cloudHeightFade);
                 #endif
@@ -166,7 +176,7 @@ vec3 getSkyRender(in vec3 nEyePlayerPos){
     #if defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
         // Flip if the sun has gone below the horizon
         // Thus completely transforming the coordinate to follow the sky rotation
-        if(dayCycle < 0.5) skyPos = -skyPos;
+        if(dayCycle < 1.0) skyPos = -skyPos;
     #endif
 
     #if (defined WORLD_AETHER && defined WORLD_LIGHT) || defined WORLD_STARS
@@ -196,18 +206,26 @@ vec3 getSkyRender(in vec3 nEyePlayerPos, in vec3 skyBoxCol, in bool isReflection
         #ifndef FORCE_DISABLE_DAY_CYCLE
             // Flip if the sun has gone below the horizon
             // Thus completely transforming the coordinate to follow the sky rotation
-            if(dayCycle < 0.5) skyPos = -skyPos;
+            if(dayCycle < 1.0) skyPos = -skyPos;
         #endif
 
-        if(!isReflection){
-            #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE != 2
-                // If current world uses shader sun and moon but not vanilla sun and moon
-                #ifdef FORCE_DISABLE_WEATHER
-                    finalCol = (getSunMoonShape(skyPos.xy) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY) * sRGBLightCol;
+        #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE != 2
+            // If current world uses shader sun and moon but not vanilla sun and moon
+            if(!isReflection){
+                #ifdef FORCE_DISABLE_DAY_CYCLE
+                    finalCol = sRGBLightCol;
                 #else
-                    finalCol = (getSunMoonShape(skyPos.xy) * (1.0 - rainStrength) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY) * sRGBLightCol;
+                    finalCol = skyPos.z > 0 ? sRGBSunCol : sRGBMoonCol;
                 #endif
-            #elif WORLD_SUN_MOON == 2
+
+                #ifdef FORCE_DISABLE_WEATHER
+                    finalCol *= getSunMoonShape(skyPos.xy) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY;
+                #else
+                    finalCol *= getSunMoonShape(skyPos.xy) * (1.0 - rainStrength) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY;
+                #endif
+            }
+        #elif WORLD_SUN_MOON == 2
+            if(!isReflection){
                 // If current world uses shader black hole
                 float blackHole = min(1.0, 0.015625 / (16.0 - skyPos.z * 16.0 - WORLD_SUN_MOON_SIZE));
                 // Black hole return nothing
@@ -217,8 +235,8 @@ vec3 getSkyRender(in vec3 nEyePlayerPos, in vec3 skyBoxCol, in bool isReflection
                 float rings = textureLod(noisetex, vec2(skyPos.x * blackHole, frameTimeCounter * 0.0009765625), 0).x;
 
                 finalCol = ((rings * blackHole * 0.9 + blackHole * 0.1) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY) * lightCol;
-            #endif
-        }
+            }
+        #endif
     #endif
 
     // Combine sky box color and sky half color

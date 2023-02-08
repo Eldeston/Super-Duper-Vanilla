@@ -23,6 +23,13 @@
     #ifdef WORLD_LIGHT
         flat out vec3 sRGBLightCol;
         flat out vec3 lightCol;
+
+        #ifndef FORCE_DISABLE_DAY_CYCLE
+            flat out vec3 sRGBSunCol;
+            flat out vec3 sunCol;
+            flat out vec3 sRGBMoonCol;
+            flat out vec3 moonCol;
+        #endif
     #endif
 
     #ifndef FORCE_DISABLE_WEATHER
@@ -45,8 +52,17 @@
         skyCol = toLinear(SKY_COL_DATA_BLOCK);
 
         #ifdef WORLD_LIGHT
-            sRGBLightCol = LIGHT_COL_DATA_BLOCK0;
-            lightCol = toLinear(sRGBLightCol);
+            #ifdef FORCE_DISABLE_DAY_CYCLE
+                sRGBLightCol = LIGHT_COL_DATA_BLOCK0;
+                lightCol = toLinear(sRGBLightCol);
+            #else
+                sRGBSunCol = SUN_COL_DATA_BLOCK;
+                sunCol = toLinear(sRGBSunCol);
+                sRGBMoonCol = MOON_COL_DATA_BLOCK;
+                moonCol = toLinear(sRGBMoonCol);
+                sRGBLightCol = LIGHT_COL_DATA_BLOCK1(sRGBSunCol, sRGBMoonCol);
+                lightCol = toLinear(sRGBLightCol);
+            #endif
         #endif
 
         gl_Position = ftransform();
@@ -63,6 +79,13 @@
     #ifdef WORLD_LIGHT
         flat in vec3 sRGBLightCol;
         flat in vec3 lightCol;
+
+        #ifndef FORCE_DISABLE_DAY_CYCLE
+            flat in vec3 sRGBSunCol;
+            flat in vec3 sunCol;
+            flat in vec3 sRGBMoonCol;
+            flat in vec3 moonCol;
+        #endif
     #endif
     
     // Sky silhoutte fix
@@ -107,6 +130,7 @@
 
     #ifndef FORCE_DISABLE_DAY_CYCLE
         uniform float dayCycle;
+        uniform float dayCycleAdjust;
     #endif
 
     #if defined STORY_MODE_CLOUDS && !defined FORCE_DISABLE_CLOUDS
