@@ -12,7 +12,7 @@ vec3 getVolumetricLight(in vec3 feetPlayerPos, in float depth, in float dither){
 	#ifdef FORCE_DISABLE_WEATHER
         float totalFogDensity = isEyeInWater == 0 ? FOG_TOTAL_DENSITY : FOG_TOTAL_DENSITY * TAU;
     #else
-        float totalFogDensity = isEyeInWater == 0 ? FOG_TOTAL_DENSITY * rainStrength * eyeBrightFact * PI + FOG_TOTAL_DENSITY : FOG_TOTAL_DENSITY * TAU;
+        float totalFogDensity = isEyeInWater == 0 ? FOG_TOTAL_DENSITY * (rainStrength * PI + 1.0) : FOG_TOTAL_DENSITY * TAU;
     #endif
 
 	float heightFade = 1.0;

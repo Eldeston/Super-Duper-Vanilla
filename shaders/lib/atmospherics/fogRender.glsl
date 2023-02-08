@@ -8,7 +8,7 @@ vec3 getFogRender(in vec3 color, in vec3 fogCol, in float viewDist, in float nEy
         float totalFogDensity = isEyeInWater == 0 ? FOG_TOTAL_DENSITY : FOG_TOTAL_DENSITY * TAU;
     #else
         float verticalFogDensity = isEyeInWater == 0 ? FOG_VERTICAL_DENSITY - FOG_VERTICAL_DENSITY * rainStrength * 0.8 : FOG_VERTICAL_DENSITY * 0.2;
-        float totalFogDensity = isEyeInWater == 0 ? FOG_TOTAL_DENSITY * rainStrength * eyeBrightFact * PI + FOG_TOTAL_DENSITY : FOG_TOTAL_DENSITY * TAU;
+        float totalFogDensity = isEyeInWater == 0 ? FOG_TOTAL_DENSITY * (rainStrength * eyeBrightFact * PI + 1.0) : FOG_TOTAL_DENSITY * TAU;
     #endif
 
     float fogMult = min(1.0, GROUND_FOG_AMOUNT + GROUND_FOG_AMOUNT * isEyeInWater);

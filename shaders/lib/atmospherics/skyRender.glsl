@@ -80,7 +80,7 @@ vec3 getSkyBasic(in vec3 nEyePlayerPos, in vec2 skyCoordScale, in float skyPosZ,
         }
 
         #if WORLD_SUN_MOON == 1
-            if(skyPosZ > 0) finalCol += lightCol * pow(skyPosZ * 0.70710678, abs(nEyePlayerPos.y) + 1.0) * shdFade;
+            if(skyPosZ > 0) finalCol += lightCol * pow(skyPosZ * skyPosZ, abs(nEyePlayerPos.y) + 1.0) * shdFade;
         #endif
     #endif
 
