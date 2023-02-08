@@ -60,6 +60,7 @@
 
     #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
         uniform float dayCycle;
+        uniform float twilightPhase;
     #endif
     
     void main(){
@@ -72,13 +73,13 @@
     /* DRAWBUFFERS:0 */
         // Detect and calculate the sun and moon
         if(renderStage == MC_RENDER_STAGE_SUN)
-            #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT
+            #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
                 gl_FragData[0] = vec4(toLinear(albedo.rgb * vertexColor * (SUN_MOON_INTENSITY * vertexAlpha)) * SUN_COL_DATA_BLOCK, albedo.a);
             #else
                 discard;
             #endif
         else if(renderStage == MC_RENDER_STAGE_MOON)
-            #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT
+            #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
                 gl_FragData[0] = vec4(toLinear(albedo.rgb * vertexColor * (SUN_MOON_INTENSITY * vertexAlpha)) * MOON_COL_DATA_BLOCK, albedo.a);
             #else
                 discard;
