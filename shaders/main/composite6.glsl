@@ -132,10 +132,10 @@
 
             // Uncompress the HDR colors and upscale
             vec3 eBloom = getBloomTile(pixSize, vec2(0), 2.0);
-            eBloom += getBloomTile(pixSize, vec2(0, 0.275), 3.0);
-            eBloom += getBloomTile(pixSize, vec2(0.135, 0.275), 4.0);
-            eBloom += getBloomTile(pixSize, vec2(0.2075, 0.275), 5.0);
-            eBloom += getBloomTile(pixSize, vec2(0.135, 0.3625), 6.0);
+            eBloom += getBloomTile(pixSize, vec2(0, 0.25390625), 3.0);
+            eBloom += getBloomTile(pixSize, vec2(0.12890625, 0.25390625), 4.0);
+            eBloom += getBloomTile(pixSize, vec2(0.19140625, 0.25390625), 5.0);
+            eBloom += getBloomTile(pixSize, vec2(0.1328125, 0.3203125), 6.0);
 
             // Average the total samples (1 / 5 bloom tiles multiplied by 1 / 4 samples used for the box blur)
             eBloom *= 0.05;
@@ -187,7 +187,7 @@
 
         #ifdef BLOOM
         /* DRAWBUFFERS:04 */
-            gl_FragData[1] = vec4(eBloom, 1); // colortex4
+            // gl_FragData[1] = vec4(eBloom, 1); // colortex4
 
             #ifdef AUTO_EXPOSURE
             /* DRAWBUFFERS:045 */

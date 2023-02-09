@@ -38,19 +38,18 @@
 
         uniform sampler2D gcolor;
 
-        vec3 bloomTile(in vec2 coords, in float LOD){
+        vec3 bloomTile(in vec2 bloomPos, in float LOD){
             float scale = exp2(LOD);
-            vec2 bloomUv = (texCoord - coords) * scale;
-            float padding = 0.5 + 0.005 * scale;
+            vec2 bloomUv = bloomPos * scale;
 
-            if(abs(bloomUv.x - 0.5) < padding && abs(bloomUv.y - 0.5) < padding){
+            if(bloomUv.x >= 0 && bloomUv.x <= 1 && bloomUv.y >= 0 && bloomUv.y <= 1){
                 // Get pixel size based on bloom tile scale
                 float pixSize = scale / viewWidth;
                 
-                vec3 sample0 = textureLod(gcolor, bloomUv + vec2(pixSize * 2.0, 0), LOD).rgb +
-                    textureLod(gcolor, bloomUv - vec2(pixSize * 2.0, 0), LOD).rgb;
-                vec3 sample1 = textureLod(gcolor, bloomUv + vec2(pixSize, 0), LOD).rgb +
-                    textureLod(gcolor, bloomUv - vec2(pixSize, 0), LOD).rgb;
+                vec3 sample0 = textureLod(gcolor, vec2(bloomUv.x - pixSize * 2.0, bloomUv.y), LOD).rgb +
+                    textureLod(gcolor, vec2(bloomUv.x + pixSize * 2.0, bloomUv.y), LOD).rgb;
+                vec3 sample1 = textureLod(gcolor, vec2(bloomUv.x - pixSize, bloomUv.y), LOD).rgb +
+                    textureLod(gcolor, vec2(bloomUv.x + pixSize, bloomUv.y), LOD).rgb;
                 vec3 sample2 = textureLod(gcolor, bloomUv, LOD).rgb;
 
                 return sample0 * 0.0625 + sample1 * 0.25 + sample2 * 0.375;
@@ -62,11 +61,11 @@
 
     void main(){
         #ifdef BLOOM
-            vec3 eBloom = bloomTile(vec2(0), 2.0);
-            eBloom += bloomTile(vec2(0, 0.275), 3.0);
-            eBloom += bloomTile(vec2(0.135, 0.275), 4.0);
-            eBloom += bloomTile(vec2(0.2075, 0.275), 5.0);
-            eBloom += bloomTile(vec2(0.135, 0.3625), 6.0);
+            vec3 eBloom = bloomTile(texCoord, 2.0);
+            eBloom += bloomTile(vec2(texCoord.x, texCoord.y - 0.25390625), 3.0);
+            eBloom += bloomTile(vec2(texCoord.x - 0.12890625, texCoord.y - 0.25390625), 4.0);
+            eBloom += bloomTile(vec2(texCoord.x - 0.19140625, texCoord.y - 0.25390625), 5.0);
+            eBloom += bloomTile(vec2(texCoord.x - 0.1328125, texCoord.y - 0.3203125), 6.0);
         
         /* DRAWBUFFERS:4 */
             gl_FragData[0] = vec4(eBloom, 1); //colortex4

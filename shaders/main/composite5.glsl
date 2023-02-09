@@ -31,14 +31,11 @@
 
     void main(){
         #ifdef BLOOM
-            // Screen texel coordinates
-            ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
-
-            vec3 sample0 = texelFetch(colortex4, ivec2(screenTexelCoord.x, screenTexelCoord.y + 2), 0).rgb +
-                texelFetch(colortex4, ivec2(screenTexelCoord.x, screenTexelCoord.y - 2), 0).rgb;
-            vec3 sample1 = texelFetch(colortex4, ivec2(screenTexelCoord.x, screenTexelCoord.y + 1), 0).rgb +
-                texelFetch(colortex4, ivec2(screenTexelCoord.x, screenTexelCoord.y - 1), 0).rgb;
-            vec3 sample2 = texelFetch(colortex4, screenTexelCoord, 0).rgb;
+            vec3 sample0 = texelFetch(colortex4, ivec2(gl_FragCoord.x, gl_FragCoord.y - 2), 0).rgb +
+                texelFetch(colortex4, ivec2(gl_FragCoord.x, gl_FragCoord.y + 2), 0).rgb;
+            vec3 sample1 = texelFetch(colortex4, ivec2(gl_FragCoord.x, gl_FragCoord.y - 1), 0).rgb +
+                texelFetch(colortex4, ivec2(gl_FragCoord.x, gl_FragCoord.y + 1), 0).rgb;
+            vec3 sample2 = texelFetch(colortex4, ivec2(gl_FragCoord.xy), 0).rgb;
 
             vec3 eBloom = sample0 * 0.0625 + sample1 * 0.25 + sample2 * 0.375;
             
