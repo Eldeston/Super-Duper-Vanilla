@@ -73,9 +73,9 @@
     #endif
 
     #ifdef AUTO_EXPOSURE
-        uniform sampler2D colortex5;
-
         uniform float frameTime;
+
+        uniform sampler2D colortex5;
     #endif
 
     #ifdef BLOOM
@@ -185,19 +185,9 @@
         // Clamp final color
         gl_FragData[0] = vec4(saturate(color), 1); // gcolor
 
-        #ifdef BLOOM
-        /* DRAWBUFFERS:04 */
-            // gl_FragData[1] = vec4(eBloom, 1); // colortex4
-
-            #ifdef AUTO_EXPOSURE
-            /* DRAWBUFFERS:045 */
-                gl_FragData[2] = vec4(TAA_DATA, tempPixLuminance); // colortex5
-            #endif
-        #else
-            #ifdef AUTO_EXPOSURE
-            /* DRAWBUFFERS:05 */
-                gl_FragData[1] = vec4(TAA_DATA, tempPixLuminance); // colortex5
-            #endif
+        #ifdef AUTO_EXPOSURE
+        /* DRAWBUFFERS:05 */
+            gl_FragData[1] = vec4(TAA_DATA, tempPixLuminance); // colortex5
         #endif
     }
 #endif
