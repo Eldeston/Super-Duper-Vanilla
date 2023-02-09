@@ -67,7 +67,6 @@
             eBloom += bloomTile(vec2(0.135, 0.275), 4.0);
             eBloom += bloomTile(vec2(0.2075, 0.275), 5.0);
             eBloom += bloomTile(vec2(0.135, 0.3625), 6.0);
-            eBloom += bloomTile(vec2(0.160625, 0.3625), 7.0);
         
         /* DRAWBUFFERS:4 */
             gl_FragData[0] = vec4(eBloom, 1); //colortex4

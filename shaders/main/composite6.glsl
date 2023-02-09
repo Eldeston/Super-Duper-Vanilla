@@ -136,10 +136,9 @@
             eBloom += getBloomTile(pixSize, vec2(0.135, 0.275), 4.0);
             eBloom += getBloomTile(pixSize, vec2(0.2075, 0.275), 5.0);
             eBloom += getBloomTile(pixSize, vec2(0.135, 0.3625), 6.0);
-            eBloom += getBloomTile(pixSize, vec2(0.160625, 0.3625), 7.0);
 
-            // Average the total samples (1 / 6 bloom tiles multiplied by 1 / 4 samples used for the box blur)
-            eBloom *= 0.04166667;
+            // Average the total samples (1 / 5 bloom tiles multiplied by 1 / 4 samples used for the box blur)
+            eBloom *= 0.05;
             // Apply bloom by BLOOM_AMOUNT
             color = mix(color, eBloom, BLOOM_AMOUNT);
         #endif
