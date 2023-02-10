@@ -86,7 +86,7 @@
 
         vec3 getBloomTile(in vec2 pixSize, in vec2 coords, in float LOD){
             // Remap to bloom tile texture coordinates
-            vec2 texCoord = texCoord / exp2(LOD) + coords;
+            vec2 texCoord = texCoord * exp2(-LOD) + coords;
 
             vec2 topRightCorner = texCoord + pixSize;
             vec2 bottomLeftCorner = texCoord - pixSize;

@@ -1,17 +1,15 @@
 #ifdef WORLD_AETHER
 #endif
 
-#if WORLD_SUN_MOON != 0
-    float getSunMoonShape(in vec2 pos){
-        #if SUN_MOON_TYPE == 1
-            // Round sun and moon
-            return min(1.0, exp2(-(length(pos) - WORLD_SUN_MOON_SIZE) * 256.0));
-        #else
-            // Default sun and moon
-            return min(1.0, exp2(-(pow(abs(pos.x * pos.x * pos.x) + abs(pos.y * pos.y * pos.y), 0.33333333) - WORLD_SUN_MOON_SIZE) * 256.0));
-        #endif
-    }
-#endif
+// Round sun and moon
+float getSunMoonShape(in float skyPosZ){
+    return min(1.0, exp2(-(sqrt(1.0 - skyPosZ * skyPosZ) - WORLD_SUN_MOON_SIZE) * 256.0));
+}
+
+// Default sun and moon
+float getSunMoonShape(in vec2 skyPos){
+    return min(1.0, exp2(-(pow(abs(skyPos.x * skyPos.x * skyPos.x) + abs(skyPos.y * skyPos.y * skyPos.y), 0.33333333) - WORLD_SUN_MOON_SIZE) * 256.0));
+}
 
 #if TIMELAPSE_MODE != 0
     uniform float animationFrameTime;
@@ -150,7 +148,7 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 skyBoxCol, in boo
 
     #ifdef WORLD_STARS
         // Star field generation
-        vec2 starData = texelFetch(noisetex, ivec2(skyCoordScale / (abs(skyPos.z) + length(skyPos.xy))) & 255, 0).xy;
+        vec2 starData = texelFetch(noisetex, ivec2(skyCoordScale / (abs(skyPos.z) + sqrt(1.0 - skyPos.z * skyPos.z))) & 255, 0).xy;
         float stars = exp(starData.x * starData.y * 64.0 - 64.0);
 
         #ifdef FORCE_DISABLE_WEATHER
@@ -218,10 +216,14 @@ vec3 getSkyRender(in vec3 nEyePlayerPos, in vec3 skyBoxCol, in bool isReflection
                     finalCol = skyPos.z > 0 ? sRGBSunCol : sRGBMoonCol;
                 #endif
 
-                #ifdef FORCE_DISABLE_WEATHER
-                    finalCol *= getSunMoonShape(skyPos.xy) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY;
+                #if SUN_MOON_TYPE == 1
+                    float sunMoonShape = getSunMoonShape(skyPos.z) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY;
                 #else
-                    finalCol *= getSunMoonShape(skyPos.xy) * (1.0 - rainStrength) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY;
+                    float sunMoonShape = getSunMoonShape(skyPos.xy) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY;
+                #endif
+
+                #ifndef FORCE_DISABLE_WEATHER
+                    finalCol *= (1.0 - rainStrength) * sunMoonShape;
                 #endif
             }
         #elif WORLD_SUN_MOON == 2
