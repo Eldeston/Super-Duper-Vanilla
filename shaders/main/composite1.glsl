@@ -55,7 +55,7 @@
 
     void main(){
         #if ANTI_ALIASING >= 2
-            vec3 sceneCol = textureTAA(ivec2(gl_FragCoord.xy), texCoord);
+            vec3 sceneCol = textureTAA(ivec2(gl_FragCoord.xy));
         #else
             vec3 sceneCol = texelFetch(gcolor, ivec2(gl_FragCoord.xy), 0).rgb;
         #endif
