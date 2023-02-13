@@ -41,7 +41,7 @@
     const int colortex5Format = RGBA16F;
     */
 
-    uniform sampler2D gcolor;
+    uniform sampler2D colortex3;
 
     // For Optifine to detect
     #ifdef SHARPEN_FILTER
@@ -65,8 +65,8 @@
             vec2 topRightCorner = uv + pixSize;
             vec2 bottomLeftCorner = uv - pixSize;
 
-            vec3 blur = textureLod(gcolor, bottomLeftCorner, 0).rgb + textureLod(gcolor, topRightCorner, 0).rgb +
-                textureLod(gcolor, vec2(bottomLeftCorner.x, topRightCorner.y), 0).rgb + textureLod(gcolor, vec2(topRightCorner.x, bottomLeftCorner.y), 0).rgb;
+            vec3 blur = textureLod(colortex3, bottomLeftCorner, 0).rgb + textureLod(colortex3, topRightCorner, 0).rgb +
+                textureLod(colortex3, vec2(bottomLeftCorner.x, topRightCorner.y), 0).rgb + textureLod(colortex3, vec2(topRightCorner.x, bottomLeftCorner.y), 0).rgb;
             
             return color * 2.0 - blur * 0.25;
         }
@@ -83,11 +83,11 @@
         #ifdef CHROMATIC_ABERRATION
             vec2 chromaStrength = ((texCoord - 0.5) * ABERRATION_PIX_SIZE) / vec2(viewWidth, viewHeight);
 
-            vec3 sceneCol = vec3(textureLod(gcolor, texCoord - chromaStrength, 0).r,
-                textureLod(gcolor, texCoord, 0).g,
-                textureLod(gcolor, texCoord + chromaStrength, 0).b);
+            vec3 sceneCol = vec3(textureLod(colortex3, texCoord - chromaStrength, 0).r,
+                textureLod(colortex3, texCoord, 0).g,
+                textureLod(colortex3, texCoord + chromaStrength, 0).b);
         #else
-            vec3 sceneCol = textureLod(gcolor, texCoord, 0).rgb;
+            vec3 sceneCol = textureLod(colortex3, texCoord, 0).rgb;
         #endif
 
         #if ANTI_ALIASING != 0 && defined SHARPEN_FILTER

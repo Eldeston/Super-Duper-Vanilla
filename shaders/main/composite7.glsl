@@ -30,7 +30,7 @@
 #ifdef FRAGMENT
     in vec2 texCoord;
 
-    uniform sampler2D gcolor;
+    uniform sampler2D colortex3;
 
     #if ANTI_ALIASING == 1 || ANTI_ALIASING == 3
         uniform float viewWidth;
@@ -43,10 +43,10 @@
         #if ANTI_ALIASING == 1 || ANTI_ALIASING == 3
             vec3 sceneCol = textureFXAA(texCoord, vec2(viewWidth, viewHeight), ivec2(gl_FragCoord.xy));
         #else
-            vec3 sceneCol = texelFetch(gcolor, ivec2(gl_FragCoord.xy), 0).rgb;
+            vec3 sceneCol = texelFetch(colortex3, ivec2(gl_FragCoord.xy), 0).rgb;
         #endif
         
-    /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(sceneCol, 1); // gcolor
+    /* DRAWBUFFERS:3 */
+        gl_FragData[0] = vec4(sceneCol, 1); // colortex3
     }
 #endif

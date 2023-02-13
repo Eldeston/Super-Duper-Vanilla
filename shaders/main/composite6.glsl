@@ -79,12 +79,12 @@
     #endif
 
     #ifdef BLOOM
-        uniform sampler2D colortex4;
-
         uniform float viewWidth;
         uniform float viewHeight;
 
-        vec3 getBloomTile(in vec2 pixSize, in vec2 coords, in float LOD){
+        uniform sampler2D colortex4;
+
+        vec3 getBloomTile(in vec2 pixSize, in vec2 coords, in int LOD){
             // Remap to bloom tile texture coordinates
             vec2 texCoord = texCoord * exp2(-LOD) + coords;
 
@@ -98,15 +98,12 @@
     #endif
 
     #if defined LENS_FLARE && defined WORLD_LIGHT
-        uniform sampler2D depthtex0;
-
-        // Get blindess
         uniform float blindness;
-        // Get darkness effect
         uniform float darknessFactor;
 
-        // Get screen aspect ratio
         uniform float aspectRatio;
+
+        uniform sampler2D depthtex0;
 
         #ifndef FORCE_DISABLE_WEATHER
             // Get rain strength
@@ -131,16 +128,16 @@
             vec2 pixSize = 1.0 / vec2(viewWidth, viewHeight);
 
             // Uncompress the HDR colors and upscale
-            vec3 eBloom = getBloomTile(pixSize, vec2(0), 2.0);
-            eBloom += getBloomTile(pixSize, vec2(0, 0.25390625), 3.0);
-            eBloom += getBloomTile(pixSize, vec2(0.12890625, 0.25390625), 4.0);
-            eBloom += getBloomTile(pixSize, vec2(0.19140625, 0.25390625), 5.0);
-            eBloom += getBloomTile(pixSize, vec2(0.1328125, 0.3203125), 6.0);
+            vec3 bloomCol = getBloomTile(pixSize, vec2(0), 2);
+            bloomCol += getBloomTile(pixSize, vec2(0, 0.25390625), 3);
+            bloomCol += getBloomTile(pixSize, vec2(0.12890625, 0.25390625), 4);
+            bloomCol += getBloomTile(pixSize, vec2(0.19140625, 0.25390625), 5);
+            bloomCol += getBloomTile(pixSize, vec2(0.1328125, 0.3203125), 6);
 
             // Average the total samples (1 / 5 bloom tiles multiplied by 1 / 4 samples used for the box blur)
-            eBloom *= 0.05;
+            bloomCol *= 0.05;
             // Apply bloom by BLOOM_AMOUNT
-            color = mix(color, eBloom, BLOOM_AMOUNT);
+            color = mix(color, bloomCol, BLOOM_AMOUNT);
         #endif
 
         #if defined LENS_FLARE && defined WORLD_LIGHT
@@ -178,15 +175,17 @@
             color *= 1.0 - lengthSquared(texCoord - 0.5) * VIGNETTE_AMOUNT * (3.0 - sumOf(color));
         #endif
 
-        // Gamma correction, color saturation, contrast, etc. and film grain
-        color = toneA(toSRGB(color)) + (texelFetch(noisetex, screenTexelCoord & 255, 0).x - 0.5) * 0.00392156863;
+        // Gamma correction, color saturation, contrast, etc.
+        color = toneA(toSRGB(color));
 
-    /* DRAWBUFFERS:0 */
-        // Clamp final color
-        gl_FragData[0] = vec4(saturate(color), 1); // gcolor
+        // Apply dithering to break color banding
+        color += (texelFetch(noisetex, screenTexelCoord & 255, 0).x - 0.5) * 0.00392156863;
+
+    /* DRAWBUFFERS:3 */
+        gl_FragData[0] = vec4(color, 1); // colortex3
 
         #ifdef AUTO_EXPOSURE
-        /* DRAWBUFFERS:05 */
+        /* DRAWBUFFERS:35 */
             gl_FragData[1] = vec4(TAA_DATA, tempPixLuminance); // colortex5
         #endif
     }
