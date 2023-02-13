@@ -38,37 +38,36 @@
 
         uniform sampler2D gcolor;
 
-        vec3 bloomTile(in vec2 bloomPos, in float LOD){
+        vec3 bloomTile(in vec3 bloomCol, in vec2 bloomPos, in int LOD){
             float scale = exp2(LOD);
             vec2 bloomUv = bloomPos * scale;
 
-            if(bloomUv.x >= 0 && bloomUv.x <= 1 && bloomUv.y >= 0 && bloomUv.y <= 1){
-                // Get pixel size based on bloom tile scale
-                float pixSize = scale / viewWidth;
-                
-                vec3 sample0 = textureLod(gcolor, vec2(bloomUv.x - pixSize * 2.0, bloomUv.y), LOD).rgb +
-                    textureLod(gcolor, vec2(bloomUv.x + pixSize * 2.0, bloomUv.y), LOD).rgb;
-                vec3 sample1 = textureLod(gcolor, vec2(bloomUv.x - pixSize, bloomUv.y), LOD).rgb +
-                    textureLod(gcolor, vec2(bloomUv.x + pixSize, bloomUv.y), LOD).rgb;
-                vec3 sample2 = textureLod(gcolor, bloomUv, LOD).rgb;
+            // Apply padding
+            if(bloomUv.x < 0 || bloomUv.x > 1 || bloomUv.y < 0 || bloomUv.y > 1) return bloomCol;
 
-                return sample0 * 0.0625 + sample1 * 0.25 + sample2 * 0.375;
-            }
-            
-            return vec3(0);
+            // Get pixel size based on bloom tile scale
+            float pixSize = scale / viewWidth;
+
+            vec3 sample0 = textureLod(gcolor, vec2(bloomUv.x - pixSize * 2.0, bloomUv.y), LOD).rgb +
+                textureLod(gcolor, vec2(bloomUv.x + pixSize * 2.0, bloomUv.y), LOD).rgb;
+            vec3 sample1 = textureLod(gcolor, vec2(bloomUv.x - pixSize, bloomUv.y), LOD).rgb +
+                textureLod(gcolor, vec2(bloomUv.x + pixSize, bloomUv.y), LOD).rgb;
+            vec3 sample2 = textureLod(gcolor, bloomUv, LOD).rgb;
+
+            return sample0 * 0.0625 + sample1 * 0.25 + sample2 * 0.375;
         }
     #endif
 
     void main(){
         #ifdef BLOOM
-            vec3 eBloom = bloomTile(texCoord, 2.0);
-            eBloom += bloomTile(vec2(texCoord.x, texCoord.y - 0.25390625), 3.0);
-            eBloom += bloomTile(vec2(texCoord.x - 0.12890625, texCoord.y - 0.25390625), 4.0);
-            eBloom += bloomTile(vec2(texCoord.x - 0.19140625, texCoord.y - 0.25390625), 5.0);
-            eBloom += bloomTile(vec2(texCoord.x - 0.1328125, texCoord.y - 0.3203125), 6.0);
+            vec3 finalCol = bloomTile(vec3(0), texCoord, 2);
+            finalCol = bloomTile(finalCol, vec2(texCoord.x, texCoord.y - 0.25390625), 3);
+            finalCol = bloomTile(finalCol, vec2(texCoord.x - 0.12890625, texCoord.y - 0.25390625), 4);
+            finalCol = bloomTile(finalCol, vec2(texCoord.x - 0.19140625, texCoord.y - 0.25390625), 5);
+            finalCol = bloomTile(finalCol, vec2(texCoord.x - 0.1328125, texCoord.y - 0.3203125), 6);
         
         /* DRAWBUFFERS:4 */
-            gl_FragData[0] = vec4(eBloom, 1); //colortex4
+            gl_FragData[0] = vec4(finalCol, 1); //colortex4
         #else
         /* DRAWBUFFERS:4 */
             gl_FragData[0] = vec4(0, 0, 0, 1); //colortex4
