@@ -176,7 +176,7 @@
         uniform float rainStrength;
     #endif
 
-    #if (defined SHD_FILTER && ANTI_ALIASING >= 2) || TIMELAPSE_MODE != 0
+    #if (defined SHD_FILTER && ANTI_ALIASING >= 2) || TIMELAPSE_MODE == 0
         uniform float frameTimeCounter;
     #endif
 
