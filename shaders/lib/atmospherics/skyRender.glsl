@@ -27,7 +27,7 @@ float getSunMoonShape(in vec2 skyPos){
         // Move towards west
         start.x += time * 0.125;
         for(int i = 0; i < 8; i++){
-            if(texelFetch(colortex4, ivec2(start) & 255, 0).a > ALPHA_THRESHOLD) return 1.0 - i * 0.125;
+            if(texelFetch(colortex4, ivec2(start) & 255, 0).a > ALPHA_THRESHOLD) return 8.0 - i;
             start += end;
         }
         
@@ -48,12 +48,10 @@ vec3 getSkyBasic(in vec3 nEyePlayerPos, in vec2 skyCoordScale, in float skyPosZ,
         #ifdef WORLD_AETHER
             int aetherAnimationSpeed = int(frameTimeCounter * 8.0);
 
-            ivec2 mainAetherTexelCoord = ivec2(skyCoordScale);
-
             // Looks complex, but all it does is move the noise texture in 3 different directions
-            ivec2 aetherTexelCoord0 = (255 - mainAetherTexelCoord - aetherAnimationSpeed) & 255;
-            ivec2 aetherTexelCoord1 = ivec2(aetherTexelCoord0.x, (mainAetherTexelCoord.y - aetherAnimationSpeed) & 255);
-            ivec2 aetherTexelCoord2 = ivec2((mainAetherTexelCoord.x - aetherAnimationSpeed) & 255, aetherTexelCoord0.y);
+            ivec2 aetherTexelCoord0 = ivec2(255 - skyCoordScale - aetherAnimationSpeed) & 255;
+            ivec2 aetherTexelCoord1 = ivec2(aetherTexelCoord0.x, (skyCoordScale.y - aetherAnimationSpeed) & 255);
+            ivec2 aetherTexelCoord2 = ivec2((skyCoordScale.x - aetherAnimationSpeed) & 255, aetherTexelCoord0.y);
 
             vec3 aetherNoise = vec3(texelFetch(noisetex, aetherTexelCoord0, 0).z,
                 texelFetch(noisetex, aetherTexelCoord1, 0).z,
@@ -64,6 +62,9 @@ vec3 getSkyBasic(in vec3 nEyePlayerPos, in vec2 skyCoordScale, in float skyPosZ,
 
         // Fake VL reflection
         if(isEyeInWater != 1 && isReflection){
+            const float fakeVLBrightness = VOL_LIGHT_BRIGHTNESS * 0.5;
+            float VLBrightness = fakeVLBrightness * shdFade;
+
             if(nEyePlayerPos.y > 0){
                 float heightFade = 1.0 - squared(nEyePlayerPos.y);
                 heightFade = squared(squared(heightFade * heightFade));
@@ -72,9 +73,9 @@ vec3 getSkyBasic(in vec3 nEyePlayerPos, in vec2 skyCoordScale, in float skyPosZ,
                     heightFade += (1.0 - heightFade) * rainStrength * 0.5;
                 #endif
 
-                finalCol += lightCol * (heightFade * shdFade * VOL_LIGHT_BRIGHTNESS * 0.5);
+                finalCol += lightCol * (heightFade * VLBrightness);
             }
-            else finalCol += lightCol * (shdFade * VOL_LIGHT_BRIGHTNESS * 0.5);
+            else finalCol += lightCol * VLBrightness;
         }
 
         #if WORLD_SUN_MOON == 1
@@ -127,9 +128,9 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 skyBoxCol, in boo
                     float clouds2 = cloudParallax(-planeUv, -ANIMATION_FRAMETIME);
                     
                     #ifdef FORCE_DISABLE_WEATHER
-                        clouds = mix(clouds, clouds2, fade);
+                        clouds = mix(clouds, clouds2, fade) * 0.125;
                     #else
-                        clouds = mix(mix(clouds, clouds2, fade), max(clouds, clouds2), rainStrength);
+                        clouds = mix(mix(clouds, clouds2, fade), max(clouds, clouds2), rainStrength) * 0.125;
                     #endif
                 #endif
 
@@ -247,7 +248,7 @@ vec3 getSkyRender(in vec3 nEyePlayerPos, in vec3 skyBoxCol, in bool isReflection
     // Do a simple void gradient calculation when underwater
     if(isEyeInWater == 1){
         if(isReflection) return finalCol * max(0.0, nEyePlayerPos.y + eyeBrightFact - 1.0);
-        else return finalCol * smootherstep(max(0.0, nEyePlayerPos.y));
+        return finalCol * smootherstep(max(0.0, nEyePlayerPos.y));
     }
 
     return finalCol * saturate(nEyePlayerPos.y + eyeBrightFact * 2.0 - 1.0);
