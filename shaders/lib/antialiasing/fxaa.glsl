@@ -8,7 +8,7 @@
 const float quality[12] = float[12](1.0, 1.0, 1.0, 1.0, 1.0, 1.5, 2.0, 2.0, 2.0, 2.0, 4.0, 8.0);
 
 // http://blog.simonrodriguez.fr/articles/30-07-2016_implementing_fxaa.html
-vec3 textureFXAA(in vec2 screenPos, in vec2 resolution, in ivec2 screenTexelCoord){
+vec3 textureFXAA(in vec2 resolution, in ivec2 screenTexelCoord){
     // Pixel size
     vec2 pixSize = 1.0 / resolution.xy;
 
@@ -93,7 +93,7 @@ vec3 textureFXAA(in vec2 screenPos, in vec2 resolution, in ivec2 screenTexelCoor
 
     // Shift UV in the correct direction by half a pixel.
     float halfStepLength = stepLength * 0.5;
-    vec2 currentUv = screenPos;
+    vec2 currentUv = texCoord;
     if(isHorizontal) currentUv.y += halfStepLength;
     else currentUv.x += halfStepLength;
 
@@ -140,8 +140,8 @@ vec3 textureFXAA(in vec2 screenPos, in vec2 resolution, in ivec2 screenTexelCoor
     }
 
     // Compute the distances to each extremity of the edge.
-    float distance1 = isHorizontal ? (screenPos.x - uv1.x) : (screenPos.y - uv1.y);
-    float distance2 = isHorizontal ? (uv2.x - screenPos.x) : (uv2.y - screenPos.y);
+    float distance1 = isHorizontal ? (texCoord.x - uv1.x) : (texCoord.y - uv1.y);
+    float distance2 = isHorizontal ? (uv2.x - texCoord.x) : (uv2.y - texCoord.y);
 
     // In which direction is the extremity of the edge closer ?
     bool isDirection1 = distance1 < distance2;
@@ -175,7 +175,7 @@ vec3 textureFXAA(in vec2 screenPos, in vec2 resolution, in ivec2 screenTexelCoor
     finalOffset *= stepLength;
 
     // Compute the final UV coordinates.
-    vec2 finalUv = screenPos;
+    vec2 finalUv = texCoord;
 
     if(isHorizontal) finalUv.y += finalOffset;
     else finalUv.x += finalOffset;

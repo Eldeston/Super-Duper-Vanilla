@@ -98,6 +98,8 @@
 
         uniform sampler2D tex;
 
+        uniform float lightningFlash;
+
         #ifndef FORCE_DISABLE_DAY_CYCLE
             uniform float dayCycle;
         #endif

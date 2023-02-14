@@ -87,7 +87,7 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 #define SUN_COL_DATA_BLOCK mix(LIGHT_T, LIGHT_D, twilightPhase) * 0.00392156863
 #define MOON_COL_DATA_BLOCK LIGHT_N * 0.00392156863
 
-#define LIGHT_COL_DATA_BLOCK0 (dayCycle > 1.0 ? mix(LIGHT_T, LIGHT_D, twilightPhase) : LIGHT_N) * 0.00392156863
-#define LIGHT_COL_DATA_BLOCK1(S, M) dayCycle > 1.0 ? S : M
+#define LIGHT_COL_DATA_BLOCK0 (dayCycle > 1 ? mix(LIGHT_T, LIGHT_D, twilightPhase) : LIGHT_N) * 0.00392156863
+#define LIGHT_COL_DATA_BLOCK1(S, M) (dayCycle > 1 ? S : M)
 
 #define SKY_COL_DATA_BLOCK lerp(SKY_N, SKY_T, SKY_D, dayCycle) * 0.00392156863

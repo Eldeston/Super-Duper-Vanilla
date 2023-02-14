@@ -89,7 +89,7 @@ vec3 getSkyBasic(in vec3 nEyePlayerPos, in vec2 skyCoordScale, in float skyPosZ,
         #endif
     #endif
 
-    return finalCol;
+    return finalCol + lightningFlash;
 }
 
 // Sky half render

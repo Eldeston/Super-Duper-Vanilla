@@ -14,6 +14,9 @@ vec4 complexShadingGbuffers(in structPBR material){
 			toLinear(AMBIENT_LIGHTING + nightVision * 0.5)) * material.ambient;
 	#endif
 
+	// Thunder flash
+	totalDiffuse += toLinear(lightningFlash * material.ambient * lmCoord.y) * EMISSIVE_INTENSITY;
+
 	#ifdef WORLD_LIGHT
 		// Get sRGB light color
 		vec3 sRGBLightCol = LIGHT_COL_DATA_BLOCK0;
@@ -81,11 +84,7 @@ vec4 complexShadingGbuffers(in structPBR material){
 			float rainDiffuseAmount = rainStrength * 0.5;
 			shadowCol *= 1.0 - rainDiffuseAmount;
 
-			#ifdef CLOUDS
-				shadowCol += rainDiffuseAmount;
-			#else
-				shadowCol += material.ambient * lmCoord.y * lmCoord.y * rainDiffuseAmount;
-			#endif
+			shadowCol += rainDiffuseAmount * material.ambient * lmCoord.y * lmCoord.y;
 		#endif
 		
 		// Calculate and add shadow diffuse

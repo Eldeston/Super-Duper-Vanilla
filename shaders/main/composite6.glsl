@@ -106,7 +106,6 @@
         uniform sampler2D depthtex0;
 
         #ifndef FORCE_DISABLE_WEATHER
-            // Get rain strength
             uniform float rainStrength;
         #endif
         

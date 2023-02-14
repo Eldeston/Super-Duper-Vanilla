@@ -113,6 +113,7 @@
     uniform int isEyeInWater;
 
     uniform float nightVision;
+    uniform float lightningFlash;
 
     uniform vec4 entityColor;
 

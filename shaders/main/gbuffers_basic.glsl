@@ -81,6 +81,7 @@
     uniform int isEyeInWater;
 
     uniform float nightVision;
+    uniform float lightningFlash;
 
     #ifndef FORCE_DISABLE_WEATHER
         uniform float rainStrength;

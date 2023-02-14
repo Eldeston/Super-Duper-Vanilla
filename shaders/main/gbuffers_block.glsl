@@ -121,6 +121,7 @@
     uniform int isEyeInWater;
 
     uniform float nightVision;
+    uniform float lightningFlash;
 
     uniform float frameTimeCounter;
 

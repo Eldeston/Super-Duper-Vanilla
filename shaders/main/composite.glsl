@@ -94,6 +94,7 @@
 
     uniform float blindness;
     uniform float nightVision;
+    uniform float lightningFlash;
     uniform float darknessFactor;
     uniform float darknessLightFactor;
 

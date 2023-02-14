@@ -156,6 +156,7 @@
     uniform int isEyeInWater;
 
     uniform float nightVision;
+    uniform float lightningFlash;
 
     uniform sampler2D tex;
 

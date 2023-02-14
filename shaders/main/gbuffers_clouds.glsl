@@ -97,6 +97,7 @@
         in vec4 vertexPos;
 
         uniform float nightVision;
+        uniform float lightningFlash;
 
         uniform sampler2D tex;
 
