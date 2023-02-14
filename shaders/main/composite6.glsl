@@ -159,7 +159,7 @@
             // Apply auto exposure by dividing it by the pixel's luminance in sRGB
             color /= max(sqrt(tempPixLuminance), MIN_EXPOSURE);
 
-            #if defined PREVIOUS_FRAME || ANTI_ALIASING >= 2
+            #if (defined PREVIOUS_FRAME && (defined SSR || defined SSGI)) || ANTI_ALIASING >= 2
                 #define TAA_DATA texelFetch(colortex5, screenTexelCoord, 0).rgb
             #else
                 // vec4(0, 0, 0, tempPixLuminance)
@@ -168,11 +168,13 @@
         #endif
 
         // Exposure, tint, and tonemap
-        color = whitePreservingLumaBasedReinhardToneMapping(color * vec3(TINT_R, TINT_G, TINT_B) * (0.00392156863 * EXPOSURE));
+        const float exposure = 0.00392156863 * EXPOSURE;
+        const vec3 exposureTint = vec3(TINT_R, TINT_G, TINT_B) * exposure;
+        color = whitePreservingLumaBasedReinhardToneMapping(color * exposureTint);
 
         #ifdef VIGNETTE
             // BSL's vignette, modified to control intensity
-            color *= 1.0 - lengthSquared(texCoord - 0.5) * VIGNETTE_AMOUNT * (3.0 - sumOf(color));
+            color *= 1.0 - lengthSquared(texCoord - 0.5) * (3.0 - sumOf(color)) * VIGNETTE_AMOUNT;
         #endif
 
         // Gamma correction, color saturation, contrast, etc.
