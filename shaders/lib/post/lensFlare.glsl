@@ -7,13 +7,13 @@ float lensShape(in vec2 lensCoord){
 }
 
 float lensFlareSimple(in vec2 centerCoord, in vec2 lightDir, in float size, in float dist){
-    vec2 flareCoord = (centerCoord + lightDir * dist) * vec2(aspectRatio, 1);
-    return squared(squared(max(0.0, 1.0 - lensShape(flareCoord) / (size * shdLightDirScreenSpace.z))));
+    vec2 flareCoord = centerCoord + lightDir * dist;
+    return squared(squared(max(0.0, 1.0 - lensShape(vec2(flareCoord.x * aspectRatio, flareCoord.y)) / (size * shdLightDirScreenSpace.z))));
 }
 
 float lensFlareRays(in vec2 centerCoord, in vec2 lightDir, in float rayBeam, in float size, in float dist){
-    vec2 flareCoord = (centerCoord + lightDir * dist) * vec2(aspectRatio, 1);
-    float rays = max(0.0, sin(atan(flareCoord.x, flareCoord.y) * rayBeam));
+    vec2 flareCoord = centerCoord + lightDir * dist;
+    float rays = max(0.0, sin(atan(flareCoord.x * aspectRatio, flareCoord.y) * rayBeam));
     float lens = lensFlareSimple(centerCoord, lightDir, size, dist);
     return rays * lens + lens;
 }

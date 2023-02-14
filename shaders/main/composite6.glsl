@@ -108,7 +108,7 @@
         #ifndef FORCE_DISABLE_WEATHER
             uniform float rainStrength;
         #endif
-        
+
         #include "/lib/post/lensFlare.glsl"
     #endif
 

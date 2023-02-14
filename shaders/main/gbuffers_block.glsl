@@ -150,9 +150,9 @@
     #ifdef WORLD_SKYLIGHT
         const float eyeBrightFact = WORLD_SKYLIGHT;
     #else
-        uniform ivec2 eyeBrightnessSmooth;
+        uniform float eyeSkylight;
         
-        float eyeBrightFact = eyeBrightnessSmooth.y * 0.00416667;
+        float eyeBrightFact = eyeSkylight;
     #endif
 
     #ifdef WORLD_LIGHT
