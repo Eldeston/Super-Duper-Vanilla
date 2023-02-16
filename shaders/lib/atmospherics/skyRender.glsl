@@ -84,7 +84,7 @@ vec3 getSkyBasic(in vec3 nEyePlayerPos, in vec2 skyCoordScale, in float skyPosZ,
             #ifdef FORCE_DISABLE_DAY_CYCLE
                 if(skyPosZ > 0) finalCol += lightCol * lightDiffuse;
             #else
-                finalCol += skyPosZ > 0 ? sunCol * (dayCycleAdjust * lightDiffuse) : moonCol * ((1.0 - dayCycleAdjust) * lightDiffuse);
+                finalCol += skyPosZ > 0 ? sunCol * (dayCycleAdjust * lightDiffuse) : moonCol * (lightDiffuse - dayCycleAdjust * lightDiffuse);
             #endif
         #endif
     #endif

@@ -232,6 +232,8 @@
     #include "/lib/utility/noiseFunctions.glsl"
 
     #if defined ENVIRO_PBR && !defined FORCE_DISABLE_WEATHER
+        uniform float isPrecipitationRain;
+
         #include "/lib/PBR/enviroPBR.glsl"
     #endif
 
