@@ -135,16 +135,16 @@
                     if(blockId == 20502){
                         #ifdef WATER_FLAT
                             #if UNDERWATER_CAUSTICS == 2
-                                shdAlbedo.rgb = vec3(squared(0.128 + getCellNoise(waterNoiseUv)) * 3.2);
+                                shdAlbedo.rgb = vec3(squared(0.256 + getCellNoise(waterNoiseUv)) * 0.8);
                             #elif UNDERWATER_CAUSTICS == 1
                                 shdAlbedo.rgb = vec3(0.8);
-                                if(isEyeInWater == 1) shdAlbedo.rgb *= squared(0.128 + getCellNoise(waterNoiseUv)) * 4.0;
+                                if(isEyeInWater == 1) shdAlbedo.rgb *= squared(0.256 + getCellNoise(waterNoiseUv));
                             #endif
                         #else
                             #if UNDERWATER_CAUSTICS == 2
-                                shdAlbedo.rgb *= squared(0.128 + getCellNoise(waterNoiseUv)) * 4.0;
+                                shdAlbedo.rgb *= squared(0.256 + getCellNoise(waterNoiseUv));
                             #elif UNDERWATER_CAUSTICS == 1
-                                if(isEyeInWater == 1) shdAlbedo.rgb *= squared(0.128 + getCellNoise(waterNoiseUv)) * 4.0;
+                                if(isEyeInWater == 1) shdAlbedo.rgb *= squared(0.256 + getCellNoise(waterNoiseUv));
                             #endif
                         #endif
 
@@ -159,13 +159,11 @@
             /* DRAWBUFFERS:0 */
                 gl_FragData[0] = shdAlbedo;
             #else
-                float shdAlbedoAlpha = textureLod(tex, texCoord, 0).a;
-
                 // Alpha test, discard immediately
-                if(shdAlbedoAlpha <= ALPHA_THRESHOLD) discard;
+                if(textureLod(tex, texCoord, 0).a <= ALPHA_THRESHOLD) discard;
 
             /* DRAWBUFFERS:0 */
-                gl_FragData[0] = vec4(0, 0, 0, shdAlbedoAlpha);
+                gl_FragData[0] = vec4(0, 0, 0, 1);
             #endif
         }
     #else

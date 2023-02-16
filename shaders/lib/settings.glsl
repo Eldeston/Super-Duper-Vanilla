@@ -123,7 +123,7 @@ const float sunPathRotation = 30.0; // Light path angle. This also affects sky a
 
 #define WATER_NORM // Enables water normals
 #define WATER_BLUR_SIZE 8.0 // Water normal map blur size, smaller means more defined waves, larger means smoother waves [1.0 2.0 4.0 8.0 16.0 32.0 64.0]
-#define WATER_DEPTH_SIZE 64 // The normal map depth of the waves, the smaller the more depth it has [16 32 64 128 256]
+#define WATER_DEPTH_SIZE 0.5 // The normal map depth of the waves, the smaller the more depth it has [0.125 0.25 0.5 1.0 2.0]
 #define WATER_TILE_SIZE 16 // Tile size of the water [4 8 16 24 32]
 
 #define WATER_STYLIZE_ABSORPTION // Enables stylized water absorption. Changes water color based on depth.

@@ -46,7 +46,7 @@
     // For Optifine to detect
     #ifdef SHARPEN_FILTER
     #endif
-    
+
     #if ANTI_ALIASING >= 2 || defined PREVIOUS_FRAME || defined AUTO_EXPOSURE
         // Disable buffer clear if TAA, previous frame reflections, or auto exposure is on
         const bool colortex5Clear = false;
@@ -74,7 +74,8 @@
 
     void main(){
         #ifdef RETRO_FILTER
-            vec2 retroResolution = vec2(viewWidth, viewHeight) * (0.5 / MC_RENDER_QUALITY);
+            const float renderScale = 0.5 / MC_RENDER_QUALITY;
+            vec2 retroResolution = vec2(viewWidth, viewHeight) * renderScale;
             vec2 retroCoord = floor(texCoord * retroResolution) / retroResolution;
 
             #define texCoord retroCoord

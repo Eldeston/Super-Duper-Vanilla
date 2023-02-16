@@ -252,12 +252,12 @@
                 material.normal = TBN * waterData.xyz;
 
                 #ifdef WATER_NOISE
-                    waterNoise *= squared(0.128 + waterData.w);
+                    waterNoise *= squared(0.128 + waterData.w * 0.5);
                 #endif
             #elif WATER_NOISE
                 float waterData = getCellNoise(worldPos.xz / WATER_TILE_SIZE);
 
-                waterNoise *= squared(0.128 + waterData);
+                waterNoise *= squared(0.128 + waterData * 0.5);
             #endif
 
             #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
