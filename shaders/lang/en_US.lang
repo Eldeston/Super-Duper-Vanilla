@@ -165,34 +165,34 @@ screen.CONFIGURATION = Configuration
             option.LIGHT0_DR = Light red
             option.LIGHT0_DG = Light green
             option.LIGHT0_DB = Light blue
-            option.LIGHT0_DI = Light brightness
+            option.LIGHT0_DI = Light intensity
 
             option.SKY0_DR = Sky red
             option.SKY0_DG = Sky green
             option.SKY0_DB = Sky blue
-            option.SKY0_DI = Sky brightness
+            option.SKY0_DI = Sky intensity
 
         screen.NIGHT_SETTINGS = Night settings
             option.LIGHT0_NR = Light red
             option.LIGHT0_NG = Light green
             option.LIGHT0_NB = Light blue
-            option.LIGHT0_NI = Light brightness
+            option.LIGHT0_NI = Light intensity
 
             option.SKY0_NR = Sky red
             option.SKY0_NG = Sky green
             option.SKY0_NB = Sky blue
-            option.SKY0_NI = Sky brightness
+            option.SKY0_NI = Sky intensity
 
         screen.TWILIGHT_SETTINGS = Twilight settings
             option.LIGHT0_TR = Light red
             option.LIGHT0_TG = Light green
             option.LIGHT0_TB = Light blue
-            option.LIGHT0_TI = Light brightness
+            option.LIGHT0_TI = Light intensity
 
             option.SKY0_TR = Sky red
             option.SKY0_TG = Sky green
             option.SKY0_TB = Sky blue
-            option.SKY0_TI = Sky brightness
+            option.SKY0_TI = Sky intensity
 
         screen.FOG_SETTINGS0 = Fog settings
             option.FOG0_VERTICAL_DENSITY_D = Vertical density day
@@ -203,18 +203,18 @@ screen.CONFIGURATION = Configuration
     screen.NETHER_SETTINGS = Nether settings
         option.FOGn1_VERTICAL_DENSITY = Vertical density
         option.FOGn1_TOTAL_DENSITY = Total density
-        option.WORLDn1_VANILLA_FOGCOLI = Fog color brightness
+        option.WORLDn1_VANILLA_FOGCOLI = Sky intensity
 
     screen.END_SETTINGS = End settings
         option.LIGHT1_CR = Light red
         option.LIGHT1_CG = Light green
         option.LIGHT1_CB = Light blue
-        option.LIGHT1_CI = Light brightness
+        option.LIGHT1_CI = Light intensity
 
         option.SKY1_CR = Sky red
         option.SKY1_CG = Sky green
         option.SKY1_CB = Sky blue
-        option.SKY1_CI = Sky brightness
+        option.SKY1_CI = Sky intensity
 
         option.FOG1_VERTICAL_DENSITY = Vertical density
         option.FOG1_TOTAL_DENSITY = Total density
@@ -223,4 +223,4 @@ screen.CONFIGURATION = Configuration
         option.BLOCKLIGHT_R = Block light red
         option.BLOCKLIGHT_G = Block light green
         option.BLOCKLIGHT_B = Block light blue
-        option.BLOCKLIGHT_I = Block light brightness
+        option.BLOCKLIGHT_I = Block light intensity
