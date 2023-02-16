@@ -104,13 +104,17 @@
 
     uniform vec3 cameraPosition;
 
+    uniform mat4 gbufferProjection;
     uniform mat4 gbufferProjectionInverse;
 
+    uniform mat4 gbufferModelView;
     uniform mat4 gbufferModelViewInverse;
 
     uniform mat4 shadowModelView;
 
     uniform sampler2D gcolor;
+    uniform sampler2D colortex1;
+    uniform sampler2D colortex2;
     uniform sampler2D colortex3;
 
     uniform sampler2D depthtex0;
@@ -151,11 +155,16 @@
     #endif
 
     #include "/lib/utility/convertViewSpace.glsl"
-
+    #include "/lib/utility/convertScreenSpace.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
 
     #include "/lib/atmospherics/skyRender.glsl"
     #include "/lib/atmospherics/fogRender.glsl"
+
+    #include "/lib/rayTracing/rayTracer.glsl"
+
+    #include "/lib/lighting/GGX.glsl"
+    #include "/lib/lighting/complexShadingDeferred.glsl"
 
     float getSpectral(in ivec2 iUv){
         ivec2 topRightCorner = iUv - 1;
@@ -196,6 +205,14 @@
         if(texelFetch(depthtex1, screenTexelCoord, 0).x > screenPos.z){
             // Get view distance
             float viewDist = length(viewPos);
+
+            // Declare and get materials
+            vec2 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xy;
+            vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
+            vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
+
+            // Apply deffered shading
+            sceneCol = complexShadingDeferred(sceneCol, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, viewDist, matRaw0.x, matRaw0.y, dither);
 
             // Get normalized eyePlayerPos
             vec3 nEyePlayerPos = eyePlayerPos / viewDist;

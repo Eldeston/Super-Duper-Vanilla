@@ -91,6 +91,11 @@
     // Sky silhoutte fix
     const vec4 gcolorClearColor = vec4(0, 0, 0, 1);
 
+    #if ANTI_ALIASING >= 2 || defined PREVIOUS_FRAME || defined AUTO_EXPOSURE
+        // Disable buffer clear if TAA, previous frame reflections, or auto exposure is on
+        const bool colortex5Clear = false;
+    #endif
+
     uniform int isEyeInWater;
 
     uniform float far;
@@ -110,14 +115,18 @@
 
     uniform vec3 cameraPosition;
 
+    uniform mat4 gbufferProjection;
     uniform mat4 gbufferProjectionInverse;
 
+    uniform mat4 gbufferModelView;
     uniform mat4 gbufferModelViewInverse;
 
     uniform mat4 shadowModelView;
 
     uniform sampler2D gcolor;
+    uniform sampler2D colortex1;
     uniform sampler2D colortex2;
+    uniform sampler2D colortex3;
     
     uniform sampler2D depthtex0;
 
@@ -146,6 +155,17 @@
         float eyeBrightFact = eyeSkylight;
     #endif
 
+    #ifdef PREVIOUS_FRAME
+        uniform vec3 previousCameraPosition;
+
+        uniform mat4 gbufferPreviousModelView;
+        uniform mat4 gbufferPreviousProjection;
+
+        uniform sampler2D colortex5;
+
+        #include "/lib/utility/convertPrevScreenSpace.glsl"
+    #endif
+
     #ifdef SSAO
         float getSSAOBoxBlur(in ivec2 screenTexelCoord){
             ivec2 topRightCorner = screenTexelCoord + 1;
@@ -165,6 +185,7 @@
     #endif
 
     #include "/lib/utility/convertViewSpace.glsl"
+    #include "/lib/utility/convertScreenSpace.glsl"
 
     #if OUTLINES != 0
         #include "/lib/post/outline.glsl"
@@ -174,6 +195,11 @@
 
     #include "/lib/atmospherics/skyRender.glsl"
     #include "/lib/atmospherics/fogRender.glsl"
+    
+    #include "/lib/rayTracing/rayTracer.glsl"
+
+    #include "/lib/lighting/GGX.glsl"
+    #include "/lib/lighting/complexShadingDeferred.glsl"
 
     void main(){
         // Screen texel coordinates
@@ -209,6 +235,20 @@
         }
         // Else, calculate reflection and fog
         else{
+            #if ANTI_ALIASING >= 2
+                vec3 dither = toRandPerFrame(getRand3(screenTexelCoord & 255), frameTimeCounter);
+            #else
+                vec3 dither = getRand3(screenTexelCoord & 255);
+            #endif
+
+            // Declare and get materials
+            vec2 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xy;
+            vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
+            vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
+
+            // Apply deffered shading
+            sceneCol = complexShadingDeferred(sceneCol, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, viewDist, matRaw0.x, matRaw0.y, dither);
+
             #if OUTLINES != 0
                 // Outline calculation
                 sceneCol *= 1.0 + getOutline(screenTexelCoord, viewPos.z, OUTLINE_PIX_SIZE) * OUTLINE_BRIGHTNESS;
