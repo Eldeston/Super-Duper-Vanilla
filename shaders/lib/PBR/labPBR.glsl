@@ -111,8 +111,8 @@ void getPBR(inout structPBR material, in int id){
     // Decode and extract the materials
     // Extract normals
     vec3 normalMap = vec3(normalAOH.xy * 2.0 - 1.0, 0);
-    // Get the z normal direction and clamp to 0.0 (NaN fix)
-    normalMap.z = max(0.0, sqrt(1.0 - lengthSquared(normalMap.xy)));
+    // Clamp dot product of the normal to 1 and get the z normal direction (NaN fix)
+    normalMap.z = sqrt(max(0.0, 1.0 - lengthSquared(normalMap.xy)));
 
     // Assign porosity
     material.porosity = SRPSSE.b < 0.252 ? SRPSSE.b * 3.984 : 0.0;
@@ -189,18 +189,15 @@ void getPBR(inout structPBR material, in int id){
             #endif
 
             #if defined PARALLAX_SHADOWS && defined WORLD_LIGHT
-                if(dot(material.normal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) > 0.001)
+                if(dot(TBN[2], vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) > 0.001)
                     material.parallaxShd = parallaxShadow(currPos, getParallaxOffset(vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z) * TBN));
                 else material.parallaxShd = material.ss;
             #endif
         }
     #endif
 
-    // Assign normal
-    if(hasNormal) material.normal = TBN * fastNormalize(normalMap);
-
-    // Calculate normal strength
-    material.normal = mix(TBN[2], material.normal, NORMAL_STRENGTH);
+    // Assign normal and calculate normal strength
+    if(hasNormal) material.normal = mix(TBN[2], TBN * fastNormalize(normalMap), NORMAL_STRENGTH);
 
     #if COLOR_MODE == 0
         material.albedo.rgb *= vertexColor;

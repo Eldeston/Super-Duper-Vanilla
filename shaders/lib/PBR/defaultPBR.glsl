@@ -11,9 +11,6 @@ void getPBR(inout structPBR material, in int id){
         if(material.albedo.a <= ALPHA_THRESHOLD) discard;
     #endif
 
-    // Assign default normal map
-    material.normal = TBN[2];
-
     // Generate bumped normals
     #if (defined TERRAIN || defined WATER || defined BLOCK) && defined AUTO_GEN_NORM
         if(id != 20500 && id != 20502 && id != 30001){
@@ -24,13 +21,17 @@ void getPBR(inout structPBR material, in int id){
             float d1 = sumOf(textureGrad(tex, fract(vec2(texCoordPixCenter.x + autoGenNormPixSize, texCoordPixCenter.y)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
             float d2 = sumOf(textureGrad(tex, fract(vec2(texCoordPixCenter.x, texCoordPixCenter.y + autoGenNormPixSize)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
 
-            vec2 difference = d0 - vec2(d1, d2);
-            // TBN * fastNormalize(vec3(difference, 1))
-            material.normal = TBN * (vec3(difference, 1) * inversesqrt(lengthSquared(difference) + 1.0));
+            vec2 slopeNormal = d0 - vec2(d1, d2);
+            // TBN * fastNormalize(vec3(slopeNormal, 1))
+            float lengthInverse = inversesqrt(lengthSquared(slopeNormal) + 1.0);
+            material.normal = TBN * vec3(slopeNormal * lengthInverse, lengthInverse);
 
             // Calculate normal strength
             material.normal = mix(TBN[2], material.normal, NORMAL_STRENGTH);
         }
+    #else
+        // Assign default normal map
+        material.normal = TBN[2];
     #endif
 
     // Default material if not specified
