@@ -144,7 +144,7 @@
     #ifdef WORLD_LIGHT
         uniform float shdFade;
 
-        #if defined VOL_LIGHT && defined SHD_ENABLE
+        #if defined VOLUMETRIC_LIGHTING && defined SHADOW
             uniform mat4 shadowProjection;
 
             #include "/lib/lighting/shdMapping.glsl"
@@ -231,7 +231,7 @@
 
         #ifdef WORLD_LIGHT
             // Apply volumetric light
-            if(VOL_LIGHT_BRIGHTNESS != 0 && isEyeInWater != 2)
+            if(VOLUMETRIC_LIGHTING_STRENGTH != 0 && isEyeInWater != 2)
                 sceneCol += getVolumetricLight(feetPlayerPos, screenPos.z, dither.x);
         #endif
 

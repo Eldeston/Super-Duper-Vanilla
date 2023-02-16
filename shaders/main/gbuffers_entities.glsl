@@ -159,10 +159,10 @@
 
         uniform mat4 shadowModelView;
 
-        #ifdef SHD_ENABLE
+        #ifdef SHADOW
             uniform mat4 shadowProjection;
 
-            #ifdef SHD_FILTER
+            #ifdef SHADOW_FILTER
                 #include "/lib/utility/noiseFunctions.glsl"
             #endif
 

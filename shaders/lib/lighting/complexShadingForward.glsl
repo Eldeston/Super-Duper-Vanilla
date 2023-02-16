@@ -34,7 +34,7 @@ vec4 complexShadingGbuffers(in structPBR material){
 			#define dirLight NL
 		#endif
 
-		#if defined SHD_ENABLE && !defined ENTITIES_GLOWING
+		#if defined SHADOW && !defined ENTITIES_GLOWING
 			vec3 shadowCol = vec3(0);
 
 			// If the area isn't shaded, apply shadow mapping
@@ -51,7 +51,7 @@ vec4 complexShadingGbuffers(in structPBR material){
 				shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
 
 				// Sample shadows
-				#ifdef SHD_FILTER
+				#ifdef SHADOW_FILTER
 					#if ANTI_ALIASING >= 2
 						shadowCol = getShdCol(shdPos, toRandPerFrame(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x, frameTimeCounter) * TAU);
 					#else

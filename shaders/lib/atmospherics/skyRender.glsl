@@ -62,7 +62,7 @@ vec3 getSkyBasic(in vec3 nEyePlayerPos, in vec2 skyCoordScale, in float skyPosZ,
 
         // Fake VL reflection
         if(isEyeInWater != 1 && isReflection){
-            const float fakeVLBrightness = VOL_LIGHT_BRIGHTNESS * 0.5;
+            const float fakeVLBrightness = VOLUMETRIC_LIGHTING_STRENGTH * 0.5;
             float VLBrightness = fakeVLBrightness * shdFade;
 
             if(nEyePlayerPos.y > 0){

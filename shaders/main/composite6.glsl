@@ -135,8 +135,8 @@
 
             // Average the total samples (1 / 5 bloom tiles multiplied by 1 / 4 samples used for the box blur)
             bloomCol *= 0.05;
-            // Apply bloom by BLOOM_AMOUNT
-            color = mix(color, bloomCol, BLOOM_AMOUNT);
+            // Apply bloom by BLOOM_STRENGTH
+            color = mix(color, bloomCol, BLOOM_STRENGTH);
         #endif
 
         #if defined LENS_FLARE && defined WORLD_LIGHT
@@ -173,7 +173,7 @@
 
         #ifdef VIGNETTE
             // BSL's vignette, modified to control intensity
-            color *= 1.0 - lengthSquared(texCoord - 0.5) * (3.0 - sumOf(color)) * VIGNETTE_AMOUNT;
+            color *= 1.0 - lengthSquared(texCoord - 0.5) * (3.0 - sumOf(color)) * VIGNETTE_STRENGTH;
         #endif
 
         // Gamma correction, color saturation, contrast, etc.

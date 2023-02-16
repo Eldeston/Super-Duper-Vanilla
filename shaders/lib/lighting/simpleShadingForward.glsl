@@ -16,7 +16,7 @@ vec4 simpleShadingGbuffers(in vec4 albedo){
 	#endif
 
 	#ifdef WORLD_LIGHT
-		#ifdef SHD_ENABLE
+		#ifdef SHADOW
 			// Get shadow pos
 			vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz) + shadowProjection[3].xyz;
 
@@ -35,7 +35,7 @@ vec4 simpleShadingGbuffers(in vec4 albedo){
 			shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
 
 			// Sample shadows
-			#ifdef SHD_FILTER
+			#ifdef SHADOW_FILTER
 				#if ANTI_ALIASING >= 2
 					vec3 shadowCol = getShdCol(shdPos, toRandPerFrame(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x, frameTimeCounter) * TAU);
 				#else

@@ -30,13 +30,13 @@ uniform sampler2D specular;
 
     #if defined PARALLAX_SHADOWS && defined WORLD_LIGHT
         float parallaxShadow(in vec3 currPos, in vec2 lightDir) {
-            const float stepSize = 1.0 / PARALLAX_SHD_STEPS;
+            const float stepSize = 1.0 / PARALLAX_SHADOW_STEPS;
             vec2 stepOffset = stepSize * lightDir;
 
             float traceDepth = currPos.z;
             vec2 traceUv = currPos.xy;
-            for(int i = int(traceDepth * PARALLAX_SHD_STEPS); i < PARALLAX_SHD_STEPS; i++){
-                if(textureGrad(normals, fract(traceUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a >= traceDepth) return exp2(i - PARALLAX_SHD_STEPS);
+            for(int i = int(traceDepth * PARALLAX_SHADOW_STEPS); i < PARALLAX_SHADOW_STEPS; i++){
+                if(textureGrad(normals, fract(traceUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a >= traceDepth) return exp2(i - PARALLAX_SHADOW_STEPS);
                 traceDepth += stepSize;
                 traceUv += stepOffset;
             }

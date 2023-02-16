@@ -176,7 +176,7 @@
         #include "/lib/utility/convertViewSpace.glsl"
     #endif
 
-    #if (defined SHD_FILTER && ANTI_ALIASING >= 2) || TIMELAPSE_MODE == 0
+    #if (defined SHADOW_FILTER && ANTI_ALIASING >= 2) || TIMELAPSE_MODE == 0
         uniform float frameTimeCounter;
     #endif
 
@@ -210,7 +210,7 @@
 
         uniform mat4 shadowModelView;
 
-        #ifdef SHD_ENABLE
+        #ifdef SHADOW
             uniform mat4 shadowProjection;
 
             #include "/lib/lighting/shdMapping.glsl"

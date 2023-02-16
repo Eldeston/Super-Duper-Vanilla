@@ -1,4 +1,4 @@
-#ifdef VOL_LIGHT
+#ifdef VOLUMETRIC_LIGHTING
 #endif
 
 vec3 getVolumetricLight(in vec3 feetPlayerPos, in float depth, in float dither){
@@ -32,7 +32,7 @@ vec3 getVolumetricLight(in vec3 feetPlayerPos, in float depth, in float dither){
 		float volumetricFogDensity = 1.0 - exp2(-feetPlayerDist * totalFogDensity);
 	#endif
 
-	#if defined VOL_LIGHT && defined SHD_ENABLE
+	#if defined VOLUMETRIC_LIGHTING && defined SHADOW
 		// Normalize then unormalize with feetPlayerDist and clamping it at minimum distance between far and current shadowDistance
 		vec3 endPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * (nFeetPlayerPos * min(min(far, shadowDistance), feetPlayerDist))) * 0.14285714;
 
@@ -47,9 +47,9 @@ vec3 getVolumetricLight(in vec3 feetPlayerPos, in float depth, in float dither){
 			startPos += endPos;
 		}
 
-		return lightCol * rayData * (min(1.0, VOL_LIGHT_BRIGHTNESS + VOL_LIGHT_BRIGHTNESS * isEyeInWater) * volumetricFogDensity * heightFade * shdFade * 0.14285714);
+		return lightCol * rayData * (min(1.0, VOLUMETRIC_LIGHTING_STRENGTH + VOLUMETRIC_LIGHTING_STRENGTH * isEyeInWater) * volumetricFogDensity * heightFade * shdFade * 0.14285714);
 	#else
-		if(isEyeInWater == 1) return lightCol * toLinear(fogColor) * (min(1.0, VOL_LIGHT_BRIGHTNESS * 2.0) * volumetricFogDensity * heightFade * shdFade);
-		else return lightCol * (volumetricFogDensity * heightFade * eyeBrightFact * shdFade * VOL_LIGHT_BRIGHTNESS);
+		if(isEyeInWater == 1) return lightCol * toLinear(fogColor) * (min(1.0, VOLUMETRIC_LIGHTING_STRENGTH * 2.0) * volumetricFogDensity * heightFade * shdFade);
+		else return lightCol * (volumetricFogDensity * heightFade * eyeBrightFact * shdFade * VOLUMETRIC_LIGHTING_STRENGTH);
 	#endif
 }
