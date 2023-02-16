@@ -200,7 +200,7 @@ screen.CONFIGURATION = Configuration
             option.FOG0_VERTICAL_DENSITY_T = Vertical density twilight
             option.FOG0_TOTAL_DENSITY = Total density
 
-    screen.NETHER_SETTINGS = 
+    screen.NETHER_SETTINGS = Nether settings
         option.FOGn1_VERTICAL_DENSITY = Vertical density
         option.FOGn1_TOTAL_DENSITY = Total density
         option.WORLDn1_VANILLA_FOGCOLI = Fog color brightness
