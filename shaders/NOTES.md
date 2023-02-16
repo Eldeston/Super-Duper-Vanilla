@@ -33,6 +33,7 @@
    This along with the `GBUFFERS` macro, are used to identify the quirks in the current program for the shader to detect.
 
 ### Complex Programs
+   Programs with complex lighting.
 * TERRAIN
 * WATER
 * BLOCK
@@ -42,11 +43,13 @@
 * HAND_WATER
 
 ### Simple Programs
+   Programs with basic lighting.
 * BASIC
 * CLOUDS
 * TEXTURED
 
 ### Basic programs
+   Programs with simple shading.
 * ARMOR_GLINT
 * BEACON_BEAM
 * SPIDER_EYES
