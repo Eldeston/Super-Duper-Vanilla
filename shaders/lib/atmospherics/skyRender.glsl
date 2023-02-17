@@ -36,12 +36,12 @@ float getSunMoonShape(in vec2 skyPos){
 #endif
 
 // Sky basic render
-vec3 getSkyBasic(in vec3 nEyePlayerPos, in vec2 skyCoordScale, in float skyPosZ, in bool isReflection){
+vec3 getSkyBasic(in vec2 skyCoordScale, in float nEyePlayerPosY, in float skyPosZ){
     // Apply ambient lighting with sky col (not realistic I know)
     vec3 finalCol = skyCol + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 
     #ifdef WORLD_SKY_GROUND
-        finalCol.rg *= smoothen(saturate(1.0 + nEyePlayerPos.y * 4.0));
+        finalCol.rg *= smoothen(saturate(1.0 + nEyePlayerPosY * 4.0));
     #endif
 
     #ifdef WORLD_LIGHT
@@ -57,29 +57,11 @@ vec3 getSkyBasic(in vec3 nEyePlayerPos, in vec2 skyCoordScale, in float skyPosZ,
                 texelFetch(noisetex, aetherTexelCoord1, 0).z,
                 texelFetch(noisetex, aetherTexelCoord2, 0).z);
 
-            finalCol += exp2(-abs(nEyePlayerPos.y) * 8.0) * cubed(aetherNoise * lightCol + sumOf(aetherNoise) * 0.66666666) * lightCol;
+            finalCol += exp2(-abs(nEyePlayerPosY) * 8.0) * cubed(aetherNoise * lightCol + sumOf(aetherNoise) * 0.66666666) * lightCol;
         #endif
 
-        // Fake VL reflection
-        if(isEyeInWater != 1 && isReflection){
-            const float fakeVLBrightness = VOLUMETRIC_LIGHTING_STRENGTH * 0.5;
-            float VLBrightness = fakeVLBrightness * shdFade;
-
-            if(nEyePlayerPos.y > 0){
-                float heightFade = 1.0 - squared(nEyePlayerPos.y);
-                heightFade = squared(squared(heightFade * heightFade));
-
-                #ifndef FORCE_DISABLE_WEATHER
-                    heightFade += (1.0 - heightFade) * rainStrength * 0.5;
-                #endif
-
-                finalCol += lightCol * (heightFade * VLBrightness);
-            }
-            else finalCol += lightCol * VLBrightness;
-        }
-
         #if WORLD_SUN_MOON == 1
-            float lightDiffuse = pow(skyPosZ * skyPosZ, abs(nEyePlayerPos.y) + 1.0);
+            float lightDiffuse = pow(skyPosZ * skyPosZ, abs(nEyePlayerPosY) + 1.0);
 
             #ifdef FORCE_DISABLE_DAY_CYCLE
                 if(skyPosZ > 0) finalCol += lightCol * lightDiffuse;
@@ -102,10 +84,30 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 skyBoxCol, in boo
     #endif
 
     // Calculate basic sky color
-    vec3 finalCol = getSkyBasic(nEyePlayerPos, skyCoordScale, skyPos.z, isReflection);
+    vec3 finalCol = getSkyBasic(skyCoordScale, nEyePlayerPos.y, skyPos.z);
 
     // Apply sky box color
     finalCol = finalCol * max(vec3(0), 1.0 - skyBoxCol) + skyBoxCol;
+
+    #ifdef WORLD_LIGHT
+        // Fake VL reflection
+        if(isEyeInWater != 1 && isReflection){
+            const float fakeVLBrightness = VOLUMETRIC_LIGHTING_STRENGTH * 0.5;
+            float VLBrightness = fakeVLBrightness * shdFade;
+
+            if(nEyePlayerPos.y > 0){
+                float heightFade = 1.0 - squared(nEyePlayerPos.y);
+                heightFade = squared(squared(heightFade * heightFade));
+
+                #ifndef FORCE_DISABLE_WEATHER
+                    heightFade += (1.0 - heightFade) * rainStrength * 0.5;
+                #endif
+
+                finalCol += lightCol * (heightFade * VLBrightness);
+            }
+            else finalCol += lightCol * VLBrightness;
+        }
+    #endif
 
     #ifdef STORY_MODE_CLOUDS
         #ifndef FORCE_DISABLE_CLOUDS
@@ -174,8 +176,7 @@ vec3 getSkyRender(in vec3 nEyePlayerPos){
 
     #if defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
         // Flip if the sun has gone below the horizon
-        // Thus completely transforming the coordinate to follow the sky rotation
-        if(dayCycle < 1.0) skyPos = -skyPos;
+        if(dayCycle < 1) skyPos.z = -skyPos.z;
     #endif
 
     #if (defined WORLD_AETHER && defined WORLD_LIGHT) || defined WORLD_STARS
@@ -185,7 +186,7 @@ vec3 getSkyRender(in vec3 nEyePlayerPos){
         vec2 skyCoordScale = vec2(0);
     #endif
 
-    vec3 finalCol = getSkyBasic(nEyePlayerPos, skyCoordScale, skyPos.z, false);
+    vec3 finalCol = getSkyBasic(skyCoordScale, nEyePlayerPos.y, skyPos.z);
 
     // Do a simple void gradient calculation when underwater
     return finalCol * saturate(nEyePlayerPos.y + eyeBrightFact * 2.0 - 1.0);
@@ -204,8 +205,7 @@ vec3 getSkyRender(in vec3 nEyePlayerPos, in vec3 skyBoxCol, in bool isReflection
     #ifdef WORLD_LIGHT
         #ifndef FORCE_DISABLE_DAY_CYCLE
             // Flip if the sun has gone below the horizon
-            // Thus completely transforming the coordinate to follow the sky rotation
-            if(dayCycle < 1.0) skyPos = -skyPos;
+            if(dayCycle < 1) skyPos.z = -skyPos.z;
         #endif
 
         #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE != 2
