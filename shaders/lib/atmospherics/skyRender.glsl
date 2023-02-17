@@ -50,14 +50,14 @@ vec3 getSkyBasic(in vec3 nEyePlayerPos, in vec2 skyCoordScale, in float skyPosZ,
 
             // Looks complex, but all it does is move the noise texture in 3 different directions
             ivec2 aetherTexelCoord0 = ivec2(255 - skyCoordScale - aetherAnimationSpeed) & 255;
-            ivec2 aetherTexelCoord1 = ivec2(aetherTexelCoord0.x, (skyCoordScale.y - aetherAnimationSpeed) & 255);
-            ivec2 aetherTexelCoord2 = ivec2((skyCoordScale.x - aetherAnimationSpeed) & 255, aetherTexelCoord0.y);
+            ivec2 aetherTexelCoord1 = ivec2(aetherTexelCoord0.x, int(skyCoordScale.y - aetherAnimationSpeed) & 255);
+            ivec2 aetherTexelCoord2 = ivec2(int(skyCoordScale.x - aetherAnimationSpeed) & 255, aetherTexelCoord0.y);
 
             vec3 aetherNoise = vec3(texelFetch(noisetex, aetherTexelCoord0, 0).z,
                 texelFetch(noisetex, aetherTexelCoord1, 0).z,
                 texelFetch(noisetex, aetherTexelCoord2, 0).z);
 
-            finalCol += exp2(-abs(nEyePlayerPos.y) * 8.0) * cubed(aetherNoise * lightCol * 0.5 + sumOf(aetherNoise) * 0.83333333) * lightCol;
+            finalCol += exp2(-abs(nEyePlayerPos.y) * 8.0) * cubed(aetherNoise * lightCol + sumOf(aetherNoise) * 0.66666666) * lightCol;
         #endif
 
         // Fake VL reflection
