@@ -4,14 +4,12 @@ vec4 complexShadingGbuffers(in structPBR material){
 		float dirLightMap = min(1.0, max(0.0, dot(fastNormalize(dirLightMapCoord), material.normal)) * lmCoord.x * DIRECTIONAL_LIGHTMAP_STRENGTH + lmCoord.x);
 
 		// Get lightmaps and add simple sky GI
-		vec3 totalDiffuse = toLinear(SKY_COL_DATA_BLOCK * lmCoord.y) +
-			toLinear((dirLightMap * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B)) +
-			toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
+		vec3 totalDiffuse = toLinear(SKY_COL_DATA_BLOCK * lmCoord.y) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5) +
+			toLinear((dirLightMap * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B));
 	#else
 		// Get lightmaps and add simple sky GI
-		vec3 totalDiffuse = toLinear(SKY_COL_DATA_BLOCK * lmCoord.y) +
-			toLinear((lmCoord.x * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B)) +
-			toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
+		vec3 totalDiffuse = toLinear(SKY_COL_DATA_BLOCK * lmCoord.y) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5) +
+			toLinear((lmCoord.x * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B));
 	#endif
 
 	// Thunder flash
