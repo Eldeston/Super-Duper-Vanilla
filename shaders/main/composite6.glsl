@@ -79,17 +79,20 @@
     #endif
 
     #ifdef BLOOM
-        uniform float viewWidth;
-        uniform float viewHeight;
+        uniform float pixelWidth;
+        uniform float pixelHeight;
 
         uniform sampler2D colortex4;
 
-        vec3 getBloomTile(in vec2 pixSize, in vec2 coords, in int LOD){
+        vec3 getBloomTile(in vec2 coords, in int LOD){
             // Remap to bloom tile texture coordinates
             vec2 texCoord = texCoord * exp2(-LOD) + coords;
 
-            vec2 topRightCorner = texCoord + pixSize;
-            vec2 bottomLeftCorner = texCoord - pixSize;
+            // Pixel size
+            vec2 pixelSize = vec2(pixelWidth, pixelHeight);
+
+            vec2 topRightCorner = texCoord + pixelSize;
+            vec2 bottomLeftCorner = texCoord - pixelSize;
 
             // Apply box blur all tiles
             return textureLod(colortex4, bottomLeftCorner, 0).rgb + textureLod(colortex4, topRightCorner, 0).rgb +
@@ -123,15 +126,12 @@
         vec3 color = texelFetch(gcolor, screenTexelCoord, 0).rgb;
 
         #ifdef BLOOM
-            // Get pixel size
-            vec2 pixSize = 1.0 / vec2(viewWidth, viewHeight);
-
             // Uncompress the HDR colors and upscale
-            vec3 bloomCol = getBloomTile(pixSize, vec2(0), 2);
-            bloomCol += getBloomTile(pixSize, vec2(0, 0.25390625), 3);
-            bloomCol += getBloomTile(pixSize, vec2(0.12890625, 0.25390625), 4);
-            bloomCol += getBloomTile(pixSize, vec2(0.1953125, 0.25390625), 5);
-            bloomCol += getBloomTile(pixSize, vec2(0.12890625, 0.3203125), 6);
+            vec3 bloomCol = getBloomTile(vec2(0), 2);
+            bloomCol += getBloomTile(vec2(0, 0.25390625), 3);
+            bloomCol += getBloomTile(vec2(0.12890625, 0.25390625), 4);
+            bloomCol += getBloomTile(vec2(0.1953125, 0.25390625), 5);
+            bloomCol += getBloomTile(vec2(0.12890625, 0.3203125), 6);
 
             // Average the total samples (1 / 5 bloom tiles multiplied by 1 / 4 samples used for the box blur)
             bloomCol *= 0.05;

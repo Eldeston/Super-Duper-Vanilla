@@ -59,11 +59,9 @@
 
     #if ANTI_ALIASING != 0 && defined SHARPEN_FILTER
         // https://www.shadertoy.com/view/lslGRr
-        vec3 sharpenFilter(in vec3 color, in vec2 uv){
-            vec2 pixSize = 1.0 / vec2(viewWidth, viewHeight);
-
-            vec2 topRightCorner = uv + pixSize;
-            vec2 bottomLeftCorner = uv - pixSize;
+        vec3 sharpenFilter(in vec3 color, in vec2 uv, in vec2 pixelSize){
+            vec2 topRightCorner = uv + pixelSize;
+            vec2 bottomLeftCorner = uv - pixelSize;
 
             vec3 blur = textureLod(colortex3, bottomLeftCorner, 0).rgb + textureLod(colortex3, topRightCorner, 0).rgb +
                 textureLod(colortex3, vec2(bottomLeftCorner.x, topRightCorner.y), 0).rgb + textureLod(colortex3, vec2(topRightCorner.x, bottomLeftCorner.y), 0).rgb;
@@ -73,6 +71,10 @@
     #endif
 
     void main(){
+        #if defined CHROMATIC_ABERRATION || (ANTI_ALIASING != 0 && defined SHARPEN_FILTER)
+            vec2 pixelSize = 1.0 / vec2(viewWidth, viewHeight);
+        #endif
+
         #ifdef RETRO_FILTER
             const float renderScale = 0.5 / MC_RENDER_QUALITY;
             vec2 retroResolution = vec2(viewWidth, viewHeight) * renderScale;
@@ -82,7 +84,7 @@
         #endif
 
         #ifdef CHROMATIC_ABERRATION
-            vec2 chromaStrength = ((texCoord - 0.5) * ABERRATION_PIX_SIZE) / vec2(viewWidth, viewHeight);
+            vec2 chromaStrength = ((texCoord - 0.5) * ABERRATION_PIX_SIZE) * pixelSize;
 
             vec3 sceneCol = vec3(textureLod(colortex3, texCoord - chromaStrength, 0).r,
                 textureLod(colortex3, texCoord, 0).g,
@@ -92,7 +94,7 @@
         #endif
 
         #if ANTI_ALIASING != 0 && defined SHARPEN_FILTER
-            sceneCol = sharpenFilter(sceneCol, texCoord);
+            sceneCol = sharpenFilter(sceneCol, texCoord, pixelSize);
         #endif
 
         // Output final result

@@ -8,10 +8,7 @@
 const float quality[12] = float[12](1.0, 1.0, 1.0, 1.0, 1.0, 1.5, 2.0, 2.0, 2.0, 2.0, 4.0, 8.0);
 
 // http://blog.simonrodriguez.fr/articles/30-07-2016_implementing_fxaa.html
-vec3 textureFXAA(in vec2 resolution, in ivec2 screenTexelCoord){
-    // Pixel size
-    vec2 pixSize = 1.0 / resolution.xy;
-
+vec3 textureFXAA(in ivec2 screenTexelCoord){
     // Offsetted screen texel coords
     ivec2 topRightCorner = screenTexelCoord + 1;
     ivec2 bottomLeftCorner = screenTexelCoord - 1;
@@ -75,7 +72,7 @@ vec3 textureFXAA(in vec2 resolution, in ivec2 screenTexelCoord){
     float gradientScaled = 0.25 * max(abs(gradient1), abs(gradient2));
 
     // Choose the step size (one pixel) according to the edge direction.
-    float stepLength = isHorizontal ? pixSize.y : pixSize.x;
+    float stepLength = isHorizontal ? pixelWidth : pixelHeight;
 
     // Average luma in the correct direction.
     float lumaLocalAverage = lumaCenter;
@@ -98,7 +95,7 @@ vec3 textureFXAA(in vec2 resolution, in ivec2 screenTexelCoord){
     else currentUv.x += halfStepLength;
 
     // Compute offset (for each iteration step) in the right direction.
-    vec2 offset = isHorizontal ? vec2(pixSize.x, 0) : vec2(0, pixSize.y);
+    vec2 offset = isHorizontal ? vec2(pixelHeight, 0) : vec2(0, pixelWidth);
     // Compute UVs to explore on each side of the edge, orthogonally. The QUALITY allows us to step faster.
     vec2 uv1 = currentUv - offset;
     vec2 uv2 = currentUv + offset;

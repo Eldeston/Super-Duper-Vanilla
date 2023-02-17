@@ -108,9 +108,6 @@
 
     uniform float frameTimeCounter;
 
-    uniform float viewWidth;
-    uniform float viewHeight;
-
     uniform vec3 fogColor;
 
     uniform vec3 cameraPosition;
@@ -181,6 +178,11 @@
     #endif
 
     #if ANTI_ALIASING == 2
+        uniform int frameMod8;
+
+        uniform float pixelWidth;
+        uniform float pixelHeight;
+
         #include "/lib/utility/taaJitter.glsl"
     #endif
 

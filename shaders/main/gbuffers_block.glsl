@@ -36,8 +36,10 @@
     uniform mat4 gbufferModelViewInverse;
 
     #if ANTI_ALIASING == 2
-        uniform float viewWidth;
-        uniform float viewHeight;
+        uniform int frameMod8;
+
+        uniform float pixelWidth;
+        uniform float pixelHeight;
 
         #include "/lib/utility/taaJitter.glsl"
     #endif
@@ -125,8 +127,8 @@
 
     uniform float frameTimeCounter;
 
-    uniform float viewWidth;
-    uniform float viewHeight;
+    uniform float pixelWidth;
+    uniform float pixelHeight;
 
     uniform sampler2D tex;
 
@@ -186,7 +188,7 @@
         // End portal
         if(blockEntityId == 30000){
             // End star uv
-            vec2 screenPos = gl_FragCoord.xy / vec2(viewWidth, viewHeight);
+            vec2 screenPos = gl_FragCoord.xy * vec2(pixelWidth, pixelHeight);
             float starSpeed = frameTimeCounter * 0.0078125;
 
             float endStarField = textureLod(tex, vec2(screenPos.y, screenPos.x + starSpeed) * 0.5, 0).r;

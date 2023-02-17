@@ -30,8 +30,10 @@
     #endif
 
     #if ANTI_ALIASING == 2
-        uniform float viewWidth;
-        uniform float viewHeight;
+        uniform int frameMod8;
+
+        uniform float pixelWidth;
+        uniform float pixelHeight;
 
         #include "/lib/utility/taaJitter.glsl"
     #endif

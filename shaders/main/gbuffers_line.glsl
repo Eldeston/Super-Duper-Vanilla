@@ -16,9 +16,8 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    /* Screen resolutions */
-    uniform float viewWidth;
-    uniform float viewHeight;
+    uniform float pixelWidth;
+    uniform float pixelHeight;
 
     #ifdef WORLD_CURVATURE
         uniform mat4 gbufferModelView;
@@ -26,6 +25,8 @@
     #endif
 
     #if ANTI_ALIASING == 2
+        uniform int frameMod8;
+
         #include "/lib/utility/taaJitter.glsl"
     #endif
 
@@ -53,10 +54,10 @@
         vec3 ndc1 = linePosStart.xyz / linePosStart.w;
         vec3 ndc2 = linePosEnd.xyz / linePosEnd.w;
 
-        vec2 lineScreenDirection = fastNormalize((ndc2.xy - ndc1.xy) * vec2(viewWidth, viewHeight));
-        vec2 lineOffset = vec2(-lineScreenDirection.y, lineScreenDirection.x) * (2.0 / vec2(viewWidth, viewHeight));
+        vec2 lineScreenDirection = fastNormalize(ndc2.xy - ndc1.xy);
+        vec2 lineOffset = vec2(-lineScreenDirection.y, lineScreenDirection.x) * vec2(pixelWidth, pixelHeight) * 2.0;
 
-        if(lineOffset.x < 0.0) lineOffset *= -1.0;
+        if(lineOffset.x < 0) lineOffset = -lineOffset;
 
         if(gl_VertexID % 2 == 0) gl_Position = vec4(vec3(ndc1.xy + lineOffset, ndc1.z) * linePosStart.w, linePosStart.w);
         else gl_Position = vec4(vec3(ndc1.xy - lineOffset, ndc1.z) * linePosStart.w, linePosStart.w);

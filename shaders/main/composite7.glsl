@@ -33,15 +33,15 @@
     uniform sampler2D colortex3;
 
     #if ANTI_ALIASING == 1 || ANTI_ALIASING == 3
-        uniform float viewWidth;
-        uniform float viewHeight;
+        uniform float pixelWidth;
+        uniform float pixelHeight;
 
         #include "/lib/antialiasing/fxaa.glsl"
     #endif
 
     void main(){
         #if ANTI_ALIASING == 1 || ANTI_ALIASING == 3
-            vec3 sceneCol = textureFXAA(vec2(viewWidth, viewHeight), ivec2(gl_FragCoord.xy));
+            vec3 sceneCol = textureFXAA(ivec2(gl_FragCoord.xy));
         #else
             vec3 sceneCol = texelFetch(colortex3, ivec2(gl_FragCoord.xy), 0).rgb;
         #endif
