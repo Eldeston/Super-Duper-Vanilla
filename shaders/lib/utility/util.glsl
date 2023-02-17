@@ -95,9 +95,8 @@ vec3 generateUnitVector(in vec2 hash){
 }
 
 vec3 generateCosineVector(in vec3 vector, in vec3 noiseUnitVector){
-	vec3 vectorDir = vector + noiseUnitVector;
-	if(sumOf(vectorDir) == 0) return vector;
-    return fastNormalize(vectorDir);
+	vec3 vectorDir = fastNormalize(vector + noiseUnitVector);
+	return dot(vectorDir, vector) < 0 ? -vectorDir : vectorDir;
 }
 
 // Rotation function
