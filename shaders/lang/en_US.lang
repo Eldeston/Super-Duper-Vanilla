@@ -34,7 +34,7 @@ screen.POST = Post
 
     option.SHARPEN_FILTER = Sharpern filter
 
-    screen.CAMERA = Camera
+    screen.CAMERA = Camera settings
         option.DOF = Depth of field
         option.DOF_STRENGTH = Depth of field strength
         option.CHROMATIC_ABERRATION = Chromatic aberration
@@ -48,7 +48,7 @@ screen.POST = Post
         option.MOTION_BLUR = Motion blur
         option.MOTION_BLUR_STRENGTH = Motion blur strength
 
-    screen.TONEMAP = Tonemap
+    screen.TONEMAP = Tonemap settings
         option.SATURATION = Saturation
         option.CONTRAST = Contrast
         option.AUTO_EXPOSURE = Auto exposure
@@ -75,7 +75,7 @@ screen.LIGHTING = Lighting
     option.SSAO = SSAO
     option.AMBIENT_LIGHTING = Ambient lighting
 
-    screen.RAY_TRACING = Ray tracing
+    screen.RAY_TRACING = Ray tracing settings
         option.SSGI = SSGI
         option.SSR = SSR
         option.SSGI_STEPS = SSGI steps
@@ -219,7 +219,7 @@ screen.CONFIGURATION = Configuration
         option.FOG1_VERTICAL_DENSITY = Vertical density
         option.FOG1_TOTAL_DENSITY = Total density
 
-    screen.BLOCK_LIGHT_COLOR = Block light colors
+    screen.BLOCK_LIGHT_COLOR = Block light settings
         option.BLOCKLIGHT_R = Block light red
         option.BLOCKLIGHT_G = Block light green
         option.BLOCKLIGHT_B = Block light blue
