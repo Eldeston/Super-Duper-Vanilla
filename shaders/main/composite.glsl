@@ -141,6 +141,17 @@
         float eyeBrightFact = eyeSkylight;
     #endif
 
+    #ifdef PREVIOUS_FRAME
+        uniform vec3 previousCameraPosition;
+
+        uniform mat4 gbufferPreviousModelView;
+        uniform mat4 gbufferPreviousProjection;
+
+        uniform sampler2D colortex5;
+
+        #include "/lib/utility/convertPrevScreenSpace.glsl"
+    #endif
+
     #ifdef WORLD_LIGHT
         uniform float shdFade;
 
