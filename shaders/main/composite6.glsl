@@ -166,7 +166,11 @@
             #endif
         #endif
 
-        // Exposure, tint, and tonemap
+        // Saturation and contrast
+        color = saturation(color, SATURATION);
+        color = contrast(color, CONTRAST);
+
+        // Color tinting, exposure, and tonemapping
         const float exposure = 0.00392156863 * EXPOSURE;
         const vec3 exposureTint = vec3(TINT_R, TINT_G, TINT_B) * exposure;
         color = whitePreservingLumaBasedReinhardToneMapping(color * exposureTint);
@@ -177,7 +181,7 @@
         #endif
 
         // Gamma correction, color saturation, contrast, etc.
-        color = toneA(toSRGB(color));
+        color = toSRGB(color);
 
         // Apply dithering to break color banding
         color += (texelFetch(noisetex, screenTexelCoord & 255, 0).x - 0.5) * 0.00392156863;
