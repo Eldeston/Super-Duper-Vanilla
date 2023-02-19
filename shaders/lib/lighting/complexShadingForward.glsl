@@ -1,3 +1,6 @@
+#ifdef DIRECTIONAL_LIGHTMAPS
+#endif
+
 vec4 complexShadingGbuffers(in structPBR material){
 	#if defined DIRECTIONAL_LIGHTMAPS && (defined TERRAIN || defined WATER)
 		vec3 dirLightMapCoord = dFdx(vertexPos.xyz) * dFdx(lmCoord.x) + dFdy(vertexPos.xyz) * dFdy(lmCoord.x);
