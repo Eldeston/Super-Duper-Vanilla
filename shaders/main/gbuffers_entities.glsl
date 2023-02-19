@@ -18,11 +18,12 @@
 #ifdef VERTEX
     flat out float vertexAlpha;
 
+    flat out vec2 lmCoord;
+
     flat out vec3 vertexColor;
 
     flat out mat3 TBN;
 
-    out vec2 lmCoord;
     out vec2 texCoord;
 
     out vec4 vertexPos;
@@ -100,11 +101,12 @@
 #ifdef FRAGMENT
     flat in float vertexAlpha;
 
+    flat in vec2 lmCoord;
+
     flat in vec3 vertexColor;
 
     flat in mat3 TBN;
 
-    in vec2 lmCoord;
     in vec2 texCoord;
 
     in vec4 vertexPos;

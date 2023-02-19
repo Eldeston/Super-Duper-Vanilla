@@ -21,13 +21,13 @@
             gl_Position = vec4(-10);
         }
     #else
-        #ifdef WORLD_LIGHT
-            flat out vec3 vertexNormal;
-        #endif
-
         out vec2 texCoord;
 
         out vec4 vertexPos;
+
+        #ifdef WORLD_LIGHT
+            flat out vec3 vertexNormal;
+        #endif
 
         uniform mat4 gbufferModelView;
         uniform mat4 gbufferModelViewInverse;
@@ -90,13 +90,13 @@
             discard;
         }
     #else
-        #ifdef WORLD_LIGHT
-            flat in vec3 vertexNormal;
-        #endif
-
         in vec2 texCoord;
 
         in vec4 vertexPos;
+
+        #ifdef WORLD_LIGHT
+            flat in vec3 vertexNormal;
+        #endif
 
         uniform float nightVision;
         uniform float lightningFlash;

@@ -34,6 +34,7 @@
     #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
         flat out vec2 vTexCoordScale;
         flat out vec2 vTexCoordPos;
+
         out vec2 vTexCoord;
     #endif
 
