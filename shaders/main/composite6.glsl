@@ -50,7 +50,7 @@
             sRGBLightCol = LIGHT_COL_DATA_BLOCK0;
 
             // Get shadow light view direction in screen space
-            shdLightDirScreenSpace = vec3(toScreen(mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)).xy, gbufferProjection[1].y * 0.72794047);
+            shdLightDirScreenSpace = vec3(toScreenCoord(mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), gbufferProjection[1].y * 0.72794047);
         #endif
 
         gl_Position = ftransform();

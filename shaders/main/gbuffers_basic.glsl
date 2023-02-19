@@ -16,10 +16,9 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    flat out vec3 vertexColor;
+    flat out vec2 lmCoord;
 
-    out vec2 lmCoord;
-    out vec2 texCoord;
+    flat out vec3 vertexColor;
 
     out vec4 vertexPos;
 
@@ -39,8 +38,6 @@
     #endif
     
     void main(){
-        // Get buffer texture coordinates
-        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         // Get vertex color
         vertexColor = gl_Color.rgb;
 
@@ -73,10 +70,9 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    flat in vec3 vertexColor;
+    flat in vec2 lmCoord;
 
-    in vec2 lmCoord;
-    in vec2 texCoord;
+    flat in vec3 vertexColor;
 
     in vec4 vertexPos;
 

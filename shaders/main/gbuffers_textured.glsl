@@ -16,9 +16,10 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
+    flat out vec2 lmCoord;
+
     flat out vec3 vertexColor;
 
-    out vec2 lmCoord;
     out vec2 texCoord;
 
     out vec4 vertexPos;
@@ -73,9 +74,10 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
+    flat in vec2 lmCoord;
+
     flat in vec3 vertexColor;
 
-    in vec2 lmCoord;
     in vec2 texCoord;
 
     in vec4 vertexPos;
