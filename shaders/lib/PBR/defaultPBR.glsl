@@ -52,7 +52,7 @@ void getPBR(inout structPBR material, in int id){
         if(id == 20500 || id == 31001) material.emissive = 1.0;
 
         // Foliage and corals
-        else if((id >= 10000 && id <= 13000) || id == 14000) material.ss = 1.0;
+        else if((id >= 10000 && id <= 13000) || id == 14000 || id == 32000) material.ss = 1.0;
     #endif
 
     #ifdef WATER
