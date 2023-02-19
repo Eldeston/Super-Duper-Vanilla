@@ -21,7 +21,7 @@
             gl_Position = vec4(-10);
         }
     #else
-        out float lmCoordX;
+        flat out float lmCoordX;
 
         out vec2 texCoord;
 
@@ -92,7 +92,7 @@
             discard;
         }
     #else
-        in float lmCoordX;
+        flat in float lmCoordX;
 
         in vec2 texCoord;
 
@@ -121,7 +121,7 @@
             albedo.rgb = toLinear(albedo.rgb);
 
         /* DRAWBUFFERS:0 */
-            gl_FragData[0] = vec4(albedo.rgb * (toLinear(SKY_COL_DATA_BLOCK) + toLinear((lmCoordX * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B)) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5)), albedo.a); // gcolor
+            gl_FragData[0] = vec4(albedo.rgb * (toLinear(SKY_COL_DATA_BLOCK) + toLinear((lmCoordX * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B)) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5) + lightningFlash * EMISSIVE_INTENSITY), albedo.a); // gcolor
         }
     #endif
 #endif

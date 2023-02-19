@@ -13,7 +13,7 @@ vec4 complexShadingGbuffers(in structPBR material){
 	#endif
 
 	// Thunder flash
-	totalDiffuse += toLinear(lightningFlash * lmCoord.y) * EMISSIVE_INTENSITY;
+	totalDiffuse += lightningFlash * lmCoord.y * lmCoord.y * EMISSIVE_INTENSITY;
 
 	// Apply ambient occlussion
 	totalDiffuse *= material.ambient;

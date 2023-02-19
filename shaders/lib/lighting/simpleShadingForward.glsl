@@ -10,9 +10,9 @@ vec4 simpleShadingGbuffers(in vec4 albedo){
 
 	// Thunder flash
 	#ifdef CLOUDS
-		totalDiffuse += toLinear(lightningFlash) * EMISSIVE_INTENSITY;
+		totalDiffuse += lightningFlash * EMISSIVE_INTENSITY;
 	#else
-		totalDiffuse += toLinear(lightningFlash * lmCoord.y) * EMISSIVE_INTENSITY;
+		totalDiffuse += lightningFlash * lmCoord.y * lmCoord.y * EMISSIVE_INTENSITY;
 	#endif
 
 	#ifdef WORLD_LIGHT
