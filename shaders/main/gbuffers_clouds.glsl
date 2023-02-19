@@ -16,7 +16,7 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    #ifdef FORCE_DISABLE_CLOUDS
+    #if defined FORCE_DISABLE_CLOUDS || defined STORY_MODE_CLOUDS
         void main(){
             gl_Position = vec4(-10);
         }
@@ -85,7 +85,7 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    #ifdef FORCE_DISABLE_CLOUDS
+    #if defined FORCE_DISABLE_CLOUDS || defined STORY_MODE_CLOUDS
         void main(){
             discard;
         }
@@ -95,7 +95,7 @@
         #endif
 
         in vec2 texCoord;
-        
+
         in vec4 vertexPos;
 
         uniform float nightVision;
