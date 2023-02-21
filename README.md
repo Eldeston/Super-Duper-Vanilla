@@ -49,6 +49,3 @@
 
    You can become a supporter by doing any of the above, or donate through paypal
    * [@Paypal donation](https://www.paypal.com/donate?hosted_button_id=4XLQ4WE296JKW)
-
-   Try out my other shader for Minecraft Bedrock, ESTN Shaders, on McpeDL!
-   [![img](https://github.com/Eldeston/ESTN-Shaders/blob/master/textures/ui/title.png)](https://mcpedl.com/estn-shaders/?cookie_check=1)
