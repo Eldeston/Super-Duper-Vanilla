@@ -2,7 +2,7 @@
 name: Mod compatibility
 about: Create a compatibility report to help us improve.
 title: "[Mod compatibility] Issue Title"
-labels: ''
+labels: compatibility
 assignees: ''
 
 ---
