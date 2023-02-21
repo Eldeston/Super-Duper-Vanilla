@@ -5,7 +5,7 @@ float getSSAO(in vec3 viewPos, in vec3 viewNormal){
         vec3 dither = getRand3(ivec2(gl_FragCoord.xy) & 255);
     #endif
 
-    float occlusion = 4.0;
+    float occlusion = 0.25;
 
     // Instead of iterating by adding stepSize and using fract every time, we swizzle + one fract instead for pleasant and optimized results
     vec3 baseDither = (dither.xyz - 0.5) * 0.5;
@@ -26,9 +26,9 @@ float getSSAO(in vec3 viewPos, in vec3 viewNormal){
         float sampleDepth = textureLod(depthtex0, samplePos.xy, 0).x;
 
         // Check if the offset points are inside geometry or if the point is occluded
-        if(samplePos.z > sampleDepth) occlusion -= 1.0 / max(toView(sampleDepth) - viewPos.z, 1.0);
+        if(samplePos.z > sampleDepth) occlusion -= 0.0625 / max(toView(sampleDepth) - viewPos.z, 1.0);
     }
 
     // Remap results and return
-    return occlusion * 0.0625;
+    return occlusion;
 }

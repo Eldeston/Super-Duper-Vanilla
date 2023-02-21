@@ -86,13 +86,13 @@
 
         vec3 getBloomTile(in vec2 coords, in int LOD){
             // Remap to bloom tile texture coordinates
-            vec2 texCoord = texCoord * exp2(-LOD) + coords;
+            vec2 baseCoord = texCoord * exp2(-LOD) + coords;
 
             // Pixel size
             vec2 pixelSize = vec2(pixelWidth, pixelHeight);
 
-            vec2 topRightCorner = texCoord + pixelSize;
-            vec2 bottomLeftCorner = texCoord - pixelSize;
+            vec2 topRightCorner = baseCoord + pixelSize;
+            vec2 bottomLeftCorner = baseCoord - pixelSize;
 
             // Apply box blur all tiles
             return textureLod(colortex4, bottomLeftCorner, 0).rgb + textureLod(colortex4, topRightCorner, 0).rgb +
