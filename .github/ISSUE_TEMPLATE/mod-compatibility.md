@@ -1,13 +1,13 @@
 ---
-name: Bug report
-about: Create a report to help us improve
-title: "[Bug Report] Issue Title"
-labels: bug
+name: Mod compatibility
+about: Create a compatibility report to help us improve.
+title: "[Mod compatibility] Issue Title"
+labels: ''
 assignees: ''
 
 ---
 
-**Describe the bug**
+**Describe the compatibility issue**
 A clear and concise description of what the bug is.
 
 **To Reproduce**
@@ -27,6 +27,7 @@ If applicable, add screenshots to help explain your problem.
  - GPU [e.g. AMD, Intel, NVidia]
  - Shader loader [e.g. Iris 1.5.1, OptiFine 1.19.2_HD_U_I1]
  - Shader version [e.g. 22]
+ - Mod/modpack [e.g. Twilight mod, Create mod]
 
 **Additional context**
 Add any other context about the problem here.

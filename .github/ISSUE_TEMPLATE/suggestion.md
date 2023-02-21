@@ -1,6 +1,6 @@
 ---
 name: Suggestion
-about: Suggest an idea for this project
+about: Suggest an idea for this project.
 title: "[Suggestion] Issue Title"
 labels: suggestion
 assignees: ''
