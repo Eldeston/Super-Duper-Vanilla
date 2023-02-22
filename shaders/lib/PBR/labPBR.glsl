@@ -83,7 +83,7 @@ void getPBR(inout structPBR material, in int id){
     vec2 texUv = texCoord;
 
     // Exclude signs and floating texts. We'll also include water and lava in the meantime.
-    bool hasNormal = id != 20500 && id != 20502 && abs(sumOf(textureGrad(normals, texCoord, dcdx, dcdy).xy)) > 0.005;
+    bool hasNormal = id != 15500 && id != 15502 && abs(sumOf(textureGrad(normals, texCoord, dcdx, dcdy).xy)) > 0.005;
 
     #ifdef PARALLAX_OCCLUSION
         vec3 viewDir = -vertexPos.xyz * TBN;
@@ -140,7 +140,7 @@ void getPBR(inout structPBR material, in int id){
 
     #ifdef TERRAIN
         // If lava and fire
-        if(id == 20500 || id == 31001) material.emissive = 1.0;
+        if(id == 15500 || id == 21001) material.emissive = 1.0;
 
         // Foliage and corals
         else if((id >= 10000 && id <= 13000) || id == 14000) material.ss = 1.0;
@@ -148,7 +148,7 @@ void getPBR(inout structPBR material, in int id){
 
     #ifdef WATER
         // If water
-        if(id == 20502){
+        if(id == 15502){
             material.smoothness = 0.96;
             material.metallic = 0.02;
 
@@ -158,7 +158,7 @@ void getPBR(inout structPBR material, in int id){
         }
             
         // Nether portal
-        else if(id == 31000){
+        else if(id == 21000){
             material.smoothness = 0.96;
             material.metallic = 0.04;
             material.emissive = maxOf(material.albedo.rgb);
@@ -176,7 +176,7 @@ void getPBR(inout structPBR material, in int id){
     #endif
 
     #ifdef BLOCK
-        if(id == 30001) material.ambient = 1.0;
+        if(id == 20001) material.ambient = 1.0;
     #endif
 
     // Get parallax shadows

@@ -112,7 +112,7 @@
         #if defined WATER_ANIMATION || defined WORLD_CURVATURE
             #ifdef WATER_ANIMATION
                 // Apply water wave animation
-                if(mc_Entity.x == 20502) vertexPos.y = getWaterWave(worldPos.xz, vertexPos.y);
+                if(mc_Entity.x == 15502) vertexPos.y = getWaterWave(worldPos.xz, vertexPos.y);
             #endif
 
             #ifdef WORLD_CURVATURE
@@ -248,7 +248,7 @@
         getPBR(material, blockId);
         
         // If water
-        if(blockId == 20502){
+        if(blockId == 15502){
             float waterNoise = WATER_BRIGHTNESS;
 
             #ifdef WATER_NORM
@@ -287,7 +287,7 @@
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         #if defined ENVIRO_PBR && !defined FORCE_DISABLE_WEATHER
-            if(blockId != 20502) enviroPBR(material);
+            if(blockId != 15502) enviroPBR(material);
         #endif
 
         vec4 sceneCol = complexShadingGbuffers(material);

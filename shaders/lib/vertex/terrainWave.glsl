@@ -38,13 +38,13 @@ vec3 getTerrainWave(in vec3 vertexPlayerPos, in vec3 worldPos, in vec3 midBlock,
         float currentStrength = cos(-sumOf(worldPos.xz) * CURRENT_FREQUENCY + newFrameTimeCounter * CURRENT_SPEED);
 
         // Simple blocks, vertical movement
-        if(id == 20500 || id == 20501){
+        if(id == 15500 || id == 15501){
             vertexPlayerPos.y += currentStrength * 0.0625;
             return vertexPlayerPos;
         }
 
         // Single and double grounded cutouts
-        if(id == 22000){
+        if(id == 17000){
             float isUpper = midBlock.y * 0.015625 - 0.5;
             vertexPlayerPos.xz += isUpper * currentStrength * 0.125;
             return vertexPlayerPos;
