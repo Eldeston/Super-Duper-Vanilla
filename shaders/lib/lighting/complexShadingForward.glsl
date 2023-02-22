@@ -15,8 +15,10 @@ vec4 complexShadingGbuffers(in structPBR material){
 			toLinear((lmCoord.x * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B));
 	#endif
 
+	float skyLightCubed = lmCoord.y * lmCoord.y * lmCoord.y;
+
 	// Thunder flash
-	totalDiffuse += lightningFlash * lmCoord.y * lmCoord.y * EMISSIVE_INTENSITY;
+	totalDiffuse += lightningFlash * skyLightCubed * EMISSIVE_INTENSITY;
 
 	// Apply ambient occlussion
 	totalDiffuse *= material.ambient;
@@ -88,7 +90,7 @@ vec4 complexShadingGbuffers(in structPBR material){
 			float rainDiffuseAmount = rainStrength * 0.5;
 			shadowCol *= 1.0 - rainDiffuseAmount;
 
-			shadowCol += rainDiffuseAmount * material.ambient * lmCoord.y * lmCoord.y;
+			shadowCol += rainDiffuseAmount * material.ambient * skyLightCubed;
 		#endif
 		
 		// Calculate and add shadow diffuse

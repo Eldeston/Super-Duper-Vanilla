@@ -12,7 +12,9 @@ vec4 simpleShadingGbuffers(in vec4 albedo){
 	#ifdef CLOUDS
 		totalDiffuse += lightningFlash * EMISSIVE_INTENSITY;
 	#else
-		totalDiffuse += lightningFlash * lmCoord.y * lmCoord.y * EMISSIVE_INTENSITY;
+		float skyLightCubed = lmCoord.y * lmCoord.y * lmCoord.y;
+
+		totalDiffuse += lightningFlash * skyLightCubed * EMISSIVE_INTENSITY;
 	#endif
 
 	#ifdef WORLD_LIGHT
@@ -70,7 +72,7 @@ vec4 simpleShadingGbuffers(in vec4 albedo){
 			#ifdef CLOUDS
 				shadowCol += rainDiffuseAmount;
 			#else
-				shadowCol += rainDiffuseAmount * lmCoord.y * lmCoord.y;
+				shadowCol += rainDiffuseAmount * skyLightCubed;
 			#endif
 		#endif
 
