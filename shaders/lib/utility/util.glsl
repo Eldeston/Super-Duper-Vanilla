@@ -50,6 +50,17 @@ float sumOf(in vec2 x){ return x.x + x.y; }
 float sumOf(in vec3 x){ return x.x + x.y + x.z; }
 float sumOf(in vec4 x){ return x.x + x.y + x.z + x.w; }
 
+// Linear interpolation functions
+float lerp(float a, float b, float c, float d){
+	if(d < 1) return mix(a, b, d);
+    return mix(b, c, d - 1.0);
+}
+
+vec3 lerp(vec3 a, vec3 b, vec3 c, float d){
+	if(d < 1) return mix(a, b, d);
+    return mix(b, c, d - 1.0);
+}
+
 // Hermite interpolation
 float hermiteMix(in float a, in float b, in float x){ return (x - a) / (b - a); }
 vec2 hermiteMix(in float a, in float b, in vec2 x){ return (x - a) / (b - a); }
@@ -77,20 +88,6 @@ vec2 smootherstep(in vec2 x){ return x * x * x * (x * (x * 6.0 - 15.0) + 10.0); 
 vec3 smootherstep(in vec3 x){ return x * x * x * (x * (x * 6.0 - 15.0) + 10.0); }
 vec4 smootherstep(in vec4 x){ return x * x * x * (x * (x * 6.0 - 15.0) + 10.0); }
 
-// Luminance function
-float getLuminance(in vec3 col){ return dot(col, vec3(0.299, 0.587, 0.114)); }
-
-// Saturation function
-vec3 toneSaturation(in vec3 col, in float a){
-	float luma = getLuminance(col);
-	return (col - luma) * a + luma;
-}
-
-// Contrast function
-vec3 toneContrast(in vec3 col, in float a){
-	return (col - 0.5) * a + 0.5;
-}
-
 // By Jessie#7257
 vec3 generateUnitVector(in vec2 hash){
     hash.x *= TAU; hash.y = hash.y * 2.0 - 1.0;
@@ -98,9 +95,8 @@ vec3 generateUnitVector(in vec2 hash){
 }
 
 vec3 generateCosineVector(in vec3 vector, in vec3 noiseUnitVector){
-	vec3 vectorDir = vector + noiseUnitVector;
-	if(sumOf(vectorDir) == 0) return vector;
-    return fastNormalize(vectorDir);
+	vec3 vectorDir = fastNormalize(vector + noiseUnitVector);
+	return dot(vectorDir, vector) < 0 ? -vectorDir : vectorDir;
 }
 
 // Rotation function

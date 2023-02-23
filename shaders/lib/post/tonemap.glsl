@@ -1,8 +1,18 @@
-vec3 toneA(in vec3 base){
-	return toneContrast(toneSaturation(base, SATURATION), CONTRAST);
+// Luminance function
+float getLuminance(in vec3 col){ return dot(col, vec3(0.299, 0.587, 0.114)); }
+
+// Saturation function
+vec3 saturation(in vec3 col, in float a){
+	float luma = getLuminance(col);
+	return (col - luma) * a + luma;
+}
+
+// Contrast function
+vec3 contrast(in vec3 col, in float a){
+	return (col - 0.5) * a + 0.5;
 }
 
 vec3 whitePreservingLumaBasedReinhardToneMapping(in vec3 color){
-	float luma = sumOf(color) * 0.33333333;
-	return color * ((1.0 + luma * 0.0625) / (1.0 + luma));
+	float sumCol = sumOf(color);
+	return color * ((3.0 + sumCol * 0.25) / (3.0 + sumCol));
 }

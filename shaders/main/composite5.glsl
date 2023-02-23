@@ -1,4 +1,19 @@
-/// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
+/*
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+
+    Developed by Eldeston, presented by FlameRender (TM) Studios.
+
+    Copyright (C) 2020 Eldeston | FlameRender (TM) Studios License
+
+
+    By downloading this content you have agreed to the license and its terms of use.
+
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+*/
+
+/// Buffer features: Bloom blur 2nd pass
+
+/// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
     void main(){
@@ -6,7 +21,7 @@
     }
 #endif
 
-/// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
+/// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
     #ifdef BLOOM
@@ -16,19 +31,16 @@
 
     void main(){
         #ifdef BLOOM
-            // Screen texel coordinates
-            ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
+            vec3 sample0 = texelFetch(colortex4, ivec2(gl_FragCoord.x, gl_FragCoord.y - 2), 0).rgb +
+                texelFetch(colortex4, ivec2(gl_FragCoord.x, gl_FragCoord.y + 2), 0).rgb;
+            vec3 sample1 = texelFetch(colortex4, ivec2(gl_FragCoord.x, gl_FragCoord.y - 1), 0).rgb +
+                texelFetch(colortex4, ivec2(gl_FragCoord.x, gl_FragCoord.y + 1), 0).rgb;
+            vec3 sample2 = texelFetch(colortex4, ivec2(gl_FragCoord.xy), 0).rgb;
 
-            vec3 sample0 = texelFetch(colortex4, ivec2(screenTexelCoord.x, screenTexelCoord.y + 2), 0).rgb +
-                texelFetch(colortex4, ivec2(screenTexelCoord.x, screenTexelCoord.y - 2), 0).rgb;
-            vec3 sample1 = texelFetch(colortex4, ivec2(screenTexelCoord.x, screenTexelCoord.y + 1), 0).rgb +
-                texelFetch(colortex4, ivec2(screenTexelCoord.x, screenTexelCoord.y - 1), 0).rgb;
-            vec3 sample2 = texelFetch(colortex4, screenTexelCoord, 0).rgb;
-
-            vec3 eBloom = sample0 * 0.0625 + sample1 * 0.25 + sample2 * 0.375;
+            vec3 finalCol = sample0 * 0.0625 + sample1 * 0.25 + sample2 * 0.375;
             
         /* DRAWBUFFERS:4 */
-            gl_FragData[0] = vec4(eBloom, 1); // colortex4
+            gl_FragData[0] = vec4(finalCol, 1); // colortex4
         #else
         /* DRAWBUFFERS:4 */
             gl_FragData[0] = vec4(0, 0, 0, 1); // colortex4

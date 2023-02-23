@@ -1,18 +1,43 @@
-/// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
+/*
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+
+    Developed by Eldeston, presented by FlameRender (TM) Studios.
+
+    Copyright (C) 2020 Eldeston | FlameRender (TM) Studios License
+
+
+    By downloading this content you have agreed to the license and its terms of use.
+
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+*/
+
+/// Buffer features: DOF blur
+
+/// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    out vec2 screenCoord;
+    flat out float fovMult;
+
+    out vec2 texCoord;
+
+    uniform mat4 gbufferProjection;
 
     void main(){
+        // Get buffer texture coordinates
+        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+
+        fovMult = gbufferProjection[1].y * 0.72794047;
+
         gl_Position = ftransform();
-        screenCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
     }
 #endif
 
-/// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
+/// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    in vec2 screenCoord;
+    flat in float fovMult;
+
+    in vec2 texCoord;
 
     uniform sampler2D gcolor;
 
@@ -33,30 +58,25 @@
             vec2(1, 0)
         );
 
-        uniform sampler2D depthtex1;
-
-        uniform mat4 gbufferProjection;
-        
         uniform float centerDepthSmooth;
 
-        /* Screen resolutions */
         uniform float viewWidth;
         uniform float viewHeight;
 
-        float fovMult = gbufferProjection[1].y * 0.72794047;
+        uniform sampler2D depthtex1;
     #endif
 
     void main(){
         // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
-        // Original color
-        vec3 color = texelFetch(gcolor, screenTexelCoord, 0).rgb;
+        // Get scene color
+        vec3 sceneCol = texelFetch(gcolor, screenTexelCoord, 0).rgb;
 
         #ifdef DOF
-            // Get depth
+            // Declare and get positions
             float depth = texelFetch(depthtex1, screenTexelCoord, 0).x;
 
-            // If not hand, do DOF
+            // Apply DOF if not player hand
             if(depth > 0.56){
                 // CoC calculation by Capt Tatsu from BSL
                 float CoC = max(0.0, abs(depth - centerDepthSmooth) * DOF_STRENGTH - 0.01);
@@ -68,18 +88,18 @@
                 vec2 blurRes = blurRadius / vec2(viewWidth, viewHeight);
 
                 // Get center pixel color with LOD
-                vec3 dofColor = textureLod(gcolor, screenCoord, currDofLOD).rgb;
+                vec3 dofColor = textureLod(gcolor, texCoord, currDofLOD).rgb;
                 for(int x = 0; x < 9; x++){
                     // Rotate offsets and sample
-                    dofColor += textureLod(gcolor, screenCoord - dofOffSets[x] * blurRes, currDofLOD).rgb;
+                    dofColor += textureLod(gcolor, texCoord - dofOffSets[x] * blurRes, currDofLOD).rgb;
                 }
 
                 // 9 offsetted samples + 1 sample (1 / 10)
-                color = dofColor * 0.1;
+                sceneCol = dofColor * 0.1;
             }
         #endif
 
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(color, 1); // gcolor
+        gl_FragData[0] = vec4(sceneCol, 1); // gcolor
     }
 #endif

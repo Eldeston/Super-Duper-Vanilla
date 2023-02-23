@@ -1,6 +1,4 @@
 // Jitter offset from Chocapic13
-uniform int framemod8;
-
 const vec2 offSetsTAA[8] = vec2[8](
     vec2(0.125,-0.375),
     vec2(-0.125, 0.375),
@@ -13,5 +11,5 @@ const vec2 offSetsTAA[8] = vec2[8](
 );
 
 vec2 jitterPos(in float posW){
-	return offSetsTAA[framemod8] * (posW / vec2(viewWidth, viewHeight));
+	return offSetsTAA[frameMod8] * vec2(pixelWidth, pixelHeight) * posW;
 }

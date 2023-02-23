@@ -1,5 +1,3 @@
-float fovMult = gbufferProjection[1].y * 0.72794047;
-
 float lensShape(in vec2 lensCoord){
     #if WORLD_SUN_MOON == 2
         return abs(length(lensCoord) - cubed(WORLD_SUN_MOON_SIZE));
@@ -9,13 +7,13 @@ float lensShape(in vec2 lensCoord){
 }
 
 float lensFlareSimple(in vec2 centerCoord, in vec2 lightDir, in float size, in float dist){
-    vec2 flareCoord = (centerCoord + lightDir * dist) * vec2(aspectRatio, 1);
-    return squared(squared(max(0.0, 1.0 - lensShape(flareCoord) / (size * fovMult))));
+    vec2 flareCoord = centerCoord + lightDir * dist;
+    return squared(squared(max(0.0, 1.0 - lensShape(vec2(flareCoord.x * aspectRatio, flareCoord.y)) / (size * shdLightDirScreenSpace.z))));
 }
 
 float lensFlareRays(in vec2 centerCoord, in vec2 lightDir, in float rayBeam, in float size, in float dist){
-    vec2 flareCoord = (centerCoord + lightDir * dist) * vec2(aspectRatio, 1);
-    float rays = max(0.0, sin(atan(flareCoord.x, flareCoord.y) * rayBeam));
+    vec2 flareCoord = centerCoord + lightDir * dist;
+    float rays = max(0.0, sin(atan(flareCoord.x * aspectRatio, flareCoord.y) * rayBeam));
     float lens = lensFlareSimple(centerCoord, lightDir, size, dist);
     return rays * lens + lens;
 }
@@ -36,12 +34,12 @@ vec3 getLensFlare(in vec2 centerCoord, in vec2 lightDir){
     vec3 chromaLens = chromaLens(centerCoord, lightDir, 0.05, 0.05, -0.5);
 
     #if WORLD_SUN_MOON == 2
-        return (lens1 + (lens0 + lens2) * 0.125 + chromaLens) * LENS_FLARE_BRIGHTNESS * sRGBLightCol;
+        return (lens1 + (lens0 + lens2) * 0.125 + chromaLens) * LENS_FLARE_STRENGTH * sRGBLightCol;
     #elif SUN_MOON_TYPE == 2
         float rays = lensFlareRays(centerCoord, lightDir, 8.0, 0.05, -1.0);
-        return (lens1 + (lens0 + lens2) * 0.125 + rays + chromaLens) * LENS_FLARE_BRIGHTNESS * sRGBLightCol;
+        return (lens1 + (lens0 + lens2) * 0.125 + rays + chromaLens) * LENS_FLARE_STRENGTH * sRGBLightCol;
     #else
         float rays = lensFlareRays(centerCoord, lightDir, 8.0, 0.1, -1.0);
-        return (lens1 + (lens0 + lens2) * 0.125 + rays + chromaLens) * LENS_FLARE_BRIGHTNESS * sRGBLightCol;
+        return (lens1 + (lens0 + lens2) * 0.125 + rays + chromaLens) * LENS_FLARE_STRENGTH * sRGBLightCol;
     #endif
 }

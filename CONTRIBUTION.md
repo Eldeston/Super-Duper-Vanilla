@@ -12,7 +12,6 @@
    
 ## Style guidelines
 * No spaces around parentheses: `if(condition){`, `this = function()`
-* No underscores, macros are exempted from this rule.
 * Use `camelCase` on everything, including constants.
 * Use `SCREAMING_CASE` for defined macros only.
 

@@ -1,19 +1,42 @@
-/// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
+/*
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+
+    Developed by Eldeston, presented by FlameRender (TM) Studios.
+
+    Copyright (C) 2020 Eldeston | FlameRender (TM) Studios License
+
+
+    By downloading this content you have agreed to the license and its terms of use.
+
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+*/
+
+/// Buffer features: TAA jittering, and direct shading
+
+/// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
+    flat out float vertexAlpha;
+
+    flat out vec3 vertexColor;
+
     out vec2 texCoord;
 
-    out vec4 vertexColor;
-
     #if ANTI_ALIASING == 2
-        /* Screen resolutions */
-        uniform float viewWidth;
-        uniform float viewHeight;
+        uniform int frameMod8;
+
+        uniform float pixelWidth;
+        uniform float pixelHeight;
 
         #include "/lib/utility/taaJitter.glsl"
     #endif
 
     void main(){
+        // Get vertex alpha
+        vertexAlpha = gl_Color.a;
+        // Get vertex color
+        vertexColor = gl_Color.rgb;
+        // Get buffer texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
 
         gl_Position = ftransform();
@@ -21,42 +44,49 @@
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
-
-        vertexColor = gl_Color;
     }
 #endif
 
-/// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
+/// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
+    flat in float vertexAlpha;
+
+    flat in vec3 vertexColor;
+
     in vec2 texCoord;
-
-    in vec4 vertexColor;
-
-    // Get albedo texture
-    uniform sampler2D tex;
 
     uniform int renderStage;
 
-    #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT
-        #include "/lib/universalVars.glsl"
+    uniform sampler2D tex;
+
+    #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
+        uniform float dayCycle;
+        uniform float twilightPhase;
     #endif
     
     void main(){
-        vec4 albedo = texture(tex, texCoord);
+        // Get albedo color
+        vec4 albedo = textureLod(tex, texCoord, 0);
 
         // Alpha test, discard immediately
         if(albedo.a <= ALPHA_THRESHOLD) discard;
 
     /* DRAWBUFFERS:0 */
         // Detect and calculate the sun and moon
-        if(renderStage == MC_RENDER_STAGE_SUN || renderStage == MC_RENDER_STAGE_MOON)
-            #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT
-                gl_FragData[0] = vec4(toLinear(albedo.rgb * vertexColor.rgb) * vertexColor.a * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY * LIGHT_COL_DATA_BLOCK, albedo.a);
+        if(renderStage == MC_RENDER_STAGE_SUN)
+            #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
+                gl_FragData[0] = vec4(toLinear(albedo.rgb * vertexColor * (SUN_MOON_INTENSITY * vertexAlpha)) * SUN_COL_DATA_BLOCK, albedo.a);
+            #else
+                discard;
+            #endif
+        else if(renderStage == MC_RENDER_STAGE_MOON)
+            #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
+                gl_FragData[0] = vec4(toLinear(albedo.rgb * vertexColor * (SUN_MOON_INTENSITY * vertexAlpha)) * MOON_COL_DATA_BLOCK, albedo.a);
             #else
                 discard;
             #endif
         // Otherwise, calculate skybox
-        else gl_FragData[0] = vec4(toLinear(albedo.rgb * vertexColor.rgb) * vertexColor.a * SKYBOX_BRIGHTNESS, albedo.a);
+        else gl_FragData[0] = vec4(toLinear(albedo.rgb * vertexColor * (SKYBOX_BRIGHTNESS * vertexAlpha)), albedo.a);
     }
 #endif

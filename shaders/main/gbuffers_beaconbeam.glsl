@@ -1,4 +1,19 @@
-/// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
+/*
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+
+    Developed by Eldeston, presented by FlameRender (TM) Studios.
+
+    Copyright (C) 2020 Eldeston | FlameRender (TM) Studios License
+
+
+    By downloading this content you have agreed to the license and its terms of use.
+
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+*/
+
+/// Buffer features: TAA jittering, direct shading, and world curvature
+
+/// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
     flat out vec4 vertexColor;
@@ -11,15 +26,16 @@
     #endif
 
     #if ANTI_ALIASING == 2
-        /* Screen resolutions */
-        uniform float viewWidth;
-        uniform float viewHeight;
+        uniform int frameMod8;
+
+        uniform float pixelWidth;
+        uniform float pixelHeight;
 
         #include "/lib/utility/taaJitter.glsl"
     #endif
 
     void main(){
-        // Get texture coordinates
+        // Get buffer texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         // Get vertex color
         vertexColor = gl_Color;
@@ -28,9 +44,10 @@
             // Get vertex position (feet player pos)
             vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
 
-            vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
+            // Apply curvature distortion
+            vertexPos.y -= lengthSquared(vertexPos.xz) / WORLD_CURVATURE_SIZE;
             
-            // Clip pos
+            // Convert to clip pos and output as position
             gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
         #else
             gl_Position = ftransform();
@@ -42,7 +59,7 @@
     }
 #endif
 
-/// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
+/// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
     flat in vec4 vertexColor;
@@ -53,20 +70,23 @@
     uniform sampler2D tex;
 
     void main(){
-        vec4 albedo = texture(tex, texCoord) * vertexColor;
+        vec4 albedo = textureLod(tex, texCoord, 0) * vertexColor;
 
         // Alpha test, discard immediately
         if(albedo.a <= ALPHA_THRESHOLD) discard;
 
-        #if WHITE_MODE == 1
+        #if COLOR_MODE == 1
             albedo.rgb = vec3(1);
-        #elif WHITE_MODE == 2
+        #elif COLOR_MODE == 2
             albedo.rgb = vec3(0);
-        #elif WHITE_MODE == 3
+        #elif COLOR_MODE == 3
             albedo.rgb = vertexColor.rgb;
         #endif
 
+        // Convert to linear space
+        albedo.rgb = toLinear(albedo.rgb);
+
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(toLinear(albedo.rgb) * EMISSIVE_INTENSITY, albedo.a); // gcolor
+        gl_FragData[0] = vec4(albedo.rgb * EMISSIVE_INTENSITY, albedo.a); // gcolor
     }
 #endif

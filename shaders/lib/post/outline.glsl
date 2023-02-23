@@ -11,9 +11,9 @@ float getOutline(in ivec2 iUv, in float depthOrigin, in int pixSize){
 
     #if OUTLINES == 1
         // Calculate standard outlines
-        return saturate(totalDepth - depthOrigin * 4.0);
+        return saturate(sumDepth - depthOrigin * 4.0);
     #else
         // Calculate dungeons outlines
-        return saturate((depthOrigin * 256.0 - sumDepth * 64.0) / -depthOrigin);
+        return saturate((sumDepth * 64.0 - depthOrigin * 256.0) / depthOrigin);
     #endif
 }

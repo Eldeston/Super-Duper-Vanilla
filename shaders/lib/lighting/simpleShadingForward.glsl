@@ -1,111 +1,86 @@
-#ifdef WORLD_LIGHT
-	uniform float shdFade;
-#endif
+vec4 simpleShadingGbuffers(in vec4 albedo){
+	#ifdef CLOUDS
+		// Calculate total diffuse for clouds
+		vec3 totalDiffuse = toLinear(SKY_COL_DATA_BLOCK) + toLinear(nightVision * 0.5 + AMBIENT_LIGHTING);
+	#else
+		// Calculate total diffuse
+		vec3 totalDiffuse = toLinear(SKY_COL_DATA_BLOCK * lmCoord.y) + toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) +
+			toLinear((lmCoord.x * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B));
+	#endif
 
-#ifdef CLOUDS
-	vec4 simpleShadingGbuffers(in vec4 albedo){
-		// Get lightmaps and add simple sky GI
-		vec3 totalDiffuse = toLinear(SKY_COL_DATA_BLOCK) +
-			toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
+	// Thunder flash
+	#ifdef CLOUDS
+		totalDiffuse += lightningFlash * EMISSIVE_INTENSITY;
+	#else
+		float skyLightCubed = lmCoord.y * lmCoord.y * lmCoord.y;
 
-		#ifdef WORLD_LIGHT
-			float NL = max(0.0, dot(vertexNormal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z))) * 0.6 + 0.4;
-			// also equivalent to:
-			// vec3(0, 0, 1) * mat3(shadowModelView) = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)
-			// shadowLightPosition is broken in other dimensions. The current is equivalent to:
-			// fastNormalize(mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz)
+		totalDiffuse += lightningFlash * skyLightCubed * EMISSIVE_INTENSITY;
+	#endif
 
-			float rainDiff = rainStrength * 0.5;
+	#ifdef WORLD_LIGHT
+		#ifdef SHADOW
+			// Get shadow pos
+			vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz);
+			shdPos.z += shadowProjection[3].z;
 
-			#ifdef SHD_ENABLE
-				vec3 shadowCol = vec3(0);
+			// Bias mutilplier, adjusts according to the current shadow distance and resolution
+			const float biasAdjustMult = (shadowDistance / shadowMapResolution) * 4.0;
+			float distortFactor = getDistortFactor(shdPos.xy);
 
-				// If the area isn't shaded, apply shadow mapping
-				if(NL > 0){
-					// Get shadow pos
-					vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz) + shadowProjection[3].xyz;
-					
-					// Bias mutilplier, adjusts according to the current shadow distance and resolution
-					const float biasAdjustMult = log2(max(4.0, shadowDistance - shadowMapResolution * 0.125)) * 0.25;
-					float distortFactor = getDistortFactor(shdPos.xy);
-					
-					// Apply bias according to normal in shadow space
-					shdPos += vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexNormal) * distortFactor * biasAdjustMult;
-					shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
-
-					// Sample shadows
-					#ifdef SHD_FILTER
-						#if ANTI_ALIASING >= 2
-							shadowCol = getShdFilter(shdPos, toRandPerFrame(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x, frameTimeCounter) * TAU);
-						#else
-							shadowCol = getShdFilter(shdPos, texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x * TAU);
-						#endif
-					#else
-						shadowCol = getShdTex(shdPos);
-					#endif
-				}
-
-				totalDiffuse += (shadowCol * NL * shdFade * (1.0 - rainDiff) + rainDiff) * toLinear(LIGHT_COL_DATA_BLOCK);
+			#ifdef CLOUDS
+				// Apply bias according to normal in shadow space for clouds
+				shdPos += vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexNormal) * distortFactor * biasAdjustMult;
 			#else
-				totalDiffuse += (NL * shdFade * (1.0 - rainDiff) + rainDiff) * toLinear(LIGHT_COL_DATA_BLOCK);
+				// Apply simpler bias for particles and basic
+				shdPos.y += shadowProjection[1].y * shadowModelView[1].y * distortFactor * biasAdjustMult;
 			#endif
-		#endif
 
-		return vec4(albedo.rgb * totalDiffuse, albedo.a);
-	}
-#else
-	vec4 simpleShadingGbuffers(in vec4 albedo){
-		// Get lightmaps and add simple sky GI
-		vec3 totalDiffuse = toLinear(SKY_COL_DATA_BLOCK * lmCoord.y) +
-			toLinear((lmCoord.x * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B)) +
-			toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
+			shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
 
-		#ifdef WORLD_LIGHT
-			float NL = max(0.0, dot(vertexNormal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)));
-			// also equivalent to:
-			// vec3(0, 0, 1) * mat3(shadowModelView) = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)
-			// shadowLightPosition is broken in other dimensions. The current is equivalent to:
-			// fastNormalize(mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz)
+			// Sample shadows
+			#ifdef SHADOW_FILTER
+				#if ANTI_ALIASING >= 2
+					vec3 shadowCol = getShdCol(shdPos, toRandPerFrame(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x, frameTimeCounter) * TAU);
+				#else
+					vec3 shadowCol = getShdCol(shdPos, texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x * TAU);
+				#endif
+			#else
+				vec3 shadowCol = getShdCol(shdPos);
+			#endif
 
-			#ifdef SHD_ENABLE
-				vec3 shadowCol = vec3(0);
-
-				// If the area isn't shaded, apply shadow mapping
-				if(NL > 0){
-					// Cave light leak fix
-					float caveFixShdFactor = isEyeInWater == 1 ? 1.0 : min(1.0, lmCoord.y * 2.0) * (1.0 - eyeBrightFact) + eyeBrightFact;
-
-					// Get shadow pos
-					vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz) + shadowProjection[3].xyz;
-					
-					// Bias mutilplier, adjusts according to the current shadow distance and resolution
-					const float biasAdjustMult = log2(max(4.0, shadowDistance - shadowMapResolution * 0.125)) * 0.25;
-					float distortFactor = getDistortFactor(shdPos.xy);
-
-					// Apply bias according to normal in shadow space
-					shdPos += vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexNormal) * distortFactor * biasAdjustMult;
-					shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
-
-					// Sample shadows
-					#ifdef SHD_FILTER
-						#if ANTI_ALIASING >= 2
-							shadowCol = getShdFilter(shdPos, toRandPerFrame(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x, frameTimeCounter) * TAU);
-						#else
-							shadowCol = getShdFilter(shdPos, texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x * TAU);
-						#endif
-					#else
-						shadowCol = getShdTex(shdPos) * caveFixShdFactor;
-					#endif
-				}
+			#ifdef CLOUDS
+				// Apply simple diffuse for clouds
+				shadowCol *= max(0.0, dot(vertexNormal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) * 0.6 + 0.4) * shdFade;
+			#else
+				// Cave light leak fix
+				shadowCol *= isEyeInWater == 1 ? shdFade : (min(1.0, lmCoord.y * 2.0) * (1.0 - eyeBrightFact) + eyeBrightFact) * shdFade;
+			#endif
+		#else
+			#ifdef CLOUDS
+				// Apply simple diffuse for clouds
+				float shadowCol = max(0.0, dot(vertexNormal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) * 0.6 + 0.4) * shdFade;
 			#else
 				// Sample fake shadows
-				float shadowCol = smoothstep(0.94, 0.96, lmCoord.y);
+				float shadowCol = saturate(hermiteMix(0.96, 0.98, lmCoord.y)) * shdFade;
 			#endif
-
-			float rainDiff = rainStrength * 0.5;
-			totalDiffuse += (shadowCol * NL * shdFade * (1.0 - rainDiff) + lmCoord.y * lmCoord.y * rainDiff) * toLinear(LIGHT_COL_DATA_BLOCK);
 		#endif
 
-		return vec4(albedo.rgb * totalDiffuse, albedo.a);
-	}
-#endif
+		#ifndef FORCE_DISABLE_WEATHER
+			// Approximate rain diffusing light shadow
+			float rainDiffuseAmount = rainStrength * 0.5;
+			shadowCol *= 1.0 - rainDiffuseAmount;
+
+			#ifdef CLOUDS
+				shadowCol += rainDiffuseAmount;
+			#else
+				shadowCol += rainDiffuseAmount * skyLightCubed;
+			#endif
+		#endif
+
+		// Calculate and add shadow diffuse
+		totalDiffuse += shadowCol * toLinear(LIGHT_COL_DATA_BLOCK0);
+	#endif
+
+	// Return final result
+	return vec4(albedo.rgb * totalDiffuse, albedo.a);
+}

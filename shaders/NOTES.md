@@ -8,7 +8,7 @@
 * gcolor - Main scene / Skybox, vanilla sun and moon : R11F_G11F_B10F
 * colortex1 - Normals : RGB16_SNORM
 * colortex2 - Raw albedo, SSAO : RGBA8
-* colortex3 - Metallic, roughness, glowing entity : RGB8
+* colortex3 - Metallic, roughness, glowing entity / Final output : RGB8
 * colortex4 - Clouds / Bloom : R11F_G11F_B10F
 * colortex5 - TAA / Previous reflections, Auto exposure : RGBA16F
 
@@ -33,6 +33,7 @@
    This along with the `GBUFFERS` macro, are used to identify the quirks in the current program for the shader to detect.
 
 ### Complex Programs
+   Programs with complex lighting.
 * TERRAIN
 * WATER
 * BLOCK
@@ -42,11 +43,13 @@
 * HAND_WATER
 
 ### Simple Programs
+   Programs with basic lighting.
 * BASIC
 * CLOUDS
 * TEXTURED
 
 ### Basic programs
+   Programs with simple shading.
 * ARMOR_GLINT
 * BEACON_BEAM
 * SPIDER_EYES

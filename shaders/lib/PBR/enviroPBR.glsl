@@ -1,13 +1,10 @@
-uniform float isPrecipitationRain;
-uniform float wetness;
-
 // For Optifine to detect this option
 #ifdef ENVIRO_PBR
 #endif
 
 // Environment PBR calculation
 void enviroPBR(inout structPBR material){
-    float rainMatFact = TBN[2].y * max(0.0, (lmCoord.y - 0.8) * 5.0) * (1.0 - material.porosity) * isPrecipitationRain * wetness;
+    float rainMatFact = TBN[2].y * max(0.0, (lmCoord.y - 0.8) * 5.0) * (1.0 - material.porosity) * isPrecipitationRain;
 
     if(rainMatFact > 0.005){
         vec2 noiseData = textureLod(noisetex, worldPos.xz * 0.001953125, 0).xy;

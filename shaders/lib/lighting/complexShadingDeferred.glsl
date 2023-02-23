@@ -2,7 +2,7 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
 	#if defined ROUGH_REFLECTIONS || defined SSGI
 		vec3 noiseUnitVector = generateUnitVector(dither.xy);
 	#endif
-	
+
 	// Calculate SSGI
 	#ifdef SSGI
 		// Get SSGI screen coordinates
@@ -37,20 +37,21 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
 			
 			#ifdef PREVIOUS_FRAME
 				// Get reflections and check for sky
-				vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyRender(mat3(gbufferModelViewInverse) * reflectedViewDir, true, true) : textureLod(colortex5, toPrevScreenPos(SSRCoord.xy), 0).rgb;
+				vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyRender(mat3(gbufferModelViewInverse) * reflectedViewDir, vec3(0), true) : textureLod(colortex5, toPrevScreenPos(SSRCoord.xy), 0).rgb;
 			#else
 				// Get reflections and check for sky
-				vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyRender(mat3(gbufferModelViewInverse) * reflectedViewDir, true, true) : textureLod(gcolor, SSRCoord.xy, 0).rgb;
+				vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyRender(mat3(gbufferModelViewInverse) * reflectedViewDir, vec3(0), true) : textureLod(gcolor, SSRCoord.xy, 0).rgb;
 			#endif
 		#else
-			vec3 reflectCol = getSkyRender(mat3(gbufferModelViewInverse) * reflectedViewDir, true, true);
+			vec3 reflectCol = getSkyRender(mat3(gbufferModelViewInverse) * reflectedViewDir, vec3(0), true);
 		#endif
 
 		// Modified version of BSL's reflection PBR calculation
 		if(metallic > 0.9){
 			vec3 fresnel = getFresnelSchlick(albedo, cosTheta) * smoothness;
 			sceneCol = sceneCol * (1.0 - smoothness) + reflectCol * fresnel;
-		}else{
+		}
+		else{
 			float fresnel = getFresnelSchlick(metallic, cosTheta) * smoothness;
 			sceneCol = sceneCol * (1.0 - fresnel) + reflectCol * fresnel;
 		}

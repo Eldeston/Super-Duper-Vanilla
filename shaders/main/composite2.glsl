@@ -1,36 +1,48 @@
-/// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
+/*
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+
+    Developed by Eldeston, presented by FlameRender (TM) Studios.
+
+    Copyright (C) 2020 Eldeston | FlameRender (TM) Studios License
+
+
+    By downloading this content you have agreed to the license and its terms of use.
+
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+*/
+
+/// Buffer features: Motion blur
+
+/// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    out vec2 screenCoord;
+    out vec2 texCoord;
 
     void main(){
+        // Get buffer texture coordinates
+        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         gl_Position = ftransform();
-        screenCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
     }
 #endif
 
-/// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
+/// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    in vec2 screenCoord;
+    in vec2 texCoord;
 
     uniform sampler2D gcolor;
 
     #ifdef MOTION_BLUR
-        uniform sampler2D depthtex0;
+        uniform vec3 cameraPosition;
+        uniform vec3 previousCameraPosition;
 
-        /* Matrix uniforms */
-        // View matrix uniforms
         uniform mat4 gbufferModelViewInverse;
         uniform mat4 gbufferPreviousModelView;
 
-        // Projection matrix uniforms
         uniform mat4 gbufferProjectionInverse;
         uniform mat4 gbufferPreviousProjection;
 
-        /* Position uniforms */
-        uniform vec3 cameraPosition;
-        uniform vec3 previousCameraPosition;
+        uniform sampler2D depthtex0;
 
         #include "/lib/utility/convertPrevScreenSpace.glsl"
 
@@ -42,13 +54,15 @@
     void main(){
         // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
-        // Scene color
+        // Get scene color
         vec3 sceneCol = texelFetch(gcolor, screenTexelCoord, 0).rgb;
 
         #ifdef MOTION_BLUR
+            // Declare and get positions
             float depth = texelFetch(depthtex0, screenTexelCoord, 0).x;
 
-            if(depth > 0.56) sceneCol = motionBlur(sceneCol, screenCoord, depth, texelFetch(noisetex, screenTexelCoord & 255, 0).x);
+            // Apply motion blur if not player hand
+            if(depth > 0.56) sceneCol = motionBlur(sceneCol, depth, texelFetch(noisetex, screenTexelCoord & 255, 0).x);
         #endif
 
     /* DRAWBUFFERS:0 */

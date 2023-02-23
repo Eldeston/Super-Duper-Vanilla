@@ -1,41 +1,58 @@
-/// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
+/*
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+
+    Developed by Eldeston, presented by FlameRender (TM) Studios.
+
+    Copyright (C) 2020 Eldeston | FlameRender (TM) Studios License
+
+
+    By downloading this content you have agreed to the license and its terms of use.
+
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+*/
+
+/// Buffer features: TAA jittering, complex shading, End portal, PBR, and world curvature
+
+/// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    flat out mat3 TBN;
+    flat out vec2 lmCoord;
 
     flat out vec3 vertexColor;
 
-    out vec2 lmCoord;
+    flat out mat3 TBN;
+
     out vec2 texCoord;
+
+    out vec4 vertexPos;
 
     #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
         flat out vec2 vTexCoordScale;
         flat out vec2 vTexCoordPos;
+
         out vec2 vTexCoord;
     #endif
 
-    out vec4 vertexPos;
-
-    // View matrix uniforms
     uniform mat4 gbufferModelView;
     uniform mat4 gbufferModelViewInverse;
 
     #if ANTI_ALIASING == 2
-        /* Screen resolutions */
-        uniform float viewWidth;
-        uniform float viewHeight;
+        uniform int frameMod8;
+
+        uniform float pixelWidth;
+        uniform float pixelHeight;
 
         #include "/lib/utility/taaJitter.glsl"
     #endif
-    
-    #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
-        attribute vec4 mc_midTexCoord;
-    #endif
 
     attribute vec4 at_tangent;
+    
+    #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
+        attribute vec2 mc_midTexCoord;
+    #endif
 
     void main(){
-        // Get texture coordinates
+        // Get buffer texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         // Get vertex color
         vertexColor = gl_Color.rgb;
@@ -53,13 +70,13 @@
 
         // Lightmap fix for mods
         #ifdef WORLD_SKYLIGHT
-            lmCoord = vec2(saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).x - 0.03125) * 1.06667), WORLD_SKYLIGHT);
+            lmCoord = vec2(saturate(gl_MultiTexCoord1.x * 0.00416667), WORLD_SKYLIGHT);
         #else
-            lmCoord = saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).xy - 0.03125) * 1.06667);
+            lmCoord = saturate(gl_MultiTexCoord1.xy * 0.00416667);
         #endif
 
         #ifdef PARALLAX_OCCLUSION
-            vec2 midCoord = (gl_TextureMatrix[0] * mc_midTexCoord).xy;
+            vec2 midCoord = (gl_TextureMatrix[0] * vec4(mc_midTexCoord, 0, 0)).xy;
             vec2 texMinMidCoord = texCoord - midCoord;
 
             vTexCoordScale = abs(texMinMidCoord) * 2.0;
@@ -68,9 +85,10 @@
         #endif
 
         #ifdef WORLD_CURVATURE
+            // Apply curvature distortion
             vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
-            
-            // Clip pos
+
+            // Convert to clip pos and output as position
             gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
         #else
             gl_Position = ftransform();
@@ -82,72 +100,79 @@
     }
 #endif
 
-/// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
+/// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    flat in mat3 TBN;
+    flat in vec2 lmCoord;
 
     flat in vec3 vertexColor;
+    
+    flat in mat3 TBN;
 
-    in vec2 lmCoord;
     in vec2 texCoord;
+
+    in vec4 vertexPos;
 
     #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
         flat in vec2 vTexCoordScale;
         flat in vec2 vTexCoordPos;
+
         in vec2 vTexCoord;
     #endif
 
-    in vec4 vertexPos;
-
-    // Get albedo texture
-    uniform sampler2D tex;
-
-    #ifdef WORLD_LIGHT
-        // Shadow view matrix uniforms
-        uniform mat4 shadowModelView;
-
-        #ifdef SHD_ENABLE
-            // Shadow projection matrix uniforms
-            uniform mat4 shadowProjection;
-        #endif
-    #endif
-
-    // Get entity id
     uniform int blockEntityId;
 
-    // Get is eye in water
     uniform int isEyeInWater;
 
-    // Get night vision
     uniform float nightVision;
+    uniform float lightningFlash;
 
-    // Get frame time
     uniform float frameTimeCounter;
 
-    /* Screen resolutions */
-    uniform float viewWidth;
-    uniform float viewHeight;
+    uniform float pixelWidth;
+    uniform float pixelHeight;
 
-    #if TIMELAPSE_MODE != 0
-        uniform float animationFrameTime;
+    uniform sampler2D tex;
 
-        float newFrameTimeCounter = animationFrameTime;
-    #else
-        float newFrameTimeCounter = frameTimeCounter;
-    #endif
-
-    // Derivatives
+    // Texture coordinate derivatives
     vec2 dcdx = dFdx(texCoord);
     vec2 dcdy = dFdy(texCoord);
 
-    #include "/lib/universalVars.glsl"
-    
-    #include "/lib/utility/noiseFunctions.glsl"
+    #ifndef FORCE_DISABLE_WEATHER
+        uniform float rainStrength;
+    #endif
 
-    #include "/lib/lighting/shdMapping.glsl"
-    #include "/lib/lighting/shdDistort.glsl"
-    #include "/lib/lighting/GGX.glsl"
+    #ifndef FORCE_DISABLE_DAY_CYCLE
+        uniform float dayCycle;
+        uniform float twilightPhase;
+    #endif
+
+    #ifdef WORLD_VANILLA_FOG_COLOR
+        uniform vec3 fogColor;
+    #endif
+
+    #ifdef WORLD_SKYLIGHT
+        const float eyeBrightFact = WORLD_SKYLIGHT;
+    #else
+        uniform float eyeSkylight;
+        
+        float eyeBrightFact = eyeSkylight;
+    #endif
+
+    #ifdef WORLD_LIGHT
+        uniform float shdFade;
+
+        uniform mat4 shadowModelView;
+
+        #ifdef SHADOW
+            uniform mat4 shadowProjection;
+
+            #include "/lib/lighting/shdMapping.glsl"
+            #include "/lib/lighting/shdDistort.glsl"
+        #endif
+
+        #include "/lib/lighting/GGX.glsl"
+    #endif
 
     #include "/lib/PBR/structPBR.glsl"
 
@@ -157,23 +182,25 @@
         #include "/lib/PBR/labPBR.glsl"
     #endif
 
+    #include "/lib/utility/noiseFunctions.glsl"
+
     #include "/lib/lighting/complexShadingForward.glsl"
 
     void main(){
         // End portal
-        if(blockEntityId == 10016){
+        if(blockEntityId == 20000){
             // End star uv
-            vec2 screenPos = gl_FragCoord.xy / vec2(viewWidth, viewHeight);
-            float starSpeed = newFrameTimeCounter * 0.0078125;
+            vec2 screenPos = gl_FragCoord.xy * vec2(pixelWidth, pixelHeight);
+            float starSpeed = frameTimeCounter * 0.0078125;
 
-            float endStarField = texture(tex, vec2(screenPos.y, screenPos.x + starSpeed) * 0.5).r;
-            endStarField += texture(tex, vec2(screenPos.x, screenPos.y + starSpeed)).r;
-            endStarField += texture(tex, vec2(-screenPos.x, starSpeed - screenPos.y) * 2.0).r;
+            float endStarField = textureLod(tex, vec2(screenPos.y, screenPos.x + starSpeed) * 0.5, 0).r;
+            endStarField += textureLod(tex, vec2(screenPos.x, screenPos.y + starSpeed), 0).r;
+            endStarField += textureLod(tex, vec2(-screenPos.x, starSpeed - screenPos.y) * 2.0, 0).r;
             
             vec2 endStarCoord1 = vec2(screenPos.x - screenPos.y, screenPos.y + screenPos.x);
-            endStarField += texture(tex, vec2(endStarCoord1.y, endStarCoord1.x + starSpeed) * 0.5).r;
-            endStarField += texture(tex, vec2(endStarCoord1.x, endStarCoord1.y + starSpeed)).r;
-            endStarField += texture(tex, vec2(-endStarCoord1.x, starSpeed - endStarCoord1.y) * 2.0).r;
+            endStarField += textureLod(tex, vec2(endStarCoord1.y, endStarCoord1.x + starSpeed) * 0.5, 0).r;
+            endStarField += textureLod(tex, vec2(endStarCoord1.x, endStarCoord1.y + starSpeed), 0).r;
+            endStarField += textureLod(tex, vec2(-endStarCoord1.x, starSpeed - endStarCoord1.y) * 2.0, 0).r;
 
             vec3 endPortalAlbedo = toLinear((endStarField + 0.1) * (getRand3(ivec2(screenPos * 128.0) & 255) * 0.5 + 0.5) * vertexColor.rgb);
             
@@ -189,7 +216,8 @@
 	    // Declare materials
 	    structPBR material;
         getPBR(material, blockEntityId);
-        
+
+        // Convert to linear space
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         vec4 sceneCol = complexShadingGbuffers(material);

@@ -1,29 +1,46 @@
-/// ------------------------------------- /// Vertex Shader /// ------------------------------------- ///
+/*
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+
+    Developed by Eldeston, presented by FlameRender (TM) Studios.
+
+    Copyright (C) 2020 Eldeston | FlameRender (TM) Studios License
+
+
+    By downloading this content you have agreed to the license and its terms of use.
+
+================================ /// Super Duper Vanilla v1.3.3 /// ================================
+*/
+
+/// Buffer features: TAA jittering, complex shading, PBR, glowing effect, and world curvature
+
+/// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    flat out mat3 TBN;
+    flat out vec2 lmCoord;
 
     flat out vec3 vertexColor;
+    
+    flat out mat3 TBN;
 
-    out vec2 lmCoord;
     out vec2 texCoord;
+
+    out vec4 vertexPos;
 
     #ifdef PARALLAX_OCCLUSION
         flat out vec2 vTexCoordScale;
         flat out vec2 vTexCoordPos;
+
         out vec2 vTexCoord;
     #endif
 
-    out vec4 vertexPos;
-
-    // View matrix uniforms
     uniform mat4 gbufferModelView;
     uniform mat4 gbufferModelViewInverse;
 
     #if ANTI_ALIASING == 2
-        /* Screen resolutions */
-        uniform float viewWidth;
-        uniform float viewHeight;
+        uniform int frameMod8;
+
+        uniform float pixelWidth;
+        uniform float pixelHeight;
 
         #include "/lib/utility/taaJitter.glsl"
     #endif
@@ -31,11 +48,11 @@
     attribute vec4 at_tangent;
 
     #ifdef PARALLAX_OCCLUSION
-        attribute vec4 mc_midTexCoord;
+        attribute vec2 mc_midTexCoord;
     #endif
 
     void main(){
-        // Get texture coordinates
+        // Get buffer texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         // Get vertex color
         vertexColor = gl_Color.rgb;
@@ -53,17 +70,18 @@
 
         // Lightmap fix for mods
         #ifdef WORLD_SKYLIGHT
-            lmCoord = vec2(saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).x - 0.03125) * 1.06667), WORLD_SKYLIGHT);
+            lmCoord = vec2(saturate(gl_MultiTexCoord1.x * 0.00416667), WORLD_SKYLIGHT);
         #else
-            lmCoord = saturate(((gl_TextureMatrix[1] * gl_MultiTexCoord1).xy - 0.03125) * 1.06667);
+            lmCoord = saturate(gl_MultiTexCoord1.xy * 0.00416667);
         #endif
 
         #ifdef PARALLAX_OCCLUSION
-            vec2 midCoord = (gl_TextureMatrix[0] * mc_midTexCoord).xy;
+            vec2 midCoord = (gl_TextureMatrix[0] * vec4(mc_midTexCoord, 0, 0)).xy;
             vec2 texMinMidCoord = texCoord - midCoord;
 
             vTexCoordScale = abs(texMinMidCoord) * 2.0;
             vTexCoordPos = min(texCoord, midCoord - texMinMidCoord);
+
             vTexCoord = sign(texMinMidCoord) * 0.5 + 0.5;
         #endif
 
@@ -85,48 +103,59 @@
     }
 #endif
 
-/// ------------------------------------- /// Fragment Shader /// ------------------------------------- ///
+/// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    flat in mat3 TBN;
+    flat in vec2 lmCoord;
 
     flat in vec3 vertexColor;
 
-    in vec2 lmCoord;
+    flat in mat3 TBN;
+
     in vec2 texCoord;
+
+    in vec4 vertexPos;
 
     #ifdef PARALLAX_OCCLUSION
         flat in vec2 vTexCoordScale;
         flat in vec2 vTexCoordPos;
+        
         in vec2 vTexCoord;
     #endif
 
-    in vec4 vertexPos;
-
-    // Get albedo texture
-    uniform sampler2D tex;
-
-    #ifdef WORLD_LIGHT
-        // Shadow view matrix uniforms
-        uniform mat4 shadowModelView;
-    #endif
-
-    // Get entity id
     uniform int entityId;
 
-    // Get night vision
     uniform float nightVision;
+    uniform float lightningFlash;
 
-    // Get entity color
     uniform vec4 entityColor;
+
+    uniform sampler2D tex;
 
     // Texture coordinate derivatives
     vec2 dcdx = dFdx(texCoord);
     vec2 dcdy = dFdy(texCoord);
 
-    #include "/lib/universalVars.glsl"
+    #ifndef FORCE_DISABLE_WEATHER
+        uniform float rainStrength;
+    #endif
 
-    #include "/lib/lighting/GGX.glsl"
+    #ifndef FORCE_DISABLE_DAY_CYCLE
+        uniform float dayCycle;
+        uniform float twilightPhase;
+    #endif
+
+    #ifdef WORLD_VANILLA_FOG_COLOR
+        uniform vec3 fogColor;
+    #endif
+
+    #ifdef WORLD_LIGHT
+        uniform float shdFade;
+
+        uniform mat4 shadowModelView;
+
+        #include "/lib/lighting/GGX.glsl"
+    #endif
 
     #include "/lib/PBR/structPBR.glsl"
 
@@ -143,8 +172,10 @@
 	    structPBR material;
         getPBR(material, entityId);
 
+        // Apply entity color tint
         material.albedo.rgb = mix(material.albedo.rgb, entityColor.rgb, entityColor.a);
 
+        // Convert to linear space
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         vec4 sceneCol = complexShadingGbuffers(material);
