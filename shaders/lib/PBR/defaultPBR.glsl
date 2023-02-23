@@ -174,12 +174,6 @@ void getPBR(inout structPBR material, in int id){
                 }
             }
 
-            // Gem blocks
-            else if(id == 10082){
-                material.smoothness = fastSqrt(min(0.8, sumOf(material.albedo.rgb)));
-                material.metallic = 0.17;
-            }
-
             // Crying obsidian
             else if(id == 10083){
                 material.smoothness = fastSqrt(min(0.8, sumOf(material.albedo.rgb)));
@@ -222,9 +216,6 @@ void getPBR(inout structPBR material, in int id){
                 material.smoothness = sumOf(material.albedo.rgb) * 0.333;
                 material.metallic = 1.0;
             }
-
-            // Packed ice
-            else if(id == 10065) material.smoothness = 0.96;
         #endif
 
         #ifdef WATER

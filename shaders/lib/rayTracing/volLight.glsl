@@ -37,7 +37,8 @@ vec3 getVolumetricLight(in vec3 feetPlayerPos, in float depth, in float dither){
 		vec3 endPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * (nFeetPlayerPos * min(min(far, shadowDistance), feetPlayerDist))) * 0.14285714;
 
 		// Apply dithering added to the eyePlayerPos "camera" position converted to shadow clip space
-		vec3 startPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * shadowModelView[3].xyz + shadowProjection[3].xyz + endPos * dither;
+		vec3 startPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * shadowModelView[3].xyz + endPos * dither;
+		startPos.z += shadowProjection[3].z;
 
 		vec3 rayData = vec3(0);
 		for(int x = 0; x < 7; x++){

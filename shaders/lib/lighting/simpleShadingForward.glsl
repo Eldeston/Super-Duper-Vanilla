@@ -20,7 +20,8 @@ vec4 simpleShadingGbuffers(in vec4 albedo){
 	#ifdef WORLD_LIGHT
 		#ifdef SHADOW
 			// Get shadow pos
-			vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz) + shadowProjection[3].xyz;
+			vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz);
+			shdPos.z += shadowProjection[3].z;
 
 			// Bias mutilplier, adjusts according to the current shadow distance and resolution
 			const float biasAdjustMult = (shadowDistance / shadowMapResolution) * 4.0;
