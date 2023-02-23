@@ -106,7 +106,7 @@ vec4 complexShadingGbuffers(in structPBR material){
 			vec3 specCol = getSpecBRDF(fastNormalize(-vertexPos.xyz), vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), material.normal, material.albedo.rgb, NL, material.metallic, 1.0 - material.smoothness);
 			// Needs to multiplied twice in order for the speculars to look relatively "correct"
 			#ifdef FORCE_DISABLE_WEATHER
-				totalDiffuse += min(vec3(SUN_MOON_INTENSITY * SUN_MOON_INTENSITY), specCol) * sRGBLightCol * shadowCol * 2.0;
+				totalDiffuse += min(vec3(SUN_MOON_INTENSITY * SUN_MOON_INTENSITY), specCol) * (1.0 + material.smoothness * 2.0) * sRGBLightCol * shadowCol;
 			#else
 				totalDiffuse += min(vec3(SUN_MOON_INTENSITY * SUN_MOON_INTENSITY), specCol) * sRGBLightCol * shadowCol * (2.0 - rainStrength * 2.0);
 			#endif
