@@ -171,11 +171,9 @@
     #endif
 
     #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
-        uniform mat4 gbufferProjectionInverse;
+        uniform float near;
 
         uniform sampler2D depthtex1;
-
-        #include "/lib/utility/convertViewSpace.glsl"
     #endif
 
     #if (defined SHADOW_FILTER && ANTI_ALIASING >= 2) || TIMELAPSE_MODE == 0
@@ -265,8 +263,8 @@
             #endif
 
             #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
-                // Water color and foam 
-                float waterDepth = toView(texelFetch(depthtex1, ivec2(gl_FragCoord.xy), 0).x) - toView(gl_FragCoord.z);
+                // Water color and foam. Fast depth linearization by DrDesten
+                float waterDepth = near / (1.0 - gl_FragCoord.z) - near / (1.0 - texelFetch(depthtex1, ivec2(gl_FragCoord.xy), 0).x);
             #endif
 
             #ifdef WATER_STYLIZE_ABSORPTION
