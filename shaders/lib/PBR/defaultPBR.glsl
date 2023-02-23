@@ -103,7 +103,7 @@ void getPBR(inout structPBR material, in int id){
             // Redstone block
             else if(id == 23002){
                 material.emissive = 0.45;
-                material.smoothness = 0.9 * material.albedo.r;
+                material.smoothness = 0.93 * material.albedo.r;
                 material.metallic = 1.0;
             }
 
@@ -186,7 +186,7 @@ void getPBR(inout structPBR material, in int id){
                 // Redstone stuff
                 if(material.albedo.r > material.albedo.b * 2.4){
                     material.emissive = float(material.albedo.r > 0.5);
-                    material.smoothness = 0.9;
+                    material.smoothness = 0.93;
                     material.metallic = 1.0;
                 }
 
