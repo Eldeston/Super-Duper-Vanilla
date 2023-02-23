@@ -16,6 +16,8 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
+    flat out vec3 vertexColor;
+
     uniform float pixelWidth;
     uniform float pixelHeight;
 
@@ -31,6 +33,9 @@
     #endif
 
     void main(){
+        // Get vertex color
+        vertexColor = gl_Color.rgb;
+
         #ifdef WORLD_CURVATURE
             // Feet player pos
             vec4 linePosStart = gbufferModelViewInverse * (gl_ModelViewMatrix * vec4(gl_Vertex.xyz, 1));
@@ -71,8 +76,10 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
+    flat in vec3 vertexColor;
+
     void main(){
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(0, 0, 0, 1); // gcolor
+        gl_FragData[0] = vec4(vertexColor, 1); // gcolor
     }
 #endif
