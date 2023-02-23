@@ -168,7 +168,7 @@ void getPBR(inout structPBR material, in int id){
             }
 
             // Netherack metals
-            else if(id == 10097){
+            else if(id == 27001){
                 if(maxOf(material.albedo.rg) > 0.6){
                     material.smoothness = sumOf(material.albedo.rgb) * 0.333;
                     material.metallic = 1.0;
@@ -221,7 +221,7 @@ void getPBR(inout structPBR material, in int id){
             /// -------------------------------- /// Crystal /// -------------------------------- ///
 
             // Beacon
-            else if(id == 10053) material.emissive = exp(sumOf(material.albedo.rgb) * 2.66666664 - 8.0);
+            else if(id == 31000) material.emissive = exp(sumOf(material.albedo.rgb) * 2.66666664 - 8.0);
 
             // End portal frame
             else if(id == 31001) material.emissive = material.albedo.g + material.albedo.b > material.albedo.r * 2.0 ? squared(saturate((material.albedo.g - material.albedo.b) * 4.0)) : 0.0;
