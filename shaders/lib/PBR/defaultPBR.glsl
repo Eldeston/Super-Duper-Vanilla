@@ -76,6 +76,9 @@ void getPBR(inout structPBR material, in int id){
     #if defined ENTITIES || defined ENTITIES_GLOWING
         // Experience orbs, glowing item frames, and fireballs
         if(id == 10130 || id == 10131) material.emissive = cubed(sumOf(material.albedo.rgb) * 0.33333333);
+
+        // End crystal
+        if(id == 10135) material.emissive = float(material.albedo.r > sumOf(material.albedo.gb) * 0.5);
     #endif
 
     #if PBR_MODE == 1
