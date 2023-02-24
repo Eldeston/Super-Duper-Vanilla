@@ -11,6 +11,9 @@ void getPBR(inout structPBR material, in int id){
         if(material.albedo.a <= ALPHA_THRESHOLD) discard;
     #endif
 
+    // Assign default normal map
+    material.normal = TBN[2];
+
     // Generate bumped normals
     #if (defined TERRAIN || defined WATER || defined BLOCK) && defined AUTO_GEN_NORM
         if(id != 15500 && id != 15502 && id != 20001){
@@ -29,9 +32,6 @@ void getPBR(inout structPBR material, in int id){
             // Calculate normal strength
             material.normal = mix(TBN[2], material.normal, NORMAL_STRENGTH);
         }
-    #else
-        // Assign default normal map
-        material.normal = TBN[2];
     #endif
 
     // Default material if not specified

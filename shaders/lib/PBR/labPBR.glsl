@@ -83,14 +83,15 @@ void getPBR(inout structPBR material, in int id){
     vec2 texUv = texCoord;
 
     // Exclude signs and floating texts. We'll also include water and lava in the meantime.
-    bool hasNormal = id != 15500 && id != 15502 && abs(sumOf(textureGrad(normals, texCoord, dcdx, dcdy).xy)) > 0.005;
+    // This bool checks if Optifine is using the proper fallback for normal maps and ao
+    bool hasFallback = id != 15500 && id != 15502 && sumOf(textureGrad(normals, texCoord, dcdx, dcdy).xy) != 0;
 
     #ifdef PARALLAX_OCCLUSION
         vec3 viewDir = -vertexPos.xyz * TBN;
 
         vec3 currPos;
 
-        if(hasNormal) texUv = fract(parallaxUv(vTexCoord, viewDir.xy / -viewDir.z, currPos)) * vTexCoordScale + vTexCoordPos;
+        if(hasFallback) texUv = fract(parallaxUv(vTexCoord, viewDir.xy / -viewDir.z, currPos)) * vTexCoordScale + vTexCoordPos;
     #endif
 
     // Assign albedo
@@ -133,9 +134,12 @@ void getPBR(inout structPBR material, in int id){
     #ifdef TERRAIN
         // Apply vanilla AO with it in terrain
         material.ambient = vertexAO * normalAOH.b;
-    #else
-        // For others, don't use vanilla AO
-        material.ambient = normalAOH.b;
+    #elif defined BLOCK
+        // Ambient occlusion fallback fix
+        if(id == 20001) material.ambient = 1.0;
+    #elif defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER
+        // Ambient occlusion fallback fix
+        material.ambient = id <= 0 ? 1.0 : normalAOH.b;
     #endif
 
     #ifdef TERRAIN
@@ -143,7 +147,7 @@ void getPBR(inout structPBR material, in int id){
         if(id == 15500 || id == 21001) material.emissive = 1.0;
 
         // Foliage and corals
-        else if((id >= 10000 && id <= 13000) || id == 14000) material.ss = 1.0;
+        else if((id >= 10000 && id <= 13000) || id == 14000 || id == 15501 || id == 22000) material.ss = 1.0;
     #endif
 
     #ifdef WATER
@@ -173,20 +177,11 @@ void getPBR(inout structPBR material, in int id){
         if(id == 10135) material.emissive = float(material.albedo.r > sumOf(material.albedo.gb) * 0.5);
     #endif
 
-    #if defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER
-        // Ambient occlusion fix
-        if(id <= 0) material.ambient = 1.0;
-    #endif
-
-    #ifdef BLOCK
-        if(id == 20001) material.ambient = 1.0;
-    #endif
-
     // Get parallax shadows
     material.parallaxShd = 1.0;
 
     #ifdef PARALLAX_OCCLUSION
-        if(hasNormal){
+        if(hasFallback){
             #ifdef SLOPE_NORMALS
                 if(textureGrad(normals, texUv, dcdx, dcdy).a > currPos.z) normalMap = vec3(getSlopeNormals(-viewDir, texUv, currPos.z), 0);
             #endif
@@ -200,7 +195,7 @@ void getPBR(inout structPBR material, in int id){
     #endif
 
     // Assign normal and calculate normal strength
-    if(hasNormal) material.normal = mix(TBN[2], TBN * fastNormalize(normalMap), NORMAL_STRENGTH);
+    if(hasFallback) material.normal = mix(TBN[2], TBN * fastNormalize(normalMap), NORMAL_STRENGTH);
 
     #if COLOR_MODE == 0
         material.albedo.rgb *= vertexColor;
