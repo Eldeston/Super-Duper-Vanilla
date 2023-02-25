@@ -251,7 +251,7 @@
 
             #ifdef WATER_NORM
                 vec4 waterData = H2NWater(worldPos.xz / WATER_TILE_SIZE);
-                material.normal = TBN * waterData.xyz;
+                material.normal = waterData.zyx * TBN[2].x + waterData.xzy * TBN[2].y + waterData.xyz * TBN[2].z;
 
                 #ifdef WATER_NOISE
                     waterNoise *= squared(0.128 + waterData.w * 0.5);
