@@ -251,9 +251,9 @@
 
         if(blockId == 15500){
             #ifdef LAVA_NOISE
-                vec2 lavaUv = (worldPos.yz * TBN[2].x + worldPos.xz * TBN[2].y + worldPos.xy * TBN[2].z) / LAVA_TILE_SIZE;
-                float lavaNoise = max(getLavaNoise(lavaUv), sumOf(material.albedo.rgb) * 0.33333333);
-                material.albedo.rgb = floor(material.albedo.rgb * saturate((lavaNoise - 0.33333333) * 3.0) * LAVA_BRIGHTNESS * 32.0) * 0.03125;
+                vec2 lavaUv = (worldPos.zy * TBN[2].x + worldPos.xz * TBN[2].y + worldPos.xy * TBN[2].z) / LAVA_TILE_SIZE;
+                float lavaNoise = saturate(max(getLavaNoise(lavaUv) * 3.0, sumOf(material.albedo.rgb)) - 1.0);
+                material.albedo.rgb = floor(material.albedo.rgb * lavaNoise * LAVA_BRIGHTNESS * 32.0) * 0.03125;
             #else
                 material.albedo.rgb = material.albedo.rgb * LAVA_BRIGHTNESS;
             #endif
