@@ -136,7 +136,7 @@ void getPBR(inout structPBR material, in int id){
         material.ambient = vertexAO * normalAOH.b;
     #elif defined BLOCK
         // Ambient occlusion fallback fix
-        if(id == 20001) material.ambient = 1.0;
+        material.ambient = id == 20001 ? 1.0 : normalAOH.b;
     #elif defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER
         // Ambient occlusion fallback fix
         material.ambient = id <= 0 ? 1.0 : normalAOH.b;
