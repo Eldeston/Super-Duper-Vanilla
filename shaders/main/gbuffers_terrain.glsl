@@ -87,6 +87,8 @@
         vertexColor = gl_Color.rgb;
 
         // Get vertex tangent
+        vec3 vertexNormal = fastNormalize(gl_Normal);
+        // Get vertex tangent
         vec3 vertexTangent = fastNormalize(at_tangent.xyz);
 
         // Get vertex position (feet player pos)
@@ -95,7 +97,7 @@
         worldPos = vertexPos.xyz + cameraPosition;
 
         // Calculate TBN matrix
-	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, gl_Normal) * sign(at_tangent.w), gl_Normal));
+	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal) * sign(at_tangent.w), vertexNormal));
 
         // Lightmap fix for mods
         #ifdef WORLD_SKYLIGHT

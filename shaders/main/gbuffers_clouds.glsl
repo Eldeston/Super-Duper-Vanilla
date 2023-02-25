@@ -57,7 +57,7 @@
 
             #ifdef WORLD_LIGHT
                 // Get vertex normal
-                vertexNormal = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * gl_Normal);
+                vertexNormal = mat3(gbufferModelViewInverse) * fastNormalize(gl_NormalMatrix * gl_Normal);
             #endif
 
             #ifdef DOUBLE_VANILLA_CLOUDS
