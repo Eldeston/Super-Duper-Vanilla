@@ -32,7 +32,7 @@ screen.POST = Post
         value.ANTI_ALIASING.2 = TAA
         value.ANTI_ALIASING.3 = Lite TAA + FXAA
 
-    option.SHARPEN_FILTER = Sharpern filter
+    option.SHARPEN_FILTER = Sharpen filter
 
     screen.CAMERA = Camera settings
         option.DOF = Depth of field
