@@ -62,9 +62,10 @@ vec3 getSpecBRDF(in vec3 V, in vec3 L, in vec3 N, in vec3 albedo, in float NL, i
 
     // Visibility
     float visibility = 1.0 / (LH + (1.0 / roughness));
-    
+
     // Calculate and apply fresnel and return final specular
     float cosTheta = exp2(-9.28 * LH);
-    if(metallic > 0.9) return getFresnelSchlick(albedo, cosTheta) * (distribution * visibility * NL);
-    return vec3(getFresnelSchlick(metallic, cosTheta) * distribution * visibility * NL);
+    float specular = distribution * visibility * NL;
+    if(metallic > 0.9) return getFresnelSchlick(albedo, cosTheta) * specular;
+    return vec3(getFresnelSchlick(metallic, cosTheta) * specular);
 }
