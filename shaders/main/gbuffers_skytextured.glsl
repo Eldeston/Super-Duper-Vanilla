@@ -84,8 +84,10 @@
         // Detect sun
         #ifdef MC_RENDER_STAGE_SUN
             #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
-                if(renderStage == MC_RENDER_STAGE_SUN)
-                    gl_FragData[0] = vec4(toLinear(albedo.rgb * vertexColor * (SUN_MOON_INTENSITY * vertexAlpha)) * SUN_COL_DATA_BLOCK, albedo.a);
+                if(renderStage == MC_RENDER_STAGE_SUN){
+                    gl_FragData[0] = vec4(toLinear(albedo.rgb * (SUN_MOON_INTENSITY * vertexAlpha)) * SUN_COL_DATA_BLOCK, albedo.a);
+                    return;
+                }
             #else
                 if(renderStage == MC_RENDER_STAGE_MOON) discard;
             #endif
@@ -94,8 +96,10 @@
         // Detect moon
         #ifdef MC_RENDER_STAGE_MOON
             #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
-                if(renderStage == MC_RENDER_STAGE_MOON)
-                    gl_FragData[0] = vec4(toLinear(albedo.rgb * vertexColor * (SUN_MOON_INTENSITY * vertexAlpha)) * MOON_COL_DATA_BLOCK, albedo.a);
+                if(renderStage == MC_RENDER_STAGE_MOON){
+                    gl_FragData[0] = vec4(toLinear(albedo.rgb * (SUN_MOON_INTENSITY * vertexAlpha)) * MOON_COL_DATA_BLOCK, albedo.a);
+                    return;
+                }
             #else
                 if(renderStage == MC_RENDER_STAGE_MOON) discard;
             #endif
