@@ -23,14 +23,14 @@ float getSunMoonShape(in vec2 skyPos){
     float cloudParallax(in vec2 start, in float time){
         // start * stepSize * depthSize = start * 0.125 * 0.08
         vec2 end = start * 0.01;
-        
+
         // Move towards west
         start.x += time * 0.125;
         for(int i = 0; i < 8; i++){
             if(texelFetch(colortex4, ivec2(start) & 255, 0).a > ALPHA_THRESHOLD) return 8.0 - i;
             start += end;
         }
-        
+
         return 0.0;
     }
 #endif

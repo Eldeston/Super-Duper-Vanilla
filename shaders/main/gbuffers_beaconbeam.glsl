@@ -73,7 +73,7 @@
         vec4 albedo = textureLod(tex, texCoord, 0) * vertexColor;
 
         // Alpha test, discard immediately
-        if(albedo.a <= ALPHA_THRESHOLD) discard;
+        if(albedo.a < ALPHA_THRESHOLD) discard;
 
         #if COLOR_MODE == 1
             albedo.rgb = vec3(1);

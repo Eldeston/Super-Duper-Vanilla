@@ -155,7 +155,7 @@
             #endif
 
             // Alpha test, discard immediately
-            if(albedoAlpha <= ALPHA_THRESHOLD) discard;
+            if(albedoAlpha < ALPHA_THRESHOLD) discard;
 
             #if COLOR_MODE == 2
                 vec4 albedo = vec4(0, 0, 0, albedoAlpha);

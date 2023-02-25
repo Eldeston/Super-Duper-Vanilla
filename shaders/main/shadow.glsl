@@ -128,7 +128,7 @@
                 vec4 shdAlbedo = textureLod(tex, texCoord, 0);
 
                 // Alpha test, discard immediately
-                if(shdAlbedo.a <= ALPHA_THRESHOLD) discard;
+                if(shdAlbedo.a < ALPHA_THRESHOLD) discard;
 
                 // If the object is not opaque, proceed with shadow coloring and caustics
                 if(shdAlbedo.a != 1){
@@ -160,7 +160,7 @@
                 gl_FragData[0] = shdAlbedo;
             #else
                 // Alpha test, discard immediately
-                if(textureLod(tex, texCoord, 0).a <= ALPHA_THRESHOLD) discard;
+                if(textureLod(tex, texCoord, 0).a < ALPHA_THRESHOLD) discard;
 
             /* DRAWBUFFERS:0 */
                 gl_FragData[0] = vec4(0, 0, 0, 1);

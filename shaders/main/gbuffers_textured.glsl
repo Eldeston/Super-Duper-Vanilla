@@ -82,8 +82,6 @@
 
     in vec4 vertexPos;
 
-    uniform int renderStage;
-
     uniform int isEyeInWater;
 
     uniform float nightVision;
@@ -92,6 +90,10 @@
     uniform ivec2 atlasSize;
 
     uniform sampler2D tex;
+
+    #ifdef MC_RENDER_STAGE_WORLD_BORDER
+        uniform int renderStage;
+    #endif
 
     #ifndef FORCE_DISABLE_WEATHER
         uniform float rainStrength;
@@ -142,7 +144,7 @@
         vec4 albedo = textureLod(tex, texCoord, 0);
 
         // Alpha test, discard immediately
-        if(albedo.a <= ALPHA_THRESHOLD) discard;
+        if(albedo.a < ALPHA_THRESHOLD) discard;
 
         #ifdef MC_RENDER_STAGE_WORLD_BORDER
             // World border fix + emissives

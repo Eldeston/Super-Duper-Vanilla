@@ -50,23 +50,17 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    #ifndef MC_RENDER_STAGE_SUN
-        #define MC_RENDER_STAGE_SUN 1
-    #endif
-
-    #ifndef MC_RENDER_STAGE_MOON
-        #define MC_RENDER_STAGE_MOON 1
-    #endif
-
     flat in float vertexAlpha;
 
     flat in vec3 vertexColor;
 
     in vec2 texCoord;
 
-    uniform int renderStage;
-
     uniform sampler2D tex;
+
+    #if defined MC_RENDER_STAGE_SUN || defined MC_RENDER_STAGE_MOON
+        uniform int renderStage;
+    #endif
 
     #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
         uniform float dayCycle;
@@ -78,7 +72,7 @@
         vec4 albedo = textureLod(tex, texCoord, 0);
 
         // Alpha test, discard immediately
-        if(albedo.a <= ALPHA_THRESHOLD) discard;
+        if(albedo.a < ALPHA_THRESHOLD) discard;
 
     /* DRAWBUFFERS:0 */
         // Detect sun

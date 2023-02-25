@@ -99,7 +99,7 @@ void getPBR(inout structPBR material, in int id){
 
     #if !(defined ENTITIES || defined ENTITIES_GLOWING)
         // Alpha test, discard immediately
-        if(material.albedo.a <= ALPHA_THRESHOLD) discard;
+        if(material.albedo.a < ALPHA_THRESHOLD) discard;
     #endif
 
     // Assign default normal map
