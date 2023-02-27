@@ -8,16 +8,16 @@
    A shader pack created to convey the style of the cancelled __Super Duper Graphics Pack__ and other popular Minecraft titles. Developed by [@Eldeston](https://github.com/Eldeston), and presented by __FlameRender Studios__.
 
 ## Screenshots
-![2022-06-28_19 28 13](https://user-images.githubusercontent.com/59617287/177016623-808d5ce2-4b2e-4ae9-a0ec-31352780b4e7.png)
-![2022-06-28_19 43 18](https://user-images.githubusercontent.com/59617287/177016630-c99ab87a-b737-4f14-b71d-11174401298c.png)
-![2022-06-28_19 49 58](https://user-images.githubusercontent.com/59617287/177016632-c2bfdd45-1493-4134-9db3-768a8cbe9503.png)
-![2022-07-04_20 31 16](https://user-images.githubusercontent.com/59617287/177194801-39e35c96-1d0a-4cd6-a862-7403bca74db7.png)
-![2022-07-04_20 36 15](https://user-images.githubusercontent.com/59617287/177194807-c21739cd-7b5b-4027-9ce8-263bc5f35cb9.png)
-![2022-07-04_20 37 21](https://user-images.githubusercontent.com/59617287/177194816-e7bcbb26-80a1-4ffb-94d2-fc516f2212d0.png)
-![2022-07-04_20 38 41](https://user-images.githubusercontent.com/59617287/177194817-d825d648-b515-49b9-a0a3-301ed22164d9.png)
-![2022-07-04_20 40 49](https://user-images.githubusercontent.com/59617287/177194822-88e1d1fc-55de-4316-8423-08d77da9bcb3.png)
-![2022-07-04_20 42 13](https://user-images.githubusercontent.com/59617287/177194825-b8783a5c-14d0-4aed-8f2f-94b46065327a.png)
-![2022-07-04_20 49 54](https://user-images.githubusercontent.com/59617287/177194827-dba1fc2f-c86f-4b9a-89cd-ef77c36369c0.png)
+![2022-06-28_19 28 13](https://cdn.modrinth.com/data/LMIZZNxZ/images/bd57c68a400e0722bc7132575ea7cec66ca529ab.png)
+![2022-06-28_19 43 18](https://cdn.modrinth.com/data/LMIZZNxZ/images/1d38424b62d4461fae738019cbd1342145e9b4ac.png)
+![2022-06-28_19 49 58](https://cdn.modrinth.com/data/LMIZZNxZ/images/8edcb53225f8eeade023759c54df0916d9e3ff2a.png)
+![2022-07-04_20 31 16](https://cdn.modrinth.com/data/LMIZZNxZ/images/79de640c0254dd1f8ddf44052a79b57105a53f2c.png)
+![2022-07-04_20 36 15](https://cdn.modrinth.com/data/LMIZZNxZ/images/33a5e8c49e4a386c17a42ef48d96f240fa8e7d20.png)
+![2022-07-04_20 37 21](https://cdn.modrinth.com/data/LMIZZNxZ/images/f97e5cb26647bd487fae153b9942f87f373f7695.png)
+![2022-07-04_20 38 41](https://cdn.modrinth.com/data/LMIZZNxZ/images/7735240a7238b15b28dba555abf0cd03f798823a.png)
+![2022-07-04_20 40 49](https://cdn.modrinth.com/data/LMIZZNxZ/images/f643695cdd4ab9f7c95750fb8ff43f396cd16f6c.png)
+![2022-07-04_20 42 13](https://cdn.modrinth.com/data/LMIZZNxZ/images/8e152465e03a3861acf4a7be6eca82a86cf26f1a.png)
+![2022-07-04_20 49 54](https://cdn.modrinth.com/data/LMIZZNxZ/images/0126040f5bcc1828e2de2b059799ab7ffb3d08ec.png)
 
 ## License 
    This shader now uses the **FlameRender (TM) Studios License**. See [**LICENSE**](LICENSE) for more info.
