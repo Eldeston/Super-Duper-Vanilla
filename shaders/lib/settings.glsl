@@ -1,6 +1,6 @@
 /// -------------------------------- /// Post /// -------------------------------- ///
 
-#define OUTLINES 0 // Enables outlines. Set to standard for classic outlined blocks, or Dungeons for Dungeons/SDGP styled outlines. [0 1 2]
+#define OUTLINES 2 // Enables outlines. Set to standard for classic outlined blocks, or Dungeons for Dungeons/SDGP styled outlines. [0 1 2]
 #define OUTLINE_BRIGHTNESS 1.00 // Outline brightness. Set it to -1 for black outlines, or 1 to highlighted outlines. [-1.00 -0.95 -0.90 -0.85 -0.80 -0.75 -0.70 -0.65 -0.60 -0.55 -0.50 -0.45 -0.40 -0.35 -0.30 -0.25 -0.20 -0.15 -0.10 -0.05 0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00]
 #define OUTLINE_PIX_SIZE 1 // Outline pixel size. Adjust to change the thickness of the outlines [1 2 4 8 16 32 64]
 
