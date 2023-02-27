@@ -262,7 +262,7 @@
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         #if defined ENVIRO_PBR && !defined FORCE_DISABLE_WEATHER
-            if(blockId != 15500) enviroPBR(material);
+            if(blockId != 15500 && id != 21001) enviroPBR(material);
         #endif
 
         vec4 sceneCol = complexShadingGbuffers(material);

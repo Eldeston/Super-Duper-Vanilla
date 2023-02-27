@@ -56,18 +56,19 @@ uniform sampler2D specular;
             vec2 texOffset = texUv - texSnapped - texPixSize * 0.5;
             vec2 stepSign = sign(-viewT.xy);
 
-            vec2 texX = texSnapped + vec2(texPixSize.x * stepSign.x, 0);
+            vec2 texX = vec2(texSnapped.x + texPixSize.x * stepSign.x, texSnapped.y);
             float heightX = textureGrad(normals, texX, dcdx, dcdy).a;
             bool hasX = traceDepth > heightX && sign(texOffset.x) == stepSign.x;
 
-            vec2 texY = texSnapped + vec2(0, texPixSize.y * stepSign.y);
+            vec2 texY = vec2(texSnapped.x, texSnapped.y + texPixSize.y * stepSign.y);
             float heightY = textureGrad(normals, texY, dcdx, dcdy).a;
             bool hasY = traceDepth > heightY && sign(texOffset.y) == stepSign.y;
 
             if(abs(texOffset.x) < abs(texOffset.y)){
                 if(hasY) return vec2(0, stepSign.y);
                 if(hasX) return vec2(stepSign.x, 0);
-            }else{
+            }
+            else{
                 if(hasX) return vec2(stepSign.x, 0);
                 if(hasY) return vec2(0, stepSign.y);
             }
@@ -84,7 +85,7 @@ void getPBR(inout structPBR material, in int id){
 
     // Exclude signs and floating texts. We'll also include water and lava in the meantime.
     // This bool checks if Optifine is using the proper fallback for normal maps and ao
-    bool hasFallback = id != 15500 && id != 15502 && sumOf(textureGrad(normals, texCoord, dcdx, dcdy).xy) != 0;
+    bool hasFallback = id != 15500 && id != 15502 && id != 21001 && sumOf(textureGrad(normals, texCoord, dcdx, dcdy).xy) != 0;
 
     #ifdef PARALLAX_OCCLUSION
         vec3 viewDir = -vertexPos.xyz * TBN;
@@ -106,14 +107,19 @@ void getPBR(inout structPBR material, in int id){
     material.normal = TBN[2];
 
     // Get raw textures
-    vec4 normalAOH = textureGrad(normals, texUv, dcdx, dcdy);
+    vec3 normalAOH = textureGrad(normals, texUv, dcdx, dcdy).xyz;
     vec4 SRPSSE = textureGrad(specular, texUv, dcdx, dcdy);
 
     // Decode and extract the materials
     // Extract normals
     vec3 normalMap = vec3(normalAOH.xy * 2.0 - 1.0, 0);
-    // Clamp dot product of the normal to 1 and get the z normal direction (NaN fix)
-    normalMap.z = sqrt(max(0.0, 1.0 - lengthSquared(normalMap.xy)));
+
+    // Get the dot of normalMap.xy
+    float normalXYdot = lengthSquared(normalMap.xy);
+    // Clamp to 0. Very important to prevent NaNs in your normals.
+    float normalZ = max(0.0, 1.0 - normalXYdot);
+    // Calculate final results and complete the normalizing process
+    normalMap = vec3(normalMap.xy * inversesqrt(normalXYdot + normalZ), sqrt(normalZ));
 
     // Assign porosity
     material.porosity = SRPSSE.b < 0.252 ? SRPSSE.b * 3.984 : 0.0;
@@ -130,16 +136,19 @@ void getPBR(inout structPBR material, in int id){
     // Assign emissive
     material.emissive = SRPSSE.a != 1 ? SRPSSE.a : 0.0;
 
-    // Assign ambient
-    #ifdef TERRAIN
-        // Apply vanilla AO with it in terrain
-        material.ambient = vertexAO * normalAOH.b;
+    // Assign ambient occlusion
+    #if defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER
+        // Ambient occlusion fallback fix
+        material.ambient = id <= 0 ? 1.0 : normalAOH.b;
     #elif defined BLOCK
         // Ambient occlusion fallback fix
         material.ambient = id == 20001 ? 1.0 : normalAOH.b;
-    #elif defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER
-        // Ambient occlusion fallback fix
-        material.ambient = id <= 0 ? 1.0 : normalAOH.b;
+    #elif defined TERRAIN
+        // Apply vanilla AO with it in terrain
+        material.ambient = vertexAO * normalAOH.b;
+    #else
+        // Apply no AO for water
+        material.ambient = normalAOH.b;
     #endif
 
     #ifdef TERRAIN
@@ -195,7 +204,7 @@ void getPBR(inout structPBR material, in int id){
     #endif
 
     // Assign normal and calculate normal strength
-    if(hasFallback) material.normal = mix(TBN[2], TBN * fastNormalize(normalMap), NORMAL_STRENGTH);
+    if(hasFallback) material.normal = mix(TBN[2], TBN * normalMap, NORMAL_STRENGTH);
 
     #if COLOR_MODE == 0
         material.albedo.rgb *= vertexColor;

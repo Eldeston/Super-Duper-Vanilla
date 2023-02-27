@@ -272,7 +272,8 @@
                         float depthBrightness = exp2(waterDepth * 0.25);
                         material.albedo.rgb = material.albedo.rgb * (waterNoise * (1.0 - depthBrightness) + depthBrightness);
                         material.albedo.a = fastSqrt(material.albedo.a) * (1.0 - depthBrightness);
-                }else material.albedo.rgb *= waterNoise;
+                }
+                else material.albedo.rgb *= waterNoise;
             #else
                 material.albedo.rgb *= waterNoise;
             #endif

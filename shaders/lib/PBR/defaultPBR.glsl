@@ -16,7 +16,7 @@ void getPBR(inout structPBR material, in int id){
 
     // Generate bumped normals
     #if (defined TERRAIN || defined WATER || defined BLOCK) && defined AUTO_GEN_NORM
-        if(id != 15500 && id != 15502 && id != 20001){
+        if(id != 15500 && id != 15502 && id != 20001 && id != 21001){
             const float autoGenNormPixSize = 2.0 / AUTO_GEN_NORM_RES;
             vec2 texCoordPixCenter = vTexCoord - autoGenNormPixSize * 0.5;
 
