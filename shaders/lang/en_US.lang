@@ -5,7 +5,7 @@
     profile.HIGH = High
     profile.ULTRA = Ultra
 
-screen.DEBUG = Super Duper Vanilla v1.3.3
+screen.DEBUG = Super Duper Vanilla v1.3.4
     screen.DEBUG.comment = Developed by §2Eldeston§f§r, produced by §9FlameRender §9Studios. §eClick me to open shader debug settings!
 
     option.COLOR_MODE = Color mode
