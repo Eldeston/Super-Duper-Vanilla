@@ -233,7 +233,7 @@
 
         // If sky, do full sky render
         if(skyMask){
-            sceneCol = getSkyRender(nEyePlayerPos, sceneCol, false) * exp2(-far * (blindness + darknessFactor));
+            sceneCol = getFullSkyRender(nEyePlayerPos, sceneCol) * exp2(-far * (blindness + darknessFactor));
         }
         // Else, calculate reflection and fog
         else{
@@ -262,7 +262,7 @@
             #endif
 
             // Do basic sky render and use it as fog color
-            sceneCol = getFogRender(sceneCol, getSkyRender(nEyePlayerPos), viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
+            sceneCol = getFogRender(sceneCol, getFogRender(nEyePlayerPos), viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
         }
 
     /* DRAWBUFFERS:0 */

@@ -229,7 +229,7 @@
             vec3 nEyePlayerPos = eyePlayerPos / viewDist;
 
             // Get skyCol as our fogCol. Do basic sky render.
-            vec3 fogCol = getSkyRender(nEyePlayerPos);
+            vec3 fogCol = getFogRender(nEyePlayerPos);
             // Fog and sky calculation
             sceneCol = getFogRender(sceneCol, fogCol, viewDist, nEyePlayerPos.y, feetPlayerPos.y + cameraPosition.y);
         }

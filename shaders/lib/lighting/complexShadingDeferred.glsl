@@ -37,13 +37,13 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
 			
 			#ifdef PREVIOUS_FRAME
 				// Get reflections and check for sky
-				vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyRender(mat3(gbufferModelViewInverse) * reflectedViewDir, vec3(0), true) : textureLod(colortex5, toPrevScreenPos(SSRCoord.xy), 0).rgb;
+				vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyReflection(mat3(gbufferModelViewInverse) * reflectedViewDir) : textureLod(colortex5, toPrevScreenPos(SSRCoord.xy), 0).rgb;
 			#else
 				// Get reflections and check for sky
-				vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyRender(mat3(gbufferModelViewInverse) * reflectedViewDir, vec3(0), true) : textureLod(gcolor, SSRCoord.xy, 0).rgb;
+				vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyReflection(mat3(gbufferModelViewInverse) * reflectedViewDir) : textureLod(gcolor, SSRCoord.xy, 0).rgb;
 			#endif
 		#else
-			vec3 reflectCol = getSkyRender(mat3(gbufferModelViewInverse) * reflectedViewDir, vec3(0), true);
+			vec3 reflectCol = getSkyReflection(mat3(gbufferModelViewInverse) * reflectedViewDir);
 		#endif
 
 		// Modified version of BSL's reflection PBR calculation
