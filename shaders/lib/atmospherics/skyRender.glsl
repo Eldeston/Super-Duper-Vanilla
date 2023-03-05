@@ -115,12 +115,12 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos){
 
                 #ifdef WORLD_LIGHT
                     #ifdef FORCE_DISABLE_DAY_CYCLE
-                        finalCol += lightCol * (clouds * min(1.0, cloudHeightFade));
+                        finalCol += lightCol * min(clouds, clouds * cloudHeightFade);
                     #else
-                        finalCol += mix(moonCol, sunCol, dayCycleAdjust) * (clouds * min(1.0, cloudHeightFade));
+                        finalCol += mix(moonCol, sunCol, dayCycleAdjust) * min(clouds, clouds * cloudHeightFade);
                     #endif
                 #else
-                    finalCol += clouds * min(1.0, cloudHeightFade);
+                    finalCol += min(clouds, clouds * cloudHeightFade);
                 #endif
             }
         #endif
@@ -165,7 +165,7 @@ vec3 getFogRender(in vec3 nEyePlayerPos){
 
     vec3 finalCol = getSkyBasic(skyCoordScale, nEyePlayerPos.y, skyPos.z);
 
-    // Do a simple void gradient calculation when underwater
+    // Do a simple void gradient calculation
     return finalCol * saturate(nEyePlayerPos.y + eyeBrightFact * 2.0 - 1.0);
 }
 
@@ -184,28 +184,27 @@ vec3 getSkyReflection(in vec3 nEyePlayerPos){
 
     vec3 finalCol = getSkyHalf(nEyePlayerPos, skyPos);
 
-    #ifdef WORLD_LIGHT
-        // Fake VL reflection
-        if(isEyeInWater != 1){
-            const float fakeVLBrightness = VOLUMETRIC_LIGHTING_STRENGTH * 0.5;
-            float VLBrightness = fakeVLBrightness * shdFade;
-
-            if(nEyePlayerPos.y > 0){
-                float heightFade = 1.0 - squared(nEyePlayerPos.y);
-                heightFade = squared(squared(heightFade * heightFade));
-
-                #ifndef FORCE_DISABLE_WEATHER
-                    heightFade += (1.0 - heightFade) * rainStrength * 0.5;
-                #endif
-
-                finalCol += lightCol * (heightFade * VLBrightness);
-            }
-            else finalCol += lightCol * VLBrightness;
-        }
-    #endif
-
     // Do a simple void gradient calculation when underwater
     if(isEyeInWater == 1) return finalCol * max(0.0, nEyePlayerPos.y + eyeBrightFact - 1.0);
+
+    #ifdef WORLD_LIGHT
+        // Fake VL reflection
+        const float fakeVLBrightness = VOLUMETRIC_LIGHTING_STRENGTH * 0.5;
+        float VLBrightness = fakeVLBrightness * shdFade;
+
+        if(nEyePlayerPos.y > 0){
+            float heightFade = 1.0 - squared(nEyePlayerPos.y);
+            heightFade = squared(squared(heightFade * heightFade));
+
+            #ifndef FORCE_DISABLE_WEATHER
+                heightFade += (1.0 - heightFade) * rainStrength * 0.5;
+            #endif
+
+            finalCol += lightCol * (heightFade * VLBrightness);
+        }
+        else finalCol += lightCol * VLBrightness;
+    #endif
+
     return finalCol * saturate(nEyePlayerPos.y + eyeBrightFact * 2.0 - 1.0);
 }
 
@@ -243,11 +242,15 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyBoxCol){
             #endif
         #elif WORLD_SUN_MOON == 2
             // If current world uses shader black hole
-            float blackHole = min(1.0, 0.015625 / (16.0 - skyPos.z * 16.0 - WORLD_SUN_MOON_SIZE));
-            // Black hole return nothing
-            if(blackHole <= 0) return vec3(0);
+            const float blackHoleSize = 1024.0 - WORLD_SUN_MOON_SIZE * 64.0;
+            float blackHole = blackHoleSize - skyPos.z * 1024.0;
 
-            skyPos.xy = rot2D(blackHole * TAU * 16.0) * skyPos.xy;
+            // If black hole return nothing
+            if(blackHole <= 0) return vec3(0);
+            blackHole = 1.0 / max(1.0, blackHole);
+
+            const float rotationFactor = TAU * 16.0;
+            skyPos.xy = rot2D(blackHole * rotationFactor) * skyPos.xy;
             float rings = textureLod(noisetex, vec2(skyPos.x * blackHole, frameTimeCounter * 0.0009765625), 0).x;
 
             finalCol += ((rings * blackHole * 0.9 + blackHole * 0.1) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY) * lightCol;
@@ -258,6 +261,6 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyBoxCol){
     finalCol += getSkyHalf(nEyePlayerPos, skyPos);
 
     // Do a simple void gradient calculation when underwater
-    if(isEyeInWater == 1) finalCol * smootherstep(max(0.0, nEyePlayerPos.y));
+    if(isEyeInWater == 1) return finalCol * smootherstep(max(0.0, nEyePlayerPos.y));
     return finalCol * saturate(nEyePlayerPos.y + eyeBrightFact * 2.0 - 1.0);
 }
