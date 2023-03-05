@@ -17,12 +17,13 @@ void getPBR(inout structPBR material, in int id){
     // Generate bumped normals
     #if (defined TERRAIN || defined WATER || defined BLOCK) && defined AUTO_GEN_NORM
         if(id != 15500 && id != 15502 && id != 20001 && id != 21001){
-            const float autoGenNormPixSize = 2.0 / AUTO_GEN_NORM_RES;
-            vec2 texCoordPixCenter = vTexCoord - autoGenNormPixSize * 0.5;
+            const float autoGenNormPixSize = 1.0 / AUTO_GEN_NORM_RES;
+            vec2 topRightCorner = fract(vTexCoord - autoGenNormPixSize) * vTexCoordScale + vTexCoordPos;
+            vec2 bottomLeftCorner = fract(vTexCoord + autoGenNormPixSize) * vTexCoordScale + vTexCoordPos;
 
-            float d0 = sumOf(textureGrad(tex, fract(texCoordPixCenter) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
-            float d1 = sumOf(textureGrad(tex, fract(vec2(texCoordPixCenter.x + autoGenNormPixSize, texCoordPixCenter.y)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
-            float d2 = sumOf(textureGrad(tex, fract(vec2(texCoordPixCenter.x, texCoordPixCenter.y + autoGenNormPixSize)) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).rgb);
+            float d0 = sumOf(textureGrad(tex, topRightCorner, dcdx, dcdy).rgb);
+            float d1 = sumOf(textureGrad(tex, vec2(bottomLeftCorner.x, topRightCorner.y), dcdx, dcdy).rgb);
+            float d2 = sumOf(textureGrad(tex, vec2(topRightCorner.x, bottomLeftCorner.y), dcdx, dcdy).rgb);
 
             vec2 slopeNormal = d0 - vec2(d1, d2);
             // TBN * fastNormalize(vec3(slopeNormal, 1))
