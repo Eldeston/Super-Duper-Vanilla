@@ -1,7 +1,7 @@
 #ifdef AUTO_GEN_NORM
 #endif
 
-// The default PBR calculation
+// The Integrated PBR calculation
 void getPBR(inout structPBR material, in int id){
     // Assign albedo
     material.albedo = textureGrad(tex, texCoord, dcdx, dcdy);

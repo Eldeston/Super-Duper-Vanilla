@@ -223,7 +223,7 @@
     #include "/lib/PBR/structPBR.glsl"
 
     #if PBR_MODE <= 1
-        #include "/lib/PBR/defaultPBR.glsl"
+        #include "/lib/PBR/integratedPBR.glsl"
     #else
         #include "/lib/PBR/labPBR.glsl"
     #endif

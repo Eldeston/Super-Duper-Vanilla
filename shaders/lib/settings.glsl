@@ -104,9 +104,9 @@ const float sunPathRotation = 30.0; // Light path angle. This also affects sky a
 
 /// -------------------------------- /// PBR /// -------------------------------- ///
 
-#define PBR_MODE 1 // Enables PBR. Default PBR depends on the vanilla albedo textures to map out the materials. Resource PBR uses your resource packs' PBR, if available. Resource PBR requires latest LabPBR version! [0 1 2]
+#define PBR_MODE 1 // Enables PBR. Integrated PBR depends on the vanilla albedo textures to map out the materials. Resource PBR uses your resource packs' PBR, if available. Resource PBR requires latest LabPBR version! [0 1 2]
 #define ENVIRO_PBR // Enables enviroment materials. Environment materials affects your surrounding according to your environment such as rain.
-// #define AUTO_GEN_NORM // Enables auto generated normals. Works if Default PBR is on. Works mostly on vanilla resource packs.
+// #define AUTO_GEN_NORM // Enables auto generated normals. Works if Integrated PBR is on. Works mostly on vanilla resource packs.
 #define AUTO_GEN_NORM_RES 128 // Auto generated normal resolution. Minor effects to performance. [16 32 64 128 256 512 1024]
 #define SUBSURFACE_SCATTERING // Enables subsurface scattering. 
 
