@@ -85,7 +85,7 @@ void getPBR(inout structPBR material, in int id){
     #if PBR_MODE == 1
         #ifdef TERRAIN
             // Glow berries
-            if(id == 10001) material.emissive = material.albedo.r + material.albedo.g > material.albedo.g * 2.0 ? smoothstep(0.3, 0.9, maxOf(material.albedo.rgb)) : material.emissive;
+            if(id == 10001) material.emissive = sumOf(material.albedo.rg) > material.albedo.g * 2.0 ? smoothstep(0.3, 0.9, maxOf(material.albedo.rgb)) : material.emissive;
 
             // Fungus
             else if(id == 12001) material.emissive = float(sumOf(material.albedo.rg) > 1);
@@ -228,7 +228,7 @@ void getPBR(inout structPBR material, in int id){
             else if(id == 31000) material.emissive = exp(sumOf(material.albedo.rgb) * 2.66666664 - 8.0);
 
             // End portal frame
-            else if(id == 31001) material.emissive = material.albedo.g + material.albedo.b > material.albedo.r * 2.0 ? squared(saturate((material.albedo.g - material.albedo.b) * 4.0)) : 0.0;
+            else if(id == 31001) material.emissive = sumOf(material.albedo.gb) > material.albedo.r * 2.0 ? squared(saturate((material.albedo.g - material.albedo.b) * 4.0)) : 0.0;
 
             // Crying obsidian
             else if(id == 31002){
@@ -239,8 +239,11 @@ void getPBR(inout structPBR material, in int id){
 
             // Amethyst
             else if(id == 31003 || id == 31004){
-                material.smoothness = sumOf(material.albedo.rgb) * 0.333;
-                material.emissive = squared(squared(material.smoothness * material.smoothness)) * (id == 31004 ? squared(cubed(material.smoothness)) : material.smoothness);
+                float amethystAverage = sumOf(material.albedo.rgb) * 0.33333333;
+                material.smoothness = amethystAverage * 0.75 + 0.25;
+                float amethystLumaSquared = squared(amethystAverage);
+                float amethystLumaCubedSquared = squared(amethystLumaSquared * amethystAverage);
+                material.emissive = amethystLumaSquared * amethystLumaCubedSquared * (id == 31004 ? amethystLumaCubedSquared : amethystAverage);
                 material.metallic = 0.17;
             }
         #endif
