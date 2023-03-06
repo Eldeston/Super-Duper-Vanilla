@@ -6,19 +6,18 @@ vec4 complexShadingGbuffers(in structPBR material){
 		vec3 dirLightMapCoord = dFdx(vertexPos.xyz) * dFdx(lmCoord.x) + dFdy(vertexPos.xyz) * dFdy(lmCoord.x);
 		float dirLightMap = min(1.0, max(0.0, dot(fastNormalize(dirLightMapCoord), material.normal)) * lmCoord.x * DIRECTIONAL_LIGHTMAP_STRENGTH + lmCoord.x);
 
-		// Get lightmaps and add simple sky GI
-		vec3 totalDiffuse = toLinear(SKY_COL_DATA_BLOCK * lmCoord.y) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5) +
-			toLinear((dirLightMap * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B));
+		// Lightmap and ambience
+		vec3 totalDiffuse = toLinear((dirLightMap * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B)) +
+			toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 	#else
-		// Get lightmaps and add simple sky GI
-		vec3 totalDiffuse = toLinear(SKY_COL_DATA_BLOCK * lmCoord.y) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5) +
-			toLinear((lmCoord.x * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B));
+		// Lightmap and ambience
+		vec3 totalDiffuse = toLinear((lmCoord.x * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B)) +
+			toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 	#endif
 
-	float skyLightCubed = lmCoord.y * lmCoord.y * lmCoord.y;
-
-	// Thunder flash
-	totalDiffuse += lightningFlash * skyLightCubed * EMISSIVE_INTENSITY;
+	// Thunder flash and sky color ambience
+	float skyLightSquared = squared(lmCoord.y);
+	totalDiffuse += (toLinear(SKY_COL_DATA_BLOCK) + lightningFlash * EMISSIVE_INTENSITY) * skyLightSquared;
 
 	// Apply ambient occlussion
 	totalDiffuse *= material.ambient;
@@ -91,7 +90,7 @@ vec4 complexShadingGbuffers(in structPBR material){
 			float rainDiffuseAmount = rainStrength * 0.5;
 			shadowCol *= 1.0 - rainDiffuseAmount;
 
-			shadowCol += rainDiffuseAmount * material.ambient * skyLightCubed;
+			shadowCol += rainDiffuseAmount * material.ambient * skyLightSquared;
 		#endif
 		
 		// Calculate and add shadow diffuse

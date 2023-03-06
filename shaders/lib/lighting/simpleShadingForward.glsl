@@ -1,20 +1,18 @@
 vec4 simpleShadingGbuffers(in vec4 albedo){
 	#ifdef CLOUDS
 		// Calculate total diffuse for clouds
-		vec3 totalDiffuse = toLinear(SKY_COL_DATA_BLOCK) + toLinear(nightVision * 0.5 + AMBIENT_LIGHTING);
+		vec3 totalDiffuse = toLinear(SKY_COL_DATA_BLOCK);
+
+		// Thunder flash and ambience
+		totalDiffuse += lightningFlash * EMISSIVE_INTENSITY + toLinear(nightVision * 0.5 + AMBIENT_LIGHTING);
 	#else
 		// Calculate total diffuse
-		vec3 totalDiffuse = toLinear(SKY_COL_DATA_BLOCK * lmCoord.y) + toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) +
-			toLinear((lmCoord.x * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B));
-	#endif
+		vec3 totalDiffuse = toLinear((lmCoord.x * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B)) +
+			toLinear(nightVision * 0.5 + AMBIENT_LIGHTING);
 
-	// Thunder flash
-	#ifdef CLOUDS
-		totalDiffuse += lightningFlash * EMISSIVE_INTENSITY;
-	#else
-		float skyLightCubed = lmCoord.y * lmCoord.y * lmCoord.y;
-
-		totalDiffuse += lightningFlash * skyLightCubed * EMISSIVE_INTENSITY;
+		// Thunder flash and sky color ambience
+		float skyLightSquared = squared(lmCoord.y);
+		totalDiffuse += (toLinear(SKY_COL_DATA_BLOCK) + lightningFlash * EMISSIVE_INTENSITY) * skyLightSquared;
 	#endif
 
 	#ifdef WORLD_LIGHT
@@ -73,7 +71,7 @@ vec4 simpleShadingGbuffers(in vec4 albedo){
 			#ifdef CLOUDS
 				shadowCol += rainDiffuseAmount;
 			#else
-				shadowCol += rainDiffuseAmount * skyLightCubed;
+				shadowCol += rainDiffuseAmount * skyLightSquared;
 			#endif
 		#endif
 
