@@ -240,7 +240,7 @@ void getPBR(inout structPBR material, in int id){
             // Amethyst
             else if(id == 31003 || id == 31004){
                 float amethystAverage = sumOf(material.albedo.rgb) * 0.33333333;
-                material.smoothness = amethystAverage * 0.75 + 0.25;
+                material.smoothness = amethystAverage * 0.6 + 0.3;
                 float amethystLumaSquared = squared(amethystAverage);
                 float amethystLumaCubedSquared = squared(amethystLumaSquared * amethystAverage);
                 material.emissive = amethystLumaSquared * amethystLumaCubedSquared * (id == 31004 ? amethystLumaCubedSquared : amethystAverage);
