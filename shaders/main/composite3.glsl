@@ -24,7 +24,7 @@
 
     void main(){
         // Get buffer texture coordinates
-        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        texCoord = gl_MultiTexCoord0.xy;
 
         fovMult = gbufferProjection[1].y * 0.72794047;
 

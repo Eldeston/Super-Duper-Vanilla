@@ -43,7 +43,7 @@
     #endif
 
     void main(){
-        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        texCoord = gl_MultiTexCoord0.xy;
 
         #if defined LENS_FLARE && defined WORLD_LIGHT
             // Get sRGB light color

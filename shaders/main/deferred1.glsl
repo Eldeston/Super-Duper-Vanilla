@@ -47,7 +47,7 @@
 
     void main(){
         // Get buffer texture coordinates
-        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        texCoord = gl_MultiTexCoord0.xy;
 
         skyCol = toLinear(SKY_COL_DATA_BLOCK);
 

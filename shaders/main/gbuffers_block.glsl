@@ -75,7 +75,7 @@
             lmCoord = saturate(gl_MultiTexCoord1.xy * 0.00416667);
         #endif
 
-        #ifdef PARALLAX_OCCLUSION
+        #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
             vec2 midCoord = (gl_TextureMatrix[0] * vec4(mc_midTexCoord, 0, 0)).xy;
             vec2 texMinMidCoord = texCoord - midCoord;
 

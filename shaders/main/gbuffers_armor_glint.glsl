@@ -16,6 +16,8 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
+    flat out float vertexAlpha;
+
     out vec2 texCoord;
 
     #ifdef WORLD_CURVATURE
@@ -33,6 +35,8 @@
     #endif
 
     void main(){
+        // Get vertex alpha
+        vertexAlpha = gl_Color.a;
         // Get buffer texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         
@@ -58,6 +62,8 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
+    flat in float vertexAlpha;
+
     in vec2 texCoord;
 
     // Get albedo texture
@@ -73,7 +79,10 @@
         // Convert to linear space
         albedo.rgb = toLinear(albedo.rgb);
 
+        // Glint emissive intensity
+        const float emissive = EMISSIVE_INTENSITY * 0.25;
+
     /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(albedo.rgb * EMISSIVE_INTENSITY * 0.25, albedo.a); // gcolor
+        gl_FragData[0] = vec4(albedo.rgb * (vertexAlpha * emissive), albedo.a); // gcolor
     }
 #endif

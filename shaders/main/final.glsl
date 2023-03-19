@@ -20,7 +20,7 @@
 
     void main(){
         // Get buffer texture coordinates
-        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        texCoord = gl_MultiTexCoord0.xy;
         gl_Position = ftransform();
     }
 #endif
