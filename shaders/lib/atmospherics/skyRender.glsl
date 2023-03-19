@@ -1,14 +1,17 @@
 #ifdef WORLD_AETHER
 #endif
 
+#ifdef STORY_MODE_CLOUDS
+#endif
+
 // Round sun and moon
 float getSunMoonShape(in float skyPosZ){
-    return min(1.0, exp2(-(sqrt(1.0 - skyPosZ * skyPosZ) - WORLD_SUN_MOON_SIZE) * 256.0));
+    return min(1.0, exp2((WORLD_SUN_MOON_SIZE - sqrt(1.0 - skyPosZ * skyPosZ)) * 256.0));
 }
 
 // Default sun and moon
 float getSunMoonShape(in vec2 skyPos){
-    return min(1.0, exp2(-(pow(abs(skyPos.x * skyPos.x * skyPos.x) + abs(skyPos.y * skyPos.y * skyPos.y), 0.33333333) - WORLD_SUN_MOON_SIZE) * 256.0));
+    return min(1.0, exp2((WORLD_SUN_MOON_SIZE - pow(abs(skyPos.x * skyPos.x * skyPos.x) + abs(skyPos.y * skyPos.y * skyPos.y), 0.33333333)) * 256.0));
 }
 
 #if TIMELAPSE_MODE != 0
@@ -25,13 +28,32 @@ float getSunMoonShape(in vec2 skyPos){
         vec2 end = start * 0.01;
 
         // Move towards west
-        start.x += time * 0.125;
-        for(int i = 0; i < 8; i++){
-            if(texelFetch(colortex4, ivec2(start) & 255, 0).a > ALPHA_THRESHOLD) return 8.0 - i;
+        start.x += time;
+
+        for(int i = 8; i > 0; i--){
+            if(texelFetch(colortex4, ivec2(start) & 255, 0).x < 0.5) return i;
             start += end;
         }
 
         return 0.0;
+    }
+
+    vec3 cloudParallaxDynamic(in vec2 start, in float time){
+        // start * stepSize * depthSize = start * 0.125 * 0.08
+        vec2 end = start * 0.01;
+
+        // Move towards west
+        start.x += time;
+
+        vec2 cloudData = vec2(0);
+        for(int i = 8; i > 0; i--){
+            vec2 cloudMap = texelFetch(colortex4, ivec2(start) & 255, 0).xy;
+            if(cloudMap.x < 0.5) cloudData.x = max(cloudData.x, i);
+            if(cloudMap.y < 0.5) cloudData.y = max(cloudData.y, i);
+            start += end;
+        }
+
+        return vec3(cloudData, maxOf(cloudData));
     }
 #endif
 
@@ -86,44 +108,34 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos){
     // Calculate basic sky color
     vec3 finalCol = getSkyBasic(skyCoordScale, nEyePlayerPos.y, skyPos.z);
 
-    #ifdef STORY_MODE_CLOUDS
-        #ifndef FORCE_DISABLE_CLOUDS
-            float cloudHeightFade = nEyePlayerPos.y - 0.125;
+    #if defined STORY_MODE_CLOUDS && defined WORLD_LIGHT && !defined FORCE_DISABLE_CLOUDS
+        float cloudHeightFade = nEyePlayerPos.y - 0.125;
 
-            #ifdef FORCE_DISABLE_WEATHER
-                cloudHeightFade *= 4.0;
+        #ifdef FORCE_DISABLE_WEATHER
+            cloudHeightFade *= 4.0;
+        #else
+            cloudHeightFade -= rainStrength * 0.175;
+            cloudHeightFade *= 4.0 - rainStrength * 3.2;
+        #endif
+
+        if(cloudHeightFade > 0.005){
+            vec2 planeUv = nEyePlayerPos.xz * (5.33333333 / nEyePlayerPos.y);
+
+            #ifdef DYNAMIC_CLOUDS
+                float fade = smootherstep(sin(ANIMATION_FRAMETIME * FADE_SPEED) * 0.5 + 0.5);
+
+                vec3 cloudData = cloudParallaxDynamic(planeUv, ANIMATION_FRAMETIME * 0.125);
+                float clouds = mix(mix(cloudData.x, cloudData.y, fade), cloudData.z, rainStrength) * 0.125;
             #else
-                cloudHeightFade -= rainStrength * 0.175;
-                cloudHeightFade *= 4.0 - rainStrength * 3.2;
+                float clouds = cloudParallax(planeUv, ANIMATION_FRAMETIME * 0.125) * 0.125;
             #endif
 
-            if(cloudHeightFade > 0.005){
-                vec2 planeUv = nEyePlayerPos.xz * (5.33333333 / nEyePlayerPos.y);
-
-                float clouds = cloudParallax(planeUv, ANIMATION_FRAMETIME);
-
-                #ifdef DYNAMIC_CLOUDS
-                    float fade = smootherstep(sin(ANIMATION_FRAMETIME * FADE_SPEED) * 0.5 + 0.5);
-                    float clouds2 = cloudParallax(-planeUv, -ANIMATION_FRAMETIME);
-                    
-                    #ifdef FORCE_DISABLE_WEATHER
-                        clouds = mix(clouds, clouds2, fade) * 0.125;
-                    #else
-                        clouds = mix(mix(clouds, clouds2, fade), max(clouds, clouds2), rainStrength) * 0.125;
-                    #endif
-                #endif
-
-                #ifdef WORLD_LIGHT
-                    #ifdef FORCE_DISABLE_DAY_CYCLE
-                        finalCol += lightCol * min(clouds, clouds * cloudHeightFade);
-                    #else
-                        finalCol += mix(moonCol, sunCol, dayCycleAdjust) * min(clouds, clouds * cloudHeightFade);
-                    #endif
-                #else
-                    finalCol += min(clouds, clouds * cloudHeightFade);
-                #endif
-            }
-        #endif
+            #ifdef FORCE_DISABLE_DAY_CYCLE
+                finalCol += lightCol * min(clouds, clouds * cloudHeightFade);
+            #else
+                finalCol += mix(moonCol, sunCol, dayCycleAdjust) * min(clouds, clouds * cloudHeightFade);
+            #endif
+        }
     #endif
 
     #ifdef WORLD_STARS
