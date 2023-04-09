@@ -107,12 +107,12 @@ mat2 rot2D(in float x){
 }
 
 // SRGB to linear
-float toLinear(in float x){ return x * x; }
-vec3 toLinear(in vec3 x){ return x * x; }
+float toLinear(in float x){ return ((2.10545 + x) * (0.0231872 + x)) * x * 0.315206; }
+vec3 toLinear(in vec3 x){ return ((2.10545 + x) * (0.0231872 + x)) * x * 0.315206; }
 
-// Linear to sRGB
-float toSRGB(in float x){ return x * inversesqrt(x); }
-vec3 toSRGB(in vec3 x){ return x * inversesqrt(x); }
+// Linear to SRGB
+float toSRGB(in float x){ return (inversesqrt(x) - 0.126893) * x * 1.14374; }
+vec3 toSRGB(in vec3 x){ return (inversesqrt(x) - 0.126893) * x * 1.14374; }
 
 /*
 // SRGB to linear
@@ -124,10 +124,10 @@ float toSRGB(in float x){ return pow(x, vec3(1.0 / 2.2)); }
 vec3 toSRGB(in vec3 x){ return pow(x, 1.0 / 2.2); }
 
 // SRGB to linear
-float toLinear(in float x){ return 0.315206 * x * ((2.10545 + x) * (0.0231872 + x)); }
-vec3 toLinear(in vec3 x){ return 0.315206 * x * ((2.10545 + x) * (0.0231872 + x)); }
+float toLinear(in float x){ return ((2.10545 + x) * (0.0231872 + x)) * x * 0.315206; }
+vec3 toLinear(in vec3 x){ return ((2.10545 + x) * (0.0231872 + x)) * x * 0.315206; }
 
 // Linear to SRGB
-float toSRGB(in float x){ return 1.14374 * (sqrt(x) - 0.126893 * x); }
-vec3 toSRGB(in vec3 x){ return 1.14374 * (sqrt(x) - 0.126893 * x); }
+float toSRGB(in float x){ return (inversesqrt(x) - 0.126893) * x * 1.14374; }
+vec3 toSRGB(in vec3 x){ return (inversesqrt(x) - 0.126893) * x * 1.14374; }
 */
