@@ -7,8 +7,7 @@ vec4 simpleShadingGbuffers(in vec4 albedo){
 		totalDiffuse += lightningFlash * EMISSIVE_INTENSITY + toLinear(nightVision * 0.5 + AMBIENT_LIGHTING);
 	#else
 		// Calculate total diffuse
-		vec3 totalDiffuse = toLinear((lmCoord.x * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B)) +
-			toLinear(nightVision * 0.5 + AMBIENT_LIGHTING);
+		vec3 totalDiffuse = toLinear(lmCoord.x * blockLightCol) + toLinear(nightVision * 0.5 + AMBIENT_LIGHTING);
 
 		// Thunder flash and sky color ambience
 		float skyLightSquared = squared(lmCoord.y);
