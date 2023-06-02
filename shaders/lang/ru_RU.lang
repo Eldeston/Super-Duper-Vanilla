@@ -34,7 +34,7 @@
         option.DOF_STRENGTH.comment = Сила размытия удалённых объектов..
         option.CHROMATIC_ABERRATION = Хроматическая аберрация
         option.ABERRATION_PIX_SIZE = Величина аберрации
-        option.VIGNETTE = Виньетироавние
+        option.VIGNETTE = Виньетирование
         option.VIGNETTE.comment = Кинематографический эффект затенения по краям изображения..
         option.VIGNETTE_AMOUNT = Коэффициент виньетирования
         option.BLOOM = Свечение
