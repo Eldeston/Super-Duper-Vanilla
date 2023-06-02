@@ -9,6 +9,9 @@
 
 ### Optimization
    Please check if your code performs well and try to optimize it as much as possible.
+
+### Translation
+   For translation, it should be based from the latest commit to ensure compatibility and avoid conflicts, and that another person fluent for the language you're translating to should verify the final product.
    
 ## Style guidelines
 * No spaces around parentheses: `if(condition){`, `this = function()`
