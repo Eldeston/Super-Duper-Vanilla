@@ -1,0 +1,312 @@
+## Профили
+    profile.POTATO = Калькулятор
+    profile.LOW = Низкий
+    profile.MEDIUM = Средний (по умолчанию)
+    profile.HIGH = Высокий
+    profile.ULTRA = Ультра
+
+screen.DEBUG = Super Duper Vanilla v1.3.4
+    screen.DEBUG.comment = Разработано §2Eldeston§f§r, производство §9FlameRender §9Studios§r.. §eНажмите, чтобы перейти к настройкам отладки
+
+    option.COLOR_MODE = Отладочный режим
+        value.COLOR_MODE.0 = Выкл
+        value.COLOR_MODE.1 = Белый мир
+        value.COLOR_MODE.2 = Чёрный мир
+        value.COLOR_MODE.3 = Растительность
+
+    option.NOISE_SPEED = Скорость шума
+
+    screen.POST = Постобработка
+    option.OUTLINES = Контуры
+        value.OUTLINES.0 = Выкл
+        value.OUTLINES.1 = Стандартные
+        value.OUTLINES.2 = Dungeons
+
+    option.OUTLINE_BRIGHTNESS = Яркость контуров
+    option.OUTLINE_PIX_SIZE = Ширина контуров
+    option.RETRO_FILTER = Ретро-фильтр
+
+    option.ANTI_ALIASING = Сглаживание
+        value.ANTI_ALIASING.0 = Выкл
+        value.ANTI_ALIASING.1 = FXAA
+        value.ANTI_ALIASING.2 = TAA
+        value.ANTI_ALIASING.3 = Lite TAA + FXAA
+
+    option.SHARPEN_FILTER = Повышение резкости
+
+    screen.CAMERA = Камера
+        option.DOF = Глубина резкости
+        option.DOF_STRENGTH = Изменение резкости
+        option.CHROMATIC_ABERRATION = Хроматическая аберрация
+        option.ABERRATION_PIX_SIZE = Величина аберрации
+        option.BLOOM = Свечение
+        option.BLOOM_STRENGTH = Сила свечения
+        option.LENS_FLARE = Блики
+        option.LENS_FLARE_STRENGTH = Яркость бликов
+        option.VIGNETTE = Виньетирование
+        option.VIGNETTE_STRENGTH = Коэффициент виньетирования
+        option.MOTION_BLUR = Размытие в движении
+        option.MOTION_BLUR_STRENGTH = Сила размытия
+
+    screen.TONEMAP = Тональное отображение
+        option.SATURATION = Насыщенность
+        option.CONTRAST = Контрастность
+        option.AUTO_EXPOSURE = Автоматическая экспозиция
+        option.AUTO_EXPOSURE_SPEED = Скорость автоэкспозиции
+        option.EXPOSURE = Экспозиция
+        option.MIN_EXPOSURE = Минимальная экспозиция
+        option.TINT_R = Красный оттенок
+        option.TINT_G = Зелёный оттенок
+        option.TINT_B = Синий оттенок
+
+screen.LIGHTING = Освещение
+    option.SHADOW = Карта теней
+    option.SHADOW_COL = Цветные тени
+    option.SHADOW_FILTER = Сглаживание теней
+    option.shadowMapResolution = Разрешение карты теней
+    option.shadowDistance = Дальность теней
+    option.sunPathRotation = Долгота
+
+    option.UNDERWATER_CAUSTICS = Водная каустика
+        value.UNDERWATER_CAUSTICS.0 = Выкл
+        value.UNDERWATER_CAUSTICS.1 = Под водой
+        value.UNDERWATER_CAUSTICS.2 = Полная
+
+    option.SSAO = Фоновое затенение
+    option.AMBIENT_LIGHTING = Непрямое освещение
+
+    screen.RAY_TRACING = Трассировка лучей
+        option.SSGI = Глобальное освещение
+        option.SSR = Отражения в поле зрения
+        option.SSGI_STEPS = Шаги освещения
+        option.SSR_STEPS = Шаги отражений
+        option.SSGI_BISTEPS = Шаги уточнения освещения
+        option.SSR_BISTEPS = Шаги уточнения отражений
+        option.ROUGH_REFLECTIONS = Грубые поверхности
+        option.PREVIOUS_FRAME = Буфер предыдущего кадра
+
+screen.ATMOSPHERICS = Атмосферность
+    option.SUN_MOON_TYPE = Солнце и Луна
+        value.SUN_MOON_TYPE.0 = Яркие
+        value.SUN_MOON_TYPE.1 = Круглые
+        value.SUN_MOON_TYPE.2 = Обычные
+
+    option.SUN_MOON_INTENSITY = Яркость небесных светил
+    option.VOLUMETRIC_LIGHTING = Объёмные лучи
+    option.VOLUMETRIC_LIGHTING_STRENGTH = Плотность среды
+    option.BORDER_FOG = Туман
+    option.GROUND_FOG_STRENGTH = Яркость дымки
+    option.STORY_MODE_CLOUDS = Облака из Story mode
+    option.DOUBLE_VANILLA_CLOUDS = Удвоить обычные облака
+    option.DYNAMIC_CLOUDS = Динамические облака
+    option.FADE_SPEED = Скорость растворения
+    option.SECOND_CLOUD_HEIGHT = Высота второго слоя
+    option.SKYBOX_BRIGHTNESS = Яркость неба
+
+screen.WORLD = Мир
+    option.TERRAIN_ANIMATION = Анимация местности
+    option.WATER_ANIMATION = Анимация воды
+    option.WEATHER_ANIMATION = Анимация погоды
+
+    option.TIMELAPSE_MODE = Режим замедленной съёмки
+        value.TIMELAPSE_MODE.0 = Выкл
+        value.TIMELAPSE_MODE.1 = Частичный
+        value.TIMELAPSE_MODE.2 = Полный
+
+    option.WIND_SPEED = Скорость ветра
+    option.CURRENT_SPEED = Скорость течения
+    option.WIND_FREQUENCY = Частота порывов ветра
+    option.CURRENT_FREQUENCY = Частота волн
+    option.WORLD_CURVATURE = Искривление горизонта
+    option.WORLD_CURVATURE_SIZE = Радиус кривизны
+
+screen.PBR = Физически корректный рендеринг
+    option.PBR_MODE = Режим рендеринга
+        value.PBR_MODE.0 = Выкл
+        value.PBR_MODE.1 = Integrated PBR
+        value.PBR_MODE.2 = Lab PBR 1.3
+
+    option.ENVIRO_PBR = Чувствительность к среде
+    option.AUTO_GEN_NORM = Генерация карт нормалей
+    option.AUTO_GEN_NORM_RES = Разрешение карт нормалей
+    option.SUBSURFACE_SCATTERING = Рассеяние в материале
+    option.EMISSIVE_INTENSITY = Сила излучения света
+    option.SLOPE_NORMALS = Боковые нормали
+    option.NORMAL_STRENGTH = Воздействие карт нормалей
+    option.DIRECTIONAL_LIGHTMAPS = Карты направленного света
+    option.DIRECTIONAL_LIGHTMAP_STRENGTH = Сила направленного света
+
+    screen.POM_SETTINGS = Настройки рельефа поверхностей
+        option.PARALLAX_OCCLUSION = Параллакс рельефа
+        option.PARALLAX_DEPTH = Глубина рельефа
+        option.PARALLAX_STEPS = Уровни параллакса
+        option.PARALLAX_SHADOWS = Затенение рельефа
+        option.PARALLAX_SHADOW_STEPS = Уровни теней
+
+    screen.WATER_SETTINGS = Свойства воды
+        option.WATER_NOISE = Шумовые волны
+        option.WATER_BRIGHTNESS = Яркость воды
+        option.WATER_NORM = Карта нормалей
+        option.WATER_BLUR_SIZE = Размытие карты нормалей
+        option.WATER_DEPTH_SIZE = Глубина карты нормалей
+        option.WATER_TILE_SIZE = Длина волны
+        option.WATER_STYLIZE_ABSORPTION = Рассеяние света в воде
+        option.WATER_FOAM = Пена
+        option.WATER_FLAT = Чистая водная гладь
+
+    screen.LAVA_SETTINGS = Свойства лавы
+        option.LAVA_BRIGHTNESS = Температура лавы
+        option.LAVA_NOISE = Температурные перепады
+        option.LAVA_TILE_SIZE = Размер холодных пятен
+
+screen.CONFIGURATION = Настройки
+    screen.OVERWORLD_SETTINGS = Верхний мир
+        screen.DAY_SETTINGS = День
+            option.LIGHT0_DR = Красный свет
+            option.LIGHT0_DG = Зелёный свет
+            option.LIGHT0_DB = Синий свет
+            option.LIGHT0_DI = Яркость света
+
+            option.SKY0_DR = Красный свет неба
+            option.SKY0_DG = Зелёный свет неба
+            option.SKY0_DB = Синий свет неба
+            option.SKY0_DI = Яркость освещения неба
+
+        screen.NIGHT_SETTINGS = Ночь
+            option.LIGHT0_NR = Красный свет
+            option.LIGHT0_NG = Зелёный свет
+            option.LIGHT0_NB = Синий свет
+            option.LIGHT0_NI = Яркость света
+
+            option.SKY0_NR = Красный свет неба
+            option.SKY0_NG = Зелёный свет неба
+            option.SKY0_NB = Синий свет неба
+            option.SKY0_NI = Яркость освещения неба
+
+        screen.TWILIGHT_SETTINGS = Сумерки
+            option.LIGHT0_TR = Красный свет
+            option.LIGHT0_TG = Зелёный свет
+            option.LIGHT0_TB = Синий свет
+            option.LIGHT0_TI = Яркость света
+
+            option.SKY0_TR = Красный свет неба
+            option.SKY0_TG = Зелёный свет неба
+            option.SKY0_TB = Синий свет неба
+            option.SKY0_TI = Яркость освещения неба
+
+        screen.FOG_SETTINGS0 = Туман
+            option.FOG0_VERTICAL_DENSITY_D = Сгущенность у земли днём
+            option.FOG0_VERTICAL_DENSITY_N = Сгущенность у земли ночью
+            option.FOG0_VERTICAL_DENSITY_T = Сгущенность в сумерки
+            option.FOG0_TOTAL_DENSITY = Общая плотность дымки
+
+    screen.NETHER_SETTINGS = Незер
+        option.FOGn1_VERTICAL_DENSITY = Сгущенность у земли
+        option.FOGn1_TOTAL_DENSITY = Общая плотность дымки
+        option.WORLDn1_VANILLA_FOGCOLI = Яркость дымки
+
+    screen.END_SETTINGS = Энд
+        option.LIGHT1_CR = Красный свет
+        option.LIGHT1_CG = Зелёный свет
+        option.LIGHT1_CB = Синий свет
+        option.LIGHT1_CI = Яркость света
+
+        option.SKY1_CR = Красный свет неба
+        option.SKY1_CG = Зелёный свет неба
+        option.SKY1_CB = Синий свет неба
+        option.SKY1_CI = Яркость освещения неба
+
+        option.FOG1_VERTICAL_DENSITY = Сгущенность у земли
+        option.FOG1_TOTAL_DENSITY = Общая плотность дымки
+
+    screen.BLOCK_LIGHT_COLOR = Цветное освещение блоков
+        option.BLOCKLIGHT_R = Красный свет
+        option.BLOCKLIGHT_G = Зелёный свет
+        option.BLOCKLIGHT_B = Синий свет
+        option.BLOCKLIGHT_I = Яркость света
+
+option.OUTLINES.comment = Стандартные – классическая обводка блоков.. Dungeons – контуры в стиле Minecraft Dungeons, Minecraft Legends или Super Duper Graphics Pack..
+option.OUTLINE_BRIGHTNESS.comment = При низких значениях напоминает тёмные контуры из Minecraft Legends.. При высоких – яркие контуры из Minecraft Dungeons или Super Duper Graphics Pack..
+option.RETRO_FILTER.comment = Лучше всего работает при низком качестве рендеринга..
+option.ANTI_ALIASING.comment = Активирует сглаживание "лесенок" на изображении.. FXAA более простой и быстрый, работает со скриншотами любого разрешения.. TAA медленнее, требует стандартного разрешения для скриншотов, но хорошо сглаживает шумы.. §cOptifine: отключите сглаживание в меню шейдеров перед использованием этой функции!
+option.SHARPEN_FILTER.comment = Активирует повышение резкости изображения.. Рекомендуется использовать вместе с включённым сглаживанием, если картинка выглядит размытой..
+
+option.DOF.comment = Активирует эффект фокусировки камеры.. Рекомендуется включить сглаживание для наилучшего результата..
+option.DOF_STRENGTH.comment = Сила размытия удалённых объектов..
+option.VIGNETTE.comment = Кинематографический эффект затенения по краям изображения..
+
+option.AUTO_EXPOSURE_SPEED.comment = Скорость привыкания персонажа к изменению условий освещения.. Меньшие значения увеличивают время..
+option.MIN_EXPOSURE.comment = Минимальное значение экспозиции в автоматическом режиме.. Меньшие значения могут улучшить видимость в тёмных сценах..
+
+option.SHADOW.comment = Активирует продвинутые тени.. Когда отключено, будет использоваться быстрая имитация тени на основе карт освещения..
+option.SHADOW_COL.comment = Тень цветных полупрозрачных объектов будет иметь соответствующий оттенок..
+option.SHADOW_FILTER.comment = Применяет к карте теней эффект сглаживания шумом.. Может незначительно повлиять на производительность..
+option.sunPathRotation.comment = Угол падения лучей светил.. Также влияет на поворот небесной сферы..
+
+option.UNDERWATER_CAUSTICS.comment = Эффект преломления света от волн на поверхности блоков.. Требует включения карты теней и цветных теней..
+option.SSAO.comment = Активирует преграждение рассеянного света геометрией поверхностей в поле зрения (SSAO).. Иными словами – тень от непрямого освещения..
+option.AMBIENT_LIGHTING.comment = Общее количество рассеянного света, который не исходит от конкретных источников.. Увеличьте, если вам не нравится кромешная тьма.. Установите значение §90§r при включённом глобальном освещении для более реалистичной картины.. Значение §90.50§r равносильно ночному зрению.. Высокие значения могут снизить реализм освещения..
+
+option.SSGI.comment = Придаёт эффект окрашивания поверхностей светом, отражённым от ярких и цветных объектов в поле зрения.. Пока функция экспериментальна и не имеет должной оптимизации, но может улучшить атмосферность тёмных сцен ценой графического шума.. Для улучшения результата рекомендуется включить временнóе сглаживание (TAA)..
+option.SSR.comment = Активирует обработку отражений объектов, находящихся на экране.. Выглядит не лучшим образом в некоторых сценах..
+option.SSGI_STEPS.comment = Количество итераций распространения освещения.. Больше итераций может улучшить качество и повысить нагрузку..
+option.SSR_STEPS.comment = Количество итераций построения отражений.. Больше итераций может улучшить качество и повысить нагрузку..
+option.SSGI_BISTEPS.comment = Количество бинарных итераций повышения точности освещения, особенно полезно при при низком количестве шагов освещения.. Для достижения оптимального качества и производительности следует подбирать оба параметра..
+option.SSR_BISTEPS.comment = Количество бинарных итераций повышения точности отражений, особенно полезно при при низком количестве шагов освещения.. Для достижения оптимального качества и производительности следует подбирать оба параметра..
+option.ROUGH_REFLECTIONS.comment = Активирует имитацию размытых отражений на поверхностях с грубым рельефом (задаются наборами ресурсов).. Может вызвать графический шум, поэтому лучше использовать в паре со сглаживанием..
+option.PREVIOUS_FRAME.comment = Позволяет использовать данные цветового буфера предыдущего кадра, что обеспечивает более реалистичное освещение и отражения.. §6Может повлиять на производительность§r..
+
+option.PBR_MODE.comment = Активирует физически корректный рендеринг (PBR), который позволяет точнее имитировать взаимодействие света с материалами в зависимости от их свойств.. §aIntegrated PBR§r зависит от отражательной способности стандартных текстур для имитации свойств материалов.. §aLab PBR 1.3§r использует данные соответствующего формата о свойствах материалов из наборов ресурсов (при их наличии); требует ресурсов формата новейшей версии LabPBR..
+option.ENVIRO_PBR.comment = Изменение свойств поверхностей в зависимости от условий окружения.. Например, во время дождя..
+option.AUTO_GEN_NORM.comment = Активирует автоматическую генерацию карт нормалей – данных об углах отражения света поверхностью.. Работает при включённом режиме §aIntegrated PBR§r.. Предназначено для стандартных текстур, не имеющих этих данных, выглядит лучше с текстурами высокого разрешения и не требует ресурсов особого формата..
+option.AUTO_GEN_NORM_RES.comment = Разрешение генерируемых карт нормалей.. Почти не влияет на производительность..
+option.SUBSURFACE_SCATTERING.comment = Активирует подповерхностное рассеяние – эффект преломления света внутри материала объекта..
+option.EMISSIVE_INTENSITY.comment = Интенсивность излучения света текстурами, имеющими карты излучения.. Не влияет на само освещение и работает только при физически корректном рендеринге..
+option.SLOPE_NORMALS.comment = Добавляет нормали по бокам пикселей в текстурах с эффектом параллакса, значительно улучшая их затенение.. При игре с реалистичными наборами ресурсов высокого разрешения со встроенными картами нормалей данный эффект лучше отключить.. За реализацию спасибо §6@Null§r!
+option.NORMAL_STRENGTH.comment = Степень влияния карт нормалей на угол отражения света.. 
+option.DIRECTIONAL_LIGHTMAPS.comment = Активирует направленное распространение света от блоков и динамических источников освещения.. Заметно только при наличии карт нормалей у текстур..
+option.DIRECTIONAL_LIGHTMAP_STRENGTH.comment = Заметность влияния направленного света на фоне общего освещения..
+
+option.PARALLAX_OCCLUSION.comment = Имитация глубины рельефа на поверхности текстуры за счёт эффекта параллакса.. Требуется набор ресурсов с поддержкой LabPBR и включённый режим рендеринга «§aLab PBR§r»..
+option.PARALLAX_DEPTH.comment = Глубина, создаваемая картой параллакса рельефа.. Высокие значения соответствуют большей глубине..
+option.PARALLAX_STEPS.comment = Количество срезов рельефа, генерируемых при создании эффекта параллакса.. Чем их больше, тем выше качество рельефа..
+option.PARALLAX_SHADOWS.comment = Активировать самозатенение рельефа за счёт создания дополнительных слоёв, имитирующих падение тени..
+option.PARALLAX_SHADOW_STEPS.comment = Количество слоёв, имитирующих падение тени.. Чем их больше, тем выше качество теней..
+
+option.WATER_NOISE.comment = Эффект движения волн по поверхности воды.. Заключается в случайном изменении её яркости, аналогично воде в Super Duper Graphics Pack..
+option.WATER_BRIGHTNESS.comment = Чем меньше, тем глубже цвета..
+option.WATER_NORM.comment = Эффект разного отражения света в зависимости от наклона волны..
+option.WATER_BLUR_SIZE.comment = Сила размытия карты нормалей.. Малые значения обеспечивают более резкие волны, высокие – более гладкие отражения..
+option.WATER_DEPTH_SIZE.comment = Глубина карт нормалей волн.. Чем меньше, тем большую амплитуду имеют волны..
+option.WATER_TILE_SIZE.comment = Длина волн на поверхности воды..
+option.WATER_STYLIZE_ABSORPTION.comment = Активирует эффект поглощения света водой.. Делает мелководье более светлым по сравнению с глубиной..
+option.WATER_FOAM.comment = Эффект пены рядом с твёрдыми объектами, пересекающими поверхность воды..
+option.WATER_FLAT.comment = Убирает стандартную текстуру с поверхности воды..
+
+option.LAVA_BRIGHTNESS.comment = Яркость видимого свечения лавы.. Чем ниже, тем темнее..
+option.LAVA_NOISE.comment = Эффект перепадов температуры на поверхности лавы.. Заключается в случайном изменении её яркости, аналогично лаве в Minecraft Dungeons..
+option.LAVA_TILE_SIZE.comment = Размер пятен с пониженной температурой и светимостью..
+
+option.SUN_MOON_TYPE.comment = Внешний вид Солнца и Луны..
+option.SUN_MOON_INTENSITY.comment = Яркость Солнца, Луны и Чёрной дыры.. Также влияет на зеркальные отражения..
+option.VOLUMETRIC_LIGHTING.comment = Требует включения карты теней..
+option.VOLUMETRIC_LIGHTING_STRENGTH.comment = Чем выше плотность, тем лучше заметен эффект объёмных лучей..
+option.BORDER_FOG.comment = Туман по краям видимой местности для скрытия её границ..
+option.GROUND_FOG_STRENGTH.comment = Яркость цвета дымки..
+option.STORY_MODE_CLOUDS.comment = Облака с процедурной генерацией, похожие на аэрогель.. Для наилучшего результата рекомендуется отключить обычные облака..
+option.DOUBLE_VANILLA_CLOUDS.comment = Создать дополнительный слой обычных облаков (не влияет на облака в стиле Story Mode).. Может повлиять на производительность..
+option.DYNAMIC_CLOUDS.comment = Придаёт облакам динамичности и позволяет им сгущаться во время дождя..
+option.FADE_SPEED.comment = Скорость испарения динамических облаков..
+option.SECOND_CLOUD_HEIGHT.comment = Высота второго слоя при включённом удвоении облаков..
+
+option.WIND_SPEED.comment = Влияет на погоду, растения и развевающиеся объекты.. Изменяет скорость анимации.
+option.CURRENT_SPEED.comment = Влияет на жидкости и подводные растения.. Изменяет скорость анимации.
+option.WIND_FREQUENCY.comment = Влияет на погоду, растения и развевающиеся объекты.. Изменяет частоту воспроизведения анимации.
+option.CURRENT_FREQUENCY.comment = Влияет на жидкости и подводные растения.. Изменяет частоту воспроизведения анимации.
+option.TIMELAPSE_MODE.comment = Синхронизирует анимацию неба, растительности и другие эффекты с текущим временем суток вместо привязки к частоте кадров, улучшая его переключение.. §aЧастичный§r режим – анимация неба и отражений в воде.. §aПолный§r режим – анимация неба, волн и отражений.. Не затрагивает небесные светила и обычные облака..
+option.TERRAIN_ANIMATION.comment = Колыхание элементов местности под действием ветра..
+option.WATER_ANIMATION.comment = Движение волн на поверхности воды..
+option.WEATHER_ANIMATION.comment = Изменение угла падения капель дождя под действием ветра.. 
+
+option.COLOR_MODE.comment = Активирует режим рендеринга без текстур.. §aБелый мир§r заменяет текстуры белым цветом, §aЧёрный §aмир§r – чёрным.. Режим §aРастительность§r сохраняет цвета растений.. Данные о материале поверхностей сохраняются..
+option.NOISE_SPEED.comment = Скорость случайного смещения шума от кадра к кадру.. Полезно для временнóго сглаживания (TAA) и заметно только с ним..
