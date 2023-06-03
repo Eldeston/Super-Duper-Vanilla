@@ -20,19 +20,23 @@ vec4 simpleShadingGbuffers(in vec4 albedo){
 			vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz);
 			shdPos.z += shadowProjection[3].z;
 
-			// Bias mutilplier, adjusts according to the current shadow distance and resolution
-			const float biasAdjustMult = (shadowDistance / shadowMapResolution) * 4.0;
-			float distortFactor = getDistortFactor(shdPos.xy);
+			// Apply shadow distortion and transform to shadow clip space
+			shdPos = distort(shdPos) * 0.5 + 0.5;
 
 			#ifdef CLOUDS
-				// Apply bias according to normal in shadow space for clouds
-				shdPos += vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexNormal) * distortFactor * biasAdjustMult;
-			#else
-				// Apply simpler bias for particles and basic
-				shdPos.y += shadowProjection[1].y * shadowModelView[1].y * distortFactor * biasAdjustMult;
-			#endif
+				// Bias mutilplier, adjusts according to the current shadow resolution
+				const vec3 biasAdjustMult = vec3(2, 2, -0.0625) / shadowMapResolution;
 
-			shdPos = distort(shdPos, distortFactor) * 0.5 + 0.5;
+				vec3 shdNormal = mat3(shadowModelView) * vertexNormal;
+				// Apply normal bias for clouds
+				shdPos += shdNormal * biasAdjustMult;
+			#else
+				// Bias mutilplier, adjusts according to the current shadow resolution
+				const float biasAdjustMult = 2.0 / shadowMapResolution;
+
+				// Apply normal bias for particles and basic
+				shdPos.y += shadowModelView[1].y * biasAdjustMult;
+			#endif
 
 			// Sample shadows
 			#ifdef SHADOW_FILTER
