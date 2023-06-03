@@ -224,7 +224,7 @@ screen.CONFIGURATION = Настройки
         option.BLOCKLIGHT_G = Зелёный свет
         option.BLOCKLIGHT_B = Синий свет
         option.BLOCKLIGHT_I = Яркость света
-marker = стереть
+
 option.OUTLINES.comment = Стандартные – классическая обводка блоков.. Dungeons – контуры в стиле Minecraft Dungeons, Minecraft Legends или Super Duper Graphics Pack..
 option.OUTLINE_BRIGHTNESS.comment = При низких значениях напоминает тёмные контуры из Minecraft Legends.. При высоких – яркие контуры из Minecraft Dungeons или Super Duper Graphics Pack..
 option.RETRO_FILTER.comment = Лучше всего работает при низком качестве рендеринга..
