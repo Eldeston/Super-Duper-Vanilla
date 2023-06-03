@@ -20,8 +20,8 @@ vec4 simpleShadingGbuffers(in vec4 albedo){
 			vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz);
 			shdPos.z += shadowProjection[3].z;
 
-			// Apply shadow distortion and transform to shadow clip space
-			shdPos = distort(shdPos) * 0.5 + 0.5;
+			// Apply shadow distortion and transform to shadow screen space
+			shdPos = vec3(shdPos.xy / (length(shdPos.xy) * 2.0 + 0.2), shdPos.z * 0.1) + 0.5;
 
 			#ifdef CLOUDS
 				// Bias mutilplier, adjusts according to the current shadow resolution

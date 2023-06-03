@@ -46,13 +46,13 @@ vec4 complexShadingGbuffers(in structPBR material){
 				vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz);
 				shdPos.z += shadowProjection[3].z;
 
-				// Apply shadow distortion and transform to shadow clip space
-				shdPos = distort(shdPos) * 0.5 + 0.5;
+				// Apply shadow distortion and transform to shadow screen space
+				shdPos = vec3(shdPos.xy / (length(shdPos.xy) * 2.0 + 0.2), shdPos.z * 0.1) + 0.5;
 				// Bias mutilplier, adjusts according to the current resolution
 				const vec3 biasAdjustMult = vec3(2, 2, -0.0625) / shadowMapResolution;
 
-				// Get shadow normal
-				vec3 shdNormal = mat3(shadowModelView) * material.normal;
+				// Get shadow normal from vertex normal
+				vec3 shdNormal = mat3(shadowModelView) * TBN[2];
 				// Apply normal bias
 				shdPos += shdNormal * biasAdjustMult;
 
