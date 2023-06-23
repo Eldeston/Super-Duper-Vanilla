@@ -2,22 +2,32 @@
 #endif
 
 vec4 complexShadingGbuffers(in structPBR material){
+	// Calculate sky diffusion first, begining with the sky itself
+	vec3 totalDiffuse = toLinear(SKY_COL_DATA_BLOCK);
+
+	// Calculate thunder flash
+	totalDiffuse += lightningFlash * EMISSIVE_INTENSITY;
+
+	// Thunder flash and sky color ambience
+	float skyLightSquared = squared(lmCoord.y);
+	// Occlude the appled sky and thunder flash calculation by sky light amount
+	totalDiffuse *= skyLightSquared;
+
 	#if defined DIRECTIONAL_LIGHTMAPS && (defined TERRAIN || defined WATER)
 		vec3 dirLightMapCoord = dFdx(vertexPos.xyz) * dFdx(lmCoord.x) + dFdy(vertexPos.xyz) * dFdy(lmCoord.x);
 		float dirLightMap = min(1.0, max(0.0, dot(fastNormalize(dirLightMapCoord), material.normal)) * lmCoord.x * DIRECTIONAL_LIGHTMAP_STRENGTH + lmCoord.x);
 
-		// Lightmap and ambience
-		vec3 totalDiffuse = toLinear(dirLightMap * blockLightCol) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
+		// Calculate block light
+		totalDiffuse += toLinear(dirLightMap * blockLightCol);
 	#else
-		// Lightmap and ambience
-		vec3 totalDiffuse = toLinear(lmCoord.x * blockLightCol) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
+		// Calculate block light
+		totalDiffuse += toLinear(lmCoord.x * blockLightCol);
 	#endif
 
-	// Thunder flash and sky color ambience
-	float skyLightSquared = squared(lmCoord.y);
-	totalDiffuse += (toLinear(SKY_COL_DATA_BLOCK) + lightningFlash * EMISSIVE_INTENSITY) * skyLightSquared;
+	// Lastly, calculate ambient lightning
+	totalDiffuse += toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 
-	// Apply ambient occlussion
+	// Apply baked ambient occlussion
 	totalDiffuse *= material.ambient;
 
 	#ifdef WORLD_LIGHT
@@ -59,16 +69,18 @@ vec4 complexShadingGbuffers(in structPBR material){
 				// Sample shadows
 				#ifdef SHADOW_FILTER
 					#if ANTI_ALIASING >= 2
-						shadowCol = getShdCol(shdPos, toRandPerFrame(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x, frameTimeCounter) * TAU);
+						float blueNoise = toRandPerFrame(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x, frameTimeCounter);
 					#else
-						shadowCol = getShdCol(shdPos, texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x * TAU);
+						float blueNoise = texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x;
 					#endif
+
+					shadowCol = getShdCol(shdPos, blueNoise * TAU);
 				#else
 					shadowCol = getShdCol(shdPos);
 				#endif
 
 				// Cave light leak fix
-				float caveFixShdFactor = isEyeInWater == 1 ? shdFade : (min(1.0, lmCoord.y * 2.0) * (1.0 - eyeBrightFact) + eyeBrightFact) * shdFade;
+				float caveFixShdFactor = isEyeInWater == 1 ? shdFade : min(1.0, lmCoord.y * 2.0 + eyeBrightFact) * shdFade;
 				
 				#if defined PARALLAX_OCCLUSION && defined PARALLAX_SHADOWS
 					shadowCol *= material.parallaxShd * caveFixShdFactor;

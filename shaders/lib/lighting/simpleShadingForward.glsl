@@ -1,18 +1,22 @@
 vec4 simpleShadingGbuffers(in vec4 albedo){
-	#ifdef CLOUDS
-		// Calculate total diffuse for clouds
-		vec3 totalDiffuse = toLinear(SKY_COL_DATA_BLOCK);
+	// Calculate sky diffusion first, begining with the sky itself
+	vec3 totalDiffuse = toLinear(SKY_COL_DATA_BLOCK);
 
-		// Thunder flash and ambience
-		totalDiffuse += lightningFlash * EMISSIVE_INTENSITY + toLinear(nightVision * 0.5 + AMBIENT_LIGHTING);
-	#else
-		// Calculate total diffuse
-		vec3 totalDiffuse = toLinear(lmCoord.x * blockLightCol) + toLinear(nightVision * 0.5 + AMBIENT_LIGHTING);
+	// Calculate thunder flash
+	totalDiffuse += lightningFlash * EMISSIVE_INTENSITY;
 
-		// Thunder flash and sky color ambience
+	#ifndef CLOUDS
+		// Get sky light squared
 		float skyLightSquared = squared(lmCoord.y);
-		totalDiffuse += (toLinear(SKY_COL_DATA_BLOCK) + lightningFlash * EMISSIVE_INTENSITY) * skyLightSquared;
+		// Occlude the appled sky and thunder flash calculation by sky light amount
+		totalDiffuse *= skyLightSquared;
+
+		// Calculate block light
+		totalDiffuse += toLinear(lmCoord.x * blockLightCol);
 	#endif
+
+	// Lastly, calculate ambient lightning
+	totalDiffuse += toLinear(nightVision * 0.5 + AMBIENT_LIGHTING);
 
 	#ifdef WORLD_LIGHT
 		#ifdef SHADOW
@@ -41,10 +45,12 @@ vec4 simpleShadingGbuffers(in vec4 albedo){
 			// Sample shadows
 			#ifdef SHADOW_FILTER
 				#if ANTI_ALIASING >= 2
-					vec3 shadowCol = getShdCol(shdPos, toRandPerFrame(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x, frameTimeCounter) * TAU);
+					float blueNoise = toRandPerFrame(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x, frameTimeCounter);
 				#else
-					vec3 shadowCol = getShdCol(shdPos, texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x * TAU);
+					float blueNoise = texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x;
 				#endif
+
+				vec3 shadowCol = getShdCol(shdPos, blueNoise * TAU);
 			#else
 				vec3 shadowCol = getShdCol(shdPos);
 			#endif
@@ -54,7 +60,7 @@ vec4 simpleShadingGbuffers(in vec4 albedo){
 				shadowCol *= max(0.0, dot(vertexNormal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) * 0.6 + 0.4) * shdFade;
 			#else
 				// Cave light leak fix
-				shadowCol *= isEyeInWater == 1 ? shdFade : (min(1.0, lmCoord.y * 2.0) * (1.0 - eyeBrightFact) + eyeBrightFact) * shdFade;
+				shadowCol *= isEyeInWater == 1 ? shdFade : min(1.0, lmCoord.y * 2.0 + eyeBrightFact) * shdFade;
 			#endif
 		#else
 			#ifdef CLOUDS
