@@ -93,6 +93,8 @@ void getPBR(inout structPBR material, in int id){
             // Fungus
             else if(id == 12001) material.emissive = float(sumOf(material.albedo.rg) > 1);
 
+            else if(id == 12002) material.emissive = squared(material.albedo.r * 0.5);
+
             /// -------------------------------- /// Emissive blocks /// -------------------------------- ///
 
             // Frog lights
