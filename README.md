@@ -22,16 +22,18 @@
 ## License 
    This shader now uses the **FlameRender (TM) Studios License**. See [**LICENSE**](LICENSE) for more info.
 
+## Contribution
+   If you plan to contribute to this project, see [**CONTRIBUTION**](CONTRIBUTION.md) for more info.
+
 ## Mod Compatibility
    If you want to request mod compatibility with this shader, create an issue post in this repository with the mod that you want to enable compatibility via linking. If you're planning to add mod compatibility by coding it yourself, see [**CONTRIBUTION**](CONTRIBUTION.md).
 
    Older versions of Iris may not work in this version of Super Duper Vanilla.
 
-## Contribution
-   If you plan to contribute to this project, see [**CONTRIBUTION**](CONTRIBUTION.md) for more info.
-
 ## Releases
-   See all available releases [here](https://github.com/Eldeston/Super-Duper-Vanilla/releases), and get the latest build [here](https://github.com/Eldeston/Super-Duper-Vanilla/archive/refs/heads/master.zip), this build will always be the latest by default. Latest builds and pre-release versions are expected to be unstable, please report any issues or bugs anytime. Feedback is much appreciated.
+   See all available releases [here](https://github.com/Eldeston/Super-Duper-Vanilla/releases), and get the latest commit [here](https://github.com/Eldeston/Super-Duper-Vanilla/archive/refs/heads/master.zip), the latest build will always be from the most recent commit by default.
+   
+   Latest build and pre-release versions are expected to be unstable, please report any issues or bugs anytime. Feedback is much appreciated.
 
 ## Official CurseForge Page
    Super Duper Vanilla just happen to be on CurseForge! Stable and latest releases will always be available there. Check it out [here](https://www.curseforge.com/minecraft/customization/super-duper-vanilla-shaders) and support me by using on one of the download links there!
