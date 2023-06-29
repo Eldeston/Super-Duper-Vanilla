@@ -7,6 +7,10 @@
 ## Description
    A shader pack created to convey the style of the cancelled __Super Duper Graphics Pack__ and other popular Minecraft titles. Developed by [@Eldeston](https://github.com/Eldeston), and presented by __FlameRender Studios__.
 
+## Sponsor
+   [![Sponsor](/shaders/textures/sponsor.png)](https://bisecthosting.com/FLAMERENDERSTUDIOS)
+   This shader is sponsored by **BisectHosting**. Open the image above to get *25%* off on your first month when buying any of their awesome gaming servers!
+
 ## Screenshots
 ![2022-06-28_19 28 13](https://cdn.modrinth.com/data/LMIZZNxZ/images/bd57c68a400e0722bc7132575ea7cec66ca529ab.png)
 ![2022-06-28_19 43 18](https://cdn.modrinth.com/data/LMIZZNxZ/images/1d38424b62d4461fae738019cbd1342145e9b4ac.png)
