@@ -144,8 +144,8 @@
         uniform sampler2D colortex4;
     #endif
 
-    #ifdef WORLD_SKYLIGHT
-        const float eyeBrightFact = WORLD_SKYLIGHT;
+    #ifdef WORLD_CUSTOM_SKYLIGHT
+        const float eyeBrightFact = WORLD_CUSTOM_SKYLIGHT;
     #else
         uniform float eyeSkylight;
         

@@ -49,8 +49,8 @@
         vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
 
         // Lightmap fix for mods
-        #ifdef WORLD_SKYLIGHT
-            lmCoord = vec2(saturate(gl_MultiTexCoord1.x * 0.00416667), WORLD_SKYLIGHT);
+        #ifdef WORLD_CUSTOM_SKYLIGHT
+            lmCoord = vec2(saturate(gl_MultiTexCoord1.x * 0.00416667), WORLD_CUSTOM_SKYLIGHT);
         #else
             lmCoord = saturate(gl_MultiTexCoord1.xy * 0.00416667);
         #endif
@@ -112,8 +112,8 @@
         uniform vec3 fogColor;
     #endif
 
-    #ifdef WORLD_SKYLIGHT
-        const float eyeBrightFact = WORLD_SKYLIGHT;
+    #ifdef WORLD_CUSTOM_SKYLIGHT
+        const float eyeBrightFact = WORLD_CUSTOM_SKYLIGHT;
     #else
         uniform float eyeSkylight;
         
