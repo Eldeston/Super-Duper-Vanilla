@@ -88,7 +88,15 @@
             vTexCoord = sign(texMinMidCoord) * 0.5 + 0.5;
         #endif
 
-        gl_Position = ftransform();
+        #ifdef WORLD_CURVATURE
+            // Apply curvature distortion
+            vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
+            
+            // Convert to clip pos and output as position
+            gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
+        #else
+            gl_Position = ftransform();
+        #endif
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);

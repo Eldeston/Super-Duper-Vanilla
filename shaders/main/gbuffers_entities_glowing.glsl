@@ -86,9 +86,10 @@
         #endif
 
         #ifdef WORLD_CURVATURE
+            // Apply curvature distortion
             vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
             
-            // Clip pos
+            // Convert to clip pos and output as position
             gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
         #else
             gl_Position = ftransform();
