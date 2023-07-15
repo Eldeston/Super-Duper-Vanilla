@@ -67,7 +67,7 @@
             #if defined TERRAIN_ANIMATION || defined TERRAIN_ANIMATION || defined WORLD_CURVATURE
                 #if defined TERRAIN_ANIMATION || defined TERRAIN_ANIMATION
                     // Apply terrain wave animation
-                    vertexPos.xyz = getShadowWave(vertexPos.xyz, worldPos, at_midBlock, mc_Entity.x, saturate(gl_MultiTexCoord1.y * 0.00416667));
+                    vertexPos.xyz = getShadowWave(vertexPos.xyz, worldPos, at_midBlock.y * 0.015625, mc_Entity.x, saturate(gl_MultiTexCoord1.y * 0.00416667));
                 #endif
 
                 #ifdef WORLD_CURVATURE

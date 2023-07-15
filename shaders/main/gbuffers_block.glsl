@@ -33,8 +33,11 @@
         out vec2 vTexCoord;
     #endif
 
-    uniform mat4 gbufferModelView;
     uniform mat4 gbufferModelViewInverse;
+
+    #ifdef WORLD_CURVATURE
+        uniform mat4 gbufferModelView;
+    #endif
 
     #if ANTI_ALIASING == 2
         uniform int frameMod8;
