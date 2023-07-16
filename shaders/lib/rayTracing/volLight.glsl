@@ -15,8 +15,8 @@ vec3 getVolumetricLight(in vec3 feetPlayerPos, in float depth, in float dither){
 
 	// Fade VL, but do not apply to underwater VL
 	if(isEyeInWater != 1 && nFeetPlayerPos.y > 0){
-		heightFade = 1.0 - squared(nFeetPlayerPos.y);
-		heightFade = depth == 1 ? squared(squared(heightFade * heightFade)) : heightFade * heightFade;
+		heightFade = squared(1.0 - squared(nFeetPlayerPos.y));
+		if(depth == 1) heightFade = squared(heightFade * heightFade);
 
 		#ifndef WORLD_CUSTOM_SKYLIGHT
 			#ifndef FORCE_DISABLE_WEATHER
