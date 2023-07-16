@@ -34,24 +34,30 @@ vec4 complexShadingGbuffers(in structPBR material){
 		// Get sRGB light color
 		vec3 sRGBLightCol = LIGHT_COL_DATA_BLOCK0;
 
-		float NL = max(0.0, dot(material.normal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)));
+		float NL = dot(material.normal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z));
 		// also equivalent to:
 		// vec3(0, 0, 1) * mat3(shadowModelView) = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)
     	// shadowLightPosition is broken in other dimensions. The current is equivalent to:
     	// (mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz) * 0.01
 
-		#ifdef SUBSURFACE_SCATTERING
-			// Diffuse with simple SS approximation
-			float dirLight = NL + (1.0 - NL) * material.ambient * material.ss * 0.5;
-		#else
-			#define dirLight NL
-		#endif
-
 		#if defined SHADOW && !defined ENTITIES_GLOWING
 			vec3 shadowCol = vec3(0);
 
+			bool isShadow = NL > 0;
+
+			float dirLight = max(NL, 0.0);
+
+			#ifdef SUBSURFACE_SCATTERING
+				// Diffuse with simple SS approximation
+				if(material.ss > 0){
+					dirLight += (1.0 - dirLight) * material.ambient * material.ss * 0.5;
+
+					isShadow = true;
+				}
+			#endif
+
 			// If the area isn't shaded, apply shadow mapping
-			if(dirLight > 0){
+			if(isShadow){
 				// Get shadow pos
 				vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz);
 				shdPos.z += shadowProjection[3].z;
