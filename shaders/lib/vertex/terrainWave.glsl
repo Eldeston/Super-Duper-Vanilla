@@ -6,7 +6,7 @@ vec3 getTerrainWave(in vec3 vertexPlayerPos, in vec3 worldPos, in float midBlock
         float windStrength = sin(-sumOf(id == 13001 ? floor(worldPos.xz) : worldPos.xz) * WIND_FREQUENCY + newFrameTimeCounter * WIND_SPEED) * outside;
 
         // Simple blocks, horizontal movement
-        if(id == 10000 || id == 10001){
+        if(id >= 10000 && id <= 10499){
             vertexPlayerPos.xz += windStrength * 0.1;
             return vertexPlayerPos;
         }

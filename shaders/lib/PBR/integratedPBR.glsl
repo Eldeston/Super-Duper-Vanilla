@@ -91,8 +91,9 @@ void getPBR(inout structPBR material, in int id){
             if(id == 10001) material.emissive = sumOf(material.albedo.rg) > material.albedo.g * 2.0 ? smoothstep(0.3, 0.9, maxOf(material.albedo.rgb)) : material.emissive;
 
             // Fungus
-            else if(id == 12001) material.emissive = float(sumOf(material.albedo.rg) > 1);
+            else if(id == 10002 || id == 12001) material.emissive = float(sumOf(material.albedo.rg) > 1);
 
+            // Torch flower
             else if(id == 12002) material.emissive = squared(material.albedo.r * 0.5);
 
             /// -------------------------------- /// Emissive blocks /// -------------------------------- ///
@@ -223,8 +224,8 @@ void getPBR(inout structPBR material, in int id){
 
             // Sculk
             else if(id == 30005){
-                material.emissive = cubed(max(0.0, material.albedo.b - material.albedo.r));
-                material.smoothness = 0.6;
+                material.emissive = cubed(material.albedo.b);
+                material.smoothness = 0.5;
             }
 
             /// -------------------------------- /// Crystal /// -------------------------------- ///
