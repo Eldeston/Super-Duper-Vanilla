@@ -64,7 +64,7 @@ vec3 getShadowWave(in vec3 vertexPlayerPos, in vec3 worldPos, in float midBlockY
                     float physics_localWaviness = texelFetch(physics_waviness, ivec2(gl_Vertex.xz) - physics_textureOffset, 0).r;
 
                     // transform gl_Vertex (since it is the raw mesh, i.e. not transformed yet)
-                    vertexPlayerPos.y += physics_waveHeight(gl_Vertex.xz, physics_localWaviness);
+                    vertexPlayerPos.y += physics_waveHeight((gl_Vertex.xz - physics_waveOffset) * PHYSICS_XZ_SCALE * physics_oceanWaveHorizontalScale, physics_localWaviness);
                 #endif
 
                 #ifdef WATER_ANIMATION

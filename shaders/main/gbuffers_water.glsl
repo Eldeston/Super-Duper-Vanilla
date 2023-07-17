@@ -126,7 +126,7 @@
                 // Physics mod vertex displacement
                 if(mc_Entity.x == 15502){
                     // pass this to the fragment shader to fetch the texture there for per fragment normals
-                    physics_localPosition = gl_Vertex.xz - physics_waveOffset;
+                    physics_localPosition = (gl_Vertex.xz - physics_waveOffset) * PHYSICS_XZ_SCALE * physics_oceanWaveHorizontalScale;
 
                     // basic texture to determine how shallow/far away from the shore the water is
                     physics_localWaviness = texelFetch(physics_waviness, ivec2(gl_Vertex.xz) - physics_textureOffset, 0).r;

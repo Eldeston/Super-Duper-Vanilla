@@ -36,9 +36,7 @@ uniform float physics_oceanWaveHorizontalScale;
 // just the generic minecraft lightmap, you can remove this and use the one supplied by Optifine/Iris
 // uniform sampler2D physics_lightmap;
 
-float physics_waveHeight(vec2 position, float factor){
-    position = position * PHYSICS_XZ_SCALE * physics_oceanWaveHorizontalScale;
-
+float physics_waveHeight(in vec2 position, in float factor){
     float iter = 0.0;
     float frequency = PHYSICS_FREQUENCY;
     float speed = PHYSICS_SPEED;
@@ -72,7 +70,7 @@ float physics_waveHeight(vec2 position, float factor){
 // VERTEX STAGE
 void main(){
     // pass this to the fragment shader to fetch the texture there for per fragment normals
-    physics_localPosition = gl_Vertex.xz - physics_waveOffset;
+    physics_localPosition = (gl_Vertex.xz - physics_waveOffset) * PHYSICS_XZ_SCALE * physics_oceanWaveHorizontalScale;
 
     // basic texture to determine how shallow/far away from the shore the water is
     physics_localWaviness = texelFetch(physics_waviness, ivec2(gl_Vertex.xz) - physics_textureOffset, 0).r;

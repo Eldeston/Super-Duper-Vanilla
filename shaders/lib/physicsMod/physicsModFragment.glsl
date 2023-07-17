@@ -73,7 +73,7 @@ vec2 physics_waveDirection(vec2 position, int iterations, float time) {
 }
 */
 
-vec3 physics_waveNormal(const in vec2 position, const in vec2 direction, const in float factor){
+vec3 physics_waveNormal(in vec2 position, in vec2 direction, in float factor){
     float oceanHeightFactor = physics_oceanHeight / 13.0;
     float totalFactor = oceanHeightFactor * factor;
 
@@ -107,8 +107,8 @@ struct WavePixelData{
     vec3 normal;
 };
 
-WavePixelData physics_wavePixel(const in vec2 position, const in float factor){
-    vec2 wavePos = position * PHYSICS_XZ_SCALE * physics_oceanWaveHorizontalScale;
+WavePixelData physics_wavePixel(in vec2 position, in float factor){
+    vec2 wavePos = position;
 
     float iter = 0.0;
     float frequency = PHYSICS_FREQUENCY;
