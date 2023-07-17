@@ -157,3 +157,23 @@ const vec3 blockLightCol = vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B) * (BLO
 
 #define COLOR_MODE 0 // Albedo color mode. White mode makes everything white. Black mode makes everything black. Foliage mode shows only foliage colors. Keeps materials on. [0 1 2 3]
 #define NOISE_SPEED 8 // The speed in which the noise randomises each frame. Useful for TAA. This effect is visible only when TAA is enabled. [2 4 8 16 32]
+
+/// -------------------------------- /// Physics mod settings /// -------------------------------- ///
+
+// Note to self: I absolutely want all of the variables below this text to be all macros to follow the style guideline
+
+#define PHYSICS_OCEAN_SUPPORT // Enables physics mod ocean support
+
+const int PHYSICS_ITERATIONS_OFFSET = 13;
+
+const float PHYSICS_DRAG_MULT = 0.048;
+const float PHYSICS_XZ_SCALE = 0.035;
+const float PHYSICS_TIME_MULTIPLICATOR = 0.45;
+const float PHYSICS_W_DETAIL = 0.75;
+const float PHYSICS_FREQUENCY = 6.0;
+const float PHYSICS_SPEED = 2.0;
+const float PHYSICS_WEIGHT = 0.8;
+const float PHYSICS_FREQUENCY_MULT = 1.18;
+const float PHYSICS_SPEED_MULT = 1.07;
+const float PHYSICS_ITER_INC = 12.0;
+const float PHYSICS_NORMAL_STRENGTH = 0.6;

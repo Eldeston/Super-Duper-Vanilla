@@ -29,6 +29,13 @@
 
     out vec4 vertexPos;
 
+    #ifdef PHYSICS_OCEAN
+        // Physics mod varyings
+        out float physics_localWaviness;
+
+        #include "/lib/physicsMod/physicsModVertex.glsl"
+    #endif
+
     #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
         flat out vec2 vTexCoordScale;
         flat out vec2 vTexCoordPos;
@@ -112,8 +119,17 @@
             vTexCoord = sign(texMinMidCoord) * 0.5 + 0.5;
         #endif
 
-        #if defined WATER_ANIMATION || defined WORLD_CURVATURE
-            #ifdef WATER_ANIMATION
+        #if defined WATER_ANIMATION || defined WORLD_CURVATURE || defined PHYSICS_OCEAN
+            #ifdef PHYSICS_OCEAN
+                // Physics mod vertex displacement
+                if(mc_Entity.x == 15502){
+                    // basic texture to determine how shallow/far away from the shore the water is
+                    physics_localWaviness = texelFetch(physics_waviness, ivec2(vertexPos.xz) - physics_textureOffset, 0).r;
+
+                    // transform gl_Vertex (since it is the raw mesh, i.e. not transformed yet)
+                    vertexPos.y += physics_waveHeight(vertexPos.xz, physics_localWaviness);
+                }
+            #elif defined WATER_ANIMATION
                 // Apply water wave animation
                 if(mc_Entity.x == 15502 && CURRENT_SPEED > 0) vertexPos.y = getWaterWave(worldPos.xz, vertexPos.y);
             #endif
@@ -150,6 +166,13 @@
     in vec3 worldPos;
 
     in vec4 vertexPos;
+
+    #ifdef PHYSICS_OCEAN
+        // Physics mod varyings
+        in float physics_localWaviness;
+
+        #include "/lib/physicsMod/physicsModFragment.glsl"
+    #endif
 
     #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
         flat in vec2 vTexCoordScale;
@@ -252,7 +275,13 @@
         if(blockId == 15502){
             float waterNoise = WATER_BRIGHTNESS;
 
-            #ifdef WATER_NORM
+            #ifdef PHYSICS_OCEAN
+                // Physics mod water normal calculation
+                WavePixelData wave = physics_wavePixel(vertexPos.xz, physics_localWaviness);
+
+                material.normal = wave.normal;
+                waterNoise *= wave.foam;
+            #elif defined WATER_NORM
                 vec4 waterData = H2NWater(worldPos.xz / WATER_TILE_SIZE);
                 material.normal = waterData.zyx * TBN[2].x + waterData.xzy * TBN[2].y + waterData.xyz * TBN[2].z;
 
