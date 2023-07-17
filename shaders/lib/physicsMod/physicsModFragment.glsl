@@ -39,19 +39,17 @@ uniform sampler3D physics_foam;
 // uniform sampler2D physics_lightmap;
 
 /*
-vec2 physics_waveDirection(vec2 position, int iterations, float time) {
-    position = (position - physics_waveOffset) * PHYSICS_XZ_SCALE * physics_oceanWaveHorizontalScale;
-
+vec2 physics_waveDirection(vec2 position, int iterations){
     float iter = 0.0;
     float frequency = PHYSICS_FREQUENCY;
     float speed = PHYSICS_SPEED;
     float weight = 1.0;
     float waveSum = 0.0;
-    float modifiedTime = time * PHYSICS_TIME_MULTIPLICATOR;
+    float modifiedTime = physics_gameTime * PHYSICS_TIME_MULTIPLICATOR;
 
     vec2 dx = vec2(0);
-    
-    for (int i = 0; i < iterations; i++) {
+
+    for(int i = 0; i < iterations; i++){
         vec2 direction = vec2(sin(iter), cos(iter));
 
         float x = dot(direction, position) * frequency + modifiedTime * speed;

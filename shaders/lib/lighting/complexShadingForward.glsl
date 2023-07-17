@@ -40,24 +40,21 @@ vec4 complexShadingGbuffers(in structPBR material){
     	// shadowLightPosition is broken in other dimensions. The current is equivalent to:
     	// (mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz) * 0.01
 
+		bool isShadow = NL > 0;
+		bool isSubSurface = material.ss > 0;
+
+		float dirLight = isShadow ? NL : 0.0;
+
+		#ifdef SUBSURFACE_SCATTERING
+			// Diffuse with simple SS approximation
+			if(isSubSurface) dirLight += (1.0 - dirLight) * material.ambient * material.ss * 0.5;
+		#endif
+
 		#if defined SHADOW && !defined ENTITIES_GLOWING
 			vec3 shadowCol = vec3(0);
 
-			bool isShadow = NL > 0;
-
-			float dirLight = max(NL, 0.0);
-
-			#ifdef SUBSURFACE_SCATTERING
-				// Diffuse with simple SS approximation
-				if(material.ss > 0){
-					dirLight += (1.0 - dirLight) * material.ambient * material.ss * 0.5;
-
-					isShadow = true;
-				}
-			#endif
-
 			// If the area isn't shaded, apply shadow mapping
-			if(isShadow){
+			if(isShadow || isSubSurface){
 				// Get shadow pos
 				vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz);
 				shdPos.z += shadowProjection[3].z;
@@ -118,7 +115,7 @@ vec4 complexShadingGbuffers(in structPBR material){
 	totalDiffuse = material.albedo.rgb * (totalDiffuse + material.emissive * EMISSIVE_INTENSITY);
 
 	#ifdef WORLD_LIGHT
-		if(NL > 0){
+		if(isShadow){
 			// Get specular GGX
 			vec3 specCol = getSpecBRDF(fastNormalize(-vertexPos.xyz), vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), material.normal, material.albedo.rgb, NL, material.metallic, 1.0 - material.smoothness);
 			// Needs to multiplied twice in order for the speculars to look relatively "correct"
