@@ -9,7 +9,7 @@
 uniform int physics_iterationsNormal;
 // used to offset the 0 point of wave meshes to keep the wave function consistent even
 // though the mesh totally changes
-uniform vec2 physics_waveOffset;
+// uniform vec2 physics_waveOffset;
 // used for offsetting the local position to fetch the right pixel of the waviness texture
 // uniform ivec2 physics_textureOffset;
 // time in seconds that can go faster dependent on weather conditions (affected by weather strength
@@ -97,7 +97,7 @@ vec3 physics_waveNormal(const in vec2 position, const in vec2 direction, const i
     return normalize(mix(waveNormal, rippleNormal, sqrt(totalEffect)));
 }
 
-struct WavePixelData {
+struct WavePixelData{
     float foam;
     float height;
 
@@ -107,8 +107,8 @@ struct WavePixelData {
     vec3 normal;
 };
 
-WavePixelData physics_wavePixel(const in vec2 position, const in float factor) {
-    vec2 wavePos = (position.xy - physics_waveOffset) * PHYSICS_XZ_SCALE * physics_oceanWaveHorizontalScale;
+WavePixelData physics_wavePixel(const in vec2 position, const in float factor){
+    vec2 wavePos = position * PHYSICS_XZ_SCALE * physics_oceanWaveHorizontalScale;
 
     float iter = 0.0;
     float frequency = PHYSICS_FREQUENCY;
@@ -120,7 +120,7 @@ WavePixelData physics_wavePixel(const in vec2 position, const in float factor) {
 
     vec2 dx = vec2(0);
     
-    for (int i = 0; i < physics_iterationsNormal; i++) {
+    for(int i = 0; i < physics_iterationsNormal; i++){
         vec2 direction = vec2(sin(iter), cos(iter));
         float x = dot(direction, wavePos) * frequency + modifiedTime * speed;
         float wave = exp(sin(x) - 1.0);
@@ -147,7 +147,7 @@ WavePixelData physics_wavePixel(const in vec2 position, const in float factor) {
 
     float waveAmplitude = data.height * squared(squared(max(data.normal.y, 0.0)));
 
-    vec2 waterUV = mix(position - physics_waveOffset, data.worldPos, clamp(factor * 2.0, 0.2, 1.0));
+    vec2 waterUV = mix(position, data.worldPos, clamp(factor * 2.0, 0.2, 1.0));
 
     vec2 s1 = textureLod(physics_foam, vec3(waterUV * 0.26, physics_globalTime / 360.0), 0).rg;
     vec2 s2 = textureLod(physics_foam, vec3(waterUV * 0.02, physics_globalTime / 360.0 + 0.5), 0).rg;
@@ -172,9 +172,8 @@ WavePixelData physics_wavePixel(const in vec2 position, const in float factor) {
 
 /*
 // FRAGMENT STAGE
-void main() {
-    WavePixelData wave = physics_wavePixel(physics_localPosition.xz, physics_localWaviness);
-    
+void main(){
     // access the wave struct data however you want, wave.normal is in world space, wave.foam is the final foam amount
+    WavePixelData wave = physics_wavePixel(physics_localPosition, physics_localWaviness);
 }
 */

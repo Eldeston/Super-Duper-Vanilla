@@ -37,7 +37,7 @@ uniform float physics_oceanWaveHorizontalScale;
 // uniform sampler2D physics_lightmap;
 
 float physics_waveHeight(vec2 position, float factor){
-    position = (position - physics_waveOffset) * PHYSICS_XZ_SCALE * physics_oceanWaveHorizontalScale;
+    position = position * PHYSICS_XZ_SCALE * physics_oceanWaveHorizontalScale;
 
     float iter = 0.0;
     float frequency = PHYSICS_FREQUENCY;
@@ -47,7 +47,7 @@ float physics_waveHeight(vec2 position, float factor){
     float waveSum = 0.0;
     float modifiedTime = physics_gameTime * PHYSICS_TIME_MULTIPLICATOR;
     
-    for (int i = 0; i < PHYSICS_ITERATIONS_OFFSET; i++) {
+    for(int i = 0; i < PHYSICS_ITERATIONS_OFFSET; i++){
         vec2 direction = vec2(sin(iter), cos(iter));
 
         float x = dot(direction, position) * frequency + modifiedTime * speed;
@@ -70,13 +70,15 @@ float physics_waveHeight(vec2 position, float factor){
 
 /*
 // VERTEX STAGE
-void main() {
+void main(){
+    // pass this to the fragment shader to fetch the texture there for per fragment normals
+    physics_localPosition = gl_Vertex.xz - physics_waveOffset;
+
     // basic texture to determine how shallow/far away from the shore the water is
     physics_localWaviness = texelFetch(physics_waviness, ivec2(gl_Vertex.xz) - physics_textureOffset, 0).r;
+
     // transform gl_Vertex (since it is the raw mesh, i.e. not transformed yet)
-    vec4 finalPosition = vec4(gl_Vertex.x, gl_Vertex.y + physics_waveHeight(gl_Vertex.xz, physics_localWaviness), gl_Vertex.z, gl_Vertex.w);
-    // pass this to the fragment shader to fetch the texture there for per fragment normals
-    physics_localPosition = finalPosition.xyz;
+    vertexPos.y += physics_waveHeight(physics_localPosition, physics_localWaviness);
     
     // now use finalPosition instead of gl_Vertex
 }

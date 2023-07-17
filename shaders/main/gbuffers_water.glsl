@@ -33,6 +33,8 @@
         // Physics mod varyings
         out float physics_localWaviness;
 
+        out vec2 physics_localPosition;
+
         #include "/lib/physicsMod/physicsModVertex.glsl"
     #endif
 
@@ -123,13 +125,18 @@
             #ifdef PHYSICS_OCEAN
                 // Physics mod vertex displacement
                 if(mc_Entity.x == 15502){
+                    // pass this to the fragment shader to fetch the texture there for per fragment normals
+                    physics_localPosition = gl_Vertex.xz - physics_waveOffset;
+
                     // basic texture to determine how shallow/far away from the shore the water is
-                    physics_localWaviness = texelFetch(physics_waviness, ivec2(vertexPos.xz) - physics_textureOffset, 0).r;
+                    physics_localWaviness = texelFetch(physics_waviness, ivec2(gl_Vertex.xz) - physics_textureOffset, 0).r;
 
                     // transform gl_Vertex (since it is the raw mesh, i.e. not transformed yet)
-                    vertexPos.y += physics_waveHeight(vertexPos.xz, physics_localWaviness);
+                    vertexPos.y += physics_waveHeight(physics_localPosition, physics_localWaviness);
                 }
-            #elif defined WATER_ANIMATION
+            #endif
+
+            #ifdef WATER_ANIMATION
                 // Apply water wave animation
                 if(mc_Entity.x == 15502 && CURRENT_SPEED > 0) vertexPos.y = getWaterWave(worldPos.xz, vertexPos.y);
             #endif
@@ -167,9 +174,14 @@
 
     in vec4 vertexPos;
 
+    #ifdef WATER_NORM
+    #endif
+
     #ifdef PHYSICS_OCEAN
         // Physics mod varyings
         in float physics_localWaviness;
+
+        in vec2 physics_localPosition;
 
         #include "/lib/physicsMod/physicsModFragment.glsl"
     #endif
@@ -277,10 +289,16 @@
 
             #ifdef PHYSICS_OCEAN
                 // Physics mod water normal calculation
-                WavePixelData wave = physics_wavePixel(vertexPos.xz, physics_localWaviness);
+                WavePixelData wave = physics_wavePixel(physics_localPosition, physics_localWaviness);
 
-                material.normal = wave.normal;
-                waterNoise *= wave.foam;
+                // Underwater normal fix
+                material.normal = !gl_FrontFacing ? -wave.normal : wave.normal;
+
+                // Apply physics foam
+                float physicsFoam = fastSqrt(wave.foam);
+                material.albedo = min(vec4(1), material.albedo + physicsFoam);
+
+                waterNoise *= physicsFoam;
             #elif defined WATER_NORM
                 vec4 waterData = H2NWater(worldPos.xz / WATER_TILE_SIZE);
                 material.normal = waterData.zyx * TBN[2].x + waterData.xzy * TBN[2].y + waterData.xyz * TBN[2].z;

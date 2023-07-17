@@ -24,12 +24,17 @@
         out vec2 texCoord;
         out vec2 waterNoiseUv;
 
+        #ifdef PHYSICS_OCEAN
+            // Physics mod compatibility
+            #include "/lib/physicsMod/physicsModVertex.glsl"
+        #endif
+
         uniform vec3 cameraPosition;
 
         uniform mat4 shadowModelView;
         uniform mat4 shadowModelViewInverse;
 
-        #if defined TERRAIN_ANIMATION || defined TERRAIN_ANIMATION
+        #if defined TERRAIN_ANIMATION || defined WATER_ANIMATION
             #if TIMELAPSE_MODE == 2
                 uniform float animationFrameTime;
 
@@ -64,8 +69,8 @@
             // Get water noise uv position
             waterNoiseUv = worldPos.xz / WATER_TILE_SIZE;
             
-            #if defined TERRAIN_ANIMATION || defined TERRAIN_ANIMATION || defined WORLD_CURVATURE
-                #if defined TERRAIN_ANIMATION || defined TERRAIN_ANIMATION
+            #if defined TERRAIN_ANIMATION || defined WATER_ANIMATION || defined WORLD_CURVATURE || defined PHYSICS_OCEAN
+                #if defined TERRAIN_ANIMATION || defined WATER_ANIMATION || defined PHYSICS_OCEAN
                     // Apply terrain wave animation
                     vertexPos.xyz = getShadowWave(vertexPos.xyz, worldPos, at_midBlock.y * 0.015625, mc_Entity.x, saturate(gl_MultiTexCoord1.y * 0.00416667));
                 #endif

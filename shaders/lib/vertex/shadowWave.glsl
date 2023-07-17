@@ -56,10 +56,21 @@ vec3 getShadowWave(in vec3 vertexPlayerPos, in vec3 worldPos, in float midBlockY
             }
         #endif
 
-        #ifdef WATER_ANIMATION
+        #if defined WATER_ANIMATION || defined PHYSICS_OCEAN
             // Water
             if(id == 15502){
-                vertexPlayerPos.y += currentStrength * 0.0625;
+                #ifdef PHYSICS_OCEAN
+                    // basic texture to determine how shallow/far away from the shore the water is
+                    float physics_localWaviness = texelFetch(physics_waviness, ivec2(gl_Vertex.xz) - physics_textureOffset, 0).r;
+
+                    // transform gl_Vertex (since it is the raw mesh, i.e. not transformed yet)
+                    vertexPlayerPos.y += physics_waveHeight(gl_Vertex.xz, physics_localWaviness);
+                #endif
+
+                #ifdef WATER_ANIMATION
+                    vertexPlayerPos.y += currentStrength * 0.0625;
+                #endif
+
                 return vertexPlayerPos;
             }
         #endif
