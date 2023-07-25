@@ -99,9 +99,12 @@
         #endif
 
         uniform float nightVision;
-        uniform float lightningFlash;
 
         uniform sampler2D tex;
+
+        #ifdef IS_IRIS
+            uniform float lightningFlash;
+        #endif
 
         #ifndef FORCE_DISABLE_WEATHER
             uniform float rainStrength;

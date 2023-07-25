@@ -5,10 +5,12 @@ vec4 complexShadingGbuffers(in structPBR material){
 	// Calculate sky diffusion first, begining with the sky itself
 	vec3 totalDiffuse = toLinear(SKY_COL_DATA_BLOCK);
 
-	// Calculate thunder flash
-	totalDiffuse += lightningFlash * EMISSIVE_INTENSITY;
+	#ifdef IS_IRIS
+		// Calculate thunder flash
+		totalDiffuse += lightningFlash;
+	#endif
 
-	// Thunder flash and sky color ambience
+	// Get sky light squared
 	float skyLightSquared = squared(lmCoord.y);
 	// Occlude the appled sky and thunder flash calculation by sky light amount
 	totalDiffuse *= skyLightSquared;

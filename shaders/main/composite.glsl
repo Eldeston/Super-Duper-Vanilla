@@ -94,7 +94,6 @@
 
     uniform float blindness;
     uniform float nightVision;
-    uniform float lightningFlash;
     uniform float darknessFactor;
     uniform float darknessLightFactor;
 
@@ -119,6 +118,10 @@
 
     uniform sampler2D depthtex0;
     uniform sampler2D depthtex1;
+
+    #ifdef IS_IRIS
+        uniform float lightningFlash;
+    #endif
 
     #ifndef FORCE_DISABLE_WEATHER
         uniform float rainStrength;

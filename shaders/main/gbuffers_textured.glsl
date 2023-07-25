@@ -85,7 +85,6 @@
     uniform int isEyeInWater;
 
     uniform float nightVision;
-    uniform float lightningFlash;
 
     uniform ivec2 atlasSize;
 
@@ -93,6 +92,10 @@
 
     #ifdef MC_RENDER_STAGE_WORLD_BORDER
         uniform int renderStage;
+    #endif
+
+    #ifdef IS_IRIS
+        uniform float lightningFlash;
     #endif
 
     #ifndef FORCE_DISABLE_WEATHER

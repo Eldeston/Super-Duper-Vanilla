@@ -128,7 +128,6 @@
     uniform int isEyeInWater;
 
     uniform float nightVision;
-    uniform float lightningFlash;
 
     uniform float frameTimeCounter;
 
@@ -140,6 +139,10 @@
     // Texture coordinate derivatives
     vec2 dcdx = dFdx(texCoord);
     vec2 dcdy = dFdy(texCoord);
+
+    #ifdef IS_IRIS
+        uniform float lightningFlash;
+    #endif
 
     #ifndef FORCE_DISABLE_WEATHER
         uniform float rainStrength;

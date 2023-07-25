@@ -62,17 +62,14 @@
             texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
 
             #ifdef WEATHER_ANIMATION
-                if(rainStrength > 0.005){
-                    // Get vertex position (feet player pos)
-                    vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+                // Get vertex position (feet player pos)
+                vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
 
-                    // Apply weather wave animation
-                    vertexPos.xz = getWeatherWave(vertexPos.xyz, vertexPos.xz + cameraPosition.xz);
+                // Apply weather wave animation
+                if(rainStrength > 0.005) vertexPos.xz = getWeatherWave(vertexPos.xyz, vertexPos.xz + cameraPosition.xz);
 
-                    // Convert to clip pos and output as position
-                    gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
-                }
-                else gl_Position = ftransform();
+                // Convert to clip pos and output as position
+                gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
             #else
                 gl_Position = ftransform();
             #endif
@@ -100,7 +97,9 @@
 
         uniform sampler2D tex;
 
-        uniform float lightningFlash;
+        #ifdef IS_IRIS
+            uniform float lightningFlash;
+        #endif
 
         #ifndef FORCE_DISABLE_DAY_CYCLE
             uniform float dayCycle;
@@ -120,8 +119,14 @@
             // Convert to linear space
             albedo.rgb = toLinear(albedo.rgb);
 
+            vec3 totalDiffuse = toLinear(SKY_COL_DATA_BLOCK) + toLinear((lmCoordX * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B)) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
+
+            #ifdef IS_IRIS
+                totalDiffuse += lightningFlash;
+            #endif
+
         /* DRAWBUFFERS:0 */
-            gl_FragData[0] = vec4(albedo.rgb * (toLinear(SKY_COL_DATA_BLOCK) + toLinear((lmCoordX * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B)) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5) + lightningFlash * EMISSIVE_INTENSITY), albedo.a); // gcolor
+            gl_FragData[0] = vec4(albedo.rgb * totalDiffuse, albedo.a); // gcolor
         }
     #endif
 #endif
