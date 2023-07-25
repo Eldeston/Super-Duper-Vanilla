@@ -1,5 +1,7 @@
 // Luminance function
-float getLuminance(in vec3 col){ return dot(col, vec3(0.299, 0.587, 0.114)); }
+float getLuminance(in vec3 col){
+	return dot(col, vec3(0.2126, 0.7152, 0.0722));
+}
 
 // Saturation function
 vec3 saturation(in vec3 col, in float a){

@@ -166,22 +166,20 @@
             #endif
         #endif
 
-        // Saturation and contrast
-        color = saturation(color, SATURATION);
-        color = contrast(color, CONTRAST);
-
-        // Color tinting, exposure, and tonemapping
-        const float exposure = 0.00392156863 * EXPOSURE;
-        const vec3 exposureTint = vec3(TINT_R, TINT_G, TINT_B) * exposure;
-        color = whitePreservingLumaBasedReinhardToneMapping(color * exposureTint);
-
         #ifdef VIGNETTE
-            // BSL's vignette, modified to control intensity
-            color *= 1.0 - lengthSquared(texCoord - 0.5) * (3.0 - sumOf(color)) * VIGNETTE_STRENGTH;
+            color *= max(0.0, 1.0 - lengthSquared(texCoord - 0.5) * VIGNETTE_STRENGTH);
         #endif
 
-        // Gamma correction, color saturation, contrast, etc.
+        // Color tinting, exposure, and tonemapping
+        const vec3 exposureTint = vec3(TINT_R, TINT_G, TINT_B) * (EXPOSURE * 0.00392156863);
+        color = whitePreservingLumaBasedReinhardToneMapping(color * exposureTint);
+
+        // Gamma correction
         color = toSRGB(color);
+
+        // Contrast and saturation
+        color = contrast(color, CONTRAST);
+        color = saturation(color, SATURATION);
 
         // Apply dithering to break color banding
         color += (texelFetch(noisetex, screenTexelCoord & 255, 0).x - 0.5) * 0.00392156863;
