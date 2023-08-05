@@ -23,19 +23,19 @@ float getSunMoonShape(in vec2 skyPos){
 #endif
 
 #if defined STORY_MODE_CLOUDS && !defined FORCE_DISABLE_CLOUDS
-    float cloudParallax(in vec2 start, in float time){
+    int cloudParallax(in vec2 start, in float time){
         // start * stepSize * depthSize = start * 0.125 * 0.08
         vec2 end = start * 0.01;
 
         // Move towards west
         start.x += time;
 
-        for(int i = 8; i > 0; i--){
+        for(int i = 0; i < 8; i++){
             if(texelFetch(colortex4, ivec2(start) & 255, 0).x < 0.5) return i;
-            start += end;
+            start -= end;
         }
 
-        return 0.0;
+        return 0;
     }
 
     vec3 cloudParallaxDynamic(in vec2 start, in float time){
@@ -46,11 +46,11 @@ float getSunMoonShape(in vec2 skyPos){
         start.x += time;
 
         vec2 cloudData = vec2(0);
-        for(int i = 8; i > 0; i--){
+        for(int i = 0; i < 8; i++){
             vec2 cloudMap = texelFetch(colortex4, ivec2(start) & 255, 0).xy;
-            if(cloudMap.x < 0.5) cloudData.x = max(cloudData.x, i);
-            if(cloudMap.y < 0.5) cloudData.y = max(cloudData.y, i);
-            start += end;
+            if(cloudMap.x < 0.5) cloudData.x = i;
+            if(cloudMap.y < 0.5) cloudData.y = i;
+            start -= end;
         }
 
         return vec3(cloudData, maxOf(cloudData));
