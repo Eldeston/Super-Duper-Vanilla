@@ -30,12 +30,13 @@ float getSunMoonShape(in vec2 skyPos){
         // Move towards west
         start.x += time;
 
+        int cloudData = 0;
         for(int i = 0; i < 8; i++){
-            if(texelFetch(colortex4, ivec2(start) & 255, 0).x < 0.5) return i;
+            if(texelFetch(colortex4, ivec2(start) & 255, 0).x < 0.5) cloudData = i;
             start -= end;
         }
 
-        return 0;
+        return cloudData;
     }
 
     vec3 cloudParallaxDynamic(in vec2 start, in float time){
@@ -126,7 +127,7 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos){
             vec2 planeUv = nEyePlayerPos.xz * (5.33333333 / nEyePlayerPos.y);
 
             #ifdef DYNAMIC_CLOUDS
-                float fade = smootherstep(sin(ANIMATION_FRAMETIME * FADE_SPEED) * 0.5 + 0.5);
+                float fade = saturate(sin(ANIMATION_FRAMETIME * FADE_SPEED) * 0.6 + 0.5);
 
                 vec3 cloudData = cloudParallaxDynamic(planeUv, ANIMATION_FRAMETIME * 0.125);
                 float clouds = mix(mix(cloudData.x, cloudData.y, fade), cloudData.z, rainStrength) * 0.125;

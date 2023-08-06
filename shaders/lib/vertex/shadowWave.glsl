@@ -36,7 +36,7 @@ vec3 getShadowWave(in vec3 vertexPlayerPos, in vec3 worldPos, in float midBlockY
 
     // Current affected blocks
     if(CURRENT_SPEED > 0){
-        #if defined TERRAIN_ANIMATION || defined TERRAIN_ANIMATION
+        #if defined TERRAIN_ANIMATION || defined WATER_ANIMATION
             // Calculate current strength
             float currentStrength = cos(-sumOf(worldPos.xz) * CURRENT_FREQUENCY + newFrameTimeCounter * CURRENT_SPEED);
         #endif
