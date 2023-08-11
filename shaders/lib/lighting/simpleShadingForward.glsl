@@ -62,7 +62,10 @@ vec4 simpleShadingGbuffers(in vec4 albedo){
 				shadowCol *= max(0.0, dot(vertexNormal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) * 0.6 + 0.4) * shdFade;
 			#else
 				// Cave light leak fix
-				shadowCol *= isEyeInWater == 1 ? shdFade : min(1.0, lmCoord.y * 2.0 + eyeBrightFact) * shdFade;
+				float caveFixShdFactor = shdFade;
+				if(isEyeInWater == 0) caveFixShdFactor *= min(1.0, lmCoord.y * 2.0 + eyeBrightFact);
+
+				shadowCol *= caveFixShdFactor;
 			#endif
 		#else
 			#ifdef CLOUDS

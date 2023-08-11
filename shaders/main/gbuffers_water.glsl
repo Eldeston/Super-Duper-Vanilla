@@ -309,7 +309,7 @@
                 #ifdef WATER_NOISE
                     waterNoise *= squared(0.128 + waterData.w * 0.5);
                 #endif
-            #elif WATER_NOISE
+            #elif defined WATER_NOISE
                 float waterData = getCellNoise(worldPos.xz / WATER_TILE_SIZE);
 
                 waterNoise *= squared(0.128 + waterData * 0.5);

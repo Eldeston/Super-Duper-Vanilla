@@ -5,16 +5,18 @@ vec3 getVolumetricLight(in vec3 feetPlayerPos, in float depth, in float dither){
 	float feetPlayerDist = length(feetPlayerPos);
 	vec3 nFeetPlayerPos = feetPlayerPos / feetPlayerDist;
 
+	float totalFogDensity = FOG_TOTAL_DENSITY;
+
 	#ifdef FORCE_DISABLE_WEATHER
-        float totalFogDensity = isEyeInWater == 0 ? FOG_TOTAL_DENSITY : FOG_TOTAL_DENSITY * TAU;
+		if(isEyeInWater != 0) totalFogDensity *= TAU;
     #else
-        float totalFogDensity = isEyeInWater == 0 ? FOG_TOTAL_DENSITY * (rainStrength * PI + 1.0) : FOG_TOTAL_DENSITY * TAU;
+		totalFogDensity *= isEyeInWater == 0 ? (rainStrength * PI + 1.0) : TAU;
     #endif
 
 	float heightFade = 1.0;
 
 	// Fade VL, but do not apply to underwater VL
-	if(isEyeInWater != 1 && nFeetPlayerPos.y > 0){
+	if(isEyeInWater == 0 && nFeetPlayerPos.y > 0){
 		heightFade = squared(1.0 - squared(nFeetPlayerPos.y));
 		if(depth == 1) heightFade = squared(heightFade * heightFade);
 

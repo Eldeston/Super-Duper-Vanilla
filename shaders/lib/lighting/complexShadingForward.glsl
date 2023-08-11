@@ -85,7 +85,8 @@ vec4 complexShadingGbuffers(in structPBR material){
 				#endif
 
 				// Cave light leak fix
-				float caveFixShdFactor = isEyeInWater == 1 ? shdFade : min(1.0, lmCoord.y * 2.0 + eyeBrightFact) * shdFade;
+				float caveFixShdFactor = shdFade;
+				if(isEyeInWater == 0) caveFixShdFactor *= min(1.0, lmCoord.y * 2.0 + eyeBrightFact);
 				
 				#if defined PARALLAX_OCCLUSION && defined PARALLAX_SHADOWS
 					shadowCol *= material.parallaxShd * caveFixShdFactor;
