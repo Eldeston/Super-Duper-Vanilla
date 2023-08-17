@@ -278,6 +278,6 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyBoxCol){
     finalCol += getSkyHalf(nEyePlayerPos, skyPos);
 
     // Do a simple void gradient calculation when underwater
-    if(isEyeInWater == 1) return finalCol * smootherstep(max(0.0, nEyePlayerPos.y));
+    if(isEyeInWater == 1) return finalCol * saturate(nEyePlayerPos.y * 1.66666667 - 0.16666667);
     return finalCol * saturate(nEyePlayerPos.y + eyeBrightFact * 2.0 - 1.0);
 }

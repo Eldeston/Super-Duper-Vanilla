@@ -98,6 +98,7 @@
 
     uniform int isEyeInWater;
 
+    uniform float near;
     uniform float far;
 
     uniform float blindness;
@@ -256,7 +257,7 @@
 
             #if OUTLINES != 0
                 // Outline calculation
-                sceneCol *= 1.0 + getOutline(screenTexelCoord, viewPos.z, OUTLINE_PIX_SIZE) * OUTLINE_BRIGHTNESS;
+                sceneCol *= 1.0 + getOutline(screenTexelCoord, screenPos.z, OUTLINE_PIX_SIZE) * OUTLINE_BRIGHTNESS;
             #endif
 
             #ifdef SSAO
