@@ -3,10 +3,6 @@ uniform sampler2D normals;
 // Get specular texture
 uniform sampler2D specular;
 
-// For Optifine to detect this option
-#ifdef PARALLAX_SHADOWS
-#endif
-
 #ifdef PARALLAX_OCCLUSION
     vec2 getParallaxOffset(in vec3 dirT){ return dirT.xy * (PARALLAX_DEPTH / dirT.z); }
 

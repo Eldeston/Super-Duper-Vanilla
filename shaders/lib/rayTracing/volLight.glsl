@@ -1,6 +1,3 @@
-#ifdef VOLUMETRIC_LIGHTING
-#endif
-
 vec3 getVolumetricLight(in vec3 feetPlayerPos, in float depth, in float dither){
 	float feetPlayerDist = length(feetPlayerPos);
 	vec3 nFeetPlayerPos = feetPlayerPos / feetPlayerDist;

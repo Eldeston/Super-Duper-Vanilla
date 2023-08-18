@@ -1,9 +1,6 @@
 #ifdef WORLD_AETHER
 #endif
 
-#ifdef STORY_MODE_CLOUDS
-#endif
-
 // Round sun and moon
 float getSunMoonShape(in float skyPosZ){
     return min(1.0, exp2((WORLD_SUN_MOON_SIZE - sqrt(1.0 - skyPosZ * skyPosZ)) * 256.0));

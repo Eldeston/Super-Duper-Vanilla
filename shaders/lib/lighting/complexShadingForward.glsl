@@ -1,6 +1,3 @@
-#ifdef DIRECTIONAL_LIGHTMAPS
-#endif
-
 vec4 complexShadingGbuffers(in structPBR material){
 	// Calculate sky diffusion first, begining with the sky itself
 	vec3 totalDiffuse = toLinear(SKY_COL_DATA_BLOCK);
