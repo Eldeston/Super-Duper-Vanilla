@@ -16,5 +16,9 @@ vec3 contrast(in vec3 col, in float a){
 
 vec3 whitePreservingLumaBasedReinhardToneMapping(in vec3 color){
 	float sumCol = sumOf(color);
-	return color * ((3.0 + sumCol * 0.25) / (3.0 + sumCol));
+
+	const float shoulderFactor = SHOULDER_STRENGTH * 3.0;
+	const float shoulderWhitePointFactor = SHOULDER_STRENGTH / (WHITE_POINT * WHITE_POINT);
+
+	return color * ((3.0 + sumCol * shoulderWhitePointFactor) / (shoulderFactor + sumCol));
 }
