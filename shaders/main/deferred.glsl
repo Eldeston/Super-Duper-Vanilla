@@ -36,6 +36,8 @@
     uniform sampler2D colortex2;
 
     #ifdef SSAO
+        uniform float near;
+
         uniform mat4 gbufferModelView;
 
         uniform mat4 gbufferProjection;
@@ -75,7 +77,7 @@
 
                 // Check if normal has a direction
                 if(normal.x + normal.y + normal.z != 0)
-                    ambientOcclusion = getSSAO(toView(vec3(texCoord, depth)), mat3(gbufferModelView) * normal);
+                    ambientOcclusion = getSSAO(vec3(texCoord, depth), mat3(gbufferModelView) * normal);
             }
             
         /* DRAWBUFFERS:2 */

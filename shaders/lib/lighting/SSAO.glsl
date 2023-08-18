@@ -1,4 +1,4 @@
-float getSSAO(in vec3 viewPos, in vec3 viewNormal){
+float getSSAO(in vec3 screenPos, in vec3 viewNormal){
     #if ANTI_ALIASING >= 2
         vec3 dither = toRandPerFrame(getRand3(ivec2(gl_FragCoord.xy) & 255), frameTimeCounter);
     #else
@@ -16,8 +16,9 @@ float getSSAO(in vec3 viewPos, in vec3 viewNormal){
 		(fract(dither.zyx + GOLDEN_RATIO) - 0.5) * 0.5
 	);
 
+    float depthOrigin = near / (1.0 - screenPos.z);
     // Pre calculate base position
-    vec3 basePos = viewPos + viewNormal * 0.5;
+    vec3 basePos = toView(screenPos) + viewNormal * 0.5;
 
     for(int i = 0; i < 4; i++){
         // Add new offsets to origin
@@ -26,7 +27,7 @@ float getSSAO(in vec3 viewPos, in vec3 viewNormal){
         float sampleDepth = textureLod(depthtex0, samplePos.xy, 0).x;
 
         // Check if the offset points are inside geometry or if the point is occluded
-        if(samplePos.z > sampleDepth) occlusion -= 0.0625 / max(toView(sampleDepth) - viewPos.z, 1.0);
+        if(samplePos.z > sampleDepth) occlusion -= 0.0625 / max(depthOrigin - near / (1.0 - sampleDepth), 1.0);
     }
 
     // Remap results and return
