@@ -18,13 +18,12 @@
 #ifdef VERTEX
     flat out int blockId;
 
-    flat out vec3 vertexColor;
-
     flat out mat3 TBN;
 
     out vec2 lmCoord;
     out vec2 texCoord;
 
+    out vec3 vertexColor;
     out vec3 worldPos;
 
     out vec4 vertexPos;
@@ -163,13 +162,12 @@
 #ifdef FRAGMENT
     flat in int blockId;
 
-    flat in vec3 vertexColor;
-
     flat in mat3 TBN;
 
     in vec2 lmCoord;
     in vec2 texCoord;
 
+    in vec3 vertexColor;
     in vec3 worldPos;
 
     in vec4 vertexPos;
