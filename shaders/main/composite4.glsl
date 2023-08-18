@@ -61,11 +61,11 @@
     void main(){
         #ifdef BLOOM
             vec3 finalCol = bloomTile(vec3(0), texCoord, 2);
-            finalCol = bloomTile(finalCol, vec2(texCoord.x, texCoord.y - 0.25390625), 3);
-            finalCol = bloomTile(finalCol, vec2(texCoord.x - 0.12890625, texCoord.y - 0.25390625), 4);
-            finalCol = bloomTile(finalCol, vec2(texCoord.x - 0.1953125, texCoord.y - 0.25390625), 5);
-            finalCol = bloomTile(finalCol, vec2(texCoord.x - 0.12890625, texCoord.y - 0.3203125), 6);
-        
+            finalCol = bloomTile(finalCol, vec2(texCoord.x, texCoord.y - 0.2578125), 3);
+            finalCol = bloomTile(finalCol, vec2(texCoord.x - 0.12890625, texCoord.y - 0.2578125), 4);
+            finalCol = bloomTile(finalCol, vec2(texCoord.x - 0.1953125, texCoord.y - 0.2578125), 5);
+            finalCol = bloomTile(finalCol, vec2(texCoord.x - 0.12890625, texCoord.y - 0.328125), 6);
+
         /* DRAWBUFFERS:4 */
             gl_FragData[0] = vec4(finalCol, 1); //colortex4
         #else

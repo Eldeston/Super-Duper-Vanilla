@@ -128,10 +128,10 @@
         #ifdef BLOOM
             // Uncompress the HDR colors and upscale
             vec3 bloomCol = getBloomTile(vec2(0), 2);
-            bloomCol += getBloomTile(vec2(0, 0.25390625), 3);
-            bloomCol += getBloomTile(vec2(0.12890625, 0.25390625), 4);
-            bloomCol += getBloomTile(vec2(0.1953125, 0.25390625), 5);
-            bloomCol += getBloomTile(vec2(0.12890625, 0.3203125), 6);
+            bloomCol += getBloomTile(vec2(0, 0.2578125), 3);
+            bloomCol += getBloomTile(vec2(0.12890625, 0.2578125), 4);
+            bloomCol += getBloomTile(vec2(0.1953125, 0.2578125), 5);
+            bloomCol += getBloomTile(vec2(0.12890625, 0.328125), 6);
 
             // Average the total samples (1 / 5 bloom tiles multiplied by 1 / 4 samples used for the box blur)
             bloomCol *= 0.05;
