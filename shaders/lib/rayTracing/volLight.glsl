@@ -37,7 +37,7 @@ vec3 getVolumetricLight(in vec3 feetPlayerPos, in float depth, in float dither){
 	// Apply adjustments
 	volumetricFogDensity *= heightFade * shdFade;
 
-	#if defined VOLUMETRIC_LIGHTING && defined SHADOW
+	#if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING
 		// Normalize then unormalize with feetPlayerDist and clamping it at minimum distance between far and current shadowDistance
 		vec3 endPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * (nFeetPlayerPos * min(min(far, shadowDistance), feetPlayerDist))) * 0.14285714;
 

@@ -158,7 +158,7 @@
     #ifdef WORLD_LIGHT
         uniform float shdFade;
 
-        #if defined VOLUMETRIC_LIGHTING && defined SHADOW
+        #if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING
             uniform mat4 shadowProjection;
 
             #include "/lib/lighting/shdMapping.glsl"

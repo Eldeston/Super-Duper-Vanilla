@@ -48,9 +48,9 @@
 
 /// -------------------------------- /// Lighting /// -------------------------------- ///
 
-#define SHADOW // Enables shadows. Disable to use only fake shadows that uses lightmap.
+#define SHADOW_MAPPING // Enables shadow mapping. Disable to use fake shadows with lightmap.
 #define SHADOW_FILTER // Enables soft shadow filtering, if enabled shadows will appear softer by using noise. May impact performance.
-#define SHADOW_COL // Enables shadow color from colored transparent objects.
+#define SHADOW_COLOR // Enables shadow color from colored transparent objects.
 
 #define ENTITY_SHADOWS // Enables entity shadows.
 #define BLOCK_ENTITY_SHADOWS // Enables block entity shadows.

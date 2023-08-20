@@ -60,8 +60,8 @@ screen.DEBUG = Super Duper Vanilla v1.3.4
         option.TINT_B = Синий оттенок
 
 screen.LIGHTING = Освещение
-    option.SHADOW = Карта теней
-    option.SHADOW_COL = Цветные тени
+    option.SHADOW_MAPPING = Карта теней
+    option.SHADOW_COLOR = Цветные тени
     option.SHADOW_FILTER = Сглаживание теней
     option.shadowMapResolution = Разрешение карты теней
     option.shadowDistance = Дальность теней
@@ -238,8 +238,8 @@ option.VIGNETTE.comment = Кинематографический эффект з
 option.AUTO_EXPOSURE_SPEED.comment = Скорость привыкания персонажа к изменению условий освещения.. Меньшие значения увеличивают время..
 option.MIN_EXPOSURE.comment = Минимальное значение экспозиции в автоматическом режиме.. Меньшие значения могут улучшить видимость в тёмных сценах..
 
-option.SHADOW.comment = Активирует продвинутые тени.. Когда отключено, будет использоваться быстрая имитация тени на основе карт освещения..
-option.SHADOW_COL.comment = Тень цветных полупрозрачных объектов будет иметь соответствующий оттенок..
+option.SHADOW_MAPPING.comment = Активирует продвинутые тени.. Когда отключено, будет использоваться быстрая имитация тени на основе карт освещения..
+option.SHADOW_COLOR.comment = Тень цветных полупрозрачных объектов будет иметь соответствующий оттенок..
 option.SHADOW_FILTER.comment = Применяет к карте теней эффект сглаживания шумом.. Может незначительно повлиять на производительность..
 option.sunPathRotation.comment = Угол падения лучей светил.. Также влияет на поворот небесной сферы..
 

@@ -170,7 +170,7 @@
 
         uniform mat4 shadowModelView;
 
-        #ifdef SHADOW
+        #ifdef SHADOW_MAPPING
             uniform mat4 shadowProjection;
 
             #include "/lib/lighting/shdMapping.glsl"

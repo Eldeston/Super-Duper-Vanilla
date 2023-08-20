@@ -49,7 +49,7 @@ vec4 complexShadingGbuffers(in structPBR material){
 			if(isSubSurface) dirLight += (1.0 - dirLight) * material.ambient * material.ss * 0.5;
 		#endif
 
-		#if defined SHADOW && !defined ENTITIES_GLOWING
+		#if defined SHADOW_MAPPING && !defined ENTITIES_GLOWING
 			vec3 shadowCol = vec3(0);
 
 			// If the area isn't shaded, apply shadow mapping

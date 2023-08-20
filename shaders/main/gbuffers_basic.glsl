@@ -114,7 +114,7 @@
 
         uniform mat4 shadowModelView;
 
-        #ifdef SHADOW
+        #ifdef SHADOW_MAPPING
             uniform mat4 shadowProjection;
 
             #ifdef SHADOW_FILTER

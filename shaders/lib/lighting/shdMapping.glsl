@@ -9,7 +9,7 @@ const float entityShadowDistanceMul = 0.5; // Renders the entity shadows at half
 // Shadow opaque
 uniform sampler2DShadow shadowtex0;
 
-#ifdef SHADOW_COL
+#ifdef SHADOW_COLOR
 	// Shadow w/o translucents
 	uniform sampler2DShadow shadowtex1;
 
@@ -18,7 +18,7 @@ uniform sampler2DShadow shadowtex0;
 #endif
 
 vec3 getShdCol(in vec3 shdPos){
-	#ifdef SHADOW_COL
+	#ifdef SHADOW_COLOR
 		// Sample shadows
 		float shd0 = textureLod(shadowtex0, shdPos, 0);
 		// If not in shadow, return "white"

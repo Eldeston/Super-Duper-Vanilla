@@ -21,7 +21,7 @@ vec4 simpleShadingGbuffers(in vec4 albedo){
 	totalDiffuse += toLinear(nightVision * 0.5 + AMBIENT_LIGHTING);
 
 	#ifdef WORLD_LIGHT
-		#ifdef SHADOW
+		#ifdef SHADOW_MAPPING
 			// Get shadow pos
 			vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz);
 			shdPos.z += shadowProjection[3].z;

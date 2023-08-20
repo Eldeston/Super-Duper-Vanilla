@@ -62,8 +62,8 @@ screen.POST = Post
         option.TINT_B = Blue tint
 
 screen.LIGHTING = Lighting
-    option.SHADOW = Shadowmapping
-    option.SHADOW_COL = Shadowmap color
+    option.SHADOW_MAPPING = Shadowmapping
+    option.SHADOW_COLOR = Shadowmap color
     option.SHADOW_FILTER = Shadowmap filter
     option.ENTITY_SHADOWS = Entity shadows
     option.BLOCK_ENTITY_SHADOWS = Block entity shadows

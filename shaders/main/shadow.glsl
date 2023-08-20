@@ -109,7 +109,7 @@
 
         uniform sampler2D tex;
         
-        #if UNDERWATER_CAUSTICS != 0 && defined SHADOW_COL
+        #if UNDERWATER_CAUSTICS != 0 && defined SHADOW_COLOR
             #if UNDERWATER_CAUSTICS == 1
                 uniform int isEyeInWater;
             #endif
@@ -129,7 +129,7 @@
         #endif
 
         void main(){
-            #ifdef SHADOW_COL
+            #ifdef SHADOW_COLOR
                 vec4 shdAlbedo = textureLod(tex, texCoord, 0);
 
                 // Alpha test, discard immediately
