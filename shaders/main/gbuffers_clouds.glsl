@@ -41,7 +41,7 @@
             #include "/lib/utility/taaJitter.glsl"
         #endif
 
-        #ifdef DOUBLE_VANILLA_CLOUDS
+        #ifdef DOUBLE_LAYERED_CLOUDS
             // Set the amount of instances, we'll use 2 for now for performance
             const int countInstances = 2;
 
@@ -60,7 +60,7 @@
                 vertexNormal = mat3(gbufferModelViewInverse) * fastNormalize(gl_NormalMatrix * gl_Normal);
             #endif
 
-            #ifdef DOUBLE_VANILLA_CLOUDS
+            #ifdef DOUBLE_LAYERED_CLOUDS
                 // May need to work on this to add more than 2 clouds in the future.
                 if(instanceId == 1){
                     // If second instance, invert texture coordinates.
