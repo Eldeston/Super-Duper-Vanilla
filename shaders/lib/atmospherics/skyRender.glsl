@@ -20,15 +20,15 @@ float getSunMoonShape(in vec2 skyPos){
 #endif
 
 #if defined STORY_MODE_CLOUDS && !defined FORCE_DISABLE_CLOUDS
-    int cloudParallax(in vec2 start, in float time, in float thickness){
+    int cloudParallax(in vec2 start, in float time){
         // start * stepSize * depthSize = start * 0.125 * 0.08
-        vec2 end = start * thickness;
+        vec2 end = start * 0.01;
 
         // Move towards west
         start.x += time;
 
         int cloudData = 0;
-        for(int i = 0; i < 8; i++){
+        for(int i = 1; i <= 8; i++){
             if(texelFetch(colortex4, ivec2(start) & 255, 0).x < 0.5) cloudData = i;
             start -= end;
         }
@@ -36,15 +36,15 @@ float getSunMoonShape(in vec2 skyPos){
         return cloudData;
     }
 
-    vec3 cloudParallaxDynamic(in vec2 start, in float time, in float thickness){
+    vec3 cloudParallaxDynamic(in vec2 start, in float time){
         // start * stepSize * depthSize = start * 0.125 * 0.08
-        vec2 end = start * thickness;
+        vec2 end = start * 0.01;
 
         // Move towards west
         start.x += time;
 
         vec2 cloudData = vec2(0);
-        for(int i = 0; i < 8; i++){
+        for(int i = 1; i <= 8; i++){
             vec2 cloudMap = texelFetch(colortex4, ivec2(start) & 255, 0).xy;
             if(cloudMap.x < 0.5) cloudData.x = i;
             if(cloudMap.y < 0.5) cloudData.y = i;
@@ -128,18 +128,18 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos){
             #ifdef DYNAMIC_CLOUDS
                 float fadeTime = saturate(sin(ANIMATION_FRAMETIME * FADE_SPEED) * 0.8 + 0.5);
 
-                vec3 cloudData0 = cloudParallaxDynamic(planeUv, cloudTime, 0.01);
+                vec3 cloudData0 = cloudParallaxDynamic(planeUv, cloudTime);
                 float clouds = mix(mix(cloudData0.x, cloudData0.y, fadeTime), cloudData0.z, rainStrength) * min(cloudHeightFade, 1.0) * 0.125;
 
                 #ifdef DOUBLE_LAYERED_CLOUDS
-                    vec3 cloudData1 = cloudParallaxDynamic(-planeUv * 2.0, -cloudTime, 0.01);
+                    vec3 cloudData1 = cloudParallaxDynamic(-planeUv * 2.0, -cloudTime);
                     clouds += mix(mix(cloudData1.x, cloudData1.y, fadeTime), cloudData1.z, rainStrength) * (1.0 - clouds) * cloudHeightFade * 0.03125;
                 #endif
             #else
-                float clouds = cloudParallax(planeUv, cloudTime, 0.01) * min(cloudHeightFade, 1.0) * 0.125;
+                float clouds = cloudParallax(planeUv, cloudTime) * min(cloudHeightFade, 1.0) * 0.125;
 
                 #ifdef DOUBLE_LAYERED_CLOUDS
-                    clouds += cloudParallax(-planeUv * 2.0, -cloudTime, 0.01) * (1.0 - clouds) * cloudHeightFade * 0.03125;
+                    clouds += cloudParallax(-planeUv * 2.0, -cloudTime) * (1.0 - clouds) * cloudHeightFade * 0.03125;
                 #endif
             #endif
 
