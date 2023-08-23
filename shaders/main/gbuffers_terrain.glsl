@@ -253,7 +253,7 @@
 	    structPBR material;
         getPBR(material, blockId);
 
-        if(blockId == 15500){
+        if(blockId == 11100){
             #ifdef LAVA_NOISE
                 vec2 lavaUv = (worldPos.zy * TBN[2].x + worldPos.xz * TBN[2].y + worldPos.xy * TBN[2].z) / LAVA_TILE_SIZE;
                 float lavaNoise = saturate(max(getLavaNoise(lavaUv) * 3.0, sumOf(material.albedo.rgb)) - 1.0);
@@ -266,7 +266,7 @@
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         #if defined ENVIRO_PBR && !defined FORCE_DISABLE_WEATHER
-            if(blockId != 15500 && blockId != 21001) enviroPBR(material);
+            if(blockId != 11100 && blockId != 12101) enviroPBR(material);
         #endif
 
         vec4 sceneCol = complexShadingGbuffers(material);

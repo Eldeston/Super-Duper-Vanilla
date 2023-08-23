@@ -1,6 +1,6 @@
 vec4 complexShadingGbuffers(in structPBR material){
 	// Calculate sky diffusion first, begining with the sky itself
-	vec3 totalDiffuse = toLinear(SKY_COL_DATA_BLOCK);
+	vec3 totalDiffuse = toLinear(SKY_COLOR_DATA_BLOCK);
 
 	#ifdef IS_IRIS
 		// Calculate thunder flash
@@ -31,7 +31,7 @@ vec4 complexShadingGbuffers(in structPBR material){
 
 	#ifdef WORLD_LIGHT
 		// Get sRGB light color
-		vec3 sRGBLightCol = LIGHT_COL_DATA_BLOCK0;
+		vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
 
 		float NL = dot(material.normal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z));
 		// also equivalent to:
@@ -61,12 +61,12 @@ vec4 complexShadingGbuffers(in structPBR material){
 				// Apply shadow distortion and transform to shadow screen space
 				shdPos = vec3(shdPos.xy / (length(shdPos.xy) * 2.0 + 0.2), shdPos.z * 0.1) + 0.5;
 				// Bias mutilplier, adjusts according to the current resolution
-				const vec3 biasAdjustMult = vec3(2, 2, -0.0625) / shadowMapResolution;
+				const vec3 biasAdjustFactor = vec3(2, 2, -0.0625) / shadowMapResolution;
 
 				// Get shadow normal from vertex normal
 				vec3 shdNormal = mat3(shadowModelView) * TBN[2];
 				// Apply normal bias
-				shdPos += shdNormal * biasAdjustMult;
+				shdPos += shdNormal * biasAdjustFactor;
 
 				// Sample shadows
 				#ifdef SHADOW_FILTER

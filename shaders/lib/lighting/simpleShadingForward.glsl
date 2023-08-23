@@ -1,6 +1,6 @@
 vec4 simpleShadingGbuffers(in vec4 albedo){
 	// Calculate sky diffusion first, begining with the sky itself
-	vec3 totalDiffuse = toLinear(SKY_COL_DATA_BLOCK);
+	vec3 totalDiffuse = toLinear(SKY_COLOR_DATA_BLOCK);
 
 	#ifdef IS_IRIS
 		// Calculate thunder flash
@@ -90,7 +90,7 @@ vec4 simpleShadingGbuffers(in vec4 albedo){
 		#endif
 
 		// Calculate and add shadow diffuse
-		totalDiffuse += shadowCol * toLinear(LIGHT_COL_DATA_BLOCK0);
+		totalDiffuse += shadowCol * toLinear(LIGHT_COLOR_DATA_BLOCK0);
 	#endif
 
 	// Return final result

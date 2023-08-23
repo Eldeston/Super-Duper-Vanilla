@@ -63,8 +63,7 @@ uniform sampler2D specular;
             if(abs(texOffset.x) < abs(texOffset.y)){
                 if(hasY) return vec2(0, stepSign.y);
                 if(hasX) return vec2(stepSign.x, 0);
-            }
-            else{
+            }else{
                 if(hasX) return vec2(stepSign.x, 0);
                 if(hasY) return vec2(0, stepSign.y);
             }
@@ -81,7 +80,7 @@ void getPBR(inout structPBR material, in int id){
 
     // Exclude signs and floating texts. We'll also include water and lava in the meantime.
     // This bool checks if Optifine is using the proper fallback for normal maps and ao
-    bool hasFallback = id != 15500 && id != 15502 && id != 21001 && sumOf(textureGrad(normals, texCoord, dcdx, dcdy).xy) != 0;
+    bool hasFallback = id != 11100 && id != 11102 && id != 12101 && sumOf(textureGrad(normals, texCoord, dcdx, dcdy).xy) != 0;
 
     #ifdef PARALLAX_OCCLUSION
         vec3 viewDir = -vertexPos.xyz * TBN;
@@ -138,7 +137,7 @@ void getPBR(inout structPBR material, in int id){
         material.ambient = id <= 0 ? 1.0 : normalAOH.b;
     #elif defined BLOCK
         // Ambient occlusion fallback fix
-        material.ambient = id == 20001 ? 1.0 : normalAOH.b;
+        material.ambient = id == 12001 ? 1.0 : normalAOH.b;
     #elif defined TERRAIN
         // Apply vanilla AO with it in terrain
         material.ambient = vertexAO * normalAOH.b;
@@ -149,15 +148,15 @@ void getPBR(inout structPBR material, in int id){
 
     #ifdef TERRAIN
         // If lava and fire
-        if(id == 15500 || id == 21001) material.emissive = 1.0;
+        if(id == 11100 || id == 12101) material.emissive = 1.0;
 
         // Foliage and corals
-        else if((id >= 10000 && id <= 13000) || id == 14000 || id == 15501 || id == 22000) material.ss = 1.0;
+        else if((id >= 10000 && id <= 10800) || id == 10900 || id == 11101 || id == 12200) material.ss = 1.0;
     #endif
 
     #ifdef WATER
         // If water
-        if(id == 15502){
+        if(id == 11102){
             material.smoothness = 0.96;
             material.metallic = 0.02;
 
@@ -167,7 +166,7 @@ void getPBR(inout structPBR material, in int id){
         }
             
         // Nether portal
-        else if(id == 21000){
+        else if(id == 12100){
             material.smoothness = 0.96;
             material.metallic = 0.04;
             material.emissive = maxOf(material.albedo.rgb);

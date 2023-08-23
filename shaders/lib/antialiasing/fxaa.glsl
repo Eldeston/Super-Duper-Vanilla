@@ -81,8 +81,7 @@ vec3 textureFXAA(in ivec2 screenTexelCoord){
         // Switch the direction
         stepLength = -stepLength;
         lumaLocalAverage += luma1;
-    }
-    else{
+    }else{
         lumaLocalAverage += luma2;
     }
 

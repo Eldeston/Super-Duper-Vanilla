@@ -194,7 +194,7 @@
 
     void main(){
         // End portal
-        if(blockEntityId == 20000){
+        if(blockEntityId == 12000){
             // End star uv
             vec2 screenPos = gl_FragCoord.xy * vec2(pixelWidth, pixelHeight);
             float starSpeed = frameTimeCounter * 0.0078125;

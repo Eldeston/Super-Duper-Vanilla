@@ -49,18 +49,18 @@
         // Get buffer texture coordinates
         texCoord = gl_MultiTexCoord0.xy;
 
-        skyCol = toLinear(SKY_COL_DATA_BLOCK);
+        skyCol = toLinear(SKY_COLOR_DATA_BLOCK);
 
         #ifdef WORLD_LIGHT
             #ifdef FORCE_DISABLE_DAY_CYCLE
-                sRGBLightCol = LIGHT_COL_DATA_BLOCK0;
+                sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
                 lightCol = toLinear(sRGBLightCol);
             #else
                 sRGBSunCol = SUN_COL_DATA_BLOCK;
                 sunCol = toLinear(sRGBSunCol);
                 sRGBMoonCol = MOON_COL_DATA_BLOCK;
                 moonCol = toLinear(sRGBMoonCol);
-                sRGBLightCol = LIGHT_COL_DATA_BLOCK1(sRGBSunCol, sRGBMoonCol);
+                sRGBLightCol = LIGHT_COLOR_DATA_BLOCK1(sRGBSunCol, sRGBMoonCol);
                 lightCol = toLinear(sRGBLightCol);
             #endif
         #endif
@@ -238,9 +238,8 @@
         // If sky, do full sky render
         if(skyMask){
             sceneCol = getFullSkyRender(nEyePlayerPos, sceneCol) * exp2(-far * (blindness + darknessFactor));
-        }
         // Else, calculate reflection and fog
-        else{
+        }else{
             #if ANTI_ALIASING >= 2
                 vec3 dither = toRandPerFrame(getRand3(screenTexelCoord & 255), frameTimeCounter);
             #else

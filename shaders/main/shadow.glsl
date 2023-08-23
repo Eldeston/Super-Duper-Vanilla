@@ -137,7 +137,7 @@
 
                 // If the object is not opaque, proceed with shadow coloring and caustics
                 if(shdAlbedo.a != 1){
-                    if(blockId == 15502){
+                    if(blockId == 11102){
                         #ifdef WATER_FLAT
                             #if UNDERWATER_CAUSTICS == 2
                                 shdAlbedo.rgb = vec3(squared(0.256 + getCellNoise(waterNoiseUv)) * 0.8);

@@ -123,7 +123,7 @@
         #if defined WATER_ANIMATION || defined WORLD_CURVATURE || defined PHYSICS_OCEAN
             #ifdef PHYSICS_OCEAN
                 // Physics mod vertex displacement
-                if(mc_Entity.x == 15502){
+                if(mc_Entity.x == 11102){
                     // pass this to the fragment shader to fetch the texture there for per fragment normals
                     physics_localPosition = (gl_Vertex.xz - physics_waveOffset) * PHYSICS_XZ_SCALE * physics_oceanWaveHorizontalScale;
 
@@ -137,7 +137,7 @@
 
             #ifdef WATER_ANIMATION
                 // Apply water wave animation
-                if(mc_Entity.x == 15502 && CURRENT_SPEED > 0) vertexPos.y = getWaterWave(worldPos.xz, vertexPos.y);
+                if(mc_Entity.x == 11102 && CURRENT_SPEED > 0) vertexPos.y = getWaterWave(worldPos.xz, vertexPos.y);
             #endif
 
             #ifdef WORLD_CURVATURE
@@ -285,7 +285,7 @@
         getPBR(material, blockId);
         
         // If water
-        if(blockId == 15502){
+        if(blockId == 11102){
             float waterNoise = WATER_BRIGHTNESS;
 
             #ifdef PHYSICS_OCEAN
@@ -337,7 +337,7 @@
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         #if defined ENVIRO_PBR && !defined FORCE_DISABLE_WEATHER
-            if(blockId != 15502) enviroPBR(material);
+            if(blockId != 11102) enviroPBR(material);
         #endif
 
         vec4 sceneCol = complexShadingGbuffers(material);

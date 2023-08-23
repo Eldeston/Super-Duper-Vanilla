@@ -50,8 +50,7 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
 		if(metallic > 0.9){
 			vec3 fresnel = getFresnelSchlick(albedo, cosTheta) * smoothness;
 			sceneCol = sceneCol * (1.0 - smoothness) + reflectCol * fresnel;
-		}
-		else{
+		}else{
 			float fresnel = getFresnelSchlick(metallic, cosTheta) * smoothness;
 			sceneCol = sceneCol * (1.0 - fresnel) + reflectCol * fresnel;
 		}
