@@ -1,3 +1,6 @@
+## Language format v1.0.0
+## All other .lang files must update to the latest language format version on this main .lang file
+
 ## Profiles
     profile.POTATO = Potato
     profile.LOW = Low
