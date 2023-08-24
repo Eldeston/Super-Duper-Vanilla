@@ -178,7 +178,7 @@ vec3 getFogRender(in vec3 nEyePlayerPos){
 
     #if defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
         // Flip if the sun has gone below the horizon
-        if(dayCycle < 1) skyPos.z = -skyPos.z;
+        if(dayCycle < 1) skyPos.xz = -skyPos.xz;
     #endif
 
     #if defined WORLD_AETHER && defined WORLD_LIGHT
@@ -204,7 +204,7 @@ vec3 getSkyReflection(in vec3 nEyePlayerPos){
 
     #if defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
         // Flip if the sun has gone below the horizon
-        if(dayCycle < 1) skyPos.z = -skyPos.z;
+        if(dayCycle < 1) skyPos.xz = -skyPos.xz;
     #endif
 
     vec3 finalCol = getSkyHalf(nEyePlayerPos, skyPos);
@@ -247,7 +247,7 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyBoxCol){
     #ifdef WORLD_LIGHT
         #ifndef FORCE_DISABLE_DAY_CYCLE
             // Flip if the sun has gone below the horizon
-            if(dayCycle < 1) skyPos.z = -skyPos.z;
+            if(dayCycle < 1) skyPos.xz = -skyPos.xz;
         #endif
 
         #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE != 2
