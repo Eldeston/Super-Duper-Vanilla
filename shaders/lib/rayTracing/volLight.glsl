@@ -46,7 +46,7 @@ vec3 getVolumetricLight(in vec3 feetPlayerPos, in float depth, in float dither){
 		startPos.z += shadowProjection[3].z;
 
 		vec3 rayData = vec3(0);
-		for(int x = 0; x < 7; x++){
+		for(int i = 0; i < 7; i++){
 			// No need to do anymore fancy matrix multiplications during the loop
 			rayData += getShdCol(vec3(startPos.xy / (length(startPos.xy) * 2.0 + 0.2), startPos.z * 0.1) + 0.5);
 			// We continue tracing!

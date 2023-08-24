@@ -84,6 +84,50 @@
 
         uniform sampler2D colortex4;
 
+        /*
+        Might use this later
+        
+        // from http://www.java-gaming.org/index.php?topic=35123.0
+        // Optimized to remove unecessary operations
+        vec4 optimizedCubic(float v){
+            vec3 n = vec3(1, 2, 3) - v; // 3
+            vec3 s = n * n * n; // 6
+            vec3 t = s * 0.16666667; // 3
+
+            float y = t.y - 4.0 * t.x; // 2
+            float z = t.z - 4.0 * t.y + s.x; // 3
+            float w = 1.0 - t.x - y - z; // 3
+
+            return vec4(t.x, y, z, w);
+        }
+
+        vec3 getBloomTile(in vec2 coords, in int LOD){
+            vec2 baseCoord = (texCoord * exp2(-LOD) + coords) / vec2(pixelWidth, pixelHeight) - 0.5;
+            vec2 fBaseCoord = fract(baseCoord);
+            baseCoord -= fBaseCoord;
+
+            vec4 xCubic = optimizedCubic(fBaseCoord.x);
+            vec4 yCubic = optimizedCubic(fBaseCoord.y);
+
+            vec4 c = baseCoord.xxyy + vec2(-0.5, 1.5).xyxy;
+
+            vec4 s = vec4(xCubic.xz + xCubic.yw, yCubic.xz + yCubic.yw);
+            vec4 offSet = c + vec4(xCubic.yw, yCubic.yw) / s;
+
+            offSet *= vec4(pixelWidth, pixelWidth, pixelHeight, pixelHeight);
+
+            vec3 sample0 = textureLod(colortex4, offSet.xz, 0).rgb;
+            vec3 sample1 = textureLod(colortex4, offSet.yz, 0).rgb;
+            vec3 sample2 = textureLod(colortex4, offSet.xw, 0).rgb;
+            vec3 sample3 = textureLod(colortex4, offSet.yw, 0).rgb;
+
+            float sx = s.x / (s.x + s.y);
+            float sy = s.z / (s.z + s.w);
+
+            return mix(mix(sample3, sample2, sx), mix(sample1, sample0, sx), sy);
+        }
+        */
+
         vec3 getBloomTile(in vec2 coords, in int LOD){
             // Remap to bloom tile texture coordinates
             vec2 baseCoord = texCoord * exp2(-LOD) + coords;
@@ -156,7 +200,8 @@
             float tempPixLuminance = mix(centerPixLuminance, texelFetch(colortex5, ivec2(1), 0).a, exp2(-AUTO_EXPOSURE_SPEED * frameTime));
 
             // Apply auto exposure by dividing it by the pixel's luminance in sRGB
-            color /= max(sqrt(tempPixLuminance), MIN_EXPOSURE);
+            const float invMinimumExposure = 1.0 / MINIMUM_EXPOSURE;
+            color *= min(inversesqrt(tempPixLuminance), invMinimumExposure);
 
             #if (defined PREVIOUS_FRAME && (defined SSR || defined SSGI)) || ANTI_ALIASING >= 2
                 #define TAA_DATA texelFetch(colortex5, screenTexelCoord, 0).rgb

@@ -24,7 +24,7 @@ uniform sampler2D specular;
         return startUv;
     }
 
-    #if defined PARALLAX_SHADOWS && defined WORLD_LIGHT
+    #if defined PARALLAX_SHADOW && defined WORLD_LIGHT
         float parallaxShadow(in vec3 currPos, in vec2 lightDir) {
             const float stepSize = 1.0 / PARALLAX_SHADOW_STEPS;
             vec2 stepOffset = stepSize * lightDir;
@@ -193,7 +193,7 @@ void getPBR(inout structPBR material, in int id){
                 if(textureGrad(normals, texUv, dcdx, dcdy).a > currPos.z) normalMap = vec3(getSlopeNormals(-viewDir, texUv, currPos.z), 0);
             #endif
 
-            #if defined PARALLAX_SHADOWS && defined WORLD_LIGHT
+            #if defined PARALLAX_SHADOW && defined WORLD_LIGHT
                 if(dot(TBN[2], vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) > 0.001)
                     material.parallaxShd = parallaxShadow(currPos, getParallaxOffset(vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z) * TBN));
                 else material.parallaxShd = material.ss;

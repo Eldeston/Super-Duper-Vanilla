@@ -85,7 +85,7 @@ vec4 complexShadingGbuffers(in structPBR material){
 				float caveFixShdFactor = shdFade;
 				if(isEyeInWater == 0) caveFixShdFactor *= min(1.0, lmCoord.y * 2.0 + eyeBrightFact);
 				
-				#if defined PARALLAX_OCCLUSION && defined PARALLAX_SHADOWS
+				#if defined PARALLAX_OCCLUSION && defined PARALLAX_SHADOW
 					shadowCol *= material.parallaxShd * caveFixShdFactor;
 				#else
 					shadowCol *= caveFixShdFactor;
@@ -95,7 +95,7 @@ vec4 complexShadingGbuffers(in structPBR material){
 			// Sample fake shadows
 			float shadowCol = saturate(hermiteMix(0.96, 0.98, lmCoord.y)) * shdFade;
 
-			#if defined PARALLAX_OCCLUSION && defined PARALLAX_SHADOWS
+			#if defined PARALLAX_OCCLUSION && defined PARALLAX_SHADOW
 				shadowCol *= material.parallaxShd;
 			#endif
 		#endif

@@ -256,7 +256,7 @@
 
             #if OUTLINES != 0
                 // Outline calculation
-                sceneCol *= 1.0 + getOutline(screenTexelCoord, screenPos.z, OUTLINE_PIX_SIZE) * OUTLINE_BRIGHTNESS;
+                sceneCol *= 1.0 + getOutline(screenTexelCoord, screenPos.z, OUTLINE_PIXEL_SIZE) * OUTLINE_BRIGHTNESS;
             #endif
 
             #ifdef SSAO
