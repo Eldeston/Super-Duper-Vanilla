@@ -1,0 +1,410 @@
+## Profiles
+    profile.POTATO = 非常低
+    profile.LOW = 低
+    profile.MEDIUM = 中（默认）
+    profile.HIGH = 高
+    profile.ULTRA = 超高
+
+screen.DEBUG = Super Duper Vanilla v1.3.4
+    screen.DEBUG.comment = 开发：§2Eldeston§f§r，出品：§9FlameRender §9Studios§r. §e点我打开光影调试设置！
+
+    option.COLOR_MODE = 颜色模式
+        option.COLOR_MODE.comment = 反照颜色模式. 全白模式使所有东西成为白色. 全黑模式使所有东西成为黑色. 植被模式只显示植被的颜色. 请保持材质开启.
+        value.COLOR_MODE.0 = 关
+        value.COLOR_MODE.1 = 全白模式
+        value.COLOR_MODE.2 = 全黑模式
+        value.COLOR_MODE.3 = 植被模式
+
+    option.NOISE_SPEED = 噪声速度
+        option.NOISE_SPEED.comment = 噪声使每帧随机化的速度. 对TAA很有用. 这种效果仅在启用TAA时可见.
+
+screen.POST = 后期处理
+    option.OUTLINES = 描边
+        option.OUTLINES.comment = 启用描边. 设置为标准来获得经典描边方块，或Dungeons来获得Dungeons/SDGP风格的描边.
+        value.OUTLINES.0 = 关
+        value.OUTLINES.1 = 标准
+        value.OUTLINES.2 = Dungeons
+
+    option.OUTLINE_BRIGHTNESS = 描边亮度
+        option.OUTLINE_BRIGHTNESS.comment = 描边的亮度. 设置为-1获得黑色描边，设置为1获得高亮描边.
+
+    option.OUTLINE_PIX_SIZE = 描边像素尺寸
+        option.OUTLINE_PIX_SIZE.comment = 描边像素尺寸. 调整以改变描边的厚度
+
+    option.RETRO_FILTER = 复古滤镜
+       option.RETRO_FILTER.comment = 启用复古滤镜. 在低渲染质量下效果最好.
+
+    option.ANTI_ALIASING = 抗锯齿
+        option.ANTI_ALIASING.comment = 启用抗锯齿. FXAA速度快，并且适用于屏幕截图大小. TAA速度慢，不能使用自定义屏幕截图，但可以平滑噪点. 在使用此功能之前，请禁用光影菜单上的抗锯齿！
+        value.ANTI_ALIASING.0 = 关
+        value.ANTI_ALIASING.1 = FXAA
+        value.ANTI_ALIASING.2 = TAA
+        value.ANTI_ALIASING.3 = 轻度TAA + FXAA
+
+    option.SHARPEN_FILTER = 锐化滤镜
+        option.SHARPEN_FILTER.comment = 启用图像锐化. 如果图像出现模糊，请启用抗锯齿.
+
+    screen.CAMERA = 镜头设置
+        option.DOF = 景深
+            option.DOF.comment = 启用景深. 启用抗锯齿来获得更好的结果.
+
+        option.DOF_STRENGTH = 景深强度
+            option.DOF_STRENGTH.comment = 景深强度.
+
+        option.CHROMATIC_ABERRATION = 色差
+            option.CHROMATIC_ABERRATION.comment = 启用色差.
+
+        option.ABERRATION_PIX_SIZE = 偏差像素大小
+            option.ABERRATION_PIX_SIZE.comment = 色差长度. 增加以获得更强的效果.
+
+        option.BLOOM = 泛光
+            option.BLOOM.comment = 启用泛光.
+
+        option.BLOOM_STRENGTH = 泛光强度
+            option.BLOOM_STRENGTH.comment = 泛光亮度
+
+        option.LENS_FLARE = 镜头眩光
+            option.LENS_FLARE.comment = 启用镜头眩光.
+
+        option.LENS_FLARE_STRENGTH = 镜头眩光强度
+            option.LENS_FLARE_STRENGTH.comment = 镜头眩光强烈程度.
+
+        option.VIGNETTE = 晕影
+            option.VIGNETTE.comment = 启用晕影
+
+        option.VIGNETTE_STRENGTH = 晕影强度
+            option.VIGNETTE_STRENGTH.comment = 晕影强烈程度
+
+        option.MOTION_BLUR = 动态模糊
+            option.MOTION_BLUR.comment = 启用动态模糊.
+
+        option.MOTION_BLUR_STRENGTH = 动态模糊强度
+            option.MOTION_BLUR_STRENGTH.comment = 动态模糊强度.
+
+    screen.TONEMAP = 色调映射设置
+        option.CONTRAST = 对比度
+            option.CONTRAST.comment = 对比度，控制颜色对比度
+
+        option.SATURATION = 饱和度
+            option.SATURATION.comment = 饱和度，控制颜色饱和度的多少
+
+        option.WHITE_POINT = 白点
+            option.WHITE_POINT.comment = 色调映射白点
+
+        option.SHOULDER_STRENGTH = Shoulder强度
+            option.SHOULDER_STRENGTH.comment = 色调映射shoulder强度
+
+        option.AUTO_EXPOSURE = 自动曝光
+            option.AUTO_EXPOSURE.comment = 启用实时自动曝光. 不会与Optifine自定义截图分辨率工作！
+
+        option.AUTO_EXPOSURE_SPEED = 自动曝光速度
+            option.AUTO_EXPOSURE_SPEED.comment = 自动曝光时间速度. 更改自动曝光将会调整屏幕曝光的快慢. 较小的值表示较慢，较大的值表示较快.
+
+        option.EXPOSURE = 曝光
+            option.EXPOSURE.comment = 曝光，控制颜色曝光
+
+        option.MIN_EXPOSURE = 最小曝光
+            option.MIN_EXPOSURE.comment = 最小自动曝光值. 较低的值可能会在开启自动曝光时增加昏暗场景的曝光.
+
+        option.TINT_R = 红色色调
+            option.TINT_R.comment = 红色色调值
+
+        option.TINT_G = 绿色色调
+            option.TINT_G.comment = 绿色色调值
+
+        option.TINT_B = 蓝色色调
+            option.TINT_B.comment = 蓝色色调值
+
+screen.LIGHTING = 光照
+    option.SHADOW_MAPPING = 阴影贴图
+        option.SHADOW_MAPPING.comment = 启用阴影. 禁用以使用光照贴图的假阴影.
+
+    option.SHADOW_COLOR = 阴影贴图颜色
+        option.SHADOW_COLOR.comment = 启用彩色透明对象的阴影颜色.
+
+    option.SHADOW_FILTER = 阴影贴图过滤
+        option.SHADOW_FILTER.comment = 启用软阴影过滤，启用后阴影将通过使用噪点显得更柔和. 可能影响性能.
+
+    option.ENTITY_SHADOWS = 实体阴影
+        option.ENTITY_SHADOWS.comment = 启用实体阴影.
+
+    option.BLOCK_ENTITY_SHADOWS = 实体方块阴影
+       option.BLOCK_ENTITY_SHADOWS.comment = 启用实体方块阴影.
+
+    option.shadowMapResolution = 阴影贴图分辨率
+    option.shadowDistance = 阴影贴图距离
+
+    option.sunPathRotation = 光线路径倾角
+        option.sunPathRotation.comment = 光线路径倾角. 这也会影响天空倾角.
+
+    option.UNDERWATER_CAUSTICS = 水下焦散
+        option.UNDERWATER_CAUSTICS.comment = 启用水下焦散. 阴影颜色必须被启用！
+        value.UNDERWATER_CAUSTICS.0 = 关
+        value.UNDERWATER_CAUSTICS.1 = 水下
+        value.UNDERWATER_CAUSTICS.2 = 完全
+
+    option.SSAO = SSAO
+        option.SSAO.comment = 启用屏幕空间环境光遮蔽（SSAO）.
+
+    option.AMBIENT_LIGHTING = 环境照明
+        option.AMBIENT_LIGHTING.comment = 整体环境照明值. 如果你不喜欢漆黑的黑暗就增加它，较高的值可能使照明不现实. 如果启用了SSGI，则将其设置为零以获得更现实的方法. 夜视设置为0.50.
+
+    screen.RAY_TRACING = 光线追踪设置
+        option.SSGI = SSGI
+            option.SSGI.comment = 启用屏幕空间全局照明（SSGI），目前为实验性且可能优化不是很好，可能会改善黑暗区域的环境，尽管有噪点. 打开TAA以获得最佳效果.
+
+        option.SSR = SSR
+            option.SSR.comment = 启用屏幕空间反射（SSR），可能在某些区域看起来不太好
+
+        option.SSGI_STEPS = SSGI步进次数
+            option.SSGI_STEPS.comment = SSGI步进次数，更多的步数意味着更高的质量，更高的质量意味着更强的性能
+
+        option.SSR_STEPS = SSR步进次数
+            option.SSR_STEPS.comment = SSR步进次数，更多的步骤意味着更高的质量，更高的质量意味着更强的性能
+
+        option.SSGI_BISTEPS = SSGI细化步进次数
+            option.SSGI_BISTEPS.comment = SSGI二进制细化步数，更多的步数意味着更精确的全局照明，更高的质量意味着更强的性能
+
+        option.SSR_BISTEPS = SSR细化步进次数
+            option.SSR_BISTEPS.comment = SSR二进制细化步数，更多步数意味着更精确的反射，更高的质量意味着更强的性能
+
+        option.ROUGH_REFLECTIONS = 粗糙反射
+            option.ROUGH_REFLECTIONS.comment = 使较粗糙的物体具有较粗糙的反射. 可能会显示奇怪的伪影，但抗锯齿可能会修复它.
+
+        option.PREVIOUS_FRAME = 前帧缓冲
+            option.PREVIOUS_FRAME.comment = 读取前一帧缓冲的颜色，允许SSR或SSGI具有无限的光反射. 会影响性能！
+
+screen.ATMOSPHERICS = 大气
+    option.SUN_MOON_TYPE = 太阳/月亮类型
+        option.SUN_MOON_TYPE.comment = 太阳和月亮的类型
+        value.SUN_MOON_TYPE.0 = 默认
+        value.SUN_MOON_TYPE.1 = 圆形
+        value.SUN_MOON_TYPE.2 = 原版
+
+    option.SUN_MOON_INTENSITY = 太阳/月亮强度
+        option.SUN_MOON_INTENSITY.comment = 太阳或月亮的强度. 同时影响镜面反射.
+
+    option.VOLUMETRIC_LIGHTING = 体积光
+        option.VOLUMETRIC_LIGHTING.comment = 启用体积光.
+
+    option.VOLUMETRIC_LIGHTING_STRENGTH = 体积光强度
+        option.VOLUMETRIC_LIGHTING_STRENGTH.comment = 体积光的强度，将其设置为零以禁用它
+
+    option.BORDER_FOG = 边界雾
+        option.BORDER_FOG.comment = 启用边界雾来覆盖世界边缘
+
+    option.GROUND_FOG_STRENGTH = 地表雾强度
+        option.GROUND_FOG_STRENGTH.comment = 水汽/地表雾的强度.
+
+    option.STORY_MODE_CLOUDS = 故事模式云
+        option.STORY_MODE_CLOUDS.comment = 使用程序生成的云（又名气凝胶云）而不是原版云. 禁用原版的云以获得正确的结果.
+
+    option.DOUBLE_VANILLA_CLOUDS = 双层原版云
+        option.DOUBLE_VANILLA_CLOUDS.comment = 另外增加一层原版的云（不适用于故事模式云），可能会消耗性能.
+
+    option.DYNAMIC_CLOUDS = 动态云层
+        option.DYNAMIC_CLOUDS.comment = 使云更为动态，并允许天气影响它. （对原版和故事模式的云都有影响）.
+
+    option.FADE_SPEED = 消失速度
+        option.FADE_SPEED.comment = 云层消失速度
+
+    option.SECOND_CLOUD_HEIGHT = 第二云层高度
+        option.SECOND_CLOUD_HEIGHT.comment = 第二层云的高度，仅在双层原版云启用时有效
+
+    option.SKYBOX_BRIGHTNESS = 天空盒亮度
+        option.SKYBOX_BRIGHTNESS.comment = 天空盒子的亮度.
+
+screen.WORLD = 世界
+    option.TERRAIN_ANIMATION = 地形动画
+        option.TERRAIN_ANIMATION.comment = 启用地形摆动动画.
+
+    option.WATER_ANIMATION = 水面动画
+        option.WATER_ANIMATION.comment = 启用水面起伏动画.
+
+    option.WEATHER_ANIMATION = 天气动画
+        option.WEATHER_ANIMATION.comment = 启用雨飘扬动画. 
+
+    option.TIMELAPSE_MODE = 延时摄影模式
+        option.TIMELAPSE_MODE.comment = 启用延时摄影模式. 这样可以根据当前世界时间使天空、植被等的动画过渡平滑，而并非帧时间. 设为部分以使其仅对水面法线和天空有效，或者全部来使其应用至水面法线、天空和波浪. 此功能不适用于原版云、天空盒，以及太阳和月亮.
+        value.TIMELAPSE_MODE.0 = 关
+        value.TIMELAPSE_MODE.1 = 部分
+        value.TIMELAPSE_MODE.2 = 全部
+
+    option.WIND_SPEED = 风速
+        option.WIND_SPEED.comment = 调整风速. 会影响植物、摆动的物体和天气. 会增加动画速度.
+
+    option.CURRENT_SPEED = 水流速度
+        option.CURRENT_SPEED.comment = 调整液体和水下流动速度. 会影响水下植物和液体. 会增加动画速度.
+
+    option.WIND_FREQUENCY = 风频
+        option.WIND_FREQUENCY.comment = 调整风频. 会影响植物、摆动的物体和天气. 会增加动画更新频率.
+
+    option.CURRENT_FREQUENCY = 水流频率
+        option.CURRENT_FREQUENCY.comment = 调整液体和水下流动频率. 会影响水下植物和液体. 会增加动画更新频率.
+
+    option.WORLD_CURVATURE = 世界曲率
+        option.WORLD_CURVATURE.comment = 启用世界曲率
+
+    option.WORLD_CURVATURE_SIZE = 世界曲率大小
+        option.WORLD_CURVATURE_SIZE.comment = 世界曲率大小
+
+screen.PBR = PBR
+    option.PBR_MODE = PBR模式
+        option.PBR_MODE.comment = 启用PBR. 默认PBR依赖于原版反照纹理来映射出材质. 资源PBR使用你的资源包的PBR，在可用的前提下. 资源PBR需要最新的LabPBR版本！
+        value.PBR_MODE.0 = 关
+        value.PBR_MODE.1 = 默认PBR
+        value.PBR_MODE.2 = Lab PBR 1.3
+
+    option.ENVIRO_PBR = 环境PBR材质
+        option.ENVIRO_PBR.comment = 启用环境材质. 环境材质会根据你所处的环境，比如雨来影响你的周围环境.
+
+    option.AUTO_GEN_NORM = 自动生成法线
+        option.AUTO_GEN_NORM.comment = 启用自动生成的法线. 在默认PBR启用时工作. 主要适用于原版资源包.
+
+    option.AUTO_GEN_NORM_RES = 自动生成法线分辨率
+        option.AUTO_GEN_NORM_RES.comment = 自动生成法线的分辨率. 对性能有轻微影响.
+
+    option.SUBSURFACE_SCATTERING = 次表面散射
+        option.SUBSURFACE_SCATTERING.comment = 启用次表面散射. 
+
+    option.EMISSIVE_INTENSITY = 自发光强度
+        option.EMISSIVE_INTENSITY.comment = 自发光贴图强度. 不影响光照贴图且需要启用PBR.
+
+    option.SLOPE_NORMALS = 斜率法线
+        option.SLOPE_NORMALS.comment = 启用斜率法线. 如果你使用的是带有法线贴图的高分辨率包，请禁用此功能. 感谢@Null！
+
+    option.NORMAL_STRENGTH = 法线强度
+        option.NORMAL_STRENGTH.comment = 法线贴图强度. 仅在使用资源包法线的PBR启用，斜率法线关闭时有效.
+
+    option.DIRECTIONAL_LIGHTMAPS = 指向性光照贴图
+        option.DIRECTIONAL_LIGHTMAPS.comment = 启用指向性光照贴图. 仅在自动生成法线或PBR中的法线贴图启用时有效.
+
+    option.DIRECTIONAL_LIGHTMAP_STRENGTH = 指向性光照贴图强度
+        option.DIRECTIONAL_LIGHTMAP_STRENGTH.comment = 指向性光照贴图强度. 在指向性光照贴图启用时有效.
+
+    screen.POM_SETTINGS = 视差遮挡设置
+        option.PARALLAX_OCCLUSION = 视差遮挡
+            option.PARALLAX_OCCLUSION.comment = 启用视察遮挡. 需要LabPBR被启用和一个启用LabPBR材质的资源包.
+
+        option.PARALLAX_DEPTH = 视差深度
+            option.PARALLAX_DEPTH.comment = 视差遮挡深度. 增加以获得更深的深度.
+
+        option.PARALLAX_STEPS = 视察步进
+            option.PARALLAX_STEPS.comment = 视差遮挡步进次数. 增加以提升视差遮挡贴图的品质.
+
+        option.PARALLAX_SHADOWS = 视差阴影
+            option.PARALLAX_SHADOWS.comment = 启用视差自投影.
+
+        option.PARALLAX_SHADOW_STEPS = 视差阴影步进
+            option.PARALLAX_SHADOW_STEPS.comment = 视差自阴影步进次数. 增加以提升自投影的品质.
+
+    screen.WATER_SETTINGS = 水面材质设置
+        option.WATER_NOISE = 水面噪点
+            option.WATER_NOISE.comment = 启用水面噪点. 通过改变水面噪点的亮度来接近于SDGP.
+
+        option.WATER_BRIGHTNESS = 水体亮度
+            option.WATER_BRIGHTNESS.comment = 水体亮度，值越低代表颜色越深
+
+        option.WATER_NORM = 水面法线贴图
+            option.WATER_NORM.comment = 启用水面法线
+
+        option.WATER_BLUR_SIZE = 水面法线贴图模糊尺寸
+            option.WATER_BLUR_SIZE.comment = 水法线地图模糊大小，较小的值代表更清晰的波浪，较大的值代表更平滑的波浪
+
+        option.WATER_DEPTH_SIZE = 水面法线贴图深度尺寸
+            option.WATER_DEPTH_SIZE.comment = 波浪的法线贴图深度, 值越小深度越深
+
+        option.WATER_TILE_SIZE = 水砖尺寸
+            option.WATER_TILE_SIZE.comment = 水砖的尺寸大小
+
+        option.WATER_STYLIZE_ABSORPTION = 水体吸光率
+            option.WATER_STYLIZE_ABSORPTION.comment = 启用风格化的水体吸光率. 根据深度改变水的颜色.
+
+        option.WATER_FOAM = 水泡沫
+            option.WATER_FOAM.comment = 启用水泡沫. 出现在大多数固体对象的旁边，包括实体.
+
+        option.WATER_FLAT = 水平面反照
+            option.WATER_FLAT.comment = 启用水平面反照.
+
+    screen.LAVA_SETTINGS = 熔岩材质设置
+        option.LAVA_BRIGHTNESS = 熔岩亮度
+            option.LAVA_BRIGHTNESS.comment = 熔岩亮度，值越低代表颜色越深
+
+        option.LAVA_NOISE = 熔岩噪点
+            option.LAVA_NOISE.comment = 启用熔岩噪点. 通过改变熔岩噪点的亮度来接近于Minecraft Dungeons.
+
+        option.LAVA_TILE_SIZE = 熔岩砖尺寸
+            option.LAVA_TILE_SIZE.comment = 熔岩砖的尺寸大小
+
+screen.CONFIGURATION = 配置
+    screen.OVERWORLD_SETTINGS = 主世界设置
+        screen.DAY_SETTINGS = 白天设置
+            option.LIGHT0_DR = 光照红色
+            option.LIGHT0_DG = 光照绿色
+            option.LIGHT0_DB = 光照蓝色
+            option.LIGHT0_DI = 光照强度
+
+            option.SKY0_DR = 天空光红色
+            option.SKY0_DG = 天空光绿色
+            option.SKY0_DB = 天空光蓝色
+            option.SKY0_DI = 天空光强度
+
+        screen.NIGHT_SETTINGS = 夜晚设置
+            option.LIGHT0_NR = 光照红色
+            option.LIGHT0_NG = 光照绿色
+            option.LIGHT0_NB = 光照蓝色
+            option.LIGHT0_NI = 光照强度
+
+            option.SKY0_NR = 天空光红色
+            option.SKY0_NG = 天空光绿色
+            option.SKY0_NB = 天空光蓝色
+            option.SKY0_NI = 天空光强度
+
+        screen.TWILIGHT_SETTINGS = 日暮设置
+            option.LIGHT0_TR = 光照红色
+            option.LIGHT0_TG = 光照绿色
+            option.LIGHT0_TB = 光照蓝色
+            option.LIGHT0_TI = 光照强度
+
+            option.SKY0_TR = 天空光红色
+            option.SKY0_TG = 天空光绿色
+            option.SKY0_TB = 天空光蓝色
+            option.SKY0_TI = 天空光强度
+
+        screen.FOG_SETTINGS0 = 雾设置
+            option.FOG0_VERTICAL_DENSITY_D = 白天垂直密度
+            option.FOG0_VERTICAL_DENSITY_N = 夜晚垂直密度
+            option.FOG0_VERTICAL_DENSITY_T = 日暮垂直密度
+            option.FOG0_TOTAL_DENSITY = 总体密度
+
+    screen.NETHER_SETTINGS = 下界设置
+        option.FOGn1_VERTICAL_DENSITY = 垂直密度
+        option.FOGn1_TOTAL_DENSITY = 总体密度
+        option.WORLDn1_VANILLA_FOGCOLI = 天空光强度
+
+    screen.END_SETTINGS = 末地设置
+        option.LIGHT1_CR = 光照红色
+        option.LIGHT1_CG = 光照绿色
+        option.LIGHT1_CB = 光照蓝色
+        option.LIGHT1_CI = 光照强度
+
+        option.SKY1_CR = 天空光红色
+        option.SKY1_CG = 天空光绿色
+        option.SKY1_CB = 天空光蓝色
+        option.SKY1_CI = 天空光强度
+
+        option.FOG1_VERTICAL_DENSITY = 垂直密度
+        option.FOG1_TOTAL_DENSITY = 总体密度
+
+    screen.BLOCK_LIGHT_COLOR = 方块光设置
+        option.BLOCKLIGHT_R = 方块光红色
+            option.BLOCKLIGHT_R.comment = 红色值
+
+        option.BLOCKLIGHT_G = 方块光绿色
+            option.BLOCKLIGHT_G.comment = 绿色值
+
+        option.BLOCKLIGHT_B = 方块光蓝色
+            option.BLOCKLIGHT_B.comment = 蓝色值
+
+        option.BLOCKLIGHT_I = 方块光强度
+            option.BLOCKLIGHT_I.comment = 强度值
