@@ -199,8 +199,8 @@ screen.ATMOSPHERICS = 大气
     option.STORY_MODE_CLOUDS = 故事模式云
         option.STORY_MODE_CLOUDS.comment = 使用程序生成的云（又名气凝胶云）而不是原版云. 禁用原版的云以获得正确的结果.
 
-    option.DOUBLE_VANILLA_CLOUDS = 双层原版云
-        option.DOUBLE_VANILLA_CLOUDS.comment = 另外增加一层原版的云（不适用于故事模式云），可能会消耗性能.
+    option.DOUBLE_LAYERED_CLOUDS = 双层云
+        option.DOUBLE_LAYERED_CLOUDS.comment = 另外增加一层云（在原版和着色云上都会工作），可能会消耗性能.
 
     option.DYNAMIC_CLOUDS = 动态云层
         option.DYNAMIC_CLOUDS.comment = 使云更为动态，并允许天气影响它. （对原版和故事模式的云都有影响）.
