@@ -341,71 +341,109 @@ screen.CONFIGURATION = 配置
     screen.OVERWORLD_SETTINGS = 主世界设置
         screen.DAY_SETTINGS = 白天设置
             option.LIGHT0_DR = 光照红色
+                option.LIGHT0_DR.comment = 红色值
             option.LIGHT0_DG = 光照绿色
+                option.LIGHT0_DG.comment = 绿色值
             option.LIGHT0_DB = 光照蓝色
+                option.LIGHT0_DB.comment = 蓝色值
             option.LIGHT0_DI = 光照强度
+                option.LIGHT0_DI.comment = 强度值
 
             option.SKY0_DR = 天空光红色
+                option.SKY0_DR.comment = 红色值
             option.SKY0_DG = 天空光绿色
+                option.SKY0_DG.comment = 绿色值
             option.SKY0_DB = 天空光蓝色
+                option.SKY0_DB.comment = 蓝色值
             option.SKY0_DI = 天空光强度
+                option.SKY0_DI.comment = 强度值
 
         screen.NIGHT_SETTINGS = 夜晚设置
             option.LIGHT0_NR = 光照红色
+                option.LIGHT0_NR.comment = 红色值
             option.LIGHT0_NG = 光照绿色
+                option.LIGHT0_NG.comment = 绿色值
             option.LIGHT0_NB = 光照蓝色
+                option.LIGHT0_NB.comment = 蓝色值
             option.LIGHT0_NI = 光照强度
+                option.LIGHT0_NI.comment = 强度值
 
             option.SKY0_NR = 天空光红色
+                option.SKY0_NR.comment = 红色值
             option.SKY0_NG = 天空光绿色
+                option.SKY0_NG.comment = 绿色值
             option.SKY0_NB = 天空光蓝色
+                option.SKY0_NB.comment = 蓝色值
             option.SKY0_NI = 天空光强度
+                option.SKY0_NI.comment = 强度值
 
         screen.TWILIGHT_SETTINGS = 日暮设置
             option.LIGHT0_TR = 光照红色
+                option.LIGHT0_TR.comment = 红色值
             option.LIGHT0_TG = 光照绿色
+                option.LIGHT0_TG.comment = 绿色值
             option.LIGHT0_TB = 光照蓝色
+                option.LIGHT0_TB.comment = 蓝色值
             option.LIGHT0_TI = 光照强度
+                option.LIGHT0_TI.comment = 强度值
 
             option.SKY0_TR = 天空光红色
+                option.SKY0_TR.comment = 红色值
             option.SKY0_TG = 天空光绿色
+                option.SKY0_TG.comment = 绿色值
             option.SKY0_TB = 天空光蓝色
+                option.SKY0_TB.comment = 蓝色值
             option.SKY0_TI = 天空光强度
+                option.SKY0_TI.comment = 强度值
 
         screen.FOG_SETTINGS0 = 雾设置
             option.FOG0_VERTICAL_DENSITY_D = 白天垂直密度
+                option.FOG0_VERTICAL_DENSITY_D.comment = 垂直密度渐衰，较大的值代表高海拔雾较薄，而低海拔雾较浓
             option.FOG0_VERTICAL_DENSITY_N = 夜晚垂直密度
+                option.FOG0_VERTICAL_DENSITY_N.comment = 垂直密度渐衰，较大的值代表高海拔雾较薄，而低海拔雾较浓
             option.FOG0_VERTICAL_DENSITY_T = 日暮垂直密度
+                option.FOG0_VERTICAL_DENSITY_T.comment = 垂直密度渐衰，较大的值代表高海拔雾较薄，而低海拔雾较浓
             option.FOG0_TOTAL_DENSITY = 总体密度
+                option.FOG0_TOTAL_DENSITY.comment = 总体密度渐衰，值越大代表雾越浓
 
     screen.NETHER_SETTINGS = 下界设置
         option.FOGn1_VERTICAL_DENSITY = 垂直密度
+            option.FOGn1_VERTICAL_DENSITY.comment = 垂直密度渐衰，较大的值代表高海拔雾较薄，而低海拔雾较浓
         option.FOGn1_TOTAL_DENSITY = 总体密度
+            option.FOGn1_TOTAL_DENSITY.comment = 总体密度渐衰，值越大代表雾越浓
         option.WORLDn1_VANILLA_FOGCOLI = 天空光强度
+            option.WORLDn1_VANILLA_FOGCOLI.comment = 强度值
 
     screen.END_SETTINGS = 末地设置
         option.LIGHT1_CR = 光照红色
+            option.LIGHT1_CR.comment = 红色值
         option.LIGHT1_CG = 光照绿色
+            option.LIGHT1_CG.comment = 绿色值
         option.LIGHT1_CB = 光照蓝色
+            option.LIGHT1_CB.comment = 蓝色值
         option.LIGHT1_CI = 光照强度
+            option.LIGHT1_CI.comment = 强度值
 
         option.SKY1_CR = 天空光红色
+            option.SKY1_CR.comment = 红色值
         option.SKY1_CG = 天空光绿色
+            option.SKY1_CG.comment = 绿色值
         option.SKY1_CB = 天空光蓝色
+            option.SKY1_CB.comment = 蓝色值
         option.SKY1_CI = 天空光强度
+            option.SKY1_CI.comment = 强度值
 
         option.FOG1_VERTICAL_DENSITY = 垂直密度
+            option.FOG1_VERTICAL_DENSITY.comment = 垂直密度渐衰，较大的值代表高海拔雾较薄，而低海拔雾较浓
         option.FOG1_TOTAL_DENSITY = 总体密度
+            option.FOG1_TOTAL_DENSITY.comment = 总体密度渐衰，值越大代表雾越浓
 
     screen.BLOCK_LIGHT_COLOR = 方块光设置
         option.BLOCKLIGHT_R = 方块光红色
             option.BLOCKLIGHT_R.comment = 红色值
-
         option.BLOCKLIGHT_G = 方块光绿色
             option.BLOCKLIGHT_G.comment = 绿色值
-
         option.BLOCKLIGHT_B = 方块光蓝色
             option.BLOCKLIGHT_B.comment = 蓝色值
-
         option.BLOCKLIGHT_I = 方块光强度
             option.BLOCKLIGHT_I.comment = 强度值
