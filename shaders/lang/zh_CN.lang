@@ -284,19 +284,19 @@ screen.PBR = PBR
 
     screen.POM_SETTINGS = 视差遮挡设置
         option.PARALLAX_OCCLUSION = 视差遮挡
-            option.PARALLAX_OCCLUSION.comment = 启用视察遮挡. 需要LabPBR被启用和一个启用LabPBR材质的资源包.
+            option.PARALLAX_OCCLUSION.comment = 启用视差遮挡. 需要LabPBR被启用和一个启用LabPBR材质的资源包.
 
         option.PARALLAX_DEPTH = 视差深度
             option.PARALLAX_DEPTH.comment = 视差遮挡深度. 增加以获得更深的深度.
 
-        option.PARALLAX_STEPS = 视察步进
+        option.PARALLAX_STEPS = 视差步进
             option.PARALLAX_STEPS.comment = 视差遮挡步进次数. 增加以提升视差遮挡贴图的品质.
 
         option.PARALLAX_SHADOWS = 视差阴影
             option.PARALLAX_SHADOWS.comment = 启用视差自投影.
 
         option.PARALLAX_SHADOW_STEPS = 视差阴影步进
-            option.PARALLAX_SHADOW_STEPS.comment = 视差自阴影步进次数. 增加以提升自投影的品质.
+            option.PARALLAX_SHADOW_STEPS.comment = 视差自投影步进次数. 增加以提升自投影的品质.
 
     screen.WATER_SETTINGS = 水面材质设置
         option.WATER_NOISE = 水面噪点
