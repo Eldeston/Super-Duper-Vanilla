@@ -175,8 +175,8 @@ screen.LIGHTING = 光照
             option.PREVIOUS_FRAME.comment = 读取前一帧缓冲的颜色，允许SSR或SSGI具有无限的光反射. 会影响性能！
 
 screen.ATMOSPHERICS = 大气
-    option.SUN_MOON_TYPE = 太阳/月亮类型
-        option.SUN_MOON_TYPE.comment = 太阳和月亮的类型
+    option.SUN_MOON_TYPE = 太阳/月亮样式
+        option.SUN_MOON_TYPE.comment = 太阳和月亮的样式
         value.SUN_MOON_TYPE.0 = 默认
         value.SUN_MOON_TYPE.1 = 圆形
         value.SUN_MOON_TYPE.2 = 原版
