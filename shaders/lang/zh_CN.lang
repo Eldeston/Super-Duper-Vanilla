@@ -133,7 +133,10 @@ screen.LIGHTING = 光照
        option.BLOCK_ENTITY_SHADOWS.comment = 启用实体方块阴影.
 
     option.shadowMapResolution = 阴影贴图分辨率
+        option.shadowMapResolution.comment = 阴影贴图分辨率. 增加来以性能为代价获得更高的分辨率.
+
     option.shadowDistance = 阴影贴图距离
+        option.shadowDistance.comment = 阴影距离. 增加来以方块为单位延伸阴影贴图至更远的距离. 建议将此项设置为与你的渲染距离相同，并增加阴影贴图分辨率.
 
     option.sunPathRotation = 光线路径倾角
         option.sunPathRotation.comment = 光线路径倾角. 这也会影响天空倾角.
