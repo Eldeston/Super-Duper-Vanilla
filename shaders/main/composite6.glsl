@@ -217,7 +217,7 @@
 
         // Color tinting, exposure, and tonemapping
         const vec3 exposureTint = vec3(TINT_R, TINT_G, TINT_B) * (EXPOSURE * 0.00392156863);
-        color = modifiedReinhardTonemapping(color * exposureTint);
+        color = modifiedReinhardExtended(color * exposureTint);
 
         // Gamma correction
         color = toSRGB(color);

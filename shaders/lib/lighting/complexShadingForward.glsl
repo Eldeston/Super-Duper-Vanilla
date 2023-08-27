@@ -61,7 +61,7 @@ vec4 complexShadingGbuffers(in structPBR material){
 				// Apply shadow distortion and transform to shadow screen space
 				shdPos = vec3(shdPos.xy / (length(shdPos.xy) * 2.0 + 0.2), shdPos.z * 0.1) + 0.5;
 				// Bias mutilplier, adjusts according to the current resolution
-				const vec3 biasAdjustFactor = vec3(2, 2, -0.0625) / shadowMapResolution;
+				const vec3 biasAdjustFactor = vec3(2, 2, -0.0625) * shadowMapPixelSize;
 
 				// Get shadow normal from vertex normal
 				vec3 shdNormal = mat3(shadowModelView) * TBN[2];
@@ -118,7 +118,7 @@ vec4 complexShadingGbuffers(in structPBR material){
 		if(isShadow){
 			// Get specular GGX
 			vec3 specCol = getSpecBRDF(fastNormalize(-vertexPos.xyz), vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), material.normal, material.albedo.rgb, NL, material.metallic, 1.0 - material.smoothness);
-			// Needs to multiplied twice in order for the speculars to look relatively "correct"
+			// Needs to multiplied twice in order for the speculars to look "relatively correct"
 			#ifdef FORCE_DISABLE_WEATHER
 				totalDiffuse += min(vec3(SUN_MOON_INTENSITY * SUN_MOON_INTENSITY), specCol) * (1.0 + material.smoothness) * sRGBLightCol * shadowCol;
 			#else

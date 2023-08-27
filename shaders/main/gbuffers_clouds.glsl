@@ -147,7 +147,7 @@
             float albedoAlpha = textureLod(tex, texCoord, 0).a;
 
             #ifdef DYNAMIC_CLOUDS
-                float fade = smootherstep(sin(frameTimeCounter * FADE_SPEED) * 0.5 + 0.5);
+                float fade = saturate(sin(ANIMATION_FRAMETIME * FADE_SPEED) * 0.8 + 0.5);
                 float albedoAlpha2 = textureLod(tex, 0.5 - texCoord, 0).a;
 
                 #ifdef FORCE_DISABLE_WEATHER
