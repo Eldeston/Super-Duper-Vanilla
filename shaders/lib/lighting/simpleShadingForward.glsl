@@ -31,14 +31,14 @@ vec4 simpleShadingGbuffers(in vec4 albedo){
 
 			#ifdef CLOUDS
 				// Bias mutilplier, adjusts according to the current shadow resolution
-				const vec3 biasAdjustMult = vec3(2, 2, -0.0625) / shadowMapResolution;
+				const vec3 biasAdjustMult = vec3(2, 2, -0.0625) * shadowMapPixelSize;
 
 				vec3 shdNormal = mat3(shadowModelView) * vertexNormal;
 				// Apply normal bias for clouds
 				shdPos += shdNormal * biasAdjustMult;
 			#else
 				// Bias mutilplier, adjusts according to the current shadow resolution
-				const float biasAdjustMult = 2.0 / shadowMapResolution;
+				const float biasAdjustMult = 2.0 * shadowMapPixelSize;
 
 				// Apply normal bias for particles and basic
 				shdPos.y += shadowModelView[1].y * biasAdjustMult;

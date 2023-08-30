@@ -30,7 +30,7 @@
 
     out vec4 vertexPos;
 
-    #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
+    #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
         flat out vec2 vTexCoordScale;
         flat out vec2 vTexCoordPos;
 
@@ -74,7 +74,7 @@
 
     attribute vec4 at_tangent;
 
-    #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION || defined TERRAIN_ANIMATION
+    #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION || defined TERRAIN_ANIMATION
         attribute vec2 mc_midTexCoord;
     #endif
 
@@ -108,7 +108,7 @@
             lmCoord = saturate(gl_MultiTexCoord1.xy * 0.00416667);
         #endif
 
-        #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
+        #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
             vec2 midTexCoord = (gl_TextureMatrix[0] * vec4(mc_midTexCoord, 0, 0)).xy;
             vec2 texMinMidTexCoord = texCoord - midTexCoord;
 
@@ -157,7 +157,7 @@
 
     in vec4 vertexPos;
 
-    #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
+    #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
         flat in vec2 vTexCoordScale;
         flat in vec2 vTexCoordPos;
         in vec2 vTexCoord;
@@ -238,7 +238,7 @@
 
     #include "/lib/utility/noiseFunctions.glsl"
 
-    #if defined ENVIRO_PBR && !defined FORCE_DISABLE_WEATHER
+    #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
         uniform float isPrecipitationRain;
 
         #include "/lib/PBR/enviroPBR.glsl"
@@ -265,7 +265,7 @@
 
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
-        #if defined ENVIRO_PBR && !defined FORCE_DISABLE_WEATHER
+        #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
             if(blockId != 11100 && blockId != 12101) enviroPBR(material);
         #endif
 

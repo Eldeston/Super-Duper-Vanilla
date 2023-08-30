@@ -12,9 +12,9 @@ void getPBR(inout structPBR material, in int id){
     material.normal = TBN[2];
 
     // Generate bumped normals
-    #if (defined TERRAIN || defined WATER || defined BLOCK) && defined AUTO_GEN_NORM
+    #if (defined TERRAIN || defined WATER || defined BLOCK) && defined NORMAL_GENERATION
         if(id != 11100 && id != 11102 && id != 12001 && id != 12101){
-            const float autoGenNormPixSize = 1.0 / AUTO_GEN_NORM_RES;
+            const float autoGenNormPixSize = 1.0 / NORMAL_GENERATION_RESOLUTION;
             vec2 topRightCorner = fract(vTexCoord - autoGenNormPixSize) * vTexCoordScale + vTexCoordPos;
             vec2 bottomLeftCorner = fract(vTexCoord + autoGenNormPixSize) * vTexCoordScale + vTexCoordPos;
 

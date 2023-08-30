@@ -84,7 +84,7 @@
         #endif
 
         #ifdef CHROMATIC_ABERRATION
-            vec2 chromaStrength = ((texCoord - 0.5) * ABERRATION_PIX_SIZE) * pixelSize;
+            vec2 chromaStrength = ((texCoord - 0.5) * ABERRATION_PIXEL_SIZE) * pixelSize;
 
             vec3 sceneCol = vec3(textureLod(colortex3, texCoord - chromaStrength, 0).r,
                 textureLod(colortex3, texCoord, 0).g,

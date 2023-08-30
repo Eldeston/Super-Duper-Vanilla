@@ -39,14 +39,15 @@ vec3 getVolumetricLight(in vec3 feetPlayerPos, in float depth, in float dither){
 
 	#if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING
 		// Normalize then unormalize with feetPlayerDist and clamping it at minimum distance between far and current shadowDistance
-		vec3 endPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * (nFeetPlayerPos * min(min(far, shadowDistance), feetPlayerDist))) * 0.14285714;
+		vec3 endPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * nFeetPlayerPos);
+		endPos *= min(min(far, shadowDistance), feetPlayerDist) * 0.14285714;
 
 		// Apply dithering added to the eyePlayerPos "camera" position converted to shadow clip space
 		vec3 startPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * shadowModelView[3].xyz + endPos * dither;
 		startPos.z += shadowProjection[3].z;
 
 		vec3 rayData = vec3(0);
-		for(int x = 0; x < 7; x++){
+		for(int i = 0; i < 7; i++){
 			// No need to do anymore fancy matrix multiplications during the loop
 			rayData += getShdCol(vec3(startPos.xy / (length(startPos.xy) * 2.0 + 0.2), startPos.z * 0.1) + 0.5);
 			// We continue tracing!

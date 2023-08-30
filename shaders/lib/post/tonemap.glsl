@@ -14,8 +14,8 @@ vec3 contrast(in vec3 col, in float a){
 	return (col - 0.5) * a + 0.5;
 }
 
-// Modified reinhard tonemapping
-vec3 modifiedReinhardTonemapping(in vec3 color){
+// Modified Reinhard extended luminance tonemapping
+vec3 modifiedReinhardExtended(in vec3 color){
 	const float oneMinusShoulder = 1.0 - SHOULDER_STRENGTH;
 
 	const float shoulderFactor = oneMinusShoulder * 3.0;
@@ -23,4 +23,20 @@ vec3 modifiedReinhardTonemapping(in vec3 color){
 
 	float sumCol = sumOf(color);
 	return color * ((3.0 + sumCol * shoulderWhitePointFactor) / (shoulderFactor + sumCol));
+}
+
+// Modified Reinhard Jodie extended tonemapping
+// Might eventually become an option...maybe
+vec3 modifiedReinhardJodieExtended(in vec3 color){
+	const float oneMinusShoulder = 1.0 - SHOULDER_STRENGTH;
+
+	const float shoulderFactorLuma = oneMinusShoulder * 3.0;
+	const float shoulderWhitePointFactor = oneMinusShoulder / (WHITE_POINT * WHITE_POINT);
+
+	float sumCol = sumOf(color);
+
+	vec3 reinhardColorFactor = color * ((1.0 + color * shoulderWhitePointFactor) / (oneMinusShoulder + color));
+	vec3 reinhardLumaFactor = color * ((3.0 + sumCol * shoulderWhitePointFactor) / (shoulderFactorLuma + sumCol));
+
+	return (reinhardColorFactor - reinhardLumaFactor) * reinhardColorFactor + reinhardLumaFactor;
 }

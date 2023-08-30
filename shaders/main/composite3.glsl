@@ -46,22 +46,28 @@
         const bool gcolorMipmapEnabled = true;
 
         // Precalculated dof offsets by vec2(cos(x), sin(x))
-        const vec2 dofOffSets[9] = vec2[9](
-            vec2(0.76604444, 0.64278761),
-            vec2(0.17364818, 0.98480775),
+        const vec2 dofOffSets[15] = vec2[15](
+            vec2(0.91354546, 0.40673664),
+            vec2(0.66913061, 0.74314483),
+            vec2(0.30901699, 0.95105652),
+            vec2(-0.10452846, 0.99452190),
             vec2(-0.5, 0.86602540),
-            vec2(-0.93969262, 0.34202014),
-            vec2(-0.93969262, -0.34202014),
+            vec2(-0.80901699, 0.58778525),
+            vec2(-0.97814760, 0.20791169),
+            vec2(-0.97814760, -0.20791169),
+            vec2(-0.80901699, -0.58778525),
             vec2(-0.5, -0.86602540),
-            vec2(0.17364818, -0.98480775),
-            vec2(0.76604444, -0.64278761),
+            vec2(-0.10452846, -0.99452190),
+            vec2(0.30901699, -0.95105652),
+            vec2(0.66913061, -0.74314483),
+            vec2(0.91354546, -0.40673664),
             vec2(1, 0)
         );
 
-        uniform float centerDepthSmooth;
-
         uniform float viewWidth;
         uniform float viewHeight;
+
+        uniform float centerDepthSmooth;
 
         uniform sampler2D depthtex1;
     #endif
@@ -82,20 +88,20 @@
                 float CoC = max(0.0, abs(depth - centerDepthSmooth) * DOF_STRENGTH - 0.01);
                 CoC = CoC * inversesqrt(CoC * CoC + 0.1);
 
-                // We'll use a total of 10 samples for this blur (1 / 10)
-                float blurRadius = max(viewWidth, viewHeight) * fovMult * CoC * 0.1;
+                // We'll use a total of 16 samples for this blur (1 / 16)
+                float blurRadius = max(viewWidth, viewHeight) * fovMult * CoC * 0.0625;
                 float currDofLOD = log2(blurRadius);
                 vec2 blurRes = blurRadius / vec2(viewWidth, viewHeight);
 
                 // Get center pixel color with LOD
                 vec3 dofColor = textureLod(gcolor, texCoord, currDofLOD).rgb;
-                for(int x = 0; x < 9; x++){
+                for(int i = 0; i < 15; i++){
                     // Rotate offsets and sample
-                    dofColor += textureLod(gcolor, texCoord - dofOffSets[x] * blurRes, currDofLOD).rgb;
+                    dofColor += textureLod(gcolor, texCoord - dofOffSets[i] * blurRes, currDofLOD).rgb;
                 }
 
-                // 9 offsetted samples + 1 sample (1 / 10)
-                sceneCol = dofColor * 0.1;
+                // 15 offsetted samples + 1 sample (1 / 16)
+                sceneCol = dofColor * 0.0625;
             }
         #endif
 

@@ -26,7 +26,7 @@
 
     out vec4 vertexPos;
 
-    #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
+    #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
         flat out vec2 vTexCoordScale;
         flat out vec2 vTexCoordPos;
 
@@ -50,7 +50,7 @@
 
     attribute vec4 at_tangent;
     
-    #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
+    #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
         attribute vec2 mc_midTexCoord;
     #endif
 
@@ -78,7 +78,7 @@
             lmCoord = saturate(gl_MultiTexCoord1.xy * 0.00416667);
         #endif
 
-        #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
+        #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
             vec2 midCoord = (gl_TextureMatrix[0] * vec4(mc_midTexCoord, 0, 0)).xy;
             vec2 texMinMidCoord = texCoord - midCoord;
 
@@ -116,7 +116,7 @@
 
     in vec4 vertexPos;
 
-    #if defined AUTO_GEN_NORM || defined PARALLAX_OCCLUSION
+    #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
         flat in vec2 vTexCoordScale;
         flat in vec2 vTexCoordPos;
 

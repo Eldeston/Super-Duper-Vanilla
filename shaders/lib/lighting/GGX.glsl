@@ -1,10 +1,8 @@
 vec3 getFresnelSchlick(in vec3 F0, in float cosTheta){
-    // Fast and more but not totally accurate fresnel
 	return F0 + (1.0 - F0) * cosTheta;
 }
 
 float getFresnelSchlick(in float F0, in float cosTheta){
-    // Fast and more but not totally accurate fresnel
 	return F0 + (1.0 - F0) * cosTheta;
 }
 
@@ -51,7 +49,7 @@ vec3 getSpecBRDF(in vec3 V, in vec3 L, in vec3 N, in vec3 albedo, in float NL, i
     vec3 H = fastNormalize(L + V);
     // Light dot halfway vector
     float LH = max(0.0, dot(L, H));
-    
+
     // Roughness remapping
     float alphaSqrd = squared(roughness * roughness);
 
