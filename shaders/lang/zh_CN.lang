@@ -33,7 +33,7 @@ screen.POST = 后期处理
         value.ANTI_ALIASING.0 = 关
         value.ANTI_ALIASING.1 = FXAA
         value.ANTI_ALIASING.2 = TAA
-        value.ANTI_ALIASING.3 = 轻度TAA + FXAA
+        value.ANTI_ALIASING.3 = 轻度 TAA + FXAA
 
     option.SHARPEN_FILTER = 锐化滤镜
 
@@ -233,9 +233,11 @@ screen.CONFIGURATION = 配置
         option.BLOCKLIGHT_I = 方块光强度
 
 
-#comment
+## Comments
+
         option.COLOR_MODE.comment = 反照颜色模式. 全白模式使所有东西成为白色. 全黑模式使所有东西成为黑色. 植被模式只显示植被的颜色. 请保持材质开启.
         option.NOISE_SPEED.comment = 噪声使每帧随机化的速度. 对 TAA 很有用. 这种效果仅在启用 TAA 时可见.
+
         option.OUTLINES.comment = 启用描边. 设置为标准来获得经典描边方块, 或 Dungeons 来获得 Dungeons/SDGP 风格的描边.
         option.OUTLINE_BRIGHTNESS.comment = 描边的亮度. 设置为 -1 获得黑色描边, 设置为 1 获得高亮描边.
         option.OUTLINE_PIXEL_SIZE.comment = 描边像素尺寸. 调整以改变描边的厚度.
@@ -277,11 +279,11 @@ screen.CONFIGURATION = 配置
         option.shadowDistance.comment = 阴影距离. 增加来以方块为单位延伸阴影贴图至更远的距离. 建议将此项设置为与你的渲染距离相同, 并增加阴影贴图分辨率.
         option.sunPathRotation.comment = 光线路径倾角. 这也会影响天空倾角.
         option.UNDERWATER_CAUSTICS.comment = 启用水下焦散. 阴影颜色必须被启用!
-        option.SSAO.comment = 启用屏幕空间环境光遮蔽（SSAO）.
+        option.SSAO.comment = 启用屏幕空间环境光遮蔽 (SSAO).
         option.AMBIENT_LIGHTING.comment = 整体环境照明值. 如果你不喜欢漆黑的黑暗就增加它, 较高的值可能使照明不现实. 如果启用了 SSGI, 则将其设置为零以获得更现实的方法. 夜视设置为 0.50.
 
-            option.SSGI.comment = 启用屏幕空间全局照明（SSGI）, 目前为实验性且可能优化不是很好, 可能会改善黑暗区域的环境, 尽管有噪点. 打开 TAA 以获得最佳效果.
-            option.SSR.comment = 启用屏幕空间反射（SSR） , 可能在某些区域看起来不太好.
+            option.SSGI.comment = 启用屏幕空间全局照明 (SSGI), 目前为实验性且可能优化不是很好, 可能会改善黑暗区域的环境, 尽管有噪点. 打开 TAA 以获得最佳效果.
+            option.SSR.comment = 启用屏幕空间反射 (SSR), 可能在某些区域看起来不太好.
             option.SSGI_STEPS.comment = SSGI 步进次数, 增加可能会提升品质, 但会消耗更多的性能.
             option.SSR_STEPS.comment = SSR 步进次数, 增加可能会提升品质, 但会消耗更多的性能.
             option.SSGI_BISTEPS.comment = SSGI 二进制细化步进次数, 会提升品质, 尤其是在使用低步进次数的时候, 平衡这些值是最佳性能所必需的.
@@ -299,7 +301,7 @@ screen.CONFIGURATION = 配置
         option.DOUBLE_LAYERED_CLOUDS.comment = 另外增加一层云（在原版和着色云上都会工作）, 可能会消耗性能.
         option.DYNAMIC_CLOUDS.comment = 使云更为动态, 并允许天气影响它. （对原版和故事模式的云都有影响）.
         option.FADE_SPEED.comment = 云层消失速度.
-        option.SECOND_CLOUD_HEIGHT.comment = 第二层云的高度, 仅在双层原版云启用时有效.
+        option.SECOND_CLOUD_HEIGHT.comment = 第二层云的高度, 仅在双层云启用时有效.
         option.SKYBOX_BRIGHTNESS.comment = 天空盒子的亮度.
 
         option.TERRAIN_ANIMATION.comment = 启用地表植被摆动动画.
