@@ -53,7 +53,7 @@
             shdLightDirScreenSpace = vec3(toScreenCoord(mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), gbufferProjection[1].y * 0.72794047);
         #endif
 
-        gl_Position = ftransform();
+        gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
     }
 #endif
 

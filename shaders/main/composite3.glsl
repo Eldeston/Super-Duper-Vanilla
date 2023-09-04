@@ -28,7 +28,7 @@
 
         fovMult = gbufferProjection[1].y * 0.72794047;
 
-        gl_Position = ftransform();
+        gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
     }
 #endif
 

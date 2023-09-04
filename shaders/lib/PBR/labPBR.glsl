@@ -83,7 +83,7 @@ void getPBR(inout structPBR material, in int id){
     bool hasFallback = id != 11100 && id != 11102 && id != 12101 && sumOf(textureGrad(normals, texCoord, dcdx, dcdy).xy) != 0;
 
     #ifdef PARALLAX_OCCLUSION
-        vec3 viewDir = -vertexPos.xyz * TBN;
+        vec3 viewDir = -vertexFeetPlayerPos.xyz * TBN;
 
         vec3 currPos;
 

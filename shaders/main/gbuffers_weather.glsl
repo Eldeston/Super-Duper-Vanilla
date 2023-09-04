@@ -57,21 +57,21 @@
 
         void main(){
             // Lightmap fix for mods
-            lmCoordX = saturate(gl_MultiTexCoord1.x * 0.00416667);
+            lmCoordX = min(gl_MultiTexCoord1.x * 0.00416667, 1.0);
             // Get buffer texture coordinates
             texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
 
             #ifdef WEATHER_ANIMATION
-                // Get vertex position (feet player pos)
-                vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+                // Get vertex feet player position
+                vec4 vertexFeetPlayerPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
 
                 // Apply weather wave animation
-                if(rainStrength > 0.005) vertexPos.xz = getWeatherWave(vertexPos.xyz, vertexPos.xz + cameraPosition.xz);
+                if(rainStrength > 0.005) vertexFeetPlayerPos.xz = getWeatherWave(vertexFeetPlayerPos.xyz, vertexFeetPlayerPos.xz + cameraPosition.xz);
 
-                // Convert to clip pos and output as position
-                gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
+                // Convert to clip position and output as final position
+                gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexFeetPlayerPos);
             #else
-                gl_Position = ftransform();
+                gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
             #endif
 
             #if ANTI_ALIASING == 2

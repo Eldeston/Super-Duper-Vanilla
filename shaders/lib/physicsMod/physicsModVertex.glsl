@@ -76,7 +76,7 @@ void main(){
     physics_localWaviness = texelFetch(physics_waviness, ivec2(gl_Vertex.xz) - physics_textureOffset, 0).r;
 
     // transform gl_Vertex (since it is the raw mesh, i.e. not transformed yet)
-    vertexPos.y += physics_waveHeight(physics_localPosition, physics_localWaviness);
+    vertexFeetPlayerPos.y += physics_waveHeight(physics_localPosition, physics_localWaviness);
     
     // now use finalPosition instead of gl_Vertex
 }

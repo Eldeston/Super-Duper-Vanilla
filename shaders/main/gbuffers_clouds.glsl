@@ -23,7 +23,7 @@
     #else
         out vec2 texCoord;
 
-        out vec4 vertexPos;
+        out vec4 vertexFeetPlayerPos;
 
         #ifdef WORLD_LIGHT
             flat out vec3 vertexNormal;
@@ -52,8 +52,10 @@
             // Get buffer texture coordinates
             texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
 
-            // Get vertex position (feet player pos)
-            vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+            // Get vertex view position
+            vec4 vertexViewPos = gl_ModelViewMatrix * gl_Vertex;
+            // Get vertex feet player position
+            vertexFeetPlayerPos = gbufferModelViewInverse * vertexViewPos;
 
             #ifdef WORLD_LIGHT
                 // Get vertex normal
@@ -66,13 +68,13 @@
                     // If second instance, invert texture coordinates.
                     texCoord = -texCoord;
                     // Increase cloud height for the second instance.
-                    vertexPos.y += SECOND_CLOUD_HEIGHT;
+                    vertexFeetPlayerPos.y += SECOND_CLOUD_HEIGHT;
                 }
 
-                // Convert to clip pos and output as position
-                gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
+                // Convert to clip position and output as final position
+                gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexFeetPlayerPos);
             #else
-                gl_Position = ftransform();
+                gl_Position = gl_ProjectionMatrix * vertexViewPos;
             #endif
 
             #if ANTI_ALIASING == 2
@@ -92,7 +94,7 @@
     #else
         in vec2 texCoord;
 
-        in vec4 vertexPos;
+        in vec4 vertexFeetPlayerPos;
 
         #ifdef WORLD_LIGHT
             flat in vec3 vertexNormal;

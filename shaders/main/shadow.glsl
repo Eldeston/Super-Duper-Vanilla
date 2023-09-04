@@ -62,28 +62,30 @@
             // Get vertex color
             vertexColor = gl_Color.rgb;
 
-            // Get vertex position (feet player pos)
-            vec4 vertexPos = shadowModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+            // Get vertex view position
+            vec4 vertexShadowViewPos = gl_ModelViewMatrix * gl_Vertex;
+            // Get vertex feet player position
+            vec4 vertexShadowFeetPlayerPos = shadowModelViewInverse * vertexShadowViewPos;
             // Get world position
-            vec3 worldPos = vertexPos.xyz + cameraPosition;
+            vec3 vertexShadowWorldPos = vertexShadowFeetPlayerPos.xyz + cameraPosition;
             // Get water noise uv position
-            waterNoiseUv = worldPos.xz / WATER_TILE_SIZE;
+            waterNoiseUv = vertexShadowWorldPos.xz / WATER_TILE_SIZE;
             
             #if defined TERRAIN_ANIMATION || defined WATER_ANIMATION || defined WORLD_CURVATURE || defined PHYSICS_OCEAN
                 #if defined TERRAIN_ANIMATION || defined WATER_ANIMATION || defined PHYSICS_OCEAN
                     // Apply terrain wave animation
-                    vertexPos.xyz = getShadowWave(vertexPos.xyz, worldPos, at_midBlock.y * 0.015625, mc_Entity.x, saturate(gl_MultiTexCoord1.y * 0.00416667));
+                    vertexShadowFeetPlayerPos.xyz = getShadowWave(vertexShadowFeetPlayerPos.xyz, vertexShadowWorldPos, at_midBlock.y * 0.015625, mc_Entity.x, saturate(gl_MultiTexCoord1.y * 0.00416667));
                 #endif
 
                 #ifdef WORLD_CURVATURE
                     // Apply curvature distortion
-                    vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
+                    vertexShadowFeetPlayerPos.y -= dot(vertexShadowFeetPlayerPos.xz, vertexShadowFeetPlayerPos.xz) / WORLD_CURVATURE_SIZE;
                 #endif
 
-                // Convert to clip pos and output as position
-                gl_Position = gl_ProjectionMatrix * (shadowModelView * vertexPos);
+                // Convert to clip position and output as final position
+                gl_Position = gl_ProjectionMatrix * (shadowModelView * vertexShadowFeetPlayerPos);
             #else
-                gl_Position = ftransform();
+                gl_Position = gl_ProjectionMatrix * vertexShadowViewPos;
             #endif
 
             // Apply shadow distortion

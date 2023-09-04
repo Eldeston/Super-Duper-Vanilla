@@ -24,9 +24,9 @@
     out vec2 texCoord;
 
     out vec3 vertexColor;
-    out vec3 worldPos;
+    out vec3 vertexWorldPos;
 
-    out vec4 vertexPos;
+    out vec4 vertexFeetPlayerPos;
 
     #ifdef PHYSICS_OCEAN
         // Physics mod varyings
@@ -96,19 +96,21 @@
         // Get vertex tangent
         vec3 vertexTangent = fastNormalize(at_tangent.xyz);
 
-        // Get vertex position (feet player pos)
-        vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+        // Get vertex view position
+        vec4 vertexViewPos = gl_ModelViewMatrix * gl_Vertex;
+        // Get vertex feet player position
+        vertexFeetPlayerPos = gbufferModelViewInverse * vertexViewPos;
         // Get world position
-        worldPos = vertexPos.xyz + cameraPosition;
+        vertexWorldPos = vertexFeetPlayerPos.xyz + cameraPosition;
 
         // Calculate TBN matrix
 	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal) * sign(at_tangent.w), vertexNormal));
 
         // Lightmap fix for mods
         #ifdef WORLD_CUSTOM_SKYLIGHT
-            lmCoord = vec2(saturate(gl_MultiTexCoord1.x * 0.00416667), WORLD_CUSTOM_SKYLIGHT);
+            lmCoord = vec2(min(gl_MultiTexCoord1.x * 0.00416667, 1.0), WORLD_CUSTOM_SKYLIGHT);
         #else
-            lmCoord = saturate(gl_MultiTexCoord1.xy * 0.00416667);
+            lmCoord = min(gl_MultiTexCoord1.xy * 0.00416667, vec2(1));
         #endif
 
         #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
@@ -131,24 +133,24 @@
                     physics_localWaviness = texelFetch(physics_waviness, ivec2(gl_Vertex.xz) - physics_textureOffset, 0).r;
 
                     // transform gl_Vertex (since it is the raw mesh, i.e. not transformed yet)
-                    vertexPos.y += physics_waveHeight(physics_localPosition, physics_localWaviness);
+                    vertexFeetPlayerPos.y += physics_waveHeight(physics_localPosition, physics_localWaviness);
                 }
             #endif
 
             #ifdef WATER_ANIMATION
                 // Apply water wave animation
-                if(mc_Entity.x == 11102 && CURRENT_SPEED > 0) vertexPos.y = getWaterWave(worldPos.xz, vertexPos.y);
+                if(mc_Entity.x == 11102 && CURRENT_SPEED > 0) vertexFeetPlayerPos.y = getWaterWave(vertexWorldPos.xz, vertexFeetPlayerPos.y);
             #endif
 
             #ifdef WORLD_CURVATURE
                 // Apply curvature distortion
-                vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
+                vertexFeetPlayerPos.y -= dot(vertexFeetPlayerPos.xz, vertexFeetPlayerPos.xz) / WORLD_CURVATURE_SIZE;
             #endif
 
-            // Convert to clip pos and output as position
-            gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
+            // Convert to clip position and output as final position
+            gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexFeetPlayerPos);
         #else
-            gl_Position = ftransform();
+            gl_Position = gl_ProjectionMatrix * vertexViewPos;
         #endif
 
         #if ANTI_ALIASING == 2
@@ -168,9 +170,9 @@
     in vec2 texCoord;
 
     in vec3 vertexColor;
-    in vec3 worldPos;
+    in vec3 vertexWorldPos;
 
-    in vec4 vertexPos;
+    in vec4 vertexFeetPlayerPos;
 
     #ifdef WATER_NORMAL
     #endif
@@ -301,14 +303,14 @@
 
                 waterNoise *= physicsFoam;
             #elif defined WATER_NORMAL
-                vec4 waterData = H2NWater(worldPos.xz / WATER_TILE_SIZE);
+                vec4 waterData = H2NWater(vertexWorldPos.xz / WATER_TILE_SIZE);
                 material.normal = waterData.zyx * TBN[2].x + waterData.xzy * TBN[2].y + waterData.xyz * TBN[2].z;
 
                 #ifdef WATER_NOISE
                     waterNoise *= squared(0.128 + waterData.w * 0.5);
                 #endif
             #elif defined WATER_NOISE
-                float waterData = getCellNoise(worldPos.xz / WATER_TILE_SIZE);
+                float waterData = getCellNoise(vertexWorldPos.xz / WATER_TILE_SIZE);
 
                 waterNoise *= squared(0.128 + waterData * 0.5);
             #endif

@@ -25,7 +25,7 @@ vec3 rayTraceScene(in vec3 screenPos, in vec3 viewPos, in vec3 rayDir, in float 
 	// Add dithering to our "startPos"
 	screenPos += screenPosRayDir * dither;
 
-	// Screen pos is our startPos
+	// screenPos is startPos
 	for(int i = 0; i < steps; i++){
 		// We raytrace here
 		screenPos += screenPosRayDir;

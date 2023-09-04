@@ -24,7 +24,7 @@
 
     out vec2 texCoord;
 
-    out vec4 vertexPos;
+    out vec4 vertexFeetPlayerPos;
 
     #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
         flat out vec2 vTexCoordScale;
@@ -65,17 +65,19 @@
         // Get vertex tangent
         vec3 vertexTangent = fastNormalize(at_tangent.xyz);
 
-        // Get vertex position (feet player pos)
-        vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+        // Get vertex view position
+        vec4 vertexViewPos = gl_ModelViewMatrix * gl_Vertex;
+        // Get vertex feet player position
+        vertexFeetPlayerPos = gbufferModelViewInverse * vertexViewPos;
 
         // Calculate TBN matrix
 	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal) * sign(at_tangent.w), vertexNormal));
 
         // Lightmap fix for mods
         #ifdef WORLD_CUSTOM_SKYLIGHT
-            lmCoord = vec2(saturate(gl_MultiTexCoord1.x * 0.00416667), WORLD_CUSTOM_SKYLIGHT);
+            lmCoord = vec2(min(gl_MultiTexCoord1.x * 0.00416667, 1.0), WORLD_CUSTOM_SKYLIGHT);
         #else
-            lmCoord = saturate(gl_MultiTexCoord1.xy * 0.00416667);
+            lmCoord = min(gl_MultiTexCoord1.xy * 0.00416667, vec2(1));
         #endif
 
         #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
@@ -89,12 +91,12 @@
 
         #ifdef WORLD_CURVATURE
             // Apply curvature distortion
-            vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
+            vertexFeetPlayerPos.y -= dot(vertexFeetPlayerPos.xz, vertexFeetPlayerPos.xz) / WORLD_CURVATURE_SIZE;
 
-            // Convert to clip pos and output as position
-            gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
+            // Convert to clip position and output as final position
+            gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexFeetPlayerPos);
         #else
-            gl_Position = ftransform();
+            gl_Position = gl_ProjectionMatrix * vertexViewPos;
         #endif
 
         #if ANTI_ALIASING == 2
@@ -114,7 +116,7 @@
 
     in vec2 texCoord;
 
-    in vec4 vertexPos;
+    in vec4 vertexFeetPlayerPos;
 
     #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
         flat in vec2 vTexCoordScale;

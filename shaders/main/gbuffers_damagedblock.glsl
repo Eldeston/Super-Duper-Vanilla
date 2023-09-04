@@ -37,16 +37,16 @@
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         
 	    #ifdef WORLD_CURVATURE
-            // Get vertex position (feet player pos)
-            vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+            // Get vertex feet player position
+            vec4 vertexFeetPlayerPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
 
             // Apply curvature distortion
-            vertexPos.y -= lengthSquared(vertexPos.xz) / WORLD_CURVATURE_SIZE;
-            
-            // Convert to clip pos and output as position
-            gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
+            vertexFeetPlayerPos.y -= lengthSquared(vertexFeetPlayerPos.xz) / WORLD_CURVATURE_SIZE;
+
+            // Convert to clip position and output as final position
+            gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexFeetPlayerPos);
         #else
-            gl_Position = ftransform();
+            gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
         #endif
 
         #if ANTI_ALIASING == 2

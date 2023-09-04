@@ -21,9 +21,13 @@ vec4 simpleShadingGbuffers(in vec4 albedo){
 	totalDiffuse += toLinear(nightVision * 0.5 + AMBIENT_LIGHTING);
 
 	#ifdef WORLD_LIGHT
+		#ifdef CLOUDS
+			float NLZ = dot(vertexNormal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z));
+		#endif
+
 		#ifdef SHADOW_MAPPING
 			// Get shadow pos
-			vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz);
+			vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexFeetPlayerPos.xyz + shadowModelView[3].xyz);
 			shdPos.z += shadowProjection[3].z;
 
 			// Apply shadow distortion and transform to shadow screen space
@@ -33,9 +37,12 @@ vec4 simpleShadingGbuffers(in vec4 albedo){
 				// Bias mutilplier, adjusts according to the current shadow resolution
 				const vec3 biasAdjustMult = vec3(2, 2, -0.0625) * shadowMapPixelSize;
 
-				vec3 shdNormal = mat3(shadowModelView) * vertexNormal;
-				// Apply normal bias for clouds
-				shdPos += shdNormal * biasAdjustMult;
+				// Since we already have NLZ, we just need NLX and NLY to complete the shadow normal
+				float NLX = dot(vertexNormal, vec3(shadowModelView[0].x, shadowModelView[1].x, shadowModelView[2].x));
+				float NLY = dot(vertexNormal, vec3(shadowModelView[0].y, shadowModelView[1].y, shadowModelView[2].y));
+
+				// Apply normal based bias
+				shdPos += vec3(NLX, NLY, NLZ) * biasAdjustMult;
 			#else
 				// Bias mutilplier, adjusts according to the current shadow resolution
 				const float biasAdjustMult = 2.0 * shadowMapPixelSize;
@@ -59,7 +66,7 @@ vec4 simpleShadingGbuffers(in vec4 albedo){
 
 			#ifdef CLOUDS
 				// Apply simple diffuse for clouds
-				shadowCol *= max(0.0, dot(vertexNormal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) * 0.6 + 0.4) * shdFade;
+				shadowCol *= max(0.0, NLZ * 0.6 + 0.4) * shdFade;
 			#else
 				// Cave light leak fix
 				float caveFixShdFactor = shdFade;
@@ -70,7 +77,7 @@ vec4 simpleShadingGbuffers(in vec4 albedo){
 		#else
 			#ifdef CLOUDS
 				// Apply simple diffuse for clouds
-				float shadowCol = max(0.0, dot(vertexNormal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) * 0.6 + 0.4) * shdFade;
+				float shadowCol = max(0.0, NLZ * 0.6 + 0.4) * shdFade;
 			#else
 				// Sample fake shadows
 				float shadowCol = saturate(hermiteMix(0.96, 0.98, lmCoord.y)) * shdFade;

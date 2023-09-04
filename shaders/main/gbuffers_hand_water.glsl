@@ -24,7 +24,7 @@
 
     out vec2 texCoord;
 
-    out vec4 vertexPos;
+    out vec4 vertexFeetPlayerPos;
 
     #ifdef PARALLAX_OCCLUSION
         flat out vec2 vTexCoordScale;
@@ -61,17 +61,19 @@
         // Get vertex tangent
         vec3 vertexTangent = fastNormalize(at_tangent.xyz);
 
-        // Get vertex position (feet player pos)
-        vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+        // Get vertex view position
+        vec4 vertexViewPos = gl_ModelViewMatrix * gl_Vertex;
+        // Get vertex feet player position
+        vertexFeetPlayerPos = gbufferModelViewInverse * vertexViewPos;
 
         // Calculate TBN matrix
 	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal) * sign(at_tangent.w), vertexNormal));
 
         // Lightmap fix for mods
         #ifdef WORLD_CUSTOM_SKYLIGHT
-            lmCoord = vec2(saturate(gl_MultiTexCoord1.x * 0.00416667), WORLD_CUSTOM_SKYLIGHT);
+            lmCoord = vec2(min(gl_MultiTexCoord1.x * 0.00416667, 1.0), WORLD_CUSTOM_SKYLIGHT);
         #else
-            lmCoord = saturate(gl_MultiTexCoord1.xy * 0.00416667);
+            lmCoord = min(gl_MultiTexCoord1.xy * 0.00416667, vec2(1));
         #endif
 
         #ifdef PARALLAX_OCCLUSION
@@ -84,7 +86,7 @@
             vTexCoord = sign(texMinMidCoord) * 0.5 + 0.5;
         #endif
 
-        gl_Position = ftransform();
+        gl_Position = gl_ProjectionMatrix * vertexViewPos;
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
@@ -103,7 +105,7 @@
 
     in vec2 texCoord;
 
-    in vec4 vertexPos;
+    in vec4 vertexFeetPlayerPos;
 
     #ifdef PARALLAX_OCCLUSION
         flat in vec2 vTexCoordScale;

@@ -1,35 +1,35 @@
 // Wave animation movements for shadow
-vec3 getShadowWave(in vec3 vertexPlayerPos, in vec3 worldPos, in float midBlockY, in float id, in float outside){
+vec3 getShadowWave(in vec3 vertexShadowFeetPlayerPos, in vec3 vertexShadowWorldPos, in float midBlockY, in float id, in float outside){
     #ifdef TERRAIN_ANIMATION
         // Wind affected blocks
         if(WIND_SPEED > 0){
             // Calculate wind strength
-            float windStrength = sin(-sumOf(id == 10801 ? floor(worldPos.xz) : worldPos.xz) * WIND_FREQUENCY + newFrameTimeCounter * WIND_SPEED) * outside;
+            float windStrength = sin(-sumOf(id == 10801 ? floor(vertexShadowWorldPos.xz) : vertexShadowWorldPos.xz) * WIND_FREQUENCY + newFrameTimeCounter * WIND_SPEED) * outside;
 
             // Simple blocks, horizontal movement
             if(id >= 10000 && id <= 10499){
-                vertexPlayerPos.xz += windStrength * 0.1;
-                return vertexPlayerPos;
+                vertexShadowFeetPlayerPos.xz += windStrength * 0.1;
+                return vertexShadowFeetPlayerPos;
             }
 
             // Single and double grounded cutouts
             if(id >= 10600 && id <= 10700){
                 float isUpper = id == 10700 ? midBlockY - 1.5 : midBlockY - 0.5;
-                vertexPlayerPos.xz += isUpper * windStrength * 0.125;
-                return vertexPlayerPos;
+                vertexShadowFeetPlayerPos.xz += isUpper * windStrength * 0.125;
+                return vertexShadowFeetPlayerPos;
             }
 
             // Single hanging cutouts
             if(id == 10800 || id == 10801){
                 float isLower = midBlockY + 0.5;
-                vertexPlayerPos.xz += isLower * windStrength * 0.0625;
-                return vertexPlayerPos;
+                vertexShadowFeetPlayerPos.xz += isLower * windStrength * 0.0625;
+                return vertexShadowFeetPlayerPos;
             }
 
             // Multi wall cutouts
             if(id == 10900){
-                vertexPlayerPos.xz += windStrength * 0.05;
-                return vertexPlayerPos;
+                vertexShadowFeetPlayerPos.xz += windStrength * 0.05;
+                return vertexShadowFeetPlayerPos;
             }
         }
     #endif
@@ -38,21 +38,21 @@ vec3 getShadowWave(in vec3 vertexPlayerPos, in vec3 worldPos, in float midBlockY
     if(CURRENT_SPEED > 0){
         #if defined TERRAIN_ANIMATION || defined WATER_ANIMATION
             // Calculate current strength
-            float currentStrength = cos(-sumOf(worldPos.xz) * CURRENT_FREQUENCY + newFrameTimeCounter * CURRENT_SPEED);
+            float currentStrength = cos(-sumOf(vertexShadowWorldPos.xz) * CURRENT_FREQUENCY + newFrameTimeCounter * CURRENT_SPEED);
         #endif
 
         #ifdef TERRAIN_ANIMATION
             // Simple blocks, vertical movement
             if(id == 11100 || id == 11101){
-                vertexPlayerPos.y += currentStrength * 0.0625;
-                return vertexPlayerPos;
+                vertexShadowFeetPlayerPos.y += currentStrength * 0.0625;
+                return vertexShadowFeetPlayerPos;
             }
 
             // Single and double grounded cutouts
             if(id == 11600){
                 float isUpper = midBlockY - 0.5;
-                vertexPlayerPos.xz += isUpper * currentStrength * 0.125;
-                return vertexPlayerPos;
+                vertexShadowFeetPlayerPos.xz += isUpper * currentStrength * 0.125;
+                return vertexShadowFeetPlayerPos;
             }
         #endif
 
@@ -64,17 +64,17 @@ vec3 getShadowWave(in vec3 vertexPlayerPos, in vec3 worldPos, in float midBlockY
                     float physics_localWaviness = texelFetch(physics_waviness, ivec2(gl_Vertex.xz) - physics_textureOffset, 0).r;
 
                     // transform gl_Vertex (since it is the raw mesh, i.e. not transformed yet)
-                    vertexPlayerPos.y += physics_waveHeight((gl_Vertex.xz - physics_waveOffset) * PHYSICS_XZ_SCALE * physics_oceanWaveHorizontalScale, physics_localWaviness);
+                    vertexShadowFeetPlayerPos.y += physics_waveHeight((gl_Vertex.xz - physics_waveOffset) * PHYSICS_XZ_SCALE * physics_oceanWaveHorizontalScale, physics_localWaviness);
                 #endif
 
                 #ifdef WATER_ANIMATION
-                    vertexPlayerPos.y += currentStrength * 0.0625;
+                    vertexShadowFeetPlayerPos.y += currentStrength * 0.0625;
                 #endif
 
-                return vertexPlayerPos;
+                return vertexShadowFeetPlayerPos;
             }
         #endif
     }
 
-    return vertexPlayerPos;
+    return vertexShadowFeetPlayerPos;
 }

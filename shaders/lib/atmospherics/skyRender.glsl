@@ -173,7 +173,7 @@ vec3 getFogRender(in vec3 nEyePlayerPos){
     // If player is in lava, return fog color
     if(isEyeInWater == 2) return fogColor;
 
-    // Rotate normalized player pos to shadow space
+    // Rotate normalized player position to shadow space
     vec3 skyPos = mat3(shadowModelView) * nEyePlayerPos;
 
     #if defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
@@ -199,7 +199,7 @@ vec3 getSkyReflection(in vec3 nEyePlayerPos){
     // If player is in lava, return fog color
     if(isEyeInWater == 2) return fogColor;
 
-    // Rotate normalized player pos to shadow space
+    // Rotate normalized player position to shadow space
     vec3 skyPos = mat3(shadowModelView) * nEyePlayerPos;
 
     #if defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
@@ -238,7 +238,7 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyBoxCol){
     // If player is in lava, return fog color
     if(isEyeInWater == 2) return fogColor;
 
-    // Rotate normalized player pos to shadow space
+    // Rotate normalized player position to shadow space
     vec3 skyPos = mat3(shadowModelView) * nEyePlayerPos;
 
     // Use sky box color as base color
@@ -253,9 +253,9 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyBoxCol){
         #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE != 2
             // If current world uses shader sun and moon but not vanilla sun and moon
             #if SUN_MOON_TYPE == 1
-                float sunMoonShape = getSunMoonShape(skyPos.z) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY;
+                float sunMoonShape = getSunMoonShape(skyPos.z) * sunMoonIntensitySquared;
             #else
-                float sunMoonShape = getSunMoonShape(skyPos.xy) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY;
+                float sunMoonShape = getSunMoonShape(skyPos.xy) * sunMoonIntensitySquared;
             #endif
 
             #ifndef FORCE_DISABLE_WEATHER
@@ -274,11 +274,13 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyBoxCol){
             if(blackHole <= 0) return vec3(0);
             blackHole = 1.0 / max(1.0, blackHole);
 
+            // Distortion application
             const float rotationFactor = TAU * 16.0;
             skyPos.xy = rot2D(blackHole * rotationFactor) * skyPos.xy;
+
             float rings = textureLod(noisetex, vec2(skyPos.x * blackHole, frameTimeCounter * 0.0009765625), 0).x;
 
-            finalCol += ((rings * blackHole * 0.9 + blackHole * 0.1) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY) * lightCol;
+            finalCol += ((rings * blackHole * 0.9 + blackHole * 0.1) * sunMoonIntensitySquared) * lightCol;
         #endif
     #endif
 

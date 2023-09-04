@@ -39,7 +39,7 @@
         // Get buffer texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
 
-        gl_Position = ftransform();
+        gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);

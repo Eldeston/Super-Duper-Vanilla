@@ -21,7 +21,8 @@
     void main(){
         // Get buffer texture coordinates
         texCoord = gl_MultiTexCoord0.xy;
-        gl_Position = ftransform();
+
+        gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
     }
 #endif
 
