@@ -24,7 +24,7 @@
 ![2022-07-04_20 49 54](https://cdn.modrinth.com/data/LMIZZNxZ/images/0126040f5bcc1828e2de2b059799ab7ffb3d08ec.png)
 
 ## License 
-   This shader now uses the **FlameRender (TM) Studios License**. See [**LICENSE**](LICENSE) for more info.
+   This shader now uses the **FlameRender (C) Studios License**. See [**LICENSE**](LICENSE) for more info.
 
 ## Contribution
    If you plan to contribute to this project, see [**CONTRIBUTION**](CONTRIBUTION.md) for more info.

@@ -5,8 +5,8 @@
     profile.HIGH = Высокий
     profile.ULTRA = Ультра
 
-screen.DEBUG = Super Duper Vanilla v1.3.4
-    screen.DEBUG.comment = Разработано §2Eldeston§f§r, производство §9FlameRender §9Studios§r.. §eНажмите, чтобы перейти к настройкам отладки
+screen.DEBUG = Super Duper Vanilla v1.3.5
+    screen.DEBUG.comment = Разработано §2Eldeston§f§r, производство §9FlameRender (C) §9Studios§r.. §eНажмите, чтобы перейти к настройкам отладки
 
     option.COLOR_MODE = Отладочный режим
         value.COLOR_MODE.0 = Выкл

@@ -6,8 +6,8 @@
     profile.HIGH = 高
     profile.ULTRA = 超高
 
-screen.DEBUG = Super Duper Vanilla v1.3.4
-    screen.DEBUG.comment = 开发：§2Eldeston§f§r，出品：§9FlameRender §9Studios§r. §e点我打开光影调试设置！
+screen.DEBUG = Super Duper Vanilla v1.3.5
+    screen.DEBUG.comment = 开发：§2Eldeston§f§r，出品：§9FlameRender (C) §9Studios§r. §e点我打开光影调试设置！
 
     option.COLOR_MODE = 颜色模式
         option.COLOR_MODE.comment = 反照颜色模式. 全白模式使所有东西成为白色. 全黑模式使所有东西成为黑色. 植被模式只显示植被的颜色. 请保持材质开启.
