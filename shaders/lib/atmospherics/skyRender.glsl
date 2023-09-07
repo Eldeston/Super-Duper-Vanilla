@@ -114,10 +114,10 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos){
         float cloudHeightFade = nEyePlayerPos.y - 0.125;
 
         #ifdef FORCE_DISABLE_WEATHER
-            cloudHeightFade *= 4.0;
+            cloudHeightFade *= 5.0;
         #else
-            cloudHeightFade -= rainStrength * 0.175;
-            cloudHeightFade *= 4.0 - rainStrength * 3.2;
+            cloudHeightFade -= rainStrength * 0.2;
+            cloudHeightFade *= 5.0 - rainStrength * 4.0;
         #endif
 
         if(cloudHeightFade > 0.005){
@@ -133,7 +133,7 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos){
 
                 #ifdef DOUBLE_LAYERED_CLOUDS
                     vec3 cloudData1 = cloudParallaxDynamic(-planeUv * 2.0, -cloudTime);
-                    clouds += mix(mix(cloudData1.x, cloudData1.y, fadeTime), cloudData1.z, rainStrength) * (1.0 - clouds) * cloudHeightFade * 0.03125;
+                    clouds += mix(mix(cloudData1.x, cloudData1.y, fadeTime), cloudData1.z, rainStrength) * (1.0 - clouds) * cloudHeightFade * 0.025; // 0.125 * 0.2
                 #endif
             #else
                 float clouds = cloudParallax(planeUv, cloudTime) * min(cloudHeightFade, 1.0) * 0.125;
@@ -218,8 +218,7 @@ vec3 getSkyReflection(in vec3 nEyePlayerPos){
         float VLBrightness = fakeVLBrightness * shdFade;
 
         if(nEyePlayerPos.y > 0){
-            float heightFade = 1.0 - squared(nEyePlayerPos.y);
-            heightFade = squared(squared(heightFade * heightFade));
+            float heightFade = squared(squared(squared(1.0 - squared(nEyePlayerPos.y))));
 
             #ifndef FORCE_DISABLE_WEATHER
                 heightFade += (1.0 - heightFade) * rainStrength * 0.5;
