@@ -47,7 +47,7 @@
 
             uniform int instanceId;
         #endif
-        
+
         void main(){
             // Get buffer texture coordinates
             texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;

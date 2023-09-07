@@ -68,7 +68,7 @@
         vec3 vertexNormal = fastNormalize(gl_Normal);
         // Get vertex tangent
         vec3 vertexTangent = fastNormalize(at_tangent.xyz);
-        
+
         // Get vertex view position
         vec4 vertexViewPos = gl_ModelViewMatrix * gl_Vertex;
         // Get vertex feet player position
@@ -97,7 +97,7 @@
         #ifdef WORLD_CURVATURE
             // Apply curvature distortion
             vertexFeetPlayerPos.y -= dot(vertexFeetPlayerPos.xz, vertexFeetPlayerPos.xz) / WORLD_CURVATURE_SIZE;
-            
+
             // Convert to clip position and output as final position
             gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexFeetPlayerPos);
         #else

@@ -218,7 +218,12 @@
         // If the object is a transparent render separate lighting
         if(texelFetch(depthtex1, screenTexelCoord, 0).x > screenPos.z){
             // Get view distance
-            float viewDist = length(viewPos);
+            float viewDot = lengthSquared(viewPos);
+            float viewDotInvSqrt = inversesqrt(viewDot);
+            float viewDist = viewDot * viewDotInvSqrt;
+
+            // Get normalized eyePlayerPos
+            vec3 nEyePlayerPos = eyePlayerPos * viewDotInvSqrt;
 
             // Declare and get materials
             vec2 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xy;
@@ -226,10 +231,7 @@
             vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
 
             // Apply deffered shading
-            sceneCol = complexShadingDeferred(sceneCol, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, viewDist, matRaw0.x, matRaw0.y, dither);
-
-            // Get normalized eyePlayerPos
-            vec3 nEyePlayerPos = eyePlayerPos / viewDist;
+            sceneCol = complexShadingDeferred(sceneCol, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, viewDotInvSqrt, matRaw0.x, matRaw0.y, dither);
 
             // Get skyCol as our fogCol. Do basic sky render.
             vec3 fogCol = getFogRender(nEyePlayerPos);

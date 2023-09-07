@@ -1,4 +1,4 @@
-vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos, in vec3 normal, in vec3 albedo, in float viewDist, in float metallic, in float smoothness, in vec3 dither){
+vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos, in vec3 normal, in vec3 albedo, in float viewDotInvSqrt, in float metallic, in float smoothness, in vec3 dither){
 	#if defined ROUGH_REFLECTIONS || defined SSGI
 		vec3 noiseUnitVector = generateUnitVector(dither.xy);
 	#endif
@@ -18,17 +18,19 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
 
 	// If smoothness is 0, don't do reflections
 	if(smoothness > 0.005){
-		vec3 nViewPos = viewPos / viewDist;
-
-		float cosTheta = exp2(-9.28 * max(dot(normal, -nViewPos), 0.0));
+		vec3 nViewPos = viewPos * viewDotInvSqrt;
 
 		#ifdef ROUGH_REFLECTIONS
 			// Rough the normals with noise
 			normal = generateCosineVector(normal, noiseUnitVector * squared(1.0 - smoothness) * 0.5);
 		#endif
 
+		float NV = dot(normal, -nViewPos);
+		float cosTheta = exp2(-9.28 * max(NV, 0.0));
+
 		// Get reflected view direction
-		vec3 reflectedViewDir = reflect(nViewPos, normal);
+		// reflect(direction, normal) = direction - 2.0 * dot(normal, direction) * normal
+		vec3 reflectedViewDir = nViewPos + (2.0 * NV) * normal;
 
 		// Calculate SSR and sky reflections
 		#ifdef SSR
@@ -43,7 +45,7 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
 				vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyReflection(mat3(gbufferModelViewInverse) * reflectedViewDir) : textureLod(gcolor, SSRCoord.xy, 0).rgb;
 			#endif
 		#else
-			vec3 reflectCol = getSkyReflection(mat3(gbufferModelViewInverse) * reflectedViewDir);
+			vec3 reflectCol = getSkyReflection(reflectedSkyDir);
 		#endif
 
 		// Modified version of BSL's reflection PBR calculation

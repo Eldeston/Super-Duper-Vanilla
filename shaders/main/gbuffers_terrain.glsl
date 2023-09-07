@@ -97,6 +97,7 @@
         vec4 vertexViewPos = gl_ModelViewMatrix * gl_Vertex;
         // Get vertex feet player position
         vertexFeetPlayerPos = gbufferModelViewInverse * vertexViewPos;
+
         // Get world position
         vertexWorldPos = vertexFeetPlayerPos.xyz + cameraPosition;
 

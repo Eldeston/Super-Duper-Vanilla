@@ -227,10 +227,11 @@
         vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
 
         // Get view distance
-        float viewDist = length(viewPos);
+        float viewDot = lengthSquared(viewPos);
+	    float viewDotInvSqrt = inversesqrt(viewDot);
 
         // Get normalized eyePlayerPos
-        vec3 nEyePlayerPos = eyePlayerPos / viewDist;
+        vec3 nEyePlayerPos = eyePlayerPos * viewDotInvSqrt;
 
         // Get scene color
         vec3 sceneCol = texelFetch(gcolor, screenTexelCoord, 0).rgb;
@@ -240,6 +241,8 @@
             sceneCol = getFullSkyRender(nEyePlayerPos, sceneCol) * exp2(-far * (blindness + darknessFactor));
         // Else, calculate reflection and fog
         }else{
+            float viewDist = viewDot * viewDotInvSqrt;
+
             #if ANTI_ALIASING >= 2
                 vec3 dither = toRandPerFrame(getRand3(screenTexelCoord & 255), frameTimeCounter);
             #else
@@ -252,7 +255,7 @@
             vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
 
             // Apply deffered shading
-            sceneCol = complexShadingDeferred(sceneCol, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, viewDist, matRaw0.x, matRaw0.y, dither);
+            sceneCol = complexShadingDeferred(sceneCol, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, viewDotInvSqrt, matRaw0.x, matRaw0.y, dither);
 
             #if OUTLINES != 0
                 // Outline calculation

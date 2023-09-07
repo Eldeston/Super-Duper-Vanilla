@@ -22,9 +22,9 @@
 
     out vec2 lmCoord;
     out vec2 texCoord;
+    out vec2 waterNoiseUv;
 
     out vec3 vertexColor;
-    out vec3 vertexWorldPos;
 
     out vec4 vertexFeetPlayerPos;
 
@@ -100,8 +100,12 @@
         vec4 vertexViewPos = gl_ModelViewMatrix * gl_Vertex;
         // Get vertex feet player position
         vertexFeetPlayerPos = gbufferModelViewInverse * vertexViewPos;
+
         // Get world position
-        vertexWorldPos = vertexFeetPlayerPos.xyz + cameraPosition;
+        vec3 vertexWorldPos = vertexFeetPlayerPos.xyz + cameraPosition;
+
+        // Get water noise uv position
+        waterNoiseUv = vertexWorldPos.xz / WATER_TILE_SIZE;
 
         // Calculate TBN matrix
 	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal) * sign(at_tangent.w), vertexNormal));
@@ -168,14 +172,11 @@
 
     in vec2 lmCoord;
     in vec2 texCoord;
+    in vec2 waterNoiseUv;
 
     in vec3 vertexColor;
-    in vec3 vertexWorldPos;
 
     in vec4 vertexFeetPlayerPos;
-
-    #ifdef WATER_NORMAL
-    #endif
 
     #ifdef PHYSICS_OCEAN
         // Physics mod varyings
@@ -271,12 +272,6 @@
 
     #include "/lib/utility/noiseFunctions.glsl"
 
-    #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
-        uniform float isPrecipitationRain;
-
-        #include "/lib/PBR/enviroPBR.glsl"
-    #endif
-
     #include "/lib/surface/water.glsl"
 
     #include "/lib/lighting/complexShadingForward.glsl"
@@ -303,14 +298,14 @@
 
                 waterNoise *= physicsFoam;
             #elif defined WATER_NORMAL
-                vec4 waterData = H2NWater(vertexWorldPos.xz / WATER_TILE_SIZE);
+                vec4 waterData = H2NWater(waterNoiseUv);
                 material.normal = waterData.zyx * TBN[2].x + waterData.xzy * TBN[2].y + waterData.xyz * TBN[2].z;
 
                 #ifdef WATER_NOISE
                     waterNoise *= squared(0.128 + waterData.w * 0.5);
                 #endif
             #elif defined WATER_NOISE
-                float waterData = getCellNoise(vertexWorldPos.xz / WATER_TILE_SIZE);
+                float waterData = getCellNoise(waterNoiseUv);
 
                 waterNoise *= squared(0.128 + waterData * 0.5);
             #endif
@@ -337,10 +332,6 @@
         }
 
         material.albedo.rgb = toLinear(material.albedo.rgb);
-
-        #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
-            if(blockId != 11102) enviroPBR(material);
-        #endif
 
         vec4 sceneCol = complexShadingGbuffers(material);
 

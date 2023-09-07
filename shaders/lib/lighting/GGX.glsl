@@ -9,7 +9,7 @@ float getFresnelSchlick(in float F0, in float cosTheta){
 // Source: https://www.guerrilla-games.com/read/decima-engine-advances-in-lighting-and-aa
 float getNoHSquared(in float radiusTan, in float NoL, in float NoV, in float VoL){
     // radiusCos can be precalculated if radiusTan is a directional light
-    float radiusCos = 1.0 * inversesqrt(1.0 + radiusTan * radiusTan);
+    float radiusCos = inversesqrt(1.0 + radiusTan * radiusTan);
     
     // Early out if R falls within the disc
     float RoL = 2.0 * NoL * NoV - VoL;
@@ -50,20 +50,19 @@ vec3 getSpecBRDF(in vec3 V, in vec3 L, in vec3 N, in vec3 albedo, in float NL, i
     // Light dot halfway vector
     float LH = max(0.0, dot(L, H));
 
+    // Visibility
+    float visibility = LH + (1.0 / roughness);
+
     // Roughness remapping
     float alphaSqrd = squared(roughness * roughness);
 
     // Distribution
     float NHSqr = getNoHSquared(WORLD_SUN_MOON_SIZE, NL, max(0.0, dot(N, V)), dot(L, V));
     float denominator = NHSqr * (alphaSqrd - 1.0) + 1.0;
-    float distribution = alphaSqrd / (PI * denominator * denominator);
-
-    // Visibility
-    float visibility = 1.0 / (LH + (1.0 / roughness));
+    float distribution = alphaSqrd / (denominator * denominator * visibility * PI);
 
     // Calculate and apply fresnel and return final specular
     float cosTheta = exp2(-9.28 * LH);
-    float specular = distribution * visibility * NL;
-    if(metallic > 0.9) return getFresnelSchlick(albedo, cosTheta) * specular;
-    return vec3(getFresnelSchlick(metallic, cosTheta) * specular);
+    if(metallic > 0.9) return getFresnelSchlick(albedo, cosTheta) * distribution;
+    return vec3(getFresnelSchlick(metallic, cosTheta) * distribution);
 }

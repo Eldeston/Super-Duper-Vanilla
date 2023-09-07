@@ -44,7 +44,7 @@
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         // Get vertex color
         vertexColor = gl_Color.rgb;
-        
+
         // Get vertex view position
         vec4 vertexViewPos = gl_ModelViewMatrix * gl_Vertex;
         // Get vertex feet player position
@@ -56,7 +56,7 @@
         #else
             lmCoord = min(gl_MultiTexCoord1.xy * 0.00416667, vec2(1));
         #endif
-        
+
 	    #ifdef WORLD_CURVATURE
             // Apply curvature distortion
             vertexFeetPlayerPos.y -= lengthSquared(vertexFeetPlayerPos.xz) / WORLD_CURVATURE_SIZE;

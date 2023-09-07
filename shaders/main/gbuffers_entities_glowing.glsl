@@ -19,7 +19,7 @@
     flat out vec2 lmCoord;
 
     flat out vec3 vertexColor;
-    
+
     flat out mat3 TBN;
 
     out vec2 texCoord;
@@ -93,7 +93,7 @@
         #ifdef WORLD_CURVATURE
             // Apply curvature distortion
             vertexFeetPlayerPos.y -= dot(vertexFeetPlayerPos.xz, vertexFeetPlayerPos.xz) / WORLD_CURVATURE_SIZE;
-            
+
             // Convert to clip position and output as final position
             gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexFeetPlayerPos);
         #else

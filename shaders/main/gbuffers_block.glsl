@@ -49,7 +49,7 @@
     #endif
 
     attribute vec4 at_tangent;
-    
+
     #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
         attribute vec2 mc_midTexCoord;
     #endif

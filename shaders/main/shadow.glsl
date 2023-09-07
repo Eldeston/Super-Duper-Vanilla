@@ -66,11 +66,13 @@
             vec4 vertexShadowViewPos = gl_ModelViewMatrix * gl_Vertex;
             // Get vertex feet player position
             vec4 vertexShadowFeetPlayerPos = shadowModelViewInverse * vertexShadowViewPos;
+
             // Get world position
             vec3 vertexShadowWorldPos = vertexShadowFeetPlayerPos.xyz + cameraPosition;
+
             // Get water noise uv position
             waterNoiseUv = vertexShadowWorldPos.xz / WATER_TILE_SIZE;
-            
+
             #if defined TERRAIN_ANIMATION || defined WATER_ANIMATION || defined WORLD_CURVATURE || defined PHYSICS_OCEAN
                 #if defined TERRAIN_ANIMATION || defined WATER_ANIMATION || defined PHYSICS_OCEAN
                     // Apply terrain wave animation

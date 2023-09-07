@@ -1,6 +1,9 @@
 vec3 getVolumetricLight(in vec3 feetPlayerPos, in float depth, in float dither){
-	float feetPlayerDist = length(feetPlayerPos);
-	vec3 nFeetPlayerPos = feetPlayerPos / feetPlayerDist;
+	float feetPlayerDot = lengthSquared(feetPlayerPos);
+	float feetPlayerDotInvSqrt = inversesqrt(feetPlayerDot);
+	float feetPlayerDist = feetPlayerDot * feetPlayerDotInvSqrt;
+
+	vec3 nFeetPlayerPos = feetPlayerPos * feetPlayerDotInvSqrt;
 
 	float totalFogDensity = FOG_TOTAL_DENSITY;
 
@@ -14,8 +17,8 @@ vec3 getVolumetricLight(in vec3 feetPlayerPos, in float depth, in float dither){
 
 	// Fade VL, but do not apply to underwater VL
 	if(isEyeInWater == 0 && nFeetPlayerPos.y > 0){
-		heightFade = squared(1.0 - squared(nFeetPlayerPos.y));
-		if(depth == 1) heightFade = squared(heightFade * heightFade);
+		heightFade = squared(squared(1.0 - squared(nFeetPlayerPos.y)));
+		if(depth == 1) heightFade *= heightFade;
 
 		#ifndef WORLD_CUSTOM_SKYLIGHT
 			#ifndef FORCE_DISABLE_WEATHER
