@@ -11,12 +11,6 @@ vec2 binarySearch(in vec3 screenPosRayDir, in vec3 startPos, in int binarySearch
 // Based from Belmu's raytracer https://github.com/BelmuTM/NobleRT
 // (it's basically an upgrade to Shadax's raytracer https://github.com/Shadax-stack/MinecraftSSR)
 vec3 rayTraceScene(in vec3 screenPos, in vec3 viewPos, in vec3 rayDir, in float dither, in int steps, in int binarySearchSteps){
-	// If hand, do simple, flipped reflections
-	if(screenPos.z < 0.56){
-		vec2 handScreenPos = toScreenCoord(viewPos + rayDir * 128.0);
-		return vec3(handScreenPos, textureLod(depthtex0, handScreenPos, 0).x != 1);
-	}
-
 	// Fix for the blob when player is near a surface. From Bálint#1673
 	if(rayDir.z > -viewPos.z) return vec3(0);
 
