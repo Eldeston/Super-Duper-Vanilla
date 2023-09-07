@@ -179,8 +179,10 @@
 
             // Average the total samples (1 / 5 bloom tiles multiplied by 1 / 4 samples used for the box blur)
             bloomCol *= 0.05;
-            // Apply bloom by BLOOM_STRENGTH
-            color = mix(color, bloomCol, BLOOM_STRENGTH);
+
+            float bloomLuma = sumOf(bloomCol);
+            // Apply bloom by tonemapped luma and BLOOM_STRENGTH
+            color = mix(color, bloomCol, BLOOM_STRENGTH * bloomLuma / (3.0 + bloomLuma));
         #endif
 
         #if defined LENS_FLARE && defined WORLD_LIGHT
