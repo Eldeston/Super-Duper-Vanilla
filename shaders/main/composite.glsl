@@ -233,10 +233,8 @@
             // Apply deffered shading
             sceneCol = complexShadingDeferred(sceneCol, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, viewDotInvSqrt, matRaw0.x, matRaw0.y, dither);
 
-            // Get skyCol as our fogCol. Do basic sky render.
-            vec3 fogCol = getFogRender(nEyePlayerPos);
-            // Fog and sky calculation
-            sceneCol = getFogRender(sceneCol, fogCol, viewDist, nEyePlayerPos.y, feetPlayerPos.y + cameraPosition.y);
+            // Do basic sky render and use it as fog color
+            sceneCol = getFogRender(sceneCol, getFogRender(nEyePlayerPos), viewDist, nEyePlayerPos.y, feetPlayerPos.y + cameraPosition.y);
         }
 
         // Apply darkness pulsing effect
