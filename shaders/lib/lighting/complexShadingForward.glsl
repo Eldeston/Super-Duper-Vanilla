@@ -17,10 +17,10 @@ vec4 complexShadingGbuffers(in structPBR material){
 		float dirLightMap = min(1.0, max(0.0, dot(fastNormalize(dirLightMapCoord), material.normal)) * lmCoord.x * DIRECTIONAL_LIGHTMAP_STRENGTH + lmCoord.x);
 
 		// Calculate block light
-		totalDiffuse += toLinear(dirLightMap * blockLightCol);
+		totalDiffuse += toLinear(dirLightMap * blockLightColor);
 	#else
 		// Calculate block light
-		totalDiffuse += toLinear(lmCoord.x * blockLightCol);
+		totalDiffuse += toLinear(lmCoord.x * blockLightColor);
 	#endif
 
 	// Lastly, calculate ambient lightning
@@ -120,7 +120,7 @@ vec4 complexShadingGbuffers(in structPBR material){
 		if(isShadow){
 			// Get specular GGX
 			vec3 specCol = getSpecularBRDF(-fastNormalize(vertexFeetPlayerPos.xyz), vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), material.normal, material.albedo.rgb, NLZ, material.metallic, 1.0 - material.smoothness);
-			totalDiffuse += min(vec3(sunMoonIntensitySquared), specCol) * sRGBLightCol * shadowCol;
+			totalDiffuse += min(vec3(sunMoonIntensitySqrd), specCol) * sRGBLightCol * shadowCol;
 		}
 	#endif
 

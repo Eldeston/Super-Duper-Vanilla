@@ -14,7 +14,7 @@ vec4 simpleShadingGbuffers(in vec4 albedo){
 		totalDiffuse *= skyLightSquared;
 
 		// Calculate block light
-		totalDiffuse += toLinear(lmCoord.x * blockLightCol);
+		totalDiffuse += toLinear(lmCoord.x * blockLightColor);
 	#endif
 
 	// Lastly, calculate ambient lightning

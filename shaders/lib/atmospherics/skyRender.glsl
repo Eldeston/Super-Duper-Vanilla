@@ -252,9 +252,9 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyBoxCol){
         #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE != 2
             // If current world uses shader sun and moon but not vanilla sun and moon
             #if SUN_MOON_TYPE == 1
-                float sunMoonShape = getSunMoonShape(skyPos.z) * sunMoonIntensitySquared;
+                float sunMoonShape = getSunMoonShape(skyPos.z) * sunMoonIntensitySqrd;
             #else
-                float sunMoonShape = getSunMoonShape(skyPos.xy) * sunMoonIntensitySquared;
+                float sunMoonShape = getSunMoonShape(skyPos.xy) * sunMoonIntensitySqrd;
             #endif
 
             #ifndef FORCE_DISABLE_WEATHER
@@ -279,7 +279,7 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyBoxCol){
 
             float rings = textureLod(noisetex, vec2(skyPos.x * blackHole, frameTimeCounter * 0.0009765625), 0).x;
 
-            finalCol += ((rings * blackHole * 0.9 + blackHole * 0.1) * sunMoonIntensitySquared) * lightCol;
+            finalCol += ((rings * blackHole * 0.9 + blackHole * 0.1) * sunMoonIntensitySqrd) * lightCol;
         #endif
     #endif
 
