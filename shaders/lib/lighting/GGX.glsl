@@ -44,8 +44,9 @@ float getNoHSquared(in float NoL, in float NoV, in float VoL){
     return saturate(NoH * NoH / HoH);
 }
 
+// Modified fast specular BRDF
 // Thanks for LVutner#5199 for sharing his code!
-vec3 getSpecBRDF(in vec3 V, in vec3 L, in vec3 N, in vec3 albedo, in float NL, in float metallic, in float roughness){
+vec3 getSpecularBRDF(in vec3 V, in vec3 L, in vec3 N, in vec3 albedo, in float NL, in float metallic, in float roughness){
     // Halfway vector
     vec3 H = fastNormalize(L + V);
     // Light dot halfway vector
@@ -55,12 +56,19 @@ vec3 getSpecBRDF(in vec3 V, in vec3 L, in vec3 N, in vec3 albedo, in float NL, i
     float visibility = LH + (1.0 / roughness);
 
     // Roughness remapping
-    float alphaSqrd = squared(roughness * roughness);
+    float alpha = roughness * roughness;
+    float alphaSqrd = alpha * alpha;
 
     // Distribution
+    // Roughness needed to be divided for compensating using reflection over specular
     float NHSqr = getNoHSquared(NL, max(0.0, dot(N, V)), dot(V, L));
     float denominator = squared(NHSqr * (alphaSqrd - 1.0) + 1.0);
-    float distribution = (alphaSqrd * NL) / (denominator * visibility * PI);
+    float distribution = (alpha * roughness * NL) / (denominator * visibility * PI);
+
+    // Rain occlusion
+    #ifndef FORCE_DISABLE_WEATHER
+        distribution *= 1.0 - rainStrength;
+    #endif
 
     // Calculate and apply fresnel and return final specular
     float cosTheta = exp2(-9.28 * LH);
