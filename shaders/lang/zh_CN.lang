@@ -1,5 +1,4 @@
 ## Language format v1.0.1
-## All other .lang files must update to the latest language format version on this main .lang file
 
 ## Profiles
     profile.POTATO = 非常低
@@ -8,8 +7,8 @@
     profile.HIGH = 高
     profile.ULTRA = 超高
 
-screen.DEBUG = Super Duper Vanilla v1.3.4
-    screen.DEBUG.comment = 开发: §2Eldeston§f§r, 出品: §9FlameRender §9Studios§r. §e点我打开光影调试设置!
+screen.DEBUG = Super Duper Vanilla v1.3.5
+    screen.DEBUG.comment = 开发: §2Eldeston§f§r, 呈现: §9FlameRender (C) §9Studios. §e点我打开光影调试设置!
 
     option.COLOR_MODE = 颜色模式
         value.COLOR_MODE.0 = 关
