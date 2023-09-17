@@ -1,5 +1,4 @@
 ## Language format v1.0.1
-## All other .lang files must update to the latest language format version on this main .lang file
 
 ## Профили
     profile.POTATO = Калькулятор
