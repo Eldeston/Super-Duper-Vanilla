@@ -1,3 +1,6 @@
+## Language format v1.0.1
+## All other .lang files must update to the latest language format version on this main .lang file
+
 ## Профили
     profile.POTATO = Калькулятор
     profile.LOW = Низкий
@@ -49,8 +52,10 @@ screen.DEBUG = Super Duper Vanilla v1.3.5
         option.MOTION_BLUR_STRENGTH = Сила размытия
 
     screen.TONEMAP = Тональное отображение
-        option.SATURATION = Насыщенность
         option.CONTRAST = Контрастность
+        option.SATURATION = Насыщенность
+        option.WHITE_POINT = Баланс белого
+        option.SHOULDER_STRENGTH = Сила перехода в белый
         option.AUTO_EXPOSURE = Автоматическая экспозиция
         option.AUTO_EXPOSURE_SPEED = Скорость автоэкспозиции
         option.EXPOSURE = Экспозиция
@@ -63,6 +68,8 @@ screen.LIGHTING = Освещение
     option.SHADOW_MAPPING = Карта теней
     option.SHADOW_COLOR = Цветные тени
     option.SHADOW_FILTER = Сглаживание теней
+    option.ENTITY_SHADOWS = Тени сущностей
+    option.BLOCK_ENTITY_SHADOWS = Тени блоков-сущностей
     option.shadowMapResolution = Разрешение карты теней
     option.shadowDistance = Дальность теней
     option.sunPathRotation = Долгота
@@ -235,6 +242,8 @@ option.DOF.comment = Активирует эффект фокусировки к
 option.DOF_STRENGTH.comment = Сила размытия удалённых объектов..
 option.VIGNETTE.comment = Кинематографический эффект затенения по краям изображения..
 
+option.WHITE_POINT.comment = Регулировка цветовой температуры..
+option.SHOULDER_STRENGTH.comment = Позволяет увеличить общую яркость сцены без изменения экспозиции..
 option.AUTO_EXPOSURE_SPEED.comment = Скорость привыкания персонажа к изменению условий освещения.. Меньшие значения увеличивают время..
 option.MINIMUM_EXPOSURE.comment = Минимальное значение экспозиции в автоматическом режиме.. Меньшие значения могут улучшить видимость в тёмных сценах..
 
