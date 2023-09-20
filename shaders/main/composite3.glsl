@@ -26,7 +26,7 @@
         // Get buffer texture coordinates
         texCoord = gl_MultiTexCoord0.xy;
 
-        fovMult = gbufferProjection[1].y * 0.72794047;
+        fovMult = gbufferProjection[1].y * 0.04549628; // 0.72794047 * 0.0625
 
         gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
     }
@@ -89,7 +89,7 @@
                 CoC = CoC * inversesqrt(CoC * CoC + 0.1);
 
                 // We'll use a total of 16 samples for this blur (1 / 16)
-                float blurRadius = max(viewWidth, viewHeight) * fovMult * CoC * 0.0625;
+                float blurRadius = min(viewWidth, viewHeight) * fovMult * CoC;
                 float currDofLOD = log2(blurRadius);
                 vec2 blurRes = blurRadius / vec2(viewWidth, viewHeight);
 
