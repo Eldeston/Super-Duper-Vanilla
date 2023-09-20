@@ -20,7 +20,7 @@ float getNoHSquared(in float NoL, in float NoV, in float VoL){
     float NoTr = rOverLengthT * (NoV - RoL * NoL);
     float VoTr = rOverLengthT * (2.0 * NoV * NoV - 1.0 - RoL * VoL);
 
-    // Calculate dot(cross(N, L), V). This could already be calculated and available.
+    // Calculate dot(cross(N, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), V). This could already be calculated and available.
     float triple = sqrt(max(0.0, 1.0 - NoL * NoL - NoV * NoV - VoL * VoL + 2.0 * NoL * NoV * VoL));
 
     // Do one Newton iteration to improve the bent light vector
@@ -41,27 +41,28 @@ float getNoHSquared(in float NoL, in float NoV, in float VoL){
     float newVoL = VoL * radiusCos + VoTr;
     float NoH = NoV + newNoL;
     float HoH = 2.0 * newVoL + 2.0;
-    return saturate(NoH * NoH / HoH);
+    return min(1.0, NoH * NoH / HoH);
 }
 
 // Modified fast specular BRDF
 // Thanks for LVutner#5199 for sharing his code!
-vec3 getSpecularBRDF(in vec3 V, in vec3 L, in vec3 N, in vec3 albedo, in float NL, in float metallic, in float roughness){
+vec3 getSpecularBRDF(in vec3 V, in vec3 N, in vec3 albedo, in float NL, in float metallic, in float smoothness){
     // Halfway vector
-    vec3 H = fastNormalize(L + V);
+    vec3 H = fastNormalize(vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z) + V);
     // Light dot halfway vector
-    float LH = max(0.0, dot(L, H));
+    float LH = dot(vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), H);
+
+    // Roughness remapping
+    float roughness = 1.0 - smoothness;
+    float alpha = roughness * roughness;
+    float alphaSqrd = alpha * alpha;
 
     // Visibility
     float visibility = LH + (1.0 / roughness);
 
-    // Roughness remapping
-    float alpha = roughness * roughness;
-    float alphaSqrd = alpha * alpha;
-
     // Distribution
-    // Roughness needed to be divided for compensating using reflection over specular
-    float NHSqr = getNoHSquared(NL, max(0.0, dot(N, V)), dot(V, L));
+    // Roughness needed to be divided in the rest of the calculation for compensating reflection over specular
+    float NHSqr = getNoHSquared(NL, dot(N, V), dot(V, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)));
     float denominator = squared(NHSqr * (alphaSqrd - 1.0) + 1.0);
     float distribution = (alpha * roughness * NL) / (denominator * visibility * PI);
 
@@ -72,6 +73,8 @@ vec3 getSpecularBRDF(in vec3 V, in vec3 L, in vec3 N, in vec3 albedo, in float N
 
     // Calculate and apply fresnel and return final specular
     float cosTheta = exp2(-9.28 * LH);
-    if(metallic > 0.9) return getFresnelSchlick(albedo, cosTheta) * distribution;
-    return vec3(getFresnelSchlick(metallic, cosTheta) * distribution);
+    if(metallic > 0.9) return min(vec3(sunMoonIntensitySqrd / roughness), getFresnelSchlick(albedo, cosTheta) * distribution);
+
+    float fresnel = getFresnelSchlick(metallic, cosTheta);
+    return vec3(min(sunMoonIntensitySqrd, fresnel * distribution * roughness) / (1.0 - fresnel * smoothness));
 }

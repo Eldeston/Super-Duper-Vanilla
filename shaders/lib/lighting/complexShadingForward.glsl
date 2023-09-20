@@ -94,7 +94,7 @@ vec4 complexShadingGbuffers(in structPBR material){
 				#endif
 			}
 		#else
-			// Sample fake shadows
+			// Calculate fake shadows
 			float shadowCol = saturate(hermiteMix(0.96, 0.98, lmCoord.y)) * shdFade;
 
 			#if defined PARALLAX_OCCLUSION && defined PARALLAX_SHADOW
@@ -119,8 +119,8 @@ vec4 complexShadingGbuffers(in structPBR material){
 	#ifdef WORLD_LIGHT
 		if(isShadow){
 			// Get specular GGX
-			vec3 specCol = getSpecularBRDF(-fastNormalize(vertexFeetPlayerPos.xyz), vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), material.normal, material.albedo.rgb, NLZ, material.metallic, 1.0 - material.smoothness);
-			totalDiffuse += min(vec3(sunMoonIntensitySqrd), specCol) * sRGBLightCol * shadowCol;
+			vec3 specCol = getSpecularBRDF(-fastNormalize(vertexFeetPlayerPos.xyz), material.normal, material.albedo.rgb, NLZ, material.metallic, material.smoothness);
+			totalDiffuse += specCol * shadowCol * sRGBLightCol;
 		}
 	#endif
 

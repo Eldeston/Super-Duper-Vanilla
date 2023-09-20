@@ -182,7 +182,7 @@
 
             float bloomLuma = sumOf(bloomCol);
             // Apply bloom by tonemapped luma and BLOOM_STRENGTH
-            color = mix(color, bloomCol, BLOOM_STRENGTH * bloomLuma / (3.0 + bloomLuma));
+            color += (bloomCol - color) * ((BLOOM_STRENGTH * bloomLuma) / (3.0 + bloomLuma));
         #endif
 
         #if defined LENS_FLARE && defined WORLD_LIGHT
@@ -196,7 +196,7 @@
 
         #ifdef AUTO_EXPOSURE
             // Get center pixel current average scene luminance and mix previous and current pixel...
-            float centerPixLuminance = sumOf(textureLod(gcolor, vec2(0.5), 9).rgb);
+            float centerPixLuminance = sumOf(textureLod(gcolor, vec2(0.5), 8).rgb);
 
             // Accumulate current luminance
             float tempPixLuminance = mix(centerPixLuminance, texelFetch(colortex5, ivec2(1), 0).a, exp2(-AUTO_EXPOSURE_SPEED * frameTime));
