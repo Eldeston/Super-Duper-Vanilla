@@ -164,6 +164,7 @@ const vec3 blockLightColor = vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B) * (B
 /// -------------------------------- /// Secret settings /// -------------------------------- ///
 
 #define COLOR_MODE 0 // Albedo color mode. White mode makes everything white. Black mode makes everything black. Foliage mode shows only foliage colors. Keeps materials on. [0 1 2 3]
+// #define ENTITY_BLOCK_TRANSPARENCY // Iris exclusive feature. Enables proper transparency for entities and block entities. May impact performance.
 #define NOISE_SPEED 8 // The speed in which the noise randomises each frame. Useful for TAA. This effect is visible only when TAA is enabled. [2 4 8 16 32]
 
 /// -------------------------------- /// Physics mod settings /// -------------------------------- ///
@@ -189,6 +190,12 @@ const float PHYSICS_NORMAL_STRENGTH = 0.6;
 /// -------------------------------- /// Misc /// -------------------------------- ///
 
 // For the shader loaders to detect the "phantom" options
+
+#ifdef SHARPEN_FILTER
+#endif
+
+#ifdef LENS_FLARE
+#endif
 
 #ifdef ENTITY_SHADOWS
 #endif
