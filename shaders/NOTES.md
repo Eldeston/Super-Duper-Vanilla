@@ -5,10 +5,10 @@
 
 ## Used Framebuffers
    Current shader pipeline uses 6 framebuffers to minimize resources used and maximize performance.
-* gcolor - Main scene / Skybox, vanilla sun and moon : R11F_G11F_B10F
+* gcolor - Main HDR / Skybox, vanilla sun and moon : R11F_G11F_B10F
 * colortex1 - Normals : RGB16_SNORM
 * colortex2 - Raw albedo, SSAO : RGBA8
-* colortex3 - Metallic, roughness, glowing entity / Final output : RGB8
+* colortex3 - Metallic, roughness, glowing entity / Final LDR / FXAA : RGB8
 * colortex4 - Clouds / Bloom : R11F_G11F_B10F
 * colortex5 - TAA / Previous reflections, Auto exposure : RGBA16F
 
