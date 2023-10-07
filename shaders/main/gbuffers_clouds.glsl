@@ -92,6 +92,10 @@
             discard;
         }
     #else
+        /* RENDERTARGETS: 0,3 */
+        layout(location = 0) out vec4 sceneColOut; // gcolor
+        layout(location = 1) out vec3 materialDataOut; // colortex3
+
         in vec2 texCoord;
 
         in vec4 vertexFeetPlayerPos;
@@ -169,11 +173,10 @@
             #endif
 
             // Apply simple shading
-            vec4 sceneCol = simpleShadingGbuffers(albedo);
+            sceneColOut = vec4(simpleShadingGbuffers(albedo), albedo.a);
 
-        /* DRAWBUFFERS:03 */
-            gl_FragData[0] = sceneCol; // gcolor
-            gl_FragData[1] = vec4(0, 0, 0, 1); // colortex3
+            // Write buffer datas (the alphas need to be 1 due to translucents)
+            materialDataOut = vec3(0, 0, 0);
         }
     #endif
 #endif

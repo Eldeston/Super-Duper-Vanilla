@@ -62,6 +62,9 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
+    /* RENDERTARGETS: 0 */
+    layout(location = 0) out vec3 sceneColOut; // gcolor
+
     flat in float vertexAlpha;
 
     in vec2 texCoord;
@@ -82,7 +85,6 @@
         // Glint emissive intensity
         const float emissive = EMISSIVE_INTENSITY * 0.25;
 
-    /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(albedo.rgb * (vertexAlpha * emissive), albedo.a); // gcolor
+        sceneColOut = albedo.rgb * (vertexAlpha * emissive);
     }
 #endif

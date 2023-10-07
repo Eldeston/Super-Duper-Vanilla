@@ -50,6 +50,9 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
+    /* RENDERTARGETS: 0 */
+    layout(location = 0) out vec3 sceneColOut; // gcolor
+
     flat in float vertexAlpha;
 
     flat in vec3 vertexColor;
@@ -79,7 +82,7 @@
         #ifdef MC_RENDER_STAGE_SUN
             #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
                 if(renderStage == MC_RENDER_STAGE_SUN){
-                    gl_FragData[0] = vec4(toLinear(albedo.rgb * (SUN_MOON_INTENSITY * vertexAlpha)) * SUN_COL_DATA_BLOCK, albedo.a);
+                    sceneColOut = toLinear(albedo.rgb * (SUN_MOON_INTENSITY * vertexAlpha)) * SUN_COL_DATA_BLOCK;
                     return;
                 }
             #else
@@ -91,7 +94,7 @@
         #ifdef MC_RENDER_STAGE_MOON
             #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
                 if(renderStage == MC_RENDER_STAGE_MOON){
-                    gl_FragData[0] = vec4(toLinear(albedo.rgb * (SUN_MOON_INTENSITY * vertexAlpha)) * MOON_COL_DATA_BLOCK, albedo.a);
+                    sceneColOut = toLinear(albedo.rgb * (SUN_MOON_INTENSITY * vertexAlpha)) * MOON_COL_DATA_BLOCK;
                     return;
                 }
             #else
@@ -100,6 +103,6 @@
         #endif
 
         // Otherwise, calculate skybox
-        gl_FragData[0] = vec4(toLinear(albedo.rgb * vertexColor * (SKYBOX_BRIGHTNESS * vertexAlpha)), albedo.a);
+        sceneColOut = toLinear(albedo.rgb * vertexColor * (SKYBOX_BRIGHTNESS * vertexAlpha));
     }
 #endif

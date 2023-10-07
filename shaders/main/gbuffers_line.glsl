@@ -76,10 +76,12 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
+    /* RENDERTARGETS: 0 */
+    layout(location = 0) out vec3 sceneColOut; // gcolor
+
     flat in vec3 vertexColor;
 
     void main(){
-    /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(vertexColor, 1); // gcolor
+        sceneColOut = vertexColor;
     }
 #endif

@@ -113,6 +113,12 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
+    /* RENDERTARGETS: 0,1,2,3 */
+    layout(location = 0) out vec4 sceneColOut; // gcolor
+    layout(location = 1) out vec3 normalDataOut; // colortex1
+    layout(location = 2) out vec3 albedoDataOut; // colortex2
+    layout(location = 3) out vec3 materialDataOut; // colortex3
+
     flat in float vertexAlpha;
 
     flat in vec2 lmCoord;
@@ -207,9 +213,10 @@
     void main(){
         // Lightning fix, materials need to be specified due to glitching issues
         if(entityId == 10129){
-            gl_FragData[0] = vec4(vec3(0.25, 0.5, 1) * EMISSIVE_INTENSITY, vertexAlpha); // gcolor
-            gl_FragData[1] = vec4(0, 0, 0, 1); // colortex1
-            gl_FragData[3] = vec4(0, 0, 0, 1); // colortex3
+            const vec3 lightningCol = vec3(0.25 * EMISSIVE_INTENSITY, 0.5 * EMISSIVE_INTENSITY, EMISSIVE_INTENSITY);
+            sceneColOut = vec4(lightningCol, vertexAlpha);
+            normalDataOut = vec3(0);
+            materialDataOut = vec3(0);
             return;
         }
 
@@ -223,12 +230,12 @@
         // Convert to linear space
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
-        vec4 sceneCol = complexShadingGbuffers(material);
+        // Write to HDR scene color
+        sceneColOut = vec4(complexShadingGbuffers(material), material.albedo.a);
 
-    /* DRAWBUFFERS:0123 */
-        gl_FragData[0] = sceneCol; // gcolor
-        gl_FragData[1] = vec4(material.normal, 1); // colortex1
-        gl_FragData[2] = vec4(material.albedo.rgb, 1); // colortex2
-        gl_FragData[3] = vec4(material.metallic, material.smoothness, 0, 1); // colortex3
+        // Write buffer datas
+        normalDataOut = material.normal;
+        albedoDataOut = material.albedo.rgb;
+        materialDataOut = vec3(material.metallic, material.smoothness, 0);
     }
 #endif

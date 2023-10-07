@@ -58,6 +58,9 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
+    /* RENDERTARGETS: 0 */
+    layout(location = 0) out vec4 sceneColOut; // gcolor
+
     in vec2 texCoord;
 
     // Get albedo texture
@@ -73,7 +76,6 @@
         // Convert to linear space
         albedo.rgb = toLinear(albedo.rgb);
 
-    /* DRAWBUFFERS:0 */
-        gl_FragData[0] = albedo; // gcolor
+        sceneColOut = albedo;
     }
 #endif

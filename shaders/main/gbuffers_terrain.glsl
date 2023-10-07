@@ -146,6 +146,12 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
+    /* RENDERTARGETS: 0,1,2,3 */
+    layout(location = 0) out vec3 sceneColOut; // gcolor
+    layout(location = 1) out vec3 normalDataOut; // colortex1
+    layout(location = 2) out vec3 albedoDataOut; // colortex2
+    layout(location = 3) out vec3 materialDataOut; // colortex3
+
     flat in int blockId;
 
     flat in mat3 TBN;
@@ -272,12 +278,12 @@
             if(blockId != 11100 && blockId != 12101) enviroPBR(material);
         #endif
 
-        vec4 sceneCol = complexShadingGbuffers(material);
+        // Write to HDR scene color
+        sceneColOut = complexShadingGbuffers(material);
 
-    /* DRAWBUFFERS:0123 */
-        gl_FragData[0] = sceneCol; // gcolor
-        gl_FragData[1] = vec4(material.normal, 1); // colortex1
-        gl_FragData[2] = vec4(material.albedo.rgb, 1); // colortex2
-        gl_FragData[3] = vec4(material.metallic, material.smoothness, 0, 1); // colortex3
+        // Write buffer datas
+        normalDataOut = material.normal;
+        albedoDataOut = material.albedo.rgb;
+        materialDataOut = vec3(material.metallic, material.smoothness, 0);
     }
 #endif

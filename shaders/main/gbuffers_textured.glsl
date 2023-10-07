@@ -76,6 +76,10 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
+    /* RENDERTARGETS: 0,3 */
+    layout(location = 0) out vec4 sceneColOut; // gcolor
+    layout(location = 1) out vec3 materialDataOut; // colortex3
+
     flat in vec2 lmCoord;
 
     flat in vec3 vertexColor;
@@ -154,14 +158,14 @@
         #ifdef MC_RENDER_STAGE_WORLD_BORDER
             // World border fix + emissives
             if(renderStage == MC_RENDER_STAGE_WORLD_BORDER){
-                gl_FragData[0] = vec4(vec3(0.125, 0.25, 0.5) * EMISSIVE_INTENSITY, albedo.a); // gcolor
+                sceneColOut = vec4(vec3(0.125, 0.25, 0.5) * EMISSIVE_INTENSITY, albedo.a);
                 return; // Return immediately, no need for lighting calculation
             }
         #endif
 
         // Particle emissives
         if((vertexColor.r * 0.5 > vertexColor.g + vertexColor.b || (vertexColor.r + vertexColor.b > vertexColor.g * 2.0 && abs(vertexColor.r - vertexColor.b) < 0.2) || ((albedo.r + albedo.g + albedo.b > 1.6 || (vertexColor.r != vertexColor.g && vertexColor.g != vertexColor.b)) && lmCoord.x == 1)) && atlasSize.x <= 1024 && atlasSize.x > 0){
-            gl_FragData[0] = vec4(toLinear(albedo.rgb * vertexColor) * EMISSIVE_INTENSITY, albedo.a); // gcolor
+            sceneColOut = vec4(toLinear(albedo.rgb * vertexColor) * EMISSIVE_INTENSITY, albedo.a);
             return; // Return immediately, no need for lighting calculation
         }
 
@@ -179,10 +183,9 @@
         albedo.rgb = toLinear(albedo.rgb);
 
         // Apply simple shading
-        vec4 sceneCol = simpleShadingGbuffers(albedo);
+        sceneColOut = vec4(simpleShadingGbuffers(albedo), albedo.a);
 
-    /* DRAWBUFFERS:03 */
-        gl_FragData[0] = sceneCol; // gcolor
-        gl_FragData[1] = vec4(0, 0, 0, 1); // colortex3
+        // Write buffer datas
+        materialDataOut = vec3(0, 0, 0);
     }
 #endif

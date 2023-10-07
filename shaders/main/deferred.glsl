@@ -16,7 +16,7 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    out vec2 texCoord;
+    noperspective out vec2 texCoord;
 
     void main(){
         // Get buffer texture coordinates
@@ -29,10 +29,17 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    in vec2 texCoord;
+    /* RENDERTARGETS: 2 */
+    #ifdef SSAO
+        layout(location = 0) out vec4 albedoDataOut; // colortex2
+    #else
+        layout(location = 0) out vec3 albedoDataOut; // colortex2
+    #endif
 
     // SSAO without normals fix for beacon
     const vec4 colortex1ClearColor = vec4(0, 0, 0, 1);
+
+    noperspective in vec2 texCoord;
 
     uniform sampler2D colortex2;
 
@@ -80,12 +87,10 @@
                 if(normal.x + normal.y + normal.z != 0)
                     ambientOcclusion = getSSAO(vec3(texCoord, depth), mat3(gbufferModelView) * normal);
             }
-            
-        /* DRAWBUFFERS:2 */
-            gl_FragData[0] = vec4(albedo, ambientOcclusion); // colortex2
+
+            albedoDataOut = vec4(albedo, ambientOcclusion);
         #else
-        /* DRAWBUFFERS:2 */
-            gl_FragData[0] = vec4(albedo, 1); // colortex2
+            albedoDataOut = albedo;
         #endif
     }
 #endif

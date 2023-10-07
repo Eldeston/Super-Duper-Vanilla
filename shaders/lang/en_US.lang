@@ -17,6 +17,7 @@ screen.DEBUG = Super Duper Vanilla v1.3.5
         value.COLOR_MODE.2 = Black Mode
         value.COLOR_MODE.3 = Foliage Mode
 
+    option.ENTITY_BLOCK_TRANSPARENCY = Entity block transparency
     option.NOISE_SPEED = Noise speed
 
 screen.POST = Post

@@ -22,7 +22,7 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
 
 		#ifdef ROUGH_REFLECTIONS
 			// Rough the normals with noise
-			normal = generateCosineVector(normal, noiseUnitVector * squared(1.0 - smoothness) * 0.5);
+			normal = generateCosineVector(normal, noiseUnitVector * (squared(1.0 - smoothness) * 0.5));
 		#endif
 
 		float NV = dot(normal, -nViewPos);

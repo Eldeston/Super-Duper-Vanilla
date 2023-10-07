@@ -24,6 +24,9 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
+    /* RENDERTARGETS: 4 */
+    layout(location = 0) out vec3 bloomColOut; // colortex4
+
     #ifdef BLOOM
         // No need to use mipmapping in this 2nd bloom pass, so we'll utilize texelFetch for some sweet, sweet performance
         uniform sampler2D colortex4;
@@ -37,13 +40,9 @@
                 texelFetch(colortex4, ivec2(gl_FragCoord.x, gl_FragCoord.y + 1), 0).rgb;
             vec3 sample2 = texelFetch(colortex4, ivec2(gl_FragCoord.xy), 0).rgb;
 
-            vec3 finalCol = sample0 * 0.0625 + sample1 * 0.25 + sample2 * 0.375;
-            
-        /* DRAWBUFFERS:4 */
-            gl_FragData[0] = vec4(finalCol, 1); // colortex4
+            bloomColOut = sample0 * 0.0625 + sample1 * 0.25 + sample2 * 0.375;
         #else
-        /* DRAWBUFFERS:4 */
-            gl_FragData[0] = vec4(0, 0, 0, 1); // colortex4
+            bloomColOut = vec3(0);
         #endif
     }
 #endif

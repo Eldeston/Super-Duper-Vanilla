@@ -89,6 +89,9 @@
             discard;
         }
     #else
+        /* RENDERTARGETS: 0 */
+        layout(location = 0) out vec4 sceneColOut; // gcolor
+
         flat in float lmCoordX;
 
         in vec2 texCoord;
@@ -125,8 +128,7 @@
                 totalDiffuse += lightningFlash;
             #endif
 
-        /* DRAWBUFFERS:0 */
-            gl_FragData[0] = vec4(albedo.rgb * totalDiffuse, albedo.a); // gcolor
+            sceneColOut = vec4(albedo.rgb * totalDiffuse, albedo.a);
         }
     #endif
 #endif

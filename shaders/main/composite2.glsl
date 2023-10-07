@@ -16,7 +16,7 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    out vec2 texCoord;
+    noperspective out vec2 texCoord;
 
     void main(){
         // Get buffer texture coordinates
@@ -29,7 +29,10 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    in vec2 texCoord;
+    /* RENDERTARGETS: 0 */
+    layout(location = 0) out vec3 sceneColOut; // gcolor
+
+    noperspective in vec2 texCoord;
 
     uniform sampler2D gcolor;
 
@@ -55,18 +58,16 @@
     void main(){
         // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
+
         // Get scene color
-        vec3 sceneCol = texelFetch(gcolor, screenTexelCoord, 0).rgb;
+        sceneColOut = texelFetch(gcolor, screenTexelCoord, 0).rgb;
 
         #ifdef MOTION_BLUR
             // Declare and get positions
             float depth = texelFetch(depthtex0, screenTexelCoord, 0).x;
 
             // Apply motion blur if not player hand
-            if(depth > 0.56) sceneCol = motionBlur(sceneCol, depth, texelFetch(noisetex, screenTexelCoord & 255, 0).x);
+            if(depth > 0.56) sceneColOut = motionBlur(sceneColOut, depth, texelFetch(noisetex, screenTexelCoord & 255, 0).x);
         #endif
-
-    /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(sceneCol, 1); // gcolor
     }
 #endif

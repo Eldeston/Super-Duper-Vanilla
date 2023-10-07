@@ -16,17 +16,21 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    flat out float fovMult;
+    #ifdef DOF
+        flat out float fovMult;
 
-    out vec2 texCoord;
+        noperspective out vec2 texCoord;
 
-    uniform mat4 gbufferProjection;
+        uniform mat4 gbufferProjection;
+    #endif
 
     void main(){
-        // Get buffer texture coordinates
-        texCoord = gl_MultiTexCoord0.xy;
+        #ifdef DOF
+            // Get buffer texture coordinates
+            texCoord = gl_MultiTexCoord0.xy;
 
-        fovMult = gbufferProjection[1].y * 0.04549628; // 0.72794047 * 0.0625
+            fovMult = gbufferProjection[1].y * 0.04549628; // 0.72794047 * 0.0625
+        #endif
 
         gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
     }
@@ -35,9 +39,8 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    flat in float fovMult;
-
-    in vec2 texCoord;
+    /* RENDERTARGETS: 0 */
+    layout(location = 0) out vec3 sceneColOut; // gcolor
 
     uniform sampler2D gcolor;
 
@@ -64,9 +67,12 @@
             vec2(1, 0)
         );
 
+        flat in float fovMult;
+
+        noperspective in vec2 texCoord;
+
         uniform float viewWidth;
         uniform float viewHeight;
-
         uniform float centerDepthSmooth;
 
         uniform sampler2D depthtex1;
@@ -75,8 +81,9 @@
     void main(){
         // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
+
         // Get scene color
-        vec3 sceneCol = texelFetch(gcolor, screenTexelCoord, 0).rgb;
+        sceneColOut = texelFetch(gcolor, screenTexelCoord, 0).rgb;
 
         #ifdef DOF
             // Declare and get positions
@@ -101,11 +108,8 @@
                 }
 
                 // 15 offsetted samples + 1 sample (1 / 16)
-                sceneCol = dofColor * 0.0625;
+                sceneColOut = dofColor * 0.0625;
             }
         #endif
-
-    /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(sceneCol, 1); // gcolor
     }
 #endif

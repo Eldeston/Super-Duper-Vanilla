@@ -16,7 +16,7 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    out vec2 texCoord;
+    noperspective out vec2 texCoord;
 
     void main(){
         // Get buffer texture coordinates
@@ -29,7 +29,19 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    in vec2 texCoord;
+    /* RENDERTARGETS: 0 */
+    layout(location = 0) out vec3 sceneColOut; // gcolor
+
+    #if (defined PREVIOUS_FRAME && (defined SSR || defined SSGI)) || ANTI_ALIASING >= 2
+        /* RENDERTARGETS: 0,5 */
+        #ifdef AUTO_EXPOSURE
+            layout(location = 1) out vec4 temporalDataOut; // colortex5
+        #else
+            layout(location = 1) out vec3 temporalDataOut; // colortex5
+        #endif
+    #endif
+
+    noperspective in vec2 texCoord;
 
     uniform sampler2D gcolor;
 
@@ -56,20 +68,16 @@
 
     void main(){
         #if ANTI_ALIASING >= 2
-            vec3 sceneCol = textureTAA(ivec2(gl_FragCoord.xy));
+            sceneColOut = textureTAA(ivec2(gl_FragCoord.xy));
         #else
-            vec3 sceneCol = texelFetch(gcolor, ivec2(gl_FragCoord.xy), 0).rgb;
+            sceneColOut = texelFetch(gcolor, ivec2(gl_FragCoord.xy), 0).rgb;
         #endif
 
-    /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(sceneCol, 1); // gcolor
-
         #if (defined PREVIOUS_FRAME && (defined SSR || defined SSGI)) || ANTI_ALIASING >= 2
-        /* DRAWBUFFERS:05 */
             #ifdef AUTO_EXPOSURE
-                gl_FragData[1] = vec4(sceneCol, texelFetch(colortex5, ivec2(0), 0).a); // colortex5
+                temporalDataOut = vec4(sceneColOut, texelFetch(colortex5, ivec2(0), 0).a); // colortex5
             #else
-                gl_FragData[1] = vec4(sceneCol, 1); // colortex5
+                temporalDataOut = sceneColOut; // colortex5
             #endif
         #endif
     }

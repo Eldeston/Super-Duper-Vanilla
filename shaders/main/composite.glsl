@@ -16,9 +16,9 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    out vec2 texCoord;
-
     flat out vec3 skyCol;
+
+    noperspective out vec2 texCoord;
 
     #ifdef WORLD_LIGHT
         flat out vec3 sRGBLightCol;
@@ -72,7 +72,8 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    in vec2 texCoord;
+    /* RENDERTARGETS: 0 */
+    layout(location = 0) out vec3 sceneColOut; // gcolor
 
     flat in vec3 skyCol;
 
@@ -87,6 +88,8 @@
             flat in vec3 moonCol;
         #endif
     #endif
+
+    noperspective in vec2 texCoord;
 
     uniform int isEyeInWater;
 
@@ -207,7 +210,7 @@
         vec3 feetPlayerPos = eyePlayerPos + gbufferModelViewInverse[3].xyz;
 
         // Get scene color
-        vec3 sceneCol = texelFetch(gcolor, screenTexelCoord, 0).rgb;
+        sceneColOut = texelFetch(gcolor, screenTexelCoord, 0).rgb;
 
         #if ANTI_ALIASING >= 2
             vec3 dither = toRandPerFrame(getRand3(screenTexelCoord & 255), frameTimeCounter);
@@ -231,28 +234,25 @@
             vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
 
             // Apply deffered shading
-            sceneCol = complexShadingDeferred(sceneCol, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, viewDotInvSqrt, matRaw0.x, matRaw0.y, dither);
+            sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, viewDotInvSqrt, matRaw0.x, matRaw0.y, dither);
 
             // Do basic sky render and use it as fog color
-            sceneCol = getFogRender(sceneCol, getFogRender(nEyePlayerPos), viewDist, nEyePlayerPos.y, feetPlayerPos.y + cameraPosition.y);
+            sceneColOut = getFogRender(sceneColOut, getFogRender(nEyePlayerPos), viewDist, nEyePlayerPos.y, feetPlayerPos.y + cameraPosition.y);
         }
 
         // Apply darkness pulsing effect
-        sceneCol *= 1.0 - darknessLightFactor;
+        sceneColOut *= 1.0 - darknessLightFactor;
 
         // Apply spectral effect
-        sceneCol += getSpectral(screenTexelCoord) * EMISSIVE_INTENSITY;
+        sceneColOut += getSpectral(screenTexelCoord) * EMISSIVE_INTENSITY;
 
         #ifdef WORLD_LIGHT
             // Apply volumetric light
             if(VOLUMETRIC_LIGHTING_STRENGTH != 0 && isEyeInWater != 2)
-                sceneCol += getVolumetricLight(feetPlayerPos, screenPos.z, dither.x);
+                sceneColOut += getVolumetricLight(feetPlayerPos, screenPos.z, dither.x);
         #endif
 
-        // Clamp scene color to prevent negative/NaN values
-        sceneCol = max(sceneCol, vec3(0));
-
-    /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(sceneCol, 1); // gcolor
+        // Clamp scene color to prevent NaNs during post processing
+        sceneColOut = max(sceneColOut, vec3(0)); // gcolor
     }
 #endif

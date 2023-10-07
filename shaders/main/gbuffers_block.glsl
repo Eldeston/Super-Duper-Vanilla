@@ -108,6 +108,12 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
+    /* RENDERTARGETS: 0,1,2,3 */
+    layout(location = 0) out vec4 sceneColOut; // gcolor
+    layout(location = 1) out vec3 normalDataOut; // colortex1
+    layout(location = 2) out vec3 albedoDataOut; // colortex2
+    layout(location = 3) out vec3 materialDataOut; // colortex3
+
     flat in vec2 lmCoord;
 
     flat in vec3 vertexColor;
@@ -212,11 +218,11 @@
 
             vec3 endPortalAlbedo = toLinear((endStarField + 0.0625) * (getRand3(ivec2(screenPos * 128.0) & 255) * 0.5 + 0.5) * vertexColor.rgb);
             
-            gl_FragData[0] = vec4(endPortalAlbedo * EMISSIVE_INTENSITY * EMISSIVE_INTENSITY, 1); // gcolor
+            sceneColOut = vec4(endPortalAlbedo * EMISSIVE_INTENSITY * EMISSIVE_INTENSITY, 1);
 
             // End portal fix
-            gl_FragData[1] = vec4(TBN[2], 1); // colortex1
-            gl_FragData[3] = vec4(0, 0, 0, 1); // colortex3
+            normalDataOut = TBN[2];
+            materialDataOut = vec3(0);
 
             return; // Return immediately, no need for lighting calculation
         }
@@ -228,12 +234,12 @@
         // Convert to linear space
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
-        vec4 sceneCol = complexShadingGbuffers(material);
+        // Write to HDR scene color
+        sceneColOut = vec4(complexShadingGbuffers(material), material.albedo.a);
 
-    /* DRAWBUFFERS:0123 */
-        gl_FragData[0] = sceneCol; // gcolor
-        gl_FragData[1] = vec4(material.normal, 1); // colortex1
-        gl_FragData[2] = vec4(material.albedo.rgb, 1); // colortex2
-        gl_FragData[3] = vec4(material.metallic, material.smoothness, 0, 1); // colortex3
+        // Write buffer datas
+        normalDataOut = material.normal;
+        albedoDataOut = material.albedo.rgb;
+        materialDataOut = vec3(material.metallic, material.smoothness, 0);
     }
 #endif

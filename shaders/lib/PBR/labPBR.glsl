@@ -93,10 +93,8 @@ void getPBR(inout structPBR material, in int id){
     // Assign albedo
     material.albedo = textureGrad(tex, texUv, dcdx, dcdy);
 
-    #if !(defined ENTITIES || defined ENTITIES_GLOWING)
-        // Alpha test, discard immediately
-        if(material.albedo.a < ALPHA_THRESHOLD) discard;
-    #endif
+    // Alpha test, discard immediately
+    if(material.albedo.a < ALPHA_THRESHOLD) discard;
 
     // Assign default normal map
     material.normal = TBN[2];

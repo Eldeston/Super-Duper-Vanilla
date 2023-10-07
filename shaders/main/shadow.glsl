@@ -104,6 +104,9 @@
 
 #ifdef FRAGMENT
     #ifdef WORLD_LIGHT
+        /* RENDERTARGETS: 0 */
+        layout(location = 0) out vec3 shadowColOut; // gcolor
+
         flat in int blockId;
 
         flat in vec3 vertexColor;
@@ -144,35 +147,32 @@
                     if(blockId == 11102){
                         #ifdef WATER_FLAT
                             #if UNDERWATER_CAUSTICS == 2
-                                shdAlbedo.rgb = vec3(squared(0.256 + getCellNoise(waterNoiseUv)) * 0.8);
+                                shadowColOut = vec3(squared(0.256 + getCellNoise(waterNoiseUv)) * 0.8);
                             #elif UNDERWATER_CAUSTICS == 1
-                                shdAlbedo.rgb = vec3(0.8);
-                                if(isEyeInWater == 1) shdAlbedo.rgb *= squared(0.256 + getCellNoise(waterNoiseUv));
+                                shadowColOut = vec3(0.8);
+                                if(isEyeInWater == 1) shadowColOut = vec3(squared(0.256 + getCellNoise(waterNoiseUv)) * 0.8);
                             #endif
                         #else
                             #if UNDERWATER_CAUSTICS == 2
-                                shdAlbedo.rgb *= squared(0.256 + getCellNoise(waterNoiseUv));
+                                shadowColOut = shdAlbedo.rgb * squared(0.256 + getCellNoise(waterNoiseUv));
                             #elif UNDERWATER_CAUSTICS == 1
-                                if(isEyeInWater == 1) shdAlbedo.rgb *= squared(0.256 + getCellNoise(waterNoiseUv));
+                                shadowColOut = shdAlbedo.rgb;
+                                if(isEyeInWater == 1) shadowColOut *= squared(0.256 + getCellNoise(waterNoiseUv));
                             #endif
                         #endif
 
-                        shdAlbedo.rgb = toLinear(shdAlbedo.rgb * vertexColor);
+                        shadowColOut = toLinear(shadowColOut * vertexColor);
                     }
                     // To give white colored glass some proper shadows except water
-                    else shdAlbedo.rgb = toLinear(shdAlbedo.rgb * vertexColor) * (1.0 - shdAlbedo.a * shdAlbedo.a);
+                    else shadowColOut = toLinear(shdAlbedo.rgb * vertexColor) * (1.0 - shdAlbedo.a * shdAlbedo.a);
                 }
                 // If the object is fully opaque, set to black. This fixes "color leaking" filtered shadows
-                else shdAlbedo.rgb = vec3(0);
-
-            /* DRAWBUFFERS:0 */
-                gl_FragData[0] = shdAlbedo;
+                else shadowColOut = vec3(0);
             #else
                 // Alpha test, discard immediately
                 if(textureLod(tex, texCoord, 0).a < ALPHA_THRESHOLD) discard;
 
-            /* DRAWBUFFERS:0 */
-                gl_FragData[0] = vec4(0, 0, 0, 1);
+                shadowColOut = vec3(0);
             #endif
         }
     #else

@@ -11,7 +11,7 @@
 ================================ /// Super Duper Vanilla v1.3.5 /// ================================
 */
 
-/// Buffer features: Lens flare, applied bloom, auto exposure, tonemapping, vignette and color grading
+/// Buffer features: Lens flare, applied bloom, auto exposure, tonemapping, vignette and postColOut grading
 
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
@@ -21,7 +21,7 @@
         flat out vec3 shdLightDirScreenSpace;
     #endif
 
-    out vec2 texCoord;
+    noperspective out vec2 texCoord;
 
     #if defined LENS_FLARE && defined WORLD_LIGHT
         uniform mat4 gbufferProjection;
@@ -46,7 +46,7 @@
         texCoord = gl_MultiTexCoord0.xy;
 
         #if defined LENS_FLARE && defined WORLD_LIGHT
-            // Get sRGB light color
+            // Get sRGB light postColOut
             sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
 
             // Get shadow light view direction in screen space
@@ -60,17 +60,22 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
+    /* RENDERTARGETS: 3 */
+    layout(location = 0) out vec3 postColOut; // colortex3
+
+    #ifdef AUTO_EXPOSURE
+        /* RENDERTARGETS: 3,5 */
+        layout(location = 1) out vec4 temporalDataOut; // colortex5
+    #endif
+
     #if defined LENS_FLARE && defined WORLD_LIGHT
         flat in vec3 sRGBLightCol;
         flat in vec3 shdLightDirScreenSpace;
     #endif
 
-    in vec2 texCoord;
+    noperspective in vec2 texCoord;
 
     uniform sampler2D gcolor;
-
-    #ifdef LENS_FLARE
-    #endif
 
     #ifdef AUTO_EXPOSURE
         uniform float frameTime;
@@ -166,8 +171,9 @@
     void main(){
         // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
-        // Original scene color
-        vec3 color = texelFetch(gcolor, screenTexelCoord, 0).rgb;
+
+        // Get scene color
+        postColOut = texelFetch(gcolor, screenTexelCoord, 0).rgb;
 
         #ifdef BLOOM
             // Uncompress the HDR colors and upscale
@@ -182,15 +188,15 @@
 
             float bloomLuma = sumOf(bloomCol);
             // Apply bloom by tonemapped luma and BLOOM_STRENGTH
-            color += (bloomCol - color) * ((BLOOM_STRENGTH * bloomLuma) / (3.0 + bloomLuma));
+            postColOut += (bloomCol - postColOut) * ((BLOOM_STRENGTH * bloomLuma) / (3.0 + bloomLuma));
         #endif
 
         #if defined LENS_FLARE && defined WORLD_LIGHT
             if(textureLod(depthtex0, shdLightDirScreenSpace.xy, 0).x == 1)
                 #ifdef FORCE_DISABLE_WEATHER
-                    color += getLensFlare(texCoord - 0.5, shdLightDirScreenSpace.xy - 0.5) * (1.0 - blindness) * (1.0 - darknessFactor);
+                    postColOut += getLensFlare(texCoord - 0.5, shdLightDirScreenSpace.xy - 0.5) * (1.0 - blindness) * (1.0 - darknessFactor);
                 #else
-                    color += getLensFlare(texCoord - 0.5, shdLightDirScreenSpace.xy - 0.5) * (1.0 - blindness) * (1.0 - darknessFactor) * (1.0 - rainStrength);
+                    postColOut += getLensFlare(texCoord - 0.5, shdLightDirScreenSpace.xy - 0.5) * (1.0 - blindness) * (1.0 - darknessFactor) * (1.0 - rainStrength);
                 #endif
         #endif
 
@@ -203,40 +209,31 @@
 
             // Apply auto exposure by dividing it by the pixel's luminance in sRGB
             const float invMinimumExposure = 1.0 / MINIMUM_EXPOSURE;
-            color *= min(inversesqrt(tempPixLuminance), invMinimumExposure);
+            postColOut *= min(inversesqrt(tempPixLuminance), invMinimumExposure);
 
             #if (defined PREVIOUS_FRAME && (defined SSR || defined SSGI)) || ANTI_ALIASING >= 2
-                #define TAA_DATA texelFetch(colortex5, screenTexelCoord, 0).rgb
+                temporalDataOut = vec4(texelFetch(colortex5, screenTexelCoord, 0).rgb, tempPixLuminance);
             #else
-                // vec4(0, 0, 0, tempPixLuminance)
-                #define TAA_DATA 0, 0, 0
+                temporalDataOut = vec4(0, 0, 0, tempPixLuminance);
             #endif
         #endif
 
         #ifdef VIGNETTE
-            color *= max(0.0, 1.0 - lengthSquared(texCoord - 0.5) * VIGNETTE_STRENGTH);
+            postColOut *= max(0.0, 1.0 - lengthSquared(texCoord - 0.5) * VIGNETTE_STRENGTH);
         #endif
 
         // Color tinting, exposure, and tonemapping
         const vec3 exposureTint = vec3(TINT_R, TINT_G, TINT_B) * (EXPOSURE * 0.00392156863);
-        color = modifiedReinhardExtended(color * exposureTint);
+        postColOut = modifiedReinhardExtended(postColOut * exposureTint);
 
         // Gamma correction
-        color = toSRGB(color);
+        postColOut = toSRGB(postColOut);
 
         // Contrast and saturation
-        color = contrast(color, CONTRAST);
-        color = saturation(color, SATURATION);
+        postColOut = contrast(postColOut, CONTRAST);
+        postColOut = saturation(postColOut, SATURATION);
 
-        // Apply dithering to break color banding
-        color += (texelFetch(noisetex, screenTexelCoord & 255, 0).x - 0.5) * 0.00392156863;
-
-    /* DRAWBUFFERS:3 */
-        gl_FragData[0] = vec4(color, 1); // colortex3
-
-        #ifdef AUTO_EXPOSURE
-        /* DRAWBUFFERS:35 */
-            gl_FragData[1] = vec4(TAA_DATA, tempPixLuminance); // colortex5
-        #endif
+        // Apply dithering to break postColOut banding
+        postColOut += (texelFetch(noisetex, screenTexelCoord & 255, 0).x - 0.5) * 0.00392156863;
     }
 #endif

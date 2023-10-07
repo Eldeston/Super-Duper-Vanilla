@@ -72,6 +72,10 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
+    /* RENDERTARGETS: 0,3 */
+    layout(location = 0) out vec3 sceneColOut; // gcolor
+    layout(location = 1) out vec3 materialDataOut; // colortex3
+
     flat in vec2 lmCoord;
 
     flat in vec3 vertexColor;
@@ -144,10 +148,9 @@
         albedo.rgb = toLinear(albedo.rgb);
 
         // Apply simple shading
-        vec4 sceneCol = simpleShadingGbuffers(albedo);
-
-    /* DRAWBUFFERS:03 */
-        gl_FragData[0] = sceneCol; // gcolor
-        gl_FragData[1] = vec4(0, 0, 0, 1); // colortex3
+        sceneColOut = simpleShadingGbuffers(albedo);
+    
+        // Write buffer datas
+        materialDataOut = vec3(0);
     }
 #endif
