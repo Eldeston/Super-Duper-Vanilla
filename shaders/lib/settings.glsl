@@ -223,3 +223,6 @@ const float PHYSICS_NORMAL_STRENGTH = 0.6;
 
 #ifdef PARALLAX_SHADOW
 #endif
+
+#ifdef ENTITY_BLOCK_TRANSPARENCY
+#endif
