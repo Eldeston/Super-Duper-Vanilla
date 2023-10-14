@@ -35,9 +35,9 @@
     #if (defined PREVIOUS_FRAME && (defined SSR || defined SSGI)) || ANTI_ALIASING >= 2
         /* RENDERTARGETS: 0,5 */
         #ifdef AUTO_EXPOSURE
-            layout(location = 1) out vec4 temporalDataOut; // colortex5
+            out vec4 temporalDataOut; // colortex5
         #else
-            layout(location = 1) out vec3 temporalDataOut; // colortex5
+            out vec3 temporalDataOut; // colortex5
         #endif
     #endif
 
@@ -45,7 +45,7 @@
 
     uniform sampler2D gcolor;
 
-    #if (defined PREVIOUS_FRAME && defined AUTO_EXPOSURE && (defined SSR || defined SSGI)) || ANTI_ALIASING >= 2
+    #if (defined PREVIOUS_FRAME && (defined SSR || defined SSGI)) || ANTI_ALIASING >= 2
         uniform sampler2D colortex5;
     #endif
 
@@ -61,7 +61,8 @@
 
         uniform sampler2D depthtex0;
 
-        #include "/lib/utility/convertPrevScreenSpace.glsl"
+        #include "/lib/utility/projectionFunctions.glsl"
+        #include "/lib/utility/prevProjectionFunctions.glsl"
 
         #include "/lib/antialiasing/taa.glsl"
     #endif
@@ -75,9 +76,9 @@
 
         #if (defined PREVIOUS_FRAME && (defined SSR || defined SSGI)) || ANTI_ALIASING >= 2
             #ifdef AUTO_EXPOSURE
-                temporalDataOut = vec4(sceneColOut, texelFetch(colortex5, ivec2(0), 0).a); // colortex5
+                temporalDataOut = vec4(sceneColOut, texelFetch(colortex5, ivec2(0), 0).a);
             #else
-                temporalDataOut = sceneColOut; // colortex5
+                temporalDataOut = sceneColOut;
             #endif
         #endif
     }

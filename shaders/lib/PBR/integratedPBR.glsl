@@ -1,3 +1,7 @@
+// Texture coordinate derivatives
+vec2 dcdx = dFdx(texCoord);
+vec2 dcdy = dFdy(texCoord);
+
 // The Integrated PBR calculation
 void getPBR(inout structPBR material, in int id){
     // Assign albedo

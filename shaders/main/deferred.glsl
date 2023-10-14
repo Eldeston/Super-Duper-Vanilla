@@ -59,8 +59,7 @@
             uniform float frameTimeCounter;
         #endif
 
-        #include "/lib/utility/convertViewSpace.glsl"
-        #include "/lib/utility/convertScreenSpace.glsl"
+        #include "/lib/utility/projectionFunctions.glsl"
         #include "/lib/utility/noiseFunctions.glsl"
 
         #include "/lib/lighting/SSAO.glsl"

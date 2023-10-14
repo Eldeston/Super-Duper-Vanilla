@@ -3,6 +3,10 @@ uniform sampler2D normals;
 // Get specular texture
 uniform sampler2D specular;
 
+// Texture coordinate derivatives
+vec2 dcdx = dFdx(texCoord);
+vec2 dcdy = dFdy(texCoord);
+
 #ifdef PARALLAX_OCCLUSION
     vec2 getParallaxOffset(in vec3 dirT){ return dirT.xy * (PARALLAX_DEPTH / dirT.z); }
 

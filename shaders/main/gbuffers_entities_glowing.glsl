@@ -143,10 +143,6 @@
 
     uniform sampler2D tex;
 
-    // Texture coordinate derivatives
-    vec2 dcdx = dFdx(texCoord);
-    vec2 dcdy = dFdy(texCoord);
-
     #ifdef IS_IRIS
         uniform float lightningFlash;
     #endif

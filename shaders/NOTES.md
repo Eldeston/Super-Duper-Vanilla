@@ -3,7 +3,7 @@
 * Minimize resources and maximize performance.
 * Keep the code squeaky clean, understandable, and portable.
 
-## Used Framebuffers
+## Used Buffers
    Current shader pipeline uses 6 framebuffers to minimize resources used and maximize performance.
 * gcolor - Main HDR / Skybox, vanilla sun and moon : R11F_G11F_B10F
 * colortex1 - Normals : RGB16_SNORM
@@ -59,3 +59,7 @@
 * LINE
 * SKY_BASIC
 * SKY_TEXTURED
+
+## TO DO
+* Create a generic function for orthographic and perspective projection matrices
+* Refactor uniform usage and remove unecessary ones

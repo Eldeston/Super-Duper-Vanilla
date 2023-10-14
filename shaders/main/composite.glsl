@@ -147,6 +147,8 @@
         float eyeBrightFact = eyeSkylight;
     #endif
 
+    #include "/lib/utility/projectionFunctions.glsl"
+
     #ifdef PREVIOUS_FRAME
         uniform vec3 previousCameraPosition;
 
@@ -155,7 +157,7 @@
 
         uniform sampler2D colortex5;
 
-        #include "/lib/utility/convertPrevScreenSpace.glsl"
+        #include "/lib/utility/prevProjectionFunctions.glsl"
     #endif
 
     #ifdef WORLD_LIGHT
@@ -171,8 +173,6 @@
         #include "/lib/rayTracing/volLight.glsl"
     #endif
 
-    #include "/lib/utility/convertViewSpace.glsl"
-    #include "/lib/utility/convertScreenSpace.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
 
     #include "/lib/atmospherics/skyRender.glsl"
@@ -203,7 +203,7 @@
         // Get screen pos
         vec3 screenPos = vec3(texCoord, texelFetch(depthtex0, screenTexelCoord, 0).x);
         // Get view pos
-        vec3 viewPos = toView(screenPos);
+        vec3 viewPos = getViewPos(gbufferProjectionInverse, screenPos);
         // Get eye player pos
         vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
         // Get feet player pos
@@ -253,6 +253,6 @@
         #endif
 
         // Clamp scene color to prevent NaNs during post processing
-        sceneColOut = max(sceneColOut, vec3(0)); // gcolor
+        sceneColOut = max(sceneColOut, vec3(0));
     }
 #endif

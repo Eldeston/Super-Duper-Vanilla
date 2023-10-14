@@ -16,11 +16,15 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    noperspective out vec2 texCoord;
+    #if ANTI_ALIASING == 1 || ANTI_ALIASING == 3
+        noperspective out vec2 texCoord;
+    #endif
 
     void main(){
-        // Get buffer texture coordinates
-        texCoord = gl_MultiTexCoord0.xy;
+        #if ANTI_ALIASING == 1 || ANTI_ALIASING == 3
+            // Get buffer texture coordinates
+            texCoord = gl_MultiTexCoord0.xy;
+        #endif
 
         gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
     }
@@ -32,11 +36,11 @@
     /* RENDERTARGETS: 3 */
     layout(location = 0) out vec3 postColOut; // colortex3
 
-    noperspective in vec2 texCoord;
-
     uniform sampler2D colortex3;
 
     #if ANTI_ALIASING == 1 || ANTI_ALIASING == 3
+        noperspective in vec2 texCoord;
+
         uniform float pixelWidth;
         uniform float pixelHeight;
 

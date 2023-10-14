@@ -18,11 +18,11 @@ float getSSAO(in vec3 screenPos, in vec3 viewNormal){
 
     float depthOrigin = near / (1.0 - screenPos.z);
     // Pre calculate base position
-    vec3 basePos = toView(screenPos) + viewNormal * 0.5;
+    vec3 basePos = getViewPos(gbufferProjectionInverse, screenPos) + viewNormal * 0.5;
 
     for(int i = 0; i < 4; i++){
         // Add new offsets to origin
-        vec3 samplePos = toScreen(basePos + ditherSwizzle[i]);
+        vec3 samplePos = getScreenPos(gbufferProjection, basePos + ditherSwizzle[i]);
         // Sample new depth and linearize
         float sampleDepth = textureLod(depthtex0, samplePos.xy, 0).x;
 

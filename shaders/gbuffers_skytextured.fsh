@@ -1,4 +1,5 @@
-#version 130
+// Fragment GL version
+#version 330 core
 
 #define GBUFFERS
 #define SKY_TEXTURED

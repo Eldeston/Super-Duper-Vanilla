@@ -159,6 +159,8 @@
         float eyeBrightFact = eyeSkylight;
     #endif
 
+    #include "/lib/utility/projectionFunctions.glsl"
+
     #ifdef PREVIOUS_FRAME
         uniform vec3 previousCameraPosition;
 
@@ -167,7 +169,7 @@
 
         uniform sampler2D colortex5;
 
-        #include "/lib/utility/convertPrevScreenSpace.glsl"
+        #include "/lib/utility/prevProjectionFunctions.glsl"
     #endif
 
     #ifdef SSAO
@@ -192,9 +194,6 @@
 
         #include "/lib/utility/taaJitter.glsl"
     #endif
-
-    #include "/lib/utility/convertViewSpace.glsl"
-    #include "/lib/utility/convertScreenSpace.glsl"
 
     #if OUTLINES != 0
         #include "/lib/post/outline.glsl"
@@ -225,7 +224,7 @@
         #endif
 
         // Get view pos
-        vec3 viewPos = toView(screenPos);
+        vec3 viewPos = getViewPos(gbufferProjectionInverse, screenPos);
         // Get eye player pos
         vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
 

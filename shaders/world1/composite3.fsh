@@ -1,4 +1,5 @@
-#version 130
+// Fragment GL version
+#version 330 core
 
 #define COMPOSITE3
 #define FRAGMENT

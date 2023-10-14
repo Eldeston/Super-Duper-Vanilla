@@ -1,4 +1,5 @@
-#version 130
+// Vertex GL version
+#version 330 compatibility
 
 #define SHADOW
 #define VERTEX

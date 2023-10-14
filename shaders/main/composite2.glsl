@@ -16,11 +16,15 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    noperspective out vec2 texCoord;
+    #ifdef MOTION_BLUR
+        noperspective out vec2 texCoord;
+    #endif
 
     void main(){
-        // Get buffer texture coordinates
-        texCoord = gl_MultiTexCoord0.xy;
+        #ifdef MOTION_BLUR
+            // Get buffer texture coordinates
+            texCoord = gl_MultiTexCoord0.xy;
+        #endif
 
         gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
     }
@@ -32,11 +36,11 @@
     /* RENDERTARGETS: 0 */
     layout(location = 0) out vec3 sceneColOut; // gcolor
 
-    noperspective in vec2 texCoord;
-
     uniform sampler2D gcolor;
 
     #ifdef MOTION_BLUR
+        noperspective in vec2 texCoord;
+
         uniform vec3 cameraPosition;
         uniform vec3 previousCameraPosition;
 
@@ -48,7 +52,8 @@
 
         uniform sampler2D depthtex0;
 
-        #include "/lib/utility/convertPrevScreenSpace.glsl"
+        #include "/lib/utility/projectionFunctions.glsl"
+        #include "/lib/utility/prevProjectionFunctions.glsl"
 
         #include "/lib/utility/noiseFunctions.glsl"
 

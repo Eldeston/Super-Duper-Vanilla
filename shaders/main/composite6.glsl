@@ -39,7 +39,7 @@
             uniform float twilightPhase;
         #endif
 
-        #include "/lib/utility/convertScreenSpace.glsl"
+        #include "/lib/utility/projectionFunctions.glsl"
     #endif
 
     void main(){
@@ -50,7 +50,7 @@
             sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
 
             // Get shadow light view direction in screen space
-            shdLightDirScreenSpace = vec3(toScreenCoord(mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), gbufferProjection[1].y * 0.72794047);
+            shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), gbufferProjection[1].y * 0.72794047);
         #endif
 
         gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
@@ -205,7 +205,8 @@
             float centerPixLuminance = sumOf(textureLod(gcolor, vec2(0.5), 8).rgb);
 
             // Accumulate current luminance
-            float tempPixLuminance = mix(centerPixLuminance, texelFetch(colortex5, ivec2(1), 0).a, exp2(-AUTO_EXPOSURE_SPEED * frameTime));
+            float frameTimeExposure = AUTO_EXPOSURE_SPEED * frameTime;
+            float tempPixLuminance = mix(texelFetch(colortex5, ivec2(1), 0).a, centerPixLuminance, frameTimeExposure / (1.0 + frameTimeExposure));
 
             // Apply auto exposure by dividing it by the pixel's luminance in sRGB
             const float invMinimumExposure = 1.0 / MINIMUM_EXPOSURE;
