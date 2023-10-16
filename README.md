@@ -35,7 +35,7 @@
 ## Version Compatibility
    Version compatibility varies across the 2 known shader loaders Iris and Optifine.
    
-   Iris versions 1.5+ are compatible with this shader. For Optifine, it varies across GPU vendors. Please always choose the latest Optifine of your respective Minecraft version.
+   Iris versions 1.5+ from Minecraft versions 1.18.2+ are compatible with this shader. For Optifine, it varies across GPU vendors. Please always choose the latest Optifine of your respective Minecraft version.
 
    | Optifine | Windows, Linux (Intel, AMD, NVidia) | Apple (M1)    |
    |----------|------------------------------------ | ------------- |
