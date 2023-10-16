@@ -1,5 +1,5 @@
-// Vertex GL version
 #version 330 compatibility
+// Vertex GL version
 
 #define GBUFFERS
 #define TEXTURED

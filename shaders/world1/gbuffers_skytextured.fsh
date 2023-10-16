@@ -1,5 +1,5 @@
-// Fragment GL version
 #version 330 compatibility
+// Fragment GL version
 
 #define GBUFFERS
 #define SKY_TEXTURED
