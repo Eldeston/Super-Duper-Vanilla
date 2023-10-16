@@ -1,5 +1,5 @@
-#version 330 compatibility
 // Fragment GL version
+#version 330 compatibility
 
 #define DEFERRED1
 #define FRAGMENT

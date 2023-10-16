@@ -1,5 +1,5 @@
-#version 330 compatibility
 // Fragment GL version
+#version 330 compatibility
 
 #define COMPOSITE3
 #define FRAGMENT

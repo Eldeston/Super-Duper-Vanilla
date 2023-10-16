@@ -1,5 +1,5 @@
-#version 330 compatibility
 // Vertex GL version
+#version 330 compatibility
 
 #define FINAL
 #define VERTEX

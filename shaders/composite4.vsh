@@ -1,5 +1,5 @@
-#version 330 compatibility
 // Vertex GL version
+#version 330 compatibility
 
 #define COMPOSITE4
 #define VERTEX

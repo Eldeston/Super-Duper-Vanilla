@@ -1,5 +1,5 @@
-#version 330 compatibility
 // Vertex GL version
+#version 330 compatibility
 
 #define DEFERRED
 #define VERTEX
