@@ -183,19 +183,28 @@
     #include "/lib/lighting/GGX.glsl"
     #include "/lib/lighting/complexShadingDeferred.glsl"
 
-    float getSpectral(in ivec2 iUv){
-        ivec2 topRightCorner = iUv - 1;
-        ivec2 bottomLeftCorner = iUv + 1;
+    #ifndef IS_IRIS
+        bool isSpectralMask(in ivec2 iUv){
+            return texelFetch(colortex3, iUv, 0).z == 1;
+        }
 
-        float sample0 = texelFetch(colortex3, topRightCorner, 0).z;
-        float sample1 = texelFetch(colortex3, bottomLeftCorner, 0).z;
-        float sample2 = texelFetch(colortex3, ivec2(topRightCorner.x, bottomLeftCorner.y), 0).z;
-        float sample3 = texelFetch(colortex3, ivec2(bottomLeftCorner.x, topRightCorner.y), 0).z;
+        float getSpectral(in ivec2 iUv){
+            ivec2 topRightCorner = iUv - 1;
+            ivec2 bottomLeftCorner = iUv + 1;
 
-        float sumDepth = sample0 + sample1 + sample2 + sample3;
+            bool sample0 = isSpectralMask(topRightCorner);
+            bool sample1 = isSpectralMask(bottomLeftCorner);
 
-        return abs(sumDepth * 0.25 - texelFetch(colortex3, iUv, 0).z);
-    }
+            if(sample0 && !sample1 || sample1 && !sample0) return EMISSIVE_INTENSITY;
+
+            bool sample2 = isSpectralMask(ivec2(topRightCorner.x, bottomLeftCorner.y));
+            bool sample3 = isSpectralMask(ivec2(bottomLeftCorner.x, topRightCorner.y));
+
+            if(sample2 && !sample3 || sample3 && !sample2) return EMISSIVE_INTENSITY;
+
+            return 0.0;
+        }
+    #endif
 
     void main(){
         // Screen texel coordinates
@@ -243,8 +252,10 @@
         // Apply darkness pulsing effect
         sceneColOut *= 1.0 - darknessLightFactor;
 
-        // Apply spectral effect
-        sceneColOut += getSpectral(screenTexelCoord) * EMISSIVE_INTENSITY;
+        #ifndef IS_IRIS
+            // Apply spectral effect
+            sceneColOut += getSpectral(screenTexelCoord);
+        #endif
 
         #ifdef WORLD_LIGHT
             // Apply volumetric light
