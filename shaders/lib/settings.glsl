@@ -65,11 +65,11 @@ const float sunPathRotation = 30.0; // Light path angle. This also affects sky a
 
 // #define SSGI // Enables SSGI, currently experimental and may not be very optimized, may improve the ambience of dark areas despite the noisiness. Turn on TAA for best results.
 #define SSGI_STEPS 20 // SSGI steps, increasing may improve quality but demand more performance [16 20 24 28 32]
-#define SSGI_BISTEPS 4 // SSGI binary refinement steps, improves quality especially when using a low step count, balancing the values is required for optimum performance [0 4 8 16]
+#define SSGI_BISTEPS 4 // SSGI binary refinement steps, improves quality especially when using a low step count, balancing the values is required for optimum performance [0 2 4 6 8]
 
 #define SSR // Enables SSR, may not look good in certain areas
 #define SSR_STEPS 20 // SSR steps, increasing may improve quality but demand more performance [16 20 24 28 32]
-#define SSR_BISTEPS 4 // SSR binary refinement steps, improves quality especially when using a low step count, balancing the values is required for optimum performance [0 4 8 16]
+#define SSR_BISTEPS 4 // SSR binary refinement steps, improves quality especially when using a low step count, balancing the values is required for optimum performance [0 2 4 6 8]
 
 // #define ROUGH_REFLECTIONS // Enables rougher objects to have rougher reflections. May show weird artifacts, but some AA might fix it.
 // #define PREVIOUS_FRAME // Reads previous frame buffer colors alowing SSR or SSGI to have infinite bounces of light. Impacts performance!
@@ -86,7 +86,7 @@ const float sunMoonIntensitySqrd = SUN_MOON_INTENSITY * SUN_MOON_INTENSITY;
 #define GROUND_FOG_STRENGTH 0.50 // The strength of mist/ground fog. [0.00 0.01 0.02 0.03 0.04 0.05 0.06 0.07 0.08 0.09 0.10 0.11 0.12 0.13 0.14 0.15 0.16 0.17 0.18 0.19 0.20 0.21 0.22 0.23 0.24 0.25 0.26 0.27 0.28 0.29 0.30 0.31 0.32 0.33 0.34 0.35 0.36 0.37 0.38 0.39 0.40 0.41 0.42 0.43 0.44 0.45 0.46 0.47 0.48 0.49 0.50 0.51 0.52 0.53 0.54 0.55 0.56 0.57 0.58 0.59 0.60 0.61 0.62 0.63 0.64 0.65 0.66 0.67 0.68 0.69 0.70 0.71 0.72 0.73 0.74 0.75 0.76 0.77 0.78 0.79 0.80 0.81 0.82 0.83 0.84 0.85 0.86 0.87 0.88 0.89 0.90 0.91 0.92 0.93 0.94 0.95 0.96 0.97 0.98 0.99 1.00]
 
 #define STORY_MODE_CLOUDS // Uses procedurally generated clouds (a.k.a. aerogel clouds) instead of vanilla clouds. Disable vanilla clouds for proper results.
-// #define DOUBLE_LAYERED_CLOUDS // Adds another layer of clouds (work on both vanilla and shader clouds), may use up performance.
+// #define DOUBLE_LAYERED_CLOUDS // Adds another layer of clouds (works on both vanilla and shader clouds), may use up performance.
 #define DYNAMIC_CLOUDS // Makes clouds more dynamic and allows weather to affect it. (affects on both vanilla and story mode clouds).
 #define FADE_SPEED 0.20 // Cloud fade speed [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.05 1.10 1.15 1.20 1.25 1.30 1.35 1.40 1.45 1.50 1.55 1.60 1.65 1.70 1.75 1.80 1.85 1.90 1.95 2.00 2.05 2.10 2.15 2.20 2.25 2.30 2.35 2.40 2.45 2.50 2.55 2.60 2.65 2.70 2.75 2.80 2.85 2.90 2.95 3.00 3.05 3.10 3.15 3.20 3.25 3.30 3.35 3.40 3.45 3.50 3.55 3.60 3.65 3.70 3.75 3.80 3.85 3.90 3.95 4.00]
 #define SECOND_CLOUD_HEIGHT 64.0 // 2nd layer cloud height, if double vanilla clouds is on [-128.0 -112.0 -96.0 -80.0 -64.0 -48.0 -32.0 -16.0 16.0 32.0 48.0 64.0 80.0 96.0 112.0 128.0]

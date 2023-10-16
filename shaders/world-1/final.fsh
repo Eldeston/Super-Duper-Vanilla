@@ -1,5 +1,5 @@
 // Fragment GL version
-#version 330 core
+#version 330 compatibility
 
 #define FINAL
 #define FRAGMENT

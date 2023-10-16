@@ -16,6 +16,7 @@ vec3 rayTraceScene(in vec3 screenPos, in vec3 viewPos, in vec3 rayDir, in float 
 
 	// Get screenspace rayDir
 	vec3 screenPosRayDir = fastNormalize(getScreenPos(gbufferProjection, viewPos + rayDir) - screenPos) / steps;
+
 	// Add dithering to our "startPos"
 	screenPos += screenPosRayDir * dither;
 
