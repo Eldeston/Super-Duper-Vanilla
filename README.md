@@ -34,18 +34,18 @@
 
 ## Version Compatibility
    Version compatibility varies across the 2 known shader loaders Iris and Optifine.
-   
-   Iris versions 1.5+ from Minecraft versions 1.18.2+ are compatible with this shader. For Optifine, it varies across GPU vendors. Please always choose the latest Optifine of your respective Minecraft version.
 
-   | Optifine | Windows, Linux (Intel, AMD, NVidia) | Apple (M1)    |
-   |----------|------------------------------------ | ------------- |
-   | 1.17+    | Supported                           | Supported     |
-   | 1.14+    | Supported                           | Not supported |
-   | 1.13-    | Not supported                       | Not supported |
+   Iris versions 1.6.10+ from Minecraft versions 1.18.2+ are compatible with this shader. For Optifine, it varies across GPU vendors. Please always choose the latest Iris or Optifine of your respective Minecraft version.
+
+| Optifine | Windows, Linux (Intel, AMD, NVidia) | Apple (M1)    |
+|----------|------------------------------------ | ------------- |
+| 1.17+    | Supported                           | Supported     |
+| 1.14+    | Supported                           | Not supported |
+| 1.13-    | Not supported                       | Not supported |
 
 ## Releases
    See all available releases [here](https://github.com/Eldeston/Super-Duper-Vanilla/releases), and get the latest commit [here](https://github.com/Eldeston/Super-Duper-Vanilla/archive/refs/heads/master.zip), the latest build will always be from the most recent commit by default.
-   
+
    Latest build and pre-release versions are expected to be unstable, please report any issues or bugs anytime. Feedback is much appreciated.
 
 ## Official CurseForge Page
@@ -57,7 +57,7 @@
 ## Social Links
    Come join my Discord server to talk about other developments made by our studio-community!
    * [Flamerender Studios Discord](https://discord.gg/UE85W5ynCg)
-   
+
    Or follow me on Twitter or subscribe to my Youtube channel to get updated with my recent developments and contents
    * [@Eldeston's Twitter](https://twitter.com/eldeston)
    * [@Eldeston's Channel](https://www.youtube.com/channel/UCQCkkFh25ydxZwCqpBhJJlg?view_as=subscriber)

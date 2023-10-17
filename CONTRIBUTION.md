@@ -63,6 +63,6 @@ Is this a bird?
 ## Miscellaneous
    You may add your name in [**CONTRIBUTORS**](CONTRIBUTORS.md) under the contributers list with your PR. If you're a translator, add your name in [**TRANSLATORS**](TRANSLATORS.md) under the translators list.
 
-## TO DO: (for Eldeston)
-   Update the descriptions of this file.
-   Make a separate file for translation.
+## TO DO (for Eldeston)
+   * Update the descriptions of this file.
+   * Make a separate file for translation.
