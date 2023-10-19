@@ -60,6 +60,7 @@
                 sunCol = toLinear(sRGBSunCol);
                 sRGBMoonCol = MOON_COL_DATA_BLOCK;
                 moonCol = toLinear(sRGBMoonCol);
+
                 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK1(sRGBSunCol, sRGBMoonCol);
                 lightCol = toLinear(sRGBLightCol);
             #endif
