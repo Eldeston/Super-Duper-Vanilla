@@ -4,7 +4,7 @@
 [![Twitter Follow](https://img.shields.io/twitter/follow/eldeston?color=1DA1F2&logoWidth=16&logo=Twitter&logoColor=white&style=for-the-badge)](https://twitter.com/eldeston)
 [![YouTube Channel Subscribers](https://img.shields.io/youtube/channel/subscribers/UCQCkkFh25ydxZwCqpBhJJlg?color=FF0000&logoWidth=16&label=Eldeston&logo=YouTube&style=for-the-badge)](https://www.youtube.com/channel/UCQCkkFh25ydxZwCqpBhJJlg)
 
-## Description
+## About
    A shader pack created to convey the style of the cancelled __Super Duper Graphics Pack__ and other popular Minecraft titles. Developed by [@Eldeston](https://github.com/Eldeston), and presented by __FlameRender Studios__.
 
 ## Sponsor

@@ -11,16 +11,16 @@
    For more information of the specifications of this version see this [documentation provided by Khronos](https://registry.khronos.org/OpenGL/specs/gl/GLSLangSpec.3.30.pdf).
 
 ## Used Buffers
-   Current shader pipeline uses 6 framebuffers to minimize resources used and maximize performance. Their usages are listed in order of what's written first.
+   Current shader pipeline uses 6 framebuffers to minimize resources used and maximize performance. Their usages are listed in order of what's written first separated by forward slashes and channels separated by commas.
 
-| Buffers   | Format         | Usage                                                 |
-| --------- | -------------- | ----------------------------------------------------- |
-| gcolor    | R11F_G11F_B10F | Main HDR / Skybox, vanilla sun and moon               |
-| colortex1 | RGB16_SNORM    | Normals                                               |
-| colortex2 | RGBA8          | Albedo, SSAO                                          |
-| colortex3 | RGB8           | Metallic, roughness, glowing entity / Main LDR / FXAA |
-| colortex4 | R11F_G11F_B10F | Clouds / Bloom                                        |
-| colortex5 | RGBA16F        | TAA / Previous reflections, Auto exposure             |
+| Buffers   | Format         | Usage                                                         |
+| --------- | -------------- | ------------------------------------------------------------- |
+| gcolor    | R11F_G11F_B10F | Main HDR (RGB) / Vanilla skybox (RGB)                         |
+| colortex1 | RGB16_SNORM    | Normals (RGB)                                                 |
+| colortex2 | RGBA8          | Albedo (RGB), SSAO (A)                                        |
+| colortex3 | RGB8           | Metal (R), Smooth (G), Glow (B) / Main LDR (RGB) / FXAA (RGB) |
+| colortex4 | R11F_G11F_B10F | Clouds (RG) / Bloom (RGB)                                     |
+| colortex5 | RGBA16F        | TAA (RGB) / Previous frame (RGB), Auto exposure (A)           |
 
 ## Custom Defined Macros
    This shader uses custom defined macros in every program and .glsl file for each world folders all connected to the main programs in the main folder. This is to keep the workflow minimized and understandable, and to identify what folder/program the shader is being used.
@@ -38,15 +38,15 @@
 ### Program Macros
    Found in their respective programs in .fsh and .vsh files. The following are the listed common program macros. These macros typically only defines the program.
 
-| Program Macros | Type    |
-| -------------- | ------- |
-| SHADOW         | defined |
-| GBUFFERS       | defined |
-| DEFERRED       | defined |
-| DEFERRED(1-7)  | defined |
-| COMPOSITE      | defined |
-| COMPOSITE(1-7) | defined |
-| FINAL          | defined |
+| Program Macros  | Type    |
+| --------------- | ------- |
+| SHADOW          | defined |
+| GBUFFERS        | defined |
+| DEFERRED        | defined |
+| DEFERRED(1-99)  | defined |
+| COMPOSITE       | defined |
+| COMPOSITE(1-99) | defined |
+| FINAL           | defined |
 
 This along with the `GBUFFERS` macro, are used to identify the quirks in the current program for the shader to detect.
 
@@ -63,7 +63,7 @@ This along with the `GBUFFERS` macro, are used to identify the quirks in the cur
 | HAND             | defined |
 | HAND_WATER       | defined |
 
-### Simple Programs
+### Basic Programs
    List of programs with basic lighting. Common basic processes are in these programs. They compute basic processes that complex programs have, but with removed features that the program doesn't necessarily need.
 
 | Program Macros | Type    |
@@ -72,7 +72,7 @@ This along with the `GBUFFERS` macro, are used to identify the quirks in the cur
 | CLOUDS         | defined |
 | TEXTURED       | defined |
 
-### Basic programs
+### Simple programs
    List of programs with simpler shading. Common simple processes are in these programs. As the name suggests, they compute very simple and fast processes. The reason is usually because they don't need additional features as they tend to slow GPU performance.
 
 | Program Macros | Type    |
