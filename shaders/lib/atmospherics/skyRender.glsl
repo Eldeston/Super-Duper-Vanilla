@@ -61,7 +61,9 @@ vec3 getSkyBasic(in vec2 skyCoordScale, in float nEyePlayerPosY, in float skyPos
     vec3 finalCol = skyCol + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 
     #ifdef WORLD_SKY_GROUND
-        finalCol.rg *= smoothen(saturate(1.0 + nEyePlayerPosY * 4.0));
+        // finalCol.rg *= smoothen(saturate(1.0 + nEyePlayerPosY * 4.0));
+        // if(nEyePlayerPosY < 0) finalCol *= smoothen(max(1.0 + nEyePlayerPosY / max(skyCol, 0.25), vec3(0.25)));
+        if(nEyePlayerPosY < 0) finalCol *= exp2(-(nEyePlayerPosY * nEyePlayerPosY * 8.0) / max(skyCol * skyCol, vec3(0.125)));
     #endif
 
     #ifdef WORLD_LIGHT

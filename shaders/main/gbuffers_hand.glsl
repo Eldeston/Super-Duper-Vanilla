@@ -200,7 +200,7 @@
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         // Write to HDR scene color
-        sceneColOut = complexShadingGbuffers(material);
+        sceneColOut = complexShadingForward(material);
 
         // Write buffer datas
         normalDataOut = material.normal;

@@ -1,4 +1,4 @@
-vec3 simpleShadingGbuffers(in vec4 albedo){
+vec3 basicShadingForward(in vec4 albedo){
 	// Calculate sky diffusion first, begining with the sky itself
 	vec3 totalDiffuse = toLinear(SKY_COLOR_DATA_BLOCK);
 

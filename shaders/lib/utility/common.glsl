@@ -91,7 +91,7 @@ vec4 smootherstep(in vec4 x){ return x * x * x * (x * (x * 6.0 - 15.0) + 10.0); 
 // By Jessie#7257
 vec3 generateUnitVector(in vec2 hash){
     hash.x *= TAU; hash.y = hash.y * 2.0 - 1.0;
-    return vec3(vec2(sin(hash.x), cos(hash.x)) * sqrt(1.0 - hash.y * hash.y), hash.y);
+    return vec3(vec2(cos(hash.x), sin(hash.x)) * sqrt(1.0 - hash.y * hash.y), hash.y);
 }
 
 vec3 generateCosineVector(in vec3 vector, in vec3 noiseUnitVector){

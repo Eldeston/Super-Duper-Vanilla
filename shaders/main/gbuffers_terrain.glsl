@@ -260,6 +260,9 @@
 
         if(blockId == 11100){
             #ifdef LAVA_NOISE
+                // Lava tile size reciprocal
+                const float lavaTileSizeInv = 1.0 / LAVA_TILE_SIZE;
+
                 vec2 lavaUv = vertexWorldPos.zy * TBN[2].x + vertexWorldPos.xz * TBN[2].y + vertexWorldPos.xy * TBN[2].z;
                 float lavaNoise = saturate(max(getLavaNoise(lavaUv * lavaTileSizeInv) * 3.0, sumOf(material.albedo.rgb)) - 1.0);
                 material.albedo.rgb = floor(material.albedo.rgb * lavaNoise * LAVA_BRIGHTNESS * 32.0) * 0.03125;
@@ -275,7 +278,7 @@
         #endif
 
         // Write to HDR scene color
-        sceneColOut = complexShadingGbuffers(material);
+        sceneColOut = complexShadingForward(material);
 
         // Write buffer datas
         normalDataOut = material.normal;

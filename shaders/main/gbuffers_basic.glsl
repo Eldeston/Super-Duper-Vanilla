@@ -132,7 +132,7 @@
         #endif
     #endif
 
-    #include "/lib/lighting/simpleShadingForward.glsl"
+    #include "/lib/lighting/basicShadingForward.glsl"
 
     void main(){
         // Get albedo color
@@ -148,7 +148,7 @@
         albedo.rgb = toLinear(albedo.rgb);
 
         // Apply simple shading
-        sceneColOut = simpleShadingGbuffers(albedo);
+        sceneColOut = basicShadingForward(albedo);
     
         // Write buffer datas
         materialDataOut = vec3(0);

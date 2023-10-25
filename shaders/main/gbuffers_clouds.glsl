@@ -146,7 +146,7 @@
             #endif
         #endif
 
-        #include "/lib/lighting/simpleShadingForward.glsl"
+        #include "/lib/lighting/basicShadingForward.glsl"
 
         void main(){
             // Get albedo alpha
@@ -173,7 +173,7 @@
             #endif
 
             // Apply simple shading
-            sceneColOut = vec4(simpleShadingGbuffers(albedo), albedo.a);
+            sceneColOut = vec4(basicShadingForward(albedo), albedo.a);
 
             // Write buffer datas (the alphas need to be 1 due to translucents)
             materialDataOut = vec3(0, 0, 0);
