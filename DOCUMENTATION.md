@@ -96,4 +96,7 @@ This along with the `GBUFFERS` macro, are used to identify the quirks in the cur
 * Create a generic function for orthographic and perspective projection matrices
 * Create a generic function for defining the world's dynamic color properties
 * Refactor uniform usage and remove unecessary ones
+* Create a custom shadow model view
+* Replace vertex space calculations
+* Optimize sky calculation
 * Document the shader pipeline
