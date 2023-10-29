@@ -27,7 +27,7 @@ vec3 basicShadingForward(in vec4 albedo){
 
 		#ifdef SHADOW_MAPPING
 			// Get shadow pos
-			vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexFeetPlayerPos.xyz + shadowModelView[3].xyz);
+			vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexFeetPlayerPos + shadowModelView[3].xyz);
 			shdPos.z += shadowProjection[3].z;
 
 			// Apply shadow distortion and transform to shadow screen space

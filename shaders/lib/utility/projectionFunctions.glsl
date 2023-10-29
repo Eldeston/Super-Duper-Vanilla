@@ -13,14 +13,14 @@ float getViewDepth(in mat4 projectionInverse, in float screenDepth){
 vec3 getScreenPos(in mat4 projection, in vec3 viewPos){
 	// vec3 screenPos = vec3(projection[0].x, projection[1].y, projection[2].z) * viewPos;
 	// return (vec3(screenPos.xy, screenPos.z + projection[3].z) / -viewPos.z) * 0.5 + 0.5;
-    vec2 screenCoord = vec2(projection[0].x, projection[1].y) * viewPos.xy;
-	return 0.5 - vec3(screenCoord.xy / viewPos.z, projection[3].z / viewPos.z + projection[2].z) * 0.5;
+    vec2 clipCoord = vec2(projection[0].x, projection[1].y) * viewPos.xy;
+	return 0.5 - vec3(clipCoord.xy / viewPos.z, projection[3].z / viewPos.z + projection[2].z) * 0.5;
 }
 
 // View space to screen space coordinates perspective projection
 vec2 getScreenCoord(in mat4 projection, in vec3 viewPos){
-	vec2 screenCoord = vec2(projection[0].x, projection[1].y) * viewPos.xy;
-	return 0.5 - (screenCoord.xy / viewPos.z) * 0.5;
+	vec2 clipCoord = vec2(projection[0].x, projection[1].y) * viewPos.xy;
+	return 0.5 - (clipCoord.xy / viewPos.z) * 0.5;
 }
 
 // View depth to screen depth

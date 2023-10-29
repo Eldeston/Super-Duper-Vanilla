@@ -88,6 +88,18 @@ vec2 smootherstep(in vec2 x){ return x * x * x * (x * (x * 6.0 - 15.0) + 10.0); 
 vec3 smootherstep(in vec3 x){ return x * x * x * (x * (x * 6.0 - 15.0) + 10.0); }
 vec4 smootherstep(in vec4 x){ return x * x * x * (x * (x * 6.0 - 15.0) + 10.0); }
 
+vec2 getMatScale(in mat2 matrix){
+	return vec2(matrix[0].x, matrix[1].y);
+}
+
+vec3 getMatScale(in mat3 matrix){
+	return vec3(matrix[0].x, matrix[1].y, matrix[2].z);
+}
+
+vec4 getMatScale(in mat4 matrix){
+	return vec4(matrix[0].x, matrix[1].y, matrix[2].z, matrix[3].w);
+}
+
 // By Jessie#7257
 vec3 generateUnitVector(in vec2 hash){
     hash.x *= TAU; hash.y = hash.y * 2.0 - 1.0;
@@ -99,11 +111,47 @@ vec3 generateCosineVector(in vec3 vector, in vec3 noiseUnitVector){
 	return dot(vectorDir, vector) < 0 ? -vectorDir : vectorDir;
 }
 
-// Rotation function
+// Rotation functions
 mat2 rot2D(in float x){
 	float cosX = cos(x);
   	float sinX = sin(x);
 	return mat2(cosX, -sinX, sinX, cosX);
+}
+
+// Rotate on the x axis
+mat3 rot3DX(in float x){
+	float cosX = cos(x);
+  	float sinX = sin(x);
+
+	return mat3(
+		cosX, -sinX, 0,
+		sinX, cosX, 0,
+		0, 0, 1
+	);
+}
+
+// Rotate on the y axis
+mat3 rot3DY(in float y){
+	float cosY = cos(y);
+  	float sinY = sin(y);
+
+	return mat3(
+		cosY, 0, sinY,
+		0, 1, 0,
+		-sinY, 0, cosY
+	);
+}
+
+// Rotate on the z axis
+mat3 rot3DZ(in float z){
+	float cosZ = cos(z);
+  	float sinZ = sin(z);
+
+	return mat3(
+		1, 0, 0,
+		0, cosZ, -sinZ,
+		0, sinZ, cosZ
+	);
 }
 
 // SRGB to linear

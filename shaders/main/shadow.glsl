@@ -63,12 +63,12 @@
             vertexColor = gl_Color.rgb;
 
             // Get vertex view position
-            vec4 vertexShadowViewPos = gl_ModelViewMatrix * gl_Vertex;
+            vec3 vertexShadowViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
             // Get vertex feet player position
-            vec4 vertexShadowFeetPlayerPos = shadowModelViewInverse * vertexShadowViewPos;
+            vec3 vertexShadowFeetPlayerPos = mat3(shadowModelViewInverse) * vertexShadowViewPos + shadowModelViewInverse[3].xyz;
 
             // Get world position
-            vec3 vertexShadowWorldPos = vertexShadowFeetPlayerPos.xyz + cameraPosition;
+            vec3 vertexShadowWorldPos = vertexShadowFeetPlayerPos + cameraPosition;
 
             // Get water noise uv position
             waterNoiseUv = vertexShadowWorldPos.xz / WATER_TILE_SIZE;
@@ -84,11 +84,16 @@
                     vertexShadowFeetPlayerPos.y -= dot(vertexShadowFeetPlayerPos.xz, vertexShadowFeetPlayerPos.xz) / WORLD_CURVATURE_SIZE;
                 #endif
 
-                // Convert to clip position and output as final position
-                gl_Position = gl_ProjectionMatrix * (shadowModelView * vertexShadowFeetPlayerPos);
-            #else
-                gl_Position = gl_ProjectionMatrix * vertexShadowViewPos;
+                // Convert back to vertex view position
+                vertexShadowViewPos = mat3(shadowModelView) * vertexShadowFeetPlayerPos + shadowModelView[3].xyz;
             #endif
+
+            // Convert to clip position and output as final position
+            // gl_Position = gl_ProjectionMatrix * vertexShadowViewPos;
+            gl_Position.xyz = getMatScale(mat3(gl_ProjectionMatrix)) * vertexShadowViewPos;
+            gl_Position.z += gl_ProjectionMatrix[3].z;
+
+            gl_Position.w = 1.0;
 
             // Apply shadow distortion
             gl_Position.xyz = distort(gl_Position.xyz);

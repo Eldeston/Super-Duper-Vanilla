@@ -13,7 +13,7 @@ vec3 complexShadingForward(in structPBR material){
 	totalDiffuse *= skyLightSquared;
 
 	#if defined DIRECTIONAL_LIGHTMAPS && (defined TERRAIN || defined WATER)
-		vec3 dirLightMapCoord = dFdx(vertexFeetPlayerPos.xyz) * dFdx(lmCoord.x) + dFdy(vertexFeetPlayerPos.xyz) * dFdy(lmCoord.x);
+		vec3 dirLightMapCoord = dFdx(vertexFeetPlayerPos) * dFdx(lmCoord.x) + dFdy(vertexFeetPlayerPos) * dFdy(lmCoord.x);
 		float dirLightMap = min(1.0, max(0.0, dot(fastNormalize(dirLightMapCoord), material.normal)) * lmCoord.x * DIRECTIONAL_LIGHTMAP_STRENGTH + lmCoord.x);
 
 		// Calculate block light
@@ -55,7 +55,7 @@ vec3 complexShadingForward(in structPBR material){
 			// If the area isn't shaded, apply shadow mapping
 			if(isShadow || isSubSurface){
 				// Get shadow pos
-				vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexFeetPlayerPos.xyz + shadowModelView[3].xyz);
+				vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexFeetPlayerPos + shadowModelView[3].xyz);
 				shdPos.z += shadowProjection[3].z;
 
 				// Apply shadow distortion and transform to shadow screen space
@@ -119,7 +119,7 @@ vec3 complexShadingForward(in structPBR material){
 	#ifdef WORLD_LIGHT
 		if(isShadow){
 			// Get specular GGX
-			vec3 specCol = getSpecularBRDF(-fastNormalize(vertexFeetPlayerPos.xyz), material.normal, material.albedo.rgb, NLZ, material.metallic, material.smoothness);
+			vec3 specCol = getSpecularBRDF(-fastNormalize(vertexFeetPlayerPos), material.normal, material.albedo.rgb, NLZ, material.metallic, material.smoothness);
 			totalDiffuse += specCol * shadowCol * sRGBLightCol;
 		}
 	#endif

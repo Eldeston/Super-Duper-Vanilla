@@ -25,8 +25,7 @@
     out vec2 waterNoiseUv;
 
     out vec3 vertexColor;
-
-    out vec4 vertexFeetPlayerPos;
+    out vec3 vertexFeetPlayerPos;
 
     #ifdef PHYSICS_OCEAN
         // Physics mod varyings
@@ -97,12 +96,12 @@
         vec3 vertexTangent = fastNormalize(at_tangent.xyz);
 
         // Get vertex view position
-        vec4 vertexViewPos = gl_ModelViewMatrix * gl_Vertex;
+        vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
         // Get vertex feet player position
-        vertexFeetPlayerPos = gbufferModelViewInverse * vertexViewPos;
+        vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos + gbufferModelViewInverse[3].xyz;
 
         // Get world position
-        vec3 vertexWorldPos = vertexFeetPlayerPos.xyz + cameraPosition;
+        vec3 vertexWorldPos = vertexFeetPlayerPos + cameraPosition;
 
         // Get water noise uv position
         waterNoiseUv = vertexWorldPos.xz / WATER_TILE_SIZE;
@@ -151,11 +150,16 @@
                 vertexFeetPlayerPos.y -= dot(vertexFeetPlayerPos.xz, vertexFeetPlayerPos.xz) / WORLD_CURVATURE_SIZE;
             #endif
 
-            // Convert to clip position and output as final position
-            gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexFeetPlayerPos);
-        #else
-            gl_Position = gl_ProjectionMatrix * vertexViewPos;
+            // Convert back to vertex view position
+            vertexViewPos = mat3(gbufferModelView) * vertexFeetPlayerPos + gbufferModelView[3].xyz;
         #endif
+
+        // Convert to clip position and output as final position
+        // gl_Position = gl_ProjectionMatrix * vertexViewPos;
+        gl_Position.xyz = getMatScale(mat3(gl_ProjectionMatrix)) * vertexViewPos;
+        gl_Position.xyz += gl_ProjectionMatrix[3].z;
+
+        gl_Position.w = -vertexViewPos.z;
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
@@ -181,8 +185,7 @@
     in vec2 waterNoiseUv;
 
     in vec3 vertexColor;
-
-    in vec4 vertexFeetPlayerPos;
+    in vec3 vertexFeetPlayerPos;
 
     #ifdef PHYSICS_OCEAN
         // Physics mod varyings

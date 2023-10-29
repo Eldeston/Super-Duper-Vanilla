@@ -26,9 +26,8 @@
     out vec2 texCoord;
 
     out vec3 vertexColor;
+    out vec3 vertexFeetPlayerPos;
     out vec3 vertexWorldPos;
-
-    out vec4 vertexFeetPlayerPos;
 
     #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
         flat out vec2 vTexCoordScale;
@@ -94,12 +93,12 @@
         vec3 vertexTangent = fastNormalize(at_tangent.xyz);
 
         // Get vertex view position
-        vec4 vertexViewPos = gl_ModelViewMatrix * gl_Vertex;
+        vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
         // Get vertex feet player position
-        vertexFeetPlayerPos = gbufferModelViewInverse * vertexViewPos;
+        vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos + gbufferModelViewInverse[3].xyz;
 
         // Get world position
-        vertexWorldPos = vertexFeetPlayerPos.xyz + cameraPosition;
+        vertexWorldPos = vertexFeetPlayerPos + cameraPosition;
 
         // Calculate TBN matrix
 	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal) * sign(at_tangent.w), vertexNormal));
@@ -123,7 +122,7 @@
         #if defined TERRAIN_ANIMATION || defined WORLD_CURVATURE
             #ifdef TERRAIN_ANIMATION
                 // Apply terrain wave animation
-                vertexFeetPlayerPos.xyz = getTerrainWave(vertexFeetPlayerPos.xyz, vertexWorldPos, at_midBlock.y * 0.015625, mc_Entity.x, lmCoord.y);
+                vertexFeetPlayerPos = getTerrainWave(vertexFeetPlayerPos, vertexWorldPos, at_midBlock.y * 0.015625, mc_Entity.x, lmCoord.y);
             #endif
 
             #ifdef WORLD_CURVATURE
@@ -131,11 +130,16 @@
                 vertexFeetPlayerPos.y -= dot(vertexFeetPlayerPos.xz, vertexFeetPlayerPos.xz) / WORLD_CURVATURE_SIZE;
             #endif
 
-            // Convert to clip position and output as final position
-            gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexFeetPlayerPos);
-        #else
-            gl_Position = gl_ProjectionMatrix * vertexViewPos;
+            // Convert back to vertex view position
+            vertexViewPos = mat3(gbufferModelView) * vertexFeetPlayerPos + gbufferModelView[3].xyz;
         #endif
+
+        // Convert to clip position and output as final position
+        // gl_Position = gl_ProjectionMatrix * vertexViewPos;
+        gl_Position.xyz = getMatScale(mat3(gl_ProjectionMatrix)) * vertexViewPos;
+        gl_Position.z += gl_ProjectionMatrix[3].z;
+
+        gl_Position.w = -vertexViewPos.z;
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
@@ -162,9 +166,8 @@
     in vec2 texCoord;
 
     in vec3 vertexColor;
+    in vec3 vertexFeetPlayerPos;
     in vec3 vertexWorldPos;
-
-    in vec4 vertexFeetPlayerPos;
 
     #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
         flat in vec2 vTexCoordScale;
@@ -283,7 +286,6 @@
         // Write buffer datas
         normalDataOut = material.normal;
         albedoDataOut = material.albedo.rgb;
-        materialDataOut
- = vec3(material.metallic, material.smoothness, 0);
+        materialDataOut = vec3(material.metallic, material.smoothness, 0);
     }
 #endif

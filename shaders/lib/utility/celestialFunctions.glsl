@@ -28,6 +28,37 @@ vec3 getCelestialPos(in vec3 eyePlayerPos, in float sinAxisX, in float cosAxisX)
     return vec3(zCoord.x, xCoord);
 }
 
+uniform float sunAngle;
+
+// World space to celestial space
+vec3 getCelestialPos(in vec3 eyePlayerPos){
+    // Rotate by 90 in the y axis
+    eyePlayerPos.xz = rot2D(-90.0 * (PI / 180.0)) * eyePlayerPos.xz;
+    // eyePlayerPos.xz = eyePlayerPos.zx;
+    // Rotate by sunPathRotation in the x axis
+	eyePlayerPos.xy = rot2D(-sunPathRotation * (PI / 180.0)) * eyePlayerPos.xy;
+	// Rotate by sunAngle in the z axis
+	eyePlayerPos.yz = rot2D(-sunAngle * TAU) * eyePlayerPos.yz;
+
+    return eyePlayerPos;
+}
+
+// World space to celestial space
+vec3 getCelestialPos(in vec3 eyePlayerPos){
+    // eyePlayerPos.xz = rot2D(-90.0 * (PI / 180.0)) * eyePlayerPos.xz;
+    // eyePlayerPos.xz = eyePlayerPos.zx;
+	// eyePlayerPos.xy = rot2D(-sunPathRotation * (PI / 180.0)) * eyePlayerPos.xy;
+	// eyePlayerPos.yz = rot2D(-sunAngle * TAU) * eyePlayerPos.yz;
+
+    // eyePlayerPos = rot3DY(90.0 * (PI / 180.0)) * eyePlayerPos;
+    // eyePlayerPos = rot3DX(-sunPathRotation * (PI / 180.0)) * eyePlayerPos;
+    // eyePlayerPos = rot3DZ(-sunAngle * TAU) * eyePlayerPos;
+
+    mat3 newShadowModelView = rot3DY(90.0 * (PI / 180.0)) * rot3DX(sunAngle * TAU) * rot3DZ(-sunPathRotation * (PI / 180.0));
+
+    return newShadowModelView * eyePlayerPos;
+}
+
 // getCelestialPos(vertexShadowFeetPlayerPos.xyz, celestialSinX, celestialCosX)
 
 /*

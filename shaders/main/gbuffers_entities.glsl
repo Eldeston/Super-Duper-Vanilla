@@ -26,7 +26,7 @@
 
     out vec2 texCoord;
 
-    out vec4 vertexFeetPlayerPos;
+    out vec3 vertexFeetPlayerPos;
 
     #ifdef PARALLAX_OCCLUSION
         flat out vec2 vTexCoordScale;
@@ -70,9 +70,9 @@
         vec3 vertexTangent = fastNormalize(at_tangent.xyz);
 
         // Get vertex view position
-        vec4 vertexViewPos = gl_ModelViewMatrix * gl_Vertex;
+        vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
         // Get vertex feet player position
-        vertexFeetPlayerPos = gbufferModelViewInverse * vertexViewPos;
+        vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos + gbufferModelViewInverse[3].xyz;
 
         // Calculate TBN matrix
 	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal) * sign(at_tangent.w), vertexNormal));
@@ -98,11 +98,16 @@
             // Apply curvature distortion
             vertexFeetPlayerPos.y -= dot(vertexFeetPlayerPos.xz, vertexFeetPlayerPos.xz) / WORLD_CURVATURE_SIZE;
 
-            // Convert to clip position and output as final position
-            gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexFeetPlayerPos);
-        #else
-            gl_Position = gl_ProjectionMatrix * vertexViewPos;
+            // Convert back to vertex view position
+            vertexViewPos = mat3(gbufferModelView) * vertexFeetPlayerPos + gbufferModelView[3].xyz;
         #endif
+
+        // Convert to clip position and output as final position
+        // gl_Position = gl_ProjectionMatrix * vertexViewPos;
+        gl_Position.xyz = getMatScale(mat3(gl_ProjectionMatrix)) * vertexViewPos;
+        gl_Position.z += gl_ProjectionMatrix[3].z;
+
+        gl_Position.w = -vertexViewPos.z;
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
@@ -129,7 +134,7 @@
 
     in vec2 texCoord;
 
-    in vec4 vertexFeetPlayerPos;
+    in vec3 vertexFeetPlayerPos;
 
     #ifdef PARALLAX_OCCLUSION
         flat in vec2 vTexCoordScale;

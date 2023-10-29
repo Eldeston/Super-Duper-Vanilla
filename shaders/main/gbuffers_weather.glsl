@@ -62,14 +62,23 @@
             texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
 
             #ifdef WEATHER_ANIMATION
+                // Get vertex view position
+                vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
                 // Get vertex feet player position
-                vec4 vertexFeetPlayerPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+                vec3 vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos + gbufferModelViewInverse[3].xyz;
 
                 // Apply weather wave animation
-                if(rainStrength > 0.005) vertexFeetPlayerPos.xz = getWeatherWave(vertexFeetPlayerPos.xyz, vertexFeetPlayerPos.xz + cameraPosition.xz);
+                if(rainStrength > 0.005) vertexFeetPlayerPos.xz = getWeatherWave(vertexFeetPlayerPos, vertexFeetPlayerPos.xz + cameraPosition.xz);
+
+                // Convert back to vertex view position
+                vertexViewPos = mat3(gbufferModelView) * vertexFeetPlayerPos + gbufferModelView[3].xyz;
 
                 // Convert to clip position and output as final position
-                gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexFeetPlayerPos);
+                // gl_Position = gl_ProjectionMatrix * vertexViewPos;
+                gl_Position.xyz = getMatScale(mat3(gl_ProjectionMatrix)) * vertexViewPos;
+                gl_Position.z += gl_ProjectionMatrix[3].z;
+
+                gl_Position.w = -vertexViewPos.z;
             #else
                 gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
             #endif

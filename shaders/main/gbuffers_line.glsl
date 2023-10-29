@@ -42,8 +42,8 @@
         vertexColor = vaColor.rgb;
 
         // Feet player pos
-        vec4 linePosStart = vec4(vaPosition, 1);
-        vec4 linePosEnd = vec4(vaPosition + gl_Normal.xyz, 1);
+        vec3 linePosStart = vaPosition;
+        vec3 linePosEnd = vaPosition + gl_Normal.xyz;
 
         #ifdef WORLD_CURVATURE
             linePosStart.y -= lengthSquared(linePosStart.xz) / WORLD_CURVATURE_SIZE;
@@ -51,19 +51,20 @@
         #endif
 
         // 1.0 - (1.0 / 256.0) = 0.99609375
-        linePosStart = projectionMatrix * (modelViewMatrix * vec4(linePosStart.xyz * 0.99609375, linePosStart.w));
-        linePosEnd = projectionMatrix * (modelViewMatrix * vec4(linePosEnd.xyz * 0.99609375, linePosEnd.w));
+        linePosStart = mat3(modelViewMatrix) * (linePosStart * 0.99609375) + modelViewMatrix[3].xyz;
+        linePosEnd = mat3(modelViewMatrix) * (linePosEnd * 0.99609375) + modelViewMatrix[3].xyz;
 
-        vec3 ndc1 = linePosStart.xyz / linePosStart.w;
-        vec3 ndc2 = linePosEnd.xyz / linePosEnd.w;
+        vec2 vertexClipCoord0 = vec2(projectionMatrix[0].x, projectionMatrix[1].y) * linePosStart.xy;
+        vec2 vertexClipCoord1 = vec2(projectionMatrix[0].x, projectionMatrix[1].y) * linePosEnd.xy;
 
-        vec2 lineScreenDirection = fastNormalize(ndc2.xy - ndc1.xy);
-        vec2 lineOffset = vec2(-lineScreenDirection.y, lineScreenDirection.x) * vec2(pixelWidth, pixelHeight) * 2.0;
+        vec2 lineScreenDir = fastNormalize(vertexClipCoord0 / linePosStart.z - vertexClipCoord1 / linePosEnd.z);
+        vec2 lineOffset = vec2(lineScreenDir.y * pixelWidth, -lineScreenDir.x * pixelHeight) * linePosStart.z * 2.0;
 
         if(lineOffset.x < 0) lineOffset = -lineOffset;
         if(gl_VertexID % 2 != 0) lineOffset = -lineOffset;
 
-        gl_Position = vec4(vec3(ndc1.xy + lineOffset, ndc1.z) * linePosStart.w, linePosStart.w);
+        gl_Position.xyz = vec3(vertexClipCoord0 + lineOffset, projectionMatrix[3].z + projectionMatrix[2].z * linePosStart.z);
+        gl_Position.w = -linePosStart.z;
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);

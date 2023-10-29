@@ -230,10 +230,3 @@ const float PHYSICS_NORMAL_STRENGTH = 0.6;
 
 // Sun and moon intensity squared
 const float sunMoonIntensitySqrd = SUN_MOON_INTENSITY * SUN_MOON_INTENSITY;
-
-// Precalculated trigonometry
-const float celestialCosZ = cos(-sunPathRotation * 0.01745329);
-const float celestialSinZ = sin(-sunPathRotation * 0.01745329);
-
-// Celestial path rotation matrix
-const mat2 celestialRotationZ = mat2(celestialCosZ, -celestialSinZ, celestialSinZ, celestialCosZ);
