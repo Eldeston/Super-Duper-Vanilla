@@ -25,13 +25,18 @@
     uniform mat4 modelViewMatrix;
     uniform mat4 projectionMatrix;
 
+    #ifdef WORLD_CURVATURE
+        uniform mat4 gbufferModelView;
+        uniform mat4 gbufferModelViewInverse;
+    #endif
+
     #if ANTI_ALIASING == 2
         uniform int frameMod8;
 
         #include "/lib/utility/taaJitter.glsl"
     #endif
 
-    // Attributes (uses "in" instead of "attribute" because Mojank)
+    // Attributes (uses "in" instead of "attribute" because Mojank and GL 330)
     in vec3 vaNormal;
     in vec3 vaPosition;
 
@@ -42,29 +47,36 @@
         vertexColor = vaColor.rgb;
 
         // Feet player pos
-        vec3 linePosStart = vaPosition;
-        vec3 linePosEnd = vaPosition + gl_Normal.xyz;
+        vec3 linePosStart = mat3(modelViewMatrix) * vaPosition + modelViewMatrix[3].xyz;
+        vec3 linePosEnd = mat3(modelViewMatrix) * (vaPosition + vaNormal) + modelViewMatrix[3].xyz;
 
         #ifdef WORLD_CURVATURE
+            linePosStart = mat3(gbufferModelViewInverse) * linePosStart + gbufferModelViewInverse[3].xyz;
+            linePosEnd = mat3(gbufferModelViewInverse) * linePosEnd + gbufferModelViewInverse[3].xyz;
+
             linePosStart.y -= lengthSquared(linePosStart.xz) / WORLD_CURVATURE_SIZE;
             linePosEnd.y -= lengthSquared(linePosEnd.xz) / WORLD_CURVATURE_SIZE;
+
+            linePosStart = mat3(gbufferModelView) * linePosStart + gbufferModelView[3].xyz;
+            linePosEnd = mat3(gbufferModelView) * linePosEnd + gbufferModelView[3].xyz;
         #endif
 
-        // 1.0 - (1.0 / 256.0) = 0.99609375
-        linePosStart = mat3(modelViewMatrix) * (linePosStart * 0.99609375) + modelViewMatrix[3].xyz;
-        linePosEnd = mat3(modelViewMatrix) * (linePosEnd * 0.99609375) + modelViewMatrix[3].xyz;
+        vec2 vertexClipCoordStart = vec2(projectionMatrix[0].x, projectionMatrix[1].y) * linePosStart.xy;
+        vec2 vertexClipCoordEnd = vec2(projectionMatrix[0].x, projectionMatrix[1].y) * linePosEnd.xy;
 
-        vec2 vertexClipCoord0 = vec2(projectionMatrix[0].x, projectionMatrix[1].y) * linePosStart.xy;
-        vec2 vertexClipCoord1 = vec2(projectionMatrix[0].x, projectionMatrix[1].y) * linePosEnd.xy;
-
-        vec2 lineScreenDir = fastNormalize(vertexClipCoord0 / linePosStart.z - vertexClipCoord1 / linePosEnd.z);
-        vec2 lineOffset = vec2(lineScreenDir.y * pixelWidth, -lineScreenDir.x * pixelHeight) * linePosStart.z * 2.0;
+        vec2 lineScreenDir = fastNormalize(vertexClipCoordStart / linePosStart.z - vertexClipCoordEnd / linePosEnd.z);
+        vec2 lineOffset = vec2(-lineScreenDir.y * pixelWidth, lineScreenDir.x * pixelHeight);
 
         if(lineOffset.x < 0) lineOffset = -lineOffset;
         if(gl_VertexID % 2 != 0) lineOffset = -lineOffset;
 
-        gl_Position.xyz = vec3(vertexClipCoord0 + lineOffset, projectionMatrix[3].z + projectionMatrix[2].z * linePosStart.z);
-        gl_Position.w = -linePosStart.z;
+        // Apply view scaling here
+        // 1.0 - (1.0 / 256.0) = 0.99609375
+        float vertexViewDepth = linePosStart.z * 0.99609375;
+        float vertexClipDepth = projectionMatrix[2].z * vertexViewDepth + projectionMatrix[3].z;
+
+        gl_Position.xyz = vec3(vertexClipCoordStart - lineOffset * (vertexViewDepth * 2.0), vertexClipDepth);
+        gl_Position.w = -vertexViewDepth;
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);

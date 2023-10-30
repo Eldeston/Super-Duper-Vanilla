@@ -100,5 +100,4 @@ This along with the `GBUFFERS` macro, are used to identify the quirks in the cur
 * Replace vertex space calculations
 * Optimize sky calculation
 * Fix glint z fighting
-* Fix line vertex calculation
 * Document the shader pipeline
