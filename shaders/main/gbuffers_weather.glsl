@@ -61,27 +61,31 @@
             // Get buffer texture coordinates
             texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
 
+            // Get vertex view position
+            vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
+
             #ifdef WEATHER_ANIMATION
-                // Get vertex view position
-                vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
+                // Get vertex eye player position
+                vec3 vertexEyePlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos;
+
                 // Get vertex feet player position
-                vec3 vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos + gbufferModelViewInverse[3].xyz;
+                vec2 vertexFeetPlayerPosXZ = vertexEyePlayerPos.xz + gbufferModelViewInverse[3].xz;
+                // Get vertex world position
+                vec2 vertexWorldPosXZ = vertexFeetPlayerPosXZ + cameraPosition.xz;
 
                 // Apply weather wave animation
-                if(rainStrength > 0.005) vertexFeetPlayerPos.xz = getWeatherWave(vertexFeetPlayerPos, vertexFeetPlayerPos.xz + cameraPosition.xz);
+                if(rainStrength > 0.005) vertexEyePlayerPos.xz = getWeatherWave(vertexEyePlayerPos, vertexWorldPosXZ);
 
                 // Convert back to vertex view position
-                vertexViewPos = mat3(gbufferModelView) * vertexFeetPlayerPos + gbufferModelView[3].xyz;
-
-                // Convert to clip position and output as final position
-                // gl_Position = gl_ProjectionMatrix * vertexViewPos;
-                gl_Position.xyz = getMatScale(mat3(gl_ProjectionMatrix)) * vertexViewPos;
-                gl_Position.z += gl_ProjectionMatrix[3].z;
-
-                gl_Position.w = -vertexViewPos.z;
-            #else
-                gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+                vertexViewPos = mat3(gbufferModelView) * vertexEyePlayerPos;
             #endif
+
+            // Convert to clip position and output as final position
+            // gl_Position = gl_ProjectionMatrix * vertexViewPos;
+            gl_Position.xyz = getMatScale(mat3(gl_ProjectionMatrix)) * vertexViewPos;
+            gl_Position.z += gl_ProjectionMatrix[3].z;
+
+            gl_Position.w = -vertexViewPos.z;
 
             #if ANTI_ALIASING == 2
                 gl_Position.xy += jitterPos(gl_Position.w);

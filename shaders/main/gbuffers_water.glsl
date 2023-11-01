@@ -90,6 +90,13 @@
         // Get vertex color
         vertexColor = gl_Color.rgb;
 
+        // Lightmap fix for mods
+        #ifdef WORLD_CUSTOM_SKYLIGHT
+            lmCoord = vec2(min(gl_MultiTexCoord1.x * 0.00416667, 1.0), WORLD_CUSTOM_SKYLIGHT);
+        #else
+            lmCoord = min(gl_MultiTexCoord1.xy * 0.00416667, vec2(1));
+        #endif
+
         // Get vertex tangent
         vec3 vertexNormal = fastNormalize(gl_Normal);
         // Get vertex tangent
@@ -104,17 +111,10 @@
         vec3 vertexWorldPos = vertexFeetPlayerPos + cameraPosition;
 
         // Get water noise uv position
-        waterNoiseUv = vertexWorldPos.xz / WATER_TILE_SIZE;
+        waterNoiseUv = vertexWorldPos.xz * waterTileSizeInv;
 
         // Calculate TBN matrix
 	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal) * sign(at_tangent.w), vertexNormal));
-
-        // Lightmap fix for mods
-        #ifdef WORLD_CUSTOM_SKYLIGHT
-            lmCoord = vec2(min(gl_MultiTexCoord1.x * 0.00416667, 1.0), WORLD_CUSTOM_SKYLIGHT);
-        #else
-            lmCoord = min(gl_MultiTexCoord1.xy * 0.00416667, vec2(1));
-        #endif
 
         #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
             vec2 midCoord = (gl_TextureMatrix[0] * vec4(mc_midTexCoord, 0, 0)).xy;
@@ -147,7 +147,7 @@
 
             #ifdef WORLD_CURVATURE
                 // Apply curvature distortion
-                vertexFeetPlayerPos.y -= dot(vertexFeetPlayerPos.xz, vertexFeetPlayerPos.xz) / WORLD_CURVATURE_SIZE;
+                vertexFeetPlayerPos.y -= dot(vertexFeetPlayerPos.xz, vertexFeetPlayerPos.xz) * worldCurvatureInv;
             #endif
 
             // Convert back to vertex view position

@@ -51,14 +51,14 @@
         vec3 linePosEnd = mat3(modelViewMatrix) * (vaPosition + vaNormal) + modelViewMatrix[3].xyz;
 
         #ifdef WORLD_CURVATURE
-            linePosStart = mat3(gbufferModelViewInverse) * linePosStart + gbufferModelViewInverse[3].xyz;
-            linePosEnd = mat3(gbufferModelViewInverse) * linePosEnd + gbufferModelViewInverse[3].xyz;
+            linePosStart = mat3(gbufferModelViewInverse) * linePosStart;
+            linePosEnd = mat3(gbufferModelViewInverse) * linePosEnd;
 
-            linePosStart.y -= lengthSquared(linePosStart.xz) / WORLD_CURVATURE_SIZE;
-            linePosEnd.y -= lengthSquared(linePosEnd.xz) / WORLD_CURVATURE_SIZE;
+            linePosStart.y -= lengthSquared(linePosStart.xz + gbufferModelViewInverse[3].xz) * worldCurvatureInv;
+            linePosEnd.y -= lengthSquared(linePosEnd.xz + gbufferModelViewInverse[3].xz) * worldCurvatureInv;
 
-            linePosStart = mat3(gbufferModelView) * linePosStart + gbufferModelView[3].xyz;
-            linePosEnd = mat3(gbufferModelView) * linePosEnd + gbufferModelView[3].xyz;
+            linePosStart = mat3(gbufferModelView) * linePosStart;
+            linePosEnd = mat3(gbufferModelView) * linePosEnd;
         #endif
 
         vec2 vertexClipCoordStart = vec2(projectionMatrix[0].x, projectionMatrix[1].y) * linePosStart.xy;

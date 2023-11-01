@@ -24,17 +24,12 @@
         out vec2 texCoord;
         out vec2 waterNoiseUv;
 
-        #ifdef PHYSICS_OCEAN
-            // Physics mod compatibility
-            #include "/lib/physicsMod/physicsModVertex.glsl"
-        #endif
-
         uniform vec3 cameraPosition;
 
         uniform mat4 shadowModelView;
         uniform mat4 shadowModelViewInverse;
 
-        #if defined TERRAIN_ANIMATION || defined WATER_ANIMATION
+        #if defined TERRAIN_ANIMATION || defined WATER_ANIMATION || defined PHYSICS_OCEAN
             #if TIMELAPSE_MODE == 2
                 uniform float animationFrameTime;
 
@@ -46,6 +41,11 @@
             #endif
 
             attribute vec3 at_midBlock;
+
+            #ifdef PHYSICS_OCEAN
+                // Physics mod compatibility
+                #include "/lib/physicsMod/physicsModVertex.glsl"
+            #endif
 
             #include "/lib/vertex/shadowWave.glsl"
         #endif
@@ -63,34 +63,36 @@
             vertexColor = gl_Color.rgb;
 
             // Get vertex view position
-            vec3 vertexShadowViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
-            // Get vertex feet player position
-            vec3 vertexShadowFeetPlayerPos = mat3(shadowModelViewInverse) * vertexShadowViewPos + shadowModelViewInverse[3].xyz;
+            vec3 vertexShdViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
+            // Get vertex eye player position
+            vec3 vertexShdEyePlayerPos = mat3(shadowModelViewInverse) * vertexShdViewPos;
 
+            // Get vertex feet player position
+            vec2 vertexShdFeetPlayerPosXZ = vertexShdEyePlayerPos.xz + shadowModelViewInverse[3].xz;
             // Get world position
-            vec3 vertexShadowWorldPos = vertexShadowFeetPlayerPos + cameraPosition;
+            vec2 vertexShdWorldPosXZ = vertexShdFeetPlayerPosXZ + cameraPosition.xz;
 
             // Get water noise uv position
-            waterNoiseUv = vertexShadowWorldPos.xz / WATER_TILE_SIZE;
+            waterNoiseUv = vertexShdWorldPosXZ * waterTileSizeInv;
 
             #if defined TERRAIN_ANIMATION || defined WATER_ANIMATION || defined WORLD_CURVATURE || defined PHYSICS_OCEAN
                 #if defined TERRAIN_ANIMATION || defined WATER_ANIMATION || defined PHYSICS_OCEAN
                     // Apply terrain wave animation
-                    vertexShadowFeetPlayerPos.xyz = getShadowWave(vertexShadowFeetPlayerPos.xyz, vertexShadowWorldPos, at_midBlock.y * 0.015625, mc_Entity.x, saturate(gl_MultiTexCoord1.y * 0.00416667));
+                    vertexShdEyePlayerPos = getShadowWave(vertexShdEyePlayerPos, vertexShdWorldPosXZ, at_midBlock.y * 0.015625, mc_Entity.x, min(gl_MultiTexCoord1.y * 0.00416667, 1.0));
                 #endif
 
                 #ifdef WORLD_CURVATURE
                     // Apply curvature distortion
-                    vertexShadowFeetPlayerPos.y -= dot(vertexShadowFeetPlayerPos.xz, vertexShadowFeetPlayerPos.xz) / WORLD_CURVATURE_SIZE;
+                    vertexShdEyePlayerPos.y -= dot(vertexShdFeetPlayerPosXZ, vertexShdFeetPlayerPosXZ) * worldCurvatureInv;
                 #endif
 
                 // Convert back to vertex view position
-                vertexShadowViewPos = mat3(shadowModelView) * vertexShadowFeetPlayerPos + shadowModelView[3].xyz;
+                vertexShdViewPos = mat3(shadowModelView) * vertexShdEyePlayerPos;
             #endif
 
             // Convert to clip position and output as final position
-            // gl_Position = gl_ProjectionMatrix * vertexShadowViewPos;
-            gl_Position.xyz = getMatScale(mat3(gl_ProjectionMatrix)) * vertexShadowViewPos;
+            // gl_Position = gl_ProjectionMatrix * vertexShdViewPos;
+            gl_Position.xyz = getMatScale(mat3(gl_ProjectionMatrix)) * vertexShdViewPos;
             gl_Position.z += gl_ProjectionMatrix[3].z;
 
             gl_Position.w = 1.0;

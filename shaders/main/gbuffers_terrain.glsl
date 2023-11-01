@@ -87,6 +87,13 @@
         // Get vertex color
         vertexColor = gl_Color.rgb;
 
+        // Lightmap fix for mods
+        #ifdef WORLD_CUSTOM_SKYLIGHT
+            lmCoord = vec2(min(gl_MultiTexCoord1.x * 0.00416667, 1.0), WORLD_CUSTOM_SKYLIGHT);
+        #else
+            lmCoord = min(gl_MultiTexCoord1.xy * 0.00416667, vec2(1));
+        #endif
+
         // Get vertex tangent
         vec3 vertexNormal = fastNormalize(gl_Normal);
         // Get vertex tangent
@@ -102,13 +109,6 @@
 
         // Calculate TBN matrix
 	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal) * sign(at_tangent.w), vertexNormal));
-
-        // Lightmap fix for mods
-        #ifdef WORLD_CUSTOM_SKYLIGHT
-            lmCoord = vec2(min(gl_MultiTexCoord1.x * 0.00416667, 1.0), WORLD_CUSTOM_SKYLIGHT);
-        #else
-            lmCoord = min(gl_MultiTexCoord1.xy * 0.00416667, vec2(1));
-        #endif
 
         #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
             vec2 midTexCoord = (gl_TextureMatrix[0] * vec4(mc_midTexCoord, 0, 0)).xy;
@@ -127,7 +127,7 @@
 
             #ifdef WORLD_CURVATURE
                 // Apply curvature distortion
-                vertexFeetPlayerPos.y -= dot(vertexFeetPlayerPos.xz, vertexFeetPlayerPos.xz) / WORLD_CURVATURE_SIZE;
+                vertexFeetPlayerPos.y -= dot(vertexFeetPlayerPos.xz, vertexFeetPlayerPos.xz) * worldCurvatureInv;
             #endif
 
             // Convert back to vertex view position
@@ -263,7 +263,7 @@
 
         if(blockId == 11100){
             #ifdef LAVA_NOISE
-                // Lava tile size reciprocal
+                // Lava tile size inverse
                 const float lavaTileSizeInv = 1.0 / LAVA_TILE_SIZE;
 
                 vec2 lavaUv = vertexWorldPos.zy * TBN[2].x + vertexWorldPos.xz * TBN[2].y + vertexWorldPos.xy * TBN[2].z;

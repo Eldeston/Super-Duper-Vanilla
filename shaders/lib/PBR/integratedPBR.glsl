@@ -26,8 +26,8 @@ void getPBR(inout structPBR material, in int id){
 
             vec2 slopeNormal = d0 - vec2(d1, d2);
             // TBN * fastNormalize(vec3(slopeNormal, 1))
-            float lengthInverse = inversesqrt(lengthSquared(slopeNormal) + 1.0);
-            material.normal = TBN * vec3(slopeNormal * lengthInverse, lengthInverse);
+            float lengthInv = inversesqrt(lengthSquared(slopeNormal) + 1.0);
+            material.normal = TBN * vec3(slopeNormal * lengthInv, lengthInv);
 
             // Calculate normal strength
             material.normal = mix(TBN[2], material.normal, NORMAL_STRENGTH);

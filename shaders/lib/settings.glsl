@@ -230,3 +230,9 @@ const float PHYSICS_NORMAL_STRENGTH = 0.6;
 
 // Sun and moon intensity squared
 const float sunMoonIntensitySqrd = SUN_MOON_INTENSITY * SUN_MOON_INTENSITY;
+
+// World curvature size inverse
+const float worldCurvatureInv = 1.0 / WORLD_CURVATURE_SIZE;
+
+// Water tile size inverse
+const float waterTileSizeInv = 1.0 / WATER_TILE_SIZE;
