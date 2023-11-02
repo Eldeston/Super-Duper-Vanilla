@@ -38,10 +38,10 @@
    Iris versions 1.6.10+ from Minecraft versions 1.18.2+ are compatible with this shader. For Optifine, it varies across GPU vendors. Please always choose the latest Iris or Optifine of your respective Minecraft version.
 
 | Optifine | Windows, Linux (Intel, AMD, NVidia) | Apple (M1)    |
-|----------|------------------------------------ | ------------- |
-| 1.17+    | Supported                           | Supported     |
-| 1.14+    | Supported                           | Not supported |
-| 1.13-    | Not supported                       | Not supported |
+| -------- | ----------------------------------- | ------------- |
+| 1.17.1+  | Supported                           | Supported     |
+| 1.14.2+  | Supported                           | Not supported |
+| 1.13.2-  | Not supported                       | Not supported |
 
 ## Releases
    See all available releases [here](https://github.com/Eldeston/Super-Duper-Vanilla/releases), and get the latest commit [here](https://github.com/Eldeston/Super-Duper-Vanilla/archive/refs/heads/master.zip), the latest build will always be from the most recent commit by default.
