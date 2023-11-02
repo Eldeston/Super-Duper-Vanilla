@@ -35,8 +35,10 @@
     #endif
 
     void main(){
-        // Get vertex alpha
-        vertexAlpha = gl_Color.a;
+        // Glint emissive intensity
+        const float emissive = EMISSIVE_INTENSITY * 0.25;
+        // Get vertex alpha and emissive
+        vertexAlpha = gl_Color.a * gl_Color.a * emissive;
         // Get buffer texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
 
@@ -93,11 +95,6 @@
         // Convert to linear space
         albedo.rgb = toLinear(albedo.rgb);
 
-        // Glint emissive intensity
-        const float emissive = EMISSIVE_INTENSITY * 0.25;
-
-        sceneColOut = albedo.rgb * (vertexAlpha * emissive);
-
-        return;
+        sceneColOut = albedo.rgb * vertexAlpha;
     }
 #endif
