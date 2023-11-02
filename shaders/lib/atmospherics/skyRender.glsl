@@ -125,7 +125,7 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos){
         if(cloudHeightFade > 0.005){
             float cloudTime = ANIMATION_FRAMETIME * 0.125;
 
-            vec2 planeUv = nEyePlayerPos.xz * (5.33333333 / nEyePlayerPos.y);
+            vec2 planeUv = nEyePlayerPos.xz * (6.0 / nEyePlayerPos.y);
 
             #ifdef DYNAMIC_CLOUDS
                 float fadeTime = saturate(sin(ANIMATION_FRAMETIME * FADE_SPEED) * 0.8 + 0.5);
