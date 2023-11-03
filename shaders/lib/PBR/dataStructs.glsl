@@ -1,5 +1,5 @@
-// Material PBR struct
-struct structPBR{
+// Material PBR data struct
+struct dataPBR{
     // Albedo texture
     vec4 albedo;
     // Normal map
@@ -19,3 +19,14 @@ struct structPBR{
     // POM self shadows
     float parallaxShd;
 };
+
+/*
+// Texture coordinate data struct
+struct dataTexCoord{
+    // Derivatives
+    vec2 texDFdx;
+    vec2 texDFdy;
+    // Main texcoord
+    vec2 texCoord;
+};
+*/

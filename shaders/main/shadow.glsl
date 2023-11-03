@@ -146,8 +146,8 @@
             #ifdef SHADOW_COLOR
                 vec4 shdAlbedo = textureLod(tex, texCoord, 0);
 
-                // Alpha test, discard immediately
-                if(shdAlbedo.a < ALPHA_THRESHOLD) discard;
+                // Alpha test, discard and return immediately
+                if(shdAlbedo.a < ALPHA_THRESHOLD){ discard; return; }
 
                 // If the object is fully opaque, set to black. This fixes "color leaking" filtered shadows
                 if(shdAlbedo.a == 1){
@@ -180,15 +180,15 @@
 
                 shadowColOut = toLinear(shadowColOut * vertexColor);
             #else
-                // Alpha test, discard immediately
-                if(textureLod(tex, texCoord, 0).a < ALPHA_THRESHOLD) discard;
+                // Alpha test, discard and return immediately
+                if(textureLod(tex, texCoord, 0).a < ALPHA_THRESHOLD){ discard; return; }
 
                 shadowColOut = vec3(0);
             #endif
         }
     #else
         void main(){
-            discard;
+            discard; return;
         }
     #endif
 #endif

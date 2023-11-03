@@ -267,7 +267,7 @@
         #include "/lib/lighting/GGX.glsl"
     #endif
 
-    #include "/lib/PBR/structPBR.glsl"
+    #include "/lib/PBR/dataStructs.glsl"
 
     #if PBR_MODE <= 1
         #include "/lib/PBR/integratedPBR.glsl"
@@ -283,7 +283,7 @@
 
     void main(){
 	    // Declare materials
-	    structPBR material;
+	    dataPBR material;
         getPBR(material, blockId);
         
         // If water

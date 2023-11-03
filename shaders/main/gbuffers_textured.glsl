@@ -157,16 +157,15 @@
         // Get albedo
         vec4 albedo = textureLod(tex, texCoord, 0);
 
-        // Alpha test, discard immediately
-        if(albedo.a < ALPHA_THRESHOLD) discard;
+        // Alpha test, discard and return immediately
+        if(albedo.a < ALPHA_THRESHOLD){ discard; return; }
 
-        #ifdef MC_RENDER_STAGE_WORLD_BORDER
-            // World border fix + emissives
-            if(renderStage == MC_RENDER_STAGE_WORLD_BORDER){
-                sceneColOut = vec4(vec3(0.125, 0.25, 0.5) * EMISSIVE_INTENSITY, albedo.a);
-                return; // Return immediately, no need for lighting calculation
-            }
-        #endif
+        // World border fix + emissives
+        if(renderStage == MC_RENDER_STAGE_WORLD_BORDER){
+            const vec3 borderCol = vec3(0.125, 0.25, 0.5) * EMISSIVE_INTENSITY;
+            sceneColOut = vec4(borderCol, albedo.a);
+            return; // Return immediately, no need for lighting calculation
+        }
 
         // Particle emissives
         if((vertexColor.r * 0.5 > vertexColor.g + vertexColor.b || (vertexColor.r + vertexColor.b > vertexColor.g * 2.0 && abs(vertexColor.r - vertexColor.b) < 0.2) || ((albedo.r + albedo.g + albedo.b > 1.6 || (vertexColor.r != vertexColor.g && vertexColor.g != vertexColor.b)) && lmCoord.x == 1)) && atlasSize.x <= 1024 && atlasSize.x > 0){

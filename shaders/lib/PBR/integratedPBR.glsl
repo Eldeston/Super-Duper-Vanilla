@@ -3,12 +3,12 @@ vec2 dcdx = dFdx(texCoord);
 vec2 dcdy = dFdy(texCoord);
 
 // The Integrated PBR calculation
-void getPBR(inout structPBR material, in int id){
+void getPBR(inout dataPBR material, in int id){
     // Assign albedo
     material.albedo = textureGrad(tex, texCoord, dcdx, dcdy);
 
-    // Alpha test, discard immediately
-    if(material.albedo.a < ALPHA_THRESHOLD) discard;
+    // Alpha test, discard and return immediately
+    if(material.albedo.a < ALPHA_THRESHOLD){ discard; return; }
 
     // Assign default normal map
     material.normal = TBN[2];

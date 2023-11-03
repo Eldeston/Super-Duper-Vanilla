@@ -99,7 +99,7 @@
 #ifdef FRAGMENT
     #ifdef FORCE_DISABLE_WEATHER
         void main(){
-            discard;
+            discard; return;
         }
     #else
         /* RENDERTARGETS: 0 */
@@ -129,8 +129,8 @@
             // Get albedo color
             vec4 albedo = textureLod(tex, texCoord, 0);
 
-            // Alpha test, discard immediately
-            if(albedo.a < ALPHA_THRESHOLD) discard;
+            // Alpha test, discard and return immediately
+            if(albedo.a < ALPHA_THRESHOLD){ discard; return; }
 
             // Convert to linear space
             albedo.rgb = toLinear(albedo.rgb);

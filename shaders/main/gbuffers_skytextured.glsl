@@ -82,8 +82,8 @@
         // Get albedo color
         vec4 albedo = textureLod(tex, texCoord, 0);
 
-        // Alpha test, discard immediately
-        if(albedo.a < ALPHA_THRESHOLD) discard;
+        // Alpha test, discard and return immediately
+        if(albedo.a < ALPHA_THRESHOLD){ discard; return; }
 
     /* DRAWBUFFERS:0 */
         // Detect sun
@@ -94,7 +94,7 @@
                     return;
                 }
             #else
-                if(renderStage == MC_RENDER_STAGE_MOON) discard;
+                if(renderStage == MC_RENDER_STAGE_MOON){ discard; return; }
             #endif
         #endif
 
@@ -106,7 +106,7 @@
                     return;
                 }
             #else
-                if(renderStage == MC_RENDER_STAGE_MOON) discard;
+                if(renderStage == MC_RENDER_STAGE_MOON){ discard; return; }
             #endif
         #endif
 

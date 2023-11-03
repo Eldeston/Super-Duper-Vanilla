@@ -1,4 +1,4 @@
-vec3 complexShadingForward(in structPBR material){
+vec3 complexShadingForward(in dataPBR material){
 	// Calculate sky diffusion first, begining with the sky itself
 	vec3 totalDiffuse = toLinear(SKY_COLOR_DATA_BLOCK);
 

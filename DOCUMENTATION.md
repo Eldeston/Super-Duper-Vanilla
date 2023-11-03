@@ -86,7 +86,7 @@ This along with the `GBUFFERS` macro, are used to identify the quirks in the cur
 | LINE           | defined |
 
 ### Disabled programs
-   List of discarded and disabled programs. They typically have no other purposes other than disabling a program by using `discard;`. This method is used to conveniently disable programs without using `shaders.properties` to disable the program per world.
+   List of discarded and disabled programs. They typically have no other purposes other than disabling a program by using `discard;` + `return;`. This method is used to conveniently disable programs without using `shaders.properties` to disable the program per world.
 
 | Program Macros | Type    |
 | -------------- | ------- |

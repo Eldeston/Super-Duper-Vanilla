@@ -94,7 +94,7 @@
 #ifdef FRAGMENT
     #if defined FORCE_DISABLE_CLOUDS || defined STORY_MODE_CLOUDS
         void main(){
-            discard;
+            discard; return;
         }
     #else
         /* RENDERTARGETS: 0,3 */
@@ -168,8 +168,8 @@
                 #endif
             #endif
 
-            // Alpha test, discard immediately
-            if(albedoAlpha < ALPHA_THRESHOLD) discard;
+            // Alpha test, discard and return immediately
+            if(albedoAlpha < ALPHA_THRESHOLD){ discard; return; }
 
             #if COLOR_MODE == 2
                 vec4 albedo = vec4(0, 0, 0, albedoAlpha);

@@ -1,5 +1,5 @@
 // Environment PBR calculation
-void enviroPBR(inout structPBR material){
+void enviroPBR(inout dataPBR material){
     float rainMatFact = TBN[2].y * max(0.0, (lmCoord.y - 0.8) * 5.0) * (1.0 - material.porosity) * isPrecipitationRain;
 
     if(rainMatFact < 0.005) return;

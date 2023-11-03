@@ -25,6 +25,6 @@
 
 #ifdef FRAGMENT
     void main(){
-        discard;
+        discard; return;
     }
 #endif

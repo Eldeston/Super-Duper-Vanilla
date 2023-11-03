@@ -79,7 +79,7 @@ vec2 dcdy = dFdy(texCoord);
 #endif
 
 // The lab PBR standard 1.3
-void getPBR(inout structPBR material, in int id){
+void getPBR(inout dataPBR material, in int id){
     vec2 texUv = texCoord;
 
     // Exclude signs and floating texts. We'll also include water and lava in the meantime.
@@ -97,8 +97,8 @@ void getPBR(inout structPBR material, in int id){
     // Assign albedo
     material.albedo = textureGrad(tex, texUv, dcdx, dcdy);
 
-    // Alpha test, discard immediately
-    if(material.albedo.a < ALPHA_THRESHOLD) discard;
+    // Alpha test, discard and return immediately
+    if(material.albedo.a < ALPHA_THRESHOLD){ discard; return; }
 
     // Assign default normal map
     material.normal = TBN[2];
