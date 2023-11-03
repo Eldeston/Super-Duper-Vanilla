@@ -74,7 +74,7 @@
                 vec2 vertexWorldPosXZ = vertexFeetPlayerPosXZ + cameraPosition.xz;
 
                 // Apply weather wave animation
-                if(rainStrength > 0.005) vertexEyePlayerPos.xz = getWeatherWave(vertexEyePlayerPos, vertexWorldPosXZ);
+                if(rainStrength >= 0.005) vertexEyePlayerPos.xz = getWeatherWave(vertexEyePlayerPos, vertexWorldPosXZ);
 
                 // Convert back to vertex view position
                 vertexViewPos = mat3(gbufferModelView) * vertexEyePlayerPos;

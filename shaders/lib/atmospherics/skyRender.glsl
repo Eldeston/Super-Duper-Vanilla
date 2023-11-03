@@ -112,6 +112,18 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos){
     // Calculate basic sky color
     vec3 finalCol = getSkyBasic(skyCoordScale, nEyePlayerPos.y, skyPos.z);
 
+    #ifdef WORLD_STARS
+        // Star field generation
+        vec2 starData = texelFetch(noisetex, ivec2(skyCoordScale / (abs(skyPos.z) + sqrt(1.0 - skyPos.z * skyPos.z))) & 255, 0).xy;
+        float stars = exp(starData.x * starData.y * 64.0 - 64.0);
+
+        #ifdef FORCE_DISABLE_WEATHER
+            finalCol += stars * WORLD_STARS;
+        #else
+            finalCol += (1.0 - rainStrength) * stars * WORLD_STARS;
+        #endif
+    #endif
+
     #if defined STORY_MODE_CLOUDS && defined WORLD_LIGHT && !defined FORCE_DISABLE_CLOUDS
         float cloudHeightFade = nEyePlayerPos.y - 0.125;
 
@@ -122,46 +134,34 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos){
             cloudHeightFade *= 5.0 - rainStrength * 4.0;
         #endif
 
-        if(cloudHeightFade > 0.005){
-            float cloudTime = ANIMATION_FRAMETIME * 0.125;
+        if(cloudHeightFade < 0.005) return finalCol;
+            
+        float cloudTime = ANIMATION_FRAMETIME * 0.125;
 
-            vec2 planeUv = nEyePlayerPos.xz * (6.0 / nEyePlayerPos.y);
+        vec2 planeUv = nEyePlayerPos.xz * (6.0 / nEyePlayerPos.y);
 
-            #ifdef DYNAMIC_CLOUDS
-                float fadeTime = saturate(sin(ANIMATION_FRAMETIME * FADE_SPEED) * 0.8 + 0.5);
+        #ifdef DYNAMIC_CLOUDS
+            float fadeTime = saturate(sin(ANIMATION_FRAMETIME * FADE_SPEED) * 0.8 + 0.5);
 
-                vec3 cloudData0 = cloudParallaxDynamic(planeUv, cloudTime);
-                float clouds = mix(mix(cloudData0.x, cloudData0.y, fadeTime), cloudData0.z, rainStrength) * min(cloudHeightFade, 1.0) * 0.125;
+            vec3 cloudData0 = cloudParallaxDynamic(planeUv, cloudTime);
+            float clouds = mix(mix(cloudData0.x, cloudData0.y, fadeTime), cloudData0.z, rainStrength) * min(cloudHeightFade, 1.0) * 0.125;
 
-                #ifdef DOUBLE_LAYERED_CLOUDS
-                    vec3 cloudData1 = cloudParallaxDynamic(-planeUv * 2.0, -cloudTime);
-                    clouds += mix(mix(cloudData1.x, cloudData1.y, fadeTime), cloudData1.z, rainStrength) * (1.0 - clouds) * cloudHeightFade * 0.025; // 0.125 * 0.2
-                #endif
-            #else
-                float clouds = cloudParallax(planeUv, cloudTime) * min(cloudHeightFade, 1.0) * 0.125;
-
-                #ifdef DOUBLE_LAYERED_CLOUDS
-                    clouds += cloudParallax(-planeUv * 2.0, -cloudTime) * (1.0 - clouds) * cloudHeightFade * 0.03125;
-                #endif
+            #ifdef DOUBLE_LAYERED_CLOUDS
+                vec3 cloudData1 = cloudParallaxDynamic(-planeUv * 2.0, -cloudTime);
+                clouds += mix(mix(cloudData1.x, cloudData1.y, fadeTime), cloudData1.z, rainStrength) * (1.0 - clouds) * cloudHeightFade * 0.025; // 0.125 * 0.2
             #endif
-
-            #ifdef FORCE_DISABLE_DAY_CYCLE
-                finalCol += lightCol * clouds;
-            #else
-                finalCol += mix(moonCol, sunCol, dayCycleAdjust) * clouds;
-            #endif
-        }
-    #endif
-
-    #ifdef WORLD_STARS
-        // Star field generation
-        vec2 starData = texelFetch(noisetex, ivec2(skyCoordScale / (abs(skyPos.z) + sqrt(1.0 - skyPos.z * skyPos.z))) & 255, 0).xy;
-        float stars = exp(starData.x * starData.y * 64.0 - 64.0);
-
-        #ifdef FORCE_DISABLE_WEATHER
-            finalCol += stars * WORLD_STARS;
         #else
-            finalCol += (1.0 - rainStrength) * stars * WORLD_STARS;
+            float clouds = cloudParallax(planeUv, cloudTime) * min(cloudHeightFade, 1.0) * 0.125;
+
+            #ifdef DOUBLE_LAYERED_CLOUDS
+                clouds += cloudParallax(-planeUv * 2.0, -cloudTime) * (1.0 - clouds) * cloudHeightFade * 0.03125;
+            #endif
+        #endif
+
+        #ifdef FORCE_DISABLE_DAY_CYCLE
+            finalCol += lightCol * clouds;
+        #else
+            finalCol += mix(moonCol, sunCol, dayCycleAdjust) * clouds;
         #endif
     #endif
 

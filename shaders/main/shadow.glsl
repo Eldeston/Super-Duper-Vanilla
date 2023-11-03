@@ -149,32 +149,36 @@
                 // Alpha test, discard immediately
                 if(shdAlbedo.a < ALPHA_THRESHOLD) discard;
 
-                // If the object is not opaque, proceed with shadow coloring and caustics
-                if(shdAlbedo.a != 1){
-                    if(blockId == 11102){
-                        #ifdef WATER_FLAT
-                            #if UNDERWATER_CAUSTICS == 2
-                                shadowColOut = vec3(squared(0.256 + getCellNoise(waterNoiseUv)) * 0.8);
-                            #elif UNDERWATER_CAUSTICS == 1
-                                shadowColOut = vec3(0.8);
-                                if(isEyeInWater == 1) shadowColOut = vec3(squared(0.256 + getCellNoise(waterNoiseUv)) * 0.8);
-                            #endif
-                        #else
-                            #if UNDERWATER_CAUSTICS == 2
-                                shadowColOut = shdAlbedo.rgb * squared(0.256 + getCellNoise(waterNoiseUv));
-                            #elif UNDERWATER_CAUSTICS == 1
-                                shadowColOut = shdAlbedo.rgb;
-                                if(isEyeInWater == 1) shadowColOut *= squared(0.256 + getCellNoise(waterNoiseUv));
-                            #endif
-                        #endif
-
-                        shadowColOut = toLinear(shadowColOut * vertexColor);
-                    }
-                    // To give white colored glass some proper shadows except water
-                    else shadowColOut = toLinear(shdAlbedo.rgb * vertexColor) * (1.0 - shdAlbedo.a * shdAlbedo.a);
-                }
                 // If the object is fully opaque, set to black. This fixes "color leaking" filtered shadows
-                else shadowColOut = vec3(0);
+                if(shdAlbedo.a == 1){
+                    shadowColOut = vec3(0);
+                    return;
+                }
+
+                // To give white colored glass some proper shadows except water
+                if(blockId != 11102){
+                    shadowColOut = toLinear(shdAlbedo.rgb * vertexColor) * (1.0 - shdAlbedo.a * shdAlbedo.a);
+                    return;
+                }
+
+                // If the object is not opaque, proceed with shadow coloring and caustics
+                #ifdef WATER_FLAT
+                    #if UNDERWATER_CAUSTICS == 2
+                        shadowColOut = vec3(squared(0.256 + getCellNoise(waterNoiseUv)) * 0.8);
+                    #elif UNDERWATER_CAUSTICS == 1
+                        shadowColOut = vec3(0.8);
+                        if(isEyeInWater == 1) shadowColOut = vec3(squared(0.256 + getCellNoise(waterNoiseUv)) * 0.8);
+                    #endif
+                #else
+                    #if UNDERWATER_CAUSTICS == 2
+                        shadowColOut = shdAlbedo.rgb * squared(0.256 + getCellNoise(waterNoiseUv));
+                    #elif UNDERWATER_CAUSTICS == 1
+                        shadowColOut = shdAlbedo.rgb;
+                        if(isEyeInWater == 1) shadowColOut *= squared(0.256 + getCellNoise(waterNoiseUv));
+                    #endif
+                #endif
+
+                shadowColOut = toLinear(shadowColOut * vertexColor);
             #else
                 // Alpha test, discard immediately
                 if(textureLod(tex, texCoord, 0).a < ALPHA_THRESHOLD) discard;
