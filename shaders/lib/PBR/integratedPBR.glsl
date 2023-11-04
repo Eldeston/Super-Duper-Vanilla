@@ -126,7 +126,7 @@ void getPBR(inout dataPBR material, in int id){
 
             // Metal blocks
             else if(id == 12401){
-                material.smoothness = sumOf(material.albedo.rgb) * 0.333;
+                material.smoothness = sumOf(material.albedo.rgb) * 0.32;
                 material.metallic = 1.0;
             }
 
@@ -170,7 +170,7 @@ void getPBR(inout dataPBR material, in int id){
                 if(material.albedo.r > material.albedo.g || material.albedo.r != material.albedo.b || material.albedo.g > material.albedo.b){
                     float metalOreColSum = sumOf(material.albedo.rgb);
                     if(metalOreColSum > 0.75){
-                        material.smoothness = metalOreColSum * 0.333;
+                        material.smoothness = metalOreColSum * 0.32;
                         material.metallic = 1.0;
                     }
                 }
@@ -179,7 +179,7 @@ void getPBR(inout dataPBR material, in int id){
             // Netherack metals
             else if(id == 12701){
                 if(maxOf(material.albedo.rg) > 0.6){
-                    material.smoothness = sumOf(material.albedo.rgb) * 0.333;
+                    material.smoothness = sumOf(material.albedo.rgb) * 0.32;
                     material.metallic = 1.0;
                 }
             }
@@ -202,7 +202,7 @@ void getPBR(inout dataPBR material, in int id){
                 // Rails
                 if(id == 12901){
                     if(material.albedo.r < material.albedo.g * 1.6 && material.albedo.r < material.albedo.b * 1.6){
-                        material.smoothness = sumOf(material.albedo.rgb) * 0.333;
+                        material.smoothness = sumOf(material.albedo.rgb) * 0.32;
                         material.metallic = 1.0;
                     }
                 }
