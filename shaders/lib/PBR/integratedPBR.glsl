@@ -120,13 +120,13 @@ void getPBR(inout dataPBR material, in int id){
 
             // Dark metals
             else if(id == 12400){
-                material.smoothness = sumOf(material.albedo.rgb) * 0.1998 + 0.4;
+                material.smoothness = sumOf(material.albedo.rgb) * 0.1999 + 0.4;
                 material.metallic = 1.0;
             }
 
             // Metal blocks
             else if(id == 12401){
-                material.smoothness = sumOf(material.albedo.rgb) * 0.32;
+                material.smoothness = sumOf(material.albedo.rgb) * 0.3 + 0.06;
                 material.metallic = 1.0;
             }
 
@@ -170,7 +170,7 @@ void getPBR(inout dataPBR material, in int id){
                 if(material.albedo.r > material.albedo.g || material.albedo.r != material.albedo.b || material.albedo.g > material.albedo.b){
                     float metalOreColSum = sumOf(material.albedo.rgb);
                     if(metalOreColSum > 0.75){
-                        material.smoothness = metalOreColSum * 0.32;
+                        material.smoothness = metalOreColSum * 0.3 + 0.06;
                         material.metallic = 1.0;
                     }
                 }
