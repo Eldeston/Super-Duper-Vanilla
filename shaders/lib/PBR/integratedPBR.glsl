@@ -151,7 +151,7 @@ void getPBR(inout dataPBR material, in int id){
                 if(material.albedo.r > material.albedo.g || material.albedo.r != material.albedo.b || material.albedo.g > material.albedo.b){
                     float gemOreColSum = sumOf(material.albedo.rgb);
                     if(gemOreColSum > 0.75){
-                        material.smoothness = min(0.93, gemOreColSum);
+                        material.smoothness = min(0.96, gemOreColSum);
                         material.metallic = 0.17;
                     }
                 }
@@ -179,7 +179,7 @@ void getPBR(inout dataPBR material, in int id){
             // Netherack metals
             else if(id == 12701){
                 if(maxOf(material.albedo.rg) > 0.6){
-                    material.smoothness = sumOf(material.albedo.rgb) * 0.32;
+                    material.smoothness = sumOf(material.albedo.rgb) * 0.31;
                     material.metallic = 1.0;
                 }
             }
