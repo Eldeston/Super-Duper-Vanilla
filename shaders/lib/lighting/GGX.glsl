@@ -73,8 +73,11 @@ vec3 getSpecularBRDF(in vec3 V, in vec3 N, in vec3 albedo, in float NL, in float
 
     // Calculate and apply fresnel and return final specular
     float cosTheta = exp2(-9.28 * LH);
-    if(metallic > 0.9) return min(vec3(sunMoonIntensitySqrd / roughness), getFresnelSchlick(albedo, cosTheta) * distribution);
+	float oneMinusCosTheta = 1.0 - cosTheta;
 
-    float fresnel = getFresnelSchlick(metallic, cosTheta);
-    return vec3(min(sunMoonIntensitySqrd, fresnel * distribution * roughness) / (1.0 - fresnel * smoothness));
+	float basicFresnel = cosTheta + metallic * oneMinusCosTheta;
+    if(metallic <= 0.9) return vec3(min(sunMoonIntensitySqrd, basicFresnel * distribution * roughness) / (1.0 - basicFresnel * smoothness));
+
+    vec3 metallicFresnel = cosTheta + albedo * oneMinusCosTheta;
+    return min(vec3(sunMoonIntensitySqrd / roughness), metallicFresnel * distribution);
 }
