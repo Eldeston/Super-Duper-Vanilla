@@ -116,7 +116,7 @@ vec3 complexShadingForward(in dataPBR material){
 
 	totalDiffuse = material.albedo.rgb * (totalDiffuse + material.emissive * EMISSIVE_INTENSITY);
 
-	#ifdef WORLD_LIGHT
+	#if defined WORLD_LIGHT && defined SPECULAR_HIGHLIGHTS
 		if(isShadow){
 			// Get specular GGX
 			vec3 specCol = getSpecularBRDF(-fastNormalize(vertexFeetPlayerPos), material.normal, material.albedo.rgb, NLZ, material.metallic, material.smoothness);

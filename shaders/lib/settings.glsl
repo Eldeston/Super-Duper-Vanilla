@@ -111,6 +111,7 @@ const float sunPathRotation = 30.0; // Light path angle. This also affects sky a
 /// -------------------------------- /// PBR /// -------------------------------- ///
 
 #define PBR_MODE 1 // Enables PBR. Integrated PBR depends on the vanilla albedo textures to map out the materials. Resource PBR uses your resource packs' PBR, if available. Resource PBR requires latest LabPBR version! [0 1 2]
+#define SPECULAR_HIGHLIGHTS // Enables specular highlight. Specular highlights are the approximate reflections of the sun.
 #define ENVIRONMENT_PBR // Enables enviroment materials. Environment materials affects your surrounding according to your environment such as rain.
 // #define NORMAL_GENERATION // Enables normal generation. Disabled when LabPBR is on. Works mostly on vanilla resource packs.
 #define NORMAL_GENERATION_RESOLUTION 128 // Auto generated normal resolution. Minor effects to performance. [16 32 64 128 256 512 1024]
@@ -206,6 +207,9 @@ const float PHYSICS_NORMAL_STRENGTH = 0.6;
 #endif
 
 #ifdef STORY_MODE_CLOUDS
+#endif
+
+#ifdef SPECULAR_HIGHLIGHTS
 #endif
 
 #ifdef ENVIRONMENT_PBR

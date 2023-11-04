@@ -51,7 +51,7 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
 
 	// Modified version of BSL's reflection PBR calculation
 	// vec3 fresnel = (F0 + (1.0 - F0) * cosTheta) * smoothness
-	// Reflection calculation derived and optimized from this equation
+	// Fresnel calculation derived and optimized from this equation
 	float smoothCosTheta = smoothness * cosTheta;
 	float oneMinusCosTheta = smoothness - smoothCosTheta;
 
