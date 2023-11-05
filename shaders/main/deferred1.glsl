@@ -238,7 +238,7 @@
         // Get scene color
         sceneColOut = texelFetch(gcolor, screenTexelCoord, 0).rgb;
 
-        // If sky, do full sky render
+        // If sky, do full sky render and return immediately
         if(skyMask){
             sceneColOut = getFullSkyRender(nEyePlayerPos, sceneColOut) * exp2(-far * (blindness + darknessFactor));
             return;
