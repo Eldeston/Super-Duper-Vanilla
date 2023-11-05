@@ -115,7 +115,11 @@ vec3 generateCosineVector(in vec3 vector, in vec3 noiseUnitVector){
 mat2 rot2D(in float x){
 	float cosX = cos(x);
   	float sinX = sin(x);
-	return mat2(cosX, -sinX, sinX, cosX);
+
+	return mat2(
+		cosX, -sinX, 
+		sinX, cosX
+	);
 }
 
 // Rotate on the x axis

@@ -89,27 +89,27 @@
             // Declare and get positions
             float depth = texelFetch(depthtex1, screenTexelCoord, 0).x;
 
-            // Apply DOF if not player hand
-            if(depth > 0.56){
-                // CoC calculation by Capt Tatsu from BSL
-                float CoC = max(0.0, abs(depth - centerDepthSmooth) * DOF_STRENGTH - 0.01);
-                CoC = CoC * inversesqrt(CoC * CoC + 0.1);
+            // Return immediately if player hand
+            if(depth <= 0.56) return;
+            
+            // CoC calculation by Capt Tatsu from BSL
+            float CoC = max(0.0, abs(depth - centerDepthSmooth) * DOF_STRENGTH - 0.01);
+            CoC = CoC * inversesqrt(CoC * CoC + 0.1);
 
-                // We'll use a total of 16 samples for this blur (1 / 16)
-                float blurRadius = min(viewWidth, viewHeight) * fovMult * CoC;
-                float currDofLOD = log2(blurRadius);
-                vec2 blurRes = blurRadius / vec2(viewWidth, viewHeight);
+            // We'll use a total of 16 samples for this blur (1 / 16)
+            float blurRadius = min(viewWidth, viewHeight) * fovMult * CoC;
+            float currDofLOD = log2(blurRadius);
+            vec2 blurRes = blurRadius / vec2(viewWidth, viewHeight);
 
-                // Get center pixel color with LOD
-                vec3 dofColor = textureLod(gcolor, texCoord, currDofLOD).rgb;
-                for(int i = 0; i < 15; i++){
-                    // Rotate offsets and sample
-                    dofColor += textureLod(gcolor, texCoord - dofOffSets[i] * blurRes, currDofLOD).rgb;
-                }
-
-                // 15 offsetted samples + 1 sample (1 / 16)
-                sceneColOut = dofColor * 0.0625;
+            // Get center pixel color with LOD
+            vec3 dofColor = textureLod(gcolor, texCoord, currDofLOD).rgb;
+            for(int i = 0; i < 15; i++){
+                // Rotate offsets and sample
+                dofColor += textureLod(gcolor, texCoord - dofOffSets[i] * blurRes, currDofLOD).rgb;
             }
+
+            // 15 offsetted samples + 1 sample (1 / 16)
+            sceneColOut = dofColor * 0.0625;
         #endif
     }
 #endif

@@ -71,8 +71,11 @@
             // Declare and get positions
             float depth = texelFetch(depthtex0, screenTexelCoord, 0).x;
 
-            // Apply motion blur if not player hand
-            if(depth > 0.56) sceneColOut = motionBlur(sceneColOut, depth, texelFetch(noisetex, screenTexelCoord & 255, 0).x);
+            // Return immediately if player hand
+            if(depth <= 0.56) return;
+
+            // Apply motion blur
+            sceneColOut = motionBlur(sceneColOut, depth, texelFetch(noisetex, screenTexelCoord & 255, 0).x);
         #endif
     }
 #endif

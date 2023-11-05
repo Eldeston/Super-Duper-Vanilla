@@ -241,36 +241,36 @@
         // If sky, do full sky render
         if(skyMask){
             sceneColOut = getFullSkyRender(nEyePlayerPos, sceneColOut) * exp2(-far * (blindness + darknessFactor));
-        // Else, calculate reflection and fog
-        }else{
-            float viewDist = viewDot * viewDotInvSqrt;
-
-            #if ANTI_ALIASING >= 2
-                vec3 dither = toRandPerFrame(getRand3(screenTexelCoord & 255), frameTimeCounter);
-            #else
-                vec3 dither = getRand3(screenTexelCoord & 255);
-            #endif
-
-            // Declare and get materials
-            vec2 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xy;
-            vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
-            vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
-
-            // Apply deffered shading
-            sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, viewDotInvSqrt, matRaw0.x, matRaw0.y, dither);
-
-            #if OUTLINES != 0
-                // Outline calculation
-                sceneColOut *= 1.0 + getOutline(screenTexelCoord, screenPos.z) * OUTLINE_BRIGHTNESS;
-            #endif
-
-            #ifdef SSAO
-                // Apply ambient occlusion with simple blur
-                sceneColOut *= getSSAOBoxBlur(screenTexelCoord);
-            #endif
-
-            // Do basic sky render and use it as fog color
-            sceneColOut = getFogRender(sceneColOut, getFogRender(nEyePlayerPos), viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
+            return;
         }
+
+        float viewDist = viewDot * viewDotInvSqrt;
+
+        #if ANTI_ALIASING >= 2
+            vec3 dither = toRandPerFrame(getRand3(screenTexelCoord & 255), frameTimeCounter);
+        #else
+            vec3 dither = getRand3(screenTexelCoord & 255);
+        #endif
+
+        // Declare and get materials
+        vec2 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xy;
+        vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
+        vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
+
+        // Apply deffered shading
+        sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, viewDotInvSqrt, matRaw0.x, matRaw0.y, dither);
+
+        #if OUTLINES != 0
+            // Outline calculation
+            sceneColOut *= 1.0 + getOutline(screenTexelCoord, screenPos.z) * OUTLINE_BRIGHTNESS;
+        #endif
+
+        #ifdef SSAO
+            // Apply ambient occlusion with simple blur
+            sceneColOut *= getSSAOBoxBlur(screenTexelCoord);
+        #endif
+
+        // Do basic sky render and use it as fog color
+        sceneColOut = getFogRender(sceneColOut, getSkyFogRender(nEyePlayerPos), viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
     }
 #endif

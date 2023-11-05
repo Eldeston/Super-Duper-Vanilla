@@ -169,7 +169,7 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos){
 }
 
 // Fog color render
-vec3 getFogRender(in vec3 nEyePlayerPos){
+vec3 getSkyFogRender(in vec3 nEyePlayerPos){
     // If player is in water, return nothing if it's not the sky
     if(isEyeInWater == 1) return vec3(0);
     // If player is in lava, return fog color
