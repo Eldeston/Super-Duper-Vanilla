@@ -157,7 +157,7 @@
         // Convert to clip position and output as final position
         // gl_Position = gl_ProjectionMatrix * vertexViewPos;
         gl_Position.xyz = getMatScale(mat3(gl_ProjectionMatrix)) * vertexViewPos;
-        gl_Position.xyz += gl_ProjectionMatrix[3].z;
+        gl_Position.z += gl_ProjectionMatrix[3].z;
 
         gl_Position.w = -vertexViewPos.z;
 
