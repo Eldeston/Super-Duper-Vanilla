@@ -17,7 +17,7 @@
 
     option.ENTITY_BLOCK_TRANSPARENCY = Точная прозрачность
     option.NOISE_SPEED = Скорость шума
-    
+
     screen.POST = Постобработка
     option.OUTLINES = Контуры
         value.OUTLINES.0 = Выкл
