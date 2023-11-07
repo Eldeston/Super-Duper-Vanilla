@@ -29,7 +29,7 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    // Final scene color
+    // Final scene color out
     layout(location = 0) out vec3 finalColOut;
 
     /*
