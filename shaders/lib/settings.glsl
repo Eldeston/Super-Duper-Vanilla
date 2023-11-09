@@ -235,6 +235,9 @@ const float PHYSICS_NORMAL_STRENGTH = 0.6;
 // Sun and moon intensity squared
 const float sunMoonIntensitySqrd = SUN_MOON_INTENSITY * SUN_MOON_INTENSITY;
 
+// Sky box brightness squared
+const float skyBoxBrightnessSqrd = SKYBOX_BRIGHTNESS * SKYBOX_BRIGHTNESS;
+
 // World curvature size inverse
 const float worldCurvatureInv = 1.0 / WORLD_CURVATURE_SIZE;
 

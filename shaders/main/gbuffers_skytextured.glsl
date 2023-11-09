@@ -33,7 +33,7 @@
 
     void main(){
         // Get vertex alpha
-        vertexAlpha = gl_Color.a;
+        vertexAlpha = gl_Color.a * gl_Color.a;
         // Get vertex color
         vertexColor = gl_Color.rgb;
         // Get buffer texture coordinates
@@ -67,16 +67,13 @@
 
     in vec2 texCoord;
 
-    uniform sampler2D tex;
-
-    #if defined MC_RENDER_STAGE_SUN || defined MC_RENDER_STAGE_MOON
-        uniform int renderStage;
-    #endif
+    uniform int renderStage;
 
     #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
-        uniform float dayCycle;
         uniform float twilightPhase;
     #endif
+
+    uniform sampler2D tex;
     
     void main(){
         // Get albedo color
@@ -85,32 +82,28 @@
         // Alpha test, discard and return immediately
         if(albedo.a < ALPHA_THRESHOLD){ discard; return; }
 
-    /* DRAWBUFFERS:0 */
-        // Detect sun
-        #ifdef MC_RENDER_STAGE_SUN
-            #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
-                if(renderStage == MC_RENDER_STAGE_SUN){
-                    sceneColOut = toLinear(albedo.rgb * (SUN_MOON_INTENSITY * vertexAlpha)) * SUN_COL_DATA_BLOCK;
-                    return;
-                }
-            #else
-                if(renderStage == MC_RENDER_STAGE_MOON){ discard; return; }
-            #endif
+        // Convert to linear space
+        albedo.rgb = toLinear(albedo.rgb);
+
+        #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
+            // Detect sun
+            if(renderStage == MC_RENDER_STAGE_SUN){
+                sceneColOut = (sunMoonIntensitySqrd * vertexAlpha) * SUN_COL_DATA_BLOCK * albedo.rgb;
+                return;
+            }
+
+            // Detect moon
+            if(renderStage == MC_RENDER_STAGE_MOON){
+                sceneColOut = (sunMoonIntensitySqrd * vertexAlpha) * MOON_COL_DATA_BLOCK * albedo.rgb;
+                return;
+            }
+        #else
+            // Otherwise BEGONE
+            if(renderStage == MC_RENDER_STAGE_SUN){ discard; return; }
+            if(renderStage == MC_RENDER_STAGE_MOON){ discard; return; }
         #endif
 
-        // Detect moon
-        #ifdef MC_RENDER_STAGE_MOON
-            #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
-                if(renderStage == MC_RENDER_STAGE_MOON){
-                    sceneColOut = toLinear(albedo.rgb * (SUN_MOON_INTENSITY * vertexAlpha)) * MOON_COL_DATA_BLOCK;
-                    return;
-                }
-            #else
-                if(renderStage == MC_RENDER_STAGE_MOON){ discard; return; }
-            #endif
-        #endif
-
-        // Otherwise, calculate skybox
-        sceneColOut = toLinear(albedo.rgb * vertexColor * (SKYBOX_BRIGHTNESS * vertexAlpha));
+        // Otherwise calculate skybox
+        sceneColOut = (skyBoxBrightnessSqrd * vertexAlpha * albedo.a) * vertexColor * albedo.rgb;
     }
 #endif
