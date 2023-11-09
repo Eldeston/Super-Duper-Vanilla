@@ -238,9 +238,20 @@
         // Get scene color
         sceneColOut = texelFetch(gcolor, screenTexelCoord, 0).rgb;
 
+        // Get sky pos by shadow model view
+        vec3 skyPos = mat3(shadowModelView) * nEyePlayerPos;
+
+        #if defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
+            // Flip if the sun has gone below the horizon
+            if(dayCycle < 1) skyPos.xz = -skyPos.xz;
+        #endif
+
+        // Get basic sky simple color
+        vec3 currSkyCol = getSkyBasic(nEyePlayerPos.y, skyPos.z);
+
         // If sky, do full sky render and return immediately
         if(skyMask){
-            sceneColOut = getFullSkyRender(nEyePlayerPos, sceneColOut) * exp2(-far * (blindness + darknessFactor));
+            sceneColOut = getFullSkyRender(nEyePlayerPos, skyPos, currSkyCol + sceneColOut) * exp2(-far * (blindness + darknessFactor));
             return;
         }
 
@@ -270,7 +281,9 @@
             sceneColOut *= getSSAOBoxBlur(screenTexelCoord);
         #endif
 
+        // Get basic sky fog color
+        vec3 fogSkyCol = getSkyFogRender(nEyePlayerPos, skyPos, currSkyCol);
         // Do basic sky render and use it as fog color
-        sceneColOut = getFogRender(sceneColOut, getSkyFogRender(nEyePlayerPos), viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
+        sceneColOut = getFogRender(sceneColOut, fogSkyCol, viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
     }
 #endif
