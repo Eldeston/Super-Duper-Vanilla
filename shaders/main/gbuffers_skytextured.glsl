@@ -1,14 +1,14 @@
 /*
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 
-    Developed by Eldeston, presented by FlameRender (TM) Studios.
+    Developed by Eldeston, presented by FlameRender (C) Studios.
 
-    Copyright (C) 2023 Eldeston | FlameRender (TM) Studios License
+    Copyright (C) 2023 Eldeston | FlameRender (C) Studios License
 
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 */
 
 /// Buffer features: TAA jittering, and direct shading
@@ -39,7 +39,15 @@
         // Get buffer texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
 
-        gl_Position = ftransform();
+        // Get vertex view position
+        vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
+
+        // Convert to clip position and output as final position
+        // gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+        gl_Position.xyz = getMatScale(mat3(gl_ProjectionMatrix)) * vertexViewPos;
+        gl_Position.z += gl_ProjectionMatrix[3].z;
+
+        gl_Position.w = -vertexViewPos.z;
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
@@ -50,6 +58,9 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
+    /* RENDERTARGETS: 0 */
+    layout(location = 0) out vec3 sceneColOut; // gcolor
+
     flat in float vertexAlpha;
 
     flat in vec3 vertexColor;
@@ -71,19 +82,19 @@
         // Get albedo color
         vec4 albedo = textureLod(tex, texCoord, 0);
 
-        // Alpha test, discard immediately
-        if(albedo.a < ALPHA_THRESHOLD) discard;
+        // Alpha test, discard and return immediately
+        if(albedo.a < ALPHA_THRESHOLD){ discard; return; }
 
     /* DRAWBUFFERS:0 */
         // Detect sun
         #ifdef MC_RENDER_STAGE_SUN
             #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
                 if(renderStage == MC_RENDER_STAGE_SUN){
-                    gl_FragData[0] = vec4(toLinear(albedo.rgb * (SUN_MOON_INTENSITY * vertexAlpha)) * SUN_COL_DATA_BLOCK, albedo.a);
+                    sceneColOut = toLinear(albedo.rgb * (SUN_MOON_INTENSITY * vertexAlpha)) * SUN_COL_DATA_BLOCK;
                     return;
                 }
             #else
-                if(renderStage == MC_RENDER_STAGE_MOON) discard;
+                if(renderStage == MC_RENDER_STAGE_MOON){ discard; return; }
             #endif
         #endif
 
@@ -91,15 +102,15 @@
         #ifdef MC_RENDER_STAGE_MOON
             #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
                 if(renderStage == MC_RENDER_STAGE_MOON){
-                    gl_FragData[0] = vec4(toLinear(albedo.rgb * (SUN_MOON_INTENSITY * vertexAlpha)) * MOON_COL_DATA_BLOCK, albedo.a);
+                    sceneColOut = toLinear(albedo.rgb * (SUN_MOON_INTENSITY * vertexAlpha)) * MOON_COL_DATA_BLOCK;
                     return;
                 }
             #else
-                if(renderStage == MC_RENDER_STAGE_MOON) discard;
+                if(renderStage == MC_RENDER_STAGE_MOON){ discard; return; }
             #endif
         #endif
 
         // Otherwise, calculate skybox
-        gl_FragData[0] = vec4(toLinear(albedo.rgb * vertexColor * (SKYBOX_BRIGHTNESS * vertexAlpha)), albedo.a);
+        sceneColOut = toLinear(albedo.rgb * vertexColor * (SKYBOX_BRIGHTNESS * vertexAlpha));
     }
 #endif

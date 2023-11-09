@@ -61,7 +61,9 @@ vec3 getSkyBasic(in vec2 skyCoordScale, in float nEyePlayerPosY, in float skyPos
     vec3 finalCol = skyCol + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 
     #ifdef WORLD_SKY_GROUND
-        finalCol.rg *= smoothen(saturate(1.0 + nEyePlayerPosY * 4.0));
+        // finalCol.rg *= smoothen(saturate(1.0 + nEyePlayerPosY * 4.0));
+        // if(nEyePlayerPosY < 0) finalCol *= smoothen(max(1.0 + nEyePlayerPosY / max(skyCol, 0.25), vec3(0.25)));
+        if(nEyePlayerPosY < 0) finalCol *= exp2(-(nEyePlayerPosY * nEyePlayerPosY * 8.0) / max(skyCol * skyCol, vec3(0.125)));
     #endif
 
     #ifdef WORLD_LIGHT
@@ -110,47 +112,6 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos){
     // Calculate basic sky color
     vec3 finalCol = getSkyBasic(skyCoordScale, nEyePlayerPos.y, skyPos.z);
 
-    #if defined STORY_MODE_CLOUDS && defined WORLD_LIGHT && !defined FORCE_DISABLE_CLOUDS
-        float cloudHeightFade = nEyePlayerPos.y - 0.125;
-
-        #ifdef FORCE_DISABLE_WEATHER
-            cloudHeightFade *= 4.0;
-        #else
-            cloudHeightFade -= rainStrength * 0.175;
-            cloudHeightFade *= 4.0 - rainStrength * 3.2;
-        #endif
-
-        if(cloudHeightFade > 0.005){
-            float cloudTime = ANIMATION_FRAMETIME * 0.125;
-
-            vec2 planeUv = nEyePlayerPos.xz * (5.33333333 / nEyePlayerPos.y);
-
-            #ifdef DYNAMIC_CLOUDS
-                float fadeTime = saturate(sin(ANIMATION_FRAMETIME * FADE_SPEED) * 0.8 + 0.5);
-
-                vec3 cloudData0 = cloudParallaxDynamic(planeUv, cloudTime);
-                float clouds = mix(mix(cloudData0.x, cloudData0.y, fadeTime), cloudData0.z, rainStrength) * min(cloudHeightFade, 1.0) * 0.125;
-
-                #ifdef DOUBLE_LAYERED_CLOUDS
-                    vec3 cloudData1 = cloudParallaxDynamic(-planeUv * 2.0, -cloudTime);
-                    clouds += mix(mix(cloudData1.x, cloudData1.y, fadeTime), cloudData1.z, rainStrength) * (1.0 - clouds) * cloudHeightFade * 0.03125;
-                #endif
-            #else
-                float clouds = cloudParallax(planeUv, cloudTime) * min(cloudHeightFade, 1.0) * 0.125;
-
-                #ifdef DOUBLE_LAYERED_CLOUDS
-                    clouds += cloudParallax(-planeUv * 2.0, -cloudTime) * (1.0 - clouds) * cloudHeightFade * 0.03125;
-                #endif
-            #endif
-
-            #ifdef FORCE_DISABLE_DAY_CYCLE
-                finalCol += lightCol * clouds;
-            #else
-                finalCol += mix(moonCol, sunCol, dayCycleAdjust) * clouds;
-            #endif
-        }
-    #endif
-
     #ifdef WORLD_STARS
         // Star field generation
         vec2 starData = texelFetch(noisetex, ivec2(skyCoordScale / (abs(skyPos.z) + sqrt(1.0 - skyPos.z * skyPos.z))) & 255, 0).xy;
@@ -163,17 +124,58 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos){
         #endif
     #endif
 
+    #if defined STORY_MODE_CLOUDS && defined WORLD_LIGHT && !defined FORCE_DISABLE_CLOUDS
+        float cloudHeightFade = nEyePlayerPos.y - 0.125;
+
+        #ifdef FORCE_DISABLE_WEATHER
+            cloudHeightFade *= 5.0;
+        #else
+            cloudHeightFade -= rainStrength * 0.2;
+            cloudHeightFade *= 5.0 - rainStrength * 4.0;
+        #endif
+
+        if(cloudHeightFade < 0.005) return finalCol;
+            
+        float cloudTime = ANIMATION_FRAMETIME * 0.125;
+
+        vec2 planeUv = nEyePlayerPos.xz * (6.0 / nEyePlayerPos.y);
+
+        #ifdef DYNAMIC_CLOUDS
+            float fadeTime = saturate(sin(ANIMATION_FRAMETIME * FADE_SPEED) * 0.8 + 0.5);
+
+            vec3 cloudData0 = cloudParallaxDynamic(planeUv, cloudTime);
+            float clouds = mix(mix(cloudData0.x, cloudData0.y, fadeTime), cloudData0.z, rainStrength) * min(cloudHeightFade, 1.0) * 0.125;
+
+            #ifdef DOUBLE_LAYERED_CLOUDS
+                vec3 cloudData1 = cloudParallaxDynamic(-planeUv * 2.0, -cloudTime);
+                clouds += mix(mix(cloudData1.x, cloudData1.y, fadeTime), cloudData1.z, rainStrength) * (1.0 - clouds) * cloudHeightFade * 0.025; // 0.125 * 0.2
+            #endif
+        #else
+            float clouds = cloudParallax(planeUv, cloudTime) * min(cloudHeightFade, 1.0) * 0.125;
+
+            #ifdef DOUBLE_LAYERED_CLOUDS
+                clouds += cloudParallax(-planeUv * 2.0, -cloudTime) * (1.0 - clouds) * cloudHeightFade * 0.03125;
+            #endif
+        #endif
+
+        #ifdef FORCE_DISABLE_DAY_CYCLE
+            finalCol += lightCol * clouds;
+        #else
+            finalCol += mix(moonCol, sunCol, dayCycleAdjust) * clouds;
+        #endif
+    #endif
+
     return finalCol;
 }
 
 // Fog color render
-vec3 getFogRender(in vec3 nEyePlayerPos){
+vec3 getSkyFogRender(in vec3 nEyePlayerPos){
     // If player is in water, return nothing if it's not the sky
     if(isEyeInWater == 1) return vec3(0);
     // If player is in lava, return fog color
     if(isEyeInWater == 2) return fogColor;
 
-    // Rotate normalized player pos to shadow space
+    // Rotate normalized player position to shadow space
     vec3 skyPos = mat3(shadowModelView) * nEyePlayerPos;
 
     #if defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
@@ -199,7 +201,7 @@ vec3 getSkyReflection(in vec3 nEyePlayerPos){
     // If player is in lava, return fog color
     if(isEyeInWater == 2) return fogColor;
 
-    // Rotate normalized player pos to shadow space
+    // Rotate normalized player position to shadow space
     vec3 skyPos = mat3(shadowModelView) * nEyePlayerPos;
 
     #if defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
@@ -218,8 +220,7 @@ vec3 getSkyReflection(in vec3 nEyePlayerPos){
         float VLBrightness = fakeVLBrightness * shdFade;
 
         if(nEyePlayerPos.y > 0){
-            float heightFade = 1.0 - squared(nEyePlayerPos.y);
-            heightFade = squared(squared(heightFade * heightFade));
+            float heightFade = squared(squared(squared(1.0 - squared(nEyePlayerPos.y))));
 
             #ifndef FORCE_DISABLE_WEATHER
                 heightFade += (1.0 - heightFade) * rainStrength * 0.5;
@@ -238,7 +239,7 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyBoxCol){
     // If player is in lava, return fog color
     if(isEyeInWater == 2) return fogColor;
 
-    // Rotate normalized player pos to shadow space
+    // Rotate normalized player position to shadow space
     vec3 skyPos = mat3(shadowModelView) * nEyePlayerPos;
 
     // Use sky box color as base color
@@ -253,9 +254,9 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyBoxCol){
         #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE != 2
             // If current world uses shader sun and moon but not vanilla sun and moon
             #if SUN_MOON_TYPE == 1
-                float sunMoonShape = getSunMoonShape(skyPos.z) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY;
+                float sunMoonShape = getSunMoonShape(skyPos.z) * sunMoonIntensitySqrd;
             #else
-                float sunMoonShape = getSunMoonShape(skyPos.xy) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY;
+                float sunMoonShape = getSunMoonShape(skyPos.xy) * sunMoonIntensitySqrd;
             #endif
 
             #ifndef FORCE_DISABLE_WEATHER
@@ -274,11 +275,13 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyBoxCol){
             if(blackHole <= 0) return vec3(0);
             blackHole = 1.0 / max(1.0, blackHole);
 
+            // Distortion application
             const float rotationFactor = TAU * 16.0;
             skyPos.xy = rot2D(blackHole * rotationFactor) * skyPos.xy;
+
             float rings = textureLod(noisetex, vec2(skyPos.x * blackHole, frameTimeCounter * 0.0009765625), 0).x;
 
-            finalCol += ((rings * blackHole * 0.9 + blackHole * 0.1) * SUN_MOON_INTENSITY * SUN_MOON_INTENSITY) * lightCol;
+            finalCol += ((rings * blackHole * 0.9 + blackHole * 0.1) * sunMoonIntensitySqrd) * lightCol;
         #endif
     #endif
 

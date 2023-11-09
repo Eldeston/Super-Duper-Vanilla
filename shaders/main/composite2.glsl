@@ -1,14 +1,14 @@
 /*
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 
-    Developed by Eldeston, presented by FlameRender (TM) Studios.
+    Developed by Eldeston, presented by FlameRender (C) Studios.
 
-    Copyright (C) 2023 Eldeston | FlameRender (TM) Studios License
+    Copyright (C) 2023 Eldeston | FlameRender (C) Studios License
 
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 */
 
 /// Buffer features: Motion blur
@@ -16,23 +16,31 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    out vec2 texCoord;
+    #ifdef MOTION_BLUR
+        noperspective out vec2 texCoord;
+    #endif
 
     void main(){
-        // Get buffer texture coordinates
-        texCoord = gl_MultiTexCoord0.xy;
-        gl_Position = ftransform();
+        #ifdef MOTION_BLUR
+            // Get buffer texture coordinates
+            texCoord = gl_MultiTexCoord0.xy;
+        #endif
+
+        gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
     }
 #endif
 
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    in vec2 texCoord;
+    /* RENDERTARGETS: 0 */
+    layout(location = 0) out vec3 sceneColOut; // gcolor
 
     uniform sampler2D gcolor;
 
     #ifdef MOTION_BLUR
+        noperspective in vec2 texCoord;
+
         uniform vec3 cameraPosition;
         uniform vec3 previousCameraPosition;
 
@@ -44,7 +52,8 @@
 
         uniform sampler2D depthtex0;
 
-        #include "/lib/utility/convertPrevScreenSpace.glsl"
+        #include "/lib/utility/projectionFunctions.glsl"
+        #include "/lib/utility/prevProjectionFunctions.glsl"
 
         #include "/lib/utility/noiseFunctions.glsl"
 
@@ -54,18 +63,19 @@
     void main(){
         // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
+
         // Get scene color
-        vec3 sceneCol = texelFetch(gcolor, screenTexelCoord, 0).rgb;
+        sceneColOut = texelFetch(gcolor, screenTexelCoord, 0).rgb;
 
         #ifdef MOTION_BLUR
             // Declare and get positions
             float depth = texelFetch(depthtex0, screenTexelCoord, 0).x;
 
-            // Apply motion blur if not player hand
-            if(depth > 0.56) sceneCol = motionBlur(sceneCol, depth, texelFetch(noisetex, screenTexelCoord & 255, 0).x);
-        #endif
+            // Return immediately if player hand
+            if(depth <= 0.56) return;
 
-    /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(sceneCol, 1); // gcolor
+            // Apply motion blur
+            sceneColOut = motionBlur(sceneColOut, depth, texelFetch(noisetex, screenTexelCoord & 255, 0).x);
+        #endif
     }
 #endif

@@ -1,14 +1,14 @@
 /*
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 
-    Developed by Eldeston, presented by FlameRender (TM) Studios.
+    Developed by Eldeston, presented by FlameRender (C) Studios.
 
-    Copyright (C) 2023 Eldeston | FlameRender (TM) Studios License
+    Copyright (C) 2023 Eldeston | FlameRender (C) Studios License
 
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 */
 
 /// Buffer features: Temporal Anti-Aliasing (TAA)
@@ -16,23 +16,36 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    out vec2 texCoord;
+    noperspective out vec2 texCoord;
 
     void main(){
         // Get buffer texture coordinates
         texCoord = gl_MultiTexCoord0.xy;
-        gl_Position = ftransform();
+
+        gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
     }
 #endif
 
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    in vec2 texCoord;
+    /* RENDERTARGETS: 0 */
+    layout(location = 0) out vec3 sceneColOut; // gcolor
+
+    #if (defined PREVIOUS_FRAME && (defined SSR || defined SSGI)) || ANTI_ALIASING >= 2
+        /* RENDERTARGETS: 0,5 */
+        #ifdef AUTO_EXPOSURE
+            out vec4 temporalDataOut; // colortex5
+        #else
+            out vec3 temporalDataOut; // colortex5
+        #endif
+    #endif
+
+    noperspective in vec2 texCoord;
 
     uniform sampler2D gcolor;
 
-    #if (defined PREVIOUS_FRAME && defined AUTO_EXPOSURE && (defined SSR || defined SSGI)) || ANTI_ALIASING >= 2
+    #if (defined PREVIOUS_FRAME && (defined SSR || defined SSGI)) || ANTI_ALIASING >= 2
         uniform sampler2D colortex5;
     #endif
 
@@ -48,27 +61,24 @@
 
         uniform sampler2D depthtex0;
 
-        #include "/lib/utility/convertPrevScreenSpace.glsl"
+        #include "/lib/utility/projectionFunctions.glsl"
+        #include "/lib/utility/prevProjectionFunctions.glsl"
 
         #include "/lib/antialiasing/taa.glsl"
     #endif
 
     void main(){
         #if ANTI_ALIASING >= 2
-            vec3 sceneCol = textureTAA(ivec2(gl_FragCoord.xy));
+            sceneColOut = textureTAA(ivec2(gl_FragCoord.xy));
         #else
-            vec3 sceneCol = texelFetch(gcolor, ivec2(gl_FragCoord.xy), 0).rgb;
+            sceneColOut = texelFetch(gcolor, ivec2(gl_FragCoord.xy), 0).rgb;
         #endif
 
-    /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(sceneCol, 1); // gcolor
-
         #if (defined PREVIOUS_FRAME && (defined SSR || defined SSGI)) || ANTI_ALIASING >= 2
-        /* DRAWBUFFERS:05 */
             #ifdef AUTO_EXPOSURE
-                gl_FragData[1] = vec4(sceneCol, texelFetch(colortex5, ivec2(0), 0).a); // colortex5
+                temporalDataOut = vec4(sceneColOut, texelFetch(colortex5, ivec2(0), 0).a);
             #else
-                gl_FragData[1] = vec4(sceneCol, 1); // colortex5
+                temporalDataOut = sceneColOut;
             #endif
         #endif
     }

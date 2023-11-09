@@ -1,17 +1,17 @@
 /*
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 
-    Developed by Eldeston, presented by FlameRender (TM) Studios.
+    Developed by Eldeston, presented by FlameRender (C) Studios.
 
-    Copyright (C) 2023 Eldeston | FlameRender (TM) Studios License
+    Copyright (C) 2023 Eldeston | FlameRender (C) Studios License
 
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 */
 
-/// Buffer features: Lens flare, applied bloom, auto exposure, tonemapping, vignette and color grading
+/// Buffer features: Lens flare, applied bloom, auto exposure, tonemapping, vignette and postColOut grading
 
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
@@ -21,7 +21,7 @@
         flat out vec3 shdLightDirScreenSpace;
     #endif
 
-    out vec2 texCoord;
+    noperspective out vec2 texCoord;
 
     #if defined LENS_FLARE && defined WORLD_LIGHT
         uniform mat4 gbufferProjection;
@@ -39,38 +39,43 @@
             uniform float twilightPhase;
         #endif
 
-        #include "/lib/utility/convertScreenSpace.glsl"
+        #include "/lib/utility/projectionFunctions.glsl"
     #endif
 
     void main(){
         texCoord = gl_MultiTexCoord0.xy;
 
         #if defined LENS_FLARE && defined WORLD_LIGHT
-            // Get sRGB light color
+            // Get sRGB light postColOut
             sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
 
             // Get shadow light view direction in screen space
-            shdLightDirScreenSpace = vec3(toScreenCoord(mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), gbufferProjection[1].y * 0.72794047);
+            shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), gbufferProjection[1].y * 0.72794047);
         #endif
 
-        gl_Position = ftransform();
+        gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
     }
 #endif
 
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
+    /* RENDERTARGETS: 3 */
+    layout(location = 0) out vec3 postColOut; // colortex3
+
+    #ifdef AUTO_EXPOSURE
+        /* RENDERTARGETS: 3,5 */
+        layout(location = 1) out vec4 temporalDataOut; // colortex5
+    #endif
+
     #if defined LENS_FLARE && defined WORLD_LIGHT
         flat in vec3 sRGBLightCol;
         flat in vec3 shdLightDirScreenSpace;
     #endif
 
-    in vec2 texCoord;
+    noperspective in vec2 texCoord;
 
     uniform sampler2D gcolor;
-
-    #ifdef LENS_FLARE
-    #endif
 
     #ifdef AUTO_EXPOSURE
         uniform float frameTime;
@@ -166,8 +171,9 @@
     void main(){
         // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
-        // Original scene color
-        vec3 color = texelFetch(gcolor, screenTexelCoord, 0).rgb;
+
+        // Get scene color
+        postColOut = texelFetch(gcolor, screenTexelCoord, 0).rgb;
 
         #ifdef BLOOM
             // Uncompress the HDR colors and upscale
@@ -179,62 +185,56 @@
 
             // Average the total samples (1 / 5 bloom tiles multiplied by 1 / 4 samples used for the box blur)
             bloomCol *= 0.05;
-            // Apply bloom by BLOOM_STRENGTH
-            color = mix(color, bloomCol, BLOOM_STRENGTH);
+
+            float bloomLuma = sumOf(bloomCol);
+            // Apply bloom by tonemapped luma and BLOOM_STRENGTH
+            postColOut += (bloomCol - postColOut) * ((BLOOM_STRENGTH * bloomLuma) / (3.0 + bloomLuma));
         #endif
 
         #if defined LENS_FLARE && defined WORLD_LIGHT
             if(textureLod(depthtex0, shdLightDirScreenSpace.xy, 0).x == 1)
                 #ifdef FORCE_DISABLE_WEATHER
-                    color += getLensFlare(texCoord - 0.5, shdLightDirScreenSpace.xy - 0.5) * (1.0 - blindness) * (1.0 - darknessFactor);
+                    postColOut += getLensFlare(texCoord - 0.5, shdLightDirScreenSpace.xy - 0.5) * (1.0 - blindness) * (1.0 - darknessFactor);
                 #else
-                    color += getLensFlare(texCoord - 0.5, shdLightDirScreenSpace.xy - 0.5) * (1.0 - blindness) * (1.0 - darknessFactor) * (1.0 - rainStrength);
+                    postColOut += getLensFlare(texCoord - 0.5, shdLightDirScreenSpace.xy - 0.5) * (1.0 - blindness) * (1.0 - darknessFactor) * (1.0 - rainStrength);
                 #endif
         #endif
 
         #ifdef AUTO_EXPOSURE
             // Get center pixel current average scene luminance and mix previous and current pixel...
-            float centerPixLuminance = sumOf(textureLod(gcolor, vec2(0.5), 9).rgb);
+            float centerPixLuminance = sumOf(textureLod(gcolor, vec2(0.5), 8).rgb);
 
             // Accumulate current luminance
-            float tempPixLuminance = mix(centerPixLuminance, texelFetch(colortex5, ivec2(1), 0).a, exp2(-AUTO_EXPOSURE_SPEED * frameTime));
+            float frameTimeExposure = AUTO_EXPOSURE_SPEED * frameTime;
+            float tempPixLuminance = mix(texelFetch(colortex5, ivec2(1), 0).a, centerPixLuminance, frameTimeExposure / (1.0 + frameTimeExposure));
 
             // Apply auto exposure by dividing it by the pixel's luminance in sRGB
             const float invMinimumExposure = 1.0 / MINIMUM_EXPOSURE;
-            color *= min(inversesqrt(tempPixLuminance), invMinimumExposure);
+            postColOut *= min(inversesqrt(tempPixLuminance), invMinimumExposure);
 
             #if (defined PREVIOUS_FRAME && (defined SSR || defined SSGI)) || ANTI_ALIASING >= 2
-                #define TAA_DATA texelFetch(colortex5, screenTexelCoord, 0).rgb
+                temporalDataOut = vec4(texelFetch(colortex5, screenTexelCoord, 0).rgb, tempPixLuminance);
             #else
-                // vec4(0, 0, 0, tempPixLuminance)
-                #define TAA_DATA 0, 0, 0
+                temporalDataOut = vec4(0, 0, 0, tempPixLuminance);
             #endif
         #endif
 
         #ifdef VIGNETTE
-            color *= max(0.0, 1.0 - lengthSquared(texCoord - 0.5) * VIGNETTE_STRENGTH);
+            postColOut *= max(0.0, 1.0 - lengthSquared(texCoord - 0.5) * VIGNETTE_STRENGTH);
         #endif
 
         // Color tinting, exposure, and tonemapping
         const vec3 exposureTint = vec3(TINT_R, TINT_G, TINT_B) * (EXPOSURE * 0.00392156863);
-        color = modifiedReinhardExtended(color * exposureTint);
+        postColOut = modifiedReinhardExtended(postColOut * exposureTint);
 
         // Gamma correction
-        color = toSRGB(color);
+        postColOut = toSRGB(postColOut);
 
         // Contrast and saturation
-        color = contrast(color, CONTRAST);
-        color = saturation(color, SATURATION);
+        postColOut = contrast(postColOut, CONTRAST);
+        postColOut = saturation(postColOut, SATURATION);
 
-        // Apply dithering to break color banding
-        color += (texelFetch(noisetex, screenTexelCoord & 255, 0).x - 0.5) * 0.00392156863;
-
-    /* DRAWBUFFERS:3 */
-        gl_FragData[0] = vec4(color, 1); // colortex3
-
-        #ifdef AUTO_EXPOSURE
-        /* DRAWBUFFERS:35 */
-            gl_FragData[1] = vec4(TAA_DATA, tempPixLuminance); // colortex5
-        #endif
+        // Apply dithering to break postColOut banding
+        postColOut += (texelFetch(noisetex, screenTexelCoord & 255, 0).x - 0.5) * 0.00392156863;
     }
 #endif

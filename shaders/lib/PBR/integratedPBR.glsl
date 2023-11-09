@@ -1,12 +1,14 @@
+// Texture coordinate derivatives
+vec2 dcdx = dFdx(texCoord);
+vec2 dcdy = dFdy(texCoord);
+
 // The Integrated PBR calculation
-void getPBR(inout structPBR material, in int id){
+void getPBR(inout dataPBR material, in int id){
     // Assign albedo
     material.albedo = textureGrad(tex, texCoord, dcdx, dcdy);
 
-    #if !(defined ENTITIES || defined ENTITIES_GLOWING)
-        // Alpha test, discard immediately
-        if(material.albedo.a < ALPHA_THRESHOLD) discard;
-    #endif
+    // Alpha test, discard and return immediately
+    if(material.albedo.a < ALPHA_THRESHOLD){ discard; return; }
 
     // Assign default normal map
     material.normal = TBN[2];
@@ -24,8 +26,8 @@ void getPBR(inout structPBR material, in int id){
 
             vec2 slopeNormal = d0 - vec2(d1, d2);
             // TBN * fastNormalize(vec3(slopeNormal, 1))
-            float lengthInverse = inversesqrt(lengthSquared(slopeNormal) + 1.0);
-            material.normal = TBN * vec3(slopeNormal * lengthInverse, lengthInverse);
+            float lengthInv = inversesqrt(lengthSquared(slopeNormal) + 1.0);
+            material.normal = TBN * vec3(slopeNormal * lengthInv, lengthInv);
 
             // Calculate normal strength
             material.normal = mix(TBN[2], material.normal, NORMAL_STRENGTH);
@@ -118,13 +120,13 @@ void getPBR(inout structPBR material, in int id){
 
             // Dark metals
             else if(id == 12400){
-                material.smoothness = sumOf(material.albedo.rgb) * 0.1998 + 0.4;
+                material.smoothness = sumOf(material.albedo.rgb) * 0.1999 + 0.4;
                 material.metallic = 1.0;
             }
 
             // Metal blocks
             else if(id == 12401){
-                material.smoothness = sumOf(material.albedo.rgb) * 0.333;
+                material.smoothness = sumOf(material.albedo.rgb) * 0.3 + 0.06;
                 material.metallic = 1.0;
             }
 
@@ -149,7 +151,7 @@ void getPBR(inout structPBR material, in int id){
                 if(material.albedo.r > material.albedo.g || material.albedo.r != material.albedo.b || material.albedo.g > material.albedo.b){
                     float gemOreColSum = sumOf(material.albedo.rgb);
                     if(gemOreColSum > 0.75){
-                        material.smoothness = min(0.93, gemOreColSum);
+                        material.smoothness = min(0.96, gemOreColSum);
                         material.metallic = 0.17;
                     }
                 }
@@ -168,7 +170,7 @@ void getPBR(inout structPBR material, in int id){
                 if(material.albedo.r > material.albedo.g || material.albedo.r != material.albedo.b || material.albedo.g > material.albedo.b){
                     float metalOreColSum = sumOf(material.albedo.rgb);
                     if(metalOreColSum > 0.75){
-                        material.smoothness = metalOreColSum * 0.333;
+                        material.smoothness = metalOreColSum * 0.3 + 0.06;
                         material.metallic = 1.0;
                     }
                 }
@@ -177,7 +179,7 @@ void getPBR(inout structPBR material, in int id){
             // Netherack metals
             else if(id == 12701){
                 if(maxOf(material.albedo.rg) > 0.6){
-                    material.smoothness = sumOf(material.albedo.rgb) * 0.333;
+                    material.smoothness = sumOf(material.albedo.rgb) * 0.31;
                     material.metallic = 1.0;
                 }
             }
@@ -200,7 +202,7 @@ void getPBR(inout structPBR material, in int id){
                 // Rails
                 if(id == 12901){
                     if(material.albedo.r < material.albedo.g * 1.6 && material.albedo.r < material.albedo.b * 1.6){
-                        material.smoothness = sumOf(material.albedo.rgb) * 0.333;
+                        material.smoothness = sumOf(material.albedo.rgb) * 0.32;
                         material.metallic = 1.0;
                     }
                 }

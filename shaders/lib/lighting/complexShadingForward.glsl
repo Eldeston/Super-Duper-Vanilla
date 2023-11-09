@@ -1,4 +1,4 @@
-vec4 complexShadingGbuffers(in structPBR material){
+vec3 complexShadingForward(in dataPBR material){
 	// Calculate sky diffusion first, begining with the sky itself
 	vec3 totalDiffuse = toLinear(SKY_COLOR_DATA_BLOCK);
 
@@ -13,14 +13,14 @@ vec4 complexShadingGbuffers(in structPBR material){
 	totalDiffuse *= skyLightSquared;
 
 	#if defined DIRECTIONAL_LIGHTMAPS && (defined TERRAIN || defined WATER)
-		vec3 dirLightMapCoord = dFdx(vertexPos.xyz) * dFdx(lmCoord.x) + dFdy(vertexPos.xyz) * dFdy(lmCoord.x);
+		vec3 dirLightMapCoord = dFdx(vertexFeetPlayerPos) * dFdx(lmCoord.x) + dFdy(vertexFeetPlayerPos) * dFdy(lmCoord.x);
 		float dirLightMap = min(1.0, max(0.0, dot(fastNormalize(dirLightMapCoord), material.normal)) * lmCoord.x * DIRECTIONAL_LIGHTMAP_STRENGTH + lmCoord.x);
 
 		// Calculate block light
-		totalDiffuse += toLinear(dirLightMap * blockLightCol);
+		totalDiffuse += toLinear(dirLightMap * blockLightColor);
 	#else
 		// Calculate block light
-		totalDiffuse += toLinear(lmCoord.x * blockLightCol);
+		totalDiffuse += toLinear(lmCoord.x * blockLightColor);
 	#endif
 
 	// Lastly, calculate ambient lightning
@@ -33,16 +33,16 @@ vec4 complexShadingGbuffers(in structPBR material){
 		// Get sRGB light color
 		vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
 
-		float NL = dot(material.normal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z));
+		float NLZ = dot(material.normal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z));
 		// also equivalent to:
 		// vec3(0, 0, 1) * mat3(shadowModelView) = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)
     	// shadowLightPosition is broken in other dimensions. The current is equivalent to:
     	// (mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz) * 0.01
 
-		bool isShadow = NL > 0;
+		bool isShadow = NLZ > 0;
 		bool isSubSurface = material.ss > 0;
 
-		float dirLight = isShadow ? NL : 0.0;
+		float dirLight = isShadow ? NLZ : 0.0;
 
 		#ifdef SUBSURFACE_SCATTERING
 			// Diffuse with simple SS approximation
@@ -55,7 +55,7 @@ vec4 complexShadingGbuffers(in structPBR material){
 			// If the area isn't shaded, apply shadow mapping
 			if(isShadow || isSubSurface){
 				// Get shadow pos
-				vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexPos.xyz + shadowModelView[3].xyz);
+				vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexFeetPlayerPos + shadowModelView[3].xyz);
 				shdPos.z += shadowProjection[3].z;
 
 				// Apply shadow distortion and transform to shadow screen space
@@ -63,10 +63,12 @@ vec4 complexShadingGbuffers(in structPBR material){
 				// Bias mutilplier, adjusts according to the current resolution
 				const vec3 biasAdjustFactor = vec3(2, 2, -0.0625) * shadowMapPixelSize;
 
-				// Get shadow normal from vertex normal
-				vec3 shdNormal = mat3(shadowModelView) * TBN[2];
-				// Apply normal bias
-				shdPos += shdNormal * biasAdjustFactor;
+				// Since we already have NLZ, we just need NLX and NLY to complete the shadow normal
+				float NLX = dot(material.normal, vec3(shadowModelView[0].x, shadowModelView[1].x, shadowModelView[2].x));
+				float NLY = dot(material.normal, vec3(shadowModelView[0].y, shadowModelView[1].y, shadowModelView[2].y));
+
+				// Apply normal based bias
+				shdPos += vec3(NLX, NLY, NLZ) * biasAdjustFactor;
 
 				// Sample shadows
 				#ifdef SHADOW_FILTER
@@ -92,7 +94,7 @@ vec4 complexShadingGbuffers(in structPBR material){
 				#endif
 			}
 		#else
-			// Sample fake shadows
+			// Calculate fake shadows
 			float shadowCol = saturate(hermiteMix(0.96, 0.98, lmCoord.y)) * shdFade;
 
 			#if defined PARALLAX_OCCLUSION && defined PARALLAX_SHADOW
@@ -114,18 +116,13 @@ vec4 complexShadingGbuffers(in structPBR material){
 
 	totalDiffuse = material.albedo.rgb * (totalDiffuse + material.emissive * EMISSIVE_INTENSITY);
 
-	#ifdef WORLD_LIGHT
+	#if defined WORLD_LIGHT && defined SPECULAR_HIGHLIGHTS
 		if(isShadow){
 			// Get specular GGX
-			vec3 specCol = getSpecBRDF(fastNormalize(-vertexPos.xyz), vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), material.normal, material.albedo.rgb, NL, material.metallic, 1.0 - material.smoothness);
-			// Needs to multiplied twice in order for the speculars to look "relatively correct"
-			#ifdef FORCE_DISABLE_WEATHER
-				totalDiffuse += min(vec3(SUN_MOON_INTENSITY * SUN_MOON_INTENSITY), specCol) * (1.0 + material.smoothness) * sRGBLightCol * shadowCol;
-			#else
-				totalDiffuse += min(vec3(SUN_MOON_INTENSITY * SUN_MOON_INTENSITY), specCol) * (1.0 + material.smoothness) * (1.0 - rainStrength) * sRGBLightCol * shadowCol;
-			#endif
+			vec3 specCol = getSpecularBRDF(-fastNormalize(vertexFeetPlayerPos), material.normal, material.albedo.rgb, NLZ, material.metallic, material.smoothness);
+			totalDiffuse += specCol * shadowCol * sRGBLightCol;
 		}
 	#endif
 
-	return vec4(totalDiffuse, material.albedo.a);
+	return totalDiffuse;
 }

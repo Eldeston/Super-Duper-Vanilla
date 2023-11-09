@@ -1,14 +1,14 @@
 /*
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 
-    Developed by Eldeston, presented by FlameRender (TM) Studios.
+    Developed by Eldeston, presented by FlameRender (C) Studios.
 
-    Copyright (C) 2023 Eldeston | FlameRender (TM) Studios License
+    Copyright (C) 2023 Eldeston | FlameRender (C) Studios License
 
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 */
 
 /// Buffer features: TAA jittering, complex shading, PBR, and world curvature
@@ -24,7 +24,7 @@
 
     out vec2 texCoord;
 
-    out vec4 vertexPos;
+    out vec3 vertexFeetPlayerPos;
 
     #ifdef PARALLAX_OCCLUSION
         flat out vec2 vTexCoordScale;
@@ -56,23 +56,25 @@
         // Get vertex color
         vertexColor = gl_Color.rgb;
 
+        // Lightmap fix for mods
+        #ifdef WORLD_CUSTOM_SKYLIGHT
+            lmCoord = vec2(min(gl_MultiTexCoord1.x * 0.00416667, 1.0), WORLD_CUSTOM_SKYLIGHT);
+        #else
+            lmCoord = min(gl_MultiTexCoord1.xy * 0.00416667, vec2(1));
+        #endif
+
         // Get vertex tangent
         vec3 vertexNormal = fastNormalize(gl_Normal);
         // Get vertex tangent
         vec3 vertexTangent = fastNormalize(at_tangent.xyz);
 
-        // Get vertex position (feet player pos)
-        vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+        // Get vertex view position
+        vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
+        // Get vertex feet player position
+        vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos + gbufferModelViewInverse[3].xyz;
 
         // Calculate TBN matrix
 	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal) * sign(at_tangent.w), vertexNormal));
-
-        // Lightmap fix for mods
-        #ifdef WORLD_CUSTOM_SKYLIGHT
-            lmCoord = vec2(saturate(gl_MultiTexCoord1.x * 0.00416667), WORLD_CUSTOM_SKYLIGHT);
-        #else
-            lmCoord = saturate(gl_MultiTexCoord1.xy * 0.00416667);
-        #endif
 
         #ifdef PARALLAX_OCCLUSION
             vec2 midCoord = (gl_TextureMatrix[0] * vec4(mc_midTexCoord, 0, 0)).xy;
@@ -84,7 +86,12 @@
             vTexCoord = sign(texMinMidCoord) * 0.5 + 0.5;
         #endif
 
-        gl_Position = ftransform();
+        // Convert to clip position and output as final position
+        // gl_Position = gl_ProjectionMatrix * vertexViewPos;
+        gl_Position.xyz = getMatScale(mat3(gl_ProjectionMatrix)) * vertexViewPos;
+        gl_Position.z += gl_ProjectionMatrix[3].z;
+
+        gl_Position.w = -vertexViewPos.z;
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
@@ -95,6 +102,12 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
+    /* RENDERTARGETS: 0,1,2,3 */
+    layout(location = 0) out vec3 sceneColOut; // gcolor
+    layout(location = 1) out vec3 normalDataOut; // colortex1
+    layout(location = 2) out vec3 albedoDataOut; // colortex2
+    layout(location = 3) out vec3 materialDataOut; // colortex3
+
     flat in vec2 lmCoord;
 
     flat in vec3 vertexColor;
@@ -103,7 +116,7 @@
 
     in vec2 texCoord;
 
-    in vec4 vertexPos;
+    in vec3 vertexFeetPlayerPos;
 
     #ifdef PARALLAX_OCCLUSION
         flat in vec2 vTexCoordScale;
@@ -121,10 +134,6 @@
     uniform vec4 entityColor;
 
     uniform sampler2D tex;
-
-    // Texture coordinate derivatives
-    vec2 dcdx = dFdx(texCoord);
-    vec2 dcdy = dFdy(texCoord);
 
     #ifdef IS_IRIS
         uniform float lightningFlash;
@@ -174,7 +183,7 @@
         #include "/lib/lighting/GGX.glsl"
     #endif
 
-    #include "/lib/PBR/structPBR.glsl"
+    #include "/lib/PBR/dataStructs.glsl"
 
     #if PBR_MODE <= 1
         #include "/lib/PBR/integratedPBR.glsl"
@@ -186,7 +195,7 @@
     
     void main(){
         // Declare materials
-	    structPBR material;
+	    dataPBR material;
         getPBR(material, entityId);
 
         // Apply entity color tint
@@ -195,12 +204,12 @@
         // Convert to linear space
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
-        vec4 sceneCol = complexShadingGbuffers(material);
+        // Write to HDR scene color
+        sceneColOut = complexShadingForward(material);
 
-    /* DRAWBUFFERS:0123 */
-        gl_FragData[0] = sceneCol; // gcolor
-        gl_FragData[1] = vec4(material.normal, 1); // colortex1
-        gl_FragData[2] = vec4(material.albedo.rgb, 1); // colortex2
-        gl_FragData[3] = vec4(material.metallic, material.smoothness, 0, 1); // colortex3
+        // Write buffer datas
+        normalDataOut = material.normal;
+        albedoDataOut = material.albedo.rgb;
+        materialDataOut = vec3(material.metallic, material.smoothness, 0);
     }
 #endif

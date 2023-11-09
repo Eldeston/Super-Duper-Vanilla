@@ -1,14 +1,14 @@
 /*
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 
-    Developed by Eldeston, presented by FlameRender (TM) Studios.
+    Developed by Eldeston, presented by FlameRender (C) Studios.
 
-    Copyright (C) 2023 Eldeston | FlameRender (TM) Studios License
+    Copyright (C) 2023 Eldeston | FlameRender (C) Studios License
 
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 */
 
 /// Buffer features: TAA jittering, and world curvature
@@ -21,6 +21,10 @@
     uniform float pixelWidth;
     uniform float pixelHeight;
 
+    // 1.17 uniforms
+    uniform mat4 modelViewMatrix;
+    uniform mat4 projectionMatrix;
+
     #ifdef WORLD_CURVATURE
         uniform mat4 gbufferModelView;
         uniform mat4 gbufferModelViewInverse;
@@ -32,40 +36,47 @@
         #include "/lib/utility/taaJitter.glsl"
     #endif
 
+    // Attributes (uses "in" instead of "attribute" because Mojank and GL 330)
+    in vec3 vaNormal;
+    in vec3 vaPosition;
+
+    in vec4 vaColor;
+
     void main(){
         // Get vertex color
-        vertexColor = gl_Color.rgb;
+        vertexColor = vaColor.rgb;
+
+        // Feet player pos
+        vec3 linePosStart = mat3(modelViewMatrix) * vaPosition + modelViewMatrix[3].xyz;
+        vec3 linePosEnd = mat3(modelViewMatrix) * (vaPosition + vaNormal) + modelViewMatrix[3].xyz;
 
         #ifdef WORLD_CURVATURE
-            // Feet player pos
-            vec4 linePosStart = gbufferModelViewInverse * (gl_ModelViewMatrix * vec4(gl_Vertex.xyz, 1));
-            vec4 linePosEnd = gbufferModelViewInverse * (gl_ModelViewMatrix * vec4(gl_Vertex.xyz + gl_Normal.xyz, 1));
+            linePosStart = mat3(gbufferModelViewInverse) * linePosStart;
+            linePosEnd = mat3(gbufferModelViewInverse) * linePosEnd;
 
-            linePosStart.y -= lengthSquared(linePosStart.xz) / WORLD_CURVATURE_SIZE;
-            linePosEnd.y -= lengthSquared(linePosEnd.xz) / WORLD_CURVATURE_SIZE;
-            
-            linePosStart = gbufferModelView * linePosStart;
-            linePosEnd = gbufferModelView * linePosEnd;
-        #else
-            // Feet player pos
-            vec4 linePosStart = gl_ModelViewMatrix * vec4(gl_Vertex.xyz, 1);
-            vec4 linePosEnd = gl_ModelViewMatrix * vec4(gl_Vertex.xyz + gl_Normal.xyz, 1);
+            linePosStart.y -= lengthSquared(linePosStart.xz + gbufferModelViewInverse[3].xz) * worldCurvatureInv;
+            linePosEnd.y -= lengthSquared(linePosEnd.xz + gbufferModelViewInverse[3].xz) * worldCurvatureInv;
+
+            linePosStart = mat3(gbufferModelView) * linePosStart;
+            linePosEnd = mat3(gbufferModelView) * linePosEnd;
         #endif
 
-        // 1.0 - (1.0 / 256.0) = 0.99609375
-        linePosStart = gl_ProjectionMatrix * vec4(linePosStart.xyz * 0.99609375, linePosStart.w);
-        linePosEnd = gl_ProjectionMatrix * vec4(linePosEnd.xyz * 0.99609375, linePosEnd.w);
+        vec2 vertexClipCoordStart = vec2(projectionMatrix[0].x, projectionMatrix[1].y) * linePosStart.xy;
+        vec2 vertexClipCoordEnd = vec2(projectionMatrix[0].x, projectionMatrix[1].y) * linePosEnd.xy;
 
-        vec3 ndc1 = linePosStart.xyz / linePosStart.w;
-        vec3 ndc2 = linePosEnd.xyz / linePosEnd.w;
-
-        vec2 lineScreenDirection = fastNormalize(ndc2.xy - ndc1.xy);
-        vec2 lineOffset = vec2(-lineScreenDirection.y, lineScreenDirection.x) * vec2(pixelWidth, pixelHeight) * 2.0;
+        vec2 lineScreenDir = fastNormalize(vertexClipCoordStart / linePosStart.z - vertexClipCoordEnd / linePosEnd.z);
+        vec2 lineOffset = vec2(-lineScreenDir.y * pixelWidth, lineScreenDir.x * pixelHeight);
 
         if(lineOffset.x < 0) lineOffset = -lineOffset;
+        if(gl_VertexID % 2 != 0) lineOffset = -lineOffset;
 
-        if(gl_VertexID % 2 == 0) gl_Position = vec4(vec3(ndc1.xy + lineOffset, ndc1.z) * linePosStart.w, linePosStart.w);
-        else gl_Position = vec4(vec3(ndc1.xy - lineOffset, ndc1.z) * linePosStart.w, linePosStart.w);
+        // Apply view scaling here
+        // 1.0 - (1.0 / 256.0) = 0.99609375
+        float vertexViewDepth = linePosStart.z * 0.99609375;
+        float vertexClipDepth = projectionMatrix[2].z * vertexViewDepth + projectionMatrix[3].z;
+
+        gl_Position.xyz = vec3(vertexClipCoordStart - lineOffset * (vertexViewDepth * 2.0), vertexClipDepth);
+        gl_Position.w = -vertexViewDepth;
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
@@ -76,10 +87,12 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
+    /* RENDERTARGETS: 0 */
+    layout(location = 0) out vec3 sceneColOut; // gcolor
+
     flat in vec3 vertexColor;
 
     void main(){
-    /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(vertexColor, 1); // gcolor
+        sceneColOut = vertexColor;
     }
 #endif

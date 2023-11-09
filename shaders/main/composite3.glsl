@@ -1,14 +1,14 @@
 /*
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 
-    Developed by Eldeston, presented by FlameRender (TM) Studios.
+    Developed by Eldeston, presented by FlameRender (C) Studios.
 
-    Copyright (C) 2023 Eldeston | FlameRender (TM) Studios License
+    Copyright (C) 2023 Eldeston | FlameRender (C) Studios License
 
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 */
 
 /// Buffer features: DOF blur
@@ -16,28 +16,31 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    flat out float fovMult;
+    #ifdef DOF
+        flat out float fovMult;
 
-    out vec2 texCoord;
+        noperspective out vec2 texCoord;
 
-    uniform mat4 gbufferProjection;
+        uniform mat4 gbufferProjection;
+    #endif
 
     void main(){
-        // Get buffer texture coordinates
-        texCoord = gl_MultiTexCoord0.xy;
+        #ifdef DOF
+            // Get buffer texture coordinates
+            texCoord = gl_MultiTexCoord0.xy;
 
-        fovMult = gbufferProjection[1].y * 0.72794047;
+            fovMult = gbufferProjection[1].y * 0.04549628; // 0.72794047 * 0.0625
+        #endif
 
-        gl_Position = ftransform();
+        gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
     }
 #endif
 
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    flat in float fovMult;
-
-    in vec2 texCoord;
+    /* RENDERTARGETS: 0 */
+    layout(location = 0) out vec3 sceneColOut; // gcolor
 
     uniform sampler2D gcolor;
 
@@ -64,9 +67,12 @@
             vec2(1, 0)
         );
 
+        flat in float fovMult;
+
+        noperspective in vec2 texCoord;
+
         uniform float viewWidth;
         uniform float viewHeight;
-
         uniform float centerDepthSmooth;
 
         uniform sampler2D depthtex1;
@@ -75,37 +81,35 @@
     void main(){
         // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
+
         // Get scene color
-        vec3 sceneCol = texelFetch(gcolor, screenTexelCoord, 0).rgb;
+        sceneColOut = texelFetch(gcolor, screenTexelCoord, 0).rgb;
 
         #ifdef DOF
             // Declare and get positions
             float depth = texelFetch(depthtex1, screenTexelCoord, 0).x;
 
-            // Apply DOF if not player hand
-            if(depth > 0.56){
-                // CoC calculation by Capt Tatsu from BSL
-                float CoC = max(0.0, abs(depth - centerDepthSmooth) * DOF_STRENGTH - 0.01);
-                CoC = CoC * inversesqrt(CoC * CoC + 0.1);
+            // Return immediately if player hand
+            if(depth <= 0.56) return;
+            
+            // CoC calculation by Capt Tatsu from BSL
+            float CoC = max(0.0, abs(depth - centerDepthSmooth) * DOF_STRENGTH - 0.01);
+            CoC = CoC * inversesqrt(CoC * CoC + 0.1);
 
-                // We'll use a total of 16 samples for this blur (1 / 16)
-                float blurRadius = max(viewWidth, viewHeight) * fovMult * CoC * 0.0625;
-                float currDofLOD = log2(blurRadius);
-                vec2 blurRes = blurRadius / vec2(viewWidth, viewHeight);
+            // We'll use a total of 16 samples for this blur (1 / 16)
+            float blurRadius = min(viewWidth, viewHeight) * fovMult * CoC;
+            float currDofLOD = log2(blurRadius);
+            vec2 blurRes = blurRadius / vec2(viewWidth, viewHeight);
 
-                // Get center pixel color with LOD
-                vec3 dofColor = textureLod(gcolor, texCoord, currDofLOD).rgb;
-                for(int i = 0; i < 15; i++){
-                    // Rotate offsets and sample
-                    dofColor += textureLod(gcolor, texCoord - dofOffSets[i] * blurRes, currDofLOD).rgb;
-                }
-
-                // 15 offsetted samples + 1 sample (1 / 16)
-                sceneCol = dofColor * 0.0625;
+            // Get center pixel color with LOD
+            vec3 dofColor = textureLod(gcolor, texCoord, currDofLOD).rgb;
+            for(int i = 0; i < 15; i++){
+                // Rotate offsets and sample
+                dofColor += textureLod(gcolor, texCoord - dofOffSets[i] * blurRes, currDofLOD).rgb;
             }
-        #endif
 
-    /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(sceneCol, 1); // gcolor
+            // 15 offsetted samples + 1 sample (1 / 16)
+            sceneColOut = dofColor * 0.0625;
+        #endif
     }
 #endif

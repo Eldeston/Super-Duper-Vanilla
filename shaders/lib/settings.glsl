@@ -18,7 +18,7 @@
 #define ABERRATION_PIXEL_SIZE 4 // Chromating abberation length. Increase for stronger effects. [1 2 4 8 16]
 
 #define BLOOM // Enables bloom.
-#define BLOOM_STRENGTH 0.20 // Bloom brightness [0.00 0.01 0.02 0.03 0.04 0.05 0.06 0.07 0.08 0.09 0.10 0.11 0.12 0.13 0.14 0.15 0.16 0.17 0.18 0.19 0.20 0.21 0.22 0.23 0.24 0.25 0.26 0.27 0.28 0.29 0.30 0.31 0.32 0.33 0.34 0.35 0.36 0.37 0.38 0.39 0.40 0.41 0.42 0.43 0.44 0.45 0.46 0.47 0.48 0.49 0.50]
+#define BLOOM_STRENGTH 0.50 // Bloom brightness [0.00 0.01 0.02 0.03 0.04 0.05 0.06 0.07 0.08 0.09 0.10 0.11 0.12 0.13 0.14 0.15 0.16 0.17 0.18 0.19 0.20 0.21 0.22 0.23 0.24 0.25 0.26 0.27 0.28 0.29 0.30 0.31 0.32 0.33 0.34 0.35 0.36 0.37 0.38 0.39 0.40 0.41 0.42 0.43 0.44 0.45 0.46 0.47 0.48 0.49 0.50 0.51 0.52 0.53 0.54 0.55 0.56 0.57 0.58 0.59 0.60 0.61 0.62 0.63 0.64 0.65 0.66 0.67 0.68 0.69 0.70 0.71 0.72 0.73 0.74 0.75 0.76 0.77 0.78 0.79 0.80 0.81 0.82 0.83 0.84 0.85 0.86 0.87 0.88 0.89 0.90 0.91 0.92 0.93 0.94 0.95 0.96 0.97 0.98 0.99 1.00]
 
 #define LENS_FLARE // Enables lens flare.
 #define LENS_FLARE_STRENGTH 1.00 // Lens flare intensity. [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.05 1.10 1.15 1.20 1.25 1.30 1.35 1.40 1.45 1.50 1.55 1.60 1.65 1.70 1.75 1.80 1.85 1.90 1.95 2.00]
@@ -65,11 +65,11 @@ const float sunPathRotation = 30.0; // Light path angle. This also affects sky a
 
 // #define SSGI // Enables SSGI, currently experimental and may not be very optimized, may improve the ambience of dark areas despite the noisiness. Turn on TAA for best results.
 #define SSGI_STEPS 20 // SSGI steps, increasing may improve quality but demand more performance [16 20 24 28 32]
-#define SSGI_BISTEPS 4 // SSGI binary refinement steps, improves quality especially when using a low step count, balancing the values is required for optimum performance [0 4 8 16]
+#define SSGI_BISTEPS 4 // SSGI binary refinement steps, improves quality especially when using a low step count, balancing the values is required for optimum performance [0 2 4 6 8]
 
 #define SSR // Enables SSR, may not look good in certain areas
 #define SSR_STEPS 20 // SSR steps, increasing may improve quality but demand more performance [16 20 24 28 32]
-#define SSR_BISTEPS 4 // SSR binary refinement steps, improves quality especially when using a low step count, balancing the values is required for optimum performance [0 4 8 16]
+#define SSR_BISTEPS 4 // SSR binary refinement steps, improves quality especially when using a low step count, balancing the values is required for optimum performance [0 2 4 6 8]
 
 // #define ROUGH_REFLECTIONS // Enables rougher objects to have rougher reflections. May show weird artifacts, but some AA might fix it.
 // #define PREVIOUS_FRAME // Reads previous frame buffer colors alowing SSR or SSGI to have infinite bounces of light. Impacts performance!
@@ -85,7 +85,7 @@ const float sunPathRotation = 30.0; // Light path angle. This also affects sky a
 #define GROUND_FOG_STRENGTH 0.50 // The strength of mist/ground fog. [0.00 0.01 0.02 0.03 0.04 0.05 0.06 0.07 0.08 0.09 0.10 0.11 0.12 0.13 0.14 0.15 0.16 0.17 0.18 0.19 0.20 0.21 0.22 0.23 0.24 0.25 0.26 0.27 0.28 0.29 0.30 0.31 0.32 0.33 0.34 0.35 0.36 0.37 0.38 0.39 0.40 0.41 0.42 0.43 0.44 0.45 0.46 0.47 0.48 0.49 0.50 0.51 0.52 0.53 0.54 0.55 0.56 0.57 0.58 0.59 0.60 0.61 0.62 0.63 0.64 0.65 0.66 0.67 0.68 0.69 0.70 0.71 0.72 0.73 0.74 0.75 0.76 0.77 0.78 0.79 0.80 0.81 0.82 0.83 0.84 0.85 0.86 0.87 0.88 0.89 0.90 0.91 0.92 0.93 0.94 0.95 0.96 0.97 0.98 0.99 1.00]
 
 #define STORY_MODE_CLOUDS // Uses procedurally generated clouds (a.k.a. aerogel clouds) instead of vanilla clouds. Disable vanilla clouds for proper results.
-// #define DOUBLE_LAYERED_CLOUDS // Adds another layer of clouds (work on both vanilla and shader clouds), may use up performance.
+// #define DOUBLE_LAYERED_CLOUDS // Adds another layer of clouds (works on both vanilla and shader clouds), may use up performance.
 #define DYNAMIC_CLOUDS // Makes clouds more dynamic and allows weather to affect it. (affects on both vanilla and story mode clouds).
 #define FADE_SPEED 0.20 // Cloud fade speed [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.05 1.10 1.15 1.20 1.25 1.30 1.35 1.40 1.45 1.50 1.55 1.60 1.65 1.70 1.75 1.80 1.85 1.90 1.95 2.00 2.05 2.10 2.15 2.20 2.25 2.30 2.35 2.40 2.45 2.50 2.55 2.60 2.65 2.70 2.75 2.80 2.85 2.90 2.95 3.00 3.05 3.10 3.15 3.20 3.25 3.30 3.35 3.40 3.45 3.50 3.55 3.60 3.65 3.70 3.75 3.80 3.85 3.90 3.95 4.00]
 #define SECOND_CLOUD_HEIGHT 64.0 // 2nd layer cloud height, if double vanilla clouds is on [-128.0 -112.0 -96.0 -80.0 -64.0 -48.0 -32.0 -16.0 16.0 32.0 48.0 64.0 80.0 96.0 112.0 128.0]
@@ -111,6 +111,7 @@ const float sunPathRotation = 30.0; // Light path angle. This also affects sky a
 /// -------------------------------- /// PBR /// -------------------------------- ///
 
 #define PBR_MODE 1 // Enables PBR. Integrated PBR depends on the vanilla albedo textures to map out the materials. Resource PBR uses your resource packs' PBR, if available. Resource PBR requires latest LabPBR version! [0 1 2]
+#define SPECULAR_HIGHLIGHTS // Enables specular highlight. Specular highlights are the approximate reflections of the sun.
 #define ENVIRONMENT_PBR // Enables enviroment materials. Environment materials affects your surrounding according to your environment such as rain.
 // #define NORMAL_GENERATION // Enables normal generation. Disabled when LabPBR is on. Works mostly on vanilla resource packs.
 #define NORMAL_GENERATION_RESOLUTION 128 // Auto generated normal resolution. Minor effects to performance. [16 32 64 128 256 512 1024]
@@ -157,11 +158,13 @@ const float sunPathRotation = 30.0; // Light path angle. This also affects sky a
 #define BLOCKLIGHT_G 240 // Green value [3 6 9 12 15 18 21 24 27 30 33 36 39 42 45 48 51 54 57 60 63 66 69 72 75 78 81 84 87 90 93 96 99 102 105 108 111 114 117 120 123 126 129 132 135 138 141 144 147 150 153 156 159 162 165 168 171 174 177 180 183 186 189 192 195 198 201 204 207 210 213 216 219 222 225 228 231 234 237 240 243 246 249 252 255]
 #define BLOCKLIGHT_B 210 // Blue value [3 6 9 12 15 18 21 24 27 30 33 36 39 42 45 48 51 54 57 60 63 66 69 72 75 78 81 84 87 90 93 96 99 102 105 108 111 114 117 120 123 126 129 132 135 138 141 144 147 150 153 156 159 162 165 168 171 174 177 180 183 186 189 192 195 198 201 204 207 210 213 216 219 222 225 228 231 234 237 240 243 246 249 252 255]
 #define BLOCKLIGHT_I 1.00 // Intensity value [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.05 1.10 1.15 1.20 1.25 1.30 1.35 1.40 1.45 1.50 1.55 1.60 1.65 1.70 1.75 1.80 1.85 1.90 1.95 2.00]
-const vec3 blockLightCol = vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B) * (BLOCKLIGHT_I * 0.00392156863);
+
+const vec3 blockLightColor = vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B) * (BLOCKLIGHT_I * 0.00392156863);
 
 /// -------------------------------- /// Secret settings /// -------------------------------- ///
 
 #define COLOR_MODE 0 // Albedo color mode. White mode makes everything white. Black mode makes everything black. Foliage mode shows only foliage colors. Keeps materials on. [0 1 2 3]
+// #define ENTITY_BLOCK_TRANSPARENCY // Iris exclusive feature. Enables proper transparency for entities and block entities. May impact performance.
 #define NOISE_SPEED 8 // The speed in which the noise randomises each frame. Useful for TAA. This effect is visible only when TAA is enabled. [2 4 8 16 32]
 
 /// -------------------------------- /// Physics mod settings /// -------------------------------- ///
@@ -187,6 +190,13 @@ const float PHYSICS_NORMAL_STRENGTH = 0.6;
 /// -------------------------------- /// Misc /// -------------------------------- ///
 
 // For the shader loaders to detect the "phantom" options
+
+#ifdef SHARPEN_FILTER
+#endif
+
+#ifdef LENS_FLARE
+#endif
+
 #ifdef ENTITY_SHADOWS
 #endif
 
@@ -199,6 +209,9 @@ const float PHYSICS_NORMAL_STRENGTH = 0.6;
 #ifdef STORY_MODE_CLOUDS
 #endif
 
+#ifdef SPECULAR_HIGHLIGHTS
+#endif
+
 #ifdef ENVIRONMENT_PBR
 #endif
 
@@ -208,5 +221,22 @@ const float PHYSICS_NORMAL_STRENGTH = 0.6;
 #ifdef DIRECTIONAL_LIGHTMAPS
 #endif
 
+#ifdef WATER_NORMAL
+#endif
+
 #ifdef PARALLAX_SHADOW
 #endif
+
+#ifdef ENTITY_BLOCK_TRANSPARENCY
+#endif
+
+// Precalculated constants
+
+// Sun and moon intensity squared
+const float sunMoonIntensitySqrd = SUN_MOON_INTENSITY * SUN_MOON_INTENSITY;
+
+// World curvature size inverse
+const float worldCurvatureInv = 1.0 / WORLD_CURVATURE_SIZE;
+
+// Water tile size inverse
+const float waterTileSizeInv = 1.0 / WATER_TILE_SIZE;

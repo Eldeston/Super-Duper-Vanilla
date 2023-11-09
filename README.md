@@ -4,7 +4,7 @@
 [![Twitter Follow](https://img.shields.io/twitter/follow/eldeston?color=1DA1F2&logoWidth=16&logo=Twitter&logoColor=white&style=for-the-badge)](https://twitter.com/eldeston)
 [![YouTube Channel Subscribers](https://img.shields.io/youtube/channel/subscribers/UCQCkkFh25ydxZwCqpBhJJlg?color=FF0000&logoWidth=16&label=Eldeston&logo=YouTube&style=for-the-badge)](https://www.youtube.com/channel/UCQCkkFh25ydxZwCqpBhJJlg)
 
-## Description
+## About
    A shader pack created to convey the style of the cancelled __Super Duper Graphics Pack__ and other popular Minecraft titles. Developed by [@Eldeston](https://github.com/Eldeston), and presented by __FlameRender Studios__.
 
 ## Sponsor
@@ -24,7 +24,7 @@
 ![2022-07-04_20 49 54](https://cdn.modrinth.com/data/LMIZZNxZ/images/0126040f5bcc1828e2de2b059799ab7ffb3d08ec.png)
 
 ## License 
-   This shader now uses the **FlameRender (TM) Studios License**. See [**LICENSE**](LICENSE) for more info.
+   This shader uses the **FlameRender (C) Studios License**. See [**LICENSE**](LICENSE) for more info.
 
 ## Contribution
    If you plan to contribute to this project, see [**CONTRIBUTION**](CONTRIBUTION.md) for more info.
@@ -32,11 +32,20 @@
 ## Mod Compatibility
    If you want to request mod compatibility with this shader, create an issue post in this repository with the mod that you want to enable compatibility via linking. If you're planning to add mod compatibility by coding it yourself, see [**CONTRIBUTION**](CONTRIBUTION.md).
 
-   Older versions of Iris may not work in this version of Super Duper Vanilla.
+## Version Compatibility
+   Version compatibility varies across the 2 known shader loaders Iris and Optifine.
+
+   Iris versions 1.6.10+ from Minecraft versions 1.18.2+ are compatible with this shader. For Optifine, it varies across GPU vendors. Please always choose the latest Iris or Optifine of your respective Minecraft version.
+
+| Optifine | Windows, Linux (Intel, AMD, NVidia) | Apple (M1)    |
+| -------- | ----------------------------------- | ------------- |
+| 1.17.1+  | Supported                           | Supported     |
+| 1.14.2+  | Supported                           | Not supported |
+| 1.13.2-  | Not supported                       | Not supported |
 
 ## Releases
    See all available releases [here](https://github.com/Eldeston/Super-Duper-Vanilla/releases), and get the latest commit [here](https://github.com/Eldeston/Super-Duper-Vanilla/archive/refs/heads/master.zip), the latest build will always be from the most recent commit by default.
-   
+
    Latest build and pre-release versions are expected to be unstable, please report any issues or bugs anytime. Feedback is much appreciated.
 
 ## Official CurseForge Page
@@ -48,7 +57,7 @@
 ## Social Links
    Come join my Discord server to talk about other developments made by our studio-community!
    * [Flamerender Studios Discord](https://discord.gg/UE85W5ynCg)
-   
+
    Or follow me on Twitter or subscribe to my Youtube channel to get updated with my recent developments and contents
    * [@Eldeston's Twitter](https://twitter.com/eldeston)
    * [@Eldeston's Channel](https://www.youtube.com/channel/UCQCkkFh25ydxZwCqpBhJJlg?view_as=subscriber)

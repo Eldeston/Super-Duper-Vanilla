@@ -1,14 +1,14 @@
 /*
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 
-    Developed by Eldeston, presented by FlameRender (TM) Studios.
+    Developed by Eldeston, presented by FlameRender (C) Studios.
 
-    Copyright (C) 2023 Eldeston | FlameRender (TM) Studios License
+    Copyright (C) 2023 Eldeston | FlameRender (C) Studios License
 
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 */
 
 /// Buffer features: Fast Approximate Anti-Aliasing (FXAA)
@@ -16,23 +16,31 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    out vec2 texCoord;
+    #if ANTI_ALIASING == 1 || ANTI_ALIASING == 3
+        noperspective out vec2 texCoord;
+    #endif
 
     void main(){
-        // Get buffer texture coordinates
-        texCoord = gl_MultiTexCoord0.xy;
-        gl_Position = ftransform();
+        #if ANTI_ALIASING == 1 || ANTI_ALIASING == 3
+            // Get buffer texture coordinates
+            texCoord = gl_MultiTexCoord0.xy;
+        #endif
+
+        gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
     }
 #endif
 
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    in vec2 texCoord;
+    /* RENDERTARGETS: 3 */
+    layout(location = 0) out vec3 postColOut; // colortex3
 
     uniform sampler2D colortex3;
 
     #if ANTI_ALIASING == 1 || ANTI_ALIASING == 3
+        noperspective in vec2 texCoord;
+
         uniform float pixelWidth;
         uniform float pixelHeight;
 
@@ -41,12 +49,9 @@
 
     void main(){
         #if ANTI_ALIASING == 1 || ANTI_ALIASING == 3
-            vec3 sceneCol = textureFXAA(ivec2(gl_FragCoord.xy));
+            postColOut = textureFXAA(ivec2(gl_FragCoord.xy));
         #else
-            vec3 sceneCol = texelFetch(colortex3, ivec2(gl_FragCoord.xy), 0).rgb;
+            postColOut = texelFetch(colortex3, ivec2(gl_FragCoord.xy), 0).rgb;
         #endif
-        
-    /* DRAWBUFFERS:3 */
-        gl_FragData[0] = vec4(sceneCol, 1); // colortex3
     }
 #endif

@@ -1,14 +1,14 @@
 /*
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 
-    Developed by Eldeston, presented by FlameRender (TM) Studios.
+    Developed by Eldeston, presented by FlameRender (C) Studios.
 
-    Copyright (C) 2023 Eldeston | FlameRender (TM) Studios License
+    Copyright (C) 2023 Eldeston | FlameRender (C) Studios License
 
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 */
 
 /// Buffer features: TAA jittering, and direct shading
@@ -57,22 +57,35 @@
 
         void main(){
             // Lightmap fix for mods
-            lmCoordX = saturate(gl_MultiTexCoord1.x * 0.00416667);
+            lmCoordX = min(gl_MultiTexCoord1.x * 0.00416667, 1.0);
             // Get buffer texture coordinates
             texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
 
+            // Get vertex view position
+            vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
+
             #ifdef WEATHER_ANIMATION
-                // Get vertex position (feet player pos)
-                vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+                // Get vertex eye player position
+                vec3 vertexEyePlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos;
+
+                // Get vertex feet player position
+                vec2 vertexFeetPlayerPosXZ = vertexEyePlayerPos.xz + gbufferModelViewInverse[3].xz;
+                // Get vertex world position
+                vec2 vertexWorldPosXZ = vertexFeetPlayerPosXZ + cameraPosition.xz;
 
                 // Apply weather wave animation
-                if(rainStrength > 0.005) vertexPos.xz = getWeatherWave(vertexPos.xyz, vertexPos.xz + cameraPosition.xz);
+                if(rainStrength >= 0.005) vertexEyePlayerPos.xz = getWeatherWave(vertexEyePlayerPos, vertexWorldPosXZ);
 
-                // Convert to clip pos and output as position
-                gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
-            #else
-                gl_Position = ftransform();
+                // Convert back to vertex view position
+                vertexViewPos = mat3(gbufferModelView) * vertexEyePlayerPos;
             #endif
+
+            // Convert to clip position and output as final position
+            // gl_Position = gl_ProjectionMatrix * vertexViewPos;
+            gl_Position.xyz = getMatScale(mat3(gl_ProjectionMatrix)) * vertexViewPos;
+            gl_Position.z += gl_ProjectionMatrix[3].z;
+
+            gl_Position.w = -vertexViewPos.z;
 
             #if ANTI_ALIASING == 2
                 gl_Position.xy += jitterPos(gl_Position.w);
@@ -86,9 +99,12 @@
 #ifdef FRAGMENT
     #ifdef FORCE_DISABLE_WEATHER
         void main(){
-            discard;
+            discard; return;
         }
     #else
+        /* RENDERTARGETS: 0 */
+        layout(location = 0) out vec4 sceneColOut; // gcolor
+
         flat in float lmCoordX;
 
         in vec2 texCoord;
@@ -113,8 +129,8 @@
             // Get albedo color
             vec4 albedo = textureLod(tex, texCoord, 0);
 
-            // Alpha test, discard immediately
-            if(albedo.a < ALPHA_THRESHOLD) discard;
+            // Alpha test, discard and return immediately
+            if(albedo.a < ALPHA_THRESHOLD){ discard; return; }
 
             // Convert to linear space
             albedo.rgb = toLinear(albedo.rgb);
@@ -125,8 +141,7 @@
                 totalDiffuse += lightningFlash;
             #endif
 
-        /* DRAWBUFFERS:0 */
-            gl_FragData[0] = vec4(albedo.rgb * totalDiffuse, albedo.a); // gcolor
+            sceneColOut = vec4(albedo.rgb * totalDiffuse, albedo.a);
         }
     #endif
 #endif

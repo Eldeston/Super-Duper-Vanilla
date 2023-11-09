@@ -1,14 +1,14 @@
 /*
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 
-    Developed by Eldeston, presented by FlameRender (TM) Studios.
+    Developed by Eldeston, presented by FlameRender (C) Studios.
 
-    Copyright (C) 2023 Eldeston | FlameRender (TM) Studios License
+    Copyright (C) 2023 Eldeston | FlameRender (C) Studios License
 
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 */
 
 /// Buffer features: TAA jittering, complex shading, animation, lava noise, PBR, and world curvature
@@ -26,9 +26,8 @@
     out vec2 texCoord;
 
     out vec3 vertexColor;
-    out vec3 worldPos;
-
-    out vec4 vertexPos;
+    out vec3 vertexFeetPlayerPos;
+    out vec3 vertexWorldPos;
 
     #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
         flat out vec2 vTexCoordScale;
@@ -88,25 +87,28 @@
         // Get vertex color
         vertexColor = gl_Color.rgb;
 
+        // Lightmap fix for mods
+        #ifdef WORLD_CUSTOM_SKYLIGHT
+            lmCoord = vec2(min(gl_MultiTexCoord1.x * 0.00416667, 1.0), WORLD_CUSTOM_SKYLIGHT);
+        #else
+            lmCoord = min(gl_MultiTexCoord1.xy * 0.00416667, vec2(1));
+        #endif
+
         // Get vertex tangent
         vec3 vertexNormal = fastNormalize(gl_Normal);
         // Get vertex tangent
         vec3 vertexTangent = fastNormalize(at_tangent.xyz);
 
-        // Get vertex position (feet player pos)
-        vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+        // Get vertex view position
+        vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
+        // Get vertex feet player position
+        vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos + gbufferModelViewInverse[3].xyz;
+
         // Get world position
-        worldPos = vertexPos.xyz + cameraPosition;
+        vertexWorldPos = vertexFeetPlayerPos + cameraPosition;
 
         // Calculate TBN matrix
 	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal) * sign(at_tangent.w), vertexNormal));
-
-        // Lightmap fix for mods
-        #ifdef WORLD_CUSTOM_SKYLIGHT
-            lmCoord = vec2(saturate(gl_MultiTexCoord1.x * 0.00416667), WORLD_CUSTOM_SKYLIGHT);
-        #else
-            lmCoord = saturate(gl_MultiTexCoord1.xy * 0.00416667);
-        #endif
 
         #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
             vec2 midTexCoord = (gl_TextureMatrix[0] * vec4(mc_midTexCoord, 0, 0)).xy;
@@ -120,19 +122,24 @@
         #if defined TERRAIN_ANIMATION || defined WORLD_CURVATURE
             #ifdef TERRAIN_ANIMATION
                 // Apply terrain wave animation
-                vertexPos.xyz = getTerrainWave(vertexPos.xyz, worldPos, at_midBlock.y * 0.015625, mc_Entity.x, lmCoord.y);
+                vertexFeetPlayerPos = getTerrainWave(vertexFeetPlayerPos, vertexWorldPos, at_midBlock.y * 0.015625, mc_Entity.x, lmCoord.y);
             #endif
 
             #ifdef WORLD_CURVATURE
                 // Apply curvature distortion
-                vertexPos.y -= dot(vertexPos.xz, vertexPos.xz) / WORLD_CURVATURE_SIZE;
+                vertexFeetPlayerPos.y -= dot(vertexFeetPlayerPos.xz, vertexFeetPlayerPos.xz) * worldCurvatureInv;
             #endif
 
-            // Convert to clip pos and output as position
-            gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
-        #else
-            gl_Position = ftransform();
+            // Convert back to vertex view position
+            vertexViewPos = mat3(gbufferModelView) * vertexFeetPlayerPos + gbufferModelView[3].xyz;
         #endif
+
+        // Convert to clip position and output as final position
+        // gl_Position = gl_ProjectionMatrix * vertexViewPos;
+        gl_Position.xyz = getMatScale(mat3(gl_ProjectionMatrix)) * vertexViewPos;
+        gl_Position.z += gl_ProjectionMatrix[3].z;
+
+        gl_Position.w = -vertexViewPos.z;
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
@@ -143,6 +150,12 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
+    /* RENDERTARGETS: 0,1,2,3 */
+    layout(location = 0) out vec3 sceneColOut; // gcolor
+    layout(location = 1) out vec3 normalDataOut; // colortex1
+    layout(location = 2) out vec3 albedoDataOut; // colortex2
+    layout(location = 3) out vec3 materialDataOut; // colortex3
+
     flat in int blockId;
 
     flat in mat3 TBN;
@@ -153,9 +166,8 @@
     in vec2 texCoord;
 
     in vec3 vertexColor;
-    in vec3 worldPos;
-
-    in vec4 vertexPos;
+    in vec3 vertexFeetPlayerPos;
+    in vec3 vertexWorldPos;
 
     #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
         flat in vec2 vTexCoordScale;
@@ -171,10 +183,6 @@
     uniform float nightVision;
 
     uniform sampler2D tex;
-
-    // Texture coordinate derivatives
-    vec2 dcdx = dFdx(texCoord);
-    vec2 dcdy = dFdy(texCoord);
 
     #ifdef IS_IRIS
         uniform float lightningFlash;
@@ -228,7 +236,7 @@
         #include "/lib/lighting/GGX.glsl"
     #endif
 
-    #include "/lib/PBR/structPBR.glsl"
+    #include "/lib/PBR/dataStructs.glsl"
 
     #if PBR_MODE <= 1
         #include "/lib/PBR/integratedPBR.glsl"
@@ -250,13 +258,16 @@
 
     void main(){
 	    // Declare materials
-	    structPBR material;
+	    dataPBR material;
         getPBR(material, blockId);
 
         if(blockId == 11100){
             #ifdef LAVA_NOISE
-                vec2 lavaUv = (worldPos.zy * TBN[2].x + worldPos.xz * TBN[2].y + worldPos.xy * TBN[2].z) / LAVA_TILE_SIZE;
-                float lavaNoise = saturate(max(getLavaNoise(lavaUv) * 3.0, sumOf(material.albedo.rgb)) - 1.0);
+                // Lava tile size inverse
+                const float lavaTileSizeInv = 1.0 / LAVA_TILE_SIZE;
+
+                vec2 lavaUv = vertexWorldPos.zy * TBN[2].x + vertexWorldPos.xz * TBN[2].y + vertexWorldPos.xy * TBN[2].z;
+                float lavaNoise = saturate(max(getLavaNoise(lavaUv * lavaTileSizeInv) * 3.0, sumOf(material.albedo.rgb)) - 1.0);
                 material.albedo.rgb = floor(material.albedo.rgb * lavaNoise * LAVA_BRIGHTNESS * 32.0) * 0.03125;
             #else
                 material.albedo.rgb = material.albedo.rgb * LAVA_BRIGHTNESS;
@@ -269,12 +280,12 @@
             if(blockId != 11100 && blockId != 12101) enviroPBR(material);
         #endif
 
-        vec4 sceneCol = complexShadingGbuffers(material);
+        // Write to HDR scene color
+        sceneColOut = complexShadingForward(material);
 
-    /* DRAWBUFFERS:0123 */
-        gl_FragData[0] = sceneCol; // gcolor
-        gl_FragData[1] = vec4(material.normal, 1); // colortex1
-        gl_FragData[2] = vec4(material.albedo.rgb, 1); // colortex2
-        gl_FragData[3] = vec4(material.metallic, material.smoothness, 0, 1); // colortex3
+        // Write buffer datas
+        normalDataOut = material.normal;
+        albedoDataOut = material.albedo.rgb;
+        materialDataOut = vec3(material.metallic, material.smoothness, 0);
     }
 #endif

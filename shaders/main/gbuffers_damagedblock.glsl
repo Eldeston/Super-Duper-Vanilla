@@ -1,14 +1,14 @@
 /*
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 
-    Developed by Eldeston, presented by FlameRender (TM) Studios.
+    Developed by Eldeston, presented by FlameRender (C) Studios.
 
-    Copyright (C) 2023 Eldeston | FlameRender (TM) Studios License
+    Copyright (C) 2023 Eldeston | FlameRender (C) Studios License
 
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 */
 
 /// Buffer features: TAA jittering, direct shading, and world curvature
@@ -36,18 +36,29 @@
         // Get buffer texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         
+	    // Get vertex view position
+        vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
+
 	    #ifdef WORLD_CURVATURE
-            // Get vertex position (feet player pos)
-            vec4 vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+            // Get vertex eye player position
+            vec3 vertexEyePlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos;
+            
+            // Get vertex feet player position
+            vec2 vertexFeetPlayerPosXZ = vertexEyePlayerPos.xz + gbufferModelViewInverse[3].xz;
 
             // Apply curvature distortion
-            vertexPos.y -= lengthSquared(vertexPos.xz) / WORLD_CURVATURE_SIZE;
+            vertexEyePlayerPos.y -= lengthSquared(vertexFeetPlayerPosXZ) * worldCurvatureInv;
             
-            // Convert to clip pos and output as position
-            gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
-        #else
-            gl_Position = ftransform();
+            // Convert back to vertex view position
+            vertexViewPos = mat3(gbufferModelView) * vertexEyePlayerPos;
         #endif
+
+        // Convert to clip position and output as final position
+        // gl_Position = gl_ProjectionMatrix * vertexViewPos;
+        gl_Position.xyz = getMatScale(mat3(gl_ProjectionMatrix)) * vertexViewPos;
+        gl_Position.z += gl_ProjectionMatrix[3].z;
+
+        gl_Position.w = -vertexViewPos.z;
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
@@ -58,6 +69,9 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
+    /* RENDERTARGETS: 0 */
+    layout(location = 0) out vec4 sceneColOut; // gcolor
+
     in vec2 texCoord;
 
     // Get albedo texture
@@ -67,13 +81,12 @@
         // Get albedo color
         vec4 albedo = textureLod(tex, texCoord, 0);
 
-        // Alpha test, discard immediately
-        if(albedo.a < ALPHA_THRESHOLD) discard;
+        // Alpha test, discard and return immediately
+        if(albedo.a < ALPHA_THRESHOLD){ discard; return; }
 
         // Convert to linear space
         albedo.rgb = toLinear(albedo.rgb);
 
-    /* DRAWBUFFERS:0 */
-        gl_FragData[0] = albedo; // gcolor
+        sceneColOut = albedo;
     }
 #endif

@@ -3,6 +3,10 @@ uniform sampler2D normals;
 // Get specular texture
 uniform sampler2D specular;
 
+// Texture coordinate derivatives
+vec2 dcdx = dFdx(texCoord);
+vec2 dcdy = dFdy(texCoord);
+
 #ifdef PARALLAX_OCCLUSION
     vec2 getParallaxOffset(in vec3 dirT){ return dirT.xy * (PARALLAX_DEPTH / dirT.z); }
 
@@ -75,7 +79,7 @@ uniform sampler2D specular;
 #endif
 
 // The lab PBR standard 1.3
-void getPBR(inout structPBR material, in int id){
+void getPBR(inout dataPBR material, in int id){
     vec2 texUv = texCoord;
 
     // Exclude signs and floating texts. We'll also include water and lava in the meantime.
@@ -83,7 +87,7 @@ void getPBR(inout structPBR material, in int id){
     bool hasFallback = id != 11100 && id != 11102 && id != 12101 && sumOf(textureGrad(normals, texCoord, dcdx, dcdy).xy) != 0;
 
     #ifdef PARALLAX_OCCLUSION
-        vec3 viewDir = -vertexPos.xyz * TBN;
+        vec3 viewDir = -vertexFeetPlayerPos.xyz * TBN;
 
         vec3 currPos;
 
@@ -93,10 +97,8 @@ void getPBR(inout structPBR material, in int id){
     // Assign albedo
     material.albedo = textureGrad(tex, texUv, dcdx, dcdy);
 
-    #if !(defined ENTITIES || defined ENTITIES_GLOWING)
-        // Alpha test, discard immediately
-        if(material.albedo.a < ALPHA_THRESHOLD) discard;
-    #endif
+    // Alpha test, discard and return immediately
+    if(material.albedo.a < ALPHA_THRESHOLD){ discard; return; }
 
     // Assign default normal map
     material.normal = TBN[2];

@@ -1,14 +1,14 @@
 /*
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 
-    Developed by Eldeston, presented by FlameRender (TM) Studios.
+    Developed by Eldeston, presented by FlameRender (C) Studios.
 
-    Copyright (C) 2023 Eldeston | FlameRender (TM) Studios License
+    Copyright (C) 2023 Eldeston | FlameRender (C) Studios License
 
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 */
 
 /// Buffer features: Bloom blur 1st pass
@@ -16,23 +16,31 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    out vec2 texCoord;
+    #ifdef BLOOM
+        noperspective out vec2 texCoord;
+    #endif
 
     void main(){
-        // Get buffer texture coordinates
-        texCoord = gl_MultiTexCoord0.xy;
-        gl_Position = ftransform();
+        #ifdef BLOOM
+            // Get buffer texture coordinates
+            texCoord = gl_MultiTexCoord0.xy;
+        #endif
+
+        gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
     }
 #endif
 
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    in vec2 texCoord;
+    /* RENDERTARGETS: 4 */
+    layout(location = 0) out vec3 bloomColOut; // colortex4
 
     #ifdef BLOOM
         // Needs to be enabled by force to be able to use LOD fully even with textureLod
         const bool gcolorMipmapEnabled = true;
+
+        noperspective in vec2 texCoord;
 
         uniform float pixelWidth;
 
@@ -60,17 +68,13 @@
 
     void main(){
         #ifdef BLOOM
-            vec3 finalCol = bloomTile(vec3(0), texCoord, 2);
-            finalCol = bloomTile(finalCol, vec2(texCoord.x, texCoord.y - 0.2578125), 3);
-            finalCol = bloomTile(finalCol, vec2(texCoord.x - 0.12890625, texCoord.y - 0.2578125), 4);
-            finalCol = bloomTile(finalCol, vec2(texCoord.x - 0.1953125, texCoord.y - 0.2578125), 5);
-            finalCol = bloomTile(finalCol, vec2(texCoord.x - 0.12890625, texCoord.y - 0.328125), 6);
-
-        /* DRAWBUFFERS:4 */
-            gl_FragData[0] = vec4(finalCol, 1); //colortex4
+            bloomColOut = bloomTile(vec3(0), texCoord, 2);
+            bloomColOut = bloomTile(bloomColOut, vec2(texCoord.x, texCoord.y - 0.2578125), 3);
+            bloomColOut = bloomTile(bloomColOut, vec2(texCoord.x - 0.12890625, texCoord.y - 0.2578125), 4);
+            bloomColOut = bloomTile(bloomColOut, vec2(texCoord.x - 0.1953125, texCoord.y - 0.2578125), 5);
+            bloomColOut = bloomTile(bloomColOut, vec2(texCoord.x - 0.12890625, texCoord.y - 0.328125), 6);
         #else
-        /* DRAWBUFFERS:4 */
-            gl_FragData[0] = vec4(0, 0, 0, 1); //colortex4
+            bloomColOut = vec3(0);
         #endif
     }
 #endif

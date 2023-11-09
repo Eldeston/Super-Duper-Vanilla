@@ -1,14 +1,14 @@
 /*
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 
-    Developed by Eldeston, presented by FlameRender (TM) Studios.
+    Developed by Eldeston, presented by FlameRender (C) Studios.
 
-    Copyright (C) 2023 Eldeston | FlameRender (TM) Studios License
+    Copyright (C) 2023 Eldeston | FlameRender (C) Studios License
 
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 */
 
 /// Buffer features: TAA jittering, simple shading, and dynamic clouds
@@ -23,7 +23,7 @@
     #else
         out vec2 texCoord;
 
-        out vec4 vertexPos;
+        out vec3 vertexFeetPlayerPos;
 
         #ifdef WORLD_LIGHT
             flat out vec3 vertexNormal;
@@ -47,13 +47,15 @@
 
             uniform int instanceId;
         #endif
-        
+
         void main(){
             // Get buffer texture coordinates
             texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
 
-            // Get vertex position (feet player pos)
-            vertexPos = gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex);
+            // Get vertex view position
+            vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
+            // Get vertex feet player position
+            vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos + gbufferModelViewInverse[3].xyz;
 
             #ifdef WORLD_LIGHT
                 // Get vertex normal
@@ -66,14 +68,19 @@
                     // If second instance, invert texture coordinates.
                     texCoord = -texCoord;
                     // Increase cloud height for the second instance.
-                    vertexPos.y += SECOND_CLOUD_HEIGHT;
+                    vertexFeetPlayerPos.y += SECOND_CLOUD_HEIGHT;
                 }
 
-                // Convert to clip pos and output as position
-                gl_Position = gl_ProjectionMatrix * (gbufferModelView * vertexPos);
-            #else
-                gl_Position = ftransform();
+                // Convert back to vertex view position
+                vertexViewPos = mat3(gbufferModelView) * vertexFeetPlayerPos + gbufferModelView[3].xyz;
             #endif
+
+            // Convert to clip position and output as final position
+            // gl_Position = gl_ProjectionMatrix * vertexViewPos;
+            gl_Position.xyz = getMatScale(mat3(gl_ProjectionMatrix)) * vertexViewPos;
+            gl_Position.z += gl_ProjectionMatrix[3].z;
+
+            gl_Position.w = -vertexViewPos.z;
 
             #if ANTI_ALIASING == 2
                 gl_Position.xy += jitterPos(gl_Position.w);
@@ -87,12 +94,16 @@
 #ifdef FRAGMENT
     #if defined FORCE_DISABLE_CLOUDS || defined STORY_MODE_CLOUDS
         void main(){
-            discard;
+            discard; return;
         }
     #else
+        /* RENDERTARGETS: 0,3 */
+        layout(location = 0) out vec4 sceneColOut; // gcolor
+        layout(location = 1) out vec3 materialDataOut; // colortex3
+
         in vec2 texCoord;
 
-        in vec4 vertexPos;
+        in vec3 vertexFeetPlayerPos;
 
         #ifdef WORLD_LIGHT
             flat in vec3 vertexNormal;
@@ -140,7 +151,7 @@
             #endif
         #endif
 
-        #include "/lib/lighting/simpleShadingForward.glsl"
+        #include "/lib/lighting/basicShadingForward.glsl"
 
         void main(){
             // Get albedo alpha
@@ -157,8 +168,8 @@
                 #endif
             #endif
 
-            // Alpha test, discard immediately
-            if(albedoAlpha < ALPHA_THRESHOLD) discard;
+            // Alpha test, discard and return immediately
+            if(albedoAlpha < ALPHA_THRESHOLD){ discard; return; }
 
             #if COLOR_MODE == 2
                 vec4 albedo = vec4(0, 0, 0, albedoAlpha);
@@ -167,11 +178,10 @@
             #endif
 
             // Apply simple shading
-            vec4 sceneCol = simpleShadingGbuffers(albedo);
+            sceneColOut = vec4(basicShadingForward(albedo), albedo.a);
 
-        /* DRAWBUFFERS:03 */
-            gl_FragData[0] = sceneCol; // gcolor
-            gl_FragData[1] = vec4(0, 0, 0, 1); // colortex3
+            // Write buffer datas (the alphas need to be 1 due to translucents)
+            materialDataOut = vec3(0, 0, 0);
         }
     #endif
 #endif

@@ -1,14 +1,14 @@
 /*
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 
-    Developed by Eldeston, presented by FlameRender (TM) Studios.
+    Developed by Eldeston, presented by FlameRender (C) Studios.
 
-    Copyright (C) 2023 Eldeston | FlameRender (TM) Studios License
+    Copyright (C) 2023 Eldeston | FlameRender (C) Studios License
 
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.4 /// ================================
+================================ /// Super Duper Vanilla v1.3.5 /// ================================
 */
 
 /// Buffer features: Solid complex shading
@@ -16,9 +16,9 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    out vec2 texCoord;
-
     flat out vec3 skyCol;
+
+    noperspective out vec2 texCoord;
 
     #ifdef WORLD_LIGHT
         flat out vec3 sRGBLightCol;
@@ -65,14 +65,23 @@
             #endif
         #endif
 
-        gl_Position = ftransform();
+        gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
     }
 #endif
 
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    in vec2 texCoord;
+    /* RENDERTARGETS: 0 */
+    layout(location = 0) out vec3 sceneColOut; // gcolor
+
+    // Sky silhoutte fix
+    const vec4 gcolorClearColor = vec4(0, 0, 0, 1);
+
+    #if ANTI_ALIASING >= 2 || defined PREVIOUS_FRAME || defined AUTO_EXPOSURE
+        // Disable buffer clear if TAA, previous frame reflections, or auto exposure is on
+        const bool colortex5Clear = false;
+    #endif
 
     flat in vec3 skyCol;
 
@@ -87,14 +96,8 @@
             flat in vec3 moonCol;
         #endif
     #endif
-    
-    // Sky silhoutte fix
-    const vec4 gcolorClearColor = vec4(0, 0, 0, 1);
 
-    #if ANTI_ALIASING >= 2 || defined PREVIOUS_FRAME || defined AUTO_EXPOSURE
-        // Disable buffer clear if TAA, previous frame reflections, or auto exposure is on
-        const bool colortex5Clear = false;
-    #endif
+    noperspective in vec2 texCoord;
 
     uniform int isEyeInWater;
 
@@ -156,6 +159,8 @@
         float eyeBrightFact = eyeSkylight;
     #endif
 
+    #include "/lib/utility/projectionFunctions.glsl"
+
     #ifdef PREVIOUS_FRAME
         uniform vec3 previousCameraPosition;
 
@@ -164,7 +169,7 @@
 
         uniform sampler2D colortex5;
 
-        #include "/lib/utility/convertPrevScreenSpace.glsl"
+        #include "/lib/utility/prevProjectionFunctions.glsl"
     #endif
 
     #ifdef SSAO
@@ -189,9 +194,6 @@
 
         #include "/lib/utility/taaJitter.glsl"
     #endif
-
-    #include "/lib/utility/convertViewSpace.glsl"
-    #include "/lib/utility/convertScreenSpace.glsl"
 
     #if OUTLINES != 0
         #include "/lib/post/outline.glsl"
@@ -222,53 +224,53 @@
         #endif
 
         // Get view pos
-        vec3 viewPos = toView(screenPos);
+        vec3 viewPos = getViewPos(gbufferProjectionInverse, screenPos);
         // Get eye player pos
         vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
 
         // Get view distance
-        float viewDist = length(viewPos);
+        float viewDot = lengthSquared(viewPos);
+	    float viewDotInvSqrt = inversesqrt(viewDot);
 
         // Get normalized eyePlayerPos
-        vec3 nEyePlayerPos = eyePlayerPos / viewDist;
+        vec3 nEyePlayerPos = eyePlayerPos * viewDotInvSqrt;
 
         // Get scene color
-        vec3 sceneCol = texelFetch(gcolor, screenTexelCoord, 0).rgb;
+        sceneColOut = texelFetch(gcolor, screenTexelCoord, 0).rgb;
 
-        // If sky, do full sky render
+        // If sky, do full sky render and return immediately
         if(skyMask){
-            sceneCol = getFullSkyRender(nEyePlayerPos, sceneCol) * exp2(-far * (blindness + darknessFactor));
-        // Else, calculate reflection and fog
-        }else{
-            #if ANTI_ALIASING >= 2
-                vec3 dither = toRandPerFrame(getRand3(screenTexelCoord & 255), frameTimeCounter);
-            #else
-                vec3 dither = getRand3(screenTexelCoord & 255);
-            #endif
-
-            // Declare and get materials
-            vec2 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xy;
-            vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
-            vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
-
-            // Apply deffered shading
-            sceneCol = complexShadingDeferred(sceneCol, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, viewDist, matRaw0.x, matRaw0.y, dither);
-
-            #if OUTLINES != 0
-                // Outline calculation
-                sceneCol *= 1.0 + getOutline(screenTexelCoord, screenPos.z, OUTLINE_PIXEL_SIZE) * OUTLINE_BRIGHTNESS;
-            #endif
-
-            #ifdef SSAO
-                // Apply ambient occlusion with simple blur
-                sceneCol *= getSSAOBoxBlur(screenTexelCoord);
-            #endif
-
-            // Do basic sky render and use it as fog color
-            sceneCol = getFogRender(sceneCol, getFogRender(nEyePlayerPos), viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
+            sceneColOut = getFullSkyRender(nEyePlayerPos, sceneColOut) * exp2(-far * (blindness + darknessFactor));
+            return;
         }
 
-    /* DRAWBUFFERS:0 */
-        gl_FragData[0] = vec4(sceneCol, 1); // gcolor
+        float viewDist = viewDot * viewDotInvSqrt;
+
+        #if ANTI_ALIASING >= 2
+            vec3 dither = toRandPerFrame(getRand3(screenTexelCoord & 255), frameTimeCounter);
+        #else
+            vec3 dither = getRand3(screenTexelCoord & 255);
+        #endif
+
+        // Declare and get materials
+        vec2 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xy;
+        vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
+        vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
+
+        // Apply deffered shading
+        sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, viewDotInvSqrt, matRaw0.x, matRaw0.y, dither);
+
+        #if OUTLINES != 0
+            // Outline calculation
+            sceneColOut *= 1.0 + getOutline(screenTexelCoord, screenPos.z) * OUTLINE_BRIGHTNESS;
+        #endif
+
+        #ifdef SSAO
+            // Apply ambient occlusion with simple blur
+            sceneColOut *= getSSAOBoxBlur(screenTexelCoord);
+        #endif
+
+        // Do basic sky render and use it as fog color
+        sceneColOut = getFogRender(sceneColOut, getSkyFogRender(nEyePlayerPos), viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
     }
 #endif
