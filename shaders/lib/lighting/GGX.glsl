@@ -83,5 +83,5 @@ vec3 getSpecularBRDF(in vec3 V, in vec3 N, in vec3 albedo, in float NL, in float
     }
 
     vec3 metallicFresnel = cosTheta + albedo * oneMinusCosTheta;
-    return min(vec3(specIntensity), metallicFresnel * distribution);
+    return min(vec3(specIntensity * PI), metallicFresnel * distribution);
 }
