@@ -54,17 +54,19 @@ vec3 getSpecularBRDF(in vec3 V, in vec3 N, in vec3 albedo, in float NL, in float
 
     // Roughness remapping
     float roughness = 1.0 - smoothness;
-    float alpha = roughness * roughness;
-    float alphaSqrd = alpha * alpha;
+    float alphaSqrd = squared(roughness * roughness);
 
     // Visibility
     float visibility = LH + (1.0 / roughness);
 
+    // Smoothness needed to be multiplied in the rest of the calculation for compensating reflection over specular
+    float specularMult = smoothness + 1.0;
+    float specIntensity = sunMoonIntensitySqrd * specularMult;
+
     // Distribution
-    // Roughness needed to be divided in the rest of the calculation for compensating reflection over specular
     float NHSqr = getNoHSquared(NL, dot(N, V), dot(V, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)));
     float denominator = squared(NHSqr * (alphaSqrd - 1.0) + 1.0);
-    float distribution = (alpha * roughness * NL) / (denominator * visibility * PI);
+    float distribution = (specularMult * alphaSqrd * NL) / (denominator * visibility * PI);
 
     // Rain occlusion
     #ifndef FORCE_DISABLE_WEATHER
@@ -75,9 +77,11 @@ vec3 getSpecularBRDF(in vec3 V, in vec3 N, in vec3 albedo, in float NL, in float
     float cosTheta = exp2(-9.28 * LH);
 	float oneMinusCosTheta = 1.0 - cosTheta;
 
-	float basicFresnel = cosTheta + metallic * oneMinusCosTheta;
-    if(metallic <= 0.9) return vec3(min(sunMoonIntensitySqrd, basicFresnel * distribution * roughness) / (1.0 - basicFresnel * smoothness));
+    if(metallic <= 0.9){
+        float basicFresnel = cosTheta + metallic * oneMinusCosTheta;
+        return vec3(min(specIntensity, basicFresnel * distribution));
+    }
 
     vec3 metallicFresnel = cosTheta + albedo * oneMinusCosTheta;
-    return min(vec3(sunMoonIntensitySqrd / roughness), metallicFresnel * distribution);
+    return min(vec3(specIntensity), metallicFresnel * distribution);
 }

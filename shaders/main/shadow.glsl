@@ -157,7 +157,7 @@
 
                 // To give white colored glass some proper shadows except water
                 if(blockId != 11102){
-                    shadowColOut = toLinear(shdAlbedo.rgb * vertexColor) * (1.0 - shdAlbedo.a * shdAlbedo.a);
+                    shadowColOut = shdAlbedo.rgb;
                     return;
                 }
 
@@ -171,7 +171,7 @@
                     #endif
                 #else
                     #if UNDERWATER_CAUSTICS == 2
-                        shadowColOut = shdAlbedo.rgb * squared(0.256 + getCellNoise(waterNoiseUv));
+                        shadowColOut = squared(0.256 + getCellNoise(waterNoiseUv)) * shdAlbedo.rgb;
                     #elif UNDERWATER_CAUSTICS == 1
                         shadowColOut = shdAlbedo.rgb;
                         if(isEyeInWater == 1) shadowColOut *= squared(0.256 + getCellNoise(waterNoiseUv));
