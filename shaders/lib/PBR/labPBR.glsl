@@ -111,27 +111,27 @@ void getPBR(inout dataPBR material, in int id){
     // Extract normals
     vec3 normalMap = vec3(normalAOH.xy * 2.0 - 1.0, 0);
 
-    // Get the dot of normalMap.xy
-    float normalXYdot = lengthSquared(normalMap.xy);
-    // Clamp to 0. Very important to prevent NaNs in your normals.
-    float normalZ = max(0.0, 1.0 - normalXYdot);
-    // Calculate final results and complete the normalizing process
-    normalMap = vec3(normalMap.xy * inversesqrt(normalXYdot + normalZ), sqrt(normalZ));
+    // Get the dot of XY
+    float normalXY = lengthSquared(normalMap.xy);
+    // If length is less than one, calculate Z
+    if(normalXY < 1) normalMap.z = sqrt(1.0 - normalXY);
+    // If length is more than one, normalize XY
+    else normalMap.xy *= inversesqrt(normalXY);
+
+    // Assign reflectance
+    material.metallic = SRPSSE.g;
+
+    // Assign smoothness
+    material.smoothness = min(SRPSSE.r, 0.96);
+
+    // Assign emissive
+    material.emissive = SRPSSE.a != 1 ? SRPSSE.a : 0.0;
 
     // Assign porosity
     material.porosity = SRPSSE.b < 0.252 ? SRPSSE.b * 3.984 : 0.0;
 
     // Assign SS
     material.ss = SRPSSE.b > 0.252 ? (SRPSSE.b - 0.2509804) * 1.3350785 : 0.0;
-
-    // Assign smoothness
-    material.smoothness = min(SRPSSE.r, 0.96);
-
-    // Assign reflectance
-    material.metallic = SRPSSE.g;
-
-    // Assign emissive
-    material.emissive = SRPSSE.a != 1 ? SRPSSE.a : 0.0;
 
     // Assign ambient occlusion
     #if defined ENTITIES || defined HAND || defined ENTITIES_GLOWING || defined HAND_WATER
@@ -159,8 +159,8 @@ void getPBR(inout dataPBR material, in int id){
     #ifdef WATER
         // If water
         if(id == 11102){
-            material.smoothness = 0.96;
             material.metallic = 0.02;
+            material.smoothness = 0.96;
 
             #ifdef WATER_FLAT
                 material.albedo.rgb = vec3(0.8);
@@ -169,8 +169,8 @@ void getPBR(inout dataPBR material, in int id){
             
         // Nether portal
         else if(id == 12100){
-            material.smoothness = 0.96;
             material.metallic = 0.04;
+            material.smoothness = 0.96;
             material.emissive = maxOf(material.albedo.rgb);
         }
     #endif
@@ -184,6 +184,16 @@ void getPBR(inout dataPBR material, in int id){
 
         // Charged creeper
         else if(id == 10132) material.emissive = float(material.albedo.b > material.albedo.g);
+    #endif
+
+    #if COLOR_MODE == 0
+        material.albedo.rgb *= vertexColor;
+    #elif COLOR_MODE == 1
+        material.albedo.rgb = vec3(1);
+    #elif COLOR_MODE == 2
+        material.albedo.rgb = vec3(0);
+    #elif COLOR_MODE == 3
+        material.albedo.rgb = vertexColor;
     #endif
 
     // Get parallax shadows
@@ -205,14 +215,4 @@ void getPBR(inout dataPBR material, in int id){
 
     // Assign normal and calculate normal strength
     if(hasFallback) material.normal = mix(TBN[2], TBN * normalMap, NORMAL_STRENGTH);
-
-    #if COLOR_MODE == 0
-        material.albedo.rgb *= vertexColor;
-    #elif COLOR_MODE == 1
-        material.albedo.rgb = vec3(1);
-    #elif COLOR_MODE == 2
-        material.albedo.rgb = vec3(0);
-    #elif COLOR_MODE == 3
-        material.albedo.rgb = vertexColor;
-    #endif
 }
