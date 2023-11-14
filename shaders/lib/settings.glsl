@@ -63,13 +63,11 @@ const float sunPathRotation = 30.0; // Light path angle. This also affects sky a
 
 /// -------------------------------- /// Ray traing settings /// -------------------------------- ///
 
-// #define SSGI // Enables SSGI, currently experimental and may not be very optimized, may improve the ambience of dark areas despite the noisiness. Turn on TAA for best results.
-#define SSGI_STEPS 20 // SSGI steps, increasing may improve quality but demand more performance [16 20 24 28 32]
-#define SSGI_BISTEPS 4 // SSGI binary refinement steps, improves quality especially when using a low step count, balancing the values is required for optimum performance [0 2 4 6 8]
+// #define SSGI // Enables screen space global illumination. May improve the ambience of dark areas despite the noisiness. Currently experimental and unoptimized. Turn on TAA for best results.
+#define SSR // Enables screen space global reflections. May improve the reflections of smooth objects using PBR.
 
-#define SSR // Enables SSR, may not look good in certain areas
-#define SSR_STEPS 20 // SSR steps, increasing may improve quality but demand more performance [16 20 24 28 32]
-#define SSR_BISTEPS 4 // SSR binary refinement steps, improves quality especially when using a low step count, balancing the values is required for optimum performance [0 2 4 6 8]
+#define RAYTRACER_STEPS 16 // Raytracer steps. Increasing may improve quality and demand more performance. [16 20 24 28 32]
+#define RAYTRACER_BISTEPS 4 // Raytracer binary refinement steps. Improves quality especially when using a low step count. Balancing the values may be necessary for performance.  [0 2 4 6 8]
 
 // #define ROUGH_REFLECTIONS // Enables rougher objects to have rougher reflections. May show weird artifacts, but some AA might fix it.
 // #define PREVIOUS_FRAME // Reads previous frame buffer colors alowing SSR or SSGI to have infinite bounces of light. Impacts performance!
