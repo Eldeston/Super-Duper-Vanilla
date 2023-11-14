@@ -1,4 +1,4 @@
-## Language format v1.0.3
+## Language format v1.0.4
 ## All other .lang files must update to the latest language format version on this main .lang file
 
 ## Profiles
@@ -86,10 +86,8 @@ screen.LIGHTING = Lighting
     screen.RAY_TRACING = Ray tracing settings
         option.SSGI = SSGI
         option.SSR = SSR
-        option.SSGI_STEPS = SSGI steps
-        option.SSR_STEPS = SSR steps
-        option.SSGI_BISTEPS = SSGI refinement steps
-        option.SSR_BISTEPS = SSR refinement steps
+        option.RAYTRACER_STEPS = Raytracer steps
+        option.RAYTRACER_BISTEPS = Raytracer refinement steps
         option.ROUGH_REFLECTIONS = Rough reflections
         option.PREVIOUS_FRAME = Previous frame buffer
 
