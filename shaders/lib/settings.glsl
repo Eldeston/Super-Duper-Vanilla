@@ -66,8 +66,8 @@ const float sunPathRotation = 30.0; // Light path angle. This also affects sky a
 // #define SSGI // Enables screen space global illumination. May improve the ambience of dark areas despite the noisiness. Currently experimental and unoptimized. Turn on TAA for best results.
 #define SSR // Enables screen space global reflections. May improve the reflections of smooth objects using PBR.
 
-#define RAYTRACER_STEPS 16 // Raytracer steps. Increasing may improve quality and demand more performance. [16 20 24 28 32]
-#define RAYTRACER_BISTEPS 4 // Raytracer binary refinement steps. Improves quality especially when using a low step count. Balancing the values may be necessary for performance.  [0 2 4 6 8]
+#define RAYTRACER_STEPS 20 // Raytracer steps. Increasing may improve quality and demand more performance. [16 20 24 28 32]
+#define RAYTRACER_BISTEPS 2 // Raytracer binary refinement steps. Improves quality especially when using a low step count. Balancing the values may be necessary for performance.  [0 2 4 6 8]
 
 // #define ROUGH_REFLECTIONS // Enables rougher objects to have rougher reflections. May show weird artifacts, but some AA might fix it.
 // #define PREVIOUS_FRAME // Reads previous frame buffer colors alowing SSR or SSGI to have infinite bounces of light. Impacts performance!
@@ -229,6 +229,9 @@ const float PHYSICS_NORMAL_STRENGTH = 0.6;
 #endif
 
 // Precalculated constants
+
+// Raytracer steps inverse
+const float rayTracerStepsInv = 1.0 / RAYTRACER_STEPS;
 
 // Sun and moon intensity squared
 const float sunMoonIntensitySqrd = SUN_MOON_INTENSITY * SUN_MOON_INTENSITY;

@@ -1,33 +1,36 @@
 vec3 complexShadingForward(in dataPBR material){
 	// Calculate sky diffusion first, begining with the sky itself
-	vec3 totalDiffuse = toLinear(SKY_COLOR_DATA_BLOCK);
+	vec3 totalIllumination = toLinear(SKY_COLOR_DATA_BLOCK);
 
 	#ifdef IS_IRIS
 		// Calculate thunder flash
-		totalDiffuse += lightningFlash;
+		totalIllumination += lightningFlash;
 	#endif
 
 	// Get sky light squared
 	float skyLightSquared = squared(lmCoord.y);
 	// Occlude the appled sky and thunder flash calculation by sky light amount
-	totalDiffuse *= skyLightSquared;
+	totalIllumination *= skyLightSquared;
 
 	#if defined DIRECTIONAL_LIGHTMAPS && (defined TERRAIN || defined WATER)
 		vec3 dirLightMapCoord = dFdx(vertexFeetPlayerPos) * dFdx(lmCoord.x) + dFdy(vertexFeetPlayerPos) * dFdy(lmCoord.x);
 		float dirLightMap = min(1.0, max(0.0, dot(fastNormalize(dirLightMapCoord), material.normal)) * lmCoord.x * DIRECTIONAL_LIGHTMAP_STRENGTH + lmCoord.x);
 
 		// Calculate block light
-		totalDiffuse += toLinear(dirLightMap * blockLightColor);
+		totalIllumination += toLinear(dirLightMap * blockLightColor);
 	#else
 		// Calculate block light
-		totalDiffuse += toLinear(lmCoord.x * blockLightColor);
+		totalIllumination += toLinear(lmCoord.x * blockLightColor);
 	#endif
 
 	// Lastly, calculate ambient lightning
-	totalDiffuse += toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
+	totalIllumination += toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 
 	// Apply baked ambient occlussion
-	totalDiffuse *= material.ambient;
+	totalIllumination *= material.ambient;
+
+	// Apply emissives
+	totalIllumination += material.emissive * EMISSIVE_INTENSITY;
 
 	#ifdef WORLD_LIGHT
 		// Get sRGB light color
@@ -41,13 +44,6 @@ vec3 complexShadingForward(in dataPBR material){
 
 		bool isShadow = NLZ > 0;
 		bool isSubSurface = material.ss > 0;
-
-		float dirLight = isShadow ? NLZ : 0.0;
-
-		#ifdef SUBSURFACE_SCATTERING
-			// Diffuse with simple SS approximation
-			if(isSubSurface) dirLight += (1.0 - dirLight) * material.ambient * material.ss * 0.5;
-		#endif
 
 		#if defined SHADOW_MAPPING && !defined ENTITIES_GLOWING
 			vec3 shadowCol = vec3(0);
@@ -109,20 +105,27 @@ vec3 complexShadingForward(in dataPBR material){
 
 			shadowCol += rainDiffuseAmount * material.ambient * skyLightSquared;
 		#endif
+
+		float dirLight = isShadow ? NLZ : 0.0;
+
+		#ifdef SUBSURFACE_SCATTERING
+			// Diffuse with simple SS approximation
+			if(isSubSurface) dirLight += (1.0 - dirLight) * material.ambient * material.ss * 0.5;
+		#endif
 		
 		// Calculate and add shadow diffuse
-		totalDiffuse += toLinear(sRGBLightCol) * shadowCol * dirLight;
+		totalIllumination += toLinear(sRGBLightCol) * shadowCol * dirLight;
 	#endif
 
-	totalDiffuse = material.albedo.rgb * (totalDiffuse + material.emissive * EMISSIVE_INTENSITY);
+	vec3 totalLighting = material.albedo.rgb * totalIllumination;
 
 	#if defined WORLD_LIGHT && defined SPECULAR_HIGHLIGHTS
 		if(isShadow){
 			// Get specular GGX
 			vec3 specCol = getSpecularBRDF(-fastNormalize(vertexFeetPlayerPos), material.normal, material.albedo.rgb, NLZ, material.metallic, material.smoothness);
-			totalDiffuse += specCol * shadowCol * sRGBLightCol;
+			totalLighting += specCol * shadowCol * sRGBLightCol;
 		}
 	#endif
 
-	return totalDiffuse;
+	return totalLighting;
 }
