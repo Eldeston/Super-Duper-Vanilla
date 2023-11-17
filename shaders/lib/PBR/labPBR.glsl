@@ -10,21 +10,30 @@ vec2 dcdy = dFdy(texCoord);
 #ifdef PARALLAX_OCCLUSION
     vec2 getParallaxOffset(in vec3 dirT){ return dirT.xy * (PARALLAX_DEPTH / dirT.z); }
 
+    float getHeightMap(in vec2 uv){ return textureGrad(normals, fract(uv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a; }
+
     vec2 parallaxUv(in vec2 startUv, in vec2 endUv, out vec3 currPos){
         const float stepSize = 1.0 / PARALLAX_STEPS;
         endUv *= stepSize * PARALLAX_DEPTH;
 
-        float texDepth = textureGrad(normals, fract(startUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
-        float traceDepth = 1.0;
-
-        for(int i = 0; i < PARALLAX_STEPS; i++){
-            if(texDepth >= traceDepth) break;
+        float startDepth = 1.0;
+        while(getHeightMap(startUv) < startDepth){
+            startDepth -= stepSize;
             startUv += endUv;
-            traceDepth -= stepSize;
-            texDepth = textureGrad(normals, fract(startUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a;
         }
 
-        currPos = vec3(startUv - endUv, traceDepth + stepSize);
+        /*
+        for(int i = 0; i < PARALLAX_STEPS; i++){
+            if(getHeightMap(startUv) >= startDepth) break;
+            startDepth -= stepSize;
+            startUv += endUv;
+        }
+        */
+
+        vec2 prevUv = startUv - endUv;
+        float prevDepth = startDepth + stepSize;
+
+        currPos = vec3(prevUv, prevDepth);
         return startUv;
     }
 
@@ -33,12 +42,14 @@ vec2 dcdy = dFdy(texCoord);
             const float stepSize = 1.0 / PARALLAX_SHADOW_STEPS;
             vec2 stepOffset = stepSize * lightDir;
 
-            float traceDepth = currPos.z;
-            vec2 traceUv = currPos.xy;
-            for(int i = int(traceDepth * PARALLAX_SHADOW_STEPS); i < PARALLAX_SHADOW_STEPS; i++){
-                if(textureGrad(normals, fract(traceUv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a >= traceDepth) return exp2(i - PARALLAX_SHADOW_STEPS);
-                traceDepth += stepSize;
-                traceUv += stepOffset;
+            vec2 startUv = currPos.xy;
+            float startDepth = currPos.z;
+
+            for(int i = int(startDepth * PARALLAX_SHADOW_STEPS); i < PARALLAX_SHADOW_STEPS; i++){
+                if(getHeightMap(startUv) >= startDepth)
+                    return exp2(i - PARALLAX_SHADOW_STEPS);
+                startDepth += stepSize;
+                startUv += stepOffset;
             }
 
             return 1.0;
@@ -49,7 +60,7 @@ vec2 dcdy = dFdy(texCoord);
         uniform ivec2 atlasSize;
 
         // Slope normals by @null511
-        vec2 getSlopeNormals(in vec3 viewT, in vec2 texUv, in float traceDepth){
+        vec2 getSlopeNormals(in vec3 viewT, in vec2 texUv, in float startDepth){
             vec2 texPixSize = 1.0 / atlasSize;
 
             vec2 texSnapped = floor(texUv * atlasSize) * texPixSize;
@@ -57,12 +68,12 @@ vec2 dcdy = dFdy(texCoord);
             vec2 stepSign = sign(-viewT.xy);
 
             vec2 texX = vec2(texSnapped.x + texPixSize.x * stepSign.x, texSnapped.y);
-            float heightX = textureGrad(normals, texX, dcdx, dcdy).a;
-            bool hasX = traceDepth > heightX && sign(texOffset.x) == stepSign.x;
+            float heightX = getHeightMap(texX);
+            bool hasX = startDepth > heightX && sign(texOffset.x) == stepSign.x;
 
             vec2 texY = vec2(texSnapped.x, texSnapped.y + texPixSize.y * stepSign.y);
-            float heightY = textureGrad(normals, texY, dcdx, dcdy).a;
-            bool hasY = traceDepth > heightY && sign(texOffset.y) == stepSign.y;
+            float heightY = getHeightMap(texY);
+            bool hasY = startDepth > heightY && sign(texOffset.y) == stepSign.y;
 
             if(abs(texOffset.x) < abs(texOffset.y)){
                 if(hasY) return vec2(0, stepSign.y);
@@ -197,7 +208,7 @@ void getPBR(inout dataPBR material, in int id){
     #endif
 
     // Get parallax shadows
-    material.parallaxShd = 1.0;
+    material.parallaxShd = material.ss;
 
     #ifdef PARALLAX_OCCLUSION
         if(hasFallback){
@@ -206,9 +217,8 @@ void getPBR(inout dataPBR material, in int id){
             #endif
 
             #if defined PARALLAX_SHADOW && defined WORLD_LIGHT
-                if(dot(TBN[2], vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) > 0.001)
+                if(dot(TBN[2], vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) > 0.005 || material.ss > 0)
                     material.parallaxShd = parallaxShadow(currPos, getParallaxOffset(vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z) * TBN));
-                else material.parallaxShd = material.ss;
             #endif
         }
     #endif

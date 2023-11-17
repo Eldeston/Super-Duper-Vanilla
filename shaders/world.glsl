@@ -97,19 +97,3 @@ const vec3 skyTwilightColor = vec3(SKY0_TR, SKY0_TG, SKY0_TB) * (SKY0_TI * 0.003
 #define LIGHT_COLOR_DATA_BLOCK1(S, M) (dayCycle > 1 ? S : M)
 
 #define SKY_COLOR_DATA_BLOCK lerp(skyNightColor, skyTwilightColor, skyDayColor, dayCycle)
-
-/*
-
-vec3 getSunCol(){
-    return toLinear(mix(lightTwilightColor, lightDayColor, twilightPhase));
-}
-
-vec3 getMoonCol(){
-    return lightNightColor;
-}
-
-vec3 getSwapSunCol(){
-    return dayCycle > 1 ? getSunCol() : getMoonCol();
-}
-
-*/

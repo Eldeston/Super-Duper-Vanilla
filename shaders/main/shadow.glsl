@@ -163,17 +163,19 @@
 
                 // If the object is not opaque, proceed with shadow coloring and caustics
                 #ifdef WATER_FLAT
+                    shadowColOut = vec3(0.8);
+
                     #if UNDERWATER_CAUSTICS == 2
                         shadowColOut = vec3(squared(0.256 + getCellNoise(waterNoiseUv)) * 0.8);
                     #elif UNDERWATER_CAUSTICS == 1
-                        shadowColOut = vec3(0.8);
                         if(isEyeInWater == 1) shadowColOut = vec3(squared(0.256 + getCellNoise(waterNoiseUv)) * 0.8);
                     #endif
                 #else
+                    shadowColOut = shdAlbedo.rgb;
+
                     #if UNDERWATER_CAUSTICS == 2
-                        shadowColOut = squared(0.256 + getCellNoise(waterNoiseUv)) * shdAlbedo.rgb;
+                        shadowColOut *= squared(0.256 + getCellNoise(waterNoiseUv));
                     #elif UNDERWATER_CAUSTICS == 1
-                        shadowColOut = shdAlbedo.rgb;
                         if(isEyeInWater == 1) shadowColOut *= squared(0.256 + getCellNoise(waterNoiseUv));
                     #endif
                 #endif
