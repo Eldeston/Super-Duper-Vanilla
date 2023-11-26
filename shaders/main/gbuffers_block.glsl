@@ -16,12 +16,11 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    flat out vec2 lmCoord;
-
     flat out vec3 vertexColor;
 
     flat out mat3 TBN;
 
+    out vec2 lmCoord;
     out vec2 texCoord;
 
     out vec3 vertexFeetPlayerPos;
@@ -119,12 +118,11 @@
     layout(location = 2) out vec3 albedoDataOut; // colortex2
     layout(location = 3) out vec3 materialDataOut; // colortex3
 
-    flat in vec2 lmCoord;
-
     flat in vec3 vertexColor;
     
     flat in mat3 TBN;
 
+    in vec2 lmCoord;
     in vec2 texCoord;
 
     in vec3 vertexFeetPlayerPos;
