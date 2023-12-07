@@ -52,8 +52,6 @@
 
         attribute vec3 mc_Entity;
 
-        #include "/lib/lighting/shdDistort.glsl"
-
         void main(){
             // Get block id
             blockId = int(mc_Entity.x);
@@ -98,7 +96,7 @@
             gl_Position.w = 1.0;
 
             // Apply shadow distortion
-            gl_Position.xyz = distort(gl_Position.xyz);
+            gl_Position.xyz = vec3(gl_Position.xy / (length(gl_Position.xy) + 0.1), gl_Position.z * 0.2);
         }
     #else
         void main(){

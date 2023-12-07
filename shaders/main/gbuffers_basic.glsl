@@ -133,7 +133,6 @@
             #endif
 
             #include "/lib/lighting/shdMapping.glsl"
-            #include "/lib/lighting/shdDistort.glsl"
         #endif
     #endif
 

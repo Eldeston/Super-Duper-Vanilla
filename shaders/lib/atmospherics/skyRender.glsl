@@ -160,6 +160,45 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
     return currSkyCol;
 }
 
+vec3 getSkyFogRender(in vec3 nEyePlayerPos){
+    // If player is in water, return nothing if it's not the sky
+    if(isEyeInWater == 1) return vec3(0);
+    // If player is in lava, return fog color
+    if(isEyeInWater == 2) return fogColor;
+
+    // Get sky pos by shadow model view
+    vec3 skyPos = mat3(shadowModelView) * nEyePlayerPos;
+
+    #if defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
+        // Flip if the sun has gone below the horizon
+        if(dayCycle < 1) skyPos.xz = -skyPos.xz;
+    #endif
+
+    // Get basic sky simple color
+    vec3 currSkyCol = getSkyBasic(nEyePlayerPos.y, skyPos.z);
+    
+    #if defined WORLD_AETHER && defined WORLD_LIGHT
+        // Scaled by noise resolution
+        vec2 skyCoordScale = skyPos.xy * 256.0;
+
+        int aetherAnimationSpeed = int(frameTimeCounter * 8.0);
+
+        // Looks complex, but all it does is move the noise texture in 3 different directions
+        ivec2 aetherTexelCoord0 = ivec2(255 - skyCoordScale - aetherAnimationSpeed) & 255;
+        ivec2 aetherTexelCoord1 = ivec2(aetherTexelCoord0.x, int(skyCoordScale.y - aetherAnimationSpeed) & 255);
+        ivec2 aetherTexelCoord2 = ivec2(int(skyCoordScale.x - aetherAnimationSpeed) & 255, aetherTexelCoord0.y);
+
+        vec3 aetherNoise = vec3(texelFetch(noisetex, aetherTexelCoord0, 0).z,
+            texelFetch(noisetex, aetherTexelCoord1, 0).z,
+            texelFetch(noisetex, aetherTexelCoord2, 0).z);
+
+        currSkyCol += exp2(-abs(nEyePlayerPos.y) * 8.0) * cubed(aetherNoise * lightCol + sumOf(aetherNoise) * 0.66666666) * lightCol;
+    #endif
+
+    // Do a simple void gradient calculation
+    return currSkyCol * saturate(nEyePlayerPos.y + eyeBrightFact * 2.0 - 1.0);
+}
+
 // Fog color render
 vec3 getSkyFogRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
     // If player is in water, return nothing if it's not the sky
@@ -190,30 +229,32 @@ vec3 getSkyFogRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
 }
 
 // Sky reflection
-vec3 getSkyReflection(in vec3 nEyePlayerPos){
+vec3 getSkyReflection(in vec3 reflectViewDir){
     // If player is in lava, return fog color
     if(isEyeInWater == 2) return fogColor;
 
+    vec3 reflectPlayerDir = mat3(gbufferModelViewInverse) * reflectViewDir;
+
     // Rotate normalized player position to shadow space
-    vec3 skyPos = mat3(shadowModelView) * nEyePlayerPos;
+    vec3 skyPos = mat3(shadowModelView) * reflectPlayerDir;
 
     #if defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
         // Flip if the sun has gone below the horizon
         if(dayCycle < 1) skyPos.xz = -skyPos.xz;
     #endif
 
-    vec3 finalCol = getSkyHalf(nEyePlayerPos, skyPos, getSkyBasic(nEyePlayerPos.y, skyPos.z));
+    vec3 finalCol = getSkyHalf(reflectPlayerDir, skyPos, getSkyBasic(reflectPlayerDir.y, skyPos.z));
 
     // Do a simple void gradient calculation when underwater
-    if(isEyeInWater == 1) return finalCol * max(0.0, nEyePlayerPos.y + eyeBrightFact - 1.0);
+    if(isEyeInWater == 1) return finalCol * max(0.0, reflectPlayerDir.y + eyeBrightFact - 1.0);
 
     #ifdef WORLD_LIGHT
         // Fake VL reflection
         const float fakeVLBrightness = VOLUMETRIC_LIGHTING_STRENGTH * 0.5;
         float VLBrightness = fakeVLBrightness * shdFade;
 
-        if(nEyePlayerPos.y > 0){
-            float heightFade = squared(squared(squared(1.0 - squared(nEyePlayerPos.y))));
+        if(reflectPlayerDir.y > 0){
+            float heightFade = squared(squared(squared(1.0 - squared(reflectPlayerDir.y))));
 
             #ifndef FORCE_DISABLE_WEATHER
                 heightFade += (1.0 - heightFade) * rainStrength * 0.5;
@@ -225,7 +266,7 @@ vec3 getSkyReflection(in vec3 nEyePlayerPos){
         finalCol += lightCol * VLBrightness;
     #endif
 
-    return finalCol * saturate(nEyePlayerPos.y + eyeBrightFact * 2.0 - 1.0);
+    return finalCol * saturate(reflectPlayerDir.y + eyeBrightFact * 2.0 - 1.0);
 }
 
 // Full sky render

@@ -230,7 +230,6 @@
             uniform mat4 shadowProjection;
 
             #include "/lib/lighting/shdMapping.glsl"
-            #include "/lib/lighting/shdDistort.glsl"
         #endif
 
         #include "/lib/lighting/GGX.glsl"

@@ -206,7 +206,6 @@
     
     #include "/lib/rayTracing/rayTracer.glsl"
 
-    #include "/lib/lighting/GGX.glsl"
     #include "/lib/lighting/complexShadingDeferred.glsl"
 
     void main(){
@@ -255,8 +254,6 @@
             return;
         }
 
-        float viewDist = viewDot * viewDotInvSqrt;
-
         #if ANTI_ALIASING >= 2
             vec3 dither = toRandPerFrame(getRand3(screenTexelCoord & 255), frameTimeCounter);
         #else
@@ -280,6 +277,8 @@
             // Apply ambient occlusion with simple blur
             sceneColOut *= getSSAOBoxBlur(screenTexelCoord);
         #endif
+
+        float viewDist = viewDot * viewDotInvSqrt;
 
         // Get basic sky fog color
         vec3 fogSkyCol = getSkyFogRender(nEyePlayerPos, skyPos, currSkyCol);

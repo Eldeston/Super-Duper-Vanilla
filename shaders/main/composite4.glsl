@@ -46,8 +46,7 @@
 
         uniform sampler2D gcolor;
 
-        vec3 bloomTile(in vec3 bloomCol, in vec2 bloomPos, in int LOD){
-            float scale = exp2(LOD);
+        vec3 bloomTile(in vec3 bloomCol, in vec2 bloomPos, in int scale, in int LOD){
             vec2 bloomUv = bloomPos * scale;
 
             // Apply padding
@@ -68,11 +67,11 @@
 
     void main(){
         #ifdef BLOOM
-            bloomColOut = bloomTile(vec3(0), texCoord, 2);
-            bloomColOut = bloomTile(bloomColOut, vec2(texCoord.x, texCoord.y - 0.2578125), 3);
-            bloomColOut = bloomTile(bloomColOut, vec2(texCoord.x - 0.12890625, texCoord.y - 0.2578125), 4);
-            bloomColOut = bloomTile(bloomColOut, vec2(texCoord.x - 0.1953125, texCoord.y - 0.2578125), 5);
-            bloomColOut = bloomTile(bloomColOut, vec2(texCoord.x - 0.12890625, texCoord.y - 0.328125), 6);
+            bloomColOut = bloomTile(vec3(0), texCoord, 4, 2);
+            bloomColOut = bloomTile(bloomColOut, vec2(texCoord.x, texCoord.y - 0.2578125), 8, 3);
+            bloomColOut = bloomTile(bloomColOut, vec2(texCoord.x - 0.12890625, texCoord.y - 0.2578125), 16, 4);
+            bloomColOut = bloomTile(bloomColOut, vec2(texCoord.x - 0.1953125, texCoord.y - 0.2578125), 32, 5);
+            bloomColOut = bloomTile(bloomColOut, vec2(texCoord.x - 0.12890625, texCoord.y - 0.328125), 64, 6);
         #else
             bloomColOut = vec3(0);
         #endif

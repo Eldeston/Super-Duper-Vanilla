@@ -94,9 +94,13 @@ This along with the `GBUFFERS` macro, are used to identify the quirks in the cur
 
 ## TO DO (for Eldeston)
 * Refactor uniform usage and remove unecessary ones
+* Optimize DOF calculations with noise
 * Create a custom shadow model view
 * Replace vertex space calculations
+* Fix transparency issues with CTM
 * Optimize albedo alpha testing
-* Optimize DOF calculations
 * Fix glint z fighting
 * Document the shader pipeline
+
+* Implement cloud absorption
+* Improve water absorption

@@ -168,7 +168,6 @@
             uniform mat4 shadowProjection;
 
             #include "/lib/lighting/shdMapping.glsl"
-            #include "/lib/lighting/shdDistort.glsl"
         #endif
 
         #include "/lib/rayTracing/volLight.glsl"
@@ -181,7 +180,6 @@
 
     #include "/lib/rayTracing/rayTracer.glsl"
 
-    #include "/lib/lighting/GGX.glsl"
     #include "/lib/lighting/complexShadingDeferred.glsl"
 
     #ifndef IS_IRIS
@@ -246,18 +244,8 @@
             // Apply deffered shading
             sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, viewDotInvSqrt, matRaw0.x, matRaw0.y, dither);
 
-            // Get sky pos by shadow model view
-            vec3 skyPos = mat3(shadowModelView) * nEyePlayerPos;
-
-            #if defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
-                // Flip if the sun has gone below the horizon
-                if(dayCycle < 1) skyPos.xz = -skyPos.xz;
-            #endif
-
-            // Get basic sky simple color
-            vec3 currSkyCol = getSkyBasic(nEyePlayerPos.y, skyPos.z);
             // Get basic sky fog color
-            vec3 fogSkyCol = getSkyFogRender(nEyePlayerPos, skyPos, currSkyCol);
+            vec3 fogSkyCol = getSkyFogRender(nEyePlayerPos);
             // Do basic sky render and use it as fog color
             sceneColOut = getFogRender(sceneColOut, fogSkyCol, viewDist, nEyePlayerPos.y, feetPlayerPos.y + cameraPosition.y);
         }
