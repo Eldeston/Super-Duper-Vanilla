@@ -59,45 +59,44 @@ vec3 basicShadingForward(in vec4 albedo){
 					float blueNoise = texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x;
 				#endif
 
-				vec3 shadowCol = getShdCol(shdPos, blueNoise * TAU);
+				vec3 shdCol = getShdCol(shdPos, blueNoise * TAU);
 			#else
-				vec3 shadowCol = getShdCol(shdPos);
+				vec3 shdCol = getShdCol(shdPos);
 			#endif
+
+			// Cave light leak fix
+			float shdFactor = shdFade;
 
 			#ifdef CLOUDS
 				// Apply simple diffuse for clouds
-				shadowCol *= max(0.0, NLZ * 0.6 + 0.4) * shdFade;
-			#else
-				// Cave light leak fix
-				float caveFixShdFactor = shdFade;
-				if(isEyeInWater == 0) caveFixShdFactor *= min(1.0, lmCoord.y * 2.0 + eyeBrightFact);
-
-				shadowCol *= caveFixShdFactor;
+				shdFactor *= max(0.0, NLZ * 0.6 + 0.4);
 			#endif
+
+			shdCol *= shdFactor;
 		#else
 			#ifdef CLOUDS
 				// Apply simple diffuse for clouds
-				float shadowCol = max(0.0, NLZ * 0.6 + 0.4) * shdFade;
+				float shdCol = max(0.0, NLZ * 0.6 + 0.4) * shdFade;
 			#else
 				// Sample fake shadows
-				float shadowCol = saturate(hermiteMix(0.96, 0.98, lmCoord.y)) * shdFade;
+				float shdCol = saturate(hermiteMix(0.96, 0.98, lmCoord.y)) * shdFade;
 			#endif
 		#endif
 
 		#ifndef FORCE_DISABLE_WEATHER
 			// Approximate rain diffusing light shadow
 			float rainDiffuseAmount = rainStrength * 0.5;
-			shadowCol *= 1.0 - rainDiffuseAmount;
+			shdCol *= 1.0 - rainDiffuseAmount;
 
 			#ifdef CLOUDS
-				shadowCol += rainDiffuseAmount;
+				shdCol += rainDiffuseAmount;
 			#else
-				shadowCol += rainDiffuseAmount * skyLightSquared;
+				shdCol += rainDiffuseAmount * skyLightSquared;
 			#endif
 		#endif
 
 		// Calculate and add shadow diffuse
-		totalDiffuse += shadowCol * toLinear(LIGHT_COLOR_DATA_BLOCK0);
+		totalDiffuse += shdCol * toLinear(LIGHT_COLOR_DATA_BLOCK0);
 	#endif
 
 	// Return final result

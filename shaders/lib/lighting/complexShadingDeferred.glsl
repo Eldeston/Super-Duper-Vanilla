@@ -19,12 +19,12 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
 	// If smoothness is 0, return immediately
 	if(smoothness < 0.005) return sceneCol;
 
-	vec3 nViewPos = viewPos * viewDotInvSqrt;
-
 	#ifdef ROUGH_REFLECTIONS
 		// Rough the normals with noise
 		normal = generateCosineVector(normal, noiseUnitVector * (squared(1.0 - smoothness) * 0.5));
 	#endif
+
+	vec3 nViewPos = viewPos * viewDotInvSqrt;
 
 	// Get reflected view direction
 	// reflect(direction, normal) = direction - 2.0 * dot(normal, direction) * normal
