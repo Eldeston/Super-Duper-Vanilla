@@ -12,6 +12,9 @@ vec3 complexShadingForward(in dataPBR material){
 	// Occlude the appled sky and thunder flash calculation by sky light amount
 	totalIllumination *= skyLightSquared;
 
+	// Lastly, calculate ambient lightning
+	totalIllumination += toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
+
 	#if defined DIRECTIONAL_LIGHTMAPS && (defined TERRAIN || defined WATER)
 		vec3 dirLightMapCoord = dFdx(vertexFeetPlayerPos) * dFdx(lmCoord.x) + dFdy(vertexFeetPlayerPos) * dFdy(lmCoord.x);
 		float dirLightMap = min(1.0, max(0.0, dot(fastNormalize(dirLightMapCoord), material.normal)) * lmCoord.x * DIRECTIONAL_LIGHTMAP_STRENGTH + lmCoord.x);
@@ -22,9 +25,6 @@ vec3 complexShadingForward(in dataPBR material){
 		// Calculate block light
 		totalIllumination += toLinear(lmCoord.x * blockLightColor);
 	#endif
-
-	// Lastly, calculate ambient lightning
-	totalIllumination += toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 
 	// Apply baked ambient occlussion
 	totalIllumination *= material.ambient;
@@ -46,7 +46,7 @@ vec3 complexShadingForward(in dataPBR material){
 		bool isSubSurface = material.ss > 0;
 
 		#if defined SHADOW_MAPPING && !defined ENTITIES_GLOWING
-			vec3 shadowCol = vec3(0);
+			vec3 shdCol = vec3(0);
 
 			// If the area isn't shaded, apply shadow mapping
 			if(isShadow || isSubSurface){
@@ -74,36 +74,39 @@ vec3 complexShadingForward(in dataPBR material){
 						float blueNoise = texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x;
 					#endif
 
-					shadowCol = getShdCol(shdPos, blueNoise * TAU);
+					shdCol = getShdCol(shdPos, blueNoise * TAU);
 				#else
-					shadowCol = getShdCol(shdPos);
+					shdCol = getShdCol(shdPos);
 				#endif
 
 				// Cave light leak fix
-				float caveFixShdFactor = shdFade;
-				if(isEyeInWater == 0) caveFixShdFactor *= min(1.0, lmCoord.y * 2.0 + eyeBrightFact);
-				
+				float shdFactor = shdFade;
+
 				#if defined PARALLAX_OCCLUSION && defined PARALLAX_SHADOW
-					shadowCol *= material.parallaxShd * caveFixShdFactor;
-				#else
-					shadowCol *= caveFixShdFactor;
+					shdFactor *= material.parallaxShd;
 				#endif
+
+				#if defined TERRAIN || defined WATER
+					if(isEyeInWater == 0) shdFactor *= min(1.0, lmCoord.y * 2.0 + eyeBrightFact);
+				#endif
+
+				shdCol *= shdFactor;
 			}
 		#else
 			// Calculate fake shadows
-			float shadowCol = saturate(hermiteMix(0.96, 0.98, lmCoord.y)) * shdFade;
+			float shdCol = saturate(hermiteMix(0.96, 0.98, lmCoord.y)) * shdFade;
 
 			#if defined PARALLAX_OCCLUSION && defined PARALLAX_SHADOW
-				shadowCol *= material.parallaxShd;
+				shdCol *= material.parallaxShd;
 			#endif
 		#endif
 
 		#ifndef FORCE_DISABLE_WEATHER
 			// Approximate rain diffusing light shadow
 			float rainDiffuseAmount = rainStrength * 0.5;
-			shadowCol *= 1.0 - rainDiffuseAmount;
+			shdCol *= 1.0 - rainDiffuseAmount;
 
-			shadowCol += rainDiffuseAmount * material.ambient * skyLightSquared;
+			shdCol += rainDiffuseAmount * material.ambient * skyLightSquared;
 		#endif
 
 		float dirLight = isShadow ? NLZ : 0.0;
@@ -114,7 +117,7 @@ vec3 complexShadingForward(in dataPBR material){
 		#endif
 		
 		// Calculate and add shadow diffuse
-		totalIllumination += toLinear(sRGBLightCol) * shadowCol * dirLight;
+		totalIllumination += toLinear(sRGBLightCol) * shdCol * dirLight;
 	#endif
 
 	vec3 totalLighting = material.albedo.rgb * totalIllumination;
@@ -123,7 +126,7 @@ vec3 complexShadingForward(in dataPBR material){
 		if(isShadow){
 			// Get specular GGX
 			vec3 specCol = getSpecularBRDF(-fastNormalize(vertexFeetPlayerPos), material.normal, material.albedo.rgb, NLZ, material.metallic, material.smoothness);
-			totalLighting += specCol * shadowCol * sRGBLightCol;
+			totalLighting += specCol * shdCol * sRGBLightCol;
 		}
 	#endif
 
