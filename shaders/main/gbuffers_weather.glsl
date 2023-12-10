@@ -135,7 +135,7 @@
             // Convert to linear space
             albedo.rgb = toLinear(albedo.rgb);
 
-            vec3 totalDiffuse = toLinear(SKY_COLOR_DATA_BLOCK) + toLinear((lmCoordX * BLOCKLIGHT_I * 0.00392156863) * vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B)) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
+            vec3 totalDiffuse = toLinear(SKY_COLOR_DATA_BLOCK) + toLinear(lmCoordX * blockLightColor) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 
             #ifdef IS_IRIS
                 totalDiffuse += lightningFlash;
