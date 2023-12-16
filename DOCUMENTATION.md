@@ -101,6 +101,7 @@ This along with the `GBUFFERS` macro, are used to identify the quirks in the cur
 * Optimize albedo alpha testing
 * Fix glint z fighting
 * Document the shader pipeline
+* Optimize block ids in block.properties
 
 * Implement cloud absorption
 * Improve water absorption
