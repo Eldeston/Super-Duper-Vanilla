@@ -18,6 +18,8 @@
 #ifdef VERTEX
     flat out int blockId;
 
+    flat out float currentTimeCounter;
+
     flat out mat3 TBN;
 
     out float vertexAO;
@@ -53,17 +55,13 @@
         #include "/lib/utility/taaJitter.glsl"
     #endif
 
+    #if TIMELAPSE_MODE == 2
+        uniform float animationFrameTime;
+    #else
+        uniform float frameTimeCounter;
+    #endif
+
     #ifdef TERRAIN_ANIMATION
-        #if TIMELAPSE_MODE == 2
-            uniform float animationFrameTime;
-
-            float newFrameTimeCounter = animationFrameTime;
-        #else
-            uniform float frameTimeCounter;
-
-            float newFrameTimeCounter = frameTimeCounter;
-        #endif
-
         attribute vec3 at_midBlock;
 
         #include "/lib/vertex/terrainWave.glsl"
@@ -119,10 +117,16 @@
             vTexCoord = sign(texMinMidTexCoord) * 0.5 + 0.5;
         #endif
 
+        #if TIMELAPSE_MODE == 2
+            currentTimeCounter = animationFrameTime;
+        #else
+            currentTimeCounter = frameTimeCounter;
+        #endif
+
         #if defined TERRAIN_ANIMATION || defined WORLD_CURVATURE
             #ifdef TERRAIN_ANIMATION
                 // Apply terrain wave animation
-                vertexFeetPlayerPos = getTerrainWave(vertexFeetPlayerPos, vertexWorldPos, at_midBlock.y * 0.015625, mc_Entity.x, lmCoord.y);
+                vertexFeetPlayerPos = getTerrainWave(vertexFeetPlayerPos, vertexWorldPos, at_midBlock.y * 0.015625, mc_Entity.x, lmCoord.y, currentTimeCounter);
             #endif
 
             #ifdef WORLD_CURVATURE
@@ -158,6 +162,8 @@
 
     flat in int blockId;
 
+    flat in float currentTimeCounter;
+
     flat in mat3 TBN;
 
     in float vertexAO;
@@ -192,7 +198,7 @@
         uniform float rainStrength;
     #endif
 
-    #if (defined SHADOW_FILTER && ANTI_ALIASING >= 2) || TIMELAPSE_MODE == 0
+    #if defined SHADOW_FILTER && ANTI_ALIASING >= 2
         uniform float frameTimeCounter;
     #endif
 
@@ -211,14 +217,6 @@
         uniform float eyeSkylight;
         
         float eyeBrightFact = eyeSkylight;
-    #endif
-
-    #if TIMELAPSE_MODE != 0
-        uniform float animationFrameTime;
-
-        float newFrameTimeCounter = animationFrameTime;
-    #else
-        float newFrameTimeCounter = frameTimeCounter;
     #endif
 
     #ifdef WORLD_LIGHT

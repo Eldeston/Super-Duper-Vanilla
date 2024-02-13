@@ -1,10 +1,10 @@
 // Wave animation movements for shadow
-vec3 getShadowWave(in vec3 vertexShdEyePlayerPos, in vec2 vertexShadowWorldPosXZ, in float midBlockY, in float id, in float outside){
+vec3 getShadowWave(in vec3 vertexShdEyePlayerPos, in vec2 vertexShadowWorldPosXZ, in float midBlockY, in float id, in float outside, in float currTime){
     #ifdef TERRAIN_ANIMATION
         // Wind affected blocks
         if(WIND_SPEED > 0){
             // Calculate wind strength
-            float windStrength = sin(-sumOf(id == 10801 ? floor(vertexShadowWorldPosXZ) : vertexShadowWorldPosXZ) * WIND_FREQUENCY + newFrameTimeCounter * WIND_SPEED) * outside;
+            float windStrength = sin(-sumOf(id == 10801 ? floor(vertexShadowWorldPosXZ) : vertexShadowWorldPosXZ) * WIND_FREQUENCY + currTime * WIND_SPEED) * outside;
 
             // Simple blocks, horizontal movement
             if(id >= 10000 && id <= 10499){
@@ -38,7 +38,7 @@ vec3 getShadowWave(in vec3 vertexShdEyePlayerPos, in vec2 vertexShadowWorldPosXZ
     if(CURRENT_SPEED > 0){
         #if defined TERRAIN_ANIMATION || defined WATER_ANIMATION
             // Calculate current strength
-            float currentStrength = cos(-sumOf(vertexShadowWorldPosXZ) * CURRENT_FREQUENCY + newFrameTimeCounter * CURRENT_SPEED);
+            float currentStrength = cos(-sumOf(vertexShadowWorldPosXZ) * CURRENT_FREQUENCY + currTime * CURRENT_SPEED);
         #endif
 
         #ifdef TERRAIN_ANIMATION

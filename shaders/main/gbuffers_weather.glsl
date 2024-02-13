@@ -45,11 +45,11 @@
             #if TIMELAPSE_MODE == 2
                 uniform float animationFrameTime;
 
-                float newFrameTimeCounter = animationFrameTime;
+                float currentTimeCounter = animationFrameTime;
             #else
                 uniform float frameTimeCounter;
 
-                float newFrameTimeCounter = frameTimeCounter;
+                float currentTimeCounter = frameTimeCounter;
             #endif
 
             #include "/lib/vertex/weatherWave.glsl"

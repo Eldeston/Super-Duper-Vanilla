@@ -1,9 +1,9 @@
 // Wave animation movements for gbuffers_terrain
-vec3 getTerrainWave(in vec3 vertexFeetPlayerPos, in vec3 vertexWorldPos, in float midBlockY, in float id, in float outside){
+vec3 getTerrainWave(in vec3 vertexFeetPlayerPos, in vec3 vertexWorldPos, in float midBlockY, in float id, in float outside, in float currTime){
     // Wind affected blocks
     if(WIND_SPEED > 0){
         // Calculate wind strength
-        float windStrength = sin(-sumOf(id == 10801 ? floor(vertexWorldPos.xz) : vertexWorldPos.xz) * WIND_FREQUENCY + newFrameTimeCounter * WIND_SPEED) * outside;
+        float windStrength = sin(-sumOf(id == 10801 ? floor(vertexWorldPos.xz) : vertexWorldPos.xz) * WIND_FREQUENCY + currTime * WIND_SPEED) * outside;
 
         // Simple blocks, horizontal movement
         if(id >= 10000 && id <= 10499){
@@ -35,7 +35,7 @@ vec3 getTerrainWave(in vec3 vertexFeetPlayerPos, in vec3 vertexWorldPos, in floa
     // Current affected blocks
     if(CURRENT_SPEED > 0){
         // Calculate current strength
-        float currentStrength = cos(-sumOf(vertexWorldPos.xz) * CURRENT_FREQUENCY + newFrameTimeCounter * CURRENT_SPEED);
+        float currentStrength = cos(-sumOf(vertexWorldPos.xz) * CURRENT_FREQUENCY + currTime * CURRENT_SPEED);
 
         // Simple blocks, vertical movement
         if(id == 11100 || id == 11101){

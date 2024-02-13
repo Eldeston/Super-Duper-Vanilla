@@ -18,6 +18,8 @@
 #ifdef VERTEX
     flat out int blockId;
 
+    flat out float currentTimeCounter;
+
     flat out mat3 TBN;
 
     out vec2 lmCoord;
@@ -27,6 +29,13 @@
     out vec3 vertexColor;
     out vec3 vertexFeetPlayerPos;
 
+    #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
+        flat out vec2 vTexCoordScale;
+        flat out vec2 vTexCoordPos;
+
+        out vec2 vTexCoord;
+    #endif
+
     #ifdef PHYSICS_OCEAN
         // Physics mod varyings
         out float physics_localWaviness;
@@ -34,13 +43,6 @@
         out vec2 physics_localPosition;
 
         #include "/lib/physicsMod/physicsModVertex.glsl"
-    #endif
-
-    #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
-        flat out vec2 vTexCoordScale;
-        flat out vec2 vTexCoordPos;
-
-        out vec2 vTexCoord;
     #endif
 
     uniform vec3 cameraPosition;
@@ -60,17 +62,13 @@
         #include "/lib/utility/taaJitter.glsl"
     #endif
 
+    #if TIMELAPSE_MODE == 2
+        uniform float animationFrameTime;
+    #else
+        uniform float frameTimeCounter;
+    #endif
+
     #ifdef WATER_ANIMATION
-        #if TIMELAPSE_MODE == 2
-            uniform float animationFrameTime;
-
-            float newFrameTimeCounter = animationFrameTime;
-        #else
-            uniform float frameTimeCounter;
-
-            float newFrameTimeCounter = frameTimeCounter;
-        #endif
-
         #include "/lib/vertex/waterWave.glsl"
     #endif
 
@@ -125,6 +123,12 @@
             vTexCoord = sign(texMinMidCoord) * 0.5 + 0.5;
         #endif
 
+        #if TIMELAPSE_MODE == 2
+            currentTimeCounter = animationFrameTime;
+        #else
+            currentTimeCounter = frameTimeCounter;
+        #endif
+
         #if defined WATER_ANIMATION || defined WORLD_CURVATURE || defined PHYSICS_OCEAN
             #ifdef PHYSICS_OCEAN
                 // Physics mod vertex displacement
@@ -142,7 +146,7 @@
 
             #ifdef WATER_ANIMATION
                 // Apply water wave animation
-                if(mc_Entity.x == 11102 && CURRENT_SPEED > 0) vertexFeetPlayerPos.y = getWaterWave(vertexWorldPos.xz, vertexFeetPlayerPos.y);
+                if(mc_Entity.x == 11102 && CURRENT_SPEED > 0) vertexFeetPlayerPos.y = getWaterWave(vertexWorldPos.xz, vertexFeetPlayerPos.y, currentTimeCounter);
             #endif
 
             #ifdef WORLD_CURVATURE
@@ -178,6 +182,8 @@
 
     flat in int blockId;
 
+    flat in float currentTimeCounter;
+
     flat in mat3 TBN;
 
     in vec2 lmCoord;
@@ -187,6 +193,13 @@
     in vec3 vertexColor;
     in vec3 vertexFeetPlayerPos;
 
+    #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
+        flat in vec2 vTexCoordScale;
+        flat in vec2 vTexCoordPos;
+
+        in vec2 vTexCoord;
+    #endif
+
     #ifdef PHYSICS_OCEAN
         // Physics mod varyings
         in float physics_localWaviness;
@@ -194,13 +207,6 @@
         in vec2 physics_localPosition;
 
         #include "/lib/physicsMod/physicsModFragment.glsl"
-    #endif
-
-    #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
-        flat in vec2 vTexCoordScale;
-        flat in vec2 vTexCoordPos;
-
-        in vec2 vTexCoord;
     #endif
 
     uniform int isEyeInWater;
@@ -223,7 +229,7 @@
         uniform sampler2D depthtex1;
     #endif
 
-    #if (defined SHADOW_FILTER && ANTI_ALIASING >= 2) || TIMELAPSE_MODE == 0
+    #if defined SHADOW_FILTER && ANTI_ALIASING >= 2
         uniform float frameTimeCounter;
     #endif
 
@@ -242,14 +248,6 @@
         uniform float eyeSkylight;
         
         float eyeBrightFact = eyeSkylight;
-    #endif
-
-    #if TIMELAPSE_MODE != 0
-        uniform float animationFrameTime;
-
-        float newFrameTimeCounter = animationFrameTime;
-    #else
-        float newFrameTimeCounter = frameTimeCounter;
     #endif
 
     #ifdef WORLD_LIGHT

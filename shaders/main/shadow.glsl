@@ -19,6 +19,8 @@
     #ifdef WORLD_LIGHT
         flat out int blockId;
 
+        flat out float currentTimeCounter;
+
         flat out vec3 vertexColor;
 
         out vec2 texCoord;
@@ -29,17 +31,13 @@
         uniform mat4 shadowModelView;
         uniform mat4 shadowModelViewInverse;
 
+        #if TIMELAPSE_MODE == 2
+            uniform float animationFrameTime;
+        #else
+            uniform float frameTimeCounter;
+        #endif
+
         #if defined TERRAIN_ANIMATION || defined WATER_ANIMATION || defined PHYSICS_OCEAN
-            #if TIMELAPSE_MODE == 2
-                uniform float animationFrameTime;
-
-                float newFrameTimeCounter = animationFrameTime;
-            #else
-                uniform float frameTimeCounter;
-
-                float newFrameTimeCounter = frameTimeCounter;
-            #endif
-
             attribute vec3 at_midBlock;
 
             #ifdef PHYSICS_OCEAN
@@ -73,10 +71,16 @@
             // Get water noise uv position
             waterNoiseUv = vertexShdWorldPosXZ * waterTileSizeInv;
 
+            #if TIMELAPSE_MODE == 2
+                currentTimeCounter = animationFrameTime;
+            #else
+                currentTimeCounter = frameTimeCounter;
+            #endif
+
             #if defined TERRAIN_ANIMATION || defined WATER_ANIMATION || defined WORLD_CURVATURE || defined PHYSICS_OCEAN
                 #if defined TERRAIN_ANIMATION || defined WATER_ANIMATION || defined PHYSICS_OCEAN
                     // Apply terrain wave animation
-                    vertexShdEyePlayerPos = getShadowWave(vertexShdEyePlayerPos, vertexShdWorldPosXZ, at_midBlock.y * 0.015625, mc_Entity.x, min(gl_MultiTexCoord1.y * 0.00416667, 1.0));
+                    vertexShdEyePlayerPos = getShadowWave(vertexShdEyePlayerPos, vertexShdWorldPosXZ, at_midBlock.y * 0.015625, mc_Entity.x, min(gl_MultiTexCoord1.y * 0.00416667, 1.0), currentTimeCounter);
                 #endif
 
                 #ifdef WORLD_CURVATURE
@@ -114,6 +118,8 @@
 
         flat in int blockId;
 
+        flat in float currentTimeCounter;
+
         flat in vec3 vertexColor;
 
         in vec2 texCoord;
@@ -124,16 +130,6 @@
         #if UNDERWATER_CAUSTICS != 0 && defined SHADOW_COLOR
             #if UNDERWATER_CAUSTICS == 1
                 uniform int isEyeInWater;
-            #endif
-
-            #if TIMELAPSE_MODE != 0
-                uniform float animationFrameTime;
-
-                float newFrameTimeCounter = animationFrameTime;
-            #else
-                uniform float frameTimeCounter;
-
-                float newFrameTimeCounter = frameTimeCounter;
             #endif
 
             #include "/lib/utility/noiseFunctions.glsl"

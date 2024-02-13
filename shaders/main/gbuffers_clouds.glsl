@@ -124,11 +124,11 @@
         #if TIMELAPSE_MODE == 2
             uniform float animationFrameTime;
 
-            float newFrameTimeCounter = animationFrameTime;
+            float currentTimeCounter = animationFrameTime;
         #else
             uniform float frameTimeCounter;
 
-            float newFrameTimeCounter = frameTimeCounter;
+            float currentTimeCounter = frameTimeCounter;
         #endif
 
         #ifndef FORCE_DISABLE_DAY_CYCLE
@@ -163,7 +163,7 @@
             float albedoAlpha = textureLod(tex, texCoord, 0).a;
 
             #ifdef DYNAMIC_CLOUDS
-                float fade = saturate(sin(newFrameTimeCounter * FADE_SPEED) * 0.8 + 0.5);
+                float fade = saturate(sin(currentTimeCounter * FADE_SPEED) * 0.8 + 0.5);
                 float albedoAlpha2 = textureLod(tex, 0.5 - texCoord, 0).a;
 
                 #ifdef FORCE_DISABLE_WEATHER
