@@ -33,7 +33,7 @@
         uniform mat4 gbufferModelViewInverse;
 
         #if ANTI_ALIASING == 2
-            uniform int frameMod8;
+            uniform int frameMod;
 
             uniform float pixelWidth;
             uniform float pixelHeight;
@@ -111,6 +111,8 @@
 
         uniform float nightVision;
 
+        uniform float fragmentFrameTime;
+
         uniform sampler2D tex;
 
         #ifdef IS_IRIS
@@ -121,14 +123,8 @@
             uniform float rainStrength;
         #endif
 
-        #if TIMELAPSE_MODE == 2
-            uniform float animationFrameTime;
-
-            float currentTimeCounter = animationFrameTime;
-        #else
-            uniform float frameTimeCounter;
-
-            float currentTimeCounter = frameTimeCounter;
+        #if defined SHADOW_FILTER && ANTI_ALIASING >= 2
+            uniform float frameFract;
         #endif
 
         #ifndef FORCE_DISABLE_DAY_CYCLE
@@ -163,7 +159,7 @@
             float albedoAlpha = textureLod(tex, texCoord, 0).a;
 
             #ifdef DYNAMIC_CLOUDS
-                float fade = saturate(sin(currentTimeCounter * FADE_SPEED) * 0.8 + 0.5);
+                float fade = saturate(sin(fragmentFrameTime * FADE_SPEED) * 0.8 + 0.5);
                 float albedoAlpha2 = textureLod(tex, 0.5 - texCoord, 0).a;
 
                 #ifdef FORCE_DISABLE_WEATHER

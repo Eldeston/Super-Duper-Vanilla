@@ -31,7 +31,7 @@
     #endif
 
     #if ANTI_ALIASING == 2
-        uniform int frameMod8;
+        uniform int frameMod;
 
         #include "/lib/utility/taaJitter.glsl"
     #endif

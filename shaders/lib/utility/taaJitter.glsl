@@ -11,5 +11,5 @@ const vec2 offSetsTAA[8] = vec2[8](
 );
 
 vec2 jitterPos(in float posW){
-	return offSetsTAA[frameMod8] * vec2(pixelWidth, pixelHeight) * posW;
+	return offSetsTAA[frameMod] * vec2(pixelWidth, pixelHeight) * posW;
 }

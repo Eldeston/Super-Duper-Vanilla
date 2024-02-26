@@ -101,7 +101,7 @@
     uniform float darknessFactor;
     uniform float darknessLightFactor;
 
-    uniform float frameTimeCounter;
+    uniform float fragmentFrameTime;
 
     uniform vec3 fogColor;
 
@@ -125,6 +125,10 @@
 
     #ifdef IS_IRIS
         uniform float lightningFlash;
+    #endif
+
+    #if ANTI_ALIASING >= 2
+        uniform float frameFract;
     #endif
 
     #ifndef FORCE_DISABLE_WEATHER
@@ -221,9 +225,9 @@
         sceneColOut = texelFetch(gcolor, screenTexelCoord, 0).rgb;
 
         #if ANTI_ALIASING >= 2
-            vec3 dither = toRandPerFrame(getRand3(screenTexelCoord & 255), frameTimeCounter);
+            vec3 dither = fract(getRng3(screenTexelCoord & 255) + frameFract);
         #else
-            vec3 dither = getRand3(screenTexelCoord & 255);
+            vec3 dither = getRng3(screenTexelCoord & 255);
         #endif
 
         // If the object is a transparent render separate lighting

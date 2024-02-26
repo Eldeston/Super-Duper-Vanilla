@@ -26,7 +26,7 @@
         out vec2 texCoord;
 
         #if ANTI_ALIASING == 2
-            uniform int frameMod8;
+            uniform int frameMod;
 
         uniform float pixelWidth;
         uniform float pixelHeight;
@@ -35,22 +35,14 @@
         #endif
 
         #ifdef WEATHER_ANIMATION
-            uniform mat4 gbufferModelView;
-            uniform mat4 gbufferModelViewInverse;
+            uniform float rainStrength;
+
+            uniform float vertexFrameTime;
 
             uniform vec3 cameraPosition;
 
-            uniform float rainStrength;
-
-            #if TIMELAPSE_MODE == 2
-                uniform float animationFrameTime;
-
-                float currentTimeCounter = animationFrameTime;
-            #else
-                uniform float frameTimeCounter;
-
-                float currentTimeCounter = frameTimeCounter;
-            #endif
+            uniform mat4 gbufferModelView;
+            uniform mat4 gbufferModelViewInverse;
 
             #include "/lib/vertex/weatherWave.glsl"
         #endif

@@ -69,7 +69,7 @@ vec3 complexShadingForward(in dataPBR material){
 				// Sample shadows
 				#ifdef SHADOW_FILTER
 					#if ANTI_ALIASING >= 2
-						float blueNoise = toRandPerFrame(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x, frameTimeCounter);
+						float blueNoise = fract(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x + frameFract);
 					#else
 						float blueNoise = texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x;
 					#endif

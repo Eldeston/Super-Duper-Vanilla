@@ -18,8 +18,6 @@
 #ifdef VERTEX
     flat out int blockId;
 
-    flat out float currentTimeCounter;
-
     flat out mat3 TBN;
 
     out float vertexAO;
@@ -38,6 +36,8 @@
         out vec2 vTexCoord;
     #endif
 
+    uniform float vertexFrameTime;
+
     uniform vec3 cameraPosition;
 
     uniform mat4 gbufferModelViewInverse;
@@ -47,18 +47,12 @@
     #endif
 
     #if ANTI_ALIASING == 2
-        uniform int frameMod8;
+        uniform int frameMod;
 
         uniform float pixelWidth;
         uniform float pixelHeight;
 
         #include "/lib/utility/taaJitter.glsl"
-    #endif
-
-    #if TIMELAPSE_MODE == 2
-        uniform float animationFrameTime;
-    #else
-        uniform float frameTimeCounter;
     #endif
 
     #ifdef TERRAIN_ANIMATION
@@ -117,16 +111,10 @@
             vTexCoord = sign(texMinMidTexCoord) * 0.5 + 0.5;
         #endif
 
-        #if TIMELAPSE_MODE == 2
-            currentTimeCounter = animationFrameTime;
-        #else
-            currentTimeCounter = frameTimeCounter;
-        #endif
-
         #if defined TERRAIN_ANIMATION || defined WORLD_CURVATURE
             #ifdef TERRAIN_ANIMATION
                 // Apply terrain wave animation
-                vertexFeetPlayerPos = getTerrainWave(vertexFeetPlayerPos, vertexWorldPos, at_midBlock.y * 0.015625, mc_Entity.x, lmCoord.y, currentTimeCounter);
+                vertexFeetPlayerPos = getTerrainWave(vertexFeetPlayerPos, vertexWorldPos, at_midBlock.y * 0.015625, mc_Entity.x, lmCoord.y, vertexFrameTime);
             #endif
 
             #ifdef WORLD_CURVATURE
@@ -162,8 +150,6 @@
 
     flat in int blockId;
 
-    flat in float currentTimeCounter;
-
     flat in mat3 TBN;
 
     in float vertexAO;
@@ -188,6 +174,8 @@
 
     uniform float nightVision;
 
+    uniform float fragmentFrameTime;
+
     uniform sampler2D tex;
 
     #ifdef IS_IRIS
@@ -199,7 +187,7 @@
     #endif
 
     #if defined SHADOW_FILTER && ANTI_ALIASING >= 2
-        uniform float frameTimeCounter;
+        uniform float frameFract;
     #endif
 
     #ifndef FORCE_DISABLE_DAY_CYCLE

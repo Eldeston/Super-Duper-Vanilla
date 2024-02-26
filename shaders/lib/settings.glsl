@@ -93,7 +93,7 @@ const float sunPathRotation = 30.0; // Light path angle. This also affects sky a
 
 #define TERRAIN_ANIMATION // Enables terrain waving animation.
 #define WATER_ANIMATION // Enables water waving animation.
-#define WEATHER_ANIMATION // Enables rain waving animation. 
+#define WEATHER_ANIMATION // Enables rain waving animation.
 
 #define TIMELAPSE_MODE 0 // Enable timelapse mode. This smoothens the transition of animations of the sky, the foliage waving etc according to current world time instead of frame time. Set to fragment for water normals and sky only and full for the water normals, sky, and waves. This feature does not work on vanilla clouds, skybox, and the sun and moon. [0 1 2]
 

@@ -109,7 +109,7 @@
     uniform float darknessFactor;
     uniform float darknessLightFactor;
 
-    uniform float frameTimeCounter;
+    uniform float fragmentFrameTime;
 
     uniform vec3 fogColor;
 
@@ -136,6 +136,10 @@
 
     #ifdef WORLD_LIGHT
         uniform float shdFade;
+    #endif
+
+    #if ANTI_ALIASING >= 2
+        uniform float frameFract;
     #endif
 
     #ifndef FORCE_DISABLE_WEATHER
@@ -187,7 +191,7 @@
     #endif
 
     #if ANTI_ALIASING == 2
-        uniform int frameMod8;
+        uniform int frameMod;
 
         uniform float pixelWidth;
         uniform float pixelHeight;
@@ -255,9 +259,9 @@
         }
 
         #if ANTI_ALIASING >= 2
-            vec3 dither = toRandPerFrame(getRand3(screenTexelCoord & 255), frameTimeCounter);
+            vec3 dither = fract(getRng3(screenTexelCoord & 255) + frameFract);
         #else
-            vec3 dither = getRand3(screenTexelCoord & 255);
+            vec3 dither = getRng3(screenTexelCoord & 255);
         #endif
 
         // Declare and get materials

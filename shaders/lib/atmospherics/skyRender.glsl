@@ -11,14 +11,6 @@ float getSunMoonShape(in vec2 skyPos){
     return min(1.0, exp2((WORLD_SUN_MOON_SIZE - pow(abs(skyPos.x * skyPos.x * skyPos.x) + abs(skyPos.y * skyPos.y * skyPos.y), 0.33333333)) * 256.0));
 }
 
-#if TIMELAPSE_MODE != 0
-    uniform float animationFrameTime;
-
-    #define ANIMATION_FRAMETIME animationFrameTime
-#else
-    #define ANIMATION_FRAMETIME frameTimeCounter
-#endif
-
 #if defined STORY_MODE_CLOUDS && !defined FORCE_DISABLE_CLOUDS
     int cloudParallax(in vec2 start, in float time){
         // start * stepSize * depthSize = start * 0.125 * 0.08
@@ -90,7 +82,7 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
     #endif
 
     #if defined WORLD_AETHER && defined WORLD_LIGHT
-        int aetherAnimationSpeed = int(frameTimeCounter * 8.0);
+        int aetherAnimationSpeed = int(fragmentFrameTime * 8.0);
 
         // Looks complex, but all it does is move the noise texture in 3 different directions
         ivec2 aetherTexelCoord0 = ivec2(255 - skyCoordScale - aetherAnimationSpeed) & 255;
@@ -127,13 +119,13 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
         #endif
 
         if(cloudHeightFade < 0.005) return currSkyCol;
-            
-        float cloudTime = ANIMATION_FRAMETIME * 0.125;
+
+        float cloudTime = fragmentFrameTime * 0.125;
 
         vec2 planeUv = nEyePlayerPos.xz * (6.0 / nEyePlayerPos.y);
 
         #ifdef DYNAMIC_CLOUDS
-            float fadeTime = saturate(sin(ANIMATION_FRAMETIME * FADE_SPEED) * 0.8 + 0.5);
+            float fadeTime = saturate(sin(fragmentFrameTime * FADE_SPEED) * 0.8 + 0.5);
 
             vec3 cloudData0 = cloudParallaxDynamic(planeUv, cloudTime);
             float clouds = mix(mix(cloudData0.x, cloudData0.y, fadeTime), cloudData0.z, rainStrength) * min(cloudHeightFade, 1.0) * 0.125;
@@ -181,7 +173,7 @@ vec3 getSkyFogRender(in vec3 nEyePlayerPos){
         // Scaled by noise resolution
         vec2 skyCoordScale = skyPos.xy * 256.0;
 
-        int aetherAnimationSpeed = int(frameTimeCounter * 8.0);
+        int aetherAnimationSpeed = int(fragmentFrameTime * 8.0);
 
         // Looks complex, but all it does is move the noise texture in 3 different directions
         ivec2 aetherTexelCoord0 = ivec2(255 - skyCoordScale - aetherAnimationSpeed) & 255;
@@ -210,7 +202,7 @@ vec3 getSkyFogRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
         // Scaled by noise resolution
         vec2 skyCoordScale = skyPos.xy * 256.0;
 
-        int aetherAnimationSpeed = int(frameTimeCounter * 8.0);
+        int aetherAnimationSpeed = int(fragmentFrameTime * 8.0);
 
         // Looks complex, but all it does is move the noise texture in 3 different directions
         ivec2 aetherTexelCoord0 = ivec2(255 - skyCoordScale - aetherAnimationSpeed) & 255;
@@ -303,7 +295,7 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol)
             const float rotationFactor = TAU * 16.0;
             skyPos.xy = rot2D(blackHole * rotationFactor) * skyPos.xy;
 
-            float rings = textureLod(noisetex, vec2(skyPos.x * blackHole, frameTimeCounter * 0.0009765625), 0).x;
+            float rings = textureLod(noisetex, vec2(skyPos.x * blackHole, fragmentFrameTime * 0.0009765625), 0).x;
 
             currSkyCol += ((rings * blackHole * 0.9 + blackHole * 0.1) * sunMoonIntensitySqrd) * lightCol;
         #endif

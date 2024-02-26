@@ -39,7 +39,7 @@
     #endif
 
     #if ANTI_ALIASING == 2
-        uniform int frameMod8;
+        uniform int frameMod;
 
         uniform float pixelWidth;
         uniform float pixelHeight;
@@ -140,10 +140,10 @@
 
     uniform float nightVision;
 
-    uniform float frameTimeCounter;
-
     uniform float pixelWidth;
     uniform float pixelHeight;
+
+    uniform float fragmentFrameTime;
 
     uniform sampler2D tex;
 
@@ -153,6 +153,10 @@
 
     #ifndef FORCE_DISABLE_WEATHER
         uniform float rainStrength;
+    #endif
+
+    #if defined SHADOW_FILTER && ANTI_ALIASING >= 2
+        uniform float frameFract;
     #endif
 
     #ifndef FORCE_DISABLE_DAY_CYCLE
@@ -203,7 +207,7 @@
         if(blockEntityId == 12000){
             // End star uv
             vec2 screenPos = gl_FragCoord.xy * vec2(pixelWidth, pixelHeight);
-            float starSpeed = frameTimeCounter * 0.0078125;
+            float starSpeed = fragmentFrameTime * 0.0078125;
 
             float endStarField = textureLod(tex, vec2(screenPos.y, screenPos.x + starSpeed) * 0.5, 0).r;
             endStarField += textureLod(tex, vec2(screenPos.x, screenPos.y + starSpeed), 0).r;
@@ -214,7 +218,7 @@
             endStarField += textureLod(tex, vec2(endStarCoord1.x, endStarCoord1.y + starSpeed), 0).r;
             endStarField += textureLod(tex, vec2(-endStarCoord1.x, starSpeed - endStarCoord1.y) * 2.0, 0).r;
 
-            vec3 endPortalAlbedo = toLinear((endStarField + 0.0625) * (getRand3(ivec2(screenPos * 128.0) & 255) * 0.5 + 0.5) * vertexColor.rgb);
+            vec3 endPortalAlbedo = toLinear((endStarField + 0.0625) * (getRng3(ivec2(screenPos * 128.0) & 255) * 0.5 + 0.5) * vertexColor.rgb);
 
             sceneColOut = vec4(endPortalAlbedo * EMISSIVE_INTENSITY * EMISSIVE_INTENSITY, 1);
 

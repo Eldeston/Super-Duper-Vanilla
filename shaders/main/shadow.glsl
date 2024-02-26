@@ -19,23 +19,17 @@
     #ifdef WORLD_LIGHT
         flat out int blockId;
 
-        flat out float currentTimeCounter;
-
         flat out vec3 vertexColor;
 
         out vec2 texCoord;
         out vec2 waterNoiseUv;
 
+        uniform float vertexFrameTime;
+
         uniform vec3 cameraPosition;
 
         uniform mat4 shadowModelView;
         uniform mat4 shadowModelViewInverse;
-
-        #if TIMELAPSE_MODE == 2
-            uniform float animationFrameTime;
-        #else
-            uniform float frameTimeCounter;
-        #endif
 
         #if defined TERRAIN_ANIMATION || defined WATER_ANIMATION || defined PHYSICS_OCEAN
             attribute vec3 at_midBlock;
@@ -71,16 +65,10 @@
             // Get water noise uv position
             waterNoiseUv = vertexShdWorldPosXZ * waterTileSizeInv;
 
-            #if TIMELAPSE_MODE == 2
-                currentTimeCounter = animationFrameTime;
-            #else
-                currentTimeCounter = frameTimeCounter;
-            #endif
-
             #if defined TERRAIN_ANIMATION || defined WATER_ANIMATION || defined WORLD_CURVATURE || defined PHYSICS_OCEAN
                 #if defined TERRAIN_ANIMATION || defined WATER_ANIMATION || defined PHYSICS_OCEAN
                     // Apply terrain wave animation
-                    vertexShdEyePlayerPos = getShadowWave(vertexShdEyePlayerPos, vertexShdWorldPosXZ, at_midBlock.y * 0.015625, mc_Entity.x, min(gl_MultiTexCoord1.y * 0.00416667, 1.0), currentTimeCounter);
+                    vertexShdEyePlayerPos = getShadowWave(vertexShdEyePlayerPos, vertexShdWorldPosXZ, at_midBlock.y * 0.015625, mc_Entity.x, min(gl_MultiTexCoord1.y * 0.00416667, 1.0), vertexFrameTime);
                 #endif
 
                 #ifdef WORLD_CURVATURE
@@ -118,12 +106,12 @@
 
         flat in int blockId;
 
-        flat in float currentTimeCounter;
-
         flat in vec3 vertexColor;
 
         in vec2 texCoord;
         in vec2 waterNoiseUv;
+
+        uniform float fragmentFrameTime;
 
         uniform sampler2D tex;
         

@@ -31,7 +31,7 @@
     #endif
 
     #if ANTI_ALIASING == 2
-        uniform int frameMod8;
+        uniform int frameMod;
 
         uniform float pixelWidth;
         uniform float pixelHeight;
@@ -113,8 +113,8 @@
         uniform float rainStrength;
     #endif
 
-    #if ANTI_ALIASING >= 2
-        uniform float frameTimeCounter;
+    #if defined SHADOW_FILTER && ANTI_ALIASING >= 2
+        uniform float frameFract;
     #endif
 
     #ifndef FORCE_DISABLE_DAY_CYCLE

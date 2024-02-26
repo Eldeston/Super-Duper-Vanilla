@@ -18,8 +18,6 @@
 #ifdef VERTEX
     flat out int blockId;
 
-    flat out float currentTimeCounter;
-
     flat out mat3 TBN;
 
     out vec2 lmCoord;
@@ -45,6 +43,8 @@
         #include "/lib/physicsMod/physicsModVertex.glsl"
     #endif
 
+    uniform float vertexFrameTime;
+
     uniform vec3 cameraPosition;
 
     uniform mat4 gbufferModelViewInverse;
@@ -54,18 +54,12 @@
     #endif
     
     #if ANTI_ALIASING == 2
-        uniform int frameMod8;
+        uniform int frameMod;
 
         uniform float pixelWidth;
         uniform float pixelHeight;
 
         #include "/lib/utility/taaJitter.glsl"
-    #endif
-
-    #if TIMELAPSE_MODE == 2
-        uniform float animationFrameTime;
-    #else
-        uniform float frameTimeCounter;
     #endif
 
     #ifdef WATER_ANIMATION
@@ -123,12 +117,6 @@
             vTexCoord = sign(texMinMidCoord) * 0.5 + 0.5;
         #endif
 
-        #if TIMELAPSE_MODE == 2
-            currentTimeCounter = animationFrameTime;
-        #else
-            currentTimeCounter = frameTimeCounter;
-        #endif
-
         #if defined WATER_ANIMATION || defined WORLD_CURVATURE || defined PHYSICS_OCEAN
             #ifdef PHYSICS_OCEAN
                 // Physics mod vertex displacement
@@ -146,7 +134,7 @@
 
             #ifdef WATER_ANIMATION
                 // Apply water wave animation
-                if(mc_Entity.x == 11102 && CURRENT_SPEED > 0) vertexFeetPlayerPos.y = getWaterWave(vertexWorldPos.xz, vertexFeetPlayerPos.y, currentTimeCounter);
+                if(mc_Entity.x == 11102 && CURRENT_SPEED > 0) vertexFeetPlayerPos.y = getWaterWave(vertexWorldPos.xz, vertexFeetPlayerPos.y, vertexFrameTime);
             #endif
 
             #ifdef WORLD_CURVATURE
@@ -182,8 +170,6 @@
 
     flat in int blockId;
 
-    flat in float currentTimeCounter;
-
     flat in mat3 TBN;
 
     in vec2 lmCoord;
@@ -213,6 +199,8 @@
 
     uniform float nightVision;
 
+    uniform float fragmentFrameTime;
+
     uniform sampler2D tex;
 
     #ifdef IS_IRIS
@@ -223,14 +211,14 @@
         uniform float rainStrength;
     #endif
 
+    #if defined SHADOW_FILTER && ANTI_ALIASING >= 2
+        uniform float frameFract;
+    #endif
+
     #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
         uniform float near;
 
         uniform sampler2D depthtex1;
-    #endif
-
-    #if defined SHADOW_FILTER && ANTI_ALIASING >= 2
-        uniform float frameTimeCounter;
     #endif
 
     #ifndef FORCE_DISABLE_DAY_CYCLE
