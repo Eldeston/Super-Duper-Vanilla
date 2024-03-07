@@ -96,12 +96,12 @@ This along with the `GBUFFERS` macro, are used to identify the quirks in the cur
 * Refactor uniform usage and remove unecessary ones
 * Optimize DOF calculations with noise
 * Create a custom shadow model view
-* Replace vertex space calculations
 * Fix transparency issues with CTM
 * Optimize albedo alpha testing
 * Fix glint z fighting
-* Document the shader pipeline
+
 * Optimize block ids in block.properties
+* Document the shader pipeline
 
 * Implement cloud absorption
 * Improve water absorption

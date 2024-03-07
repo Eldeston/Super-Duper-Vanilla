@@ -111,12 +111,14 @@
 
         uniform float nightVision;
 
-        uniform float fragmentFrameTime;
-
         uniform sampler2D tex;
 
         #ifdef IS_IRIS
             uniform float lightningFlash;
+        #endif
+
+        #ifdef DYNAMIC_CLOUDS
+            uniform float fragmentFrameTime;
         #endif
 
         #ifndef FORCE_DISABLE_WEATHER

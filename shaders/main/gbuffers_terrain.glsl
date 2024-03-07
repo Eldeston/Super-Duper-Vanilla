@@ -36,8 +36,6 @@
         out vec2 vTexCoord;
     #endif
 
-    uniform float vertexFrameTime;
-
     uniform vec3 cameraPosition;
 
     uniform mat4 gbufferModelViewInverse;
@@ -56,6 +54,8 @@
     #endif
 
     #ifdef TERRAIN_ANIMATION
+        uniform float vertexFrameTime;
+
         attribute vec3 at_midBlock;
 
         #include "/lib/vertex/terrainWave.glsl"
@@ -111,17 +111,17 @@
             vTexCoord = sign(texMinMidTexCoord) * 0.5 + 0.5;
         #endif
 
+        #ifdef TERRAIN_ANIMATION
+            // Apply terrain wave animation
+            vertexFeetPlayerPos = getTerrainWave(vertexFeetPlayerPos, vertexWorldPos, at_midBlock.y * 0.015625, mc_Entity.x, lmCoord.y, vertexFrameTime);
+        #endif
+
+        #ifdef WORLD_CURVATURE
+            // Apply curvature distortion
+            vertexFeetPlayerPos.y -= dot(vertexFeetPlayerPos.xz, vertexFeetPlayerPos.xz) * worldCurvatureInv;
+        #endif
+
         #if defined TERRAIN_ANIMATION || defined WORLD_CURVATURE
-            #ifdef TERRAIN_ANIMATION
-                // Apply terrain wave animation
-                vertexFeetPlayerPos = getTerrainWave(vertexFeetPlayerPos, vertexWorldPos, at_midBlock.y * 0.015625, mc_Entity.x, lmCoord.y, vertexFrameTime);
-            #endif
-
-            #ifdef WORLD_CURVATURE
-                // Apply curvature distortion
-                vertexFeetPlayerPos.y -= dot(vertexFeetPlayerPos.xz, vertexFeetPlayerPos.xz) * worldCurvatureInv;
-            #endif
-
             // Convert back to vertex view position
             vertexViewPos = mat3(gbufferModelView) * vertexFeetPlayerPos + gbufferModelView[3].xyz;
         #endif
@@ -173,8 +173,6 @@
     uniform int isEyeInWater;
 
     uniform float nightVision;
-
-    uniform float fragmentFrameTime;
 
     uniform sampler2D tex;
 
@@ -231,13 +229,17 @@
 
     #include "/lib/utility/noiseFunctions.glsl"
 
+    #ifdef LAVA_NOISE
+        uniform float fragmentFrameTime;
+
+        #include "/lib/surface/lava.glsl"
+    #endif
+
     #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
         uniform float isPrecipitationRain;
 
         #include "/lib/PBR/enviroPBR.glsl"
     #endif
-
-    #include "/lib/surface/lava.glsl"
 
     #include "/lib/lighting/complexShadingForward.glsl"
 

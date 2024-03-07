@@ -43,8 +43,6 @@
         #include "/lib/physicsMod/physicsModVertex.glsl"
     #endif
 
-    uniform float vertexFrameTime;
-
     uniform vec3 cameraPosition;
 
     uniform mat4 gbufferModelViewInverse;
@@ -63,6 +61,8 @@
     #endif
 
     #ifdef WATER_ANIMATION
+        uniform float vertexFrameTime;
+
         #include "/lib/vertex/waterWave.glsl"
     #endif
 
@@ -117,31 +117,31 @@
             vTexCoord = sign(texMinMidCoord) * 0.5 + 0.5;
         #endif
 
+        #ifdef PHYSICS_OCEAN
+            // Physics mod vertex displacement
+            if(mc_Entity.x == 11102){
+                // pass this to the fragment shader to fetch the texture there for per fragment normals
+                physics_localPosition = (gl_Vertex.xz - physics_waveOffset) * PHYSICS_XZ_SCALE * physics_oceanWaveHorizontalScale;
+
+                // basic texture to determine how shallow/far away from the shore the water is
+                physics_localWaviness = texelFetch(physics_waviness, ivec2(gl_Vertex.xz) - physics_textureOffset, 0).r;
+
+                // transform gl_Vertex (since it is the raw mesh, i.e. not transformed yet)
+                vertexFeetPlayerPos.y += physics_waveHeight(physics_localPosition, physics_localWaviness);
+            }
+        #endif
+
+        #ifdef WATER_ANIMATION
+            // Apply water wave animation
+            if(mc_Entity.x == 11102 && CURRENT_SPEED > 0) vertexFeetPlayerPos.y = getWaterWave(vertexWorldPos.xz, vertexFeetPlayerPos.y, vertexFrameTime);
+        #endif
+
+        #ifdef WORLD_CURVATURE
+            // Apply curvature distortion
+            vertexFeetPlayerPos.y -= dot(vertexFeetPlayerPos.xz, vertexFeetPlayerPos.xz) * worldCurvatureInv;
+        #endif
+
         #if defined WATER_ANIMATION || defined WORLD_CURVATURE || defined PHYSICS_OCEAN
-            #ifdef PHYSICS_OCEAN
-                // Physics mod vertex displacement
-                if(mc_Entity.x == 11102){
-                    // pass this to the fragment shader to fetch the texture there for per fragment normals
-                    physics_localPosition = (gl_Vertex.xz - physics_waveOffset) * PHYSICS_XZ_SCALE * physics_oceanWaveHorizontalScale;
-
-                    // basic texture to determine how shallow/far away from the shore the water is
-                    physics_localWaviness = texelFetch(physics_waviness, ivec2(gl_Vertex.xz) - physics_textureOffset, 0).r;
-
-                    // transform gl_Vertex (since it is the raw mesh, i.e. not transformed yet)
-                    vertexFeetPlayerPos.y += physics_waveHeight(physics_localPosition, physics_localWaviness);
-                }
-            #endif
-
-            #ifdef WATER_ANIMATION
-                // Apply water wave animation
-                if(mc_Entity.x == 11102 && CURRENT_SPEED > 0) vertexFeetPlayerPos.y = getWaterWave(vertexWorldPos.xz, vertexFeetPlayerPos.y, vertexFrameTime);
-            #endif
-
-            #ifdef WORLD_CURVATURE
-                // Apply curvature distortion
-                vertexFeetPlayerPos.y -= dot(vertexFeetPlayerPos.xz, vertexFeetPlayerPos.xz) * worldCurvatureInv;
-            #endif
-
             // Convert back to vertex view position
             vertexViewPos = mat3(gbufferModelView) * vertexFeetPlayerPos + gbufferModelView[3].xyz;
         #endif
@@ -198,8 +198,6 @@
     uniform int isEyeInWater;
 
     uniform float nightVision;
-
-    uniform float fragmentFrameTime;
 
     uniform sampler2D tex;
 
@@ -262,7 +260,11 @@
 
     #include "/lib/utility/noiseFunctions.glsl"
 
-    #include "/lib/surface/water.glsl"
+    #if defined WATER_NORMAL || defined WATER_NOISE
+        uniform float fragmentFrameTime;
+
+        #include "/lib/surface/water.glsl"
+    #endif
 
     #include "/lib/lighting/complexShadingForward.glsl"
 

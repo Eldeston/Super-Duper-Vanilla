@@ -54,7 +54,7 @@ vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){
     #ifdef WORLD_SKY_GROUND
         // currSkyCol.rg *= smoothen(saturate(1.0 + nEyePlayerPosY * 4.0));
         // if(nEyePlayerPosY < 0) currSkyCol *= smoothen(max(1.0 + nEyePlayerPosY / max(skyCol, 0.25), vec3(0.25)));
-        if(nEyePlayerPosY < 0) currSkyCol *= exp2(-(nEyePlayerPosY * nEyePlayerPosY * 8.0) / max(skyCol * skyCol, vec3(0.125)));
+        if(nEyePlayerPosY < 0 && isEyeInWater == 0) currSkyCol *= exp2(-(nEyePlayerPosY * nEyePlayerPosY * 8.0) / max(skyCol * skyCol, vec3(0.125)));
     #endif
 
     #if defined WORLD_LIGHT && WORLD_SUN_MOON == 1
@@ -188,7 +188,7 @@ vec3 getSkyFogRender(in vec3 nEyePlayerPos){
     #endif
 
     // Do a simple void gradient calculation
-    return currSkyCol * saturate(nEyePlayerPos.y + eyeBrightFact * 2.0 - 1.0);
+    return currSkyCol * saturate(nEyePlayerPos.y + eyeBrightFact * 3.0 - 1.0);
 }
 
 // Fog color render
@@ -217,7 +217,7 @@ vec3 getSkyFogRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
     #endif
 
     // Do a simple void gradient calculation
-    return currSkyCol * saturate(nEyePlayerPos.y + eyeBrightFact * 2.0 - 1.0);
+    return currSkyCol * saturate(nEyePlayerPos.y + eyeBrightFact * 3.0 - 1.0);
 }
 
 // Sky reflection
@@ -258,7 +258,7 @@ vec3 getSkyReflection(in vec3 reflectViewDir){
         finalCol += lightCol * VLBrightness;
     #endif
 
-    return finalCol * saturate(reflectPlayerDir.y + eyeBrightFact * 2.0 - 1.0);
+    return finalCol * saturate(reflectPlayerDir.y + eyeBrightFact * 3.0 - 1.0);
 }
 
 // Full sky render
@@ -306,5 +306,5 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol)
 
     // Do a simple void gradient calculation when underwater
     if(isEyeInWater == 1) return currSkyCol * saturate(nEyePlayerPos.y * 1.66666667 - 0.16666667);
-    return currSkyCol * saturate(nEyePlayerPos.y + eyeBrightFact * 2.0 - 1.0);
+    return currSkyCol * saturate(nEyePlayerPos.y + eyeBrightFact * 3.0 - 1.0);
 }
