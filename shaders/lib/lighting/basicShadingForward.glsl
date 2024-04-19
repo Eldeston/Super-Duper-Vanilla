@@ -21,34 +21,17 @@ vec3 basicShadingForward(in vec4 albedo){
 	totalDiffuse += toLinear(nightVision * 0.5 + AMBIENT_LIGHTING);
 
 	#ifdef WORLD_LIGHT
-		#ifdef CLOUDS
-			float NLZ = dot(vertexNormal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z));
-		#endif
-
 		#ifdef SHADOW_MAPPING
-			// Get shadow pos
-			vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexFeetPlayerPos + shadowModelView[3].xyz);
-			shdPos.z += shadowProjection[3].z;
-
 			// Apply shadow distortion and transform to shadow screen space
-			shdPos = vec3(shdPos.xy / (length(shdPos.xy) * 2.0 + 0.2), shdPos.z * 0.1) + 0.5;
+			vec3 shdPos = vec3(vertexShdPos.xy / (length(vertexShdPos.xy) * 2.0 + 0.2) + 0.5, vertexShdPos.z);
 
+			// There is no need for bias for particles
 			#ifdef CLOUDS
 				// Bias mutilplier, adjusts according to the current shadow resolution
 				const vec3 biasAdjustMult = vec3(2, 2, -0.0625) * shadowMapPixelSize;
 
-				// Since we already have NLZ, we just need NLX and NLY to complete the shadow normal
-				float NLX = dot(vertexNormal, vec3(shadowModelView[0].x, shadowModelView[1].x, shadowModelView[2].x));
-				float NLY = dot(vertexNormal, vec3(shadowModelView[0].y, shadowModelView[1].y, shadowModelView[2].y));
-
 				// Apply normal based bias
-				shdPos += vec3(NLX, NLY, NLZ) * biasAdjustMult;
-			#else
-				// Bias mutilplier, adjusts according to the current shadow resolution
-				const float biasAdjustMult = 2.0 * shadowMapPixelSize;
-
-				// Apply normal bias for particles and basic
-				shdPos.y += shadowModelView[1].y * biasAdjustMult;
+				shdPos += vec3(vertexNLX, vertexNLY, vertexNLZ) * biasAdjustMult;
 			#endif
 
 			// Sample shadows
@@ -69,14 +52,14 @@ vec3 basicShadingForward(in vec4 albedo){
 
 			#ifdef CLOUDS
 				// Apply simple diffuse for clouds
-				shdFactor *= max(0.0, NLZ * 0.6 + 0.4);
+				shdFactor *= max(0.0, vertexNLZ * 0.6 + 0.4);
 			#endif
 
 			shdCol *= shdFactor;
 		#else
 			#ifdef CLOUDS
 				// Apply simple diffuse for clouds
-				float shdCol = max(0.0, NLZ * 0.6 + 0.4) * shdFade;
+				float shdCol = max(0.0, vertexNLZ * 0.6 + 0.4) * shdFade;
 			#else
 				// Sample fake shadows
 				float shdCol = saturate(hermiteMix(0.96, 0.98, lmCoord.y)) * shdFade;

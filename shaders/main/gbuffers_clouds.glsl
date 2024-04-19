@@ -23,14 +23,30 @@
     #else
         out vec2 texCoord;
 
-        out vec3 vertexFeetPlayerPos;
-
         #ifdef WORLD_LIGHT
-            flat out vec3 vertexNormal;
+            flat out float vertexNLZ;
+
+            #ifdef SHADOW_MAPPING
+                flat out float vertexNLX;
+                flat out float vertexNLY;
+
+                out vec3 vertexShdPos;
+            #endif
         #endif
 
-        uniform mat4 gbufferModelView;
         uniform mat4 gbufferModelViewInverse;
+
+        #ifdef DOUBLE_LAYERED_CLOUDS
+            uniform mat4 gbufferModelView;
+        #endif
+
+        #ifdef WORLD_LIGHT
+            uniform mat4 shadowModelView;
+
+            #ifdef SHADOW_MAPPING
+                uniform mat4 shadowProjection;
+            #endif
+        #endif
 
         #if ANTI_ALIASING == 2
             uniform int frameMod;
@@ -54,12 +70,10 @@
 
             // Get vertex view position
             vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
-            // Get vertex feet player position
-            vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos + gbufferModelViewInverse[3].xyz;
 
-            #ifdef WORLD_LIGHT
-                // Get vertex normal
-                vertexNormal = mat3(gbufferModelViewInverse) * fastNormalize(gl_NormalMatrix * gl_Normal);
+            #if defined SHADOW_MAPPING && defined WORLD_LIGHT || defined DOUBLE_LAYERED_CLOUDS
+                // Get vertex feet player position
+                vec3 vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos + gbufferModelViewInverse[3].xyz;
             #endif
 
             #ifdef DOUBLE_LAYERED_CLOUDS
@@ -73,6 +87,23 @@
 
                 // Convert back to vertex view position
                 vertexViewPos = mat3(gbufferModelView) * vertexFeetPlayerPos + gbufferModelView[3].xyz;
+            #endif
+
+            #ifdef WORLD_LIGHT
+                vec3 vertexNormal = mat3(gbufferModelViewInverse) * fastNormalize(gl_NormalMatrix * gl_Normal);
+
+                vertexNLZ = dot(vertexNormal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z));
+
+                #ifdef SHADOW_MAPPING
+                    // Since we already have vertexNLZ, we just need NLX and NLY to complete the shadow normal
+                    vertexNLX = dot(vertexNormal, vec3(shadowModelView[0].x, shadowModelView[1].x, shadowModelView[2].x));
+                    vertexNLY = dot(vertexNormal, vec3(shadowModelView[0].y, shadowModelView[1].y, shadowModelView[2].y));
+
+                    // Calculate shadow pos in vertex
+                    vertexShdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexFeetPlayerPos + shadowModelView[3].xyz);
+                    vertexShdPos.z += shadowProjection[3].z;
+                    vertexShdPos.z = vertexShdPos.z * 0.1 + 0.5;
+                #endif
             #endif
 
             // Convert to clip position and output as final position
@@ -103,10 +134,15 @@
 
         in vec2 texCoord;
 
-        in vec3 vertexFeetPlayerPos;
-
         #ifdef WORLD_LIGHT
-            flat in vec3 vertexNormal;
+            flat in float vertexNLZ;
+
+            #ifdef SHADOW_MAPPING
+                flat in float vertexNLX;
+                flat in float vertexNLY;
+
+                in vec3 vertexShdPos;
+            #endif
         #endif
 
         uniform float nightVision;
@@ -141,11 +177,7 @@
         #ifdef WORLD_LIGHT
             uniform float shdFade;
 
-            uniform mat4 shadowModelView;
-
             #ifdef SHADOW_MAPPING
-                uniform mat4 shadowProjection;
-
                 #ifdef SHADOW_FILTER
                     #include "/lib/utility/noiseFunctions.glsl"
                 #endif

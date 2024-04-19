@@ -20,12 +20,22 @@
 
     flat out vec3 vertexColor;
 
-    out vec3 vertexFeetPlayerPos;
+    #if defined WORLD_LIGHT && defined SHADOW_MAPPING
+        out vec3 vertexShdPos;
+    #endif
 
     uniform mat4 gbufferModelViewInverse;
 
     #ifdef WORLD_CURVATURE
         uniform mat4 gbufferModelView;
+    #endif
+
+    #ifdef WORLD_LIGHT
+        uniform mat4 shadowModelView;
+
+        #ifdef SHADOW_MAPPING
+            uniform mat4 shadowProjection;
+        #endif
     #endif
 
     #if ANTI_ALIASING == 2
@@ -50,8 +60,11 @@
 
         // Get vertex view position
         vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
-        // Get vertex feet player position
-        vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos + gbufferModelViewInverse[3].xyz;
+
+        #if defined SHADOW_MAPPING && defined WORLD_LIGHT || defined WORLD_CURVATURE
+            // Get vertex feet player position
+            vec3 vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos + gbufferModelViewInverse[3].xyz;
+        #endif
 
 	    #ifdef WORLD_CURVATURE
             // Apply curvature distortion
@@ -59,6 +72,13 @@
 
             // Convert back to vertex view position
             vertexViewPos = mat3(gbufferModelView) * vertexFeetPlayerPos + gbufferModelView[3].xyz;
+        #endif
+
+        #if defined SHADOW_MAPPING && defined WORLD_LIGHT
+            // Calculate shadow pos in vertex
+            vertexShdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexFeetPlayerPos + shadowModelView[3].xyz);
+			vertexShdPos.z += shadowProjection[3].z;
+            vertexShdPos.z = vertexShdPos.z * 0.1 + 0.5;
         #endif
 
         // Convert to clip position and output as final position
@@ -85,7 +105,9 @@
 
     flat in vec3 vertexColor;
 
-    in vec3 vertexFeetPlayerPos;
+    #if defined WORLD_LIGHT && defined SHADOW_MAPPING
+        in vec3 vertexShdPos;
+    #endif
 
     uniform int isEyeInWater;
 
@@ -123,11 +145,7 @@
     #ifdef WORLD_LIGHT
         uniform float shdFade;
 
-        uniform mat4 shadowModelView;
-
         #ifdef SHADOW_MAPPING
-            uniform mat4 shadowProjection;
-
             #ifdef SHADOW_FILTER
                 #include "/lib/utility/noiseFunctions.glsl"
             #endif
