@@ -11,16 +11,29 @@
 ================================ /// Super Duper Vanilla v1.3.5 /// ================================
 */
 
-/// Buffer features: TAA jittering, simple shading, and world curvature
+/// Buffer features: TAA jittering, complex shading, PBR, lightning, and world curvature
 
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
+    flat out float vertexAlpha;
+
     flat out vec2 lmCoord;
 
     flat out vec3 vertexColor;
 
+    flat out mat3 TBN;
+
+    out vec2 texCoord;
+
     out vec3 vertexFeetPlayerPos;
+
+    #ifdef PARALLAX_OCCLUSION
+        flat out vec2 vTexCoordScale;
+        flat out vec2 vTexCoordPos;
+
+        out vec2 vTexCoord;
+    #endif
 
     uniform mat4 gbufferModelViewInverse;
 
@@ -36,10 +49,20 @@
 
         #include "/lib/utility/taaJitter.glsl"
     #endif
-    
+
+    attribute vec4 at_tangent;
+
+    #ifdef PARALLAX_OCCLUSION
+        attribute vec2 mc_midTexCoord;
+    #endif
+
     void main(){
+        // Get vertex alpha
+        vertexAlpha = gl_Color.a;
         // Get vertex color
         vertexColor = gl_Color.rgb;
+        // Get buffer texture coordinates
+        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
 
         // Lightmap fix for mods
         #ifdef WORLD_CUSTOM_SKYLIGHT
@@ -48,14 +71,32 @@
             lmCoord = min(gl_MultiTexCoord1.xy * 0.00416667, vec2(1));
         #endif
 
+        // Get vertex tangent
+        vec3 vertexNormal = fastNormalize(gl_Normal);
+        // Get vertex tangent
+        vec3 vertexTangent = fastNormalize(at_tangent.xyz);
+
         // Get vertex view position
         vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
         // Get vertex feet player position
         vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos + gbufferModelViewInverse[3].xyz;
 
-	    #ifdef WORLD_CURVATURE
+        // Calculate TBN matrix
+	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal) * sign(at_tangent.w), vertexNormal));
+
+        #ifdef PARALLAX_OCCLUSION
+            vec2 midCoord = (gl_TextureMatrix[0] * vec4(mc_midTexCoord, 0, 0)).xy;
+            vec2 texMinMidCoord = texCoord - midCoord;
+
+            vTexCoordScale = abs(texMinMidCoord) * 2.0;
+            vTexCoordPos = min(texCoord, midCoord - texMinMidCoord);
+
+            vTexCoord = sign(texMinMidCoord) * 0.5 + 0.5;
+        #endif
+
+        #ifdef WORLD_CURVATURE
             // Apply curvature distortion
-            vertexFeetPlayerPos.y -= lengthSquared(vertexFeetPlayerPos.xz) * worldCurvatureInv;
+            vertexFeetPlayerPos.y -= dot(vertexFeetPlayerPos.xz, vertexFeetPlayerPos.xz) * worldCurvatureInv;
 
             // Convert back to vertex view position
             vertexViewPos = mat3(gbufferModelView) * vertexFeetPlayerPos + gbufferModelView[3].xyz;
@@ -77,19 +118,40 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    /* RENDERTARGETS: 0,3 */
-    layout(location = 0) out vec3 sceneColOut; // gcolor
-    layout(location = 1) out vec3 materialDataOut; // colortex3
+    /* RENDERTARGETS: 0,1,2,3 */
+    layout(location = 0) out vec4 sceneColOut; // gcolor
+    layout(location = 1) out vec3 normalDataOut; // colortex1
+    layout(location = 2) out vec3 albedoDataOut; // colortex2
+    layout(location = 3) out vec3 materialDataOut; // colortex3
+
+    flat in float vertexAlpha;
 
     flat in vec2 lmCoord;
 
     flat in vec3 vertexColor;
 
+    flat in mat3 TBN;
+
+    in vec2 texCoord;
+
     in vec3 vertexFeetPlayerPos;
+
+    #ifdef PARALLAX_OCCLUSION
+        flat in vec2 vTexCoordScale;
+        flat in vec2 vTexCoordPos;
+
+        in vec2 vTexCoord;
+    #endif
+
+    uniform int entityId;
 
     uniform int isEyeInWater;
 
     uniform float nightVision;
+
+    uniform vec4 entityColor;
+
+    uniform sampler2D tex;
 
     #ifdef IS_IRIS
         uniform float lightningFlash;
@@ -134,27 +196,46 @@
 
             #include "/lib/lighting/shdMapping.glsl"
         #endif
+
+        #include "/lib/lighting/GGX.glsl"
     #endif
 
-    #include "/lib/lighting/basicShadingForward.glsl"
+    #include "/lib/PBR/dataStructs.glsl"
+
+    #if PBR_MODE <= 1
+        #include "/lib/PBR/integratedPBR.glsl"
+    #else
+        #include "/lib/PBR/labPBR.glsl"
+    #endif
+
+    #include "/lib/lighting/complexShadingForward.glsl"
 
     void main(){
-        // Get albedo color
-        vec4 albedo = vec4(vertexColor, 1);
+        // Lightning fix, materials need to be specified due to glitching issues
+        if(entityId == 10129){
+            const vec3 lightningCol = vec3(0.25 * EMISSIVE_INTENSITY, 0.5 * EMISSIVE_INTENSITY, EMISSIVE_INTENSITY);
+            sceneColOut = vec4(lightningCol, vertexAlpha);
+            normalDataOut = vec3(0);
+            materialDataOut = vec3(0);
+            return;
+        }
 
-        #if COLOR_MODE == 1
-            albedo.rgb = vec3(1);
-        #elif COLOR_MODE == 2
-            albedo.rgb = vec3(0);
-        #endif
+        // Declare materials
+	    dataPBR material;
+        getPBR(material, entityId);
+
+        // Apply entity color tint
+        material.albedo.rgb = mix(material.albedo.rgb, entityColor.rgb, entityColor.a);
 
         // Convert to linear space
-        albedo.rgb = toLinear(albedo.rgb);
+        material.albedo.rgb = toLinear(material.albedo.rgb);
 
-        // Apply simple shading
-        sceneColOut = basicShadingForward(albedo);
-    
-        // Write material data
-        materialDataOut = vec3(0);
+        // Write to HDR scene color
+        sceneColOut = vec4(complexShadingForward(material), material.albedo.a);
+
+        // Write buffer datas
+        normalDataOut = material.normal;
+        albedoDataOut = material.albedo.rgb;
+        materialDataOut = vec3(material.metallic, material.smoothness, 0);
     }
 #endif

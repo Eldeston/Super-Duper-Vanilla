@@ -119,7 +119,7 @@
 
 #ifdef FRAGMENT
     /* RENDERTARGETS: 0,1,2,3 */
-    layout(location = 0) out vec4 sceneColOut; // gcolor
+    layout(location = 0) out vec3 sceneColOut; // gcolor
     layout(location = 1) out vec3 normalDataOut; // colortex1
     layout(location = 2) out vec3 albedoDataOut; // colortex2
     layout(location = 3) out vec3 materialDataOut; // colortex3
@@ -214,7 +214,7 @@
         // Lightning fix, materials need to be specified due to glitching issues
         if(entityId == 10129){
             const vec3 lightningCol = vec3(0.25 * EMISSIVE_INTENSITY, 0.5 * EMISSIVE_INTENSITY, EMISSIVE_INTENSITY);
-            sceneColOut = vec4(lightningCol, vertexAlpha);
+            sceneColOut = lightningCol;
             normalDataOut = vec3(0);
             materialDataOut = vec3(0);
             return;
@@ -231,7 +231,7 @@
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         // Write to HDR scene color
-        sceneColOut = vec4(complexShadingForward(material), material.albedo.a);
+        sceneColOut = complexShadingForward(material);
 
         // Write buffer datas
         normalDataOut = material.normal;

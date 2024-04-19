@@ -217,7 +217,7 @@
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
         // Get screen pos
         vec3 screenPos = vec3(texCoord, texelFetch(depthtex0, screenTexelCoord, 0).x);
-        
+
         // Get sky mask
         bool skyMask = screenPos.z == 1;
 
