@@ -5,7 +5,8 @@
 #define TAU 6.28318531
 #define GOLDEN_RATIO 1.61803399
 
-#define ALPHA_THRESHOLD 0.005
+// Certain RP artists mistakingly add additional alpha to nontranslucent textures
+#define ALPHA_THRESHOLD 0.099
 
 // Saturate/clamp functions
 float saturate(in float x){ return clamp(x, 0.0, 1.0); }
