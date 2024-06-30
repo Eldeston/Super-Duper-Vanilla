@@ -23,6 +23,8 @@
     #ifdef WORLD_CURVATURE
         uniform mat4 gbufferModelView;
         uniform mat4 gbufferModelViewInverse;
+
+        uniform int renderStage;
     #endif
 
     #if ANTI_ALIASING == 2
@@ -46,17 +48,20 @@
         vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
 
 	    #ifdef WORLD_CURVATURE
-            // Get vertex eye player position
-            vec3 vertexEyePlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos;
-            
-            // Get vertex feet player position
-            vec2 vertexFeetPlayerPosXZ = vertexEyePlayerPos.xz + gbufferModelViewInverse[3].xz;
+            // This is because world curvature isn't applied to the player hand
+            if(renderStage != MC_RENDER_STAGE_HAND_SOLID && renderStage != MC_RENDER_STAGE_TERRAIN_TRANSLUCENT){
+                // Get vertex eye player position
+                vec3 vertexEyePlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos;
+                
+                // Get vertex feet player position
+                vec2 vertexFeetPlayerPosXZ = vertexEyePlayerPos.xz + gbufferModelViewInverse[3].xz;
 
-            // Apply curvature distortion
-            vertexEyePlayerPos.y -= lengthSquared(vertexFeetPlayerPosXZ) * worldCurvatureInv;
-            
-            // Convert back to vertex view position
-            vertexViewPos = mat3(gbufferModelView) * vertexEyePlayerPos;
+                // Apply curvature distortion
+                vertexEyePlayerPos.y -= lengthSquared(vertexFeetPlayerPosXZ) * worldCurvatureInv;
+                
+                // Convert back to vertex view position
+                vertexViewPos = mat3(gbufferModelView) * vertexEyePlayerPos;
+            }
         #endif
 
         // Convert to clip position and output as final position

@@ -98,7 +98,6 @@ This along with the `GBUFFERS` macro, are used to identify the quirks in the cur
 * Create a custom shadow model view
 * Fix transparency issues with CTM
 * Optimize albedo alpha testing
-* Fix glint z fighting
 
 * Optimize block ids in block.properties
 * Document the shader pipeline
