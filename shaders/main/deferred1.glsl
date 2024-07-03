@@ -155,6 +155,13 @@
         uniform sampler2D colortex4;
     #endif
 
+    #ifdef DISTANT_HORIZONS
+        uniform mat4 dhProjection;
+        uniform mat4 dhProjectionInverse;
+
+        uniform sampler2D dhDepthTex0;
+    #endif
+
     #ifdef WORLD_CUSTOM_SKYLIGHT
         const float eyeBrightFact = WORLD_CUSTOM_SKYLIGHT;
     #else
@@ -215,8 +222,18 @@
     void main(){
         // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
+
+        // Distant Horizons apparently uses a different depth texture
+        #ifdef DISTANT_HORIZONS
+            float depth = texelFetch(depthtex0, screenTexelCoord, 0).x;
+            bool realSky = depth == 1;
+            if(realSky) depth = texelFetch(dhDepthTex0, screenTexelCoord, 0).x;
+        #else
+            float depth = texelFetch(depthtex0, screenTexelCoord, 0).x;
+        #endif
+
         // Get screen pos
-        vec3 screenPos = vec3(texCoord, texelFetch(depthtex0, screenTexelCoord, 0).x);
+        vec3 screenPos = vec3(texCoord, depth);
 
         // Get sky mask
         bool skyMask = screenPos.z == 1;
@@ -226,8 +243,13 @@
             if(skyMask) screenPos.xy += jitterPos(-0.5);
         #endif
 
-        // Get view pos
-        vec3 viewPos = getViewPos(gbufferProjectionInverse, screenPos);
+        // Distant Horizons apparently uses a different projection matrix
+        #ifdef DISTANT_HORIZONS
+            vec3 viewPos = getViewPos(realSky ? dhProjectionInverse : gbufferProjectionInverse, screenPos);
+        #else
+            vec3 viewPos = getViewPos(gbufferProjectionInverse, screenPos);
+        #endif
+
         // Get eye player pos
         vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
 

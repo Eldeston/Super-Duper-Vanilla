@@ -144,6 +144,13 @@
         uniform sampler2D colortex4;
     #endif
 
+    #ifdef DISTANT_HORIZONS
+        uniform mat4 dhProjection;
+        uniform mat4 dhProjectionInverse;
+
+        uniform sampler2D dhDepthTex0;
+    #endif
+
     #ifdef WORLD_CUSTOM_SKYLIGHT
         const float eyeBrightFact = WORLD_CUSTOM_SKYLIGHT;
     #else
