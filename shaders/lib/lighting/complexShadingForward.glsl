@@ -45,7 +45,7 @@ vec3 complexShadingForward(in dataPBR material){
 		bool isShadow = NLZ > 0;
 		bool isSubSurface = material.ss > 0;
 
-		#if defined SHADOW_MAPPING && !defined ENTITIES_GLOWING // && !defined DH_TERRAIN && !defined DH_WATER
+		#if defined SHADOW_MAPPING && !defined ENTITIES_GLOWING
 			vec3 shdCol = vec3(0);
 
 			// If the area isn't shaded, apply shadow mapping
