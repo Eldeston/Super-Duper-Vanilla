@@ -94,7 +94,7 @@
 
     uniform int isEyeInWater;
 
-    uniform float far;
+    uniform float borderFar;
 
     uniform float blindness;
     uniform float nightVision;
@@ -219,10 +219,26 @@
     void main(){
         // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
+
+        // Distant Horizons apparently uses a different depth texture
+        #ifdef DISTANT_HORIZONS
+            float depth = texelFetch(depthtex0, screenTexelCoord, 0).x;
+            bool realSky = depth == 1;
+            if(realSky) depth = texelFetch(dhDepthTex0, screenTexelCoord, 0).x;
+        #else
+            float depth = texelFetch(depthtex0, screenTexelCoord, 0).x;
+        #endif
+
         // Get screen pos
-        vec3 screenPos = vec3(texCoord, texelFetch(depthtex0, screenTexelCoord, 0).x);
-        // Get view pos
-        vec3 viewPos = getViewPos(gbufferProjectionInverse, screenPos);
+        vec3 screenPos = vec3(texCoord, depth);
+        
+        // Distant Horizons apparently uses a different projection matrix
+        #ifdef DISTANT_HORIZONS
+            vec3 viewPos = getViewPos(realSky ? dhProjectionInverse : gbufferProjectionInverse, screenPos);
+        #else
+            vec3 viewPos = getViewPos(gbufferProjectionInverse, screenPos);
+        #endif
+
         // Get eye player pos
         vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
         // Get feet player pos

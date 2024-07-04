@@ -36,7 +36,7 @@ vec3 getVolumetricLight(in vec3 feetPlayerPos, in float depth, in float dither){
 	// Border fog
 	// Modified Complementary border fog calculation, thanks Emin!
 	#ifdef BORDER_FOG
-		float volumetricFogDensity = 1.0 - exp2(-feetPlayerDist * totalFogDensity - exp2(feetPlayerDist / far * 21.0 - 18.0));
+		float volumetricFogDensity = 1.0 - exp2(-feetPlayerDist * totalFogDensity - exp2(feetPlayerDist / borderFar * 21.0 - 18.0));
 	#else
 		float volumetricFogDensity = 1.0 - exp2(-feetPlayerDist * totalFogDensity);
 	#endif
@@ -47,7 +47,7 @@ vec3 getVolumetricLight(in vec3 feetPlayerPos, in float depth, in float dither){
 	#if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING
 		// Normalize then unormalize with feetPlayerDist and clamping it at minimum distance between far and current shadowDistance
 		vec3 endPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * nFeetPlayerPos);
-		endPos *= min(min(far, shadowDistance), feetPlayerDist) * volumetricStepsInverse;
+		endPos *= min(min(borderFar, shadowDistance), feetPlayerDist) * volumetricStepsInverse;
 
 		// Apply dithering added to the eyePlayerPos "camera" position converted to shadow clip space
 		vec3 startPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * shadowModelView[3].xyz + endPos * dither;

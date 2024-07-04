@@ -18,11 +18,16 @@
 #ifdef VERTEX
     flat out vec2 lmCoord;
 
+    flat out vec3 vertexNormal;
+
+    out vec3 vertexColor;
+    out vec3 vertexFeetPlayerPos;
+
+    /*
     #if defined WORLD_LIGHT && defined SHADOW_MAPPING
         out vec3 vertexShdPos;
     #endif
-
-    out vec3 vertexColor;
+    */
 
     uniform mat4 gbufferModelViewInverse;
 
@@ -58,12 +63,15 @@
             lmCoord = min(gl_MultiTexCoord2.xy, vec2(1));
         #endif
 
+        // Get vertex normal
+        vertexNormal = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * fastNormalize(gl_Normal));
+
         // Get vertex view position
         vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
 
         #if defined SHADOW_MAPPING && defined WORLD_LIGHT || defined WORLD_CURVATURE
             // Get vertex feet player position
-            vec3 vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos + gbufferModelViewInverse[3].xyz;
+            vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos + gbufferModelViewInverse[3].xyz;
         #endif
 
 	    #ifdef WORLD_CURVATURE
@@ -74,12 +82,14 @@
             vertexViewPos = mat3(gbufferModelView) * vertexFeetPlayerPos + gbufferModelView[3].xyz;
         #endif
 
+        /*
         #if defined SHADOW_MAPPING && defined WORLD_LIGHT
             // Calculate shadow pos in vertex
             vertexShdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexFeetPlayerPos + shadowModelView[3].xyz);
 			vertexShdPos.z += shadowProjection[3].z;
             vertexShdPos.z = vertexShdPos.z * 0.1 + 0.5;
         #endif
+        */
 
         // Convert to clip position and output as final position
         // gl_Position = gl_ProjectionMatrix * vertexViewPos;
@@ -103,11 +113,16 @@
 
     flat in vec2 lmCoord;
 
+    flat in vec3 vertexNormal;
+
+    in vec3 vertexColor;
+    in vec3 vertexFeetPlayerPos;
+
+    /*
     #if defined WORLD_LIGHT && defined SHADOW_MAPPING
         in vec3 vertexShdPos;
     #endif
-
-    in vec3 vertexColor;
+    */
 
     uniform int isEyeInWater;
 
@@ -145,32 +160,45 @@
     #ifdef WORLD_LIGHT
         uniform float shdFade;
 
+        uniform mat4 shadowModelView;
+
         #ifdef SHADOW_MAPPING
-            #ifdef SHADOW_FILTER
-                #include "/lib/utility/noiseFunctions.glsl"
-            #endif
+            uniform mat4 shadowProjection;
 
             #include "/lib/lighting/shdMapping.glsl"
         #endif
+
+        #include "/lib/lighting/GGX.glsl"
     #endif
 
-    #include "/lib/lighting/basicShadingForward.glsl"
+    #include "/lib/PBR/dataStructs.glsl"
+
+    #include "/lib/utility/noiseFunctions.glsl"
+
+    #include "/lib/lighting/complexShadingForward.glsl"
 
     void main(){
-        // Get albedo color
-        vec4 albedo = vec4(vertexColor, 1);
+        // Declare materials
+	    dataPBR material;
+        material.normal = vertexNormal;
+        material.albedo = vec4(vertexColor, 1);
 
         #if COLOR_MODE == 1
-            albedo.rgb = vec3(1);
+            material.albedo.rgb = vec3(1);
         #elif COLOR_MODE == 2
-            albedo.rgb = vec3(0);
+            material.albedo.rgb = vec3(0);
         #endif
 
+        material.smoothness = 0.0; material.emissive = 0.0;
+        material.metallic = 0.04; material.porosity = 0.0;
+        material.ss = 0.0; material.parallaxShd = 1.0;
+        material.ambient = 1.0;
+
         // Convert to linear space
-        albedo.rgb = toLinear(albedo.rgb);
+        material.albedo.rgb = toLinear(material.albedo.rgb);
 
         // Apply simple shading
-        sceneColOut = basicShadingForward(albedo);
+        sceneColOut = complexShadingForward(material);
     
         // Write material data
         materialDataOut = vec3(0);

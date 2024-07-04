@@ -101,8 +101,7 @@
 
     uniform int isEyeInWater;
 
-    uniform float near;
-    uniform float far;
+    uniform float borderFar;
 
     uniform float blindness;
     uniform float nightVision;
@@ -276,7 +275,7 @@
 
         // If sky, do full sky render and return immediately
         if(skyMask){
-            sceneColOut = getFullSkyRender(nEyePlayerPos, skyPos, currSkyCol + sceneColOut) * exp2(-far * (blindness + darknessFactor));
+            sceneColOut = getFullSkyRender(nEyePlayerPos, skyPos, currSkyCol + sceneColOut) * exp2(-borderFar * (blindness + darknessFactor));
             return;
         }
 

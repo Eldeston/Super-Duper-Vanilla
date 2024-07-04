@@ -86,7 +86,7 @@
             lmCoord = min(gl_MultiTexCoord1.xy * 0.00416667, vec2(1));
         #endif
 
-        // Get vertex tangent
+        // Get vertex normal
         vec3 vertexNormal = fastNormalize(gl_Normal);
         // Get vertex tangent
         vec3 vertexTangent = fastNormalize(at_tangent.xyz);

@@ -102,5 +102,7 @@ This along with the `GBUFFERS` macro, are used to identify the quirks in the cur
 * Optimize block ids in block.properties
 * Document the shader pipeline
 
+* Separate iPBR for gbuffers
+
 * Implement cloud absorption
 * Improve water absorption

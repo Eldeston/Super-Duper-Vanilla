@@ -25,7 +25,7 @@ vec3 basicShadingForward(in vec4 albedo){
 			// Apply shadow distortion and transform to shadow screen space
 			vec3 shdPos = vec3(vertexShdPos.xy / (length(vertexShdPos.xy) * 2.0 + 0.2) + 0.5, vertexShdPos.z);
 
-			// There is no need for bias for particles
+			// There is no need for bias for particles, leads, etc.
 			#ifdef CLOUDS
 				// Bias mutilplier, adjusts according to the current shadow resolution
 				const vec3 biasAdjustMult = vec3(2, 2, -0.0625) * shadowMapPixelSize;
