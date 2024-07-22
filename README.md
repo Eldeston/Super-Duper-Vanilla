@@ -44,7 +44,7 @@
 | 1.13.2-  | Not supported                       | Not supported |
 
 ## Releases
-   See all available releases [here](https://github.com/Eldeston/Super-Duper-Vanilla/releases). Other more recent builds are found in their corresponding branches, to download simply switch to the branch you need and download as zip.
+   See all available releases [here](https://github.com/Eldeston/Super-Duper-Vanilla/releases). More recent builds are found in their corresponding branches, to download simply switch to the latest version branch, go to code (green button) and download as zip.
 
    Latest build and pre-release versions are expected to be unstable, please report any issues or bugs anytime. Feedback is much appreciated.
 
