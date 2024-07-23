@@ -93,16 +93,19 @@ This along with the `GBUFFERS` macro, are used to identify the quirks in the cur
 | SKY_BASIC      | defined |
 
 ## TO DO (for Eldeston)
-* Refactor uniform usage and remove unecessary ones
-* Optimize DOF calculations with noise
-* Create a custom shadow model view
-* Fix transparency issues with CTM
-* Optimize albedo alpha testing
+* Refactor uniform usage and remove unecessary ones (medium priority)
+* Optimize DOF calculations with noise (low priority)
+* Create a custom shadow model view (low priority)
+* Fix transparency issues with CTM (medium priority)
+* Fix transparency issues with entities (high priority)
+* Optimize albedo alpha testing (high priority)
 
-* Optimize block ids in block.properties
-* Document the shader pipeline
+* Optimize block ids in block.properties (medium priority)
+* Rebuild pipeline and include visualization (high priority)
+* Document the shader pipeline (high priority)
+* Fully integrate into Iris and abandon Optifine (high priority)
 
-* Separate iPBR for gbuffers
+* Separate iPBR for gbuffers (medium priority)
 
-* Implement cloud absorption
-* Improve water absorption
+* Implement cloud absorption (low priority)
+* Improve water absorption (low priority)
