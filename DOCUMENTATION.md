@@ -103,7 +103,7 @@ This along with the `GBUFFERS` macro, are used to identify the quirks in the cur
 * Optimize block ids in block.properties (medium priority)
 * Rebuild pipeline and include visualization (high priority)
 * Document the shader pipeline (high priority)
-* Fully integrate into Iris and abandon Optifine (high priority)
+* Move to Iris and abandon Optifine support (medium priority)
 
 * Separate iPBR for gbuffers (medium priority)
 

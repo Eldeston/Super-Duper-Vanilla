@@ -1,5 +1,5 @@
 /*
-================================ /// Super Duper Vanilla v1.3.5 /// ================================
+================================ /// Super Duper Vanilla v1.3.6 /// ================================
 
     Developed by Eldeston, presented by FlameRender (C) Studios.
 
@@ -8,7 +8,7 @@
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.5 /// ================================
+================================ /// Super Duper Vanilla v1.3.6 /// ================================
 */
 
 /// Buffer features: Solid complex shading
