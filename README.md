@@ -33,7 +33,7 @@
    If you want to request mod compatibility with this shader, create an issue post in this repository with the mod that you want to enable compatibility via linking. If you're planning to add mod compatibility by coding it yourself, see [**CONTRIBUTION**](CONTRIBUTION.md).
 
 ## Version Compatibility
-   Version compatibility varies across the 2 known shader loaders Iris and Optifine.
+   Version compatibility varies across the 2 known shader loaders Iris and Optifine. Optifine support will not be prioritized or maintained starting from 1.3.7 of this shader.
 
    Iris versions 1.6.10+ from Minecraft versions 1.18.2+ are compatible with this shader. For Optifine, it varies across GPU vendors. Please always choose the latest Iris or Optifine of your respective Minecraft version.
 
