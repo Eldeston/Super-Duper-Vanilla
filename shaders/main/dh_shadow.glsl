@@ -36,7 +36,7 @@
 
             #ifdef PHYSICS_OCEAN
                 // Physics mod compatibility
-                #include "/lib/physicsMod/physicsModVertex.glsl"
+                #include "/lib/modded/physicsMod/physicsModVertex.glsl"
             #endif
 
             #include "/lib/vertex/shadowWave.glsl"

@@ -97,7 +97,6 @@ This along with the `GBUFFERS` macro, are used to identify the quirks in the cur
 * Optimize DOF calculations with noise (low priority)
 * Create a custom shadow model view (low priority)
 * Fix transparency issues with CTM (medium priority)
-* Fix transparency issues with entities (high priority)
 * Optimize albedo alpha testing (high priority)
 
 * Optimize block ids in block.properties (medium priority)

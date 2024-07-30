@@ -40,7 +40,7 @@
 
         out vec2 physics_localPosition;
 
-        #include "/lib/physicsMod/physicsModVertex.glsl"
+        #include "/lib/modded/physicsMod/physicsModVertex.glsl"
     #endif
 
     uniform vec3 cameraPosition;
@@ -192,7 +192,7 @@
 
         in vec2 physics_localPosition;
 
-        #include "/lib/physicsMod/physicsModFragment.glsl"
+        #include "/lib/modded/physicsMod/physicsModFragment.glsl"
     #endif
 
     uniform int isEyeInWater;
