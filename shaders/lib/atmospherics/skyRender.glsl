@@ -109,13 +109,13 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
     #endif
 
     #if defined STORY_MODE_CLOUDS && defined WORLD_LIGHT && !defined FORCE_DISABLE_CLOUDS
-        float cloudHeightFade = nEyePlayerPos.y - 0.125;
+        float cloudHeightFade = nEyePlayerPos.y - 0.1;
 
         #ifdef FORCE_DISABLE_WEATHER
-            cloudHeightFade *= 5.0;
+            cloudHeightFade *= 6.0;
         #else
             cloudHeightFade -= rainStrength * 0.2;
-            cloudHeightFade *= 5.0 - rainStrength * 4.0;
+            cloudHeightFade *= 6.0 - rainStrength * 5.0;
         #endif
 
         if(cloudHeightFade < 0.005) return currSkyCol;
