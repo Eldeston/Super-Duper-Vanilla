@@ -128,6 +128,12 @@
 
     uniform float nightVision;
 
+    uniform float far;
+    uniform float near;
+    uniform float dhNearPlane;
+
+    uniform sampler2D depthtex0;
+
     #ifdef IS_IRIS
         uniform float lightningFlash;
     #endif
@@ -178,6 +184,10 @@
     #include "/lib/lighting/complexShadingForward.glsl"
 
     void main(){
+        // Fix for Distant Horizons translucents rendering over real geometry
+        float realDepth = texelFetch(depthtex0, ivec2(gl_FragCoord.xy), 0).x;
+        if(near / (1.0 - realDepth) < dhNearPlane / (1.0 - gl_FragCoord.z) || realDepth != 1.0){ discard; return; }
+
         // Declare materials
 	    dataPBR material;
         material.normal = vertexNormal;
