@@ -145,10 +145,14 @@
     #endif
 
     #ifdef DISTANT_HORIZONS
+        uniform float near;
+        uniform float dhNearPlane;
+
         uniform mat4 dhProjection;
         uniform mat4 dhProjectionInverse;
 
         uniform sampler2D dhDepthTex0;
+        uniform sampler2D dhDepthTex1;
     #endif
 
     #ifdef WORLD_CUSTOM_SKYLIGHT
@@ -253,8 +257,15 @@
             vec3 dither = getRng3(screenTexelCoord & 255);
         #endif
 
+        #ifdef DISTANT_HORIZONS
+            bool isWater = near / (1.0 - texelFetch(depthtex1, screenTexelCoord, 0).x) > dhNearPlane / (1.0 - texelFetch(dhDepthTex1, screenTexelCoord, 0).x) ||
+                texelFetch(depthtex1, screenTexelCoord, 0).x > screenPos.z;
+        #else
+            bool isWater = texelFetch(depthtex1, screenTexelCoord, 0).x > screenPos.z;
+        #endif
+
         // If the object is a transparent render separate lighting
-        if(texelFetch(depthtex1, screenTexelCoord, 0).x > screenPos.z){
+        if(isWater){
             // Get view distance
             float viewDot = lengthSquared(viewPos);
             float viewDotInvSqrt = inversesqrt(viewDot);
