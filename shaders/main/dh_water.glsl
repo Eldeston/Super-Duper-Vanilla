@@ -16,9 +16,13 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
+    flat out int blockId;
+
     flat out vec2 lmCoord;
 
     flat out vec3 vertexNormal;
+
+    out vec2 waterNoiseUv;
 
     out vec3 vertexColor;
     out vec3 vertexFeetPlayerPos;
@@ -28,6 +32,8 @@
         out vec3 vertexShdPos;
     #endif
     */
+
+    uniform vec3 cameraPosition;
 
     uniform mat4 gbufferModelViewInverse;
 
@@ -68,11 +74,16 @@
 
         // Get vertex view position
         vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
+        // Get vertex feet player position
+        vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos + gbufferModelViewInverse[3].xyz;
 
-        #if defined SHADOW_MAPPING && defined WORLD_LIGHT || defined WORLD_CURVATURE
-            // Get vertex feet player position
-            vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos + gbufferModelViewInverse[3].xyz;
-        #endif
+        // Get world position
+        vec3 vertexWorldPos = vertexFeetPlayerPos + cameraPosition;
+
+        // Get water noise uv position
+        waterNoiseUv = vertexWorldPos.xz * waterTileSizeInv;
+
+        if(dhMaterialId == DH_BLOCK_WATER) blockId = 11102;
 
 	    #ifdef WORLD_CURVATURE
             // Apply curvature distortion
@@ -81,15 +92,6 @@
             // Convert back to vertex view position
             vertexViewPos = mat3(gbufferModelView) * vertexFeetPlayerPos + gbufferModelView[3].xyz;
         #endif
-
-        /*
-        #if defined SHADOW_MAPPING && defined WORLD_LIGHT
-            // Calculate shadow pos in vertex
-            vertexShdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexFeetPlayerPos + shadowModelView[3].xyz);
-			vertexShdPos.z += shadowProjection[3].z;
-            vertexShdPos.z = vertexShdPos.z * 0.1 + 0.5;
-        #endif
-        */
 
         // Convert to clip position and output as final position
         // gl_Position = gl_ProjectionMatrix * vertexViewPos;
@@ -107,22 +109,22 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    /* RENDERTARGETS: 0,3 */
+    /* RENDERTARGETS: 0,1,2,3 */
     layout(location = 0) out vec3 sceneColOut; // gcolor
-    layout(location = 1) out vec3 materialDataOut; // colortex3
+    layout(location = 1) out vec3 normalDataOut; // colortex1
+    layout(location = 2) out vec3 albedoDataOut; // colortex2
+    layout(location = 3) out vec3 materialDataOut; // colortex3
+
+    flat in int blockId;
 
     flat in vec2 lmCoord;
 
     flat in vec3 vertexNormal;
 
+    in vec2 waterNoiseUv;
+
     in vec3 vertexColor;
     in vec3 vertexFeetPlayerPos;
-
-    /*
-    #if defined WORLD_LIGHT && defined SHADOW_MAPPING
-        in vec3 vertexShdPos;
-    #endif
-    */
 
     uniform int isEyeInWater;
 
@@ -133,6 +135,7 @@
     uniform float dhNearPlane;
 
     uniform sampler2D depthtex0;
+    uniform sampler2D dhDepthTex1;
 
     #ifdef IS_IRIS
         uniform float lightningFlash;
@@ -181,12 +184,19 @@
 
     #include "/lib/utility/noiseFunctions.glsl"
 
+    #if defined WATER_NORMAL || defined WATER_NOISE
+        uniform float fragmentFrameTime;
+
+        #include "/lib/surface/water.glsl"
+    #endif
+
     #include "/lib/lighting/complexShadingForward.glsl"
 
     void main(){
         // Fix for Distant Horizons translucents rendering over real geometry
         float realDepth = texelFetch(depthtex0, ivec2(gl_FragCoord.xy), 0).x;
-        if(near / (1.0 - realDepth) < dhNearPlane / (1.0 - gl_FragCoord.z) || realDepth != 1.0){ discard; return; }
+        float dhDepth = dhNearPlane / (1.0 - gl_FragCoord.z);
+        if(near / (1.0 - realDepth) < dhDepth || realDepth != 1.0){ discard; return; }
 
         // Declare materials
 	    dataPBR material;
@@ -199,10 +209,48 @@
             material.albedo.rgb = vec3(0);
         #endif
 
-        material.smoothness = 0.0; material.emissive = 0.0;
+        material.smoothness = 0.96; material.emissive = 0.0;
         material.metallic = 0.04; material.porosity = 0.0;
         material.ss = 0.0; material.parallaxShd = 1.0;
         material.ambient = 1.0;
+
+        // If water
+        if(blockId == 11102){
+            float waterNoise = WATER_BRIGHTNESS;
+
+            #ifdef WATER_NORMAL
+                vec4 waterData = H2NWater(waterNoiseUv);
+                material.normal = waterData.zyx * vertexNormal.x + waterData.xzy * vertexNormal.y + waterData.xyz * vertexNormal.z;
+
+                #ifdef WATER_NOISE
+                    waterNoise *= squared(0.128 + waterData.w * 0.5);
+                #endif
+            #elif defined WATER_NOISE
+                float waterData = getCellNoise(waterNoiseUv);
+
+                waterNoise *= squared(0.128 + waterData * 0.5);
+            #endif
+
+            #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
+                // Water color and foam. Fast depth linearization by DrDesten
+                float waterDepth = dhDepth - dhNearPlane / (1.0 - texelFetch(dhDepthTex1, ivec2(gl_FragCoord.xy), 0).x);
+            #endif
+
+            #ifdef WATER_STYLIZE_ABSORPTION
+                if(isEyeInWater == 0){
+                    float depthBrightness = exp2(waterDepth * 0.25);
+                    material.albedo.rgb = material.albedo.rgb * (waterNoise * (1.0 - depthBrightness) + depthBrightness);
+                    material.albedo.a = fastSqrt(material.albedo.a) * (1.0 - depthBrightness);
+                }
+                else material.albedo.rgb *= waterNoise;
+            #else
+                material.albedo.rgb *= waterNoise;
+            #endif
+
+            #ifdef WATER_FOAM
+                material.albedo = min(vec4(1), material.albedo + exp2((waterDepth + 0.0625) * 8.0));
+            #endif
+        }
 
         // Convert to linear space
         material.albedo.rgb = toLinear(material.albedo.rgb);
@@ -210,7 +258,9 @@
         // Apply simple shading
         sceneColOut = complexShadingForward(material);
     
-        // Write material data
-        materialDataOut = vec3(0);
+        // Write buffer datas
+        normalDataOut = material.normal;
+        albedoDataOut = material.albedo.rgb;
+        materialDataOut = vec3(material.metallic, material.smoothness, 0);
     }
 #endif
