@@ -15,14 +15,43 @@ vec3 getFogRender(in vec3 color, in vec3 fogCol, in float viewDist, in float nEy
 
     // Mist fog
     float mistFog = min(1.0, getAtmosphericFog(nEyePlayerPosY, worldPosY, viewDist, totalFogDensity, verticalFogDensity)) * fogMult;
-    color = (fogCol - color) * mistFog + color;
 
     // Border fog
     #ifdef BORDER_FOG
         // Modified Complementary border fog calculation, thanks Emin!
-        color = (color - fogCol) * exp2(-exp2(viewDist / borderFar * 21.0 - 18.0)) + fogCol;
+        mistFog = (mistFog - 1.0) * exp2(-exp2(viewDist / borderFar * 21.0 - 18.0)) + 1.0;
     #endif
+
+    color = (fogCol - color) * mistFog + color;
 
     // Blindness fog
     return color * exp2(-viewDist * max(blindness, darknessFactor * 0.125 + darknessLightFactor));
+}
+
+float getFogFactor(in float viewDist, in float nEyePlayerPosY, in float worldPosY){
+    #ifdef FORCE_DISABLE_WEATHER
+        float verticalFogDensity = isEyeInWater == 0 ? FOG_VERTICAL_DENSITY : FOG_VERTICAL_DENSITY * 0.2;
+        float totalFogDensity = isEyeInWater == 0 ? FOG_TOTAL_DENSITY : FOG_TOTAL_DENSITY * TAU;
+    #else
+        float verticalFogDensity = isEyeInWater == 0 ? FOG_VERTICAL_DENSITY - FOG_VERTICAL_DENSITY * rainStrength * 0.8 : FOG_VERTICAL_DENSITY * 0.2;
+        float totalFogDensity = isEyeInWater == 0 ? FOG_TOTAL_DENSITY * (rainStrength * eyeBrightFact * PI + 1.0) : FOG_TOTAL_DENSITY * TAU;
+    #endif
+
+    float fogMult = min(1.0, GROUND_FOG_STRENGTH + GROUND_FOG_STRENGTH * isEyeInWater);
+
+    // Mist fog
+    float mistFog = min(1.0, getAtmosphericFog(nEyePlayerPosY, worldPosY, viewDist, totalFogDensity, verticalFogDensity)) * fogMult;
+
+    // Border fog
+    #ifdef BORDER_FOG
+        // Modified Complementary border fog calculation, thanks Emin!
+        mistFog = (mistFog - 1.0) * exp2(-exp2(viewDist / borderFar * 21.0 - 18.0)) + 1.0;
+    #endif
+
+    return mistFog;
+}
+
+float getFogDarknessFactor(in float viewDist){
+    // Blindness fog
+    return exp2(-viewDist * max(blindness, darknessFactor * 0.125 + darknessLightFactor));
 }

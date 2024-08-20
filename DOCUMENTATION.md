@@ -108,3 +108,4 @@ This along with the `GBUFFERS` macro, are used to identify the quirks in the cur
 
 * Implement cloud absorption (low priority)
 * Improve water absorption (low priority)
+* Improve atmospheric fog (medium priority)

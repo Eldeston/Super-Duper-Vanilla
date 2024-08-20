@@ -264,16 +264,19 @@
             bool isWater = texelFetch(depthtex1, screenTexelCoord, 0).x > screenPos.z;
         #endif
 
+        // Get view distance
+        float viewDot = lengthSquared(viewPos);
+        float viewDotInvSqrt = inversesqrt(viewDot);
+        float viewDist = viewDot * viewDotInvSqrt;
+
+        // Get normalized eyePlayerPos
+        vec3 nEyePlayerPos = eyePlayerPos * viewDotInvSqrt;
+
+        float fogFactor = getFogFactor(viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
+
         // If the object is a transparent render separate lighting
+        // This needs to be changed
         if(isWater){
-            // Get view distance
-            float viewDot = lengthSquared(viewPos);
-            float viewDotInvSqrt = inversesqrt(viewDot);
-            float viewDist = viewDot * viewDotInvSqrt;
-
-            // Get normalized eyePlayerPos
-            vec3 nEyePlayerPos = eyePlayerPos * viewDotInvSqrt;
-
             // Declare and get materials
             vec2 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xy;
             vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
@@ -284,8 +287,8 @@
 
             // Get basic sky fog color
             vec3 fogSkyCol = getSkyFogRender(nEyePlayerPos);
-            // Do basic sky render and use it as fog color
-            sceneColOut = getFogRender(sceneColOut, fogSkyCol, viewDist, nEyePlayerPos.y, feetPlayerPos.y + cameraPosition.y);
+            // Apply fog and darkness fog
+            sceneColOut = ((fogSkyCol - sceneColOut) * fogFactor + sceneColOut) * getFogDarknessFactor(viewDist);
         }
 
         // Apply darkness pulsing effect
@@ -299,7 +302,7 @@
         #ifdef WORLD_LIGHT
             // Apply volumetric light
             if(VOLUMETRIC_LIGHTING_STRENGTH != 0 && isEyeInWater != 2)
-                sceneColOut += getVolumetricLight(feetPlayerPos, screenPos.z, dither.x);
+                sceneColOut += getVolumetricLight(feetPlayerPos, fogFactor, screenPos.z, dither.x);
         #endif
 
         // Clamp scene color to prevent NaNs during post processing

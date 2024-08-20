@@ -2,7 +2,7 @@
 
 const float volumetricStepsInverse = 1.0 / VOLUMETRIC_STEPS;
 
-vec3 getVolumetricLight(in vec3 feetPlayerPos, in float depth, in float dither){
+vec3 getVolumetricLight(in vec3 feetPlayerPos, in float fogFactor, in float depth, in float dither){
 	float feetPlayerDot = lengthSquared(feetPlayerPos);
 	float feetPlayerDotInvSqrt = inversesqrt(feetPlayerDot);
 	float feetPlayerDist = feetPlayerDot * feetPlayerDotInvSqrt;
@@ -40,6 +40,8 @@ vec3 getVolumetricLight(in vec3 feetPlayerPos, in float depth, in float dither){
 	#else
 		float volumetricFogDensity = 1.0 - exp2(-feetPlayerDist * totalFogDensity);
 	#endif
+
+	volumetricFogDensity = (fogFactor - volumetricFogDensity) * VOLUMETRIC_LIGHTING_STRENGTH + volumetricFogDensity;
 
 	// Apply adjustments
 	volumetricFogDensity *= heightFade * shdFade;
