@@ -18,14 +18,14 @@
 #ifdef VERTEX
     flat out int blockId;
 
-    flat out mat3 TBN;
-
     out vec2 lmCoord;
     out vec2 texCoord;
     out vec2 waterNoiseUv;
 
     out vec3 vertexColor;
     out vec3 vertexFeetPlayerPos;
+
+    out mat3 TBN;
 
     #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
         flat out vec2 vTexCoordScale;
@@ -170,14 +170,14 @@
 
     flat in int blockId;
 
-    flat in mat3 TBN;
-
     in vec2 lmCoord;
     in vec2 texCoord;
     in vec2 waterNoiseUv;
 
     in vec3 vertexColor;
     in vec3 vertexFeetPlayerPos;
+
+    in mat3 TBN;
 
     #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
         flat in vec2 vTexCoordScale;
@@ -290,8 +290,8 @@
 
                 waterNoise *= physicsFoam;
             #elif defined WATER_NORMAL
-                vec4 waterData = H2NWater(waterNoiseUv);
-                material.normal = waterData.zyx * TBN[2].x + waterData.xzy * TBN[2].y + waterData.xyz * TBN[2].z;
+                vec4 waterData = H2NWater(waterNoiseUv).xzyw;
+                material.normal = fastNormalize(waterData.yxz * TBN[2].x + waterData.xyz * TBN[2].y + waterData.xzy * TBN[2].z);
 
                 #ifdef WATER_NOISE
                     waterNoise *= squared(0.128 + waterData.w * 0.5);

@@ -13,5 +13,5 @@ vec4 H2NWater(in vec2 uv){
 	float d1 = getCellNoise(vec2(uv.x + waterPixel, uv.y));
 	float d2 = getCellNoise(vec2(uv.x, uv.y + waterPixel));
     
-    return vec4(fastNormalize(vec3(d0 - d1, d0 - d2, waterDepth)), d0);
+    return vec4(d0 - d1, d0 - d2, waterDepth, d0);
 }

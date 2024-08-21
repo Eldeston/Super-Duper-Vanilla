@@ -130,7 +130,6 @@
 
     uniform float nightVision;
 
-    uniform float far;
     uniform float near;
     uniform float dhNearPlane;
 
@@ -219,8 +218,8 @@
             float waterNoise = WATER_BRIGHTNESS;
 
             #ifdef WATER_NORMAL
-                vec4 waterData = H2NWater(waterNoiseUv);
-                material.normal = waterData.zyx * vertexNormal.x + waterData.xzy * vertexNormal.y + waterData.xyz * vertexNormal.z;
+                vec4 waterData = H2NWater(waterNoiseUv).xzyw;
+                material.normal = fastNormalize(waterData.yxz * vertexNormal.x + waterData.xyz * vertexNormal.y + waterData.xzy * vertexNormal.z);
 
                 #ifdef WATER_NOISE
                     waterNoise *= squared(0.128 + waterData.w * 0.5);
