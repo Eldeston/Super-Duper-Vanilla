@@ -1,5 +1,5 @@
 /*
-================================ /// Super Duper Vanilla v1.3.6 /// ================================
+================================ /// Super Duper Vanilla v1.3.7 /// ================================
 
     Developed by Eldeston, presented by FlameRender (C) Studios.
 
@@ -8,7 +8,7 @@
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.6 /// ================================
+================================ /// Super Duper Vanilla v1.3.7 /// ================================
 */
 
 /// Buffer features: TAA jittering, complex shading, animation, water noise, PBR, and world curvature
@@ -304,6 +304,7 @@
 
             #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
                 // Water color and foam. Fast depth linearization by DrDesten
+                // Not great, but plausible for most scenarios
                 float waterDepth = near / (1.0 - gl_FragCoord.z) - near / (1.0 - texelFetch(depthtex1, ivec2(gl_FragCoord.xy), 0).x);
             #endif
 

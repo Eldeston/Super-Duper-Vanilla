@@ -1,5 +1,5 @@
 /*
-================================ /// Super Duper Vanilla v1.3.6 /// ================================
+================================ /// Super Duper Vanilla v1.3.7 /// ================================
 
     Developed by Eldeston, presented by FlameRender (C) Studios.
 
@@ -8,7 +8,7 @@
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.6 /// ================================
+================================ /// Super Duper Vanilla v1.3.7 /// ================================
 */
 
 /// Buffer features: Water caustics, direct shading, animation, and world curvature

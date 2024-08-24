@@ -1,5 +1,5 @@
 /*
-================================ /// Super Duper Vanilla v1.3.6 /// ================================
+================================ /// Super Duper Vanilla v1.3.7 /// ================================
 
     Developed by Eldeston, presented by FlameRender (C) Studios.
 
@@ -8,7 +8,7 @@
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.6 /// ================================
+================================ /// Super Duper Vanilla v1.3.7 /// ================================
 */
 
 /// Buffer features: Transparent complex shading and volumetric lighting
@@ -258,9 +258,11 @@
         #endif
 
         #ifdef DISTANT_HORIZONS
+            // Not great, but plausible for most scenarios
             bool isWater = near / (1.0 - texelFetch(depthtex1, screenTexelCoord, 0).x) > dhNearPlane / (1.0 - texelFetch(dhDepthTex1, screenTexelCoord, 0).x) ||
                 texelFetch(depthtex1, screenTexelCoord, 0).x > screenPos.z;
         #else
+            // This is acceptable
             bool isWater = texelFetch(depthtex1, screenTexelCoord, 0).x > screenPos.z;
         #endif
 
