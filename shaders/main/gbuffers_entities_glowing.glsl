@@ -1,3 +1,5 @@
+/// PROGRAM WILL BE DEPRECATED SOON(TM)
+
 /*
 ================================ /// Super Duper Vanilla v1.3.7 /// ================================
 

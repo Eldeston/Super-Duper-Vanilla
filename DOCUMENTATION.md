@@ -58,7 +58,7 @@ This along with the `GBUFFERS` macro, are used to identify the quirks in the cur
 | TERRAIN          | defined |
 | WATER            | defined |
 | BLOCK            | defined |
-| ENTITIES_GLOWING | defined |
+| ENTITIES_GLOWING | defined | (DEPRECATED)
 | ENTITIES         | defined |
 | HAND             | defined |
 | HAND_WATER       | defined |
@@ -103,7 +103,7 @@ This along with the `GBUFFERS` macro, are used to identify the quirks in the cur
 * Optimize block ids in block.properties (medium priority)
 * Rebuild pipeline and include visualization (high priority)
 * Document the shader pipeline (high priority)
-* Abandon Optifine support (medium priority)
+* Abandon Optifine support (high priority)
 
 * Separate iPBR for gbuffers (low priority)
 
