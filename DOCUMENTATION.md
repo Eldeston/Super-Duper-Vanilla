@@ -96,6 +96,7 @@ This along with the `GBUFFERS` macro, are used to identify the quirks in the cur
 * Refactor uniform usage and remove unecessary ones (medium priority)
 * Optimize DOF calculations with noise (low priority)
 * Create a custom shadow model view (low priority)
+* Fix FXAA, it was broken the whole time (medium priority)
 * Fix transparency issues with CTM (medium priority)
 * Optimize albedo alpha testing (high priority)
 

@@ -276,6 +276,14 @@
 
         float fogFactor = getFogFactor(viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
 
+        // Border fog
+        #ifdef BORDER_FOG
+            float borderFog = getBorderFog(viewDist);
+            fogFactor = (fogFactor - 1.0) * borderFog + 1.0;
+        #else
+            float borderFog = 0.0;
+        #endif
+
         // If the object is a transparent render separate lighting
         // This needs to be changed
         if(isWater){
@@ -304,7 +312,7 @@
         #ifdef WORLD_LIGHT
             // Apply volumetric light
             if(VOLUMETRIC_LIGHTING_STRENGTH != 0 && isEyeInWater != 2)
-                sceneColOut += getVolumetricLight(feetPlayerPos, fogFactor, screenPos.z, dither.x);
+                sceneColOut += getVolumetricLight(feetPlayerPos, fogFactor, borderFog, screenPos.z, dither.x);
         #endif
 
         // Clamp scene color to prevent NaNs during post processing

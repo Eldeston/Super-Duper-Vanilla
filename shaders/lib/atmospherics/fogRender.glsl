@@ -1,31 +1,10 @@
-float getAtmosphericFog(in float nPlayerPosY, in float worldPosY, in float playerPosLength, in float totalDensity, in float verticalFogDensity){
-    return (totalDensity / verticalFogDensity) * exp2(-worldPosY * verticalFogDensity) * (1.0 - exp2(-playerPosLength * nPlayerPosY * verticalFogDensity)) / nPlayerPosY;
+// Modified Complementary border fog calculation, thanks Emin!
+float getBorderFog(in float playerPosLength){
+    return exp2(-exp2(playerPosLength / borderFar * 21.0 - 18.0));
 }
 
-vec3 getFogRender(in vec3 color, in vec3 fogCol, in float viewDist, in float nEyePlayerPosY, in float worldPosY){
-    #ifdef FORCE_DISABLE_WEATHER
-        float verticalFogDensity = isEyeInWater == 0 ? FOG_VERTICAL_DENSITY : FOG_VERTICAL_DENSITY * 0.2;
-        float totalFogDensity = isEyeInWater == 0 ? FOG_TOTAL_DENSITY : FOG_TOTAL_DENSITY * TAU;
-    #else
-        float verticalFogDensity = isEyeInWater == 0 ? FOG_VERTICAL_DENSITY - FOG_VERTICAL_DENSITY * rainStrength * 0.8 : FOG_VERTICAL_DENSITY * 0.2;
-        float totalFogDensity = isEyeInWater == 0 ? FOG_TOTAL_DENSITY * (rainStrength * eyeBrightFact * PI + 1.0) : FOG_TOTAL_DENSITY * TAU;
-    #endif
-
-    float fogMult = min(1.0, GROUND_FOG_STRENGTH + GROUND_FOG_STRENGTH * isEyeInWater);
-
-    // Mist fog
-    float mistFog = min(1.0, getAtmosphericFog(nEyePlayerPosY, worldPosY, viewDist, totalFogDensity, verticalFogDensity)) * fogMult;
-
-    // Border fog
-    #ifdef BORDER_FOG
-        // Modified Complementary border fog calculation, thanks Emin!
-        mistFog = (mistFog - 1.0) * exp2(-exp2(viewDist / borderFar * 21.0 - 18.0)) + 1.0;
-    #endif
-
-    color = (fogCol - color) * mistFog + color;
-
-    // Blindness fog
-    return color * exp2(-viewDist * max(blindness, darknessFactor * 0.125 + darknessLightFactor));
+float getAtmosphericFog(in float nPlayerPosY, in float worldPosY, in float playerPosLength, in float totalDensity, in float verticalFogDensity){
+    return (totalDensity / verticalFogDensity) * exp2(-worldPosY * verticalFogDensity) * (1.0 - exp2(-playerPosLength * nPlayerPosY * verticalFogDensity)) / nPlayerPosY;
 }
 
 float getFogFactor(in float viewDist, in float nEyePlayerPosY, in float worldPosY){
@@ -41,12 +20,6 @@ float getFogFactor(in float viewDist, in float nEyePlayerPosY, in float worldPos
 
     // Mist fog
     float mistFog = min(1.0, getAtmosphericFog(nEyePlayerPosY, worldPosY, viewDist, totalFogDensity, verticalFogDensity)) * fogMult;
-
-    // Border fog
-    #ifdef BORDER_FOG
-        // Modified Complementary border fog calculation, thanks Emin!
-        mistFog = (mistFog - 1.0) * exp2(-exp2(viewDist / borderFar * 21.0 - 18.0)) + 1.0;
-    #endif
 
     return mistFog;
 }

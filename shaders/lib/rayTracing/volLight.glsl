@@ -2,7 +2,7 @@
 
 const float volumetricStepsInverse = 1.0 / VOLUMETRIC_STEPS;
 
-vec3 getVolumetricLight(in vec3 feetPlayerPos, in float fogFactor, in float depth, in float dither){
+vec3 getVolumetricLight(in vec3 feetPlayerPos, in float fogFactor, in float borderFog, in float depth, in float dither){
 	float feetPlayerDot = lengthSquared(feetPlayerPos);
 	float feetPlayerDotInvSqrt = inversesqrt(feetPlayerDot);
 	float feetPlayerDist = feetPlayerDot * feetPlayerDotInvSqrt;
@@ -33,15 +33,13 @@ vec3 getVolumetricLight(in vec3 feetPlayerPos, in float fogFactor, in float dept
 		#endif
 	}
 
-	// Border fog
-	// Modified Complementary border fog calculation, thanks Emin!
-	#ifdef BORDER_FOG
-		float volumetricFogDensity = 1.0 - exp2(-feetPlayerDist * totalFogDensity - exp2(feetPlayerDist / borderFar * 21.0 - 18.0));
-	#else
-		float volumetricFogDensity = 1.0 - exp2(-feetPlayerDist * totalFogDensity);
-	#endif
-
+	float volumetricFogDensity = exp2(-feetPlayerDist * totalFogDensity);
 	volumetricFogDensity = (fogFactor - volumetricFogDensity) * VOLUMETRIC_LIGHTING_STRENGTH + volumetricFogDensity;
+
+	// Border fog
+	#ifdef BORDER_FOG
+		volumetricFogDensity = (volumetricFogDensity - 1.0) * borderFog + 1.0;
+	#endif
 
 	// Apply adjustments
 	volumetricFogDensity *= heightFade * shdFade;

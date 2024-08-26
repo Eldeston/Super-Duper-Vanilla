@@ -309,6 +309,12 @@
         vec3 fogSkyCol = getSkyFogRender(nEyePlayerPos, skyPos, currSkyCol);
         // Apply fog and darkness fog
         float fogFactor = getFogFactor(viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
+
+        // Border fog
+        #ifdef BORDER_FOG
+            fogFactor = (fogFactor - 1.0) * getBorderFog(viewDist) + 1.0;
+        #endif
+
         sceneColOut = ((fogSkyCol - sceneColOut) * fogFactor + sceneColOut) * getFogDarknessFactor(viewDist);
     }
 #endif
