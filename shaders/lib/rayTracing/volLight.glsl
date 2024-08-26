@@ -34,7 +34,7 @@ vec3 getVolumetricLight(in vec3 feetPlayerPos, in float fogFactor, in float bord
 	}
 
 	float volumetricFogDensity = exp2(-feetPlayerDist * totalFogDensity);
-	volumetricFogDensity = (fogFactor - volumetricFogDensity) * VOLUMETRIC_LIGHTING_STRENGTH + volumetricFogDensity;
+	volumetricFogDensity = (volumetricFogDensity - fogFactor) * VOLUMETRIC_LIGHTING_STRENGTH + fogFactor;
 
 	// Border fog
 	#ifdef BORDER_FOG
