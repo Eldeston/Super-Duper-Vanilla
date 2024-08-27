@@ -120,7 +120,7 @@
 
 #ifdef FRAGMENT
     /* RENDERTARGETS: 0,1,2,3 */
-    layout(location = 0) out vec4 sceneColOut; // gcolor
+    layout(location = 0) out vec3 sceneColOut; // gcolor
     layout(location = 1) out vec3 normalDataOut; // colortex1
     layout(location = 2) out vec3 albedoDataOut; // colortex2
     layout(location = 3) out vec3 materialDataOut; // colortex3
@@ -197,7 +197,7 @@
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         // Write to HDR scene color
-        sceneColOut = vec4(complexShadingForward(material), material.albedo.a);
+        sceneColOut = complexShadingForward(material);
 
         // Write buffer datas
         normalDataOut = material.normal;
