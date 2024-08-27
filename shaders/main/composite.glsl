@@ -121,7 +121,6 @@
     uniform sampler2D colortex3;
 
     uniform sampler2D depthtex0;
-    uniform sampler2D depthtex1; // REMOVE LATER
 
     #ifdef IS_IRIS
         uniform float lightningFlash;
@@ -277,8 +276,6 @@
         // Materials and programs that come after deferred mask
         vec3 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xyz;
 
-        if(texelFetch(depthtex1, screenTexelCoord, 0).x > screenPos.z) sceneColOut = vec3(0, 2, 0); // REMOVE LATER
-
         // If the object renders after deferred apply separate lighting
         if(matRaw0.z > 0 && matRaw0.z != 1){
             // Declare and get materials
@@ -298,8 +295,6 @@
 
             // Apply fog and darkness fog
             sceneColOut = ((fogSkyCol - sceneColOut) * fogFactor + sceneColOut) * getFogDarknessFactor(viewDist);
-
-            sceneColOut = vec3(2); // REMOVE LATER
         }
 
         // Apply darkness pulsing effect

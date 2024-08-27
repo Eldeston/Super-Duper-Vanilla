@@ -13,14 +13,14 @@
 ## Used Buffers
    Current shader pipeline uses 6 framebuffers to minimize resources used and maximize performance. Their usages are listed in order of what's written first separated by forward slashes and channels separated by commas.
 
-| Buffers   | Format         | Usage                                                         |
-| --------- | -------------- | ------------------------------------------------------------- |
-| gcolor    | R11F_G11F_B10F | Main HDR (RGB) / Vanilla skybox (RGB)                         |
-| colortex1 | RGB16_SNORM    | Normals (RGB)                                                 |
-| colortex2 | RGBA8          | Albedo (RGB), SSAO (A)                                        |
-| colortex3 | RGB8           | Metal (R), Smooth (G), Glow (B) / Main LDR (RGB) / FXAA (RGB) |
-| colortex4 | R11F_G11F_B10F | Clouds (RG) / Bloom (RGB)                                     |
-| colortex5 | RGBA16F        | TAA (RGB) / Previous frame (RGB), Auto exposure (A)           |
+| Buffers   | Format         | Usage                                                                             |
+| --------- | -------------- | --------------------------------------------------------------------------------- |
+| gcolor    | R11F_G11F_B10F | Main HDR (RGB) / Vanilla skybox (RGB)                                             |
+| colortex1 | RGB16_SNORM    | Normals (RGB)                                                                     |
+| colortex2 | RGBA8          | Albedo (RGB), SSAO (A)                                                            |
+| colortex3 | RGB8           | Metal (R), Smooth (G), Glow  /Translucents mask (B) / Main LDR (RGB) / FXAA (RGB) |
+| colortex4 | R11F_G11F_B10F | Clouds (RG) / Bloom (RGB)                                                         |
+| colortex5 | RGBA16F        | TAA (RGB) / Previous frame (RGB), Auto exposure (A)                               |
 
 ## Custom Defined Macros
    This shader uses custom defined macros in every program and .glsl file for each world folders all connected to the main programs in the main folder. This is to keep the workflow minimized and understandable, and to identify what folder/program the shader is being used.
@@ -52,7 +52,7 @@
 
    This along with the `GBUFFERS` macro, are used to identify the quirks in the current program for the shader to detect.
 
-   This list's purpose is to fully realize the shader pipeline and visualize the flow of data across programs. This list also includes the program's blend type.
+   This list's purpose is to fully realize the shader pipeline and visualize the flow of data across programs and their purpose.
 
 | Program Macros       | Blend Type  | Program Type | Shading Type |
 | -------------------- | ----------- | ------------ | ------------ |
