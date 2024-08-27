@@ -28,77 +28,70 @@
 ### Dimension Macros
    Found in all world.glsl files. Dimension macros define the world's lighting properties. These are not finalized and are still a work in progress as they tend to be inconsistent thus the reason of it being not available to the common user.
 
-| Dimension Macros    | Type    | Usage                   |
-| ------------------- | ------- | ----------------------- |
-| WORLD_ID            | int     | World ID                |
-| WORLD_LIGHT         | defined | World enabled shadows   |
-| WORLD_SUN_MOON      | int     | World light source type |
-| WORLD_SUN_MOON_SIZE | float   | World light source size |
-
-### Program Macros
-   Found in their respective programs in .fsh and .vsh files. The following are the listed common program macros. These macros typically only defines the program.
-
-| Program Macros  | Type    |
-| --------------- | ------- |
-| SHADOW          | defined |
-| GBUFFERS        | defined |
-| DEFERRED        | defined |
-| DEFERRED(1-99)  | defined |
-| COMPOSITE       | defined |
-| COMPOSITE(1-99) | defined |
-| FINAL           | defined |
-
-This along with the `GBUFFERS` macro, are used to identify the quirks in the current program for the shader to detect.
+| Dimension Macros    | Data Type | Usage                   |
+| ------------------- | --------- | ----------------------- |
+| WORLD_ID            | int       | World ID                |
+| WORLD_LIGHT         | none      | World enabled shadows   |
+| WORLD_SUN_MOON      | int       | World light source type |
+| WORLD_SUN_MOON_SIZE | float     | World light source size |
 
 ### Complex Programs
    List of programs with complex lighting. Common complex processes are in these programs. They compute complex processes such as PBR and vertex displacement for animations and tend to be very expensive.
 
-| Program Macros   | Type    |
-| ---------------- | ------- |
-| TERRAIN          | defined |
-| WATER            | defined |
-| BLOCK            | defined |
-| ENTITIES_GLOWING | defined | (DEPRECATED)
-| ENTITIES         | defined |
-| HAND             | defined |
-| HAND_WATER       | defined |
-
 ### Basic Programs
    List of programs with basic lighting. Common basic processes are in these programs. They compute basic processes that complex programs have, but with removed features that the program doesn't necessarily need.
-
-| Program Macros | Type    |
-| -------------- | ------- |
-| BASIC          | defined |
-| CLOUDS         | defined |
-| TEXTURED       | defined |
 
 ### Simple programs
    List of programs with simpler shading. Common simple processes are in these programs. As the name suggests, they compute very simple and fast processes. The reason is usually because they don't need additional features as they tend to slow GPU performance.
 
-| Program Macros | Type    |
-| -------------- | ------- |
-| ARMOR_GLINT    | defined |
-| BEACON_BEAM    | defined |
-| SPIDER_EYES    | defined |
-| DAMAGED_BLOCK  | defined |
-| WEATHER        | defined |
-| SKY_TEXTURED   | defined |
-| LINE           | defined |
-
 ### Disabled programs
    List of discarded and disabled programs. They typically have no other purposes other than disabling a program by using `discard;` + `return;`. This method is used to conveniently disable programs without using `shaders.properties` to disable the program per world.
 
-| Program Macros | Type    |
-| -------------- | ------- |
-| SKY_BASIC      | defined |
+### Program Properties
+   Found in their respective programs in .fsh and .vsh files. The following are the listed common program macros. These macros typically only defines the program.
+
+   This along with the `GBUFFERS` macro, are used to identify the quirks in the current program for the shader to detect.
+
+   This list's purpose is to fully realize the shader pipeline and visualize the flow of data across programs. This list also includes the program's blend type.
+
+| Program Macros       | Blend Type  | Program Type | Shading Type |
+| -------------------- | ----------- | ------------ | ------------ |
+| DH_SHADOW            | solid       | GBUFFER      |              |
+| SHADOW               | solid       | GBUFFER      |              |
+| -------------------- | ----------- | ------------ | ------------ |
+| DH_TERRAIN           | solid       | GBUFFER      | Complex      |
+| ARMOR_GLINT          | add         | GBUFFER      | Simple       |
+| BASIC                | solid       | GBUFFER      | Basic        |
+| BEACON_BEAM          | add         | GBUFFER      | Simple       |
+| DAMAGED_BLOCK        | solid       | GBUFFER      | Simple       |
+| ENTITIES_GLOWING     | solid       | GBUFFER      | Complex      |
+| ENTITIES             | solid       | GBUFFER      | Complex      |
+| HAND                 | solid       | GBUFFER      | Complex      |
+| LINE                 | solid       | GBUFFER      | Disabled     |
+| SKY_BASIC            | solid       | GBUFFER      | Simple       |
+| SKY_TEXTURED         | solid       | GBUFFER      | Simple       |
+| SPIDER_EYES          | add         | GBUFFER      | Simple       |
+| TERRAIN              | solid       | GBUFFER      | Complex      |
+| DEFERRED(0-99)       | none        | DEFERRED     |              |
+| -------------------- | ----------- | ------------ | ------------ |
+| DH_WATER             | transparent | GBUFFER      | Complex      |
+| BLOCK                | transparent | GBUFFER      | Complex      |
+| CLOUDS               | transparent | GBUFFER      | Basic        |
+| ENTITIES_TRANSLUCENT | transparent | GBUFFER      | Complex      |
+| HAND_WATER           | transparent | GBUFFER      | Complex      |
+| TEXTURED             | transparent | GBUFFER      | Basic        |
+| WATER                | transparent | GBUFFER      | Complex      |
+| WEATHER              | transparent | GBUFFER      | Simple       |
+| COMPOSITE(0-99)      | none        | DEFERRED     |              |
+
+Note to self: clarify program names with its purpose
 
 ## TO DO (for Eldeston)
 * Refactor uniform usage and remove unecessary ones (medium priority)
 * Optimize DOF calculations with noise (low priority)
 * Create a custom shadow model view (low priority)
-* Fix FXAA, it was broken the whole time (medium priority)
-* Fix transparency issues with CTM (medium priority)
-* Optimize albedo alpha testing (high priority)
+* Fix FXAA, it was broken the whole time (high priority)
+* Optimize alpha testing (high priority)
 
 * Optimize block ids in block.properties (medium priority)
 * Rebuild pipeline and include visualization (high priority)
