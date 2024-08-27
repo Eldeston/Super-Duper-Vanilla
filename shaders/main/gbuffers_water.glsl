@@ -24,6 +24,7 @@
 
     out vec3 vertexColor;
     out vec3 vertexFeetPlayerPos;
+    out vec3 vertexWorldPos;
 
     out mat3 TBN;
 
@@ -100,7 +101,7 @@
         vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos + gbufferModelViewInverse[3].xyz;
 
         // Get world position
-        vec3 vertexWorldPos = vertexFeetPlayerPos + cameraPosition;
+        vertexWorldPos = vertexFeetPlayerPos + cameraPosition;
 
         // Get water noise uv position
         waterNoiseUv = vertexWorldPos.xz * waterTileSizeInv;
@@ -176,6 +177,7 @@
 
     in vec3 vertexColor;
     in vec3 vertexFeetPlayerPos;
+    in vec3 vertexWorldPos;
 
     in mat3 TBN;
 
@@ -266,6 +268,12 @@
         #include "/lib/surface/water.glsl"
     #endif
 
+    #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
+        uniform float isPrecipitationRain;
+
+        #include "/lib/PBR/enviroPBR.glsl"
+    #endif
+
     #include "/lib/lighting/complexShadingForward.glsl"
 
     void main(){
@@ -326,12 +334,16 @@
 
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
+        #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
+            if(blockId != 11102) enviroPBR(material);
+        #endif
+
         // Write to HDR scene color
         sceneColOut = vec4(complexShadingForward(material), material.albedo.a);
 
         // Write buffer datas
         normalDataOut = material.normal;
         albedoDataOut = material.albedo.rgb;
-        materialDataOut = vec3(material.metallic, material.smoothness, 0);
+        materialDataOut = vec3(material.metallic, material.smoothness, 0.5);
     }
 #endif

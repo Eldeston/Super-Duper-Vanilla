@@ -40,7 +40,7 @@
             #endif
 
             // Simple bias offset, uses a large bias to account for distorted geometry using distorted shadow mapping and maximum LOD size
-            vertexShdViewPos.z -= (gl_NormalMatrix * fastNormalize(gl_Normal)).z * 16.0;
+            vertexShdViewPos.z -= (gl_NormalMatrix * fastNormalize(gl_Normal)).z * 4.0;
 
             // Convert to clip position and output as final position
             // gl_Position = gl_ProjectionMatrix * vertexShdViewPos;

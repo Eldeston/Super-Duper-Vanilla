@@ -121,7 +121,7 @@
     uniform sampler2D colortex3;
 
     uniform sampler2D depthtex0;
-    uniform sampler2D depthtex1;
+    uniform sampler2D depthtex1; // REMOVE LATER
 
     #ifdef IS_IRIS
         uniform float lightningFlash;
@@ -152,7 +152,6 @@
         uniform mat4 dhProjectionInverse;
 
         uniform sampler2D dhDepthTex0;
-        uniform sampler2D dhDepthTex1;
     #endif
 
     #ifdef WORLD_CUSTOM_SKYLIGHT
@@ -257,15 +256,6 @@
             vec3 dither = getRng3(screenTexelCoord & 255);
         #endif
 
-        #ifdef DISTANT_HORIZONS
-            // Not great, but plausible for most scenarios
-            bool isWater = near / (1.0 - texelFetch(depthtex1, screenTexelCoord, 0).x) > dhNearPlane / (1.0 - texelFetch(dhDepthTex1, screenTexelCoord, 0).x) ||
-                texelFetch(depthtex1, screenTexelCoord, 0).x > screenPos.z;
-        #else
-            // This is acceptable
-            bool isWater = texelFetch(depthtex1, screenTexelCoord, 0).x > screenPos.z;
-        #endif
-
         // Get view distance
         float viewDot = lengthSquared(viewPos);
         float viewDotInvSqrt = inversesqrt(viewDot);
@@ -280,16 +270,18 @@
         // Border fog
         #ifdef BORDER_FOG
             float borderFog = getBorderFog(viewDist);
-            fogFactor = (fogFactor - 1.0) * borderFog + 1.0;
         #else
             float borderFog = 0.0;
         #endif
 
-        // If the object is a transparent render separate lighting
-        // This needs to be changed
-        if(isWater){
+        // Materials and programs that come after deferred mask
+        vec3 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xyz;
+
+        if(texelFetch(depthtex1, screenTexelCoord, 0).x > screenPos.z) sceneColOut = vec3(0, 2, 0); // REMOVE LATER
+
+        // If the object renders after deferred apply separate lighting
+        if(matRaw0.z > 0 && matRaw0.z != 1){
             // Declare and get materials
-            vec2 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xy;
             vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
             vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
 
@@ -301,11 +293,13 @@
 
             // Border fog
             #ifdef BORDER_FOG
-                fogFactor = (fogFactor - 1.0) * getBorderFog(viewDist) + 1.0;
+                fogFactor = (fogFactor - 1.0) * borderFog + 1.0;
             #endif
 
             // Apply fog and darkness fog
             sceneColOut = ((fogSkyCol - sceneColOut) * fogFactor + sceneColOut) * getFogDarknessFactor(viewDist);
+
+            sceneColOut = vec3(2); // REMOVE LATER
         }
 
         // Apply darkness pulsing effect

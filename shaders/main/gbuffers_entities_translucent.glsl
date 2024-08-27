@@ -216,7 +216,7 @@
             const vec3 lightningCol = vec3(0.25 * EMISSIVE_INTENSITY, 0.5 * EMISSIVE_INTENSITY, EMISSIVE_INTENSITY);
             sceneColOut = vec4(lightningCol, vertexAlpha);
             normalDataOut = vec3(0);
-            materialDataOut = vec3(0);
+            materialDataOut = vec3(0, 0, 0.5);
             return;
         }
 
@@ -236,6 +236,6 @@
         // Write buffer datas
         normalDataOut = material.normal;
         albedoDataOut = material.albedo.rgb;
-        materialDataOut = vec3(material.metallic, material.smoothness, 0);
+        materialDataOut = vec3(material.metallic, material.smoothness, 0.5);
     }
 #endif

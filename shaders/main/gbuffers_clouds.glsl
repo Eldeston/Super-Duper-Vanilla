@@ -216,7 +216,7 @@
             sceneColOut = vec4(basicShadingForward(albedo), albedo.a);
 
             // Write material data
-            materialDataOut = vec3(0);
+            materialDataOut = vec3(0, 0, 0.5);
         }
     #endif
 #endif

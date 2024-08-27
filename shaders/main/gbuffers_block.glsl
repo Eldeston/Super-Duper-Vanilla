@@ -224,7 +224,7 @@
 
             // End portal fix
             normalDataOut = TBN[2];
-            materialDataOut = vec3(0);
+            materialDataOut = vec3(0, 0, 0.5);
 
             return; // Return immediately, no need for lighting calculation
         }
@@ -242,6 +242,6 @@
         // Write buffer datas
         normalDataOut = material.normal;
         albedoDataOut = material.albedo.rgb;
-        materialDataOut = vec3(material.metallic, material.smoothness, 0);
+        materialDataOut = vec3(material.metallic, material.smoothness, 0.5);
     }
 #endif

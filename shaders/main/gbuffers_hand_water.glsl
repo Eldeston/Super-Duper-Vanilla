@@ -209,6 +209,6 @@
         // Write buffer datas
         normalDataOut = material.normal;
         albedoDataOut = material.albedo.rgb;
-        materialDataOut = vec3(material.metallic, material.smoothness, 0);
+        materialDataOut = vec3(material.metallic, material.smoothness, 0.5);
     }
 #endif

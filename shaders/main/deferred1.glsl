@@ -317,5 +317,7 @@
 
         // Apply fog and darkness fog
         sceneColOut = ((fogSkyCol - sceneColOut) * fogFactor + sceneColOut) * getFogDarknessFactor(viewDist);
+
+        sceneColOut = vec3(0); // REMOVE LATER
     }
 #endif
