@@ -1,6 +1,6 @@
 // Environment PBR calculation
 void enviroPBR(inout dataPBR material, in vec3 normal){
-    if(normal.y < 0) return;
+    if(normal.y < 0.005) return;
 
     float skyLightDelta = lmCoord.y - 0.8;
 
