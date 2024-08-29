@@ -16,12 +16,17 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
+    flat out int blockId;
+
     flat out vec2 lmCoord;
 
     flat out vec3 vertexNormal;
 
     out vec3 vertexColor;
     out vec3 vertexFeetPlayerPos;
+    out vec3 vertexWorldPos;
+
+    uniform vec3 cameraPosition;
 
     uniform mat4 gbufferModelViewInverse;
 
@@ -62,6 +67,14 @@
 
         // Get vertex view position
         vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
+        // Get vertex feet player position
+        vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos + gbufferModelViewInverse[3].xyz;
+
+        // Get world position
+        vertexWorldPos = vertexFeetPlayerPos + cameraPosition;
+
+        if(dhMaterialId == DH_BLOCK_ILLUMINATED) blockId = 0;
+        if(dhMaterialId == DH_BLOCK_LAVA) blockId = 1;
 
         #if defined SHADOW_MAPPING && defined WORLD_LIGHT || defined WORLD_CURVATURE
             // Get vertex feet player position
@@ -96,12 +109,15 @@
     layout(location = 0) out vec3 sceneColOut; // gcolor
     layout(location = 1) out vec3 materialDataOut; // colortex3
 
+    flat in int blockId;
+
     flat in vec2 lmCoord;
 
     flat in vec3 vertexNormal;
 
     in vec3 vertexColor;
     in vec3 vertexFeetPlayerPos;
+    in vec3 vertexWorldPos;
 
     uniform int isEyeInWater;
 
@@ -154,6 +170,18 @@
 
     #include "/lib/utility/noiseFunctions.glsl"
 
+    #ifdef LAVA_NOISE
+        uniform float fragmentFrameTime;
+
+        #include "/lib/surface/lava.glsl"
+    #endif
+
+    #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
+        uniform float isPrecipitationRain;
+
+        #include "/lib/PBR/enviroPBR.glsl"
+    #endif
+
     #include "/lib/lighting/complexShadingForward.glsl"
 
     void main(){
@@ -172,6 +200,25 @@
         material.metallic = 0.04; material.porosity = 0.0;
         material.ss = 0.0; material.parallaxShd = 1.0;
         material.ambient = 1.0;
+
+        // If illuminated block
+        if(blockId == 0) material.emissive = 1.0;
+
+        // If lava
+        if(blockId == 1){
+            #ifdef LAVA_NOISE
+                // Lava tile size inverse
+                const float lavaTileSizeInv = 1.0 / LAVA_TILE_SIZE;
+
+                vec2 lavaUv = vertexWorldPos.zy * vertexNormal.x + vertexWorldPos.xz * vertexNormal.y + vertexWorldPos.xy * vertexNormal.z;
+                float lavaNoise = saturate(max(getLavaNoise(lavaUv * lavaTileSizeInv) * 3.0, sumOf(material.albedo.rgb)) - 1.0);
+                material.albedo.rgb = floor(material.albedo.rgb * lavaNoise * LAVA_BRIGHTNESS * 32.0) * 0.03125;
+            #else
+                material.albedo.rgb = material.albedo.rgb * LAVA_BRIGHTNESS;
+            #endif
+
+            material.emissive = 1.0;
+        }
 
         // Convert to linear space
         material.albedo.rgb = toLinear(material.albedo.rgb);

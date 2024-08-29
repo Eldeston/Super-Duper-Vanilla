@@ -248,6 +248,7 @@
 	    dataPBR material;
         getPBR(material, blockId);
 
+        // If lava
         if(blockId == 11100){
             #ifdef LAVA_NOISE
                 // Lava tile size inverse
@@ -264,7 +265,7 @@
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
-            if(blockId != 11100 && blockId != 12101) enviroPBR(material);
+            if(blockId != 11100 && blockId != 12101) enviroPBR(material, TBN[2]);
         #endif
 
         // Write to HDR scene color

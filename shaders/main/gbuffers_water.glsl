@@ -335,7 +335,7 @@
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
-            if(blockId != 11102) enviroPBR(material);
+            if(blockId != 11102) enviroPBR(material, TBN[2]);
         #endif
 
         // Write to HDR scene color

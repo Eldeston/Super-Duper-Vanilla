@@ -83,7 +83,7 @@
         // Get water noise uv position
         waterNoiseUv = vertexWorldPos.xz * waterTileSizeInv;
 
-        if(dhMaterialId == DH_BLOCK_WATER) blockId = 11102;
+        if(dhMaterialId == DH_BLOCK_WATER) blockId = 2;
 
 	    #ifdef WORLD_CURVATURE
             // Apply curvature distortion
@@ -214,7 +214,7 @@
         material.ambient = 1.0;
 
         // If water
-        if(blockId == 11102){
+        if(blockId == 2){
             float waterNoise = WATER_BRIGHTNESS;
 
             #ifdef WATER_NORMAL
