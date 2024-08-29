@@ -86,6 +86,13 @@
 
 Note to self: clarify program names with its purpose
 
+## Incompatible Mods
+   List of incompatible mods.
+
+| Mods       | Compatibility | Status       |
+| ---------- | ------------- | ------------ |
+| Astrocraft | Incompatible  | low priority |
+
 ## TO DO (for Eldeston)
 * Refactor uniform usage and remove unecessary ones (medium priority)
 * Optimize DOF calculations with noise (low priority)
