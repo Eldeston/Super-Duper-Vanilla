@@ -22,16 +22,12 @@
 
     flat out vec3 vertexNormal;
 
+    out float vertexViewDepth;
+
     out vec2 waterNoiseUv;
 
     out vec3 vertexColor;
     out vec3 vertexFeetPlayerPos;
-
-    /*
-    #if defined WORLD_LIGHT && defined SHADOW_MAPPING
-        out vec3 vertexShdPos;
-    #endif
-    */
 
     uniform vec3 cameraPosition;
 
@@ -83,6 +79,9 @@
         // Get water noise uv position
         waterNoiseUv = vertexWorldPos.xz * waterTileSizeInv;
 
+        // Output view depth
+        vertexViewDepth = -vertexViewPos.z;
+
         if(dhMaterialId == DH_BLOCK_WATER) blockId = 2;
 
 	    #ifdef WORLD_CURVATURE
@@ -121,6 +120,8 @@
 
     flat in vec3 vertexNormal;
 
+    in float vertexViewDepth;
+
     in vec2 waterNoiseUv;
 
     in vec3 vertexColor;
@@ -131,7 +132,8 @@
     uniform float nightVision;
 
     uniform float near;
-    uniform float dhNearPlane;
+
+    uniform mat4 gbufferProjectionInverse;
 
     uniform sampler2D depthtex0;
     uniform sampler2D dhDepthTex1;
@@ -146,6 +148,10 @@
 
     #if defined SHADOW_FILTER && ANTI_ALIASING >= 2
         uniform float frameFract;
+    #endif
+
+    #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
+        uniform float dhNearPlane;
     #endif
 
     #ifndef FORCE_DISABLE_DAY_CYCLE
@@ -164,6 +170,8 @@
         
         float eyeBrightFact = eyeSkylight;
     #endif
+
+    #include "/lib/utility/projectionFunctions.glsl"
 
     #ifdef WORLD_LIGHT
         uniform float shdFade;
@@ -194,8 +202,7 @@
     void main(){
         // Fix for Distant Horizons translucents rendering over real geometry
         float realDepth = texelFetch(depthtex0, ivec2(gl_FragCoord.xy), 0).x;
-        float dhDepth = dhNearPlane / (1.0 - gl_FragCoord.z);
-        if(near / (1.0 - realDepth) < dhDepth || realDepth != 1.0){ discard; return; }
+        if(getViewDepth(gbufferProjectionInverse, realDepth) > vertexViewDepth || realDepth != 1.0){ discard; return; }
 
         // Declare materials
 	    dataPBR material;
@@ -232,7 +239,7 @@
 
             #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
                 // Water color and foam. Fast depth linearization by DrDesten
-                float waterDepth = dhDepth - dhNearPlane / (1.0 - texelFetch(dhDepthTex1, ivec2(gl_FragCoord.xy), 0).x);
+                float waterDepth = dhNearPlane / (1.0 - gl_FragCoord.z) - dhNearPlane / (1.0 - texelFetch(dhDepthTex1, ivec2(gl_FragCoord.xy), 0).x);
             #endif
 
             #ifdef WATER_STYLIZE_ABSORPTION
