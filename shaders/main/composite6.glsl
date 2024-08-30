@@ -113,6 +113,10 @@
 
         uniform sampler2D depthtex0;
 
+        #ifdef DISTANT_HORIZONS
+            uniform sampler2D dhDepthTex1;
+        #endif
+
         #ifndef FORCE_DISABLE_WEATHER
             uniform float rainStrength;
         #endif
@@ -148,7 +152,13 @@
         #endif
 
         #if defined LENS_FLARE && defined WORLD_LIGHT
-            if(textureLod(depthtex0, shdLightDirScreenSpace.xy, 0).x == 1)
+            #ifdef DISTANT_HORIZONS
+                bool isSky = textureLod(dhDepthTex1, shdLightDirScreenSpace.xy, 0).x == 1 && textureLod(depthtex0, shdLightDirScreenSpace.xy, 0).x == 1;
+            #else
+                bool isSky = textureLod(depthtex0, shdLightDirScreenSpace.xy, 0).x == 1;
+            #endif
+
+            if(isSky)
                 #ifdef FORCE_DISABLE_WEATHER
                     postColOut += getLensFlare(texCoord - 0.5, shdLightDirScreenSpace.xy - 0.5) * (1.0 - blindness) * (1.0 - darknessFactor);
                 #else
