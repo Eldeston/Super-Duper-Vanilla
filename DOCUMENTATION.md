@@ -54,35 +54,35 @@
 
    This list's purpose is to fully realize the shader pipeline and visualize the flow of data across programs and their purpose.
 
-| Program Macros       | Blend Type  | Program Type | Shading Type |
-| -------------------- | ----------- | ------------ | ------------ |
-| DH_SHADOW            | solid       | GBUFFER      |              |
-| SHADOW               | solid       | GBUFFER      |              |
-| -------------------- | ----------- | ------------ | ------------ |
-| DH_TERRAIN           | solid       | GBUFFER      | Complex      |
-| ARMOR_GLINT          | add         | GBUFFER      | Simple       |
-| BASIC                | solid       | GBUFFER      | Basic        |
-| BEACON_BEAM          | add         | GBUFFER      | Simple       |
-| DAMAGED_BLOCK        | solid       | GBUFFER      | Simple       |
-| ENTITIES_GLOWING     | solid       | GBUFFER      | Complex      |
-| ENTITIES             | solid       | GBUFFER      | Complex      |
-| HAND                 | solid       | GBUFFER      | Complex      |
-| LINE                 | solid       | GBUFFER      | Disabled     |
-| SKY_BASIC            | solid       | GBUFFER      | Simple       |
-| SKY_TEXTURED         | solid       | GBUFFER      | Simple       |
-| SPIDER_EYES          | add         | GBUFFER      | Simple       |
-| TERRAIN              | solid       | GBUFFER      | Complex      |
-| DEFERRED(0-99)       | none        | DEFERRED     |              |
-| -------------------- | ----------- | ------------ | ------------ |
-| DH_WATER             | transparent | GBUFFER      | Complex      |
-| BLOCK                | transparent | GBUFFER      | Complex      |
-| CLOUDS               | transparent | GBUFFER      | Basic        |
-| ENTITIES_TRANSLUCENT | transparent | GBUFFER      | Complex      |
-| HAND_WATER           | transparent | GBUFFER      | Complex      |
-| TEXTURED             | transparent | GBUFFER      | Basic        |
-| WATER                | transparent | GBUFFER      | Complex      |
-| WEATHER              | transparent | GBUFFER      | Simple       |
-| COMPOSITE(0-99)      | none        | DEFERRED     |              |
+| Program Macros       | Blend Type  | Program Type | Shading Type | Usage            |
+| -------------------- | ----------- | ------------ | ------------ | ---------------- |
+| DH_SHADOW            | solid       | GBUFFER      |              | Distant Horizons |
+| SHADOW               | solid       | GBUFFER      |              | Iris/Optifine    |
+| -------------------- | ----------- | ------------ | ------------ | ---------------- |
+| DH_TERRAIN           | solid       | GBUFFER      | Complex      | Distant Horizons |
+| ARMOR_GLINT          | add         | GBUFFER      | Simple       | Iris/Optifine    |
+| BASIC                | solid       | GBUFFER      | Basic        | Iris/Optifine    |
+| BEACON_BEAM          | add         | GBUFFER      | Simple       | Iris/Optifine    |
+| DAMAGED_BLOCK        | solid       | GBUFFER      | Simple       | Iris/Optifine    |
+| ENTITIES_GLOWING     | solid       | GBUFFER      | Complex      | Optifine         |
+| ENTITIES             | solid       | GBUFFER      | Complex      | Iris/Optifine    |
+| HAND                 | solid       | GBUFFER      | Complex      | Iris/Optifine    |
+| LINE                 | solid       | GBUFFER      | Disabled     | Iris/Optifine    |
+| SKY_BASIC            | solid       | GBUFFER      | Simple       | Iris/Optifine    |
+| SKY_TEXTURED         | solid       | GBUFFER      | Simple       | Iris/Optifine    |
+| SPIDER_EYES          | add         | GBUFFER      | Simple       | Iris/Optifine    |
+| TERRAIN              | solid       | GBUFFER      | Complex      | Iris/Optifine    |
+| DEFERRED(0-99)       | none        | DEFERRED     |              | Iris/Optifine    |
+| -------------------- | ----------- | ------------ | ------------ | ---------------- |
+| DH_WATER             | transparent | GBUFFER      | Complex      | Distant Horizons |
+| BLOCK                | transparent | GBUFFER      | Complex      | Iris/Optifine    |
+| CLOUDS               | transparent | GBUFFER      | Basic        | Iris/Optifine    |
+| ENTITIES_TRANSLUCENT | transparent | GBUFFER      | Complex      | Iris             |
+| HAND_WATER           | transparent | GBUFFER      | Complex      | Iris/Optifine    |
+| TEXTURED             | transparent | GBUFFER      | Basic        | Iris/Optifine    |
+| WATER                | transparent | GBUFFER      | Complex      | Iris/Optifine    |
+| WEATHER              | transparent | GBUFFER      | Simple       | Iris/Optifine    |
+| COMPOSITE(0-99)      | none        | DEFERRED     |              | Iris/Optifine    |
 
 Note to self: clarify program names with its purpose
 
