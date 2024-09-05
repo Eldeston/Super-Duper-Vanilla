@@ -224,6 +224,9 @@
 	    dataPBR material;
         getPBR(material, entityId);
 
+        // Nametag
+        if(vertexAlpha >= 0.24 && vertexAlpha < 0.255) material.albedo.a *= vertexAlpha;
+
         // Apply entity color tint
         material.albedo.rgb = mix(material.albedo.rgb, entityColor.rgb, entityColor.a);
 

@@ -56,8 +56,8 @@
 
 | Program Macros       | Blend Type  | Program Type | Shading Type | Usage            |
 | -------------------- | ----------- | ------------ | ------------ | ---------------- |
-| DH_SHADOW            | solid       | GBUFFER      |              | Distant Horizons |
-| SHADOW               | solid       | GBUFFER      |              | Iris/Optifine    |
+| DH_SHADOW            | solid       | GBUFFER      | Shadow       | Distant Horizons |
+| SHADOW               | solid       | GBUFFER      | Shadow       | Iris/Optifine    |
 | -------------------- | ----------- | ------------ | ------------ | ---------------- |
 | DH_TERRAIN           | solid       | GBUFFER      | Complex      | Distant Horizons |
 | ARMOR_GLINT          | add         | GBUFFER      | Simple       | Iris/Optifine    |
@@ -72,7 +72,7 @@
 | SKY_TEXTURED         | solid       | GBUFFER      | Simple       | Iris/Optifine    |
 | SPIDER_EYES          | add         | GBUFFER      | Simple       | Iris/Optifine    |
 | TERRAIN              | solid       | GBUFFER      | Complex      | Iris/Optifine    |
-| DEFERRED(0-99)       | none        | DEFERRED     |              | Iris/Optifine    |
+| DEFERRED(0-99)       | none        | DEFERRED     | Post         | Iris/Optifine    |
 | -------------------- | ----------- | ------------ | ------------ | ---------------- |
 | DH_WATER             | transparent | GBUFFER      | Complex      | Distant Horizons |
 | BLOCK                | transparent | GBUFFER      | Complex      | Iris/Optifine    |
@@ -82,9 +82,9 @@
 | TEXTURED             | transparent | GBUFFER      | Basic        | Iris/Optifine    |
 | WATER                | transparent | GBUFFER      | Complex      | Iris/Optifine    |
 | WEATHER              | transparent | GBUFFER      | Simple       | Iris/Optifine    |
-| COMPOSITE(0-99)      | none        | DEFERRED     |              | Iris/Optifine    |
+| COMPOSITE(0-99)      | none        | DEFERRED     | Post         | Iris/Optifine    |
 
-Note to self: clarify program names with its purpose
+Note to Eldeston: clarify program names with its purpose
 
 ## Incompatible Mods
    List of incompatible mods.
@@ -99,6 +99,8 @@ Note to self: clarify program names with its purpose
 * Create a custom shadow model view (low priority)
 * Fix FXAA, it was broken the whole time (high priority)
 * Optimize alpha testing (high priority)
+
+* Improve world properties calculation
 
 * Optimize block ids in block.properties (medium priority)
 * Rebuild pipeline and include visualization (high priority)
