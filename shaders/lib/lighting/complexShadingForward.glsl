@@ -57,7 +57,9 @@ vec3 complexShadingForward(in dataPBR material){
 				// Apply shadow distortion and transform to shadow screen space
 				shdPos = vec3(shdPos.xy / (length(shdPos.xy) * 2.0 + 0.2), shdPos.z * 0.1) + 0.5;
 				// Bias mutilplier, adjusts according to the current resolution
-				const vec3 biasAdjustFactor = vec3(2, 2, -0.0625) * shadowMapPixelSize;
+				// The Z is instead a constant and the only extra bias that isn't accounted for is shadow distortion "blobs"
+				// 0.00006103515625 = exp2(-14)
+				const vec3 biasAdjustFactor = vec3(shadowMapPixelSize * 2.0, shadowMapPixelSize * 2.0, -0.00006103515625);
 
 				// Since we already have NLZ, we just need NLX and NLY to complete the shadow normal
 				float NLX = dot(material.normal, vec3(shadowModelView[0].x, shadowModelView[1].x, shadowModelView[2].x));

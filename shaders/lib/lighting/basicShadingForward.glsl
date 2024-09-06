@@ -27,8 +27,10 @@ vec3 basicShadingForward(in vec4 albedo){
 
 			// There is no need for bias for particles, leads, etc.
 			#ifdef CLOUDS
-				// Bias mutilplier, adjusts according to the current shadow resolution
-				const vec3 biasAdjustMult = vec3(2, 2, -0.0625) * shadowMapPixelSize;
+				// Bias mutilplier, adjusts according to the current resolution -exp2(-shadowDistance * 0.03125 - 9.0)
+				// The Z is instead a constant and the only extra bias that isn't accounted for is shadow distortion "blobs"
+				// 0.00006103515625 = exp2(-14)
+				const vec3 biasAdjustFactor = vec3(shadowMapPixelSize * 2.0, shadowMapPixelSize * 2.0, -0.00006103515625);
 
 				// Apply normal based bias
 				shdPos += vec3(vertexNLX, vertexNLY, vertexNLZ) * biasAdjustMult;
