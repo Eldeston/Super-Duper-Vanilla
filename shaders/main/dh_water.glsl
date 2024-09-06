@@ -131,8 +131,6 @@
 
     uniform float nightVision;
 
-    uniform float near;
-
     uniform mat4 gbufferProjectionInverse;
 
     uniform sampler2D depthtex0;

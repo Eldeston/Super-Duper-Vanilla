@@ -94,7 +94,6 @@ Note to Eldeston: clarify program names with its purpose
 | Astrocraft | Incompatible  | low priority |
 
 ## TO DO (for Eldeston)
-* Refactor uniform usage and remove unecessary ones (medium priority)
 * Optimize DOF calculations with noise (low priority)
 * Create a custom shadow model view (low priority)
 * Fix FXAA, it was broken the whole time (high priority)
@@ -102,7 +101,6 @@ Note to Eldeston: clarify program names with its purpose
 
 * Improve world properties calculation
 
-* Optimize block ids in block.properties (medium priority)
 * Rebuild pipeline and include visualization (high priority)
 * Document the shader pipeline (high priority)
 * Abandon Optifine support (high priority)
@@ -113,3 +111,7 @@ Note to Eldeston: clarify program names with its purpose
 * Improve water absorption (low priority)
 * Improve tonemapping (medium priority)
 * Improve atmospheric fog (medium priority)
+
+* Optimize block ids in block.properties (medium priority)
+* Refactor uniform usage and remove unecessary ones (medium priority)
+* Format the goodness knows how much nesting I used in my code because BROTHA EWWHH (maximum priority)
