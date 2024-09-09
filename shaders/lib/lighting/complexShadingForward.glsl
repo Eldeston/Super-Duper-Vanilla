@@ -89,7 +89,7 @@ vec3 complexShadingForward(in dataPBR material){
 				#endif
 
 				#if defined TERRAIN || defined WATER
-					if(isEyeInWater == 0) shdFactor *= min(1.0, lmCoord.y * 2.0 + eyeBrightFact);
+					if(isEyeInWater == 0) shdFactor *= min(1.0, (lmCoord.y + eyeBrightFact) * 2.0);
 				#endif
 
 				shdCol *= shdFactor;
@@ -103,6 +103,15 @@ vec3 complexShadingForward(in dataPBR material){
 			#endif
 		#endif
 
+		float dirLight = isShadow ? NLZ : 0.0;
+
+		#ifdef SUBSURFACE_SCATTERING
+			// Diffuse with simple SS approximation
+			if(isSubSurface) dirLight += (1.0 - dirLight) * material.ambient * material.ss * 0.5;
+		#endif
+
+		shdCol *= dirLight;
+
 		#ifndef FORCE_DISABLE_WEATHER
 			// Approximate rain diffusing light shadow
 			float rainDiffuseAmount = rainStrength * 0.5;
@@ -111,15 +120,8 @@ vec3 complexShadingForward(in dataPBR material){
 			shdCol += rainDiffuseAmount * material.ambient * skyLightSquared;
 		#endif
 
-		float dirLight = isShadow ? NLZ : 0.0;
-
-		#ifdef SUBSURFACE_SCATTERING
-			// Diffuse with simple SS approximation
-			if(isSubSurface) dirLight += (1.0 - dirLight) * material.ambient * material.ss * 0.5;
-		#endif
-		
 		// Calculate and add shadow diffuse
-		totalIllumination += toLinear(sRGBLightCol) * shdCol * dirLight;
+		totalIllumination += toLinear(sRGBLightCol) * shdCol;
 	#endif
 
 	vec3 totalLighting = material.albedo.rgb * totalIllumination;
