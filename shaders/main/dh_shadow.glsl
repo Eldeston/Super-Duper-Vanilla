@@ -17,8 +17,6 @@
 
 #ifdef VERTEX
     #ifdef WORLD_LIGHT
-        uniform vec3 cameraPosition;
-
         uniform mat4 shadowModelView;
         uniform mat4 shadowModelViewInverse;
 

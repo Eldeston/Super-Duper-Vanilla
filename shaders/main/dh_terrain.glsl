@@ -75,6 +75,7 @@
 
         if(dhMaterialId == DH_BLOCK_ILLUMINATED) blockId = 0;
         if(dhMaterialId == DH_BLOCK_LAVA) blockId = 1;
+        if(dhMaterialId == DH_BLOCK_LEAVES) blockId = 2;
 
         #if defined SHADOW_MAPPING && defined WORLD_LIGHT || defined WORLD_CURVATURE
             // Get vertex feet player position
@@ -221,6 +222,9 @@
 
             material.emissive = 1.0;
         }
+
+        // If leaves
+        if(blockId == 2) material.ss = 0.5;
 
         // Convert to linear space
         material.albedo.rgb = toLinear(material.albedo.rgb);
