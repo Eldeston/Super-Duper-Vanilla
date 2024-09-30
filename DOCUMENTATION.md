@@ -18,7 +18,7 @@
 | gcolor    | R11F_G11F_B10F | Main HDR (RGB) / Vanilla skybox (RGB)                                             |
 | colortex1 | RGB16_SNORM    | Normals (RGB)                                                                     |
 | colortex2 | RGBA8          | Albedo (RGB), SSAO (A)                                                            |
-| colortex3 | RGB8           | Metal (R), Smooth (G), Glow  /Translucents mask (B) / Main LDR (RGB) / FXAA (RGB) |
+| colortex3 | RGB8           | Metal (R), Smooth (G), Glow / Translucents mask (B) / Main LDR (RGB) / FXAA (RGB) |
 | colortex4 | R11F_G11F_B10F | Clouds (RG) / Bloom (RGB)                                                         |
 | colortex5 | RGBA16F        | TAA (RGB) / Previous frame (RGB), Auto exposure (A)                               |
 
@@ -56,33 +56,33 @@
 
 | Program Macros       | Blend Type  | Program Type | Shading Type | Usage            |
 | -------------------- | ----------- | ------------ | ------------ | ---------------- |
-| DH_SHADOW            | solid       | GBUFFER      | Shadow       | Distant Horizons |
-| SHADOW               | solid       | GBUFFER      | Shadow       | Iris/Optifine    |
+| DH_SHADOW            | Solid       | GBUFFER      | Shadow       | Distant Horizons |
+| SHADOW               | Solid       | GBUFFER      | Shadow       | Iris/Optifine    |
 | -------------------- | ----------- | ------------ | ------------ | ---------------- |
-| DH_TERRAIN           | solid       | GBUFFER      | Complex      | Distant Horizons |
-| ARMOR_GLINT          | add         | GBUFFER      | Simple       | Iris/Optifine    |
-| BASIC                | solid       | GBUFFER      | Basic        | Iris/Optifine    |
-| BEACON_BEAM          | add         | GBUFFER      | Simple       | Iris/Optifine    |
-| DAMAGED_BLOCK        | solid       | GBUFFER      | Simple       | Iris/Optifine    |
-| ENTITIES_GLOWING     | solid       | GBUFFER      | Complex      | Optifine         |
-| ENTITIES             | solid       | GBUFFER      | Complex      | Iris/Optifine    |
-| HAND                 | solid       | GBUFFER      | Complex      | Iris/Optifine    |
-| LINE                 | solid       | GBUFFER      | Disabled     | Iris/Optifine    |
-| SKY_BASIC            | solid       | GBUFFER      | Simple       | Iris/Optifine    |
-| SKY_TEXTURED         | solid       | GBUFFER      | Simple       | Iris/Optifine    |
-| SPIDER_EYES          | add         | GBUFFER      | Simple       | Iris/Optifine    |
-| TERRAIN              | solid       | GBUFFER      | Complex      | Iris/Optifine    |
-| DEFERRED(0-99)       | none        | DEFERRED     | Post         | Iris/Optifine    |
+| DH_TERRAIN           | Solid       | GBUFFER      | Complex      | Distant Horizons |
+| ARMOR_GLINT          | Add         | GBUFFER      | Simple       | Iris/Optifine    |
+| BASIC                | Solid       | GBUFFER      | Basic        | Iris/Optifine    |
+| BEACON_BEAM          | Add         | GBUFFER      | Simple       | Iris/Optifine    |
+| DAMAGED_BLOCK        | Solid       | GBUFFER      | Simple       | Iris/Optifine    |
+| ENTITIES_GLOWING     | Solid       | GBUFFER      | Complex      | Optifine         |
+| ENTITIES             | Solid       | GBUFFER      | Complex      | Iris/Optifine    |
+| HAND                 | Solid       | GBUFFER      | Complex      | Iris/Optifine    |
+| LINE                 | Solid       | GBUFFER      | Disabled     | Iris/Optifine    |
+| SKY_BASIC            | Solid       | GBUFFER      | Simple       | Iris/Optifine    |
+| SKY_TEXTURED         | Solid       | GBUFFER      | Simple       | Iris/Optifine    |
+| SPIDER_EYES          | Add         | GBUFFER      | Simple       | Iris/Optifine    |
+| TERRAIN              | Solid       | GBUFFER      | Complex      | Iris/Optifine    |
+| DEFERRED(0-99)       | None        | DEFERRED     | Post         | Iris/Optifine    |
 | -------------------- | ----------- | ------------ | ------------ | ---------------- |
-| DH_WATER             | transparent | GBUFFER      | Complex      | Distant Horizons |
-| BLOCK                | transparent | GBUFFER      | Complex      | Iris/Optifine    |
-| CLOUDS               | transparent | GBUFFER      | Basic        | Iris/Optifine    |
-| ENTITIES_TRANSLUCENT | transparent | GBUFFER      | Complex      | Iris             |
-| HAND_WATER           | transparent | GBUFFER      | Complex      | Iris/Optifine    |
-| TEXTURED             | transparent | GBUFFER      | Basic        | Iris/Optifine    |
-| WATER                | transparent | GBUFFER      | Complex      | Iris/Optifine    |
-| WEATHER              | transparent | GBUFFER      | Simple       | Iris/Optifine    |
-| COMPOSITE(0-99)      | none        | DEFERRED     | Post         | Iris/Optifine    |
+| DH_WATER             | Transparent | GBUFFER      | Complex      | Distant Horizons |
+| BLOCK                | Transparent | GBUFFER      | Complex      | Iris/Optifine    |
+| CLOUDS               | Transparent | GBUFFER      | Basic        | Iris/Optifine    |
+| ENTITIES_TRANSLUCENT | Transparent | GBUFFER      | Complex      | Iris             |
+| HAND_WATER           | Transparent | GBUFFER      | Complex      | Iris/Optifine    |
+| TEXTURED             | Transparent | GBUFFER      | Basic        | Iris/Optifine    |
+| WATER                | Transparent | GBUFFER      | Complex      | Iris/Optifine    |
+| WEATHER              | Transparent | GBUFFER      | Simple       | Iris/Optifine    |
+| COMPOSITE(0-99)      | None        | DEFERRED     | Post         | Iris/Optifine    |
 
 Note to Eldeston: clarify program names with its purpose
 
@@ -91,7 +91,7 @@ Note to Eldeston: clarify program names with its purpose
 
 | Mods       | Compatibility | Status       |
 | ---------- | ------------- | ------------ |
-| Astrocraft | Incompatible  | low priority |
+| Astrocraft | Visual bug    | Low priority |
 
 ## TO DO (for Eldeston)
 * Optimize DOF calculations with noise (low priority)
@@ -99,13 +99,16 @@ Note to Eldeston: clarify program names with its purpose
 * Fix FXAA, it was broken the whole time (high priority)
 * Optimize alpha testing (high priority)
 
+* Find a way to make translucent detection more dynamic
+
 * Improve world properties calculation
+* Improve settings UI
 
 * Rebuild pipeline and include visualization (high priority)
 * Document the shader pipeline (high priority)
 * Abandon Optifine support (high priority)
 
-* Separate iPBR for gbuffers (low priority)
+* Separate iPBR for all gbuffers (medium priority)
 
 * Implement cloud absorption (low priority)
 * Improve water absorption (low priority)

@@ -1,8 +1,10 @@
 ![Thumbnail](/shaders/textures/thumbCF.png)
 ![Title Logo](/shaders/textures/title.png)
 [![Discord](https://img.shields.io/discord/604061216779796492.svg?label=FlameRender%E2%84%A2%20Studios&logo=discord&logoColor=white&logoWidth=16&labelColor=7289DA&style=for-the-badge)](https://discord.gg/UE85W5ynCg)
-[![Twitter Follow](https://img.shields.io/twitter/follow/eldeston?color=1DA1F2&logoWidth=16&logo=Twitter&logoColor=white&style=for-the-badge)](https://twitter.com/eldeston)
+[![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/eldeston?style=for-the-badge&logo=x&color=%231DA1F2)](https://twitter.com/eldeston)
 [![YouTube Channel Subscribers](https://img.shields.io/youtube/channel/subscribers/UCQCkkFh25ydxZwCqpBhJJlg?color=FF0000&logoWidth=16&label=Eldeston&logo=YouTube&style=for-the-badge)](https://www.youtube.com/channel/UCQCkkFh25ydxZwCqpBhJJlg)
+![CurseForge Downloads](https://img.shields.io/curseforge/dt/534748?style=for-the-badge&logo=curseforge&logoColor=%23FFFFFF&label=CurseForge%20Downloads&color=%23FF9101)
+![Modrinth Downloads](https://img.shields.io/modrinth/dt/LMIZZNxZ?style=for-the-badge&logo=modrinth&logoColor=%23FFFFFF&label=Modrinth%20Downloads&color=%2300FF00)
 
 ## About
    A shader pack created to convey the style of the cancelled __Super Duper Graphics Pack__ and other popular Minecraft titles. Developed by [@Eldeston](https://github.com/Eldeston), and presented by __FlameRender Studios__.
@@ -49,7 +51,7 @@
    Latest build and pre-release versions are expected to be unstable, please report any issues or bugs anytime. Feedback is much appreciated.
 
 ## Official CurseForge Page
-   Super Duper Vanilla just happen to be on CurseForge! Stable and latest releases will always be available there. Check it out [here](https://www.curseforge.com/minecraft/customization/super-duper-vanilla-shaders) and support me by using on one of the download links there!
+   Super Duper Vanilla just happens to be on CurseForge! Stable and latest releases will always be available there. Check it out [here](https://www.curseforge.com/minecraft/customization/super-duper-vanilla-shaders) and support me by using on one of the download links there!
 
 ## Super Duper Vanilla Installer
    Alternatively, you can use this installer developed by [@steb-git](https://github.com/steb-git) allowing you to install either the release versions of SDV or the development versions. While the installer's task is relatively simple, it's still a WIP. [Use this link to go to the installer repository](https://github.com/steb-git/super-duper-vanilla-installer).
