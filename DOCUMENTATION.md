@@ -97,9 +97,10 @@ Note to Eldeston: clarify program names with its purpose
 * Optimize DOF calculations with noise (low priority)
 * Create a custom shadow model view (low priority)
 * Fix FXAA, it was broken the whole time (high priority)
+* Fix dragon death beam (medium priority)
 * Optimize alpha testing (high priority)
 
-* Find a way to make translucent detection more dynamic
+* Find a way to make translucent detection more dynamic (medium priority)
 
 * Improve world properties calculation
 * Improve settings UI
