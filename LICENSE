@@ -1,5 +1,5 @@
 FlameRender (C) Studios License
-Version 1.5, July 22, 2024
+Version 1.6, November 8, 2024
 
 Copyright (C) 2023 Eldeston
 All Rights Reserved unless otherwise explicitly stated.
@@ -15,7 +15,9 @@ All Rights Reserved unless otherwise explicitly stated.
 
   0.5. "Modpack" refers to a collection of unique projects represented as another unique project.
 
-  0.6. To "modify" means to adapt all or part of the project other than its exact copy. The resulting project is then called the "modified version" of the earlier project.
+  0.6. To "modify" means to adapt all or part of the project other than its exact copy. The resulting project is then called the "modified version" of the earlier project. The criteria for the modified version must meet the following conditions:
+    a. Adapted values or settings of the project are disqualified as the "modified version."
+    b. The "modified version" is visually and functionally distinct from the earlier project.
 
 1. Permissions
   1.1. Users are allowed to modify this project for personal use.

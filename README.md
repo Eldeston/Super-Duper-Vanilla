@@ -6,7 +6,7 @@
 ![CurseForge Downloads](https://img.shields.io/curseforge/dt/534748?style=for-the-badge&logo=curseforge&logoColor=%23FFFFFF&label=CurseForge%20Downloads&color=%23FF9101)
 ![Modrinth Downloads](https://img.shields.io/modrinth/dt/LMIZZNxZ?style=for-the-badge&logo=modrinth&logoColor=%23FFFFFF&label=Modrinth%20Downloads&color=%2300FF00)
 
-## About
+## Description
    A shader pack created to convey the style of the cancelled __Super Duper Graphics Pack__ and other popular Minecraft titles. Developed by [@Eldeston](https://github.com/Eldeston), and presented by __FlameRender Studios__.
 
 ## Sponsor
