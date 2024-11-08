@@ -76,7 +76,10 @@
     in vec4 vertexColor;
 
     void main(){
-        sceneColOut = vec4(toLinear(vertexColor.rgb) * EMISSIVE_INTENSITY, vertexColor.a);
+        // Write to HDR scene color
+        sceneColOut = vec4(vertexColor.rgb * EMISSIVE_INTENSITY, vertexColor.a * vertexColor.a);
+
+        // Write buffer datas
         materialDataOut = vec3(0, 0, 0.5);
     }
 #endif
