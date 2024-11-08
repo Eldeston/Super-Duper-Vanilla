@@ -16,8 +16,8 @@ float getFogFactor(in float viewDist, in float nEyePlayerPosY, in float worldPos
         float totalFogDensity = isEyeInWater == 0 ? FOG_TOTAL_DENSITY * (rainStrength * eyeBrightFact * PI + 1.0) : FOG_TOTAL_DENSITY * TAU;
     #endif
 
-    // Return fog
-    return min(1.0, getAtmosphericFog(nEyePlayerPosY, worldPosY, viewDist, totalFogDensity, verticalFogDensity)) * min(1.0, GROUND_FOG_STRENGTH + GROUND_FOG_STRENGTH * isEyeInWater);
+    // Return fog, need to cap world position to prevent further fogging
+    return min(1.0, getAtmosphericFog(nEyePlayerPosY, max(0.0, worldPosY), viewDist, totalFogDensity, verticalFogDensity)) * min(1.0, GROUND_FOG_STRENGTH + GROUND_FOG_STRENGTH * isEyeInWater);
 }
 
 float getFogDarknessFactor(in float viewDist){
