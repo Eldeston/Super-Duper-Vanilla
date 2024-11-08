@@ -188,7 +188,7 @@ screen.CONFIGURATION = Configuração
             option.SKY0_NR = Céu Vermelho
             option.SKY0_NG = Céu Verde
             option.SKY0_NB = Céu Azul
-            option.SKY0_NI = Sky intensity
+            option.SKY0_NI = Intensidade do Céu
 
         screen.TWILIGHT_SETTINGS = Configurações do Twilight
             option.LIGHT0_TR = Luz Vermelha
