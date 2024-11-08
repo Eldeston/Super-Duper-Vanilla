@@ -164,7 +164,7 @@ screen.PBR = PBR
     screen.LAVA_SETTINGS = Configurações de Material da Lava
         option.LAVA_BRIGHTNESS = Brilho da Lava
         option.LAVA_NOISE = Ruído da Lava
-        option.LAVA_TILE_SIZE = Tamanho das TElas da Lava
+        option.LAVA_TILE_SIZE = Tamanho das Telas da Lava
 
 screen.CONFIGURATION = Configuração
     screen.OVERWORLD_SETTINGS = Configurações do Mundo
