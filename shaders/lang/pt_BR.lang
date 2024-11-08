@@ -11,13 +11,13 @@
 screen.DEBUG = Super Duper Vanilla v1.3.5
     screen.DEBUG.comment = Desenvolvido por §2Eldeston§f§r, apresentado por §9FlameRender (C) §9Studios. §eClique em mim para abrir as configurações de depuração!
 
-    option.COLOR_MODE = Modo de cor
+    option.COLOR_MODE = Modo de Cor
         value.COLOR_MODE.0 = OFF
         value.COLOR_MODE.1 = Modo Branco
         value.COLOR_MODE.2 = Modo Preto
-        value.COLOR_MODE.3 = Modo de Foliagem
+        value.COLOR_MODE.3 = Modo de Folhagem
 
-    option.ENTITY_BLOCK_TRANSPARENCY = Transparência de Bloco de Entiade
+    option.ENTITY_BLOCK_TRANSPARENCY = Transparência de Bloco de Entidade
     option.NOISE_SPEED = Velocidade do Ruído
 
 screen.POST = Post
@@ -26,11 +26,11 @@ screen.POST = Post
         value.OUTLINES.1 = Padrão
         value.OUTLINES.2 = Dungeons
 
-    option.OUTLINE_BRIGHTNESS = Claridade do contorno
-    option.OUTLINE_PIXEL_SIZE = Espessura do pixel do Contorno
-    option.RETRO_FILTER = Filtro retro
+    option.OUTLINE_BRIGHTNESS = Claridade do Contorno
+    option.OUTLINE_PIXEL_SIZE = Espessura do Pixel do Contorno
+    option.RETRO_FILTER = Filtro Retro
 
-    option.ANTI_ALIASING = Anti aliasing
+    option.ANTI_ALIASING = Anti Aliasing
         value.ANTI_ALIASING.0 = OFF
         value.ANTI_ALIASING.1 = FXAA
         value.ANTI_ALIASING.2 = TAA
@@ -41,7 +41,7 @@ screen.POST = Post
     screen.CAMERA = Configurações da Câmera
         option.DOF = Profundidade de Campo
         option.DOF_STRENGTH = Intensidade da Profundidade de Campo
-        option.CHROMATIC_ABERRATION = Aberração Chromática
+        option.CHROMATIC_ABERRATION = Aberração Cromática
         option.ABERRATION_PIXEL_SIZE = Tamanho do pixel da Aberração
         option.BLOOM = Bloom
         option.BLOOM_STRENGTH = Bloom strength
@@ -98,8 +98,8 @@ screen.ATMOSPHERICS = Atmosféricos
         value.SUN_MOON_TYPE.2 = Vanilla
 
     option.SUN_MOON_INTENSITY = Intensidade do Sol/Lua
-    option.VOLUMETRIC_LIGHTING = Iluminção Volumetrica
-    option.VOLUMETRIC_LIGHTING_STRENGTH = Intensidade da Iluminção Volumetrica
+    option.VOLUMETRIC_LIGHTING = Iluminação Volumétrica
+    option.VOLUMETRIC_LIGHTING_STRENGTH = Intensidade da Iluminação Volumétrica
     option.BORDER_FOG = Névoa da Borda
     option.GROUND_FOG_STRENGTH = Intensidade da Névoa no Solo
     option.STORY_MODE_CLOUDS = Nuvens do Modo História
@@ -163,7 +163,7 @@ screen.PBR = PBR
 
     screen.LAVA_SETTINGS = Configurações de Material da Lava
         option.LAVA_BRIGHTNESS = Brilho da Lava
-        option.LAVA_NOISE = Ruido da Lava
+        option.LAVA_NOISE = Ruído da Lava
         option.LAVA_TILE_SIZE = Tamanho das TElas da Lava
 
 screen.CONFIGURATION = Configuração
