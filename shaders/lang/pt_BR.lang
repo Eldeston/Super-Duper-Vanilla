@@ -1,5 +1,4 @@
 ## Language format v1.0.4
-## All other .lang files must update to the latest language format version on this main .lang file
 
 ## Profiles
     profile.POTATO = Batata
