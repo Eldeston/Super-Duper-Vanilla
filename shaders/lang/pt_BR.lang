@@ -4,12 +4,12 @@
 ## Profiles
     profile.POTATO = Batata
     profile.LOW = Baixo
-    profile.MEDIUM = Médio (Default)
+    profile.MEDIUM = Médio (Padrão)
     profile.HIGH = Alto
     profile.ULTRA = Ultra
 
 screen.DEBUG = Super Duper Vanilla v1.3.5
-    screen.DEBUG.comment = Desenvolvido por §2Eldeston§f§r, apresentador por §9FlameRender (C) §9Studios. §eClique em mim para abrir as configurações de depuração!
+    screen.DEBUG.comment = Desenvolvido por §2Eldeston§f§r, apresentado por §9FlameRender (C) §9Studios. §eClique em mim para abrir as configurações de depuração!
 
     option.COLOR_MODE = Modo de cor
         value.COLOR_MODE.0 = OFF
@@ -140,94 +140,94 @@ screen.PBR = PBR
     option.EMISSIVE_INTENSITY = Intensidade Emissiva
     option.SLOPE_NORMALS = Normais de Inclinação
     option.NORMAL_STRENGTH = Intensidade do Normais
-    option.DIRECTIONAL_LIGHTMAPS = Directional lightmaps
-    option.DIRECTIONAL_LIGHTMAP_STRENGTH = Directional lightmaps strength
+    option.DIRECTIONAL_LIGHTMAPS = Mapas de Luz Direcional
+    option.DIRECTIONAL_LIGHTMAP_STRENGTH = Intensidade do Mapa de Luz Direcional
 
-    screen.POM_SETTINGS = Parallax occlusion settings
-        option.PARALLAX_OCCLUSION = Parallax occlusion
-        option.PARALLAX_DEPTH = Parallax depth
-        option.PARALLAX_STEPS = Parallax steps
-        option.PARALLAX_SHADOW = Parallax shadows
-        option.PARALLAX_SHADOW_STEPS = Parallax shadow steps
+    screen.POM_SETTINGS = Configurações de Oclusão por Paralaxe
+        option.PARALLAX_OCCLUSION = Oclusão por Paralaxe
+        option.PARALLAX_DEPTH = Profundidade de Paralaxe
+        option.PARALLAX_STEPS = Passos de Paralaxe
+        option.PARALLAX_SHADOW = Sombras de Paralaxe
+        option.PARALLAX_SHADOW_STEPS = Passos das Sombras de Paralaxe
 
-    screen.WATER_SETTINGS = Water material settings
-        option.WATER_NOISE = Water noise
-        option.WATER_BRIGHTNESS = Water brightness
-        option.WATER_NORMAL = Water normalmap
-        option.WATER_BLUR_SIZE = Water normalmap blur size
-        option.WATER_DEPTH_SIZE = Water normalmap depth size
-        option.WATER_TILE_SIZE = Water tile size
-        option.WATER_STYLIZE_ABSORPTION = Water absorption
-        option.WATER_FOAM = Water foam
-        option.WATER_FLAT = Flat water albedo
+    screen.WATER_SETTINGS = Configurações de Material da Água
+        option.WATER_NOISE = Ruído da Água
+        option.WATER_BRIGHTNESS = Brilho da Água
+        option.WATER_NORMAL = Normalmap da Água
+        option.WATER_BLUR_SIZE = Tamanho do Desfoque do Normalmap da Água
+        option.WATER_DEPTH_SIZE = Tamanho da Profundidade do Normalmap da Água
+        option.WATER_TILE_SIZE = Tamanho das Telas da Água
+        option.WATER_STYLIZE_ABSORPTION = Absorção da Água
+        option.WATER_FOAM = Espuma da Água
+        option.WATER_FLAT = Albedo da Água Lisa
 
-    screen.LAVA_SETTINGS = Lava material settings
-        option.LAVA_BRIGHTNESS = Lava brightness
-        option.LAVA_NOISE = Lava noise
-        option.LAVA_TILE_SIZE = Lava tile size
+    screen.LAVA_SETTINGS = Configurações de Material da Lava
+        option.LAVA_BRIGHTNESS = Brilho da Lava
+        option.LAVA_NOISE = Ruido da Lava
+        option.LAVA_TILE_SIZE = Tamanho das TElas da Lava
 
-screen.CONFIGURATION = Configuration
-    screen.OVERWORLD_SETTINGS = Overworld settings
-        screen.DAY_SETTINGS = Day settings
-            option.LIGHT0_DR = Light red
-            option.LIGHT0_DG = Light green
-            option.LIGHT0_DB = Light blue
-            option.LIGHT0_DI = Light intensity
+screen.CONFIGURATION = Configuração
+    screen.OVERWORLD_SETTINGS = Configurações do Mundo
+        screen.DAY_SETTINGS = Configurações do Dia
+            option.LIGHT0_DR = Luz Vermelha
+            option.LIGHT0_DG = Luz Verde
+            option.LIGHT0_DB = Luz Azul
+            option.LIGHT0_DI = Intensidade da Luz
 
-            option.SKY0_DR = Sky red
-            option.SKY0_DG = Sky green
-            option.SKY0_DB = Sky blue
-            option.SKY0_DI = Sky intensity
+            option.SKY0_DR = Céu Vermelho
+            option.SKY0_DG = Céu Verde
+            option.SKY0_DB = Céu Azul
+            option.SKY0_DI = Intensidade do Céu
 
-        screen.NIGHT_SETTINGS = Night settings
-            option.LIGHT0_NR = Light red
-            option.LIGHT0_NG = Light green
-            option.LIGHT0_NB = Light blue
-            option.LIGHT0_NI = Light intensity
+        screen.NIGHT_SETTINGS = Configurações da Noite
+            option.LIGHT0_NR = Luz Vermelha
+            option.LIGHT0_NG = Luz Verde
+            option.LIGHT0_NB = Luz Azul
+            option.LIGHT0_NI = Intensidade da Luz
 
-            option.SKY0_NR = Sky red
-            option.SKY0_NG = Sky green
-            option.SKY0_NB = Sky blue
+            option.SKY0_NR = Céu Vermelho
+            option.SKY0_NG = Céu Verde
+            option.SKY0_NB = Céu Azul
             option.SKY0_NI = Sky intensity
 
-        screen.TWILIGHT_SETTINGS = Twilight settings
-            option.LIGHT0_TR = Light red
-            option.LIGHT0_TG = Light green
-            option.LIGHT0_TB = Light blue
-            option.LIGHT0_TI = Light intensity
+        screen.TWILIGHT_SETTINGS = Configurações do Twilight
+            option.LIGHT0_TR = Luz Vermelha
+            option.LIGHT0_TG = Luz Verde
+            option.LIGHT0_TB = Luz Azul
+            option.LIGHT0_TI = Intensidade da Luz
 
-            option.SKY0_TR = Sky red
-            option.SKY0_TG = Sky green
-            option.SKY0_TB = Sky blue
-            option.SKY0_TI = Sky intensity
+            option.SKY0_TR = Céu Vermelho
+            option.SKY0_TG = Céu Verde
+            option.SKY0_TB = Céu Azul
+            option.SKY0_TI = Intensidade do Céu
 
-        screen.FOG_SETTINGS0 = Fog settings
-            option.FOG0_VERTICAL_DENSITY_D = Vertical density day
-            option.FOG0_VERTICAL_DENSITY_N = Vertical density night
-            option.FOG0_VERTICAL_DENSITY_T = Vertical density twilight
-            option.FOG0_TOTAL_DENSITY = Total density
+        screen.FOG_SETTINGS0 = Configurações da Névoa
+            option.FOG0_VERTICAL_DENSITY_D = Densidade Vertical no Dia
+            option.FOG0_VERTICAL_DENSITY_N = Densidade Vertical na Noite
+            option.FOG0_VERTICAL_DENSITY_T = Densidade Vertical no Twilight
+            option.FOG0_TOTAL_DENSITY = Densidade Total
 
-    screen.NETHER_SETTINGS = Nether settings
-        option.FOGn1_VERTICAL_DENSITY = Vertical density
-        option.FOGn1_TOTAL_DENSITY = Total density
-        option.WORLDn1_VANILLA_FOGCOLI = Sky intensity
+    screen.NETHER_SETTINGS = Configurações do Nether
+        option.FOGn1_VERTICAL_DENSITY = Densidade Vertical
+        option.FOGn1_TOTAL_DENSITY = Densidade Total
+        option.WORLDn1_VANILLA_FOGCOLI = Intensidade do Céu
 
-    screen.END_SETTINGS = End settings
-        option.LIGHT1_CR = Light red
-        option.LIGHT1_CG = Light green
-        option.LIGHT1_CB = Light blue
-        option.LIGHT1_CI = Light intensity
+    screen.END_SETTINGS = Configurações do Fim
+        option.LIGHT1_CR = Luz Vermelha
+        option.LIGHT1_CG = Luz Verde
+        option.LIGHT1_CB = Luz Azul
+        option.LIGHT1_CI = Intensidade da Luz
 
-        option.SKY1_CR = Sky red
-        option.SKY1_CG = Sky green
-        option.SKY1_CB = Sky blue
-        option.SKY1_CI = Sky intensity
+        option.SKY1_CR = Céu Vermelho
+        option.SKY1_CG = Céu Verde
+        option.SKY1_CB = Céu Azul
+        option.SKY1_CI = Intensidade do Céu
 
-        option.FOG1_VERTICAL_DENSITY = Vertical density
-        option.FOG1_TOTAL_DENSITY = Total density
+        option.FOG1_VERTICAL_DENSITY = Densidade Vertical
+        option.FOG1_TOTAL_DENSITY = Densidade Total
 
-    screen.BLOCK_LIGHT_COLOR = Block light settings
-        option.BLOCKLIGHT_R = Block light red
-        option.BLOCKLIGHT_G = Block light green
-        option.BLOCKLIGHT_B = Block light blue
-        option.BLOCKLIGHT_I = Block light intensity
+    screen.BLOCK_LIGHT_COLOR = Configurações de Iluminação do Bloco
+        option.BLOCKLIGHT_R = Luz do Bloco Vermelha
+        option.BLOCKLIGHT_G = Luz do Bloco Verde
+        option.BLOCKLIGHT_B = Luz do Bloco Azul
+        option.BLOCKLIGHT_I = Intensidade da Luz do Bloco
