@@ -211,15 +211,6 @@
     #include "/lib/lighting/complexShadingForward.glsl"
 
     void main(){
-        // Lightning fix, materials need to be specified due to glitching issues
-        if(entityId == 10129){
-            const vec3 lightningCol = vec3(0.25 * EMISSIVE_INTENSITY, 0.5 * EMISSIVE_INTENSITY, EMISSIVE_INTENSITY);
-            sceneColOut = vec4(lightningCol, vertexAlpha);
-            normalDataOut = vec3(0);
-            materialDataOut = vec3(0, 0, 0.5);
-            return;
-        }
-
         // Declare materials
 	    dataPBR material;
         getPBR(material, entityId);
