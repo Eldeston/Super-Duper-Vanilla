@@ -1,0 +1,232 @@
+## Language format v1.0.4
+
+## Profiles
+    profile.POTATO = Batata
+    profile.LOW = Baixo
+    profile.MEDIUM = Médio (Padrão)
+    profile.HIGH = Alto
+    profile.ULTRA = Ultra
+
+screen.DEBUG = Super Duper Vanilla v1.3.5
+    screen.DEBUG.comment = Desenvolvido por §2Eldeston§f§r, apresentado por §9FlameRender (C) §9Studios. §eClique em mim para abrir as configurações de depuração!
+
+    option.COLOR_MODE = Modo de Cor
+        value.COLOR_MODE.0 = OFF
+        value.COLOR_MODE.1 = Modo Branco
+        value.COLOR_MODE.2 = Modo Preto
+        value.COLOR_MODE.3 = Modo de Folhagem
+
+    option.ENTITY_BLOCK_TRANSPARENCY = Transparência de Bloco de Entidade
+    option.NOISE_SPEED = Velocidade do Ruído
+
+screen.POST = Post
+    option.OUTLINES = Contornos
+        value.OUTLINES.0 = OFF
+        value.OUTLINES.1 = Padrão
+        value.OUTLINES.2 = Dungeons
+
+    option.OUTLINE_BRIGHTNESS = Claridade do Contorno
+    option.OUTLINE_PIXEL_SIZE = Espessura do Pixel do Contorno
+    option.RETRO_FILTER = Filtro Retro
+
+    option.ANTI_ALIASING = Anti Aliasing
+        value.ANTI_ALIASING.0 = OFF
+        value.ANTI_ALIASING.1 = FXAA
+        value.ANTI_ALIASING.2 = TAA
+        value.ANTI_ALIASING.3 = Lite TAA + FXAA
+
+    option.SHARPEN_FILTER = Filtro de nitidez
+
+    screen.CAMERA = Configurações da Câmera
+        option.DOF = Profundidade de Campo
+        option.DOF_STRENGTH = Intensidade da Profundidade de Campo
+        option.CHROMATIC_ABERRATION = Aberração Cromática
+        option.ABERRATION_PIXEL_SIZE = Tamanho do pixel da Aberração
+        option.BLOOM = Bloom
+        option.BLOOM_STRENGTH = Intensidade do Bloom
+        option.LENS_FLARE = Reflexo de lente
+        option.LENS_FLARE_STRENGTH = Intensidade do Reflexo de lente
+        option.VIGNETTE = Vinheta
+        option.VIGNETTE_STRENGTH = Intensidade da Vinheta
+        option.MOTION_BLUR = Desfoque de Movimento
+        option.MOTION_BLUR_STRENGTH = Intensidade do Desfoque de Movimento
+
+    screen.TONEMAP = Configuração do Mapeamento de Tons
+        option.CONTRAST = Contraste
+        option.SATURATION = Saturação
+        option.WHITE_POINT = Ponto branco
+        option.SHOULDER_STRENGTH = Força de ombro
+        option.AUTO_EXPOSURE = Exposição automática
+        option.AUTO_EXPOSURE_SPEED = Velocidade da Exposição automática
+        option.EXPOSURE = Exposição
+        option.MINIMUM_EXPOSURE = Exposição Mínima
+        option.TINT_R = Matiz Vermelha
+        option.TINT_G = Matiz Verde
+        option.TINT_B = Matiz Azul
+
+screen.LIGHTING = Iluminação
+    option.SHADOW_MAPPING = Mapeamento de Sombras
+    option.SHADOW_COLOR = Cor do Mapa de Sombras
+    option.SHADOW_FILTER = Filtro do Mapa de Sombras
+    option.ENTITY_SHADOWS = Sombra de entidades
+    option.BLOCK_ENTITY_SHADOWS = Sombra da entidade de blocos
+    option.shadowMapResolution = Resolução do Mapa de Sombras
+    option.shadowDistance = Distância do Mapa de Sombras
+    option.sunPathRotation = Ângulo do Caminho de Luz
+
+    option.UNDERWATER_CAUSTICS = Cáusticas Subaquáticas
+        value.UNDERWATER_CAUSTICS.0 = OFF
+        value.UNDERWATER_CAUSTICS.1 = Subaquático
+        value.UNDERWATER_CAUSTICS.2 = Total
+
+    option.SSAO = SSAO
+    option.AMBIENT_LIGHTING = Iluminação ambiente
+
+    screen.RAY_TRACING = Configurações de Ray tracing
+        option.SSGI = SSGI
+        option.SSR = SSR
+        option.RAYTRACER_STEPS = Passos do Raytracer
+        option.RAYTRACER_BISTEPS = Passos do refinamento do Raytracer
+        option.ROUGH_REFLECTIONS = Reflexões Ásperas
+        option.PREVIOUS_FRAME = Buffer do Quadro Anterior
+
+screen.ATMOSPHERICS = Atmosféricos
+    option.SUN_MOON_TYPE = Tipo de Sol/Lua
+        value.SUN_MOON_TYPE.0 = Padrão
+        value.SUN_MOON_TYPE.1 = Arredondado
+        value.SUN_MOON_TYPE.2 = Vanilla
+
+    option.SUN_MOON_INTENSITY = Intensidade do Sol/Lua
+    option.VOLUMETRIC_LIGHTING = Iluminação Volumétrica
+    option.VOLUMETRIC_LIGHTING_STRENGTH = Intensidade da Iluminação Volumétrica
+    option.BORDER_FOG = Névoa da Borda
+    option.GROUND_FOG_STRENGTH = Intensidade da Névoa no Solo
+    option.STORY_MODE_CLOUDS = Nuvens do Modo História
+    option.DOUBLE_LAYERED_CLOUDS = Camada Dupla de Nuvens
+    option.DYNAMIC_CLOUDS = Nuvens Dinâmicas
+    option.FADE_SPEED = Velocidade de Desvanecimento
+    option.SECOND_CLOUD_HEIGHT = Altura da 2a Camada de Nuvem
+    option.SKYBOX_BRIGHTNESS = Brilho da Skybox
+
+screen.WORLD = Mundo
+    option.TERRAIN_ANIMATION = Animação de Terreno
+    option.WATER_ANIMATION = Animação da Água
+    option.WEATHER_ANIMATION = Animação do Clima
+
+    option.TIMELAPSE_MODE = Modo Timelapse
+        value.TIMELAPSE_MODE.0 = OFF
+        value.TIMELAPSE_MODE.1 = Fragmento
+        value.TIMELAPSE_MODE.2 = Completo
+
+    option.WIND_SPEED = Velocidade do Vento
+    option.CURRENT_SPEED = Velocidade da Corrente
+    option.WIND_FREQUENCY = Frequência do Vento
+    option.CURRENT_FREQUENCY = Frequência da Corrente
+    option.WORLD_CURVATURE = Curvatura do Mundo
+    option.WORLD_CURVATURE_SIZE = Intensidade da Curvatura
+
+screen.PBR = PBR
+    option.PBR_MODE = Modo do PBR
+        value.PBR_MODE.0 = OFF
+        value.PBR_MODE.1 = PBR Integrado
+        value.PBR_MODE.2 = Lab PBR 1.3
+
+    option.SPECULAR_HIGHLIGHTS = Realces Especulares
+    option.ENVIRONMENT_PBR = Materiais PBR Ambientais
+    option.NORMAL_GENERATION = Geração Automática de Normais
+    option.NORMAL_GENERATION_RESOLUTION = Resolução da Geração Automática de Normais
+    option.SUBSURFACE_SCATTERING = Espalhamento Subsuperficial
+    option.EMISSIVE_INTENSITY = Intensidade Emissiva
+    option.SLOPE_NORMALS = Normais de Inclinação
+    option.NORMAL_STRENGTH = Intensidade do Normais
+    option.DIRECTIONAL_LIGHTMAPS = Mapas de Luz Direcional
+    option.DIRECTIONAL_LIGHTMAP_STRENGTH = Intensidade do Mapa de Luz Direcional
+
+    screen.POM_SETTINGS = Configurações de Oclusão por Paralaxe
+        option.PARALLAX_OCCLUSION = Oclusão por Paralaxe
+        option.PARALLAX_DEPTH = Profundidade de Paralaxe
+        option.PARALLAX_STEPS = Passos de Paralaxe
+        option.PARALLAX_SHADOW = Sombras de Paralaxe
+        option.PARALLAX_SHADOW_STEPS = Passos das Sombras de Paralaxe
+
+    screen.WATER_SETTINGS = Configurações de Material da Água
+        option.WATER_NOISE = Ruído da Água
+        option.WATER_BRIGHTNESS = Brilho da Água
+        option.WATER_NORMAL = Normalmap da Água
+        option.WATER_BLUR_SIZE = Tamanho do Desfoque do Normalmap da Água
+        option.WATER_DEPTH_SIZE = Tamanho da Profundidade do Normalmap da Água
+        option.WATER_TILE_SIZE = Tamanho das Telas da Água
+        option.WATER_STYLIZE_ABSORPTION = Absorção da Água
+        option.WATER_FOAM = Espuma da Água
+        option.WATER_FLAT = Albedo da Água Lisa
+
+    screen.LAVA_SETTINGS = Configurações de Material da Lava
+        option.LAVA_BRIGHTNESS = Brilho da Lava
+        option.LAVA_NOISE = Ruído da Lava
+        option.LAVA_TILE_SIZE = Tamanho das Telas da Lava
+
+screen.CONFIGURATION = Configuração
+    screen.OVERWORLD_SETTINGS = Configurações do Mundo
+        screen.DAY_SETTINGS = Configurações do Dia
+            option.LIGHT0_DR = Luz Vermelha
+            option.LIGHT0_DG = Luz Verde
+            option.LIGHT0_DB = Luz Azul
+            option.LIGHT0_DI = Intensidade da Luz
+
+            option.SKY0_DR = Céu Vermelho
+            option.SKY0_DG = Céu Verde
+            option.SKY0_DB = Céu Azul
+            option.SKY0_DI = Intensidade do Céu
+
+        screen.NIGHT_SETTINGS = Configurações da Noite
+            option.LIGHT0_NR = Luz Vermelha
+            option.LIGHT0_NG = Luz Verde
+            option.LIGHT0_NB = Luz Azul
+            option.LIGHT0_NI = Intensidade da Luz
+
+            option.SKY0_NR = Céu Vermelho
+            option.SKY0_NG = Céu Verde
+            option.SKY0_NB = Céu Azul
+            option.SKY0_NI = Intensidade do Céu
+
+        screen.TWILIGHT_SETTINGS = Configurações do Twilight
+            option.LIGHT0_TR = Luz Vermelha
+            option.LIGHT0_TG = Luz Verde
+            option.LIGHT0_TB = Luz Azul
+            option.LIGHT0_TI = Intensidade da Luz
+
+            option.SKY0_TR = Céu Vermelho
+            option.SKY0_TG = Céu Verde
+            option.SKY0_TB = Céu Azul
+            option.SKY0_TI = Intensidade do Céu
+
+        screen.FOG_SETTINGS0 = Configurações da Névoa
+            option.FOG0_VERTICAL_DENSITY_D = Densidade Vertical no Dia
+            option.FOG0_VERTICAL_DENSITY_N = Densidade Vertical na Noite
+            option.FOG0_VERTICAL_DENSITY_T = Densidade Vertical no Twilight
+            option.FOG0_TOTAL_DENSITY = Densidade Total
+
+    screen.NETHER_SETTINGS = Configurações do Nether
+        option.FOGn1_VERTICAL_DENSITY = Densidade Vertical
+        option.FOGn1_TOTAL_DENSITY = Densidade Total
+        option.WORLDn1_VANILLA_FOGCOLI = Intensidade do Céu
+
+    screen.END_SETTINGS = Configurações do Fim
+        option.LIGHT1_CR = Luz Vermelha
+        option.LIGHT1_CG = Luz Verde
+        option.LIGHT1_CB = Luz Azul
+        option.LIGHT1_CI = Intensidade da Luz
+
+        option.SKY1_CR = Céu Vermelho
+        option.SKY1_CG = Céu Verde
+        option.SKY1_CB = Céu Azul
+        option.SKY1_CI = Intensidade do Céu
+
+        option.FOG1_VERTICAL_DENSITY = Densidade Vertical
+        option.FOG1_TOTAL_DENSITY = Densidade Total
+
+    screen.BLOCK_LIGHT_COLOR = Configurações de Iluminação do Bloco
+        option.BLOCKLIGHT_R = Luz do Bloco Vermelha
+        option.BLOCKLIGHT_G = Luz do Bloco Verde
+        option.BLOCKLIGHT_B = Luz do Bloco Azul
+        option.BLOCKLIGHT_I = Intensidade da Luz do Bloco
