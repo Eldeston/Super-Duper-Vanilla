@@ -79,12 +79,13 @@
 | CLOUDS               | Transparent | GBUFFER      | Basic        | Iris/Optifine    |
 | ENTITIES_TRANSLUCENT | Transparent | GBUFFER      | Complex      | Iris             |
 | HAND_WATER           | Transparent | GBUFFER      | Complex      | Iris/Optifine    |
+| LIGHTNING            | Transparent | GBUFFER      | Complex      | Iris             |
 | TEXTURED             | Transparent | GBUFFER      | Basic        | Iris/Optifine    |
 | WATER                | Transparent | GBUFFER      | Complex      | Iris/Optifine    |
 | WEATHER              | Transparent | GBUFFER      | Simple       | Iris/Optifine    |
 | COMPOSITE(0-99)      | None        | DEFERRED     | Post         | Iris/Optifine    |
 
-Note to Eldeston: clarify program names with its purpose
+Note to Eldeston: Clarify program names with its purpose.
 
 ## Incompatible Mods
    List of incompatible mods.
@@ -97,7 +98,6 @@ Note to Eldeston: clarify program names with its purpose
 * Optimize DOF calculations with noise (low priority)
 * Create a custom shadow model view (low priority)
 * Fix FXAA, it was broken the whole time (high priority)
-* Fix dragon death beam (medium priority)
 * Optimize alpha testing (high priority)
 
 * Find a way to make translucent detection more dynamic (medium priority)
@@ -119,3 +119,6 @@ Note to Eldeston: clarify program names with its purpose
 * Optimize block ids in block.properties (medium priority)
 * Refactor uniform usage and remove unecessary ones (medium priority)
 * Format the goodness knows how much nesting I used in my code because BROTHA EWWHH (maximum priority)
+
+## DONE
+* Fix dragon death beam (medium priority) ?
