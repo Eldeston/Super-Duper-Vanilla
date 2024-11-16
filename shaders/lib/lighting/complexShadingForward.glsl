@@ -89,7 +89,7 @@ vec3 complexShadingForward(in dataPBR material){
 				#endif
 
 				#if defined TERRAIN || defined WATER
-					if(isEyeInWater == 0) shdFactor *= min(1.0, (lmCoord.y + eyeBrightFact) * 2.0);
+					if(isEyeInWater == 0) shdFactor *= min(1.0, (lmCoord.y + eyeBrightFact) * 4.0);
 				#endif
 
 				shdCol *= shdFactor;
