@@ -30,6 +30,8 @@
 
     uniform mat4 gbufferModelViewInverse;
 
+    uniform mat4 dhProjection;
+
     #ifdef WORLD_CURVATURE
         uniform mat4 gbufferModelView;
     #endif
@@ -91,9 +93,9 @@
         #endif
 
         // Convert to clip position and output as final position
-        // gl_Position = gl_ProjectionMatrix * vertexViewPos;
-        gl_Position.xyz = getMatScale(mat3(gl_ProjectionMatrix)) * vertexViewPos;
-        gl_Position.z += gl_ProjectionMatrix[3].z;
+        // gl_Position = dhProjection * vertexViewPos;
+        gl_Position.xyz = getMatScale(mat3(dhProjection)) * vertexViewPos;
+        gl_Position.z += dhProjection[3].z;
 
         gl_Position.w = -vertexViewPos.z;
 
@@ -107,10 +109,10 @@
 
 #ifdef FRAGMENT
     /* RENDERTARGETS: 0,1,2,3 */
-    layout(location = 0) out vec3 sceneColOut; // gcolor
-    layout(location = 1) out vec3 normalDataOut; // colortex1
-    layout(location = 2) out vec3 albedoDataOut; // colortex2
-    layout(location = 3) out vec3 materialDataOut; // colortex3
+    layout(location = 0) out vec4 sceneColOut; // gcolor
+    layout(location = 1) out vec4 normalDataOut; // colortex1
+    layout(location = 2) out vec4 albedoDataOut; // colortex2
+    layout(location = 3) out vec4 materialDataOut; // colortex3
 
     flat in int blockId;
 
@@ -125,6 +127,8 @@
     uniform int isEyeInWater;
 
     uniform float nightVision;
+
+    uniform sampler2D depthtex0;
 
     #ifdef IS_IRIS
         uniform float lightningFlash;
@@ -234,11 +238,11 @@
         #endif
 
         // Apply simple shading
-        sceneColOut = complexShadingForward(material);
+        sceneColOut = vec4(complexShadingForward(material), 1);
     
         // Write buffer datas
-        normalDataOut = material.normal;
-        albedoDataOut = material.albedo.rgb;
-        materialDataOut = vec3(material.metallic, material.smoothness, 0);
+        normalDataOut = vec4(material.normal, 1);
+        albedoDataOut = vec4(material.albedo.rgb, 1);
+        materialDataOut = vec4(material.metallic, material.smoothness, 0, 1);
     }
 #endif

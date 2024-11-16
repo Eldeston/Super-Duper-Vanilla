@@ -22,8 +22,6 @@
 
     flat out vec3 vertexNormal;
 
-    out float vertexViewDepth;
-
     out vec2 waterNoiseUv;
 
     out vec3 vertexColor;
@@ -32,6 +30,8 @@
     uniform vec3 cameraPosition;
 
     uniform mat4 gbufferModelViewInverse;
+
+    uniform mat4 dhProjection;
 
     #ifdef WORLD_CURVATURE
         uniform mat4 gbufferModelView;
@@ -79,9 +79,6 @@
         // Get water noise uv position
         waterNoiseUv = vertexWorldPos.xz * waterTileSizeInv;
 
-        // Output view depth
-        vertexViewDepth = -vertexViewPos.z;
-
         if(dhMaterialId == DH_BLOCK_WATER) blockId = 2;
 
 	    #ifdef WORLD_CURVATURE
@@ -93,9 +90,9 @@
         #endif
 
         // Convert to clip position and output as final position
-        // gl_Position = gl_ProjectionMatrix * vertexViewPos;
-        gl_Position.xyz = getMatScale(mat3(gl_ProjectionMatrix)) * vertexViewPos;
-        gl_Position.z += gl_ProjectionMatrix[3].z;
+        // gl_Position = dhProjection * vertexViewPos;
+        gl_Position.xyz = getMatScale(mat3(dhProjection)) * vertexViewPos;
+        gl_Position.z += dhProjection[3].z;
 
         gl_Position.w = -vertexViewPos.z;
 
@@ -109,18 +106,16 @@
 
 #ifdef FRAGMENT
     /* RENDERTARGETS: 0,1,2,3 */
-    layout(location = 0) out vec3 sceneColOut; // gcolor
-    layout(location = 1) out vec3 normalDataOut; // colortex1
-    layout(location = 2) out vec3 albedoDataOut; // colortex2
-    layout(location = 3) out vec3 materialDataOut; // colortex3
+    layout(location = 0) out vec4 sceneColOut; // gcolor
+    layout(location = 1) out vec4 normalDataOut; // colortex1
+    layout(location = 2) out vec4 albedoDataOut; // colortex2
+    layout(location = 3) out vec4 materialDataOut; // colortex3
 
     flat in int blockId;
 
     flat in vec2 lmCoord;
 
     flat in vec3 vertexNormal;
-
-    in float vertexViewDepth;
 
     in vec2 waterNoiseUv;
 
@@ -133,7 +128,7 @@
 
     uniform mat4 gbufferProjectionInverse;
 
-    uniform sampler2D depthtex0;
+    uniform sampler2D depthtex1;
     uniform sampler2D dhDepthTex1;
 
     #ifdef IS_IRIS
@@ -199,8 +194,7 @@
 
     void main(){
         // Fix for Distant Horizons translucents rendering over real geometry
-        float realDepth = texelFetch(depthtex0, ivec2(gl_FragCoord.xy), 0).x;
-        if(getViewDepth(gbufferProjectionInverse, realDepth) > vertexViewDepth || realDepth != 1.0){ discard; return; }
+        if(texelFetch(depthtex1, ivec2(gl_FragCoord.xy), 0).x != 1.0){ discard; return; }
 
         // Declare materials
 	    dataPBR material;
@@ -260,11 +254,11 @@
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         // Apply simple shading
-        sceneColOut = complexShadingForward(material);
+        sceneColOut = vec4(complexShadingForward(material), 1);
     
         // Write buffer datas
-        normalDataOut = material.normal;
-        albedoDataOut = material.albedo.rgb;
-        materialDataOut = vec3(material.metallic, material.smoothness, 0.5);
+        normalDataOut = vec4(material.normal, 1);
+        albedoDataOut = vec4(material.albedo.rgb, 1);
+        materialDataOut = vec4(material.metallic, material.smoothness, 0.5, 1);
     }
 #endif
