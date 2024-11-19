@@ -206,6 +206,10 @@
     #endif
 
     #if OUTLINES != 0
+        #if OUTLINES == 1
+            uniform float near;
+        #endif
+
         #include "/lib/post/outline.glsl"
     #endif
 
