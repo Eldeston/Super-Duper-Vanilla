@@ -213,7 +213,7 @@
             #endif
 
             // Apply simple shading
-            sceneColOut = vec4(basicShadingForward(albedo), albedo.a);
+            sceneColOut = vec4(basicShadingForward(albedo.rgb), albedo.a);
 
             // Write material data
             materialDataOut = vec3(0, 0, 0.5);

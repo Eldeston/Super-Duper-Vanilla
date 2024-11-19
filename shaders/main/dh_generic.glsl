@@ -16,13 +16,31 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    out vec3 vertexColor;
+    #ifdef WORLD_LIGHT
+        flat out float vertexNLZ;
 
-    uniform mat4 dhProjection;
+        #ifdef SHADOW_MAPPING
+            flat out float vertexNLX;
+            flat out float vertexNLY;
+
+            out vec3 vertexShdPos;
+        #endif
+    #endif
+
+    uniform vec3 cameraPosition;
+
+    uniform mat4 gbufferModelViewInverse;
 
     #ifdef WORLD_CURVATURE
         uniform mat4 gbufferModelView;
-        uniform mat4 gbufferModelViewInverse;
+    #endif
+
+    #ifdef WORLD_LIGHT
+        uniform mat4 shadowModelView;
+
+        #ifdef SHADOW_MAPPING
+            uniform mat4 shadowProjection;
+        #endif
     #endif
 
     #if ANTI_ALIASING == 2
@@ -35,34 +53,45 @@
     #endif
     
     void main(){
-        // Get vertex color
-        vertexColor = gl_Color.rgb;
-
         // Get vertex view position
         vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
 
-	    #ifdef WORLD_CURVATURE
-            // Get vertex eye player position
-            vec3 vertexEyePlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos;
-            
+        #if defined SHADOW_MAPPING && defined WORLD_LIGHT || defined WORLD_CURVATURE
             // Get vertex feet player position
-            vec2 vertexFeetPlayerPosXZ = vertexEyePlayerPos.xz + gbufferModelViewInverse[3].xz;
+            vec3 vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos + gbufferModelViewInverse[3].xyz;
+        #endif
 
+	    #ifdef WORLD_CURVATURE
             // Apply curvature distortion
-            vertexEyePlayerPos.y -= lengthSquared(vertexFeetPlayerPosXZ) * worldCurvatureInv;
-            
+            vertexFeetPlayerPos.y -= lengthSquared(vertexFeetPlayerPos.xz) * worldCurvatureInv;
+
             // Convert back to vertex view position
-            vertexViewPos = mat3(gbufferModelView) * vertexEyePlayerPos;
+            vertexViewPos = mat3(gbufferModelView) * vertexFeetPlayerPos + gbufferModelView[3].xyz;
+        #endif
+
+        #ifdef WORLD_LIGHT
+            vec3 vertexNormal = mat3(gbufferModelViewInverse) * fastNormalize(gl_NormalMatrix * gl_Normal);
+
+            vertexNLZ = dot(vertexNormal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z));
+
+            #ifdef SHADOW_MAPPING
+                // Since we already have vertexNLZ, we just need NLX and NLY to complete the shadow normal
+                vertexNLX = dot(vertexNormal, vec3(shadowModelView[0].x, shadowModelView[1].x, shadowModelView[2].x));
+                vertexNLY = dot(vertexNormal, vec3(shadowModelView[0].y, shadowModelView[1].y, shadowModelView[2].y));
+
+                // Calculate shadow pos in vertex
+                vertexShdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexFeetPlayerPos + shadowModelView[3].xyz);
+                vertexShdPos.z += shadowProjection[3].z;
+                vertexShdPos.z = vertexShdPos.z * 0.1 + 0.5;
+            #endif
         #endif
 
         // Convert to clip position and output as final position
-        // gl_Position = dhProjection * vertexViewPos;
-        gl_Position.xyz = getMatScale(mat3(dhProjection)) * vertexViewPos;
-        gl_Position.z += dhProjection[3].z;
+        // gl_Position = gl_ProjectionMatrix * vertexViewPos;
+        gl_Position.xyz = getMatScale(mat3(gl_ProjectionMatrix)) * vertexViewPos;
+        gl_Position.z += gl_ProjectionMatrix[3].z;
 
         gl_Position.w = -vertexViewPos.z;
-
-        gl_Position = ftransform();
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
@@ -73,26 +102,69 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    /* RENDERTARGETS: 0,1,2,3 */
+    /* RENDERTARGETS: 0 */
     layout(location = 0) out vec4 sceneColOut; // gcolor
-    layout(location = 1) out vec4 normalDataOut; // colortex1
-    layout(location = 2) out vec4 albedoDataOut; // colortex2
-    layout(location = 3) out vec4 materialDataOut; // colortex3
 
-    in vec3 vertexColor;
+    #ifdef WORLD_LIGHT
+        flat in float vertexNLZ;
 
-    uniform sampler2D depthtex0;
+        #ifdef SHADOW_MAPPING
+            flat in float vertexNLX;
+            flat in float vertexNLY;
+
+            in vec3 vertexShdPos;
+        #endif
+    #endif
+
+    uniform int isEyeInWater;
+
+    uniform float nightVision;
+
+    #ifdef IS_IRIS
+        uniform float lightningFlash;
+    #endif
+
+    #ifndef FORCE_DISABLE_WEATHER
+        uniform float rainStrength;
+    #endif
+
+    #if defined SHADOW_FILTER && ANTI_ALIASING >= 2
+        uniform float frameFract;
+    #endif
+
+    #ifndef FORCE_DISABLE_DAY_CYCLE
+        uniform float dayCycle;
+        uniform float twilightPhase;
+    #endif
+
+    #ifdef WORLD_VANILLA_FOG_COLOR
+        uniform vec3 fogColor;
+    #endif
+
+    #ifdef WORLD_CUSTOM_SKYLIGHT
+        const float eyeBrightFact = WORLD_CUSTOM_SKYLIGHT;
+    #else
+        uniform float eyeSkylight;
+        
+        float eyeBrightFact = eyeSkylight;
+    #endif
+
+    #ifdef WORLD_LIGHT
+        uniform float shdFade;
+
+        #ifdef SHADOW_MAPPING
+            #ifdef SHADOW_FILTER
+                #include "/lib/utility/noiseFunctions.glsl"
+            #endif
+
+            #include "/lib/lighting/shdMapping.glsl"
+        #endif
+    #endif
+
+    #include "/lib/lighting/basicShadingForward.glsl"
 
     void main(){
-        // Fix for Distant Horizons translucents rendering over real geometry
-        if(texelFetch(depthtex0, ivec2(gl_FragCoord.xy), 0).x != 1.0){ discard; return; }
-
         // Apply simple shading
-        sceneColOut = vec4(vertexColor * EMISSIVE_INTENSITY, 1);
-
-        // Write buffer datas
-        normalDataOut = vec4(0, 0, 1, 1);
-        albedoDataOut = vec4(vertexColor, 1);
-        materialDataOut = vec4(0, 0, 0, 1);
+        sceneColOut = vec4(basicShadingForward(vec3(1)), 1);
     }
 #endif

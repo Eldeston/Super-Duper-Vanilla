@@ -120,5 +120,8 @@ Note to Eldeston: Clarify program names with its purpose.
 * Refactor uniform usage and remove unecessary ones (medium priority)
 * Format the goodness knows how much nesting I used in my code because BROTHA EWWHH (maximum priority)
 
+## Current
+* Finish programming dh_generic
+
 ## DONE
 * Fix dragon death beam (medium priority) ?

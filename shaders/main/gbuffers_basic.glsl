@@ -170,7 +170,7 @@
         albedo.rgb = toLinear(albedo.rgb);
 
         // Apply simple shading
-        sceneColOut = basicShadingForward(albedo);
+        sceneColOut = basicShadingForward(albedo.rgb);
     
         // Write material data
         materialDataOut = vec3(0);

@@ -1,4 +1,4 @@
-vec3 basicShadingForward(in vec4 albedo){
+vec3 basicShadingForward(in vec3 albedo){
 	// Calculate sky diffusion first, begining with the sky itself
 	vec3 totalDiffuse = toLinear(SKY_COLOR_DATA_BLOCK);
 
@@ -7,7 +7,7 @@ vec3 basicShadingForward(in vec4 albedo){
 		totalDiffuse += lightningFlash;
 	#endif
 
-	#ifndef CLOUDS
+	#if !defined CLOUDS && !defined DH_GENERIC
 		// Get sky light squared
 		float skyLightSquared = squared(lmCoord.y);
 		// Occlude the appled sky and thunder flash calculation by sky light amount
@@ -26,14 +26,14 @@ vec3 basicShadingForward(in vec4 albedo){
 			vec3 shdPos = vec3(vertexShdPos.xy / (length(vertexShdPos.xy) * 2.0 + 0.2) + 0.5, vertexShdPos.z);
 
 			// There is no need for bias for particles, leads, etc.
-			#ifdef CLOUDS
+			#if defined CLOUDS || defined DH_GENERIC
 				// Bias mutilplier, adjusts according to the current resolution -exp2(-shadowDistance * 0.03125 - 9.0)
 				// The Z is instead a constant and the only extra bias that isn't accounted for is shadow distortion "blobs"
 				// 0.00006103515625 = exp2(-14)
 				const vec3 biasAdjustFactor = vec3(shadowMapPixelSize * 2.0, shadowMapPixelSize * 2.0, -0.00006103515625);
 
 				// Apply normal based bias
-				shdPos += vec3(vertexNLX, vertexNLY, vertexNLZ) * biasAdjustMult;
+				shdPos += vec3(vertexNLX, vertexNLY, vertexNLZ) * biasAdjustFactor;
 			#endif
 
 			// Sample shadows
@@ -52,14 +52,14 @@ vec3 basicShadingForward(in vec4 albedo){
 			// Cave light leak fix
 			float shdFactor = shdFade;
 
-			#ifdef CLOUDS
+			#if defined CLOUDS || defined DH_GENERIC
 				// Apply simple diffuse for clouds
 				shdFactor *= max(0.0, vertexNLZ * 0.6 + 0.4);
 			#endif
 
 			shdCol *= shdFactor;
 		#else
-			#ifdef CLOUDS
+			#if defined CLOUDS || defined DH_GENERIC
 				// Apply simple diffuse for clouds
 				float shdCol = max(0.0, vertexNLZ * 0.6 + 0.4) * shdFade;
 			#else
@@ -73,7 +73,7 @@ vec3 basicShadingForward(in vec4 albedo){
 			float rainDiffuseAmount = rainStrength * 0.5;
 			shdCol *= 1.0 - rainDiffuseAmount;
 
-			#ifdef CLOUDS
+			#if defined CLOUDS || defined DH_GENERIC
 				shdCol += rainDiffuseAmount;
 			#else
 				shdCol += rainDiffuseAmount * skyLightSquared;

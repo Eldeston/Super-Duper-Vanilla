@@ -31,8 +31,6 @@
 
     uniform mat4 gbufferModelViewInverse;
 
-    uniform mat4 dhProjection;
-
     #ifdef WORLD_CURVATURE
         uniform mat4 gbufferModelView;
     #endif
@@ -90,9 +88,9 @@
         #endif
 
         // Convert to clip position and output as final position
-        // gl_Position = dhProjection * vertexViewPos;
-        gl_Position.xyz = getMatScale(mat3(dhProjection)) * vertexViewPos;
-        gl_Position.z += dhProjection[3].z;
+        // gl_Position = gl_ProjectionMatrix * vertexViewPos;
+        gl_Position.xyz = getMatScale(mat3(gl_ProjectionMatrix)) * vertexViewPos;
+        gl_Position.z += gl_ProjectionMatrix[3].z;
 
         gl_Position.w = -vertexViewPos.z;
 

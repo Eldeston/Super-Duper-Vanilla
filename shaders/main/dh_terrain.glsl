@@ -30,8 +30,6 @@
 
     uniform mat4 gbufferModelViewInverse;
 
-    uniform mat4 dhProjection;
-
     #ifdef WORLD_CURVATURE
         uniform mat4 gbufferModelView;
     #endif
@@ -93,9 +91,9 @@
         #endif
 
         // Convert to clip position and output as final position
-        // gl_Position = dhProjection * vertexViewPos;
-        gl_Position.xyz = getMatScale(mat3(dhProjection)) * vertexViewPos;
-        gl_Position.z += dhProjection[3].z;
+        // gl_Position = gl_ProjectionMatrix * vertexViewPos;
+        gl_Position.xyz = getMatScale(mat3(gl_ProjectionMatrix)) * vertexViewPos;
+        gl_Position.z += gl_ProjectionMatrix[3].z;
 
         gl_Position.w = -vertexViewPos.z;
 
@@ -108,11 +106,8 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    /* RENDERTARGETS: 0,1,2,3 */
+    /* RENDERTARGETS: 0 */
     layout(location = 0) out vec4 sceneColOut; // gcolor
-    layout(location = 1) out vec4 normalDataOut; // colortex1
-    layout(location = 2) out vec4 albedoDataOut; // colortex2
-    layout(location = 3) out vec4 materialDataOut; // colortex3
 
     flat in int blockId;
 
@@ -127,8 +122,6 @@
     uniform int isEyeInWater;
 
     uniform float nightVision;
-
-    uniform sampler2D depthtex0;
 
     #ifdef IS_IRIS
         uniform float lightningFlash;
@@ -239,10 +232,5 @@
 
         // Apply simple shading
         sceneColOut = vec4(complexShadingForward(material), 1);
-    
-        // Write buffer datas
-        normalDataOut = vec4(material.normal, 1);
-        albedoDataOut = vec4(material.albedo.rgb, 1);
-        materialDataOut = vec4(material.metallic, material.smoothness, 0, 1);
     }
 #endif
