@@ -3,6 +3,8 @@ float getBorderFog(in float playerPosLength){
     return exp2(-exp2(playerPosLength / borderFar * 21.0 - 18.0));
 }
 
+// Ground fog calculation from this Stack Exchange post, variables has been renamed for their respective purpose
+// https://www.bing.com/search?q=ground+fog+shader&qs=n&form=QBRE&sp=-1&lq=0&pq=&sc=0-0&sk=&cvid=CEF589A66F844D48A5D56923DDBF4540&ghsh=0&ghacc=0&ghpl=&ntref=1
 float getAtmosphericFog(in float nPlayerPosY, in float worldPosY, in float playerPosLength, in float totalDensity, in float verticalFogDensity){
     return (totalDensity / verticalFogDensity) * exp2(-worldPosY * verticalFogDensity) * (1.0 - exp2(-playerPosLength * nPlayerPosY * verticalFogDensity)) / nPlayerPosY;
 }

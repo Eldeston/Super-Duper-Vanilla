@@ -27,8 +27,6 @@
         #endif
     #endif
 
-    uniform vec3 cameraPosition;
-
     uniform mat4 gbufferModelViewInverse;
 
     #ifdef WORLD_CURVATURE
@@ -164,7 +162,7 @@
     #include "/lib/lighting/basicShadingForward.glsl"
 
     void main(){
-        // Apply simple shading
+        // Apply basic shading
         sceneColOut = vec4(basicShadingForward(vec3(1)), 1);
     }
 #endif

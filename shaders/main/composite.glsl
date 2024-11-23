@@ -277,7 +277,7 @@
         vec3 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xyz;
 
         // If the object renders after deferred apply separate lighting
-        if(matRaw0.z > 0 && matRaw0.z != 1){
+        if(matRaw0.z > 0 && matRaw0.z < 1){
             // Declare and get materials
             vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
             vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
