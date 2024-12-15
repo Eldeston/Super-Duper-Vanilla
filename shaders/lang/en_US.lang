@@ -1,4 +1,4 @@
-## Language format v1.0.4
+## Language format v1.0.5
 ## All other .lang files must update to the latest language format version on this main .lang file
 
 ## Profiles
@@ -8,7 +8,7 @@
     profile.HIGH = High
     profile.ULTRA = Ultra
 
-screen.DEBUG = Super Duper Vanilla v1.3.5
+screen.DEBUG = Super Duper Vanilla v1.3.7
     screen.DEBUG.comment = Developed by §2Eldeston§f§r, presented by §9FlameRender (C) §9Studios. §eClick me to open shader debug settings!
 
     option.COLOR_MODE = Color mode
@@ -106,6 +106,8 @@ screen.ATMOSPHERICS = Atmospherics
     option.DOUBLE_LAYERED_CLOUDS = Double layered clouds
     option.DYNAMIC_CLOUDS = Dynamic clouds
     option.FADE_SPEED = Fade speed
+    option.CLOUD_STEPS = Cloud steps
+    option.CLOUD_DEPTH = Cloud depth
     option.SECOND_CLOUD_HEIGHT = 2nd cloud height
     option.SKYBOX_BRIGHTNESS = Skybox brightness
 

@@ -1,11 +1,12 @@
-// Fragment GL version
+// Vertex GL version
 #version 330 compatibility
 
-#define COMPOSITE0
-#define FRAGMENT
+#define GBUFFERS
+#define DH_GENERIC
+#define VERTEX
 
 #include "/lib/settings.glsl"
 #include "/lib/utility/common.glsl"
 
 #include "world.glsl"
-#include "/main/composite.glsl"
+#include "/main/dh_generic.glsl"

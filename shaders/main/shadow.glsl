@@ -1,5 +1,5 @@
 /*
-================================ /// Super Duper Vanilla v1.3.5 /// ================================
+================================ /// Super Duper Vanilla v1.3.7 /// ================================
 
     Developed by Eldeston, presented by FlameRender (C) Studios.
 
@@ -8,7 +8,7 @@
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.5 /// ================================
+================================ /// Super Duper Vanilla v1.3.7 /// ================================
 */
 
 /// Buffer features: Water caustics, direct shading, animation, and world curvature
@@ -24,6 +24,8 @@
         out vec2 texCoord;
         out vec2 waterNoiseUv;
 
+        uniform int renderStage;
+
         uniform vec3 cameraPosition;
 
         uniform mat4 shadowModelView;
@@ -36,7 +38,7 @@
 
             #ifdef PHYSICS_OCEAN
                 // Physics mod compatibility
-                #include "/lib/physicsMod/physicsModVertex.glsl"
+                #include "/lib/modded/physicsMod/physicsModVertex.glsl"
             #endif
 
             #include "/lib/vertex/shadowWave.glsl"
@@ -89,6 +91,10 @@
 
             // Apply shadow distortion
             gl_Position.xyz = vec3(gl_Position.xy / (length(gl_Position.xy) + 0.1), gl_Position.z * 0.2);
+
+            // Fix for dragon death beams rendering in shadow
+            // SOMEBODY FIX THIS INCONSISTENCY MY EYES ARE ITCHY
+            if(renderStage == MC_RENDER_STAGE_ENTITIES && length(gl_Normal) == 1) gl_Position = vec4(-10);
         }
     #else
         void main(){

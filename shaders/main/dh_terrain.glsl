@@ -1,5 +1,5 @@
 /*
-================================ /// Super Duper Vanilla v1.3.5 /// ================================
+================================ /// Super Duper Vanilla v1.3.7 /// ================================
 
     Developed by Eldeston, presented by FlameRender (C) Studios.
 
@@ -8,7 +8,7 @@
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.5 /// ================================
+================================ /// Super Duper Vanilla v1.3.7 /// ================================
 */
 
 /// Buffer features: TAA jittering, simple shading, and world curvature
@@ -16,18 +16,17 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
+    flat out int blockId;
+
     flat out vec2 lmCoord;
 
     flat out vec3 vertexNormal;
 
     out vec3 vertexColor;
     out vec3 vertexFeetPlayerPos;
+    out vec3 vertexWorldPos;
 
-    /*
-    #if defined WORLD_LIGHT && defined SHADOW_MAPPING
-        out vec3 vertexShdPos;
-    #endif
-    */
+    uniform vec3 cameraPosition;
 
     uniform mat4 gbufferModelViewInverse;
 
@@ -68,6 +67,15 @@
 
         // Get vertex view position
         vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
+        // Get vertex feet player position
+        vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos + gbufferModelViewInverse[3].xyz;
+
+        // Get world position
+        vertexWorldPos = vertexFeetPlayerPos + cameraPosition;
+
+        if(dhMaterialId == DH_BLOCK_ILLUMINATED) blockId = 0;
+        else if(dhMaterialId == DH_BLOCK_LAVA) blockId = 1;
+        else if(dhMaterialId == DH_BLOCK_LEAVES) blockId = 2;
 
         #if defined SHADOW_MAPPING && defined WORLD_LIGHT || defined WORLD_CURVATURE
             // Get vertex feet player position
@@ -81,15 +89,6 @@
             // Convert back to vertex view position
             vertexViewPos = mat3(gbufferModelView) * vertexFeetPlayerPos + gbufferModelView[3].xyz;
         #endif
-
-        /*
-        #if defined SHADOW_MAPPING && defined WORLD_LIGHT
-            // Calculate shadow pos in vertex
-            vertexShdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexFeetPlayerPos + shadowModelView[3].xyz);
-			vertexShdPos.z += shadowProjection[3].z;
-            vertexShdPos.z = vertexShdPos.z * 0.1 + 0.5;
-        #endif
-        */
 
         // Convert to clip position and output as final position
         // gl_Position = gl_ProjectionMatrix * vertexViewPos;
@@ -107,9 +106,10 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    /* RENDERTARGETS: 0,3 */
-    layout(location = 0) out vec3 sceneColOut; // gcolor
-    layout(location = 1) out vec3 materialDataOut; // colortex3
+    /* RENDERTARGETS: 0 */
+    layout(location = 0) out vec4 sceneColOut; // gcolor
+
+    flat in int blockId;
 
     flat in vec2 lmCoord;
 
@@ -117,12 +117,7 @@
 
     in vec3 vertexColor;
     in vec3 vertexFeetPlayerPos;
-
-    /*
-    #if defined WORLD_LIGHT && defined SHADOW_MAPPING
-        in vec3 vertexShdPos;
-    #endif
-    */
+    in vec3 vertexWorldPos;
 
     uniform int isEyeInWater;
 
@@ -175,6 +170,18 @@
 
     #include "/lib/utility/noiseFunctions.glsl"
 
+    #ifdef LAVA_NOISE
+        uniform float fragmentFrameTime;
+
+        #include "/lib/surface/lava.glsl"
+    #endif
+
+    #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
+        uniform float isPrecipitationRain;
+
+        #include "/lib/PBR/enviroPBR.glsl"
+    #endif
+
     #include "/lib/lighting/complexShadingForward.glsl"
 
     void main(){
@@ -194,13 +201,36 @@
         material.ss = 0.0; material.parallaxShd = 1.0;
         material.ambient = 1.0;
 
+        // If illuminated block
+        if(blockId == 0) material.emissive = 1.0;
+
+        // If lava
+        else if(blockId == 1){
+            #ifdef LAVA_NOISE
+                // Lava tile size inverse
+                const float lavaTileSizeInv = 1.0 / LAVA_TILE_SIZE;
+
+                vec2 lavaUv = vertexWorldPos.zy * vertexNormal.x + vertexWorldPos.xz * vertexNormal.y + vertexWorldPos.xy * vertexNormal.z;
+                float lavaNoise = saturate(max(getLavaNoise(lavaUv * lavaTileSizeInv) * 3.0, sumOf(material.albedo.rgb)) - 1.0);
+                material.albedo.rgb = floor(material.albedo.rgb * lavaNoise * LAVA_BRIGHTNESS * 32.0) * 0.03125;
+            #else
+                material.albedo.rgb = material.albedo.rgb * LAVA_BRIGHTNESS;
+            #endif
+
+            material.emissive = 1.0;
+        }
+
+        // If leaves
+        else if(blockId == 2) material.ss = 0.5;
+
         // Convert to linear space
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
+        #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
+            if(blockId != 0 && blockId != 1) enviroPBR(material, vertexNormal);
+        #endif
+
         // Apply simple shading
-        sceneColOut = complexShadingForward(material);
-    
-        // Write material data
-        materialDataOut = vec3(0);
+        sceneColOut = vec4(complexShadingForward(material), 1);
     }
 #endif

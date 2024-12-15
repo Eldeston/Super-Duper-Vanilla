@@ -1,5 +1,5 @@
 /*
-================================ /// Super Duper Vanilla v1.3.5 /// ================================
+================================ /// Super Duper Vanilla v1.3.7 /// ================================
 
     Developed by Eldeston, presented by FlameRender (C) Studios.
 
@@ -8,7 +8,7 @@
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.5 /// ================================
+================================ /// Super Duper Vanilla v1.3.7 /// ================================
 */
 
 /// Buffer features: Solid complex shading
@@ -206,6 +206,10 @@
     #endif
 
     #if OUTLINES != 0
+        #if OUTLINES == 1
+            uniform float near;
+        #endif
+
         #include "/lib/post/outline.glsl"
     #endif
 
@@ -307,7 +311,15 @@
 
         // Get basic sky fog color
         vec3 fogSkyCol = getSkyFogRender(nEyePlayerPos, skyPos, currSkyCol);
-        // Do basic sky render and use it as fog color
-        sceneColOut = getFogRender(sceneColOut, fogSkyCol, viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
+        // Get fog factor
+        float fogFactor = getFogFactor(viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
+
+        // Border fog
+        #ifdef BORDER_FOG
+            fogFactor = (fogFactor - 1.0) * getBorderFog(viewDist) + 1.0;
+        #endif
+
+        // Apply fog and darkness fog
+        sceneColOut = ((fogSkyCol - sceneColOut) * fogFactor + sceneColOut) * getFogDarknessFactor(viewDist);
     }
 #endif

@@ -1,5 +1,5 @@
 /*
-================================ /// Super Duper Vanilla v1.3.5 /// ================================
+================================ /// Super Duper Vanilla v1.3.7 /// ================================
 
     Developed by Eldeston, presented by FlameRender (C) Studios.
 
@@ -8,7 +8,7 @@
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.5 /// ================================
+================================ /// Super Duper Vanilla v1.3.7 /// ================================
 */
 
 /// Buffer features: TAA jittering, simple shading, and dynamic clouds
@@ -213,10 +213,10 @@
             #endif
 
             // Apply simple shading
-            sceneColOut = vec4(basicShadingForward(albedo), albedo.a);
+            sceneColOut = vec4(basicShadingForward(albedo.rgb), albedo.a);
 
             // Write material data
-            materialDataOut = vec3(0);
+            materialDataOut = vec3(0, 0, 0.5);
         }
     #endif
 #endif

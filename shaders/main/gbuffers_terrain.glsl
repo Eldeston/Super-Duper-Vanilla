@@ -1,5 +1,5 @@
 /*
-================================ /// Super Duper Vanilla v1.3.5 /// ================================
+================================ /// Super Duper Vanilla v1.3.7 /// ================================
 
     Developed by Eldeston, presented by FlameRender (C) Studios.
 
@@ -8,7 +8,7 @@
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.5 /// ================================
+================================ /// Super Duper Vanilla v1.3.7 /// ================================
 */
 
 /// Buffer features: TAA jittering, complex shading, animation, lava noise, PBR, and world curvature
@@ -248,6 +248,7 @@
 	    dataPBR material;
         getPBR(material, blockId);
 
+        // If lava
         if(blockId == 11100){
             #ifdef LAVA_NOISE
                 // Lava tile size inverse
@@ -264,7 +265,7 @@
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
-            if(blockId != 11100 && blockId != 12101) enviroPBR(material);
+            if(blockId != 11100 && blockId != 12101) enviroPBR(material, TBN[2]);
         #endif
 
         // Write to HDR scene color

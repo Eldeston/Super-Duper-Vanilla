@@ -1,5 +1,5 @@
 /*
-================================ /// Super Duper Vanilla v1.3.5 /// ================================
+================================ /// Super Duper Vanilla v1.3.7 /// ================================
 
     Developed by Eldeston, presented by FlameRender (C) Studios.
 
@@ -8,7 +8,7 @@
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.5 /// ================================
+================================ /// Super Duper Vanilla v1.3.7 /// ================================
 */
 
 /// Buffer features: TAA jittering, complex shading, PBR, lightning, and world curvature
@@ -16,8 +16,6 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    flat out float vertexAlpha;
-
     flat out vec2 lmCoord;
 
     flat out vec3 vertexColor;
@@ -57,8 +55,6 @@
     #endif
 
     void main(){
-        // Get vertex alpha
-        vertexAlpha = gl_Color.a;
         // Get vertex color
         vertexColor = gl_Color.rgb;
         // Get buffer texture coordinates
@@ -123,8 +119,6 @@
     layout(location = 1) out vec3 normalDataOut; // colortex1
     layout(location = 2) out vec3 albedoDataOut; // colortex2
     layout(location = 3) out vec3 materialDataOut; // colortex3
-
-    flat in float vertexAlpha;
 
     flat in vec2 lmCoord;
 
@@ -211,15 +205,6 @@
     #include "/lib/lighting/complexShadingForward.glsl"
 
     void main(){
-        // Lightning fix, materials need to be specified due to glitching issues
-        if(entityId == 10129){
-            const vec3 lightningCol = vec3(0.25 * EMISSIVE_INTENSITY, 0.5 * EMISSIVE_INTENSITY, EMISSIVE_INTENSITY);
-            sceneColOut = lightningCol;
-            normalDataOut = vec3(0);
-            materialDataOut = vec3(0);
-            return;
-        }
-
         // Declare materials
 	    dataPBR material;
         getPBR(material, entityId);

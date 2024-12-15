@@ -1,5 +1,5 @@
 /*
-================================ /// Super Duper Vanilla v1.3.5 /// ================================
+================================ /// Super Duper Vanilla v1.3.7 /// ================================
 
     Developed by Eldeston, presented by FlameRender (C) Studios.
 
@@ -8,7 +8,7 @@
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.5 /// ================================
+================================ /// Super Duper Vanilla v1.3.7 /// ================================
 */
 
 /// Buffer features: TAA jittering, complex shading, PBR, lightning, and world curvature
@@ -211,18 +211,12 @@
     #include "/lib/lighting/complexShadingForward.glsl"
 
     void main(){
-        // Lightning fix, materials need to be specified due to glitching issues
-        if(entityId == 10129){
-            const vec3 lightningCol = vec3(0.25 * EMISSIVE_INTENSITY, 0.5 * EMISSIVE_INTENSITY, EMISSIVE_INTENSITY);
-            sceneColOut = vec4(lightningCol, vertexAlpha);
-            normalDataOut = vec3(0);
-            materialDataOut = vec3(0);
-            return;
-        }
-
         // Declare materials
 	    dataPBR material;
         getPBR(material, entityId);
+
+        // Nametag
+        if(vertexAlpha >= 0.24 && vertexAlpha < 0.255) material.albedo.a *= vertexAlpha;
 
         // Apply entity color tint
         material.albedo.rgb = mix(material.albedo.rgb, entityColor.rgb, entityColor.a);
@@ -236,6 +230,6 @@
         // Write buffer datas
         normalDataOut = material.normal;
         albedoDataOut = material.albedo.rgb;
-        materialDataOut = vec3(material.metallic, material.smoothness, 0);
+        materialDataOut = vec3(material.metallic, material.smoothness, 0.5);
     }
 #endif

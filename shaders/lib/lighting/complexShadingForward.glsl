@@ -57,7 +57,9 @@ vec3 complexShadingForward(in dataPBR material){
 				// Apply shadow distortion and transform to shadow screen space
 				shdPos = vec3(shdPos.xy / (length(shdPos.xy) * 2.0 + 0.2), shdPos.z * 0.1) + 0.5;
 				// Bias mutilplier, adjusts according to the current resolution
-				const vec3 biasAdjustFactor = vec3(2, 2, -0.0625) * shadowMapPixelSize;
+				// The Z is instead a constant and the only extra bias that isn't accounted for is shadow distortion "blobs"
+				// 0.00006103515625 = exp2(-14)
+				const vec3 biasAdjustFactor = vec3(shadowMapPixelSize * 2.0, shadowMapPixelSize * 2.0, -0.00006103515625);
 
 				// Since we already have NLZ, we just need NLX and NLY to complete the shadow normal
 				float NLX = dot(material.normal, vec3(shadowModelView[0].x, shadowModelView[1].x, shadowModelView[2].x));
@@ -87,7 +89,7 @@ vec3 complexShadingForward(in dataPBR material){
 				#endif
 
 				#if defined TERRAIN || defined WATER
-					if(isEyeInWater == 0) shdFactor *= min(1.0, lmCoord.y * 2.0 + eyeBrightFact);
+					if(isEyeInWater == 0) shdFactor *= min(1.0, (lmCoord.y + eyeBrightFact) * 4.0);
 				#endif
 
 				shdCol *= shdFactor;
@@ -101,6 +103,15 @@ vec3 complexShadingForward(in dataPBR material){
 			#endif
 		#endif
 
+		float dirLight = isShadow ? NLZ : 0.0;
+
+		#ifdef SUBSURFACE_SCATTERING
+			// Diffuse with simple SS approximation
+			if(isSubSurface) dirLight += (1.0 - dirLight) * material.ambient * material.ss * 0.5;
+		#endif
+
+		shdCol *= dirLight;
+
 		#ifndef FORCE_DISABLE_WEATHER
 			// Approximate rain diffusing light shadow
 			float rainDiffuseAmount = rainStrength * 0.5;
@@ -109,15 +120,8 @@ vec3 complexShadingForward(in dataPBR material){
 			shdCol += rainDiffuseAmount * material.ambient * skyLightSquared;
 		#endif
 
-		float dirLight = isShadow ? NLZ : 0.0;
-
-		#ifdef SUBSURFACE_SCATTERING
-			// Diffuse with simple SS approximation
-			if(isSubSurface) dirLight += (1.0 - dirLight) * material.ambient * material.ss * 0.5;
-		#endif
-		
 		// Calculate and add shadow diffuse
-		totalIllumination += toLinear(sRGBLightCol) * shdCol * dirLight;
+		totalIllumination += toLinear(sRGBLightCol) * shdCol;
 	#endif
 
 	vec3 totalLighting = material.albedo.rgb * totalIllumination;

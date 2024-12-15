@@ -1,5 +1,5 @@
 /*
-================================ /// Super Duper Vanilla v1.3.5 /// ================================
+================================ /// Super Duper Vanilla v1.3.7 /// ================================
 
     Developed by Eldeston, presented by FlameRender (C) Studios.
 
@@ -8,7 +8,7 @@
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.5 /// ================================
+================================ /// Super Duper Vanilla v1.3.7 /// ================================
 */
 
 /// Buffer features: Transparent complex shading and volumetric lighting
@@ -121,7 +121,6 @@
     uniform sampler2D colortex3;
 
     uniform sampler2D depthtex0;
-    uniform sampler2D depthtex1;
 
     #ifdef IS_IRIS
         uniform float lightningFlash;
@@ -145,6 +144,9 @@
     #endif
 
     #ifdef DISTANT_HORIZONS
+        uniform float near;
+        uniform float dhNearPlane;
+
         uniform mat4 dhProjection;
         uniform mat4 dhProjectionInverse;
 
@@ -253,18 +255,30 @@
             vec3 dither = getRng3(screenTexelCoord & 255);
         #endif
 
-        // If the object is a transparent render separate lighting
-        if(texelFetch(depthtex1, screenTexelCoord, 0).x > screenPos.z){
-            // Get view distance
-            float viewDot = lengthSquared(viewPos);
-            float viewDotInvSqrt = inversesqrt(viewDot);
-            float viewDist = viewDot * viewDotInvSqrt;
+        // Get view distance
+        float viewDot = lengthSquared(viewPos);
+        float viewDotInvSqrt = inversesqrt(viewDot);
+        float viewDist = viewDot * viewDotInvSqrt;
 
-            // Get normalized eyePlayerPos
-            vec3 nEyePlayerPos = eyePlayerPos * viewDotInvSqrt;
+        // Get normalized eyePlayerPos
+        vec3 nEyePlayerPos = eyePlayerPos * viewDotInvSqrt;
 
+        // Get fog factor
+        float fogFactor = getFogFactor(viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
+
+        // Border fog
+        #ifdef BORDER_FOG
+            float borderFog = getBorderFog(viewDist);
+        #else
+            float borderFog = 0.0;
+        #endif
+
+        // Materials and programs that come after deferred mask
+        vec3 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xyz;
+
+        // If the object renders after deferred apply separate lighting
+        if(matRaw0.z > 0 && matRaw0.z < 1){
             // Declare and get materials
-            vec2 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xy;
             vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
             vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
 
@@ -273,8 +287,14 @@
 
             // Get basic sky fog color
             vec3 fogSkyCol = getSkyFogRender(nEyePlayerPos);
-            // Do basic sky render and use it as fog color
-            sceneColOut = getFogRender(sceneColOut, fogSkyCol, viewDist, nEyePlayerPos.y, feetPlayerPos.y + cameraPosition.y);
+
+            // Border fog
+            #ifdef BORDER_FOG
+                fogFactor = (fogFactor - 1.0) * borderFog + 1.0;
+            #endif
+
+            // Apply fog and darkness fog
+            sceneColOut = ((fogSkyCol - sceneColOut) * fogFactor + sceneColOut) * getFogDarknessFactor(viewDist);
         }
 
         // Apply darkness pulsing effect
@@ -288,7 +308,7 @@
         #ifdef WORLD_LIGHT
             // Apply volumetric light
             if(VOLUMETRIC_LIGHTING_STRENGTH != 0 && isEyeInWater != 2)
-                sceneColOut += getVolumetricLight(feetPlayerPos, screenPos.z, dither.x);
+                sceneColOut += getVolumetricLight(feetPlayerPos, fogFactor, borderFog, screenPos.z, dither.x);
         #endif
 
         // Clamp scene color to prevent NaNs during post processing

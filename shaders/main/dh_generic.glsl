@@ -16,14 +16,15 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    flat out vec2 lmCoord;
+    #ifdef WORLD_LIGHT
+        flat out float vertexNLZ;
 
-    flat out vec3 vertexColor;
+        #ifdef SHADOW_MAPPING
+            flat out float vertexNLX;
+            flat out float vertexNLY;
 
-    out vec2 texCoord;
-
-    #if defined WORLD_LIGHT && defined SHADOW_MAPPING
-        out vec3 vertexShdPos;
+            out vec3 vertexShdPos;
+        #endif
     #endif
 
     uniform mat4 gbufferModelViewInverse;
@@ -50,18 +51,6 @@
     #endif
     
     void main(){
-        // Get buffer texture coordinates
-        texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
-        // Get vertex color
-        vertexColor = gl_Color.rgb;
-
-        // Lightmap fix for mods
-        #ifdef WORLD_CUSTOM_SKYLIGHT
-            lmCoord = vec2(min(gl_MultiTexCoord1.x * 0.00416667, 1.0), WORLD_CUSTOM_SKYLIGHT);
-        #else
-            lmCoord = min(gl_MultiTexCoord1.xy * 0.00416667, vec2(1));
-        #endif
-
         // Get vertex view position
         vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
 
@@ -78,11 +67,21 @@
             vertexViewPos = mat3(gbufferModelView) * vertexFeetPlayerPos + gbufferModelView[3].xyz;
         #endif
 
-        #if defined SHADOW_MAPPING && defined WORLD_LIGHT
-            // Calculate shadow pos in vertex
-            vertexShdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexFeetPlayerPos + shadowModelView[3].xyz);
-			vertexShdPos.z += shadowProjection[3].z;
-            vertexShdPos.z = vertexShdPos.z * 0.1 + 0.5;
+        #ifdef WORLD_LIGHT
+            vec3 vertexNormal = mat3(gbufferModelViewInverse) * fastNormalize(gl_NormalMatrix * gl_Normal);
+
+            vertexNLZ = dot(vertexNormal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z));
+
+            #ifdef SHADOW_MAPPING
+                // Since we already have vertexNLZ, we just need NLX and NLY to complete the shadow normal
+                vertexNLX = dot(vertexNormal, vec3(shadowModelView[0].x, shadowModelView[1].x, shadowModelView[2].x));
+                vertexNLY = dot(vertexNormal, vec3(shadowModelView[0].y, shadowModelView[1].y, shadowModelView[2].y));
+
+                // Calculate shadow pos in vertex
+                vertexShdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexFeetPlayerPos + shadowModelView[3].xyz);
+                vertexShdPos.z += shadowProjection[3].z;
+                vertexShdPos.z = vertexShdPos.z * 0.1 + 0.5;
+            #endif
         #endif
 
         // Convert to clip position and output as final position
@@ -101,31 +100,23 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    /* RENDERTARGETS: 0,3 */
+    /* RENDERTARGETS: 0 */
     layout(location = 0) out vec4 sceneColOut; // gcolor
-    layout(location = 1) out vec3 materialDataOut; // colortex3
 
-    flat in vec2 lmCoord;
+    #ifdef WORLD_LIGHT
+        flat in float vertexNLZ;
 
-    flat in vec3 vertexColor;
+        #ifdef SHADOW_MAPPING
+            flat in float vertexNLX;
+            flat in float vertexNLY;
 
-    in vec2 texCoord;
-
-    #if defined WORLD_LIGHT && defined SHADOW_MAPPING
-        in vec3 vertexShdPos;
+            in vec3 vertexShdPos;
+        #endif
     #endif
 
     uniform int isEyeInWater;
 
     uniform float nightVision;
-
-    uniform ivec2 atlasSize;
-
-    uniform sampler2D tex;
-
-    #ifdef MC_RENDER_STAGE_WORLD_BORDER
-        uniform int renderStage;
-    #endif
 
     #ifdef IS_IRIS
         uniform float lightningFlash;
@@ -171,42 +162,7 @@
     #include "/lib/lighting/basicShadingForward.glsl"
 
     void main(){
-        // Get albedo
-        vec4 albedo = textureLod(tex, texCoord, 0);
-
-        // Alpha test, discard and return immediately
-        if(albedo.a < ALPHA_THRESHOLD){ discard; return; }
-
-        // World border fix + emissives
-        if(renderStage == MC_RENDER_STAGE_WORLD_BORDER){
-            const vec3 borderCol = vec3(0.125, 0.25, 0.5) * EMISSIVE_INTENSITY;
-            sceneColOut = vec4(borderCol, albedo.a);
-            return; // Return immediately, no need for lighting calculation
-        }
-
-        // Particle emissives
-        if((vertexColor.r * 0.5 > vertexColor.g + vertexColor.b || (vertexColor.r + vertexColor.b > vertexColor.g * 2.0 && abs(vertexColor.r - vertexColor.b) < 0.2) || ((albedo.r + albedo.g + albedo.b > 1.6 || (vertexColor.r != vertexColor.g && vertexColor.g != vertexColor.b)) && lmCoord.x == 1)) && atlasSize.x <= 1024 && atlasSize.x > 0){
-            sceneColOut = vec4(toLinear(albedo.rgb * vertexColor) * EMISSIVE_INTENSITY, albedo.a);
-            return; // Return immediately, no need for lighting calculation
-        }
-
-        #if COLOR_MODE == 0
-            albedo.rgb *= vertexColor;
-        #elif COLOR_MODE == 1
-            albedo.rgb = vec3(1);
-        #elif COLOR_MODE == 2
-            albedo.rgb = vec3(0);
-        #elif COLOR_MODE == 3
-            albedo.rgb = vertexColor;
-        #endif
-
-        // Convert to linear space
-        albedo.rgb = toLinear(albedo.rgb);
-
-        // Apply simple shading
-        sceneColOut = vec4(basicShadingForward(albedo.rgb), albedo.a);
-
-        // Write material data
-        materialDataOut = vec3(0, 0, 0.5);
+        // Apply basic shading
+        sceneColOut = vec4(basicShadingForward(vec3(1)), 1);
     }
 #endif

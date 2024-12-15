@@ -1,5 +1,5 @@
 /*
-================================ /// Super Duper Vanilla v1.3.5 /// ================================
+================================ /// Super Duper Vanilla v1.3.7 /// ================================
 
     Developed by Eldeston, presented by FlameRender (C) Studios.
 
@@ -8,7 +8,7 @@
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.5 /// ================================
+================================ /// Super Duper Vanilla v1.3.7 /// ================================
 */
 
 /// Buffer features: TAA jittering, complex shading, animation, water noise, PBR, and world curvature
@@ -18,14 +18,15 @@
 #ifdef VERTEX
     flat out int blockId;
 
-    flat out mat3 TBN;
-
     out vec2 lmCoord;
     out vec2 texCoord;
     out vec2 waterNoiseUv;
 
     out vec3 vertexColor;
     out vec3 vertexFeetPlayerPos;
+    out vec3 vertexWorldPos;
+
+    out mat3 TBN;
 
     #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
         flat out vec2 vTexCoordScale;
@@ -40,7 +41,7 @@
 
         out vec2 physics_localPosition;
 
-        #include "/lib/physicsMod/physicsModVertex.glsl"
+        #include "/lib/modded/physicsMod/physicsModVertex.glsl"
     #endif
 
     uniform vec3 cameraPosition;
@@ -100,7 +101,7 @@
         vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos + gbufferModelViewInverse[3].xyz;
 
         // Get world position
-        vec3 vertexWorldPos = vertexFeetPlayerPos + cameraPosition;
+        vertexWorldPos = vertexFeetPlayerPos + cameraPosition;
 
         // Get water noise uv position
         waterNoiseUv = vertexWorldPos.xz * waterTileSizeInv;
@@ -170,14 +171,15 @@
 
     flat in int blockId;
 
-    flat in mat3 TBN;
-
     in vec2 lmCoord;
     in vec2 texCoord;
     in vec2 waterNoiseUv;
 
     in vec3 vertexColor;
     in vec3 vertexFeetPlayerPos;
+    in vec3 vertexWorldPos;
+
+    in mat3 TBN;
 
     #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
         flat in vec2 vTexCoordScale;
@@ -192,7 +194,7 @@
 
         in vec2 physics_localPosition;
 
-        #include "/lib/physicsMod/physicsModFragment.glsl"
+        #include "/lib/modded/physicsMod/physicsModFragment.glsl"
     #endif
 
     uniform int isEyeInWater;
@@ -266,6 +268,12 @@
         #include "/lib/surface/water.glsl"
     #endif
 
+    #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
+        uniform float isPrecipitationRain;
+
+        #include "/lib/PBR/enviroPBR.glsl"
+    #endif
+
     #include "/lib/lighting/complexShadingForward.glsl"
 
     void main(){
@@ -290,8 +298,8 @@
 
                 waterNoise *= physicsFoam;
             #elif defined WATER_NORMAL
-                vec4 waterData = H2NWater(waterNoiseUv);
-                material.normal = waterData.zyx * TBN[2].x + waterData.xzy * TBN[2].y + waterData.xyz * TBN[2].z;
+                vec4 waterData = H2NWater(waterNoiseUv).xzyw;
+                material.normal = fastNormalize(waterData.yxz * TBN[2].x + waterData.xyz * TBN[2].y + waterData.xzy * TBN[2].z);
 
                 #ifdef WATER_NOISE
                     waterNoise *= squared(0.128 + waterData.w * 0.5);
@@ -304,6 +312,7 @@
 
             #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
                 // Water color and foam. Fast depth linearization by DrDesten
+                // Not great, but plausible for most scenarios
                 float waterDepth = near / (1.0 - gl_FragCoord.z) - near / (1.0 - texelFetch(depthtex1, ivec2(gl_FragCoord.xy), 0).x);
             #endif
 
@@ -325,12 +334,16 @@
 
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
+        #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
+            if(blockId != 11102) enviroPBR(material, TBN[2]);
+        #endif
+
         // Write to HDR scene color
         sceneColOut = vec4(complexShadingForward(material), material.albedo.a);
 
         // Write buffer datas
         normalDataOut = material.normal;
         albedoDataOut = material.albedo.rgb;
-        materialDataOut = vec3(material.metallic, material.smoothness, 0);
+        materialDataOut = vec3(material.metallic, material.smoothness, 0.5);
     }
 #endif

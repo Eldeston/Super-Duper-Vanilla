@@ -1,5 +1,5 @@
 /*
-================================ /// Super Duper Vanilla v1.3.5 /// ================================
+================================ /// Super Duper Vanilla v1.3.7 /// ================================
 
     Developed by Eldeston, presented by FlameRender (C) Studios.
 
@@ -8,7 +8,7 @@
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.5 /// ================================
+================================ /// Super Duper Vanilla v1.3.7 /// ================================
 */
 
 /// Buffer features: TAA jittering, direct shading, and world curvature
@@ -16,6 +16,8 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
+    flat out float vertexAlpha;
+
     out vec2 texCoord;
 
     #ifdef WORLD_CURVATURE
@@ -35,6 +37,8 @@
     void main(){
         // Get buffer texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+        // Get vertex alpha (in this case, the warden stores the heartbeat pulse here)
+        vertexAlpha = (gl_Color.a * 0.9 + 0.1) * EMISSIVE_INTENSITY;
 
 	    // Get vertex view position
         vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
@@ -72,6 +76,8 @@
     /* RENDERTARGETS: 0 */
     layout(location = 0) out vec3 sceneColOut; // gcolor
 
+    flat in float vertexAlpha;
+
     in vec2 texCoord;
 
     // Get albedo texture
@@ -87,6 +93,6 @@
         // Convert to linear space
         albedo.rgb = toLinear(albedo.rgb);
 
-        sceneColOut = albedo.rgb * EMISSIVE_INTENSITY;
+        sceneColOut = albedo.rgb * vertexAlpha;
     }
 #endif
