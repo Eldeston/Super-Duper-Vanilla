@@ -52,6 +52,9 @@
 
         uniform sampler2D depthtex0;
 
+        uniform float viewWidth;
+        uniform float viewHeight;
+
         #include "/lib/utility/projectionFunctions.glsl"
         #include "/lib/utility/prevProjectionFunctions.glsl"
 
