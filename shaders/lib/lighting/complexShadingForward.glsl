@@ -117,7 +117,7 @@ vec3 complexShadingForward(in dataPBR material){
 			float rainDiffuseAmount = rainStrength * 0.5;
 			shdCol *= 1.0 - rainDiffuseAmount;
 
-			shdCol += rainDiffuseAmount * material.ambient * skyLightSquared;
+			shdCol += rainDiffuseAmount * material.ambient * skyLightSquared * (1.0 - shdFade);
 		#endif
 
 		// Calculate and add shadow diffuse

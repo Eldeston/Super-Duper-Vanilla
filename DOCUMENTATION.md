@@ -98,10 +98,9 @@ List of incompatible mods.
 Notes for pending features/bug fixes to be implemented categorized by importance.
 
 ## PENDING
-* Optimize DOF calculations with noise (low priority)
 * Create a custom shadow model view (low priority)
 * Fix FXAA, it was broken the whole time (high priority)
-* Optimize alpha testing (high priority)
+* Fix gbuffers_skytextured (medium priority)
 
 * Find a way to make translucent detection more dynamic (medium priority)
 
@@ -118,7 +117,10 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 * Improve water absorption (low priority)
 * Improve tonemapping (medium priority)
 
+* Optimize alpha testing (high priority)
+* Optimize DOF calculations with noise (low priority)
 * Optimize block ids in block.properties (medium priority)
+
 * Refactor uniform usage and remove unecessary ones (medium priority)
 * Format the goodness knows how much nesting I used in my code because BROTHA EWWHH (maximum priority)
 
