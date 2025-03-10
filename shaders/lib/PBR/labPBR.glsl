@@ -224,5 +224,5 @@ void getPBR(inout dataPBR material, in int id){
     #endif
 
     // Assign normal and calculate normal strength
-    if(hasFallback) material.normal = mix(TBN[2], TBN * normalMap, NORMAL_STRENGTH);
+    if(hasFallback) material.normal = mix(TBN[2], fastNormalize(TBN * normalMap), NORMAL_STRENGTH);
 }
