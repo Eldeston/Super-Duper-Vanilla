@@ -9,9 +9,17 @@
 ## Description
    A shader pack created to convey the style of the cancelled __Super Duper Graphics Pack__ and other popular Minecraft titles. Developed by [@Eldeston](https://github.com/Eldeston), and presented by __FlameRender Studios__.
 
-## Sponsor
-   [![Sponsor](/shaders/textures/sponsor.png)](https://bisecthosting.com/FLAMERENDERSTUDIOS)
-   This shader is sponsored by **BisectHosting**. Open the image above to get *25%* off on your first month when buying any of their awesome gaming servers!
+## Sponsored by BisectHosting
+   [![Sponsor](/shaders/textures/sponsor0.png)](https://bisecthosting.com/FLAMERENDERSTUDIOS)
+   This shader is sponsored by **BisectHosting**. Open the image above or use the code [**FLAMERENDERSTUDIOS**](https://bisecthosting.com/FLAMERENDERSTUDIOS) to claim your discount to get *25%* off on your first month!
+
+   Choose **BisectHosting** to host any of your favorite games including some of my personal favorites: **Minecraft, Terraria, and Project Zomboid**! **30%** of your first purchase will support the development of Super Duper Vanilla!
+
+## Sponsored by Ember Host
+   [![Sponsor](/shaders/textures/sponsor1.png)](https://billing.ember.host/aff.php?aff=23)
+   This shader is sponsored by **Ember Host**. Open the image above or use the code [**SUPERFLAME**](https://billing.ember.host/aff.php?aff=23) to claim your discount to get *10%* off on your first purchase!
+
+   Choose **Ember Host** to host your Minecraft server and take advantage of their **powerful AMD processors** and go beyond with excellent prices! **50%** of your first purchase will support the development of Super Duper Vanilla!
 
 ## Screenshots
 ![2022-06-28_19 28 13](https://cdn.modrinth.com/data/LMIZZNxZ/images/bd57c68a400e0722bc7132575ea7cec66ca529ab.png)
@@ -57,8 +65,8 @@
    Alternatively, you can use this installer developed by [@steb-git](https://github.com/steb-git) allowing you to install either the release versions of SDV or the development versions. While the installer's task is relatively simple, it's still a WIP. [Use this link to go to the installer repository](https://github.com/steb-git/super-duper-vanilla-installer).
 
 ## Social Links
-   Come join my Discord server to talk about other developments made by our studio-community!
-   * [Flamerender Studios Discord](https://discord.gg/UE85W5ynCg)
+   Come join my [Discord server](https://discord.gg/UE85W5ynCg) to talk about other developments made by our studio-community!
+   <iframe src="https://discord.com/widget?id=604061216779796492&theme=dark" width=256 height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
 
    Or follow me on Twitter or subscribe to my Youtube channel to get updated with my recent developments and contents
    * [@Eldeston's Twitter](https://twitter.com/eldeston)
