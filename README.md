@@ -13,7 +13,7 @@
    [![Sponsor](/shaders/textures/sponsor0.png)](https://bisecthosting.com/FLAMERENDERSTUDIOS)
    This shader is sponsored by **BisectHosting**. Open the image above or use the code [**FLAMERENDERSTUDIOS**](https://bisecthosting.com/FLAMERENDERSTUDIOS) to claim your discount to get *25%* off on your first month!
 
-   Choose **BisectHosting** to host any of your favorite games including some of my personal favorites: **Minecraft, Terraria, and Project Zomboid**! **30%** of your first purchase will support the development of Super Duper Vanilla!
+   Choose **BisectHosting** to host a wide range of games including some of my personal favorites: **Minecraft, Terraria, and Project Zomboid**! **30%** of your first purchase will support the development of Super Duper Vanilla!
 
 ## Sponsored by Ember Host
    [![Sponsor](/shaders/textures/sponsor1.png)](https://billing.ember.host/aff.php?aff=23)
@@ -65,8 +65,8 @@
    Alternatively, you can use this installer developed by [@steb-git](https://github.com/steb-git) allowing you to install either the release versions of SDV or the development versions. While the installer's task is relatively simple, it's still a WIP. [Use this link to go to the installer repository](https://github.com/steb-git/super-duper-vanilla-installer).
 
 ## Social Links
-   Come join my [Discord server](https://discord.gg/UE85W5ynCg) to talk about other developments made by our studio-community!
-   <iframe src="https://discord.com/widget?id=604061216779796492&theme=dark" width=256 height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+   Come join my Discord server to talk about other developments made by our studio-community!
+   * [Flamerender Studios Discord](https://discord.gg/UE85W5ynCg)
 
    Or follow me on Twitter or subscribe to my Youtube channel to get updated with my recent developments and contents
    * [@Eldeston's Twitter](https://twitter.com/eldeston)
