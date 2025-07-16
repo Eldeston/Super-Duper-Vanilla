@@ -39,8 +39,11 @@ This shader uses the **FlameRender (C) Studios License**. See [**LICENSE**](LICE
 ## Contribution
 If you plan to contribute to this project, see [**CONTRIBUTION**](CONTRIBUTION.md) for more info.
 
+## GPU Compatibility
+Super Duper Vanilla has been generally working on most specifications. However for some older AMD graphics drivers, there are visual bugs that can occur and other shaders have also experienced this issue. There are also some platforms that this shader can run on such as Pojav Launcher, however support is not official, any results may vary across devices.
+
 ## Mod Compatibility
-If you want to request mod compatibility with this shader, create an issue post in this repository with the mod that you want to enable compatibility via linking. If you're planning to add mod compatibility by coding it yourself, see [**CONTRIBUTION**](CONTRIBUTION.md).
+If you want to request mod compatibility with this shader, create an issue post in this repository with the mod that you want to enable compatibility via linking the mod's page. If you're planning to add mod compatibility by coding it yourself, see [**CONTRIBUTION**](CONTRIBUTION.md).
 
 ## Version Compatibility
 Version compatibility varies across the 2 known shader loaders Iris and Optifine. Iris versions 1.6.10+ from Minecraft versions 1.18.2+ are compatible with this shader. For Optifine, it varies across GPU vendors. Please always choose the latest Iris or Optifine of your respective Minecraft version.
