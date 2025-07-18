@@ -35,6 +35,8 @@
     /*
     Buffer settings, the compiler will attempt to read the commented lines:
 
+    const int shadowcolor0Format = RGB8;
+
     const int colortex0Format = R11F_G11F_B10F;
     const int colortex1Format = RGB16_SNORM;
     const int colortex2Format = RGBA8;
@@ -43,10 +45,17 @@
     const int colortex5Format = RGBA16F;
     */
 
-    #if ((defined SSR || defined SSGI) && defined PREVIOUS_FRAME) || ANTI_ALIASING >= 2 || defined AUTO_EXPOSURE
-        // Disable buffer clear if TAA, previous frame reflections, or auto exposure is on
-        const bool colortex5Clear = false;
-    #endif
+    // SSAO without normals fix for beacon
+    const vec4 colortex1ClearColor = vec4(0, 0, 0, 1);
+    // Sky silhoutte fix
+    const vec4 colortex4ClearColor = vec4(0, 0, 0, 1);
+
+    // Disable to save performance
+    const bool shadowcolor0Clear = false;
+    const bool colortex0Clear = false;
+    const bool colortex2Clear = false;
+    // Needed for temporal filtering
+    const bool colortex5Clear = false;
 
     noperspective in vec2 texCoord;
 
