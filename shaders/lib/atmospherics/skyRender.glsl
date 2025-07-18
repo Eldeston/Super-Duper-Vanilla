@@ -56,7 +56,7 @@ float getSunMoonShape(in vec2 skyPos){
         vec2 cloudData = cloudParallaxDynamic(planeUv, planePos);
 
         #ifdef DOUBLE_LAYERED_CLOUDS
-            cloudData = max(cloudParallaxDynamic(planeUv * 2.0, planePos).yx * 0.25, cloudData);
+            cloudData = max(cloudParallaxDynamic(planeUv * 2.0, planePos - 2064.0).yx * 0.25, cloudData);
         #endif
 
         #ifdef DYNAMIC_CLOUDS

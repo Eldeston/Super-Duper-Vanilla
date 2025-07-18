@@ -75,9 +75,6 @@
     /* RENDERTARGETS: 4 */
     layout(location = 0) out vec3 sceneColOut; // colortex4
 
-    // Sky silhoutte fix
-    const vec4 gcolorClearColor = vec4(0, 0, 0, 1);
-
     flat in vec3 skyCol;
 
     #ifdef WORLD_LIGHT
@@ -143,7 +140,7 @@
         uniform float dayCycleAdjust;
     #endif
 
-    #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS
+    #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
         uniform sampler2D colortex0;
     #endif
 
