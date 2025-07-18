@@ -137,7 +137,7 @@
         uniform float dayCycleAdjust;
     #endif
 
-    #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS
+    #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
         uniform sampler2D colortex0;
 
         #if CLOUD_TYPE == 2
@@ -300,7 +300,7 @@
                 sceneColOut += getVolumetricLight(nFeetPlayerPos, feetPlayerDist, fogFactor, borderFog, dither.x, isSky);
         #endif
 
-        #if !defined FORCE_DISABLE_CLOUDS && CLOUD_TYPE == 2
+        #if CLOUD_TYPE == 2 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
             // Get the 1st layer of volumetric clouds position
             // Note that the clouds needs to move westward just as in vanilla
             vec3 cloudStartPos0 = vec3(cameraPosition.x + fragmentFrameTime, cameraPosition.y - volumetricCloudHeight, cameraPosition.z);
@@ -310,7 +310,7 @@
 
             #ifdef DOUBLE_LAYERED_CLOUDS
                 // Get the 2nd layer of volumetric clouds position by reusing the 1st layer's position
-                vec3 cloudStartPos1 = vec3(cloudStartPos0.x, cloudStartPos0.y - SECOND_CLOUD_HEIGHT, cloudStartPos0.z);
+                vec3 cloudStartPos1 = vec3(cloudStartPos0.x - 2064.0, cloudStartPos0.y - SECOND_CLOUD_HEIGHT, cloudStartPos0.z - 2064.0);
 
                 // Variate by swizzling the 2 cloud channels
                 cloudData = max(volumetricClouds(nFeetPlayerPos, cloudStartPos1, feetPlayerDist, dither.x, isSky).yx, cloudData);

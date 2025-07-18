@@ -40,9 +40,6 @@
         layout(location = 0) out vec3 albedoDataOut; // colortex2
     #endif
 
-    // SSAO without normals fix for beacon
-    const vec4 colortex1ClearColor = vec4(0, 0, 0, 1);
-
     #ifdef SSAO
         noperspective in vec2 texCoord;
     #endif
