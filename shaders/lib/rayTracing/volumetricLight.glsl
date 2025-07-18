@@ -55,7 +55,8 @@ vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in floa
 		
 		return volumeData * lightCol * (min(1.0, VOLUMETRIC_LIGHTING_STRENGTH + VOLUMETRIC_LIGHTING_STRENGTH * isEyeInWater) * squared(heightFade) * volumetricFogDensity * volumetricStepsInverse);
 	#else
-		if(isEyeInWater == 1) return lightCol * toLinear(fogColor) * (min(1.0, VOLUMETRIC_LIGHTING_STRENGTH * 2.0) * volumetricFogDensity);
+		if(isEyeInWater == 1) return lightCol * toLinear(fogColor) * (min(1.0, VOLUMETRIC_LIGHTING_STRENGTH * 2.0) * squared(heightFade) * volumetricFogDensity);
+
 		#ifdef WORLD_CUSTOM_SKYLIGHT
 			else return lightCol * (volumetricFogDensity * VOLUMETRIC_LIGHTING_STRENGTH);
 		#else
