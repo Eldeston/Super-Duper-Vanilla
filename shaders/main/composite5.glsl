@@ -34,13 +34,13 @@
 
     void main(){
         #ifdef BLOOM
-            vec3 sample0 = texelFetch(colortex0, ivec2(gl_FragCoord.x, gl_FragCoord.y - 2), 0).rgb +
-                texelFetch(colortex0, ivec2(gl_FragCoord.x, gl_FragCoord.y + 2), 0).rgb;
-            vec3 sample1 = texelFetch(colortex0, ivec2(gl_FragCoord.x, gl_FragCoord.y - 1), 0).rgb +
-                texelFetch(colortex0, ivec2(gl_FragCoord.x, gl_FragCoord.y + 1), 0).rgb;
-            vec3 sample2 = texelFetch(colortex0, ivec2(gl_FragCoord.xy), 0).rgb;
+            vec3 sample0 = texelFetch(colortex0, ivec2(gl_FragCoord.x - 2, gl_FragCoord.y), 0).rgb +
+                texelFetch(colortex0, ivec2(gl_FragCoord.x + 2, gl_FragCoord.y), 0).rgb;
+            vec3 sample1 = texelFetch(colortex0, ivec2(gl_FragCoord.x - 1, gl_FragCoord.y), 0).rgb +
+                texelFetch(colortex0, ivec2(gl_FragCoord.x + 1, gl_FragCoord.y), 0).rgb;
+            vec3 center = texelFetch(colortex0, ivec2(gl_FragCoord.xy), 0).rgb;
 
-            bloomColOut = sample0 * 0.0625 + sample1 * 0.25 + sample2 * 0.375;
+            bloomColOut = sample0 * 0.0625 + sample1 * 0.25 + center * 0.375;
         #else
             bloomColOut = vec3(0);
         #endif

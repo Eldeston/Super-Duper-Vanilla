@@ -42,26 +42,17 @@
 
         noperspective in vec2 texCoord;
 
-        uniform float pixelWidth;
-
         uniform sampler2D colortex4;
 
         vec3 bloomTile(in vec3 bloomCol, in vec2 bloomPos, in int scale, in int LOD){
+            // Get bloom UV
             vec2 bloomUv = bloomPos * scale;
 
             // Apply padding
             if(bloomUv.x < 0 || bloomUv.x > 1 || bloomUv.y < 0 || bloomUv.y > 1) return bloomCol;
 
-            // Get pixel size based on bloom tile scale
-            float pixSize = scale * pixelWidth;
-
-            vec3 sample0 = textureLod(colortex4, vec2(bloomUv.x - pixSize * 2.0, bloomUv.y), LOD).rgb +
-                textureLod(colortex4, vec2(bloomUv.x + pixSize * 2.0, bloomUv.y), LOD).rgb;
-            vec3 sample1 = textureLod(colortex4, vec2(bloomUv.x - pixSize, bloomUv.y), LOD).rgb +
-                textureLod(colortex4, vec2(bloomUv.x + pixSize, bloomUv.y), LOD).rgb;
-            vec3 sample2 = textureLod(colortex4, bloomUv, LOD).rgb;
-
-            return sample0 * 0.0625 + sample1 * 0.25 + sample2 * 0.375;
+            // Output bloom
+            return textureLod(colortex4, bloomPos * scale, LOD).rgb;
         }
     #endif
 
