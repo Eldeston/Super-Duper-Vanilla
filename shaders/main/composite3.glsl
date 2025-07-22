@@ -82,9 +82,6 @@
         // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
 
-        // Get scene color
-        sceneColOut = texelFetch(colortex4, screenTexelCoord, 0).rgb;
-
         #ifdef DOF
             // Declare and get positions
             float depth = texelFetch(depthtex1, screenTexelCoord, 0).x;
@@ -110,6 +107,9 @@
 
             // 15 offsetted samples + 1 sample (1 / 16)
             sceneColOut = dofColor * 0.0625;
+        #else
+            // Get scene color
+            sceneColOut = texelFetch(colortex4, screenTexelCoord, 0).rgb;
         #endif
     }
 #endif
