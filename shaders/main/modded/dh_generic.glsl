@@ -71,9 +71,8 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    /* RENDERTARGETS: 4,3 */
+    /* RENDERTARGETS: 4 */
     layout(location = 0) out vec3 sceneColOut; // colortex4
-    layout(location = 1) out vec3 materialDataOut; // colortex3
 
     flat in vec4 vertexColor;
 
@@ -102,8 +101,5 @@
 
         // Apply simple shading
         sceneColOut = albedo.rgb * EMISSIVE_INTENSITY;
-    
-        // Write material data
-        materialDataOut = vec3(0, 0, 0.5);
     }
 #endif

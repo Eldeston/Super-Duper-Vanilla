@@ -17,7 +17,7 @@ float getNoHSquared(in float NoL, in float NoV, in float VoL){
     float NoTr = rOverLengthT * (NoV - RoL * NoL);
     float VoTr = rOverLengthT * (2.0 * NoVSqrd - 1.0 - RoL * VoL);
 
-    // Calculate dot(cross(N, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), V). This could already be calculated and available.
+    // Calculate dot(cross(N, L), V). This could already be calculated and available.
     float tripleDelta = 1.0 - NoL * NoL - NoVSqrd - VoL * VoL + NoLNoV * VoL;
     float tripleAlpha = tripleDelta > 0 ? rOverLengthT * sqrt(tripleDelta) : 0.0;
 
