@@ -45,6 +45,9 @@
     const int colortex5Format = RGBA16F;
     */
 
+    // NOTE: Do not disable main HDR and LDR scenes' clear
+    // May produce visual artifacts
+
     // SSAO without normals fix for beacon
     const vec4 colortex1ClearColor = vec4(0, 0, 0, 1);
     // Sky silhoutte fix
@@ -54,6 +57,7 @@
     const bool shadowcolor0Clear = false;
     const bool colortex0Clear = false;
     const bool colortex2Clear = false;
+
     // Needed for temporal filtering
     const bool colortex5Clear = false;
 

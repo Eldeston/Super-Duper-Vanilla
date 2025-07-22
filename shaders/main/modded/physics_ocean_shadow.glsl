@@ -104,7 +104,7 @@
 #ifdef FRAGMENT
     #ifdef WORLD_LIGHT
         /* RENDERTARGETS: 0 */
-        layout(location = 0) out vec3 shadowColOut; // colortex0
+        layout(location = 0) out vec3 shadowColOut; // shadowcolor0
 
         flat in vec3 vertexColor;
 
