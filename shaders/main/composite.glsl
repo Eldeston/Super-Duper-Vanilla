@@ -167,6 +167,17 @@
 
     #include "/lib/utility/projectionFunctions.glsl"
 
+    #if defined SSR || defined SSGI
+        uniform float viewWidth;
+        uniform float viewHeight;
+
+        uniform float pixelWidth;
+        uniform float pixelHeight;
+
+        #include "/lib/utility/depthTex.glsl"
+        #include "/lib/rayTracing/rayTracer.glsl"
+    #endif
+
     #if (defined SSR || defined SSGI) && defined PREVIOUS_FRAME
         uniform vec3 camPosDelta;
 
@@ -190,14 +201,10 @@
         #include "/lib/rayTracing/volumetricLight.glsl"
     #endif
 
-    #include "/lib/utility/depthTex.glsl"
-
     #include "/lib/utility/noiseFunctions.glsl"
 
     #include "/lib/atmospherics/skyRender.glsl"
     #include "/lib/atmospherics/fogRender.glsl"
-
-    #include "/lib/rayTracing/rayTracer.glsl"
 
     #include "/lib/lighting/complexShadingDeferred.glsl"
 

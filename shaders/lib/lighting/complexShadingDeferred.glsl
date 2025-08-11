@@ -48,16 +48,17 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
 			// This masks only the reflections in view
 			if(reflectDirF.z < viewPos.z){
 				vec3 SSRDH = getScreenPos(gbufferProjection, reflectDirF);
-				if(SSRDH.x >= 0 && SSRDH.y >= 0 && SSRDH.x <= 1 && SSRDH.y <= 1 && getDepthTex(SSRDH.xy) != 1) SSRCoord = vec3(SSRDH.xy, 1);
+				// SSRDH.xy *= vec2(viewWidth, viewHeight);
+				if(SSRDH.x >= 0 && SSRDH.y >= 0 && SSRDH.x <= 1 && SSRDH.y <= 1 && getDepthTex(SSRDH.xy) != 1) SSRCoord = vec3(SSRDH.xy * vec2(viewWidth, viewHeight), 1);
 			}
 		}
 
 		#ifdef PREVIOUS_FRAME
 			// Get reflections and check for sky
-			vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyReflection(reflectViewDir) : textureLod(colortex5, getPrevScreenCoord(SSRCoord.xy), 0).rgb;
+			vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyReflection(reflectViewDir) : texelFetch(colortex5, ivec2(getPrevScreenCoord(SSRCoord.xy * vec2(pixelWidth, pixelHeight)) * vec2(viewWidth, viewHeight)), 0).rgb;
 		#else
 			// Get reflections and check for sky
-			vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyReflection(reflectViewDir) : textureLod(colortex4, SSRCoord.xy, 0).rgb;
+			vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyReflection(reflectViewDir) : texelFetch(colortex4, ivec2(SSRCoord.xy), 0).rgb;
 		#endif
 	#else
 		vec3 reflectCol = getSkyReflection(reflectViewDir);
