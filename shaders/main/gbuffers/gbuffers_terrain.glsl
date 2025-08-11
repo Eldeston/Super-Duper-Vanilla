@@ -226,9 +226,11 @@
 
     #include "/lib/utility/noiseFunctions.glsl"
 
-    #ifdef LAVA_NOISE
+    #if defined LAVA_NOISE || defined SCULK_NOISE
         uniform float fragmentFrameTime;
+    #endif
 
+    #ifdef LAVA_NOISE
         #include "/lib/surface/lava.glsl"
     #endif
 
