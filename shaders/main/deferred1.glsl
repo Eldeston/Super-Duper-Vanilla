@@ -161,6 +161,17 @@
 
     #include "/lib/utility/projectionFunctions.glsl"
 
+    #if defined SSR || defined SSGI
+        uniform float viewWidth;
+        uniform float viewHeight;
+
+        uniform float pixelWidth;
+        uniform float pixelHeight;
+
+        #include "/lib/utility/depthTex.glsl"
+        #include "/lib/rayTracing/rayTracer.glsl"
+    #endif
+
     #if (defined SSR || defined SSGI) && defined PREVIOUS_FRAME
         uniform vec3 camPosDelta;
 
@@ -186,17 +197,6 @@
         }
     #endif
 
-    #if ANTI_ALIASING == 2
-        uniform int frameMod;
-
-        uniform float pixelWidth;
-        uniform float pixelHeight;
-
-        #include "/lib/utility/taaJitter.glsl"
-    #endif
-
-    #include "/lib/utility/depthTex.glsl"
-
     #if OUTLINES != 0
         #if OUTLINES == 1
             uniform float near;
@@ -209,8 +209,6 @@
 
     #include "/lib/atmospherics/skyRender.glsl"
     #include "/lib/atmospherics/fogRender.glsl"
-    
-    #include "/lib/rayTracing/rayTracer.glsl"
 
     #include "/lib/lighting/complexShadingDeferred.glsl"
 
@@ -230,14 +228,6 @@
 
         // Get screen pos
         vec3 screenPos = vec3(texCoord, depth);
-
-        // Get sky mask
-        bool skyMask = screenPos.z == 1;
-
-        // Jitter the sky only
-        #if ANTI_ALIASING == 2
-            if(skyMask) screenPos.xy += jitterPos(-0.5);
-        #endif
 
         // Distant Horizons apparently uses a different projection matrix
         #ifdef DISTANT_HORIZONS
@@ -271,7 +261,7 @@
         vec3 currSkyCol = getSkyBasic(nEyePlayerPos.y, skyPos.z);
 
         // If sky, do full sky render and return immediately
-        if(skyMask){
+        if(screenPos.z == 1){
             // Calculate and output sky render
             sceneColOut = getFullSkyRender(nEyePlayerPos, skyPos, currSkyCol + sceneColOut) * exp2(-borderFar * effectFactor);
             // Exit function immediately

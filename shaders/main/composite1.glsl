@@ -74,7 +74,7 @@
             sceneColOut = texelFetch(colortex4, ivec2(gl_FragCoord.xy), 0).rgb;
         #endif
 
-        #if ((defined SSR || defined SSGI) && defined PREVIOUS_FRAME) || ANTI_ALIASING >= 2
+        #if (defined PREVIOUS_FRAME && (defined SSR || defined SSGI)) || ANTI_ALIASING >= 2
             #ifdef AUTO_EXPOSURE
                 temporalDataOut = vec4(sceneColOut, texelFetch(colortex5, ivec2(0), 0).a);
             #else

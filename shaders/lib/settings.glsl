@@ -240,9 +240,6 @@ const float PHYSICS_NORMAL_STRENGTH = 0.6;
 
 // Precalculated constants
 
-// Raytracer steps inverse
-const float rayTracerStepsInv = 1.0 / RAYTRACER_STEPS;
-
 // Sun and moon intensity squared
 const float sunMoonIntensitySqrd = SUN_MOON_INTENSITY * SUN_MOON_INTENSITY;
 
