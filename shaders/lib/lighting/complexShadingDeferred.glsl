@@ -10,9 +10,9 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
 
 		// If sky don't do SSGI
 		#ifdef PREVIOUS_FRAME
-			if(SSGIcoord.z > 0.5) sceneCol += albedo * textureLod(colortex5, getPrevScreenCoord(SSGIcoord.xy), 0).rgb;
+			if(SSGIcoord.z > 0.5) sceneCol += albedo * texelFetch(colortex5, ivec2(getPrevScreenCoord(SSGIcoord.xy * vec2(pixelWidth, pixelHeight)) * vec2(viewWidth, viewHeight)), 0).rgb;
 		#else
-			if(SSGIcoord.z > 0.5) sceneCol += albedo * textureLod(colortex4, SSGIcoord.xy, 0).rgb;
+			if(SSGIcoord.z > 0.5) sceneCol += albedo * texelFetch(colortex4, ivec2(SSGIcoord.xy), 0).rgb;
 		#endif
 	#endif
 
