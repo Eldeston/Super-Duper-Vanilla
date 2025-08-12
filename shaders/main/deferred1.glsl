@@ -95,6 +95,9 @@
 
     uniform float borderFar;
 
+    uniform float far;
+    uniform float near;
+
     uniform float nightVision;
     uniform float effectFactor;
     uniform float lightningFlash;
@@ -145,7 +148,6 @@
     #endif
 
     #ifdef DISTANT_HORIZONS
-        uniform mat4 dhProjection;
         uniform mat4 dhProjectionInverse;
 
         uniform sampler2D dhDepthTex0;
@@ -198,10 +200,6 @@
     #endif
 
     #if OUTLINES != 0
-        #if OUTLINES == 1
-            uniform float near;
-        #endif
-
         #include "/lib/post/outline.glsl"
     #endif
 
