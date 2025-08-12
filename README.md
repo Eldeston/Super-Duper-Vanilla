@@ -13,13 +13,13 @@ A shader pack created to convey the style of the cancelled __Super Duper Graphic
 [![Sponsor](https://github.com/Eldeston/Super-Duper-Vanilla/blob/master/shaders/textures/sponsor0.png?raw=true)](https://bisecthosting.com/FLAMERENDERSTUDIOS)
 This shader is sponsored by **BisectHosting**. Open the image above or use the code [**FLAMERENDERSTUDIOS**](https://bisecthosting.com/FLAMERENDERSTUDIOS) to claim your discount to get ***25%*** off on your first month!
 
-Choose **BisectHosting** to host a wide range of games including some of my personal favorites: **Minecraft, Terraria, and Project Zomboid**! ***30%*** of your first purchase will support the development of Super Duper Vanilla!
+Choose **BisectHosting** to host a wide range of games including some of my personal favorites: **Minecraft, Terraria, and Project Zomboid**! ***65%*** of your first purchase will support the development of Super Duper Vanilla!
 
 ## Sponsored by Ember Host
 [![Sponsor](https://github.com/Eldeston/Super-Duper-Vanilla/blob/master/shaders/textures/sponsor1.png?raw=true)](https://billing.ember.host/aff.php?aff=23)
 This shader is sponsored by **Ember Host**. Open the image above or use the code [**SUPERFLAME**](https://billing.ember.host/aff.php?aff=23) to claim your discount to get ***10%*** off on your first purchase!
 
-Choose **Ember Host** to host your Minecraft server and take advantage of their **powerful AMD processors** and go beyond with excellent prices! ***50%*** of your first purchase will support the development of Super Duper Vanilla!
+Choose **Ember Host** to host your Minecraft server and take advantage of their **powerful AMD processors** and go beyond with excellent prices! ***70%*** of your first purchase will support the development of Super Duper Vanilla!
 
 ## Screenshots
 ![2022-06-28_19 28 13](https://cdn.modrinth.com/data/LMIZZNxZ/images/bd57c68a400e0722bc7132575ea7cec66ca529ab.png)
