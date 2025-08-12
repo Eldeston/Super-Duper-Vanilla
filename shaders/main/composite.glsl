@@ -96,6 +96,9 @@
 
     uniform float borderFar;
 
+    uniform float far;
+    uniform float near;
+
     uniform float nightVision;
     uniform float effectFactor;
     uniform float lightningFlash;
@@ -148,10 +151,6 @@
     #endif
 
     #ifdef DISTANT_HORIZONS
-        uniform float near;
-        uniform float dhNearPlane;
-
-        uniform mat4 dhProjection;
         uniform mat4 dhProjectionInverse;
 
         uniform sampler2D dhDepthTex0;
