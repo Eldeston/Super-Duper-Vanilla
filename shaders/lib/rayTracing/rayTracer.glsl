@@ -20,7 +20,6 @@ vec3 rayTraceScene(in vec3 screenPos, in vec3 viewPos, in vec3 rayDir, in float 
 	// Get screenspace rayDir
 	vec3 screenRayDir = getScreenPos(gbufferProjection, viewPos - rayDir * viewPos.z) - screenPos;
 	screenRayDir *= minOf((sign(screenRayDir.xy) - screenPos.xy) / screenRayDir.xy) * rayTracerStepsInv;
-	// screenRayDir = fastNormalize(screenRayDir) * rayTracerStepsInv;
 	screenRayDir.xy *= vec2(viewWidth, viewHeight);
 
 	// Apply dithering
