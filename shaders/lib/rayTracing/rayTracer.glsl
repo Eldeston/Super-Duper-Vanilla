@@ -8,24 +8,30 @@ const float rayTracerStepsInv = 1.0 / RAYTRACER_STEPS;
 // Based from Belmu's raytracer https://github.com/BelmuTM/NobleRT
 // Basically an upgrade to Shadax's raytracer https://github.com/Shadax-stack/MinecraftSSR
 vec3 rayTraceScene(in vec3 screenPos, in vec3 viewPos, in vec3 rayDir, in float dither){
-	// No longer needed as it now uses a depth limit
-	// Technically it could still be used for performance reasons
 	// Fix for the blob when player is near a surface. From Bálint#1673
 	if(rayDir.z > -viewPos.z) return vec3(0);
 
-	// From Lipesto the goat
-	// Clip the rayDir by near and far planes
-    // float zLimit = (rayDir.z < 0.0 ? viewPos.z + far * 4.0 : -viewPos.z - near) / rayDir.z;
-
 	// Get screenspace rayDir
-	vec3 screenRayDir = getScreenPos(gbufferProjection, viewPos - rayDir * viewPos.z) - screenPos;
-	screenRayDir *= minOf((sign(screenRayDir.xy) - screenPos.xy) / screenRayDir.xy) * rayTracerStepsInv;
+	vec3 screenRayDir = getScreenPos(gbufferProjection, viewPos + rayDir) - screenPos;
+
+	// This code prevents oversampling/undersampling of a pixel
+	screenRayDir *= minOf((step(vec2(0), screenRayDir.xy) - screenPos.xy) / screenRayDir.xy);
+
+	// Calculate ray length
+	float rayLength = max(abs(screenRayDir.x), abs(screenRayDir.y)) * rayTraceSteps;
+    screenRayDir /= rayLength;
+
+	// Scale to screen size
 	screenRayDir.xy *= vec2(viewWidth, viewHeight);
 
 	// Apply dithering
 	vec3 screenRayPos = vec3(gl_FragCoord.xy, screenPos.z) + screenRayDir * dither;
 
-	for(uint i = 0u; i < rayTraceSteps; i++){
+	// Ray tracing loop
+	for(uint i = 0u; i < uint(rayLength); i++){
+		// We continue ray tracing
+		screenRayPos += screenRayDir;
+
 		// If current pos is out of bounds, exit immediately
 		if(screenRayPos.x < 0 || screenRayPos.y < 0 || screenRayPos.x > viewWidth || screenRayPos.y > viewHeight) return vec3(0);
 
@@ -60,9 +66,6 @@ vec3 rayTraceScene(in vec3 screenPos, in vec3 viewPos, in vec3 rayDir, in float 
 			// Return final results
 			return vec3(screenRayPos.xy, 1);
 		}
-
-		// We continue ray tracing
-		screenRayPos += screenRayDir;
 	}
 
 	return vec3(0);
