@@ -66,7 +66,7 @@ const float sunPathRotation = 30.0; // Light path angle. This also affects sky a
 // #define SSGI // Enables screen space global illumination. May improve the ambience of dark areas despite the noisiness. Currently experimental and unoptimized. Turn on TAA for best results.
 #define SSR // Enables screen space global reflections. May improve the reflections of smooth objects using PBR.
 
-#define RAYTRACER_STEPS 20 // Raytracer steps. Increasing may improve quality and demand more performance. [8 12 16 20 24 28 32 36 40]
+#define RAYTRACER_STEPS 16 // Raytracer steps. Increasing may improve quality and demand more performance. [2 4 8 16 32 64 128]
 #define RAYTRACER_BISTEPS 4 // Raytracer binary refinement steps. Improves quality especially when using a low step count. Balancing the values may be necessary for performance.  [0 2 4 6 8]
 
 // #define ROUGH_REFLECTIONS // Enables rougher objects to have rougher reflections. May show weird artifacts, but some AA might fix it.
