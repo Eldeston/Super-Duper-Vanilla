@@ -13,7 +13,7 @@ vec3 textureTAA(in ivec2 screenTexelCoord){
     
     vec3 boxMin = min(currColor, min(nearCol0, min(nearCol1, min(nearCol2, nearCol3))));
     vec3 boxMax = max(currColor, max(nearCol0, max(nearCol1, max(nearCol2, nearCol3))));;
-    
+
     // Required to add the "sum color" of the remaining VL
     prevColor = clamp(prevColor, boxMin, boxMax);
 

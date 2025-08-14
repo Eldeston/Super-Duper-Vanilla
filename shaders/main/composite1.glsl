@@ -50,7 +50,6 @@
     #endif
 
     #if ANTI_ALIASING >= 2
-        uniform vec3 cameraPosition;
         uniform vec3 camPosDelta;
 
         uniform mat4 gbufferModelViewInverse;
