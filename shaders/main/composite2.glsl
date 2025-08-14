@@ -41,7 +41,9 @@
     #ifdef MOTION_BLUR
         noperspective in vec2 texCoord;
 
-        uniform vec3 cameraPosition;
+        uniform float viewWidth;
+        uniform float viewHeight;
+
         uniform vec3 camPosDelta;
 
         uniform mat4 gbufferModelViewInverse;
