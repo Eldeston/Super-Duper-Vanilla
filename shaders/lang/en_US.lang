@@ -224,13 +224,13 @@ screen.ATMOSPHERICS.comment = §6Atmospheric effects including sun/moon, clouds,
         option.SECOND_CLOUD_HEIGHT.comment = 2nd layer cloud height, if double vanilla clouds is on.
 
         option.VOLUMETRIC_CLOUD_STEPS = Volumetric steps
-        option.VOLUMETRIC_CLOUD_STEPS.comment = Story mode clouds steps. Increasing may improve quality and demand more performance.
+        option.VOLUMETRIC_CLOUD_STEPS.comment = Volumetric story mode clouds steps. Increasing may improve quality and demand more performance.
 
         option.VOLUMETRIC_CLOUD_DEPTH = Volumetric depth
         option.VOLUMETRIC_CLOUD_DEPTH.comment = Determines the story mode clouds' thickness.
 
         option.SKYBOX_CLOUD_STEPS = Skybox steps
-        option.SKYBOX_CLOUD_STEPS.comment = Story mode clouds steps. Increasing may improve quality and demand more performance.
+        option.SKYBOX_CLOUD_STEPS.comment = Skybox story mode clouds steps. Increasing may improve quality and demand more performance.
 
         option.SKYBOX_CLOUD_DEPTH = Skybox depth
         option.SKYBOX_CLOUD_DEPTH.comment = Determines the story mode clouds' thickness.
