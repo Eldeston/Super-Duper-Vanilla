@@ -46,7 +46,7 @@
 
     #ifdef DOF
         // Needs to be enabled by force to be able to use LOD fully even with textureLod
-        const bool gcolorMipmapEnabled = true;
+        const bool colortex4MipmapEnabled = true;
 
         // Precalculated dof offsets by vec2(cos(x), sin(x))
         const vec2 dofOffSets[15] = vec2[15](
@@ -87,7 +87,10 @@
             float depth = texelFetch(depthtex1, screenTexelCoord, 0).x;
 
             // Return immediately if player hand
-            if(depth <= 0.56) return;
+            if(depth <= 0.56){
+                sceneColOut = texelFetch(colortex4, screenTexelCoord, 0).rgb;
+                return;
+            }
             
             // CoC calculation by Capt Tatsu from BSL
             float CoC = max(0.0, abs(depth - centerDepthSmooth) * DOF_STRENGTH - 0.01);
