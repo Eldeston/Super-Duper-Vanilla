@@ -1,4 +1,4 @@
-## Language format v1.1.0
+## Language format v1.1.1
 ## All other .lang files must update to the latest language format version on this main .lang file
 
 ## Profiles
@@ -184,7 +184,7 @@ screen.ATMOSPHERICS = Atmospherics
 screen.ATMOSPHERICS.comment = §6Atmospheric effects including sun/moon, clouds, fog, border fog, and volumetric lighting.
     option.SUN_MOON_TYPE = Sun/moon type
     option.SUN_MOON_TYPE.comment = Changes sun and moon type.
-        value.SUN_MOON_TYPE.0 = Default
+        value.SUN_MOON_TYPE.0 = Squircle
         value.SUN_MOON_TYPE.1 = Round
         value.SUN_MOON_TYPE.2 = Vanilla
     
@@ -227,13 +227,13 @@ screen.ATMOSPHERICS.comment = §6Atmospheric effects including sun/moon, clouds,
         option.VOLUMETRIC_CLOUD_STEPS.comment = Volumetric story mode clouds steps. Increasing may improve quality and demand more performance.
 
         option.VOLUMETRIC_CLOUD_DEPTH = Volumetric depth
-        option.VOLUMETRIC_CLOUD_DEPTH.comment = Determines the story mode clouds' thickness.
+        option.VOLUMETRIC_CLOUD_DEPTH.comment = Determines the volumetric story mode clouds' thickness in blocks.
 
         option.SKYBOX_CLOUD_STEPS = Skybox steps
         option.SKYBOX_CLOUD_STEPS.comment = Skybox story mode clouds steps. Increasing may improve quality and demand more performance.
 
         option.SKYBOX_CLOUD_DEPTH = Skybox depth
-        option.SKYBOX_CLOUD_DEPTH.comment = Determines the story mode clouds' thickness.
+        option.SKYBOX_CLOUD_DEPTH.comment = Determines the skybox story mode clouds' thickness in value.
 
     option.SKYBOX_BRIGHTNESS = Skybox brightness
     option.SKYBOX_BRIGHTNESS.comment = Sky box brightness.
