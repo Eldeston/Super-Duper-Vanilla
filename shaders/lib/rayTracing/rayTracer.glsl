@@ -7,7 +7,7 @@ const float rayTracerStepsInv = 1.0 / RAYTRACER_STEPS;
 // Binary refinement to improve sampled quality by stepping back and forth until it is closer to the actual result
 vec2 binaryRefinement(in vec3 screenRayPos, in vec3 screenRayDir, in float sampledDepth, in bool intersection){
 	// Reuse stored sampled depth and intersection to use 1 less depth sample
-	for(uint i = 0u; i < rayTraceBiSteps; i++){
+	for(uint i = 1u; i <= rayTraceBiSteps; i++){
 		// Refine ray direction
 		screenRayDir *= 0.5;
 		screenRayPos += intersection ? -screenRayDir : screenRayDir;
