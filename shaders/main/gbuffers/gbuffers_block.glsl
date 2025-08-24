@@ -225,8 +225,8 @@
             float starSpeed = fragmentFrameTime * 0.0625;
 
             float endStarField = getEndStarField(startPos, starSpeed);
-            endStarField += getEndStarField(startPos.yx - endPos.yx * 0.5, starSpeed) * 0.66666667;
-            endStarField += getEndStarField(endPos.xy - startPos, starSpeed) * 0.33333333;
+            endStarField += getEndStarField(startPos.yx - endPos.yx, starSpeed) * 0.66666667;
+            endStarField += getEndStarField(endPos.xy * 2.0 - startPos, starSpeed) * 0.33333333;
 
             // Get the depth outline for the end portal
             float edgeBrightness = exp2((blockDepth + 0.0625) * 8.0);
