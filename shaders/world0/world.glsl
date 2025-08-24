@@ -11,7 +11,7 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 // Enable sun/moon in your world. 1 for the standard sun and moon. 2 for the black hole.
 #define WORLD_SUN_MOON 1
 // Sun/moon size
-#define WORLD_SUN_MOON_SIZE 0.1
+#define WORLD_SUN_MOON_SIZE 0.125
 
 // Force disable clouds
 // #define FORCE_DISABLE_CLOUDS
