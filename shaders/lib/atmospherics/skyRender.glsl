@@ -278,13 +278,11 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol)
                 #endif
             #endif
         #elif WORLD_SUN_MOON == 2
-            // If current world uses shader black hole
-            const float blackHoleSize = 1024.0 - WORLD_SUN_MOON_SIZE * 64.0;
-            float blackHole = blackHoleSize - skyPos.z * 1024.0;
+            float blackHole = sqrt(1.0 - skyPos.z * skyPos.z) - WORLD_SUN_MOON_SIZE;
 
             // If black hole return nothing
             if(blackHole <= 0) return vec3(0);
-            blackHole = 1.0 / max(1.0, blackHole);
+            blackHole = 1.0 / max(1.0, blackHole * 256.0);
 
             // Distortion application
             const float rotationFactor = TAU * 16.0;
