@@ -1,4 +1,4 @@
-vec3 complexShadingLOD(in dataPBR material){
+vec4 complexShadingLOD(in dataPBR material){
 	// Calculate sky diffusion first, begining with the sky itself
 	vec3 totalIllumination = toLinear(SKY_COLOR_DATA_BLOCK);
 
@@ -41,18 +41,18 @@ vec3 complexShadingLOD(in dataPBR material){
 			if(material.ss > 0) dirLight += (1.0 - dirLight) * material.ambient * material.ss * 0.5;
 		#endif
 
-		shdCol *= dirLight;
+		float finalShadowCol = shdCol * dirLight;
 
 		#ifndef FORCE_DISABLE_WEATHER
 			// Approximate rain diffusing light shadow
 			float rainDiffuseAmount = rainStrength * 0.5;
-			shdCol *= 1.0 - rainDiffuseAmount;
+			finalShadowCol *= 1.0 - rainDiffuseAmount;
 
-			shdCol += rainDiffuseAmount * material.ambient * skyLightSquared * (1.0 - shdFade);
+			finalShadowCol += rainDiffuseAmount * material.ambient * skyLightSquared * (1.0 - shdFade);
 		#endif
 
 		// Calculate and add shadow diffuse
-		totalIllumination += toLinear(sRGBLightCol) * shdCol;
+		totalIllumination += toLinear(sRGBLightCol) * finalShadowCol;
 	#endif
 
 	// Get view direction
@@ -71,13 +71,14 @@ vec3 complexShadingLOD(in dataPBR material){
 	// Apply emissives
 	totalIllumination += material.emissive * EMISSIVE_INTENSITY;
 
-	vec3 totalLighting = material.albedo.rgb * totalIllumination;
+	vec4 totalLighting = vec4(material.albedo.rgb * totalIllumination, material.albedo.a);
 
 	#if defined WORLD_LIGHT && defined SPECULAR_HIGHLIGHTS
 		if(isShadow){
 			// Get specular GGX
 			vec3 specCol = getSpecularBRDF(viewDir, material.normal, material.albedo.rgb, NLZ, NV, material.metallic, material.smoothness);
-			totalLighting += specCol * shdCol * sRGBLightCol;
+			totalLighting.rgb += sunMoonIntensitySqrd * specCol * shdCol * sRGBLightCol;
+			totalLighting.a = min(maxOf(specCol) + totalLighting.a, 1.0);
 		}
 	#endif
 

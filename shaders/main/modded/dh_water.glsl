@@ -265,7 +265,7 @@
         #endif
 
         // Apply simple shading
-        sceneColOut = vec4(complexShadingLOD(material), material.albedo.a);
+        sceneColOut = complexShadingLOD(material);
     
         // Write buffer datas
         normalDataOut = material.normal;
