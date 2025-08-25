@@ -282,7 +282,7 @@
 
         #if OUTLINES != 0
             // Outline calculation
-            sceneColOut *= 1.0 + getOutline(screenTexelCoord, screenPos.z) * OUTLINE_BRIGHTNESS;
+            if(!realSky) sceneColOut *= 1.0 + getOutline(screenTexelCoord, screenPos.z) * OUTLINE_BRIGHTNESS;
         #endif
 
         #ifdef SSAO
