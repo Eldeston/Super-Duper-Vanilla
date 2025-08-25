@@ -69,7 +69,7 @@ const float sunPathRotation = 30.0; // Light path angle. This also affects sky a
 #define RAYTRACER_STEPS 16 // Raytracer steps. Increasing may improve quality and demand more performance. [2 4 8 16 32 64 128]
 #define RAYTRACER_BISTEPS 4 // Raytracer binary refinement steps. Improves quality especially when using a low step count. Balancing the values may be necessary for performance.  [0 2 4 6 8]
 
-// #define ROUGH_REFLECTIONS // Enables rougher objects to have rougher reflections. May show weird artifacts, but some AA might fix it.
+#define ROUGH_REFLECTIONS // Enables rougher objects to have rougher reflections. May show weird artifacts, but some AA might fix it.
 #define PREVIOUS_FRAME // Reads previous frame buffer colors alowing SSR or SSGI to have infinite bounces of light. Impacts performance!
 
 /// -------------------------------- /// Atmospherics /// -------------------------------- ///
