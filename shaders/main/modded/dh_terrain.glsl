@@ -227,7 +227,7 @@
         #endif
 
         // Apply simple shading
-        sceneColOut = complexShadingLOD(material);
+        sceneColOut = complexShadingLOD(material).rgb;
 
         // Write buffer datas
         normalDataOut = material.normal;

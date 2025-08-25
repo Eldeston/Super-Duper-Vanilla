@@ -281,7 +281,7 @@
         #endif
 
         // Write to HDR scene color
-        sceneColOut = complexShadingForward(material);
+        sceneColOut = complexShadingForward(material).rgb;
 
         // Write buffer datas
         normalDataOut = material.normal;

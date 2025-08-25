@@ -45,8 +45,6 @@
 
         gl_Position.w = -vertexViewPos.z;
 
-        gl_Position.z *= 0.9;
-
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
         #endif
@@ -98,7 +96,7 @@
             if(renderStage == MC_RENDER_STAGE_MOON){ discard; return; }
         #endif
 
-        // Otherwise calculate skybox
-        sceneColOut = toLinear(albedo.rgb * albedo.a) * skyBoxIntensitySqrd;
+        // Otherwise BEGONE
+        return;
     }
 #endif
