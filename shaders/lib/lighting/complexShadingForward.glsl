@@ -38,7 +38,7 @@ vec4 complexShadingForward(in dataPBR material){
 		bool isShadow = NLZ > 0;
 		bool isSubSurface = material.ss > 0;
 
-		#if defined SHADOW_MAPPING && !defined DH_GBUFFERS
+		#ifdef SHADOW_MAPPING
 			vec3 shdCol = vec3(0);
 
 			// If the area isn't shaded, apply shadow mapping
@@ -112,10 +112,16 @@ vec4 complexShadingForward(in dataPBR material){
 
 		#ifdef SUBSURFACE_SCATTERING
 			// Diffuse with simple SS approximation
-			if(isSubSurface) dirLight += max(0.0, -NLZ) * material.ambient;
+			if(isSubSurface) dirLight += (1.0 - dirLight) * material.ambient * material.ss * 0.5;
+
+			return vec4(vec3(dirLight), 1);
 		#endif
 
-		vec3 finalShadowCol = shdCol * dirLight;
+		#ifdef SHADOW_MAPPING
+			vec3 finalShadowCol = shdCol * dirLight;
+		#else
+			float finalShadowCol = shdCol * dirLight;
+		#endif
 
 		#ifndef FORCE_DISABLE_WEATHER
 			// Approximate rain diffusing light shadow
@@ -152,7 +158,7 @@ vec4 complexShadingForward(in dataPBR material){
 			// Get specular GGX
 			vec3 specCol = getSpecularBRDF(viewDir, material.normal, material.albedo.rgb, NLZ, NV, material.metallic, material.smoothness) * shdCol;
 			totalLighting.rgb += sunMoonIntensitySqrd * specCol * sRGBLightCol;
-			totalLighting.a = min(maxOf(specCol) + totalLighting.a, 1.0);
+			if(material.albedo.a != 1) totalLighting.a = min(maxOf(specCol) + totalLighting.a, 1.0);
 		}
 	#endif
 
