@@ -7,7 +7,7 @@ const float volumetricCloudHeight = 195.0 + volumetricCenterDepth;
 vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPlayerDist, in float dither, in bool isSky){
     // Minimum cloud distance, if terrain, caps distance to the minimum cloud distance
     float cloudFar = isSky ? volumetricCloudFar : min(volumetricCloudFar, feetPlayerDist);
-    float invCloudFarSqrd = 1.0 / squared(volumetricCloudFar);
+    float invCloudFarSqrd = 1.0 / volumetricCloudFar;
 
     // Sets the bounding box vertically
     float lowerBoundDist = (-VOLUMETRIC_CLOUD_DEPTH - cameraPos.y) / nFeetPlayerPos.y;
@@ -39,7 +39,7 @@ vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPl
     // LESSS GOOOOO RAT RACING!!!11!!11!!11!!
     for(uint i = 0u; i < dynamicVolumetricCloudSteps; i++){
         // Get cloud fog
-        float cloudFog = 1.0 - lengthSquared(startPos - cameraPos) * invCloudFarSqrd;
+        float cloudFog = 1.0 - length(startPos - cameraPos) * invCloudFarSqrd;
 
         // Get cloud texture
         vec2 cloudData = texelFetch(colortex0, ivec2(startPos.xz * 0.0625) & 255, 0).xy;
