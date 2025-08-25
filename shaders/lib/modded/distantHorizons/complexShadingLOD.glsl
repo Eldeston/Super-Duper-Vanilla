@@ -78,7 +78,7 @@ vec4 complexShadingLOD(in dataPBR material){
 			// Get specular GGX
 			vec3 specCol = getSpecularBRDF(viewDir, material.normal, material.albedo.rgb, NLZ, NV, material.metallic, material.smoothness) * shdCol;
 			totalLighting.rgb += sunMoonIntensitySqrd * specCol * sRGBLightCol;
-			totalLighting.a = min(maxOf(specCol) + totalLighting.a, 1.0);
+			if(material.albedo.a != 1) totalLighting.a = min(maxOf(specCol) + totalLighting.a, 1.0);
 		}
 	#endif
 
