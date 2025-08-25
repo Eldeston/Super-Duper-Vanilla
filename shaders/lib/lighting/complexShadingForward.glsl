@@ -112,7 +112,7 @@ vec4 complexShadingForward(in dataPBR material){
 
 		#ifdef SUBSURFACE_SCATTERING
 			// Diffuse with simple SS approximation
-			if(isSubSurface) dirLight += (1.0 - dirLight) * material.ambient * material.ss * 0.5;
+			if(isSubSurface) dirLight += max(0.0, -NLZ) * material.ambient;
 		#endif
 
 		vec3 finalShadowCol = shdCol * dirLight;
@@ -150,8 +150,8 @@ vec4 complexShadingForward(in dataPBR material){
 	#if defined WORLD_LIGHT && defined SPECULAR_HIGHLIGHTS
 		if(isShadow){
 			// Get specular GGX
-			vec3 specCol = getSpecularBRDF(viewDir, material.normal, material.albedo.rgb, NLZ, NV, material.metallic, material.smoothness);
-			totalLighting.rgb += sunMoonIntensitySqrd * specCol * shdCol * sRGBLightCol;
+			vec3 specCol = getSpecularBRDF(viewDir, material.normal, material.albedo.rgb, NLZ, NV, material.metallic, material.smoothness) * shdCol;
+			totalLighting.rgb += sunMoonIntensitySqrd * specCol * sRGBLightCol;
 			totalLighting.a = min(maxOf(specCol) + totalLighting.a, 1.0);
 		}
 	#endif
