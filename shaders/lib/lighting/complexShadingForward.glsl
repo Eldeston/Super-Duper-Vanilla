@@ -113,8 +113,6 @@ vec4 complexShadingForward(in dataPBR material){
 		#ifdef SUBSURFACE_SCATTERING
 			// Diffuse with simple SS approximation
 			if(isSubSurface) dirLight += (1.0 - dirLight) * material.ambient * material.ss * 0.5;
-
-			return vec4(vec3(dirLight), 1);
 		#endif
 
 		#ifdef SHADOW_MAPPING
