@@ -1,3 +1,31 @@
+float getSquarePhong(in vec3 N, in vec3 V, in float NV){
+    vec3 reflectDir = V - (2.0 * NV) * N;
+
+    float RX = dot(reflectDir, vec3(shadowModelView[0].x, shadowModelView[1].x, shadowModelView[2].x));
+	float RY = dot(reflectDir, vec3(shadowModelView[0].y, shadowModelView[1].y, shadowModelView[2].y));
+
+    vec2 d = max(abs(vec2(RX, RY)) - WORLD_SUN_MOON_SIZE, 0.0);
+    return max(1.0 - squared(length(d) + maxOf(d)), 0.0);
+}
+
+float getSquirclePhong(in vec3 N, in vec3 V, in float NV){
+    vec3 reflectDir = V - (2.0 * NV) * N;
+
+    float RX = dot(reflectDir, vec3(shadowModelView[0].x, shadowModelView[1].x, shadowModelView[2].x));
+	float RY = dot(reflectDir, vec3(shadowModelView[0].y, shadowModelView[1].y, shadowModelView[2].y));
+
+    return max(1.0 - squared(max(0.0, pow(abs(RX * RX * RX) + abs(RY * RY * RY), 0.33333333) - WORLD_SUN_MOON_SIZE)), 0.0);
+}
+
+// Kinda stupid but it works
+float getBlackHolePhong(in vec3 N, in vec3 V, in float NV){
+    vec3 reflectDir = V - (2.0 * NV) * N;
+
+    float RZ = dot(reflectDir, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z));
+
+    return max(1.0 - squared(sqrt(1.0 - RZ * RZ) - WORLD_SUN_MOON_SIZE), 0.0);
+}
+
 // Source: https://www.guerrilla-games.com/read/decima-engine-advances-in-lighting-and-aa
 float getNoHSquared(in float NoL, in float NoV, in float VoL){
     // radiusTan == WORLD_SUN_MOON_SIZE
@@ -69,14 +97,20 @@ vec3 getSpecularBRDF(in vec3 V, in vec3 N, in vec3 albedo, in float NL, in float
     // Visibility
     float visibility = LH + (1.0 / roughness);
 
-    // Smoothness needed to be multiplied in the rest of the calculation for compensating reflection over specular
-    float specularMult = smoothness + 1.0;
-    float specIntensity = sunMoonIntensitySqrd * specularMult;
+    // Determines the shape of the NH to match the sun and moon shape
+    #if WORLD_SUN_MOON == 2
+        float NHSqr = getNoHSquared(NL, NV, dot(V, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)));
+    #else
+        #if SUN_MOON_TYPE == 0
+            float NHSqr = getSquirclePhong(N, V, NV);
+        #else
+            float NHSqr = getNoHSquared(NL, NV, dot(V, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)));
+        #endif
+    #endif
 
     // Distribution
-    float NHSqr = getNoHSquared(NL, NV, dot(V, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)));
     float denominator = squared(NHSqr * (alphaSqrd - 1.0) + 1.0);
-    float distribution = (specularMult * alphaSqrd * NL) / (denominator * visibility * PI);
+    float distribution = (smoothness * alphaSqrd * NL) / (denominator * visibility * PI);
 
     // Rain occlusion
     #ifndef FORCE_DISABLE_WEATHER
@@ -89,9 +123,9 @@ vec3 getSpecularBRDF(in vec3 V, in vec3 N, in vec3 albedo, in float NL, in float
 
     if(metallic <= 0.9){
         float basicFresnel = cosTheta + metallic * oneMinusCosTheta;
-        return vec3(min(specIntensity, basicFresnel * distribution));
+        return vec3(min(1.0, basicFresnel * distribution));
     }
 
     vec3 metallicFresnel = cosTheta + albedo * oneMinusCosTheta;
-    return min(vec3(specIntensity * PI), metallicFresnel * distribution);
+    return min(vec3(1), metallicFresnel * distribution);
 }
