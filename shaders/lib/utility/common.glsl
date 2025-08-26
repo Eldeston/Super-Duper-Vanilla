@@ -13,26 +13,26 @@ const float lightMapVertexScale = 1.0328125 / 240.0;
 const float oneMinusLightMapScale = 1.0 - lightMapEpsilon;
 
 bool isSkyDepth(in float depth){
-	#ifdef MC_GL_VENDOR_AMD
-		return depth == 1;
-	#else
-		return fract(depth) < 0.1;
-	#endif
+    #ifdef MC_GL_VENDOR_AMD
+        return depth == 1;
+    #else
+        return fract(depth) < 0.1;
+    #endif
 }
 
 // For some reason, the lightmap has precision errors and does not reach 0 or 1
 float lightMapCoord(in float lightMap){
-	// lightMap = (lightMap * 33.05 / 32.0) - (1.05 / 32.0);
-	lightMap = lightMap * lightMapVertexScale - 0.0328125;
+    // lightMap = (lightMap * 33.05 / 32.0) - (1.05 / 32.0);
+    lightMap = lightMap * lightMapVertexScale - 0.0328125;
 
-	if(lightMap < lightMapEpsilon) return 0.0;
-	if(lightMap > oneMinusLightMapScale) return 1.0;
+    if(lightMap < lightMapEpsilon) return 0.0;
+    if(lightMap > oneMinusLightMapScale) return 1.0;
 
-	return lightMap;
+    return lightMap;
 }
 
 vec2 lightMapCoord(in vec2 lightMap){
-	return vec2(lightMapCoord(lightMap.x), lightMapCoord(lightMap.y));
+    return vec2(lightMapCoord(lightMap.x), lightMapCoord(lightMap.y));
 }
 
 // Saturate/clamp functions
@@ -90,12 +90,12 @@ uint maxOf(in uvec4 x){ return max(max(x.x, x.y), max(x.z, x.w)); }
 
 // Linear interpolation functions
 float lerp(float a, float b, float c, float d){
-	if(d < 1) return mix(a, b, d);
+    if(d < 1) return mix(a, b, d);
     return mix(b, c, d - 1.0);
 }
 
 vec3 lerp(vec3 a, vec3 b, vec3 c, float d){
-	if(d < 1) return mix(a, b, d);
+    if(d < 1) return mix(a, b, d);
     return mix(b, c, d - 1.0);
 }
 
@@ -127,15 +127,15 @@ vec3 smootherstep(in vec3 x){ return x * x * x * (x * (x * 6.0 - 15.0) + 10.0); 
 vec4 smootherstep(in vec4 x){ return x * x * x * (x * (x * 6.0 - 15.0) + 10.0); }
 
 vec2 getMatScale(in mat2 matrix){
-	return vec2(matrix[0].x, matrix[1].y);
+    return vec2(matrix[0].x, matrix[1].y);
 }
 
 vec3 getMatScale(in mat3 matrix){
-	return vec3(matrix[0].x, matrix[1].y, matrix[2].z);
+    return vec3(matrix[0].x, matrix[1].y, matrix[2].z);
 }
 
 vec4 getMatScale(in mat4 matrix){
-	return vec4(matrix[0].x, matrix[1].y, matrix[2].z, matrix[3].w);
+    return vec4(matrix[0].x, matrix[1].y, matrix[2].z, matrix[3].w);
 }
 
 // By Jessie#7257
@@ -145,55 +145,55 @@ vec3 generateUnitVector(in vec2 hash){
 }
 
 vec3 generateCosineVector(in vec3 vector, in vec3 noiseUnitVector){
-	vec3 vectorDir = fastNormalize(vector + noiseUnitVector);
-	return dot(vectorDir, vector) < 0 ? -vectorDir : vectorDir;
+    vec3 vectorDir = fastNormalize(vector + noiseUnitVector);
+    return dot(vectorDir, vector) < 0 ? -vectorDir : vectorDir;
 }
 
 // Rotation functions
 mat2 rot2D(in float x){
-	float cosX = cos(x);
-  	float sinX = sin(x);
+    float cosX = cos(x);
+      float sinX = sin(x);
 
-	return mat2(
-		cosX, -sinX, 
-		sinX, cosX
-	);
+    return mat2(
+        cosX, -sinX, 
+        sinX, cosX
+    );
 }
 
 // Rotate on the x axis
 mat3 rot3DX(in float x){
-	float cosX = cos(x);
-  	float sinX = sin(x);
+    float cosX = cos(x);
+      float sinX = sin(x);
 
-	return mat3(
-		cosX, -sinX, 0,
-		sinX, cosX, 0,
-		0, 0, 1
-	);
+    return mat3(
+        cosX, -sinX, 0,
+        sinX, cosX, 0,
+        0, 0, 1
+    );
 }
 
 // Rotate on the y axis
 mat3 rot3DY(in float y){
-	float cosY = cos(y);
-  	float sinY = sin(y);
+    float cosY = cos(y);
+      float sinY = sin(y);
 
-	return mat3(
-		cosY, 0, sinY,
-		0, 1, 0,
-		-sinY, 0, cosY
-	);
+    return mat3(
+        cosY, 0, sinY,
+        0, 1, 0,
+        -sinY, 0, cosY
+    );
 }
 
 // Rotate on the z axis
 mat3 rot3DZ(in float z){
-	float cosZ = cos(z);
-  	float sinZ = sin(z);
+    float cosZ = cos(z);
+      float sinZ = sin(z);
 
-	return mat3(
-		1, 0, 0,
-		0, cosZ, -sinZ,
-		0, sinZ, cosZ
-	);
+    return mat3(
+        1, 0, 0,
+        0, cosZ, -sinZ,
+        0, sinZ, cosZ
+    );
 }
 
 // SRGB to linear

@@ -68,7 +68,7 @@
             vec3 vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos + gbufferModelViewInverse[3].xyz;
         #endif
 
-	    #ifdef WORLD_CURVATURE
+        #ifdef WORLD_CURVATURE
             // Apply curvature distortion
             vertexFeetPlayerPos.y -= lengthSquared(vertexFeetPlayerPos.xz) * worldCurvatureInv;
 
@@ -79,7 +79,7 @@
         #if defined SHADOW_MAPPING && defined WORLD_LIGHT
             // Calculate shadow pos in vertex
             vertexShdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexFeetPlayerPos + shadowModelView[3].xyz);
-			vertexShdPos.z += shadowProjection[3].z;
+            vertexShdPos.z += shadowProjection[3].z;
             
             vertexShdPos.z = vertexShdPos.z * 0.1 + 0.5;
         #endif

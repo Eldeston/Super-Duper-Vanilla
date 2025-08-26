@@ -15,7 +15,7 @@ vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPl
 
     // Finds the nearest and furthest plane
     float nearestPlane = max(min(lowerBoundDist, higherBoundDist), 0.0);
-	float furthestPlane = min(cloudFar, max(lowerBoundDist, higherBoundDist));
+    float furthestPlane = min(cloudFar, max(lowerBoundDist, higherBoundDist));
 
     // If the clouds are outside the bounding box, return nothing
     if(furthestPlane < 0) return vec2(0);
