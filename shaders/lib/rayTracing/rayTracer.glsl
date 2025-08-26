@@ -78,7 +78,7 @@ vec3 rayTraceScene(in vec3 screenPos, in vec3 viewPos, in vec3 rayDir, in float 
 	}
 
 	// If sky or no intersection has been found return immediately
-	if(sampledDepth == 1 || !intersection) return vec3(0);
+	if(isSkyDepth(sampledDepth) || !intersection) return vec3(0);
 
 	// Do binary refinement
 	#if RAYTRACER_BISTEPS != 0

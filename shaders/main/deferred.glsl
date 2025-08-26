@@ -79,7 +79,7 @@
             float depth = texelFetch(depthtex0, screenTexelCoord, 0).x;
 
             // If sky or player hand return immediately
-            if(depth <= 0.56 || depth == 1) return;
+            if(depth <= 0.56 || isSkyDepth(depth)) return;
 
             // Check if sky and player hand
             vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
