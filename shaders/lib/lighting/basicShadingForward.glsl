@@ -25,7 +25,9 @@ vec3 basicShadingForward(in vec3 albedo){
 					float dither = texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x;
 				#endif
 
-				vec3 shdCol = getShdCol(shdPos, dither * TAU);
+				vec2 randVec = vec2(cos(dither), sin(dither)) * shadowMapPixelSize;
+
+				vec3 shdCol = getShdCol(shdPos, randVec);
 			#else
 				vec3 shdCol = getShdCol(shdPos);
 			#endif

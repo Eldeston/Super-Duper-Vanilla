@@ -81,7 +81,9 @@ vec4 complexShadingForward(in dataPBR material){
 						float dither = texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x;
 					#endif
 
-					shdCol = getShdCol(shdPos, dither * TAU);
+					vec2 randVec = vec2(cos(dither), sin(dither)) * shadowMapPixelSize;
+
+					shdCol = getShdCol(shdPos, randVec);
 				#else
 					shdCol = getShdCol(shdPos);
 				#endif
