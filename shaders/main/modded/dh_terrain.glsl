@@ -73,7 +73,7 @@
         // Get world position
         vertexWorldPos = vertexFeetPlayerPos + cameraPosition;
 
-	    #ifdef WORLD_CURVATURE
+        #ifdef WORLD_CURVATURE
             // Apply curvature distortion
             vertexFeetPlayerPos.y -= lengthSquared(vertexFeetPlayerPos.xz) * worldCurvatureInv;
 
@@ -178,7 +178,7 @@
         float dhNoise = (noiseCol.x + noiseCol.y) * 0.2 + 0.8;
 
         // Declare materials
-	    dataPBR material;
+        dataPBR material;
         material.normal = vertexNormal;
         material.albedo = vec4(min(vertexColor * dhNoise, vec3(1)), 1);
 

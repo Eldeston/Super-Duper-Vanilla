@@ -44,7 +44,7 @@
         // Output view distance
         vertexViewDist = length(vertexViewPos);
 
-	    #ifdef WORLD_CURVATURE
+        #ifdef WORLD_CURVATURE
             // Get vertex feet player position
             vec3 vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos + gbufferModelViewInverse[3].xyz;
 

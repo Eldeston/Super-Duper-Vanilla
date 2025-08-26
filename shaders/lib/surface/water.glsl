@@ -16,9 +16,9 @@ vec4 H2NWater(in vec2 uv){
 
     float animateTime = fragmentFrameTime * currentSpeed;
 
-	float d0 = getCellNoise(uv, animateTime);
-	float d1 = getCellNoise(vec2(uv.x + waterPixel, uv.y), animateTime);
-	float d2 = getCellNoise(vec2(uv.x, uv.y + waterPixel), animateTime);
+    float d0 = getCellNoise(uv, animateTime);
+    float d1 = getCellNoise(vec2(uv.x + waterPixel, uv.y), animateTime);
+    float d2 = getCellNoise(vec2(uv.x, uv.y + waterPixel), animateTime);
     
     return vec4(d0 - d1, d0 - d2, waterDepth, d0);
 }

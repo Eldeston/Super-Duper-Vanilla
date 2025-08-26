@@ -45,7 +45,7 @@
         // Get vertex view position
         vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
 
-	    #ifdef WORLD_CURVATURE
+        #ifdef WORLD_CURVATURE
             // This is because world curvature isn't applied to the player hand
             if(renderStage != MC_RENDER_STAGE_HAND_SOLID && renderStage != MC_RENDER_STAGE_TERRAIN_TRANSLUCENT){
                 // Get vertex eye player position

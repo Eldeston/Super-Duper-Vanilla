@@ -100,7 +100,7 @@
         vertexWorldPos = vertexFeetPlayerPos + cameraPosition;
 
         // Calculate TBN matrix
-	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal) * sign(at_tangent.w), vertexNormal));
+        TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal) * sign(at_tangent.w), vertexNormal));
 
         #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
             vec2 midTexCoord = (gl_TextureMatrix[0] * vec4(mc_midTexCoord, 0, 0)).xy;
@@ -243,8 +243,8 @@
     #include "/lib/lighting/complexShadingForward.glsl"
 
     void main(){
-	    // Declare materials
-	    dataPBR material;
+        // Declare materials
+        dataPBR material;
         getPBR(material, blockId);
 
         if(blockId == 11100 || blockId == 13005){

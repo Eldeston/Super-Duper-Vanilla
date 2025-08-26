@@ -9,12 +9,12 @@ float getSSAO(in vec3 screenPos, in vec3 viewNormal){
 
     // Instead of iterating by adding stepSize and using fract every time, we swizzle + one fract instead for pleasant and optimized results
     vec3 baseDither = dither.xyz * 0.5 - 0.25;
-	vec3 ditherSwizzle[4] = vec3[4](
-		baseDither.xyz,
-		baseDither.zxy,
-		baseDither.yzx,
-		fract(dither.zyx + GOLDEN_RATIO) * 0.5 - 0.25
-	);
+    vec3 ditherSwizzle[4] = vec3[4](
+        baseDither.xyz,
+        baseDither.zxy,
+        baseDither.yzx,
+        fract(dither.zyx + GOLDEN_RATIO) * 0.5 - 0.25
+    );
 
     float depthOrigin = near / (1.0 - screenPos.z);
 

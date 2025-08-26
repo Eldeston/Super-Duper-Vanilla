@@ -36,9 +36,9 @@ vec3 getCelestialPos(in vec3 eyePlayerPos){
     eyePlayerPos.xz = rot2D(-90.0 * (PI / 180.0)) * eyePlayerPos.xz;
     // eyePlayerPos.xz = eyePlayerPos.zx;
     // Rotate by sunPathRotation in the x axis
-	eyePlayerPos.xy = rot2D(-sunPathRotation * (PI / 180.0)) * eyePlayerPos.xy;
-	// Rotate by sunAngle in the z axis
-	eyePlayerPos.yz = rot2D(-sunAngle * TAU) * eyePlayerPos.yz;
+    eyePlayerPos.xy = rot2D(-sunPathRotation * (PI / 180.0)) * eyePlayerPos.xy;
+    // Rotate by sunAngle in the z axis
+    eyePlayerPos.yz = rot2D(-sunAngle * TAU) * eyePlayerPos.yz;
 
     return eyePlayerPos;
 }
@@ -47,8 +47,8 @@ vec3 getCelestialPos(in vec3 eyePlayerPos){
 vec3 getCelestialPos(in vec3 eyePlayerPos){
     // eyePlayerPos.xz = rot2D(-90.0 * (PI / 180.0)) * eyePlayerPos.xz;
     // eyePlayerPos.xz = eyePlayerPos.zx;
-	// eyePlayerPos.xy = rot2D(-sunPathRotation * (PI / 180.0)) * eyePlayerPos.xy;
-	// eyePlayerPos.yz = rot2D(-sunAngle * TAU) * eyePlayerPos.yz;
+    // eyePlayerPos.xy = rot2D(-sunPathRotation * (PI / 180.0)) * eyePlayerPos.xy;
+    // eyePlayerPos.yz = rot2D(-sunAngle * TAU) * eyePlayerPos.yz;
 
     // eyePlayerPos = rot3DY(90.0 * (PI / 180.0)) * eyePlayerPos;
     // eyePlayerPos = rot3DX(-sunPathRotation * (PI / 180.0)) * eyePlayerPos;

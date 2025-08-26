@@ -239,7 +239,7 @@
 
         // Get view distance
         float viewDot = lengthSquared(viewPos);
-	    float viewDotInvSqrt = inversesqrt(viewDot);
+        float viewDotInvSqrt = inversesqrt(viewDot);
 
         // Get normalized eyePlayerPos
         vec3 nEyePlayerPos = eyePlayerPos * viewDotInvSqrt;

@@ -2,7 +2,7 @@ float getSquarePhong(in vec3 N, in vec3 V, in float NV){
     vec3 reflectDir = V - (2.0 * NV) * N;
 
     float RX = dot(reflectDir, vec3(shadowModelView[0].x, shadowModelView[1].x, shadowModelView[2].x));
-	float RY = dot(reflectDir, vec3(shadowModelView[0].y, shadowModelView[1].y, shadowModelView[2].y));
+    float RY = dot(reflectDir, vec3(shadowModelView[0].y, shadowModelView[1].y, shadowModelView[2].y));
 
     vec2 d = max(abs(vec2(RX, RY)) - WORLD_SUN_MOON_SIZE, 0.0);
     return max(1.0 - squared(length(d) + maxOf(d)), 0.0);
@@ -12,7 +12,7 @@ float getSquirclePhong(in vec3 N, in vec3 V, in float NV){
     vec3 reflectDir = V - (2.0 * NV) * N;
 
     float RX = dot(reflectDir, vec3(shadowModelView[0].x, shadowModelView[1].x, shadowModelView[2].x));
-	float RY = dot(reflectDir, vec3(shadowModelView[0].y, shadowModelView[1].y, shadowModelView[2].y));
+    float RY = dot(reflectDir, vec3(shadowModelView[0].y, shadowModelView[1].y, shadowModelView[2].y));
 
     return max(1.0 - squared(max(0.0, pow(abs(RX * RX * RX) + abs(RY * RY * RY), 0.33333333) - WORLD_SUN_MOON_SIZE)), 0.0);
 }
@@ -119,7 +119,7 @@ vec3 getSpecularBRDF(in vec3 V, in vec3 N, in vec3 albedo, in float NL, in float
 
     // Calculate and apply fresnel and return final specular
     float cosTheta = exp2(-9.28 * LH);
-	float oneMinusCosTheta = 1.0 - cosTheta;
+    float oneMinusCosTheta = 1.0 - cosTheta;
 
     if(metallic <= 0.9){
         float basicFresnel = cosTheta + metallic * oneMinusCosTheta;

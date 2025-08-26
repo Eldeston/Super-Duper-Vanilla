@@ -82,7 +82,7 @@
         vertexWorldPos = vertexFeetPlayerPos + cameraPosition;
 
         // Calculate TBN matrix
-	    TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal) * sign(at_tangent.w), vertexNormal));
+        TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal) * sign(at_tangent.w), vertexNormal));
 
         #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
             vec2 midCoord = (gl_TextureMatrix[0] * vec4(mc_midTexCoord, 0, 0)).xy;
@@ -244,8 +244,8 @@
             return; // Return immediately, no need for lighting calculation
         }
 
-	    // Declare materials
-	    dataPBR material;
+        // Declare materials
+        dataPBR material;
         getPBR(material, blockEntityId);
 
         // Convert to linear space

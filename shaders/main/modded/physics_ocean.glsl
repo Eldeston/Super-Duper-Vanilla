@@ -209,8 +209,8 @@
     #include "/lib/modded/physicsMod/physicsModFragment.glsl"
 
     void main(){
-	    // Declare materials
-	    dataPBR material;
+        // Declare materials
+        dataPBR material;
         material.albedo = textureGrad(gtexture, texCoord, dFdx(texCoord), dFdy(texCoord));
         material.albedo.rgb *= vertexColor;
         material.normal = vertexNormal;
