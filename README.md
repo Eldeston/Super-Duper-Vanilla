@@ -48,7 +48,7 @@ If you want to request mod compatibility with this shader, create an issue post 
 ## Version Compatibility
 Version compatibility varies across the 2 known shader loaders Iris and Optifine. Iris versions 1.6.10+ from Minecraft versions 1.18.2+ are compatible with this shader. For Optifine, it varies across GPU vendors. Please always choose the latest Iris or Optifine of your respective Minecraft version.
 
-Optifine support will not be prioritized or maintained starting from version 1.3.7 of this shader.
+Optifine support will no longer be maintained starting from version 1.3.7 of this shader, please use Iris/Oculus whenever possible.
 
 | Iris     | Windows, Linux (Intel, AMD, NVidia) | Apple (M1)      |
 | -------- | ----------------------------------- | --------------- |
