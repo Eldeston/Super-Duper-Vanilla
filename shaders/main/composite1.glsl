@@ -1,14 +1,14 @@
 /*
-================================ /// Super Duper Vanilla v1.3.8 /// ================================
+================================ /// Super Duper Vanilla v1.3.9 /// ================================
 
     Developed by Eldeston, presented by FlameRender (C) Studios.
 
-    Copyright (C) 2023 Eldeston | FlameRender (C) Studios License
+    Copyright (C) 2025 Eldeston | FlameRender (C) Studios License
 
 
     By downloading this content you have agreed to the license and its terms of use.
 
-================================ /// Super Duper Vanilla v1.3.8 /// ================================
+================================ /// Super Duper Vanilla v1.3.9 /// ================================
 */
 
 /// Buffer features: Temporal Anti-Aliasing (TAA)
