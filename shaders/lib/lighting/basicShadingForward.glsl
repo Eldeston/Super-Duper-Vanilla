@@ -20,9 +20,9 @@ vec3 basicShadingForward(in vec3 albedo){
 			// Sample shadows
 			#ifdef SHADOW_FILTER
 				#if ANTI_ALIASING >= 2
-					float dither = fract(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x + frameFract);
+					float dither = fract(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x + frameFract) * TAU;
 				#else
-					float dither = texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x;
+					float dither = texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x * TAU;
 				#endif
 
 				vec2 randVec = vec2(cos(dither), sin(dither)) * shadowMapPixelSize;
