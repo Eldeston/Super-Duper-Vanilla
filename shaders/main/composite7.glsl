@@ -184,9 +184,9 @@
 
         #if defined LENS_FLARE && defined WORLD_LIGHT
             #ifdef DISTANT_HORIZONS
-                bool isSky = isSkyDepth(textureLod(dhDepthTex1, shdLightDirScreenSpace.xy, 0).x) && isSkyDepth(textureLod(depthtex0, shdLightDirScreenSpace.xy, 0).x);
+                bool isSky = textureLod(dhDepthTex1, shdLightDirScreenSpace.xy, 0).x == 1 && getDepth(depthtex0, shdLightDirScreenSpace.xy, 0) == 1;
             #else
-                bool isSky = isSkyDepth(textureLod(depthtex0, shdLightDirScreenSpace.xy, 0).x);
+                bool isSky = getDepth(depthtex0, shdLightDirScreenSpace.xy, 0) == 1;
             #endif
 
             #ifdef FORCE_DISABLE_WEATHER

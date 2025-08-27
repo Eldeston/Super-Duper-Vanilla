@@ -216,11 +216,11 @@
 
         bool realSky = false;
 
-        float depth = texelFetch(depthtex0, screenTexelCoord, 0).x;
+        float depth = getDepth(depthtex0, screenTexelCoord, 0);
 
         // Distant Horizons apparently uses a different depth texture
         #ifdef DISTANT_HORIZONS
-            realSky = isSkyDepth(depth);
+            realSky = depth == 1;
             if(realSky) depth = texelFetch(dhDepthTex0, screenTexelCoord, 0).x;
         #endif
 
@@ -259,7 +259,7 @@
         vec3 currSkyCol = getSkyBasic(nEyePlayerPos.y, skyPos.z);
 
         // If sky, do full sky render and return immediately
-        if(isSkyDepth(screenPos.z)){
+        if(screenPos.z == 1){
             // Calculate and output sky render
             sceneColOut = getFullSkyRender(nEyePlayerPos, skyPos, currSkyCol + sceneColOut) * exp2(-borderFar * effectFactor);
             // Exit function immediately

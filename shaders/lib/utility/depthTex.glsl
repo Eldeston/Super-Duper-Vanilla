@@ -1,19 +1,19 @@
 float getDepthTex(in ivec2 screenTexelCoord){
     #ifdef DISTANT_HORIZONS
-        float mainDepth = texelFetch(depthtex0, screenTexelCoord, 0).x;
+        float mainDepth = getDepth(depthtex0, screenTexelCoord, 0);
 
-        return isSkyDepth(mainDepth) ? texelFetch(dhDepthTex0, screenTexelCoord, 0).x : mainDepth;
+        return mainDepth == 1 ? texelFetch(dhDepthTex0, screenTexelCoord, 0).x : mainDepth;
     #else
-        return texelFetch(depthtex0, screenTexelCoord, 0).x;
+        return getDepth(depthtex0, screenTexelCoord, 0);
     #endif
 }
 
 float getDepthTex(in vec2 screenCoord){
     #ifdef DISTANT_HORIZONS
-        float mainDepth = textureLod(depthtex0, screenCoord, 0).x;
+        float mainDepth = getDepth(depthtex0, screenCoord, 0);
 
-        return isSkyDepth(mainDepth) ? textureLod(dhDepthTex0, screenCoord, 0).x : mainDepth;
+        return mainDepth == 1 ? textureLod(dhDepthTex0, screenCoord, 0).x : mainDepth;
     #else
-        return textureLod(depthtex0, screenCoord, 0).x;
+        return getDepth(depthtex0, screenCoord, 0);
     #endif
 }

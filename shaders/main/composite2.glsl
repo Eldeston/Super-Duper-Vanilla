@@ -71,7 +71,7 @@
 
         #ifdef MOTION_BLUR
             // Declare and get positions
-            float depth = texelFetch(depthtex0, screenTexelCoord, 0).x;
+            float depth = getDepth(depthtex0, screenTexelCoord, 0);
 
             // Return immediately if player hand
             if(depth <= 0.56) return;

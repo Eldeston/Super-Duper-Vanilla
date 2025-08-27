@@ -12,12 +12,24 @@ const float lightMapEpsilon = 1.0 / 16.0;
 const float lightMapVertexScale = 1.0328125 / 240.0;
 const float oneMinusLightMapScale = 1.0 - lightMapEpsilon;
 
-bool isSkyDepth(in float depth){
+float getDepth(in sampler2D depthTex, in ivec2 texelCoord, in int LOD){
+    float depth = texelFetch(depthTex, texelCoord, LOD).x;
+
     #ifdef MC_GL_VENDOR_AMD
-        return depth == 1;
-    #else
-        return fract(depth) < 0.1;
+        if(fract(depth) < 0.1) return 1.0;
     #endif
+
+    return depth;
+}
+
+float getDepth(in sampler2D depthTex, in vec2 texelCoord, in int LOD){
+    float depth = textureLod(depthTex, texelCoord, LOD).x;
+
+    #ifdef MC_GL_VENDOR_AMD
+        if(fract(depth) < 0.1) return 1.0;
+    #endif
+
+    return depth;
 }
 
 // For some reason, the lightmap has precision errors and does not reach 0 or 1
