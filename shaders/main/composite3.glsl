@@ -84,7 +84,7 @@
 
         #ifdef DOF
             // Declare and get positions
-            float depth = texelFetch(depthtex1, screenTexelCoord, 0).x;
+            float depth = getDepth(depthtex1, screenTexelCoord, 0);
 
             // Return immediately if player hand
             if(depth <= 0.56){

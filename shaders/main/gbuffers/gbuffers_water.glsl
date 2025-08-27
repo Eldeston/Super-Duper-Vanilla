@@ -245,7 +245,7 @@
         if(blockId == 11102 || blockId == 12100){
             // Fast depth linearization by DrDesten
             // Not great, but plausible for most scenarios
-            float blockDepth = near / (1.0 - gl_FragCoord.z) - near / (1.0 - texelFetch(depthtex1, ivec2(gl_FragCoord.xy), 0).x);
+            float blockDepth = near / (1.0 - gl_FragCoord.z) - near / (1.0 - getDepth(depthtex1, ivec2(gl_FragCoord.xy), 0));
             // Get the depth outline for the end portal
             float edgeBrightness = exp2((blockDepth + 0.0625) * 8.0);
 
