@@ -213,11 +213,11 @@
 
         bool realSky = false;
 
-        float depth = texelFetch(depthtex0, screenTexelCoord, 0).x;
+        float depth = getDepth(depthtex0, screenTexelCoord, 0);
 
         // Distant Horizons apparently uses a different depth texture
         #ifdef DISTANT_HORIZONS
-            realSky = isSkyDepth(depth);
+            realSky = depth == 1;
             if(realSky) depth = texelFetch(dhDepthTex0, screenTexelCoord, 0).x;
         #endif
 
@@ -291,7 +291,7 @@
         sceneColOut *= 1.0 - darknessLightFactor;
 
         #if defined WORLD_LIGHT || !defined FORCE_DISABLE_CLOUDS && CLOUD_TYPE == 2
-            bool isSky = isSkyDepth(depth);
+            bool isSky = depth == 1;
 
             float feetPlayerDot = lengthSquared(feetPlayerPos);
             float feetPlayerDotInvSqrt = inversesqrt(feetPlayerDot);

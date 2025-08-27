@@ -16,7 +16,7 @@ vec2 binaryRefinement(in vec3 screenRayPos, in vec3 screenRayDir, in float sampl
         if(i == rayTraceBiSteps) return screenRayPos.xy;
 
         // Get current texture depth
-        sampledDepth = texelFetch(depthtex0, ivec2(screenRayPos.xy), 0).x;
+        sampledDepth = getDepth(depthtex0, ivec2(screenRayPos.xy), 0);
         // Check intersection
         intersection = sampledDepth <= screenRayPos.z;
     }
@@ -65,7 +65,7 @@ vec3 rayTraceScene(in vec3 screenPos, in vec3 viewPos, in vec3 rayDir, in float 
         if(screenRayPos.x < 0 || screenRayPos.y < 0 || screenRayPos.x > viewWidth || screenRayPos.y > viewHeight) return vec3(0);
 
         // Get current texture depth
-        sampledDepth = texelFetch(depthtex0, ivec2(screenRayPos.xy), 0).x;
+        sampledDepth = getDepth(depthtex0, ivec2(screenRayPos.xy), 0);
 
         // If hand return immediately
         if(sampledDepth <= 0.56) return vec3(0);
@@ -78,7 +78,7 @@ vec3 rayTraceScene(in vec3 screenPos, in vec3 viewPos, in vec3 rayDir, in float 
     }
 
     // If sky or no intersection has been found return immediately
-    if(isSkyDepth(sampledDepth) || !intersection) return vec3(0);
+    if(sampledDepth == 1 || !intersection) return vec3(0);
 
     // Do binary refinement
     #if RAYTRACER_BISTEPS != 0

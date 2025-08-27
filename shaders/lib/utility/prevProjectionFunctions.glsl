@@ -10,5 +10,5 @@ vec2 getPrevScreenCoord(in vec2 currScreenPos, in float screenDepth){
 }
 
 vec2 getPrevScreenCoord(in vec2 currScreenPos){
-    return getPrevScreenCoord(currScreenPos, textureLod(depthtex0, currScreenPos, 0).x);
+    return getPrevScreenCoord(currScreenPos, getDepth(depthtex0, currScreenPos, 0));
 }
