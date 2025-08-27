@@ -25,6 +25,11 @@ vec3 getShdCol(in vec3 shdPos){
         // If not in shadow, return "white"
         if(shd0 == 1) return vec3(1);
 
+        // Another fix for AMD's electriic boogaloo
+        #ifdef MC_GL_RENDERER_RADEON
+            if(shd0 <= 0) return vec3(1);
+        #endif
+
         // Sample opaque only shadows
         float shd1 = textureLod(shadowtex1, shdPos, 0);
         // If in shadow, return "black"
