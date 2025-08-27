@@ -25,9 +25,9 @@ vec3 getShdCol(in vec3 shdPos){
         // If not in shadow, return "white"
         if(shd0 == 1) return vec3(1);
 
-        // Another fix for AMD's electriic boogaloo
+        // Another fix for AMD's electriic boogaloo (doesn't actually work)
         #ifdef MC_GL_RENDERER_RADEON
-            if(shd0 <= 0) return vec3(1);
+            // if(shd0 <= 0) return vec3(1);
         #endif
 
         // Sample opaque only shadows
