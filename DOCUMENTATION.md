@@ -1,4 +1,4 @@
-# Coding Standards
+# Formatting Standards
 These standards must be kept in order to keep the code format consistent and readable.
 
 * Minimizing resources and maximizing performance is top priority. Quality is secondary.
@@ -53,6 +53,8 @@ Found in their respective programs in .fsh and .vsh files. The following are the
 This list's purpose is to fully realize the shader pipeline (based on Iris) and visualize the flow of data across programs and their purpose.
 
 ### Before Gbuffers
+The following are the programs that run before gbuffers which are typically the shadow programs.
+
 | Program Macros        | Blend Type  | Program Type     | Shading Type | Usage            |
 | --------------------- | ----------- | ---------------- | ------------ | ---------------- |
 | PHYSICS_OCEAN_SHADOW  | Solid       | PHYSICS_SHADOW   | Shadow       | Physics Mod      |
@@ -65,6 +67,8 @@ This list's purpose is to fully realize the shader pipeline (based on Iris) and 
 | SHADOW                | Solid       | SHADOW           | Shadow       | Iris/Optifine    |
 
 ### Before Deferred
+The following are the programs that run before deferred which are typically the solid gbuffer programs. This is where most of the forward rendering and everything about PBR happen.
+
 | Program Macros        | Blend Type  | Program Type     | Shading Type | Usage            |
 | --------------------- | ----------- | ---------------- | ------------ | ---------------- |
 | DH_TERRAIN            | Solid       | DH_GBUFFERS      | Complex      | Distant Horizons |
@@ -80,6 +84,8 @@ This list's purpose is to fully realize the shader pipeline (based on Iris) and 
 | DEFERRED(0-99)        | None        | DEFERRED         | Post         | Iris/Optifine    |
 
 ## Mixed
+The following are the programs that run before deferred which are typically the translucent/solid gbuffer programs. This is where most of the forward rendering and everything about PBR happen. This section is called mix because despite being translucent, they render before deferred instead of composite.
+
 | Program Macros        | Blend Type  | Program Type     | Shading Type | Usage            |
 | --------------------- | ----------- | ---------------- | ------------ | ---------------- |
 | PARTICLES             | Transparent | GBUFFER          | Basic        | Iris             |
@@ -88,6 +94,8 @@ This list's purpose is to fully realize the shader pipeline (based on Iris) and 
 | HAND                  | Transparent | GBUFFER          | Complex      | Iris/Optifine    |
 
 ### Before Composite
+The following are the programs that run before composite which are typically the translucent gbuffer programs. This is where most of the forward rendering and everything about PBR happen.
+
 | Program Macros        | Blend Type  | Program Type     | Shading Type | Usage            |
 | --------------------- | ----------- | ---------------- | ------------ | ---------------- |
 | PHYSICS_OCEAN         | Solid       | PHYSICS_GBUFFERS | Complex      | Physics Mod      |
@@ -120,7 +128,6 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 * Find a way to make translucent detection more dynamic (medium priority)
 
 * Improve world properties calculation
-* Improve settings UI
 
 * Rebuild pipeline and include visualization (high priority)
 * Document the shader pipeline (high priority)
