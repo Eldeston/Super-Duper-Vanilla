@@ -275,8 +275,15 @@
 
         // If sky, do full sky render and return immediately
         if(skyMask){
-            // Calculate and output sky render
-            sceneColOut = getFullSkyRender(nEyePlayerPos, skyPos, currSkyCol + sceneColOut) * exp2(-borderFar * effectFactor);
+            #ifdef VANILLA_SKY_PASS
+                // Boost skybox brightness so the red eye glows on the gray background
+                // Bloom will pick up the bright red and create a natural glow effect
+                // Credits: Kawwabi
+                sceneColOut = max(sceneColOut * 3.0, skyCol) * exp2(-borderFar * effectFactor);
+            #else
+                // Calculate and output sky render
+                sceneColOut = getFullSkyRender(nEyePlayerPos, skyPos, currSkyCol + sceneColOut) * exp2(-borderFar * effectFactor);
+            #endif
             // Exit function immediately
             return;
         }
