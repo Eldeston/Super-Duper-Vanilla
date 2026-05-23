@@ -299,17 +299,25 @@
         vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
         vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
 
-        // Apply deffered shading
-        sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, realSky);
+        // Skip deferred shading for pixels with zero normal (fabric blocks)
+        // Credits: Kawwabi
+        if(length(normal) > 0.001){
+            // Apply deffered shading
+            sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, realSky);
+        }
 
         #if OUTLINES != 0
-            // Outline calculation
-            sceneColOut *= 1.0 + getOutline(screenTexelCoord, screenPos.z) * OUTLINE_BRIGHTNESS;
+            // Outline calculation — skip for fabric blocks (zero normal)
+            if(length(normal) > 0.001){
+                sceneColOut *= 1.0 + getOutline(screenTexelCoord, screenPos.z) * OUTLINE_BRIGHTNESS;
+            }
         #endif
 
         #ifdef SSAO
-            // Apply ambient occlusion with simple blur
-            sceneColOut *= getSSAOBoxBlur(screenTexelCoord);
+            // Apply ambient occlusion — skip for zero-normal pixels
+            if(length(normal) > 0.001){
+                sceneColOut *= getSSAOBoxBlur(screenTexelCoord);
+            }
         #endif
 
         float viewDist = viewDot * viewDotInvSqrt;
@@ -324,8 +332,10 @@
             fogFactor = (fogFactor - 1.0) * getBorderFog(viewDist) + 1.0;
         #endif
 
-        // Apply fog and darkness fog
-        sceneColOut = ((fogSkyCol - sceneColOut) * fogFactor + sceneColOut) * getFogEffectFactor(viewDist);
+        // Apply fog and darkness fog — skip for fabric blocks (zero normal)
+        if(length(normal) > 0.001){
+            sceneColOut = ((fogSkyCol - sceneColOut) * fogFactor + sceneColOut) * getFogEffectFactor(viewDist);
+        }
         // Clamp scene color to prevent NaNs during post processing
         sceneColOut = max(sceneColOut, vec3(0));
     }

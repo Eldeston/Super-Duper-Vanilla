@@ -6,6 +6,10 @@ float getBorderFog(in float playerPosLength){
 // Ground fog calculation from this Stack Exchange post, variables has been renamed for their respective purpose
 // https://www.bing.com/search?q=ground+fog+shader&qs=n&form=QBRE&sp=-1&lq=0&pq=&sc=0-0&sk=&cvid=CEF589A66F844D48A5D56923DDBF4540&ghsh=0&ghacc=0&ghpl=&ntref=1
 float getAtmosphericFog(in float nPlayerPosY, in float worldPosY, in float playerPosLength, in float totalDensity, in float verticalFogDensity){
+    // If vertical fog density is zero, there is no fog
+    if (verticalFogDensity <= 0.0) {
+        return 0.0;
+    }
     return (totalDensity / verticalFogDensity) * exp2(-worldPosY * verticalFogDensity) * (1.0 - exp2(-playerPosLength * nPlayerPosY * verticalFogDensity)) / nPlayerPosY;
 }
 
@@ -24,5 +28,11 @@ float getFogFactor(in float viewDist, in float nEyePlayerPosY, in float worldPos
 
 float getFogEffectFactor(in float viewDist){
     // Blindness fog
+    // Made it not work in the pure light dimension that is the private pockets
+    #ifdef WORLD_ID
+        if (WORLD_ID == -4) {
+            return 1.0;
+        }
+    #endif
     return exp2(-viewDist * effectFactor);
 }

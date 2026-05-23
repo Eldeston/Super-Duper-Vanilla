@@ -245,6 +245,27 @@
 	    dataPBR material;
         getPBR(material, blockId);
 
+        // Dimensional Doors fabric blocks by Kawwabi, pure unshaded texture colors.
+        // Zero normals prevents SSAO edge artifacts, zero material data
+        // prevents specular/fresnel variation. Every pixel on every face
+        // is perfectly uniform — no corner shadows, no washout.
+        // Read texture directly. gtexture returns sRGB (not linear), and the
+        // HDR buffer expects linear values, so toLinear is required.
+        if(blockId == 13200 || blockId == 13202){
+            vec2 texDerivX = dFdx(texCoord);
+            vec2 texDerivY = dFdy(texCoord);
+            vec4 rawAlbedo = textureGrad(gtexture, texCoord, texDerivX, texDerivY);
+            if(rawAlbedo.a < ALPHA_THRESHOLD) discard;
+            vec3 texCol = toLinear(rawAlbedo.rgb);
+
+            float brightnessMultiplier = (blockId == 13200) ? 1.948 : 0.7792; // 1.948 * 0.40 = 0.7792 for 40% brightness
+            sceneColOut = texCol * brightnessMultiplier;                 // Very, VERY specific number to get the same color as vanilla
+            normalDataOut = vec3(0);                 // Zero normals kill SSAO edge shadows
+            albedoDataOut = texCol * brightnessMultiplier;                 // Very, VERY specific number to get the same color as vanilla
+            materialDataOut = vec3(0);               // Zero smoothness/metallic
+            return;
+        }
+
         if(blockId == 11100 || blockId == 13005){
             vec2 blockUv = vertexWorldPos.zy * TBN[2].x + vertexWorldPos.xz * TBN[2].y + vertexWorldPos.xy * TBN[2].z;
 

@@ -52,15 +52,31 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
 			}
 		}
 
-		#ifdef PREVIOUS_FRAME
-			// Get reflections and check for sky
-			vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyReflection(reflectViewDir) : textureLod(colortex5, getPrevScreenCoord(SSRCoord.xy), 0).rgb;
-		#else
-			// Get reflections and check for sky
-			vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyReflection(reflectViewDir) : textureLod(colortex4, SSRCoord.xy, 0).rgb;
-		#endif
+		// Blend between simple sky gradient and full sky reflection to avoid
+		// hard cutoff that causes glitchy water reflections when smoothness
+		// hovers near the threshold.
+		vec3 reflectCol;
+		float skyBlend = smoothstep(0.05, 0.25, smoothness);
+		if(SSRCoord.z < 0.5){
+			vec3 skyReflect = getSkyReflection(reflectViewDir);
+			vec3 skyBasic = getSkyBasic((mat3(shadowModelView) * (mat3(gbufferModelViewInverse) * reflectViewDir)).z, 0.0) * saturate((mat3(gbufferModelViewInverse) * reflectViewDir).y + eyeBrightFact * 3.0 - 1.0);
+			reflectCol = mix(skyBasic, skyReflect, skyBlend);
+		} else {
+			#ifdef PREVIOUS_FRAME
+				reflectCol = textureLod(colortex5, getPrevScreenCoord(SSRCoord.xy), 0).rgb;
+			#else
+				reflectCol = textureLod(colortex4, SSRCoord.xy, 0).rgb;
+			#endif
+		}
 	#else
-		vec3 reflectCol = getSkyReflection(reflectViewDir);
+		// Blend between simple sky gradient and full sky reflection to avoid
+		// hard cutoff that causes glitchy water reflections when smoothness
+		// hovers near the threshold.
+		vec3 reflectCol;
+		float skyBlend = smoothstep(0.05, 0.25, smoothness);
+		vec3 skyReflect = getSkyReflection(reflectViewDir);
+		vec3 skyBasic = getSkyBasic((mat3(shadowModelView) * (mat3(gbufferModelViewInverse) * reflectViewDir)).z, 0.0) * saturate((mat3(gbufferModelViewInverse) * reflectViewDir).y + eyeBrightFact * 3.0 - 1.0);
+		reflectCol = mix(skyBasic, skyReflect, skyBlend);
 	#endif
 
 	// Modified version of BSL's reflection PBR calculation

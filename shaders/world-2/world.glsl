@@ -1,4 +1,5 @@
 /* --Main world/dimension settings-- */
+// Credits: Kawwabi
 
 /* This file allows custom macro settings for multiple worlds/dimensions,
 allowing more compatibility for future worlds/dimensions and modded worlds/dimensions */
@@ -27,6 +28,10 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 
 // No skylight — blocks are unlit, entities glow via WORLD_ENTITY_GLOW
 #define WORLD_CUSTOM_SKYLIGHT 0.00
+
+// Make blocks glow at full brightness (like having night vision) in public/dungeon pockets
+// Credits: Kawwabi
+#define WORLD_BLOCK_GLOW
 
 // Make entities glow as if under a 15-level light source inside dimdoors
 // Credits: Kawwabi

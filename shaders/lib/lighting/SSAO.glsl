@@ -9,11 +9,10 @@ float getSSAO(in vec3 screenPos, in vec3 viewNormal){
 
     // Instead of iterating by adding stepSize and using fract every time, we swizzle + one fract instead for pleasant and optimized results
     vec3 baseDither = dither.xyz * 0.5 - 0.25;
-	vec3 ditherSwizzle[4] = vec3[4](
+	vec3 ditherSwizzle[3] = vec3[3](
 		baseDither.xyz,
 		baseDither.zxy,
-		baseDither.yzx,
-		fract(dither.zyx + GOLDEN_RATIO) * 0.5 - 0.25
+		baseDither.yzx
 	);
 
     float depthOrigin = near / (1.0 - screenPos.z);
@@ -21,14 +20,14 @@ float getSSAO(in vec3 screenPos, in vec3 viewNormal){
     // Pre calculate base position
     vec3 basePos = getViewPos(gbufferProjectionInverse, screenPos) + viewNormal * 0.5;
 
-    for(uint i = 0u; i < 4u; i++){
+    for(uint i = 0u; i < 3u; i++){
         // Add new offsets to origin
         vec3 samplePos = getScreenPos(gbufferProjection, basePos + ditherSwizzle[i]);
         // Sample new depth and linearize
         float sampleDepth = textureLod(depthtex0, samplePos.xy, 0).x;
 
         // Check if the offset points are inside geometry or if the point is occluded
-        if(samplePos.z > sampleDepth) occlusion -= 0.0625 / max(depthOrigin - near / (1.0 - sampleDepth), 1.0);
+        if(samplePos.z > sampleDepth) occlusion -= 0.08333 / max(depthOrigin - near / (1.0 - sampleDepth), 1.0);
     }
 
     // Remap results and return

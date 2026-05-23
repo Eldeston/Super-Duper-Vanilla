@@ -11,6 +11,14 @@ float getSunMoonShape(in vec2 skyPos){
     return min(1.0, exp2((WORLD_SUN_MOON_SIZE - pow(abs(skyPos.x * skyPos.x * skyPos.x) + abs(skyPos.y * skyPos.y * skyPos.y), 0.33333333)) * 256.0));
 }
 
+// Vanilla square sun and moon
+// Half the visible size of the glow of the default and rounded types
+// Credits: Kawwabi
+float getSunMoonShapeSquare(in vec2 skyPos){
+    float square = max(abs(skyPos.x) * 2.0, abs(skyPos.y) * 2.0);
+    return min(1.0, exp2((WORLD_SUN_MOON_SIZE - square) * 256.0));
+}
+
 #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
     // Depth size / cloud steps
     const uint skyBoxCloudSteps = uint(SKYBOX_CLOUD_STEPS);
@@ -226,6 +234,31 @@ vec3 getSkyReflection(in vec3 reflectViewDir){
     #endif
 
     vec3 finalCol = getSkyHalf(reflectPlayerDir, skyPos, getSkyBasic(reflectPlayerDir.y, skyPos.z));
+
+    // Render sun/moon shape in reflections to match the actual sky
+    // Credits: Kawwabi
+    #if defined WORLD_LIGHT && WORLD_SUN_MOON == 1
+        #if SUN_MOON_TYPE == 1
+            float sunMoonShape = getSunMoonShape(skyPos.z) * sunMoonIntensitySqrd;
+        #elif SUN_MOON_TYPE == 2
+            float sunMoonShape = getSunMoonShapeSquare(skyPos.xy) * sunMoonIntensitySqrd;
+        #else
+            float sunMoonShape = getSunMoonShape(skyPos.xy) * sunMoonIntensitySqrd;
+        #endif
+
+        #ifndef FORCE_DISABLE_WEATHER
+            #ifdef FORCE_DISABLE_DAY_CYCLE
+                finalCol += sRGBLightCol * (sunMoonShape - rainStrength * sunMoonShape);
+            #else
+                // Weight by dayCycleAdjust so the active celestial body color dominates.
+                // At day the sun is visible, at night the moon. The shape function already
+                // returns zero everywhere except at the exact angular position of the body,
+                // so it naturally only renders where appropriate regardless of hemisphere.
+                vec3 bodyCol = sRGBSunCol * dayCycleAdjust + sRGBMoonCol * (1.0 - dayCycleAdjust);
+                finalCol += bodyCol * (sunMoonShape - rainStrength * sunMoonShape);
+            #endif
+        #endif
+    #endif
 
     // Skybox clouds should render in reflections when volumetrics are on
     #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT

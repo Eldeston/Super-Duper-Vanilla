@@ -47,7 +47,9 @@ vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in floa
 		vec3 volumeData = vec3(0);
 
 		for(uint i = 0u; i < VOLUMETRIC_LIGHT_STEPS; i++){
-			// No need to do anymore fancy matrix multiplications during the loop
+			// Use length() for accurate shadow coordinate distortion.
+			// The infinity-norm (max(abs())) caused systematic coordinate drift
+			// that produced structured noise visible on flat surfaces.
 			volumeData += getShdCol(vec3(startPos.xy / (length(startPos.xy) * 2.0 + 0.2), startPos.z * 0.1) + 0.5);
 			// We continue tracing!
 			startPos += endPos;

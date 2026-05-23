@@ -83,6 +83,20 @@ vec3 getSpecularBRDF(in vec3 V, in vec3 N, in vec3 albedo, in float NL, in float
         distribution *= 1.0 - rainStrength;
     #endif
 
+    #if SUN_MOON_TYPE == 0
+        // Modulate specular highlight by sun/moon shape to match the non-round
+        // appearance of the sun/moon in the sky
+        vec3 H_shadow = mat3(shadowModelView) * H;
+        float shapeFactor = min(1.0, exp2((WORLD_SUN_MOON_SIZE - pow(abs(H_shadow.x * H_shadow.x * H_shadow.x) + abs(H_shadow.y * H_shadow.y * H_shadow.y), 0.33333333)) * 256.0));
+        distribution *= shapeFactor;
+    #elif SUN_MOON_TYPE == 2
+        // Vanilla sun/moon: both are rendered on square quads
+        // Use square-ish shape to match the quad shape
+        vec3 H_shadow = mat3(shadowModelView) * H;
+        float shapeFactor = min(1.0, exp2((WORLD_SUN_MOON_SIZE - pow(abs(H_shadow.x * H_shadow.x * H_shadow.x) + abs(H_shadow.y * H_shadow.y * H_shadow.y), 0.33333333)) * 256.0));
+        distribution *= shapeFactor;
+    #endif
+
     // Calculate and apply fresnel and return final specular
     float cosTheta = exp2(-9.28 * LH);
 	float oneMinusCosTheta = 1.0 - cosTheta;
