@@ -24,5 +24,5 @@ float getFogFactor(in float viewDist, in float nEyePlayerPosY, in float worldPos
 
 float getFogEffectFactor(in float viewDist){
     // Blindness fog
-    return exp2(-viewDist * effectFactor);
+    return exp2(-viewDist * darkEffectFactor);
 }
