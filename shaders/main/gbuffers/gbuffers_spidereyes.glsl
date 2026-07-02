@@ -16,7 +16,7 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    flat out float vertexAlpha;
+    flat out vec4 vertexColor;
 
     out vec2 texCoord;
 
@@ -37,8 +37,11 @@
     void main(){
         // Get buffer texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+
+        // Set vertex color for mod compatibility
+        vertexColor.rgb = gl_Color.rgb;
         // Get vertex alpha (in this case, the warden stores the heartbeat pulse here)
-        vertexAlpha = gl_Color.a * EMISSIVE_INTENSITY;
+        vertexColor.a = gl_Color.a * EMISSIVE_INTENSITY;
 
         // Get vertex view position
         vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
@@ -76,7 +79,7 @@
     /* RENDERTARGETS: 4 */
     layout(location = 0) out vec3 sceneColOut; // colortex4
 
-    flat in float vertexAlpha;
+    flat in vec4 vertexColor;
 
     in vec2 texCoord;
 
@@ -95,7 +98,9 @@
 
         // Since the blend is set to add, simply base the glow from the avarage of the albedo's luminance squared
         // Then use vertexAlpha where it stores the vanilla emissive brightness
-        float emissiveMap = sumOf(albedo.rgb) * 0.33333333;
-        sceneColOut = albedo.rgb * emissiveMap * max(emissiveMap, vertexAlpha);
+        float emissiveMap = maxOf(albedo.rgb) * albedo.a;
+        sceneColOut = albedo.rgb * vertexColor.rgb * emissiveMap * vertexColor.a;
+
+        // Fix later
     }
 #endif
