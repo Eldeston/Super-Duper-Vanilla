@@ -69,15 +69,12 @@ float getSunMoonShape(in vec2 skyPos){
 
         clouds *= cloudHeightFade * cloudStepSize;
 
-        #ifdef FORCE_DISABLE_DAY_CYCLE
-            currSkyCol += lightCol * clouds;
-        #else
-            currSkyCol += mix(moonCol, sunCol, dayCycleAdjust) * clouds;
+        #if CLOUD_TYPE >= 1 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
+            currSkyCol = mix(currSkyCol, cloudCol, clouds);
         #endif
 
         return currSkyCol;
     }
-
 #endif
 
 vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){

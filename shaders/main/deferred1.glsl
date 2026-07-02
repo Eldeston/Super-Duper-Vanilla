@@ -30,7 +30,15 @@
             flat out vec3 sRGBMoonCol;
             flat out vec3 moonCol;
         #endif
+
+        #if CLOUD_TYPE >= 1 && !defined FORCE_DISABLE_CLOUDS
+            flat out vec3 cloudCol;
+        #endif
     #endif
+
+    uniform float nightVision;
+    uniform float darkEffectFactor;
+    uniform float lightningFlash;
 
     #ifndef FORCE_DISABLE_WEATHER
         uniform float rainStrength;
@@ -39,6 +47,10 @@
     #ifndef FORCE_DISABLE_DAY_CYCLE
         uniform float dayCycle;
         uniform float twilightPhase;
+
+        #if CLOUD_TYPE >= 1 && !defined FORCE_DISABLE_CLOUDS
+            uniform float dayCycleAdjust;
+        #endif
     #endif
 
     #ifdef WORLD_VANILLA_FOG_COLOR
@@ -52,16 +64,29 @@
         skyCol = toLinear(SKY_COLOR_DATA_BLOCK);
 
         #ifdef WORLD_LIGHT
+            #if CLOUD_TYPE >= 1 && !defined FORCE_DISABLE_CLOUDS
+                cloudCol = (toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash) + skyCol;
+            #endif
+
             #ifdef FORCE_DISABLE_DAY_CYCLE
                 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
                 lightCol = toLinear(sRGBLightCol);
+
+                #if CLOUD_TYPE >= 1 && !defined FORCE_DISABLE_CLOUDS
+                    cloudCol += lightCol;
+                #endif
             #else
                 sRGBSunCol = SUN_COL_DATA_BLOCK;
                 sunCol = toLinear(sRGBSunCol);
                 sRGBMoonCol = MOON_COL_DATA_BLOCK;
                 moonCol = toLinear(sRGBMoonCol);
+
                 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK1(sRGBSunCol, sRGBMoonCol);
                 lightCol = toLinear(sRGBLightCol);
+
+                #if CLOUD_TYPE >= 1 && !defined FORCE_DISABLE_CLOUDS
+                    cloudCol += mix(moonCol, sunCol, dayCycleAdjust);
+                #endif
             #endif
         #endif
 
@@ -87,6 +112,10 @@
             flat in vec3 sRGBMoonCol;
             flat in vec3 moonCol;
         #endif
+
+        #if CLOUD_TYPE >= 1 && !defined FORCE_DISABLE_CLOUDS
+            flat in vec3 cloudCol;
+        #endif
     #endif
 
     noperspective in vec2 texCoord;
@@ -99,7 +128,7 @@
     uniform float near;
 
     uniform float nightVision;
-    uniform float effectFactor;
+    uniform float darkEffectFactor;
     uniform float lightningFlash;
     uniform float darknessLightFactor;
 
@@ -261,7 +290,7 @@
         // If sky, do full sky render and return immediately
         if(screenPos.z == 1){
             // Calculate and output sky render
-            sceneColOut = getFullSkyRender(nEyePlayerPos, skyPos, currSkyCol + sceneColOut) * exp2(-borderFar * effectFactor);
+            sceneColOut = getFullSkyRender(nEyePlayerPos, skyPos, currSkyCol + sceneColOut) * exp2(-borderFar * darkEffectFactor);
             // Exit function immediately
             return;
         }
