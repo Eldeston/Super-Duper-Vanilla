@@ -79,7 +79,7 @@ float getSunMoonShape(in vec2 skyPos){
 
 vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){
     // Apply ambient lighting with sky col (not realistic I know)
-    vec3 currSkyCol = skyCol + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
+    vec3 currSkyCol = skyCol;
 
     #ifdef WORLD_SKY_GROUND
         // currSkyCol.rg *= smoothen(saturate(1.0 + nEyePlayerPosY * 4.0));
@@ -96,8 +96,6 @@ vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){
             currSkyCol += skyPosZ > 0 ? sunCol * diffuseCycleAdjust : moonCol * (lightDiffuse - diffuseCycleAdjust);
         #endif
     #endif
-
-    currSkyCol += lightningFlash;
 
     return currSkyCol;
 }

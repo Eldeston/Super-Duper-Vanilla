@@ -37,7 +37,6 @@
     #endif
 
     uniform float nightVision;
-    uniform float darkEffectFactor;
     uniform float lightningFlash;
 
     #ifndef FORCE_DISABLE_WEATHER
@@ -61,11 +60,11 @@
         // Get buffer texture coordinates
         texCoord = gl_MultiTexCoord0.xy;
 
-        skyCol = toLinear(SKY_COLOR_DATA_BLOCK);
+        skyCol = (toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash) + toLinear(SKY_COLOR_DATA_BLOCK);
 
         #ifdef WORLD_LIGHT
             #if CLOUD_TYPE >= 1 && !defined FORCE_DISABLE_CLOUDS
-                cloudCol = (toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash) + skyCol;
+                cloudCol = skyCol;
             #endif
 
             #ifdef FORCE_DISABLE_DAY_CYCLE
@@ -127,9 +126,7 @@
     uniform float far;
     uniform float near;
 
-    uniform float nightVision;
     uniform float darkEffectFactor;
-    uniform float lightningFlash;
     uniform float darknessLightFactor;
 
     uniform float fragmentFrameTime;

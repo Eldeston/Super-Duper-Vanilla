@@ -47,6 +47,9 @@
 
     void main(){
         #ifdef BLOOM
+            // Optimized 9x9 gaussian blur with only 5 texture fetches
+            // Technique from https://www.rastergrid.com/blog/2010/09/efficient-gaussian-blur-with-linear-sampling/
+            
             vec3 sample0 = textureLod(colortex0, vec2(texCoord.x, texCoord.y - pixelHeight * 3.2307692308), 0).rgb +
                 textureLod(colortex0, vec2(texCoord.x, texCoord.y + pixelHeight * 3.2307692308), 0).rgb;
             vec3 sample1 = textureLod(colortex0, vec2(texCoord.x, texCoord.y - pixelHeight * 1.3846153846), 0).rgb +
