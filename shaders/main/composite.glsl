@@ -37,7 +37,6 @@
     #endif
 
     uniform float nightVision;
-    uniform float darkEffectFactor;
     uniform float lightningFlash;
 
     #ifndef FORCE_DISABLE_WEATHER
@@ -127,9 +126,7 @@
     uniform float far;
     uniform float near;
 
-    uniform float nightVision;
     uniform float darkEffectFactor;
-    uniform float lightningFlash;
     uniform float darknessLightFactor;
 
     uniform float fragmentFrameTime;
