@@ -167,19 +167,32 @@
         postColOut = texelFetch(colortex4, screenTexelCoord, 0).rgb;
 
         #ifdef BLOOM
-            // Uncompress the HDR colors and upscale
-            vec3 bloomCol = getBloomTile(vec2(0), 0.25);
-            bloomCol += getBloomTile(vec2(0, 0.2578125), 0.125);
-            bloomCol += getBloomTile(vec2(0.12890625, 0.2578125), 0.0625);
-            bloomCol += getBloomTile(vec2(0.1953125, 0.2578125), 0.03125);
-            bloomCol += getBloomTile(vec2(0.12890625, 0.328125), 0.015625);
+            #ifdef KAWASE_BLOOM
+                // Uncompress the HDR colors and upscale
+                vec3 bloomCol = getBloomTile(vec2(0), 0.25);
 
-            // Average the total samples (1 / 5 bloom tiles multiplied by 1 / 4 samples used for the box blur)
-            bloomCol *= 0.2;
+                float bloomLuma = sumOf(bloomCol);
+                // Apply bloom by tonemapped luma and BLOOM_STRENGTH
+                postColOut += bloomCol * ((BLOOM_STRENGTH * bloomLuma) / (3.0 + bloomLuma));
 
-            float bloomLuma = sumOf(bloomCol);
-            // Apply bloom by tonemapped luma and BLOOM_STRENGTH
-            postColOut += bloomCol * ((BLOOM_STRENGTH * bloomLuma) / (3.0 + bloomLuma));
+                postColOut = bloomCol;
+            #else
+                // Uncompress the HDR colors and upscale
+                vec3 bloomCol = getBloomTile(vec2(0), 0.25);
+                bloomCol += getBloomTile(vec2(0, 0.2578125), 0.125);
+                bloomCol += getBloomTile(vec2(0.12890625, 0.2578125), 0.0625);
+                bloomCol += getBloomTile(vec2(0.1953125, 0.2578125), 0.03125);
+                bloomCol += getBloomTile(vec2(0.12890625, 0.328125), 0.015625);
+
+                // Average the total samples (1 / 5 bloom tiles multiplied by 1 / 4 samples used for the box blur)
+                bloomCol *= 0.2;
+
+                float bloomLuma = sumOf(bloomCol);
+                // Apply bloom by tonemapped luma and BLOOM_STRENGTH
+                postColOut += bloomCol * ((BLOOM_STRENGTH * bloomLuma) / (3.0 + bloomLuma));
+
+                postColOut = getBloomTile(vec2(0), 0.25);
+            #endif
         #endif
 
         #if defined LENS_FLARE && defined WORLD_LIGHT

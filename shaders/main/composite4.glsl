@@ -58,11 +58,15 @@
 
     void main(){
         #ifdef BLOOM
-            bloomColOut = bloomTile(vec3(0), texCoord, 4, 2);
-            bloomColOut = bloomTile(bloomColOut, vec2(texCoord.x, texCoord.y - 0.2578125), 8, 3);
-            bloomColOut = bloomTile(bloomColOut, vec2(texCoord.x - 0.12890625, texCoord.y - 0.2578125), 16, 4);
-            bloomColOut = bloomTile(bloomColOut, vec2(texCoord.x - 0.1953125, texCoord.y - 0.2578125), 32, 5);
-            bloomColOut = bloomTile(bloomColOut, vec2(texCoord.x - 0.12890625, texCoord.y - 0.328125), 64, 6);
+            #ifdef KAWASE_BLOOM
+                bloomColOut = bloomTile(vec3(0), texCoord, 4, 2);
+            #else
+                bloomColOut = bloomTile(vec3(0), texCoord, 4, 2);
+                bloomColOut = bloomTile(bloomColOut, vec2(texCoord.x, texCoord.y - 0.2578125), 8, 3);
+                bloomColOut = bloomTile(bloomColOut, vec2(texCoord.x - 0.12890625, texCoord.y - 0.2578125), 16, 4);
+                bloomColOut = bloomTile(bloomColOut, vec2(texCoord.x - 0.1953125, texCoord.y - 0.2578125), 32, 5);
+                bloomColOut = bloomTile(bloomColOut, vec2(texCoord.x - 0.12890625, texCoord.y - 0.328125), 64, 6);
+            #endif
         #else
             bloomColOut = vec3(0);
         #endif
