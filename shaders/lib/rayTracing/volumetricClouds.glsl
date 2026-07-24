@@ -34,10 +34,10 @@ vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPl
 
     // Calculate cloud steps that dynamically increase with distance
     uint dynamicVolumetricCloudSteps = min(uint(distInsideCloud), volumetricCloudSteps);
-    float volumetricCloudStepsInverse = 1.0 / dynamicVolumetricCloudSteps;
+    float dynamicVolumetricCloudStepsInv = 1.0 / dynamicVolumetricCloudSteps;
 
-    // Multiply by volumetricCloudStepsInverse to get the step size and scale with distance
-    float endDist = distInsideCloud * volumetricCloudStepsInverse;
+    // Multiply by dynamicVolumetricCloudStepsInv to get the step size and scale with distance
+    float endDist = distInsideCloud * dynamicVolumetricCloudStepsInv;
     vec3 endPos = nFeetPlayerPos * endDist;
 
     // Camera position as its start position
