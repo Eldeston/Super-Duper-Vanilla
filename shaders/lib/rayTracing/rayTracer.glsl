@@ -1,9 +1,6 @@
 const uint rayTraceSteps = uint(RAYTRACER_STEPS);
 const uint rayTraceBiSteps = uint(RAYTRACER_BISTEPS);
 
-// Raytracer steps inverse
-const float rayTracerStepsInv = 1.0 / RAYTRACER_STEPS;
-
 // Binary refinement to improve sampled quality by stepping back and forth until it is closer to the actual result
 vec2 binaryRefinement(in vec3 screenRayPos, in vec3 screenRayDir, in float sampledDepth, in bool intersection){
     // Reuse stored sampled depth and intersection to use 1 less depth sample
@@ -37,7 +34,7 @@ vec3 rayTraceScene(in vec3 screenPos, in vec3 viewPos, in vec3 rayDir, in float 
     // Get screenspace ray direction
     vec3 screenRayDir = getScreenPos(gbufferProjection, viewPos + rayDir) - screenPos;
 
-    // This code prevents oversampling/undersampling of a ray
+    // This code preventsoversampling/undersampling by clipping the ray to screen
     screenRayDir *= minOf((step(vec2(0), screenRayDir.xy) - screenPos.xy) / screenRayDir.xy);
 
     // Calculate ray length and normalize ray direction
@@ -54,10 +51,12 @@ vec3 rayTraceScene(in vec3 screenPos, in vec3 viewPos, in vec3 rayDir, in float 
     float sampledDepth = 0.0;
     // Keep track of intersections
     bool intersection = false;
+    // Use raylength to determine the step count
+    uint raySteps = uint(rayLength);
 
     // ULTRA FAST RAT RACING!!!111!!1!
     // https://www.youtube.com/watch?v=atuFSv2bLa8
-    for(uint i = 0u; i < uint(rayLength); i++){
+    for(uint i = 0u; i < raySteps; i++){
         // We continue ray tracing
         screenRayPos += screenRayDir;
 

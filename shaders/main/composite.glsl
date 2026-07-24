@@ -337,22 +337,22 @@
             vec3 cloudStartPos0 = vec3(cameraPosition.x + fragmentFrameTime, cameraPosition.y - volumetricCloudHeight, cameraPosition.z);
 
             // Get the volumetric clouds
-            vec2 cloudData = volumetricClouds(nFeetPlayerPos, cloudStartPos0, feetPlayerDist, dither.x, isSky);
+            vec2 cloudData = volumetricClouds(nFeetPlayerPos, cloudStartPos0, feetPlayerDist, dither.x);
 
             #ifdef DOUBLE_LAYERED_CLOUDS
                 // Get the 2nd layer of volumetric clouds position by reusing the 1st layer's position
                 vec3 cloudStartPos1 = vec3(cloudStartPos0.x - 2064.0, cloudStartPos0.y - SECOND_CLOUD_HEIGHT, cloudStartPos0.z - 2064.0);
 
                 // Variate by swizzling the 2 cloud channels
-                cloudData = max(volumetricClouds(nFeetPlayerPos, cloudStartPos1, feetPlayerDist, dither.x, isSky).yx, cloudData);
+                cloudData = max(volumetricClouds(nFeetPlayerPos, cloudStartPos1, feetPlayerDist, dither.x).yx, cloudData);
             #endif
 
             #ifdef DYNAMIC_CLOUDS
                 float fadeTime = saturate(cos(fragmentFrameTime * FADE_SPEED) + 0.5);
 
-                float cloudFinal = mix(mix(cloudData.x, cloudData.y, fadeTime), max(cloudData.x, cloudData.y), rainStrength) * 0.125;
+                float cloudFinal = mix(mix(cloudData.x, cloudData.y, fadeTime), max(cloudData.x, cloudData.y), rainStrength) * volumetricDepthInverse;
             #else
-                float cloudFinal = mix(cloudData.x, max(cloudData.x, cloudData.y), rainStrength) * 0.125;
+                float cloudFinal = mix(cloudData.x, max(cloudData.x, cloudData.y), rainStrength) * volumetricDepthInverse;
             #endif
 
             sceneColOut = mix(sceneColOut, cloudCol, cloudFinal);
