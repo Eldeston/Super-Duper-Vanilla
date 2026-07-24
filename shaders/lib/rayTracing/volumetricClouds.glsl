@@ -1,37 +1,56 @@
 const uint volumetricCloudSteps = uint(VOLUMETRIC_CLOUD_STEPS);
+const float volumetricCloudStepsInv = 1.0 / volumetricCloudSteps;
 
+const float volumetricDepthInverse = 1.0 / VOLUMETRIC_CLOUD_DEPTH;
 const float volumetricCenterDepth = VOLUMETRIC_CLOUD_DEPTH * 0.5;
 const float volumetricCloudHeight = 195.0 + volumetricCenterDepth;
 
 // This took me a while to finally understand how this all works
-vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPlayerDist, in float dither, in bool isSky){
+vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPlayerDist, in float dither){
+    // Sets the bounding box vertically by creating an analytical slab intersected by a sphere at the camera's position
+    float lowerSlabDist = (-VOLUMETRIC_CLOUD_DEPTH - cameraPos.y) / nFeetPlayerPos.y;
+    float higherSlabDist = -cameraPos.y / nFeetPlayerPos.y;
+
+    // Finds the slab entry and exit distances
+    float slabNear = min(lowerSlabDist, higherSlabDist);
+    float slabFar = max(lowerSlabDist, higherSlabDist);
+
     // Minimum cloud distance, if terrain, caps distance to the minimum cloud distance
-    float cloudFar = isSky ? volumetricCloudFar : min(volumetricCloudFar, feetPlayerDist);
-    float invCloudFarSqrd = 1.0 / volumetricCloudFar;
+    float sphereNear = 0.0;
+    float sphereFar = min(volumetricCloudFar, feetPlayerDist);
 
-    // Sets the bounding box vertically
-    float lowerBoundDist = (-VOLUMETRIC_CLOUD_DEPTH - cameraPos.y) / nFeetPlayerPos.y;
-    float higherBoundDist = -cameraPos.y / nFeetPlayerPos.y;
+    // Intersection of the slab and sphere here
+    float marchStartDistance = max(slabNear, sphereNear);
+    float marchEndDistance = min(slabFar, sphereFar);
 
-    // Finds the nearest and furthest plane
-    float nearestPlane = max(min(lowerBoundDist, higherBoundDist), 0.0);
-    float furthestPlane = min(cloudFar, max(lowerBoundDist, higherBoundDist));
-
-    // If the clouds are outside the bounding box, return nothing
-    if(furthestPlane < 0) return vec2(0);
+    // Exit early when out of bounds
+    if(marchEndDistance < marchStartDistance) return vec2(0);
+    
+    // inverse of the cloud far distance, used for fog calculation
+    float invCloudFar = 1.0 / volumetricCloudFar;
 
     // Get distance inside the cloud
-    float distInsideCloud = furthestPlane - nearestPlane;
+    float distInsideCloud = marchEndDistance - marchStartDistance;
 
     // Calculate cloud steps that dynamically increase with distance
     uint dynamicVolumetricCloudSteps = min(uint(distInsideCloud), volumetricCloudSteps);
     float volumetricCloudStepsInverse = 1.0 / dynamicVolumetricCloudSteps;
 
     // Multiply by volumetricCloudStepsInverse to get the step size and scale with distance
-    vec3 endPos = nFeetPlayerPos * (distInsideCloud * volumetricCloudStepsInverse);
+    float endDist = distInsideCloud * volumetricCloudStepsInverse;
+    vec3 endPos = nFeetPlayerPos * endDist;
 
     // Camera position as its start position
-    vec3 startPos = cameraPos + nFeetPlayerPos * nearestPlane + endPos * dither;
+    float startDist = marchStartDistance + endDist * dither;
+    vec3 startPos = cameraPos + nFeetPlayerPos * marchStartDistance + endPos * dither;
+
+    /*
+    // Use the cloud slab length to derive one per-step delta.
+    // This keeps the step size proportional to the ray length,
+    // while the loop still only depends on the fixed cloud step budget.
+    float stepSize = distInsideCloud * volumetricCloudStepsInv;
+    vec3 endPos = nFeetPlayerPos * stepSize;
+    */
 
     // To store the cloud data for 2 cloud layers
     vec2 clouds = vec2(0);
@@ -39,7 +58,7 @@ vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPl
     // LESSS GOOOOO RAT RACING!!!11!!11!!11!!
     for(uint i = 0u; i < dynamicVolumetricCloudSteps; i++){
         // Get cloud fog
-        float cloudFog = 1.0 - length(startPos - cameraPos) * invCloudFarSqrd;
+        float cloudFog = 1.0 - startDist * invCloudFar;
 
         // Get cloud texture
         vec2 cloudData = texelFetch(colortex0, ivec2(startPos.xz * 0.0625) & 255, 0).xy;
@@ -50,6 +69,7 @@ vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPl
         if(cloudData.y > 0.5) clouds.y = max(clouds.y, -startPos.y * cloudFog);
 
         // Continue tracing
+        startDist += endDist;
         startPos += endPos;
     }
 
