@@ -56,7 +56,7 @@ vec4 complexShadingForward(in dataPBR material){
                 shdPos.z += shadowProjection[3].z;
 
                 // Apply shadow distortion and transform to shadow screen space
-                shdPos = vec3(shdPos.xy / (length(shdPos.xy) * 2.0 + 0.2), shdPos.z * 0.1) + 0.5;
+                shdPos = getShdDistort(shdPos);
 
                 // Items that are not subject to depth do not need a bias
                 #if !defined HAND && !defined HAND_WATER

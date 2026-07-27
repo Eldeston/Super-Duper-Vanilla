@@ -15,7 +15,7 @@ vec3 basicShadingForward(in vec3 albedo){
     #ifdef WORLD_LIGHT
         #ifdef SHADOW_MAPPING
             // Apply shadow distortion and transform to shadow screen space
-            vec3 shdPos = vec3(vertexShdPos.xy / (length(vertexShdPos.xy) * 2.0 + 0.2) + 0.5, vertexShdPos.z);
+            vec3 shdPos = getShdDistort(vertexShdPos);
 
             // Sample shadows
             #ifdef SHADOW_FILTER

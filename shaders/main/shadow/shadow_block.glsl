@@ -21,12 +21,14 @@
 
         out vec2 texCoord;
 
+        attribute vec3 mc_Entity;
+
         #ifdef WORLD_CURVATURE
             uniform mat4 shadowModelView;
             uniform mat4 shadowModelViewInverse;
         #endif
 
-        attribute vec3 mc_Entity;
+        #include "/lib/lighting/shdDistort.glsl"
 
         void main(){
             // Get block id
@@ -61,7 +63,7 @@
             gl_Position.w = 1.0;
 
             // Apply shadow distortion
-            gl_Position.xyz = vec3(gl_Position.xy / (length(gl_Position.xy) + 0.1), gl_Position.z * 0.2);
+            gl_Position.xyz = getShdClipDistort(gl_Position.xyz);
         }
     #else
         void main(){

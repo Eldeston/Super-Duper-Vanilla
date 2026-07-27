@@ -16,6 +16,7 @@ float getDepth(in sampler2D depthTex, in ivec2 screenTexelCoord, in int LOD){
     float depth = texelFetch(depthTex, screenTexelCoord, LOD).x;
 
     // Fix for AMD's electriic boogaloo
+    // For some reason, AMD has not fixed this yet
     #ifdef MC_GL_RENDERER_RADEON
         if(depth <= 0) return 1.0;
     #endif
@@ -27,6 +28,7 @@ float getDepth(in sampler2D depthTex, in vec2 screenCoord, in float LOD){
     float depth = textureLod(depthTex, screenCoord, LOD).x;
 
     // Fix for AMD's electriic boogaloo
+    // For some reason, AMD has not fixed this yet
     #ifdef MC_GL_RENDERER_RADEON
         if(depth <= 0) return 1.0;
     #endif
