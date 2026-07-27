@@ -80,8 +80,6 @@
             // Calculate shadow pos in vertex
             vertexShdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * vertexFeetPlayerPos + shadowModelView[3].xyz);
             vertexShdPos.z += shadowProjection[3].z;
-            
-            vertexShdPos.z = vertexShdPos.z * 0.1 + 0.5;
         #endif
 
         // Convert to clip position and output as final position
@@ -150,7 +148,8 @@
                 #include "/lib/utility/noiseFunctions.glsl"
             #endif
 
-            #include "/lib/lighting/shdMapping.glsl"
+            #include "/lib/lighting/shdDistort.glsl"
+            #include "/lib/lighting/shdSample.glsl"
         #endif
     #endif
 

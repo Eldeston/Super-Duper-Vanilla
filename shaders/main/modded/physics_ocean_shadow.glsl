@@ -41,6 +41,8 @@
             #include "/lib/vertex/waveWater.glsl"
         #endif
 
+        #include "/lib/lighting/shdDistort.glsl"
+
         void main(){
             // Get buffer texture coordinates
             texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
@@ -90,7 +92,7 @@
             gl_Position.w = 1.0;
 
             // Apply shadow distortion
-            gl_Position.xyz = vec3(gl_Position.xy / (length(gl_Position.xy) + 0.1), gl_Position.z * 0.2);
+            gl_Position.xyz = getShdClipDistort(gl_Position.xyz);
         }
     #else
         void main(){

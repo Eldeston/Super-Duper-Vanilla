@@ -24,6 +24,8 @@
         out vec2 texCoord;
         out vec2 waterNoiseUv;
 
+        attribute vec3 mc_Entity;
+
         uniform int renderStage;
 
         uniform vec3 cameraPosition;
@@ -48,7 +50,7 @@
             #include "/lib/vertex/waveWater.glsl"
         #endif
 
-        attribute vec3 mc_Entity;
+        #include "/lib/lighting/shdDistort.glsl"
 
         void main(){
             // Get block id
@@ -98,7 +100,7 @@
             gl_Position.w = 1.0;
 
             // Apply shadow distortion
-            gl_Position.xyz = vec3(gl_Position.xy / (length(gl_Position.xy) + 0.1), gl_Position.z * 0.2);
+            gl_Position.xyz = getShdClipDistort(gl_Position.xyz);
 
             // Fix for dragon death beams rendering in shadow
             // SOMEBODY FIX THIS INCONSISTENCY MY EYES ARE ITCHY

@@ -186,7 +186,8 @@
         #ifdef SHADOW_MAPPING
             uniform mat4 shadowProjection;
 
-            #include "/lib/lighting/shdMapping.glsl"
+            #include "/lib/lighting/shdDistort.glsl"
+            #include "/lib/lighting/shdSample.glsl"
         #endif
 
         #include "/lib/lighting/GGX.glsl"
