@@ -24,11 +24,3 @@ vec3 getShdCol(in vec3 shdPos){
         return vec3(shdPos.z < texelFetch(shadowtex0, texelShdPos, 0).x);
     #endif
 }
-
-vec3 getShdCol(in vec3 shdPos, in vec2 randVec){
-    #if ANTI_ALIASING >= 2
-        return getShdCol(vec3(shdPos.xy + randVec, shdPos.z));
-    #else
-        return (getShdCol(vec3(shdPos.xy + randVec, shdPos.z)) + getShdCol(vec3(shdPos.xy - randVec, shdPos.z))) * 0.5;
-    #endif
-}

@@ -255,6 +255,9 @@ const float entityShadowDistanceMul = 0.5;
 // Shadow map pixel size. Calculated as the reciprocal of the shadow map resolution.
 const float shadowMapPixelSize = 1.0 / shadowMapResolution;
 
+// Reciprocal of shadow distance.
+const float shadowDistanceInv = 1.0 / shadowDistance;
+
 // Sun and moon intensity squared
 const float sunMoonIntensitySqrd = SUN_MOON_INTENSITY * SUN_MOON_INTENSITY;
 

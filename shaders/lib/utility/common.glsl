@@ -104,6 +104,12 @@ uint maxOf(in uvec2 x){ return max(x.x, x.y); }
 uint maxOf(in uvec3 x){ return max(x.x, max(x.y, x.z)); }
 uint maxOf(in uvec4 x){ return max(max(x.x, x.y), max(x.z, x.w)); }
 
+// By @foxtrot112 on ShaderLABs
+float smoothMax(float x, float y, float b) {
+    const float c = 1.1283791671;
+    return (x - y) / 2.0 * (1.0 + tanh(c * b * (x - y))) + y;
+}
+
 // Linear interpolation functions
 float lerp(float a, float b, float c, float d){
     if(d < 1) return mix(a, b, d);

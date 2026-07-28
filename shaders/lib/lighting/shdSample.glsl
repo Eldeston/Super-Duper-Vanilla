@@ -27,10 +27,19 @@ vec3 getShdCol(in vec3 shdPos){
     #endif
 }
 
-vec3 getShdCol(in vec3 shdPos, in vec2 randVec){
-    #if ANTI_ALIASING >= 2
-        return getShdCol(vec3(shdPos.xy + randVec, shdPos.z));
-    #else
-        return (getShdCol(vec3(shdPos.xy + randVec, shdPos.z)) + getShdCol(vec3(shdPos.xy - randVec, shdPos.z))) * 0.5;
-    #endif
+vec3 getShdCol(in vec3 shdPos, in float dither, in float offSetSize, in uint samples){
+    float sampledAngle = dither;
+    float samplesInv = 1.0 / samples;
+
+    vec3 sampledFilter = vec3(0);
+
+    for(uint i = 1u; i <= samples; i++){
+        sampledAngle += GOLDEN_RATIO;
+        float offSetFinal = sqrt(i * samplesInv) * offSetSize;
+
+        vec2 randVec = vec2(cos(sampledAngle), sin(sampledAngle)) * offSetFinal;
+        sampledFilter += getShdCol(vec3(shdPos.xy + randVec, shdPos.z));
+    }
+
+    return sampledFilter * samplesInv;
 }
