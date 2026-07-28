@@ -2,7 +2,7 @@
 
 const float volumetricStepsInverse = 1.0 / VOLUMETRIC_LIGHT_STEPS;
 
-vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in float fogFactor, in float borderFog, in float dither, in bool isSky){
+vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in float rayReduction, in float fogFactor, in float borderFog, in float dither, in bool isSky){
     float totalFogDensity = FOG_TOTAL_DENSITY;
 
     #ifdef FORCE_DISABLE_WEATHER
@@ -38,9 +38,18 @@ vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in floa
     volumetricFogDensity *= shdFade;
 
     #if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING
+        float rayLength = min(min(borderFar, shadowDistance), feetPlayerDist);
+
+        // Calculate steps that dynamically increase with distance
+        // uint dynamicVolumetricLightSteps = clamp(uint(rayLength * rayReduction * VOLUMETRIC_LIGHT_STEPS), 1u, VOLUMETRIC_LIGHT_STEPS);
+        uint dynamicVolumetricLightSteps = uint(mix(1.0, VOLUMETRIC_LIGHT_STEPS, min(rayLength * rayReduction / (rayLength + 1.0), 1.0)));
+        float dynamicVolumetricLightStepsInv = 1.0 / dynamicVolumetricLightSteps;
+
+        // Change or nah? Hmmmm...
+
         // Normalize then unormalize with feetPlayerDist and clamping it at minimum distance between far and current shadowDistance
         vec3 endPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * nFeetPlayerPos);
-        endPos *= min(min(borderFar, shadowDistance), feetPlayerDist) * volumetricStepsInverse;
+        endPos *= rayLength * dynamicVolumetricLightStepsInv;
 
         // Apply dithering added to the eyePlayerPos "camera" position converted to shadow clip space
         vec3 startPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * shadowModelView[3].xyz + endPos * dither;
@@ -48,14 +57,14 @@ vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in floa
 
         vec3 volumeData = vec3(0);
 
-        for(uint i = 0u; i < VOLUMETRIC_LIGHT_STEPS; i++){
+        for(uint i = 0u; i < dynamicVolumetricLightSteps; i++){
             // No need to do anymore fancy matrix multiplications during the loop
             volumeData += getShdCol(getShdDistort(startPos));
             // We continue tracing!
             startPos += endPos;
         }
         
-        return volumeData * lightCol * (min(1.0, VOLUMETRIC_LIGHTING_STRENGTH + VOLUMETRIC_LIGHTING_STRENGTH * isEyeInWater) * squared(heightFade) * volumetricFogDensity * volumetricStepsInverse);
+        return volumeData * lightCol * (min(1.0, VOLUMETRIC_LIGHTING_STRENGTH + VOLUMETRIC_LIGHTING_STRENGTH * isEyeInWater) * squared(heightFade) * volumetricFogDensity * dynamicVolumetricLightStepsInv);
     #else
         if(isEyeInWater == 1) return lightCol * toLinear(fogColor) * (min(1.0, VOLUMETRIC_LIGHTING_STRENGTH * 2.0) * squared(heightFade) * volumetricFogDensity);
 

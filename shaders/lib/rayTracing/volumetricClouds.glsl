@@ -1,12 +1,12 @@
 const uint volumetricCloudSteps = uint(VOLUMETRIC_CLOUD_STEPS);
-const float volumetricCloudStepsInv = 1.0 / volumetricCloudSteps;
+const float volumetricCloudStepsInv = 1.0 / volumetricCloudSteps; // Probably not needed
 
 const float volumetricDepthInverse = 1.0 / VOLUMETRIC_CLOUD_DEPTH;
 const float volumetricCenterDepth = VOLUMETRIC_CLOUD_DEPTH * 0.5;
 const float volumetricCloudHeight = 195.0 + volumetricCenterDepth;
 
 // This took me a while to finally understand how this all works
-vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPlayerDist, in float dither){
+vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPlayerDist, in float rayReduction, in float dither){
     // Sets the bounding box vertically by creating an analytical slab intersected by a sphere at the camera's position
     float lowerSlabDist = (-VOLUMETRIC_CLOUD_DEPTH - cameraPos.y) / nFeetPlayerPos.y;
     float higherSlabDist = -cameraPos.y / nFeetPlayerPos.y;
@@ -32,25 +32,19 @@ vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPl
     // Get distance inside the cloud
     float distInsideCloud = marchEndDistance - marchStartDistance;
 
-    // Calculate cloud steps that dynamically increase with distance
-    uint dynamicVolumetricCloudSteps = min(uint(distInsideCloud), volumetricCloudSteps);
-    float dynamicVolumetricCloudStepsInv = 1.0 / dynamicVolumetricCloudSteps;
+    // Calculate steps that dynamically increase with distance
+    // uint dynamicVolumetricCloudSteps = clamp(uint(distInsideCloud * rayReduction * volumetricCloudSteps), 1u, volumetricCloudSteps);
+    uint dynamicVolumetricCloudSteps = uint(mix(1.0, volumetricCloudSteps, min(distInsideCloud * rayReduction / (distInsideCloud + 1.0), 1.0)));
+
+    // Decide on this cuz this is driving me nuts
 
     // Multiply by dynamicVolumetricCloudStepsInv to get the step size and scale with distance
-    float endDist = distInsideCloud * dynamicVolumetricCloudStepsInv;
+    float endDist = distInsideCloud / dynamicVolumetricCloudSteps;
     vec3 endPos = nFeetPlayerPos * endDist;
 
     // Camera position as its start position
     float startDist = marchStartDistance + endDist * dither;
     vec3 startPos = cameraPos + nFeetPlayerPos * marchStartDistance + endPos * dither;
-
-    /*
-    // Use the cloud slab length to derive one per-step delta.
-    // This keeps the step size proportional to the ray length,
-    // while the loop still only depends on the fixed cloud step budget.
-    float stepSize = distInsideCloud * volumetricCloudStepsInv;
-    vec3 endPos = nFeetPlayerPos * stepSize;
-    */
 
     // To store the cloud data for 2 cloud layers
     vec2 clouds = vec2(0);
