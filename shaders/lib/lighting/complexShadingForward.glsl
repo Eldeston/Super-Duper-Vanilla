@@ -1,3 +1,87 @@
+#if defined WORLD_LIGHT && defined SHADOW_MAPPING
+    vec3 getShdMapping(in vec3 normal, in float NLZ, in float parallaxShd, in float ss, in bool isShadow, in bool isSubSurface){
+        vec3 feetPlayerPos = vertexFeetPlayerPos;
+
+        #ifdef ENTITIES
+            // Fixes boats having water shadows inside them
+            // Not the best fix for a water leak in a boat
+            if(entityId == 10133) feetPlayerPos.y += 0.2;
+        #endif
+
+        // Get shadow pos
+        vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * feetPlayerPos + shadowModelView[3].xyz);
+        shdPos.z += shadowProjection[3].z;
+
+        // Apply shadow distortion and transform to shadow screen space
+        float distortShape = getDistortShape(shdPos.xy);
+        shdPos = getShdDistort(shdPos, distortShape);
+
+        // Removes the extra blobs at the edges occurring from shadow distortion
+        if(shdPos.x < 0 || shdPos.x > 1 || shdPos.y < 0 || shdPos.y > 1) return vec3(1);
+
+        // Items that are not subject to depth do not need a bias
+        #if !defined HAND && !defined HAND_WATER
+            // Old bias calculation
+            // const vec3 biasFactor = vec3(shadowMapPixelSize * 2.0, shadowMapPixelSize * 2.0, -0.00006103515625);
+            // Bias mutilplier, adjusts according to the current resolution and shadow depth view scale
+            const vec3 biasFactor = vec3(shadowMapPixelSize, shadowMapPixelSize, 0.03125 * (shadowDistance * shadowMapPixelSize)) * 2.0;
+
+            // Since we already have NLZ, we just need NLX and NLY to complete the shadow normal
+            float NLX = dot(normal, vec3(shadowModelView[0].x, shadowModelView[1].x, shadowModelView[2].x));
+            float NLY = dot(normal, vec3(shadowModelView[0].y, shadowModelView[1].y, shadowModelView[2].y));
+
+            // Old bias calculation
+            // shdPos += vec3(NLX, NLY, NLZ) * biasFactor;
+            // Apply normal slope scaled bias
+            // Bias in the z-axis is need to be applied to be scaled up
+            shdPos += vec3(NLX, NLY, NLZ * shadowProjection[2].z) * (distortShape + 1.0) * biasFactor;
+        #endif
+
+        // Cave light leak fix
+        float shdFactor = shdFade;
+
+        #if defined PARALLAX_OCCLUSION && defined PARALLAX_SHADOW
+            shdFactor *= parallaxShd;
+        #endif
+
+        #if defined TERRAIN || defined WATER
+            if(isEyeInWater == 0) shdFactor *= min(1.0, (lmCoord.y + eyeBrightFact) * 4.0);
+        #endif
+
+        // Sample shadows, reduce whenever possible
+        #ifdef SHADOW_FILTER
+            #if ANTI_ALIASING >= 2
+                float dither = fract(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x + frameFract);
+            #else
+                float dither = texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x;
+            #endif
+
+            dither *= TAU;
+
+            #ifdef SUBSURFACE_SCATTERING
+                float subSurfaceFactor = isShadow ? max(ss - ss * NLZ * 16.0, 0.0) : ss;
+                float offSetSize = isSubSurface ? mix(shadowMapPixelSize, shadowDistanceInv * 4.0, subSurfaceFactor) : shadowMapPixelSize;
+
+                // Use more samples for subsurface scattering
+                if(isSubSurface){
+                    vec3 shdCol = getShdCol(shdPos, dither, offSetSize, 4u);
+                    float maxShdCol = maxOf(shdCol);
+                    // return (max(pow(maxShdCol, subSurfaceFactor * 3.0), 0.0) * (shdFactor / (0.015625 + maxShdCol))) * shdCol;
+                    return (mix(maxShdCol, cubed(maxShdCol), subSurfaceFactor) * (shdFactor / (0.015625 + maxShdCol))) * shdCol;
+                }
+            #endif
+
+            #if ANTI_ALIASING >= 2
+                return getShdCol(shdPos, dither, shadowMapPixelSize, 1u) * shdFactor;
+            #else
+                return getShdCol(shdPos, dither, shadowMapPixelSize, 2u) * shdFactor;
+            #endif
+        #else
+            return getShdCol(shdPos) * shdFactor;
+        #endif
+    }
+#endif
+
 vec4 complexShadingForward(in dataPBR material){
     // Get block light squared
     float blockLightSquared = squared(lmCoord.x);
@@ -42,65 +126,7 @@ vec4 complexShadingForward(in dataPBR material){
             vec3 shdCol = vec3(0);
 
             // If the area isn't shaded, apply shadow mapping
-            if(isShadow || isSubSurface){
-                vec3 feetPlayerPos = vertexFeetPlayerPos;
-
-                #ifdef ENTITIES
-                    // Fixes boats having water shadows inside them
-                    // Not the best fix for a water leak in a boat
-                    if(entityId == 10133) feetPlayerPos.y += 0.2;
-                #endif
-
-                // Get shadow pos
-                vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * feetPlayerPos + shadowModelView[3].xyz);
-                shdPos.z += shadowProjection[3].z;
-
-                // Apply shadow distortion and transform to shadow screen space
-                shdPos = getShdDistort(shdPos);
-
-                // Items that are not subject to depth do not need a bias
-                #if !defined HAND && !defined HAND_WATER
-                    // Bias mutilplier, adjusts according to the current resolution
-                    // The Z is instead a constant and the only extra bias that isn't accounted for is shadow distortion "blobs"
-                    // 0.00006103515625 = exp2(-14)
-                    const vec3 biasAdjustFactor = vec3(shadowMapPixelSize * 2.0, shadowMapPixelSize * 2.0, -0.00006103515625);
-
-                    // Since we already have NLZ, we just need NLX and NLY to complete the shadow normal
-                    float NLX = dot(material.normal, vec3(shadowModelView[0].x, shadowModelView[1].x, shadowModelView[2].x));
-                    float NLY = dot(material.normal, vec3(shadowModelView[0].y, shadowModelView[1].y, shadowModelView[2].y));
-
-                    // Apply normal based bias
-                    shdPos += vec3(NLX, NLY, NLZ) * biasAdjustFactor;
-                #endif
-
-                // Sample shadows
-                #ifdef SHADOW_FILTER
-                    #if ANTI_ALIASING >= 2
-                        float dither = fract(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x + frameFract) * TAU;
-                    #else
-                        float dither = texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x * TAU;
-                    #endif
-
-                    vec2 randVec = vec2(cos(dither), sin(dither)) * shadowMapPixelSize;
-
-                    shdCol = getShdCol(shdPos, randVec);
-                #else
-                    shdCol = getShdCol(shdPos);
-                #endif
-
-                // Cave light leak fix
-                float shdFactor = shdFade;
-
-                #if defined PARALLAX_OCCLUSION && defined PARALLAX_SHADOW
-                    shdFactor *= material.parallaxShd;
-                #endif
-
-                #if defined TERRAIN || defined WATER
-                    if(isEyeInWater == 0) shdFactor *= min(1.0, (lmCoord.y + eyeBrightFact) * 4.0);
-                #endif
-
-                shdCol *= shdFactor;
-            }
+            if(isShadow || isSubSurface) shdCol = getShdMapping(material.normal, NLZ, material.parallaxShd, material.ss, isShadow, isSubSurface);
         #else
             // Calculate fake shadows
             float shdCol = saturate(hermiteMix(0.9, 1.0, lmCoord.y)) * shdFade;
@@ -114,7 +140,7 @@ vec4 complexShadingForward(in dataPBR material){
 
         #ifdef SUBSURFACE_SCATTERING
             // Diffuse with simple SS approximation
-            if(isSubSurface) dirLight += (1.0 - dirLight) * material.ambient * material.ss * 0.5;
+            if(isSubSurface) dirLight += (1.0 - dirLight) * material.ambient * material.ss;
         #endif
 
         #ifdef SHADOW_MAPPING
