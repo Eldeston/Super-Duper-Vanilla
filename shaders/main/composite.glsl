@@ -326,10 +326,10 @@
             vec3 nFeetPlayerPos = feetPlayerPos * feetPlayerDotInvSqrt;
         #endif
 
-        // Reduce samples wherever possible, quality is maintained in the middle
-        float rayReduction = 1.0 - maxOf(abs(texCoord - 0.5)) * 1.5;
-
-        #ifdef WORLD_LIGHT
+        #if defined WORLD_LIGHT
+            // Reduce samples wherever possible, quality is maintained in the middle
+            float rayReduction = 1.0 - maxOf(abs(texCoord - 0.5)) * 1.5;
+            
             // Apply volumetric light
             if(VOLUMETRIC_LIGHTING_STRENGTH != 0 && isEyeInWater != 2)
                 sceneColOut += getVolumetricLight(nFeetPlayerPos, feetPlayerDist, rayReduction, fogFactor, borderFog, dither.x, isSky);
@@ -341,14 +341,14 @@
             vec3 cloudStartPos0 = vec3(cameraPosition.x + fragmentFrameTime, cameraPosition.y - volumetricCloudHeight, cameraPosition.z);
 
             // Get the volumetric clouds
-            vec2 cloudData = volumetricClouds(nFeetPlayerPos, cloudStartPos0, feetPlayerDist, rayReduction, dither.x);
+            vec2 cloudData = cloudsDDA(nFeetPlayerPos, cloudStartPos0, feetPlayerDist);
 
             #ifdef DOUBLE_LAYERED_CLOUDS
                 // Get the 2nd layer of volumetric clouds position by reusing the 1st layer's position
                 vec3 cloudStartPos1 = vec3(cloudStartPos0.x - 2064.0, cloudStartPos0.y - SECOND_CLOUD_HEIGHT, cloudStartPos0.z - 2064.0);
 
                 // Variate by swizzling the 2 cloud channels
-                cloudData = max(volumetricClouds(nFeetPlayerPos, cloudStartPos1, feetPlayerDist, rayReduction, dither.x).yx, cloudData);
+                cloudData = max(cloudsDDA(nFeetPlayerPos, cloudStartPos1, feetPlayerDist).yx, cloudData);
             #endif
 
             #ifdef DYNAMIC_CLOUDS

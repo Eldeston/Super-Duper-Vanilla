@@ -21,8 +21,6 @@
 
         // Items that are not subject to depth do not need a bias
         #if !defined HAND && !defined HAND_WATER
-            // Old bias calculation
-            // const vec3 biasFactor = vec3(shadowMapPixelSize * 2.0, shadowMapPixelSize * 2.0, -0.00006103515625);
             // Bias mutilplier, adjusts according to the current resolution and shadow depth view scale
             const vec3 biasFactor = vec3(shadowMapPixelSize, shadowMapPixelSize, 0.03125 * (shadowDistance * shadowMapPixelSize)) * 2.0;
 
@@ -30,10 +28,7 @@
             float NLX = dot(normal, vec3(shadowModelView[0].x, shadowModelView[1].x, shadowModelView[2].x));
             float NLY = dot(normal, vec3(shadowModelView[0].y, shadowModelView[1].y, shadowModelView[2].y));
 
-            // Old bias calculation
-            // shdPos += vec3(NLX, NLY, NLZ) * biasFactor;
-            // Apply normal slope scaled bias
-            // Bias in the z-axis is need to be applied to be scaled up
+            // Apply normal slope scaled bias. Bias in the z-axis is need to be applied to be scaled up
             shdPos += vec3(NLX, NLY, NLZ * shadowProjection[2].z) * (distortShape + 1.0) * biasFactor;
         #endif
 
