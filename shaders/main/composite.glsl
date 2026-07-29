@@ -171,7 +171,7 @@
         #if CLOUD_TYPE == 2
             uniform float volumetricCloudFar;
 
-            #include "/lib/rayTracing/volumetricClouds.glsl"
+            #include "/lib/rayTracing/voxelClouds.glsl"
         #endif
     #endif
 
@@ -341,14 +341,14 @@
             vec3 cloudStartPos0 = vec3(cameraPosition.x + fragmentFrameTime, cameraPosition.y - volumetricCloudHeight, cameraPosition.z);
 
             // Get the volumetric clouds
-            vec2 cloudData = cloudsDDA(nFeetPlayerPos, cloudStartPos0, feetPlayerDist);
+            vec2 cloudData = voxelClouds(nFeetPlayerPos, cloudStartPos0, feetPlayerDist);
 
             #ifdef DOUBLE_LAYERED_CLOUDS
                 // Get the 2nd layer of volumetric clouds position by reusing the 1st layer's position
                 vec3 cloudStartPos1 = vec3(cloudStartPos0.x - 2064.0, cloudStartPos0.y - SECOND_CLOUD_HEIGHT, cloudStartPos0.z - 2064.0);
 
                 // Variate by swizzling the 2 cloud channels
-                cloudData = max(cloudsDDA(nFeetPlayerPos, cloudStartPos1, feetPlayerDist).yx, cloudData);
+                cloudData = max(voxelClouds(nFeetPlayerPos, cloudStartPos1, feetPlayerDist).yx, cloudData);
             #endif
 
             #ifdef DYNAMIC_CLOUDS

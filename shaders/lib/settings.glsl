@@ -254,18 +254,25 @@ const float entityShadowDistanceMul = 0.5;
 
 // Shadow map pixel size. Calculated as the reciprocal of the shadow map resolution.
 const float shadowMapPixelSize = 1.0 / shadowMapResolution;
-
 // Reciprocal of shadow distance.
 const float shadowDistanceInv = 1.0 / shadowDistance;
 
+// Converting of volumetric steps to uint (probably not needed)
+const uint volumetricCloudSteps = uint(VOLUMETRIC_CLOUD_STEPS);
+// Reciprocal of cloud steps (probably also not needed)
+const float volumetricCloudStepsInv = 1.0 / volumetricCloudSteps;
+
+// Reciprocal of cloud depth
+const float volumetricDepthInverse = 1.0 / VOLUMETRIC_CLOUD_DEPTH;
+// Half of depth to find the centre pivot
+const float volumetricCenterDepth = VOLUMETRIC_CLOUD_DEPTH * 0.5;
+// Hard-code volumetric cloud height to Minecraft's default
+const float volumetricCloudHeight = 195.0 + volumetricCenterDepth;
+
 // Sun and moon intensity squared
 const float sunMoonIntensitySqrd = SUN_MOON_INTENSITY * SUN_MOON_INTENSITY;
-
 // Sky box intensity squared
 const float skyBoxIntensitySqrd = SKYBOX_BRIGHTNESS * SKYBOX_BRIGHTNESS;
-
-// Sky box brightness squared
-const float skyBoxBrightnessSqrd = SKYBOX_BRIGHTNESS * SKYBOX_BRIGHTNESS;
 
 // World curvature size inverse
 const float worldCurvatureInv = 1.0 / WORLD_CURVATURE_SIZE;
