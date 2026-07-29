@@ -3,11 +3,11 @@ const uint voxelSize = 16u;
 const float voxelScale = 1.0 / voxelSize;
 
 // My magnum opus, the ABSOLUTE Cinema, I present you...pure voxel traced DDA clouds.
-vec2 voxelClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPlayerDist){
+vec2 voxelClouds(in vec3 nFeetPlayerPos, in vec3 camPos, in float feetPlayerDist){
     // Create 2 analytical slabs
     float nFeetPlayerPosInvY = 1.0 / nFeetPlayerPos.y;
-    float lowerSlabDist  = (-CLOUD_THICKNESS - cameraPos.y) * nFeetPlayerPosInvY;
-    float higherSlabDist = -cameraPos.y * nFeetPlayerPosInvY;
+    float lowerSlabDist  = (-CLOUD_THICKNESS - camPos.y) * nFeetPlayerPosInvY;
+    float higherSlabDist = -camPos.y * nFeetPlayerPosInvY;
 
     // Create a slab as thick as CLOUD_THICKNESS
     float slabNear = min(lowerSlabDist, higherSlabDist);
@@ -31,7 +31,7 @@ vec2 voxelClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPlayerD
 
     // Start position and distance in local cloud space
     float startDist = rayStartDistance;
-    vec3 startPos = cameraPos + nFeetPlayerPos * rayStartDistance;
+    vec3 startPos = camPos + nFeetPlayerPos * rayStartDistance;
 
     // Ray in voxel space
     float voxelDist = distInsideCloud * voxelScale;
@@ -46,30 +46,32 @@ vec2 voxelClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPlayerD
     // Keep track of previous cloud data to complete the shells in the XZ plane
     float closestDist = 0.0;
     vec2 cloudOutput = vec2(0);
-    vec2 prevCloudData = vec2(0);
+    bvec2 prevCloudData = bvec2(0);
 
     // Don't need to keep track of step count (..?)
     while(closestDist < voxelDist){
-        // Convert parametric > world distance
-        float currDist = startDist + closestDist * voxelSize;
-
         // Sample cloud pixels (same texture, same indexing)
-        vec2 currCloudData = texelFetch(colortex0, ivec2(voxelPos) & 255, 0).xy;
+        bvec2 currCloudData = lessThan(vec2(0.5), texelFetch(colortex0, ivec2(voxelPos) & 255, 0).xy);
 
-        // Cloud fog
-        float cloudFog = 1.0 - currDist * invCloudFar;
-        // Local vertical shading
-        float currentPosY = cameraPos.y + nFeetPlayerPos.y * currDist;
-        // Cloud shading
-        float cloudShade = -currentPosY * cloudFog;
+        // If any of the voxels is populated...shading time!
+        if(any(currCloudData) || any(prevCloudData)){
+            // Convert parametric > world distance
+            float currDistance = startDist + closestDist * voxelSize;
+            // Local vertical shading
+            float currentPosY = camPos.y + nFeetPlayerPos.y * currDistance;
+            // Cloud fog
+            float cloudFog = 1.0 - currDistance * invCloudFar;
+            // Cloud shading
+            float cloudShade = -currentPosY * cloudFog;
 
-        // I'm so pro
-        // cloudOutput = max(cloudOutput, step(0.5, max(currCloudData, prevCloudData)) * cloudShade);
-        if(currCloudData.x > 0.5 || prevCloudData.x > 0.5) cloudOutput.x = max(cloudOutput.x, cloudShade);
-        if(currCloudData.y > 0.5 || prevCloudData.y > 0.5) cloudOutput.y = max(cloudOutput.y, cloudShade);
+            // I'm so pro
+            // cloudOutput = max(cloudOutput, step(0.5, max(currCloudData, prevCloudData)) * cloudShade);
+            if(currCloudData.x || prevCloudData.x) cloudOutput.x = max(cloudOutput.x, cloudShade);
+            if(currCloudData.y || prevCloudData.y) cloudOutput.y = max(cloudOutput.y, cloudShade);
 
-        // Record previous cloud data
-        prevCloudData = currCloudData;
+            // Record previous cloud data
+            prevCloudData = currCloudData;
+        }
 
         // DDA step, onto the next voxel!
         closestDist = minOf(nextDist);
@@ -84,19 +86,22 @@ vec2 voxelClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPlayerD
 
     // Complete the bottom plane (I'm so pro 2)
     if(nFeetPlayerPos.y < 0.0){
-        // Fog is really easy to calculate at this point
-        float cloudFog = 1.0 - newSlabDist * invCloudFar;
         // Plane coordinates
-        vec3 planePos = cameraPos + nFeetPlayerPos * newSlabDist;
+        vec3 planePos = camPos + nFeetPlayerPos * newSlabDist;
         // Sample cloud voxel
-        vec2 currCloudData = texelFetch(colortex0, ivec2(planePos.xz * voxelScale) & 255, 0).xy;
-        // Cloud shading
-        float cloudShade = -planePos.y * cloudFog;
+        bvec2 currCloudData = lessThan(vec2(0.5), texelFetch(colortex0, ivec2(planePos.xz * voxelScale) & 255, 0).xy);
 
-        // I'm so pro (3)
-        // cloudOutput = max(cloudOutput, step(0.5, currCloudData) * cloudShade);
-        if(currCloudData.x > 0.5) cloudOutput.x = max(cloudOutput.x, cloudShade);
-        if(currCloudData.y > 0.5) cloudOutput.y = max(cloudOutput.y, cloudShade);
+        if(any(currCloudData) || any(prevCloudData)){
+            // Fog is really easy to calculate at this point
+            float cloudFog = 1.0 - newSlabDist * invCloudFar;
+            // Cloud shading
+            float cloudShade = -planePos.y * cloudFog;
+
+            // I'm so pro (3)
+            // cloudOutput = max(cloudOutput, step(0.5, currCloudData) * cloudShade);
+            if(currCloudData.x) cloudOutput.x = max(cloudOutput.x, cloudShade);
+            if(currCloudData.y) cloudOutput.y = max(cloudOutput.y, cloudShade);
+        }
     }
 
     return cloudOutput;

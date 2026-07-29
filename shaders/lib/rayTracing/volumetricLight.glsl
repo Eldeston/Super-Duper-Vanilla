@@ -41,8 +41,8 @@ vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in floa
         float rayLength = min(min(borderFar, shadowDistance), feetPlayerDist);
 
         // Calculate steps that dynamically increase with distance
-        // uint dynamicVolumetricLightSteps = clamp(uint(rayLength * rayReduction * VOLUMETRIC_LIGHT_STEPS), 1u, VOLUMETRIC_LIGHT_STEPS);
-        uint dynamicVolumetricLightSteps = uint(mix(1.0, VOLUMETRIC_LIGHT_STEPS, min(rayLength * rayReduction / (rayLength + 1.0), 1.0)));
+        // uint dynamicVolumetricLightSteps = uint(mix(1.0, VOLUMETRIC_LIGHT_STEPS, min(rayLength * rayReduction / (rayLength + 1.0), 1.0)));
+        uint dynamicVolumetricLightSteps = min(uint(rayLength * rayReduction * VOLUMETRIC_LIGHT_STEPS), VOLUMETRIC_LIGHT_STEPS);
         float dynamicVolumetricLightStepsInv = 1.0 / dynamicVolumetricLightSteps;
 
         // Change or nah? Hmmmm...
