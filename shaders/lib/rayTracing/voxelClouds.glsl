@@ -61,7 +61,8 @@ vec2 voxelClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPlayerD
         // Cloud shading
         float cloudShade = -currentPosY * cloudFog;
 
-        // I'm so pro (2)
+        // I'm so pro
+        // cloudOutput = max(cloudOutput, step(0.5, max(currCloudData, prevCloudData)) * cloudShade);
         if(currCloudData.x > 0.5 || prevCloudData.x > 0.5) cloudOutput.x = max(cloudOutput.x, cloudShade);
         if(currCloudData.y > 0.5 || prevCloudData.y > 0.5) cloudOutput.y = max(cloudOutput.y, cloudShade);
 
@@ -79,18 +80,19 @@ vec2 voxelClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPlayerD
     // Create a new slab to fill in missing backface (since voxel tracing skips tracing in-between boundries)
     float newSlabDist = min(lowerSlabDist, sphereFar);
 
-    // Complete the bottom plane (I'm so pro 3)
+    // Complete the bottom plane (I'm so pro 2)
     if(nFeetPlayerPos.y < 0.0){
         // Fog is really easy to calculate at this point
         float cloudFog = 1.0 - newSlabDist * invCloudFar;
         // Plane coordinates
-        vec3 hitPos = cameraPos + nFeetPlayerPos * newSlabDist;
+        vec3 planePos = cameraPos + nFeetPlayerPos * newSlabDist;
         // Sample cloud voxel
-        vec2 currCloudData = texelFetch(colortex0, ivec2(hitPos.xz * voxelScale) & 255, 0).xy;
+        vec2 currCloudData = texelFetch(colortex0, ivec2(planePos.xz * voxelScale) & 255, 0).xy;
         // Cloud shading
-        float cloudShade = -hitPos.y * cloudFog;
+        float cloudShade = -planePos.y * cloudFog;
 
-        // Only shade if voxel is filled
+        // I'm so pro (3)
+        // cloudOutput = max(cloudOutput, step(0.5, currCloudData) * cloudShade);
         if(currCloudData.x > 0.5) cloudOutput.x = max(cloudOutput.x, cloudShade);
         if(currCloudData.y > 0.5) cloudOutput.y = max(cloudOutput.y, cloudShade);
     }
