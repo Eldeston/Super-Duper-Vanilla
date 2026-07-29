@@ -1,4 +1,4 @@
-## Language format v1.1.1
+## Language format v1.1.2
 ## All other .lang files must update to the latest language format version on this main .lang file
 
 ## Profiles
@@ -192,7 +192,7 @@ screen.ATMOSPHERICS.comment = §6Atmospheric effects including sun/moon, clouds,
     option.CLOUD_TYPE.comment = Changes cloud type.
         value.CLOUD_TYPE.0 = Vanilla
         value.CLOUD_TYPE.1 = Skybox
-        value.CLOUD_TYPE.2 = Volumetric
+        value.CLOUD_TYPE.2 = Voxel
 
     option.SUN_MOON_INTENSITY = Sun/moon intensity
     option.SUN_MOON_INTENSITY.comment = The sun or moon's intensity. Also affects specular reflections.
@@ -223,11 +223,8 @@ screen.ATMOSPHERICS.comment = §6Atmospheric effects including sun/moon, clouds,
         option.SECOND_CLOUD_HEIGHT = 2nd cloud height
         option.SECOND_CLOUD_HEIGHT.comment = 2nd layer cloud height, if double vanilla clouds is on.
 
-        option.VOLUMETRIC_CLOUD_STEPS = Volumetric steps
-        option.VOLUMETRIC_CLOUD_STEPS.comment = Volumetric story mode clouds steps. Increasing may improve quality and demand more performance.
-
-        option.VOLUMETRIC_CLOUD_DEPTH = Volumetric depth
-        option.VOLUMETRIC_CLOUD_DEPTH.comment = Determines the volumetric story mode clouds' thickness in blocks.
+        option.CLOUD_THICKNESS = Cloud thickness
+        option.CLOUD_THICKNESS.comment = Determines the story mode clouds' thickness in blocks.
 
         option.SKYBOX_CLOUD_STEPS = Skybox steps
         option.SKYBOX_CLOUD_STEPS.comment = Skybox story mode clouds steps. Increasing may improve quality and demand more performance.
