@@ -83,7 +83,7 @@ void getPBR(inout dataPBR material, in int id){
     #endif
 
     #if PBR_MODE == 1
-        #if defined TERRAIN || defined BLOCK
+        #ifdef TERRAIN
             float albedoSum = sumOf(material.albedo.rgb);
 
             // Glow berries
@@ -119,12 +119,6 @@ void getPBR(inout dataPBR material, in int id){
                 material.emissive = material.albedo.r * 0.25;
                 material.smoothness = 0.9 * fastSqrt(material.albedo.r);
                 material.metallic = 1.0;
-            }
-
-            // Raid den crystal
-            else if(id == 12304){
-                material.emissive = cubed(maxOf(material.albedo.rgb)) * 0.25;
-                material.smoothness = 0.9;
             }
 
             /// -------------------------------- /// Metallic blocks /// -------------------------------- ///
@@ -298,6 +292,14 @@ void getPBR(inout dataPBR material, in int id){
         #if defined WATER || defined BLOCK
             // Glass, ice, and jelly
             if(id == 12500) material.smoothness = 0.96;
+        #endif
+
+        #ifdef BLOCK
+            // Raid den crystal (Modded)
+            if(id == 12304){
+                material.emissive = cubed(maxOf(material.albedo.rgb)) * 0.25;
+                material.smoothness = 0.9;
+            }
         #endif
     #endif
 
