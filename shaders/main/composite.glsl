@@ -165,16 +165,6 @@
         uniform float dayCycleAdjust;
     #endif
 
-    #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
-        uniform sampler2D colortex0;
-
-        #if CLOUD_TYPE == 2
-            uniform float volumetricCloudFar;
-
-            #include "/lib/rayTracing/voxelClouds.glsl"
-        #endif
-    #endif
-
     #ifdef DISTANT_HORIZONS
         uniform mat4 dhProjectionInverse;
 
@@ -224,6 +214,16 @@
         #endif
 
         #include "/lib/rayTracing/volumetricLight.glsl"
+    #endif
+
+    #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
+        uniform sampler2D colortex0;
+
+        #if CLOUD_TYPE == 2
+            uniform float cloudDistantFar;
+
+            #include "/lib/rayTracing/voxelClouds.glsl"
+        #endif
     #endif
 
     #include "/lib/utility/noiseFunctions.glsl"
@@ -326,7 +326,7 @@
             vec3 nFeetPlayerPos = feetPlayerPos * feetPlayerDotInvSqrt;
         #endif
 
-        #if defined WORLD_LIGHT
+        #ifdef WORLD_LIGHT
             // Reduce samples wherever possible, quality is maintained in the middle
             float rayReduction = 1.0 - maxOf(abs(texCoord - 0.5)) * 1.5;
             
