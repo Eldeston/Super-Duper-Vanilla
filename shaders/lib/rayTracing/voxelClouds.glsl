@@ -2,35 +2,36 @@
 const uint voxelSize = 16u;
 const float voxelScale = 1.0 / voxelSize;
 
-// My magnum opus, the ABSOLUTE Cinema, I present you...pure DDA traced clouds.
+// My magnum opus, the ABSOLUTE Cinema, I present you...pure voxel traced DDA clouds.
 vec2 voxelClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPlayerDist){
     // Create 2 analytical slabs
-    float lowerSlabDist  = (-VOLUMETRIC_CLOUD_DEPTH - cameraPos.y) / nFeetPlayerPos.y;
-    float higherSlabDist = (0.0 - cameraPos.y) / nFeetPlayerPos.y;
+    float nFeetPlayerPosInvY = 1.0 / nFeetPlayerPos.y;
+    float lowerSlabDist  = (-CLOUD_THICKNESS - cameraPos.y) * nFeetPlayerPosInvY;
+    float higherSlabDist = -cameraPos.y * nFeetPlayerPosInvY;
 
-    // Create a slab as thick as VOLUMETRIC_CLOUD_DEPTH
+    // Create a slab as thick as CLOUD_THICKNESS
     float slabNear = min(lowerSlabDist, higherSlabDist);
     float slabFar = max(lowerSlabDist, higherSlabDist);
 
     // Sphere bound capped by terrain distance (with an epilipson to avoid z-fighting)
     const float sphereNear = 0.0;
-    float sphereFar = min(volumetricCloudFar, feetPlayerDist * 1.015625);
+    float sphereFar = min(cloudDistantFar, feetPlayerDist * 1.015625);
 
     // Intersection of the slab and sphere here
-    float marchStartDistance = max(slabNear, sphereNear);
-    float marchEndDistance = min(slabFar, sphereFar);
+    float rayStartDistance = max(slabNear, sphereNear);
+    float rayEndDistance = min(slabFar, sphereFar);
 
     // Exit early when out of bounds
-    if(marchEndDistance < marchStartDistance) return vec2(0);
+    if(rayEndDistance < rayStartDistance) return vec2(0);
 
     // Get distance inside the cloud
-    float distInsideCloud = marchEndDistance - marchStartDistance;
+    float distInsideCloud = rayEndDistance - rayStartDistance;
     // This is for fog calculation
-    float invCloudFar = 1.0 / volumetricCloudFar;
+    float invCloudFar = 1.0 / cloudDistantFar;
 
     // Start position and distance in local cloud space
-    float startDist = marchStartDistance;
-    vec3 startPos = cameraPos + nFeetPlayerPos * marchStartDistance;
+    float startDist = rayStartDistance;
+    vec3 startPos = cameraPos + nFeetPlayerPos * rayStartDistance;
 
     // Ray in voxel space
     float voxelDist = distInsideCloud * voxelScale;
@@ -38,8 +39,9 @@ vec2 voxelClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPlayerD
 
     // DDA setup in voxel space
     vec2 stepDir = sign(nFeetPlayerPos.xz);
-    vec2 stepSizes = stepDir / nFeetPlayerPos.xz;
-    vec2 nextDist = (stepDir * 0.5 + 0.5 - fract(voxelPos)) / nFeetPlayerPos.xz;
+    vec2 nFeetPlayerPosInvXZ = 1.0 / nFeetPlayerPos.xz;
+    vec2 stepSizes = stepDir * nFeetPlayerPosInvXZ;
+    vec2 nextDist = (stepDir * 0.5 + 0.5 - fract(voxelPos)) * nFeetPlayerPosInvXZ;
 
     // Keep track of previous cloud data to complete the shells in the XZ plane
     float closestDist = 0.0;

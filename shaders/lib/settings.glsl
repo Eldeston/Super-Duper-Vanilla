@@ -93,9 +93,7 @@ const float sunPathRotation = 30.0; // Light path angle. This also affects sky a
 #define DYNAMIC_CLOUDS // Makes clouds more dynamic and allows weather to affect it. (affects on both vanilla and story mode clouds).
 #define FADE_SPEED 0.10 // Cloud fade speed [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.05 1.10 1.15 1.20 1.25 1.30 1.35 1.40 1.45 1.50 1.55 1.60 1.65 1.70 1.75 1.80 1.85 1.90 1.95 2.00 2.05 2.10 2.15 2.20 2.25 2.30 2.35 2.40 2.45 2.50 2.55 2.60 2.65 2.70 2.75 2.80 2.85 2.90 2.95 3.00 3.05 3.10 3.15 3.20 3.25 3.30 3.35 3.40 3.45 3.50 3.55 3.60 3.65 3.70 3.75 3.80 3.85 3.90 3.95 4.00]
 #define SECOND_CLOUD_HEIGHT 128.0 // 2nd layer cloud height, if double vanilla clouds is on [0.0 4.0 8.0 12.0 16.0 20.0 24.0 28.0 32.0 36.0 40.0 44.0 48.0 52.0 56.0 60.0 64.0 68.0 72.0 76.0 80.0 84.0 88.0 92.0 96.0 100.0 104.0 108.0 112.0 116.0 120.0 124.0 128.0 132.0 136.0 140.0 144.0 148.0 152.0 156.0 160.0 164.0 168.0 172.0 176.0 180.0 184.0 188.0 192.0 196.0 200.0 204.0 208.0 212.0 216.0 220.0 224.0 228.0 232.0 236.0 240.0 244.0 248.0 252.0 256.0]
-
-#define VOLUMETRIC_CLOUD_STEPS 16 // Story mode clouds steps. Increasing may improve quality and demand more performance. [16 32 64 128 256]
-#define VOLUMETRIC_CLOUD_DEPTH 8.0 // Determines the story mode clouds' thickness. [4.0 6.0 8.0 10.0 12.0]
+#define CLOUD_THICKNESS 8.0 // Determines the story mode clouds' thickness. [4.0 6.0 8.0 10.0 12.0]
 
 #define SKYBOX_CLOUD_STEPS 16 // Story mode clouds steps. Increasing may improve quality and demand more performance. [16 32 64 128 256]
 #define SKYBOX_CLOUD_DEPTH 0.08 // Determines the story mode clouds' thickness. [0.00 0.01 0.02 0.03 0.04 0.05 0.06 0.07 0.08 0.09 0.10 0.11 0.12 0.13 0.14 0.15 0.16 0.17 0.18 0.19 0.20 0.21 0.22 0.23 0.24 0.25 0.26 0.27 0.28 0.29 0.30 0.31 0.32 0.33 0.34 0.35 0.36 0.37 0.38 0.39 0.40 0.41 0.42 0.43 0.44 0.45 0.46 0.47 0.48 0.49 0.50 0.51 0.52 0.53 0.54 0.55 0.56 0.57 0.58 0.59 0.60 0.61 0.62 0.63 0.64 0.65 0.66 0.67 0.68 0.69 0.70 0.71 0.72 0.73 0.74 0.75 0.76 0.77 0.78 0.79 0.80 0.81 0.82 0.83 0.84 0.85 0.86 0.87 0.88 0.89 0.90 0.91 0.92 0.93 0.94 0.95 0.96 0.97 0.98 0.99 1.00]
@@ -257,15 +255,10 @@ const float shadowMapPixelSize = 1.0 / shadowMapResolution;
 // Reciprocal of shadow distance.
 const float shadowDistanceInv = 1.0 / shadowDistance;
 
-// Converting of volumetric steps to uint (probably not needed)
-const uint volumetricCloudSteps = uint(VOLUMETRIC_CLOUD_STEPS);
-// Reciprocal of cloud steps (probably also not needed)
-const float volumetricCloudStepsInv = 1.0 / volumetricCloudSteps;
-
 // Reciprocal of cloud depth
-const float volumetricDepthInverse = 1.0 / VOLUMETRIC_CLOUD_DEPTH;
+const float volumetricDepthInverse = 1.0 / CLOUD_THICKNESS;
 // Half of depth to find the centre pivot
-const float volumetricCenterDepth = VOLUMETRIC_CLOUD_DEPTH * 0.5;
+const float volumetricCenterDepth = CLOUD_THICKNESS * 0.5;
 // Hard-code volumetric cloud height to Minecraft's default
 const float volumetricCloudHeight = 195.0 + volumetricCenterDepth;
 

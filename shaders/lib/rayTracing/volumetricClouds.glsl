@@ -1,7 +1,14 @@
+#define VOLUMETRIC_CLOUD_STEPS 16 // Story mode clouds steps. Increasing may improve quality and demand more performance. [16 32 64 128 256]
+
+// Converting of volumetric steps to uint (probably not needed)
+const uint volumetricCloudSteps = uint(VOLUMETRIC_CLOUD_STEPS);
+// Reciprocal of cloud steps (probably also not needed)
+const float volumetricCloudStepsInv = 1.0 / volumetricCloudSteps;
+
 // This took me a while to finally understand how this all works. This is old now. Voxel wins.
 vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPlayerDist, in float rayReduction, in float dither){
     // Sets the bounding box vertically by creating an analytical slab intersected by a sphere at the camera's position
-    float lowerSlabDist = (-VOLUMETRIC_CLOUD_DEPTH - cameraPos.y) / nFeetPlayerPos.y;
+    float lowerSlabDist = (-CLOUD_THICKNESS - cameraPos.y) / nFeetPlayerPos.y;
     float higherSlabDist = -cameraPos.y / nFeetPlayerPos.y;
 
     // Finds the slab entry and exit distances
@@ -10,7 +17,7 @@ vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPl
 
     // Minimum cloud distance, if terrain, caps distance to the minimum cloud distance
     float sphereNear = 0.0;
-    float sphereFar = min(volumetricCloudFar, feetPlayerDist);
+    float sphereFar = min(cloudDistantFar, feetPlayerDist);
 
     // Intersection of the slab and sphere here
     float marchStartDistance = max(slabNear, sphereNear);
@@ -20,7 +27,7 @@ vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPl
     if(marchEndDistance < marchStartDistance) return vec2(0);
     
     // inverse of the cloud far distance, used for fog calculation
-    float invCloudFar = 1.0 / volumetricCloudFar;
+    float invCloudFar = 1.0 / cloudDistantFar;
 
     // Get distance inside the cloud
     float distInsideCloud = marchEndDistance - marchStartDistance;
