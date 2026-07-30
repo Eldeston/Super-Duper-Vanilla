@@ -23,15 +23,6 @@
         uniform mat4 gbufferModelViewInverse;
     #endif
 
-    #if ANTI_ALIASING == 2
-        uniform int frameMod;
-
-        uniform float pixelWidth;
-        uniform float pixelHeight;
-
-        #include "/lib/utility/taaJitter.glsl"
-    #endif
-
     void main(){
         // Get vertex color
         vertexColor = gl_Color;
@@ -59,10 +50,6 @@
         gl_Position.z += gl_ProjectionMatrix[3].z;
 
         gl_Position.w = -vertexViewPos.z;
-
-        #if ANTI_ALIASING == 2
-            gl_Position.xy += jitterPos(gl_Position.w);
-        #endif
     }
 #endif
 

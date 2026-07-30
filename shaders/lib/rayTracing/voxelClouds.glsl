@@ -73,7 +73,7 @@ vec2 voxelClouds(in vec3 nFeetPlayerPos, in vec3 camPos, in float feetPlayerDist
             prevCloudData = currCloudData;
         }
 
-        // DDA step, onto the next voxel!
+        // Find the closest distance of the next voxel
         closestDist = minOf(nextDist);
         vec2 stepAxis = vec2(equal(nextDist, vec2(closestDist)));
 
@@ -85,7 +85,7 @@ vec2 voxelClouds(in vec3 nFeetPlayerPos, in vec3 camPos, in float feetPlayerDist
     float newSlabDist = min(lowerSlabDist, sphereFar);
 
     // Complete the bottom plane (I'm so pro 2)
-    if(nFeetPlayerPos.y < 0.0){
+    if(nFeetPlayerPos.y < 0){
         // Plane coordinates
         vec3 planePos = camPos + nFeetPlayerPos * newSlabDist;
         // Sample cloud voxel
