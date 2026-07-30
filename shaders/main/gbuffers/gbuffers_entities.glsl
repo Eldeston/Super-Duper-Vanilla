@@ -41,15 +41,6 @@
         uniform mat4 gbufferModelView;
     #endif
 
-    #if ANTI_ALIASING == 2
-        uniform int frameMod;
-
-        uniform float pixelWidth;
-        uniform float pixelHeight;
-
-        #include "/lib/utility/taaJitter.glsl"
-    #endif
-
     attribute vec4 at_tangent;
 
     #ifdef PARALLAX_OCCLUSION
@@ -108,10 +99,6 @@
         gl_Position.z += gl_ProjectionMatrix[3].z;
 
         gl_Position.w = -vertexViewPos.z;
-
-        #if ANTI_ALIASING == 2
-            gl_Position.xy += jitterPos(gl_Position.w);
-        #endif
     }
 #endif
 
