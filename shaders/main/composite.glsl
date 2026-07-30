@@ -348,6 +348,7 @@
                 vec3 cloudStartPos1 = vec3(cloudStartPos0.x - 2064.0, cloudStartPos0.y - SECOND_CLOUD_HEIGHT, cloudStartPos0.z - 2064.0);
 
                 // Variate by swizzling the 2 cloud channels
+                // cloudData = voxelClouds(nFeetPlayerPos, cloudStartPos1, feetPlayerDist).yx * (1.0 - cloudData * volumetricDepthInverse) + cloudData;
                 cloudData = max(voxelClouds(nFeetPlayerPos, cloudStartPos1, feetPlayerDist).yx, cloudData);
             #endif
 

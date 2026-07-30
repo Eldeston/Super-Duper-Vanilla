@@ -54,11 +54,13 @@
             dither *= TAU;
 
             #ifdef SUBSURFACE_SCATTERING
-                float subSurfaceFactor = isShadow ? max(ss - ss * NLZ * 16.0, 0.0) : ss;
-                float offSetSize = isSubSurface ? mix(shadowMapPixelSize, shadowDistanceInv * 4.0, subSurfaceFactor) : shadowMapPixelSize;
+                const float subSurfaceOffset = shadowDistanceInv;
 
                 // Use more samples for subsurface scattering
                 if(isSubSurface){
+                    float subSurfaceFactor = isShadow ? max(ss - ss * NLZ * 16.0, 0.0) : ss;
+                    float offSetSize = mix(shadowMapPixelSize, subSurfaceOffset, subSurfaceFactor);
+
                     vec3 shdCol = getShdCol(shdPos, dither, offSetSize, 4u);
                     float maxShdCol = maxOf(shdCol);
                     // return (max(pow(maxShdCol, subSurfaceFactor * 3.0), 0.0) * (shdFactor / (0.015625 + maxShdCol))) * shdCol;
