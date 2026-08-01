@@ -38,22 +38,11 @@ vec3 getShdCol(in vec3 shdPos){
 }
 
 vec3 getShdCol(in vec3 shdPos, in float dither){
+	vec2 randVec = vec2(cos(dither), sin(dither)) * shadowMapPixelSize;
+
 	#if ANTI_ALIASING >= 2
-		// With TAA, temporal accumulation smooths the single-sample noise.
-		// Performance contribution by Kawwabi.
-		vec2 randVec = vec2(cos(dither), sin(dither)) * shadowMapPixelSize;
 		return getShdCol(vec3(shdPos.xy + randVec, shdPos.z));
 	#else
-		// Without TAA, use a 4-sample box pattern for dot-free shadows.
-		// Fixed 2x2 grid covers the shadow texel area evenly, giving smooth
-		// results without temporal dependence. More expensive but essential
-		// when no temporal accumulation is available.
-		vec2 halfPixel = vec2(shadowMapPixelSize * 0.5);
-		vec3 shdSample = vec3(0);
-		shdSample += getShdCol(vec3(shdPos.xy + vec2(-halfPixel.x, -halfPixel.y), shdPos.z));
-		shdSample += getShdCol(vec3(shdPos.xy + vec2( halfPixel.x, -halfPixel.y), shdPos.z));
-		shdSample += getShdCol(vec3(shdPos.xy + vec2(-halfPixel.x,  halfPixel.y), shdPos.z));
-		shdSample += getShdCol(vec3(shdPos.xy + vec2( halfPixel.x,  halfPixel.y), shdPos.z));
-		return shdSample * 0.25;
+		return (getShdCol(vec3(shdPos.xy + randVec, shdPos.z)) + getShdCol(vec3(shdPos.xy - randVec, shdPos.z))) * 0.5;
 	#endif
 }

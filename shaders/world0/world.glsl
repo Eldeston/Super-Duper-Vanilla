@@ -46,10 +46,6 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 #define FOG_VERTICAL_DENSITY lerp(FOG0_VERTICAL_DENSITY_N, FOG0_VERTICAL_DENSITY_T, FOG0_VERTICAL_DENSITY_D, dayCycle)
 #define FOG_TOTAL_DENSITY FOG0_TOTAL_DENSITY
 
-// The transition range in dayCycle units for smooth dawn/dusk (~5 seconds)
-// Credits: Kawwabi
-#define DAY_TRANSITION 0.008
-
 // Day colors
 #define LIGHT0_DR 255 // Red value [3 6 9 12 15 18 21 24 27 30 33 36 39 42 45 48 51 54 57 60 63 66 69 72 75 78 81 84 87 90 93 96 99 102 105 108 111 114 117 120 123 126 129 132 135 138 141 144 147 150 153 156 159 162 165 168 171 174 177 180 183 186 189 192 195 198 201 204 207 210 213 216 219 222 225 228 231 234 237 240 243 246 249 252 255]
 #define LIGHT0_DG 210 // Green value [3 6 9 12 15 18 21 24 27 30 33 36 39 42 45 48 51 54 57 60 63 66 69 72 75 78 81 84 87 90 93 96 99 102 105 108 111 114 117 120 123 126 129 132 135 138 141 144 147 150 153 156 159 162 165 168 171 174 177 180 183 186 189 192 195 198 201 204 207 210 213 216 219 222 225 228 231 234 237 240 243 246 249 252 255]
@@ -99,7 +95,7 @@ const vec3 skyTwilightColor = vec3(SKY0_TR, SKY0_TG, SKY0_TB) * (SKY0_TI * 0.003
 #define SUN_COL_DATA_BLOCK mix(lightTwilightColor, lightDayColor, twilightPhase)
 #define MOON_COL_DATA_BLOCK lightNightColor
 
-#define LIGHT_COLOR_DATA_BLOCK0 mix(lightNightColor, mix(lightTwilightColor, lightDayColor, twilightPhase), smoothstep(1.0 - DAY_TRANSITION, 1.0 + DAY_TRANSITION, dayCycle))
-#define LIGHT_COLOR_DATA_BLOCK1(S, M) mix(M, S, smoothstep(1.0 - DAY_TRANSITION, 1.0 + DAY_TRANSITION, dayCycle))
+#define LIGHT_COLOR_DATA_BLOCK0 (dayCycle > 1 ? mix(lightTwilightColor, lightDayColor, twilightPhase) : lightNightColor)
+#define LIGHT_COLOR_DATA_BLOCK1(S, M) (dayCycle > 1 ? S : M)
 
 #define SKY_COLOR_DATA_BLOCK lerp(skyNightColor, skyTwilightColor, skyDayColor, dayCycle)
