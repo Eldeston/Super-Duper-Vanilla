@@ -46,15 +46,17 @@ vec2 voxelClouds(in vec3 nFeetPlayerPos, in vec3 camPos, in float feetPlayerDist
     // Keep track of previous cloud data to complete the shells in the XZ plane
     float closestDist = 0.0;
     vec2 cloudOutput = vec2(0);
-    bvec2 prevCloudData = bvec2(0);
 
-    // Don't need to keep track of step count (..?)
+    // The loop sometimes run more than 64 iterations but it is capped
     while(closestDist < voxelDist){
+        // Calculate the step's axis first, also fixes backface rendering
+        uvec2 stepAxis = uvec2(equal(nextDist, vec2(closestDist)));
+
         // Sample cloud pixels (same texture, same indexing)
         bvec2 currCloudData = lessThan(vec2(0.5), texelFetch(colortex0, ivec2(voxelPos) & 255, 0).xy);
 
         // If any of the voxels is populated...shading time!
-        if(any(currCloudData) || any(prevCloudData)){
+        if(currCloudData.x || currCloudData.y){
             // Convert parametric > world distance
             float currDistance = startDist + closestDist * voxelSize;
             // Local vertical shading
@@ -65,35 +67,28 @@ vec2 voxelClouds(in vec3 nFeetPlayerPos, in vec3 camPos, in float feetPlayerDist
             float cloudShade = -currentPosY * cloudFog;
 
             // I'm so pro
-            // cloudOutput = max(cloudOutput, step(0.5, max(currCloudData, prevCloudData)) * cloudShade);
-            if(currCloudData.x || prevCloudData.x) cloudOutput.x = max(cloudOutput.x, cloudShade);
-            if(currCloudData.y || prevCloudData.y) cloudOutput.y = max(cloudOutput.y, cloudShade);
-
-            // Record previous cloud data
-            prevCloudData = currCloudData;
+            // cloudOutput = max(cloudOutput, step(0.5, currCloudData) * cloudShade);
+            if(currCloudData.x) cloudOutput.x = max(cloudOutput.x, cloudShade);
+            if(currCloudData.y) cloudOutput.y = max(cloudOutput.y, cloudShade);
         }
 
-        // Find the closest distance of the next voxel
+        // Find the closest voxel distance
         closestDist = minOf(nextDist);
-        vec2 stepAxis = vec2(equal(nextDist, vec2(closestDist)));
-
-        nextDist += stepAxis * stepSizes;
         voxelPos += stepAxis * stepDir;
+        nextDist += stepAxis * stepSizes;
     }
 
-    // Create a new slab to fill in missing backface (since voxel tracing skips tracing in-between boundries)
-    float newSlabDist = min(lowerSlabDist, sphereFar);
-
-    // Complete the bottom plane (I'm so pro 2)
+    // Complete the bottom plane since voxel tracing skips tracing in-between boundries (I'm so pro 2)
     if(nFeetPlayerPos.y < 0){
         // Plane coordinates
-        vec3 planePos = camPos + nFeetPlayerPos * newSlabDist;
+        vec3 planePos = camPos + nFeetPlayerPos * rayEndDistance;
         // Sample cloud voxel
         bvec2 currCloudData = lessThan(vec2(0.5), texelFetch(colortex0, ivec2(planePos.xz * voxelScale) & 255, 0).xy);
 
-        if(any(currCloudData) || any(prevCloudData)){
+        // If any of the voxels is populated...shading time!
+        if(currCloudData.x || currCloudData.y){
             // Fog is really easy to calculate at this point
-            float cloudFog = 1.0 - newSlabDist * invCloudFar;
+            float cloudFog = 1.0 - rayEndDistance * invCloudFar;
             // Cloud shading
             float cloudShade = -planePos.y * cloudFog;
 
