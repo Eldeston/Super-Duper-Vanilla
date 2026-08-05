@@ -1,8 +1,8 @@
-#define VOLUMETRIC_LIGHT_STEPS 7u
+#define VOLUMETRIC_LIGHT_STEPS 8u
 
 const float volumetricStepsInverse = 1.0 / VOLUMETRIC_LIGHT_STEPS;
 
-vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in float rayReduction, in float fogFactor, in float borderFog, in float dither, in bool isSky){
+vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in float fogFactor, in float borderFog, in float dither, in bool isSky){
     float totalFogDensity = FOG_TOTAL_DENSITY;
 
     #ifdef FORCE_DISABLE_WEATHER
@@ -39,10 +39,11 @@ vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in floa
 
     #if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING
         float rayLength = min(min(borderFar, shadowDistance), feetPlayerDist);
+        float rayReduction = 1.0 - maxOf(abs(texCoord - 0.5)) * 1.5;
 
         // Calculate steps that dynamically increase with distance
         // uint dynamicVolumetricLightSteps = uint(mix(1.0, VOLUMETRIC_LIGHT_STEPS, min(rayLength * rayReduction / (rayLength + 1.0), 1.0)));
-        uint dynamicVolumetricLightSteps = clamp(uint(rayLength * rayReduction * VOLUMETRIC_LIGHT_STEPS), 1u, VOLUMETRIC_LIGHT_STEPS);
+        uint dynamicVolumetricLightSteps = min(uint(rayLength * rayReduction * VOLUMETRIC_LIGHT_STEPS), VOLUMETRIC_LIGHT_STEPS);
         float dynamicVolumetricLightStepsInv = 1.0 / dynamicVolumetricLightSteps;
 
         // Change or nah? Hmmmm...
