@@ -205,6 +205,35 @@
 
     #include "/lib/lighting/complexShadingForward.glsl"
 
+    // Dimensional Doors portal helpers (adapted from vanilla end portal)
+    mat2 mat2_rotate_z_portal(float angle) {
+        float s = sin(angle);
+        float c = cos(angle);
+        return mat2(c, s, -s, c);
+    }
+
+    mat4 end_portal_layer_dd(float layer, float time) {
+        mat4 translate = mat4(
+            1.0, 0.0, 0.0, 17.0 / layer,
+            0.0, 1.0, 0.0, (2.0 + layer / 1.5) * (time * 0.001),
+            0.0, 0.0, 1.0, 0.0,
+            0.0, 0.0, 0.0, 1.0
+        );
+
+        mat2 rotate = mat2_rotate_z_portal(radians((layer * layer * 4321.0 + layer * 9.0) * 1.0));
+
+        mat2 scale = mat2(4.5 - layer / 4.0);
+
+        const mat4 SCALE_TRANSLATE = mat4(
+            1.0, 0.0, 0.0, 0.5,
+            0.0, 1.0, 0.0, 0.5,
+            0.0, 0.0, 1.0, 0.0,
+            0.0, 0.0, 0.0, 1.0
+        );
+
+        return mat4(scale * rotate) * translate * SCALE_TRANSLATE;
+    }
+
     float getEndStarField(in vec2 uv, in float time){
         return textureLod(gtexture, vec2(uv.x, uv.y + time) * 0.125, 0).r + textureLod(gtexture, vec2(uv.x - uv.y, uv.y + uv.x + time) * 0.125, 0).r;
     }
@@ -212,37 +241,51 @@
     void main(){
         // Dimensional Doors portal, credits to Kawwabi
         if(blockEntityId == 13201){
-            // Get portal depth
-            float blockDepth = near / (1.0 - gl_FragCoord.z) - near / (1.0 - getDepth(depthtex0, ivec2(gl_FragCoord.xy), 0));
+            // Build UV coordinates from world position projected onto the portal face
+            vec3 portalUv = vec3(vertexWorldPos.zy * TBN[2].x + vertexWorldPos.xz * TBN[2].y + vertexWorldPos.xy * TBN[2].z, 1.0);
 
-            // Get start pos
-            vec2 startPos = vertexWorldPos.zy * TBN[2].x + vertexWorldPos.xz * TBN[2].y + vertexWorldPos.xy * TBN[2].z;
+            // Color palette for Dimensional Doors
+            const vec3[] PORTAL_COLORS = vec3[](
+                vec3(0.022087, 0.098399, 0.110818),
+                vec3(0.011892, 0.095924, 0.089485),
+                vec3(0.027636, 0.101689, 0.100326),
+                vec3(0.046564, 0.109883, 0.114838),
+                vec3(0.064901, 0.117696, 0.097189),
+                vec3(0.063761, 0.086895, 0.123646),
+                vec3(0.084817, 0.111994, 0.166380),
+                vec3(0.097489, 0.154120, 0.091064),
+                vec3(0.106152, 0.131144, 0.195191),
+                vec3(0.097721, 0.110188, 0.187229),
+                vec3(0.133516, 0.138278, 0.148582),
+                vec3(0.070006, 0.243332, 0.235792),
+                vec3(0.196766, 0.142899, 0.214696),
+                vec3(0.047281, 0.315338, 0.321970),
+                vec3(0.204675, 0.390010, 0.302066),
+                vec3(0.080955, 0.314821, 0.661491)
+            );
 
-            // Get end pos
-            vec3 endPos = vertexFeetPlayerPos.zyx * TBN[2].x + vertexFeetPlayerPos.xzy * TBN[2].y + vertexFeetPlayerPos.xyz * TBN[2].z;
-            endPos.xy /= endPos.z;
-            
-            // End star uv
-            float starSpeed = fragmentFrameTime * 0.0625;
+            // First layer: base texture (zoom in for less tiling)
+            vec3 color = textureLod(gtexture, portalUv.xy * 0.25, 0).rgb * PORTAL_COLORS[0];
 
-            float endStarField = getEndStarField(startPos, starSpeed);
-            endStarField += getEndStarField(startPos.yx - endPos.yx, starSpeed) * 0.66666667;
-            endStarField += getEndStarField(endPos.xy * 2.0 - startPos, starSpeed) * 0.33333333;
+            // Additional layers with transforms
+            for (int i = 0; i < 16; i++) {
+                vec4 transformedUv = vec4(portalUv.xy * 0.25, 0.0, 1.0) * end_portal_layer_dd(float(i + 1), fragmentFrameTime);
+                vec3 layerColor = textureLod(gtexture, transformedUv.xy / transformedUv.w, 0).rgb;
+                color += layerColor * PORTAL_COLORS[min(i, 15)];
+            }
 
-            // Get the depth outline for the end portal
-            float edgeBrightness = exp2((blockDepth + 0.0625) * 8.0);
+            // Normalize by total layer count to prevent over-brightening
+            color /= 13.6;
 
-            // Get noise color to variate the end portal color
-            vec3 noiseCol = getRng3(ivec2(startPos * 16.0) & 255) * 0.5 + 0.5;
-            vec3 finalCol = (noiseCol * endStarField + edgeBrightness) * vec3(0.25, 0.5, 1);
+            // Outer glow handled by bloom post-processing
+            vec3 finalCol = color * EMISSIVE_INTENSITY * vertexColor.rgb;
 
             sceneColOut = vec4(toLinear(finalCol), 1);
-
-            // End portal fix
             normalDataOut = vec3(0);
+            albedoDataOut = toLinear(finalCol);
             materialDataOut = vec3(0, 0, 0.5);
 
-            return; // Return immediately, no need for lighting calculation
+            return;
         }
 
         // End portal
