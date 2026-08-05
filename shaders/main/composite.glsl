@@ -327,12 +327,9 @@
         #endif
 
         #ifdef WORLD_LIGHT
-            // Reduce samples wherever possible, quality is maintained in the middle
-            float rayReduction = 1.0 - maxOf(abs(texCoord - 0.5)) * 1.5;
-            
             // Apply volumetric light
             if(VOLUMETRIC_LIGHTING_STRENGTH != 0 && isEyeInWater != 2)
-                sceneColOut += getVolumetricLight(nFeetPlayerPos, feetPlayerDist, rayReduction, fogFactor, borderFog, dither.x, isSky);
+                sceneColOut += getVolumetricLight(nFeetPlayerPos, feetPlayerDist, fogFactor, borderFog, dither.x, isSky);
         #endif
 
         #if CLOUD_TYPE == 2 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
