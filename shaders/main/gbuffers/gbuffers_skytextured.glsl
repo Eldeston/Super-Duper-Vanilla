@@ -96,7 +96,13 @@
             if(renderStage == MC_RENDER_STAGE_MOON){ discard; return; }
         #endif
 
-        // Otherwise BEGONE
-        return;
+        #ifdef VANILLA_SKY_PASS
+            // Pass through the modded vanilla skybox (Dimensional Doors eye)
+            // Credits: Kawwabi
+            sceneColOut = toLinear(albedo.rgb * albedo.a) * skyBoxIntensitySqrd;
+        #else
+            // Otherwise BEGONE
+            return;
+        #endif
     }
 #endif
