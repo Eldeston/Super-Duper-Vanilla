@@ -6,8 +6,8 @@ const float voxelScale = 1.0 / voxelSize;
 vec2 voxelClouds(in vec3 nFeetPlayerPos, in vec3 camPos, in float feetPlayerDist){
     // Create 2 analytical slabs
     float nFeetPlayerPosInvY = 1.0 / nFeetPlayerPos.y;
-    float lowerSlabDist  = (-CLOUD_THICKNESS - camPos.y) * nFeetPlayerPosInvY;
     float higherSlabDist = -camPos.y * nFeetPlayerPosInvY;
+    float lowerSlabDist  = higherSlabDist - nFeetPlayerPosInvY * CLOUD_THICKNESS;
 
     // Create a slab as thick as CLOUD_THICKNESS
     float slabNear = min(lowerSlabDist, higherSlabDist);
