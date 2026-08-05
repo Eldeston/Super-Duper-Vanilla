@@ -298,6 +298,7 @@ void getPBR(inout dataPBR material, in int id){
                 material.ambient = 1.0;
                 material.emissive = 0.02;
             }
+            
             else if(id == 13202){
                 material.ambient = 0.40; // Make ancient fabric 40% brightness
                 material.emissive = 0.004; // Reduce emissive by about 20%
