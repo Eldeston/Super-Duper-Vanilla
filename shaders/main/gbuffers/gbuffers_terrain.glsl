@@ -244,10 +244,6 @@
     #include "/lib/lighting/complexShadingForward.glsl"
 
     void main(){
-        // Declare materials
-        dataPBR material;
-        getPBR(material, blockId);
-
         // Dimensional Doors fabric blocks by Kawwabi, pure unshaded texture colors.
         // Zero normals prevents SSAO edge artifacts, zero material data
         // prevents specular/fresnel variation. Every pixel on every face
@@ -258,16 +254,20 @@
             vec2 texDerivX = dFdx(texCoord);
             vec2 texDerivY = dFdy(texCoord);
             vec4 rawAlbedo = textureGrad(gtexture, texCoord, texDerivX, texDerivY);
-            if(rawAlbedo.a < ALPHA_THRESHOLD) discard;
-            vec3 texCol = toLinear(rawAlbedo.rgb);
 
-            float brightnessMultiplier = (blockId == 13200) ? 0.971 : 0.388; // 0.971 * 0.40 = 0.388 for 40% brightness
-            sceneColOut = texCol * brightnessMultiplier;                 // Very, VERY specific number to get the same color as vanilla
-            normalDataOut = vec3(0);                 // Zero normals kill SSAO edge shadows
-            albedoDataOut = texCol * brightnessMultiplier;                 // Very, VERY specific number to get the same color as vanilla
-            materialDataOut = vec3(0);               // Zero smoothness/metallic
+            if(rawAlbedo.a < ALPHA_THRESHOLD) discard;
+
+            vec3 texCol = toLinear(rawAlbedo.rgb);
+            if(blockId == 13202) texCol *= 0.33333333 + abs(TBN[2].y) * 0.66666667 + abs(TBN[2].z) * 0.33333333; // Sculk blocks are slightly darker on the sides, like vanilla wool
+
+            sceneColOut = texCol; // Very, VERY specific number to get the same color as vanilla
+            normalDataOut = vec3(0); // Zero normals kill SSAO edge shadows
             return;
         }
+
+        // Declare materials
+        dataPBR material;
+        getPBR(material, blockId);
 
         if(blockId == 11100 || blockId == 13005){
             vec2 blockUv = vertexWorldPos.zy * TBN[2].x + vertexWorldPos.xz * TBN[2].y + vertexWorldPos.xy * TBN[2].z;
