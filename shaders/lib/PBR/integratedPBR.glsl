@@ -287,22 +287,6 @@ void getPBR(inout dataPBR material, in int id){
                 material.emissive = amethystLumaSquaredSquared * (id == 13103 ? amethystLumaSquared * amethystLumaSquaredSquared : amethystAverage);
                 material.metallic = 0.17;
             }
-
-            /// -------------------------- /// Dimensional Doors compat by Kawwabi /// -------------------------- ///
-
-            // Fabric blocks — ambient overridden to 1.0 in the gbuffer's early-return
-            // Emissive here is a subtle self-illumination boost, kept low so
-            // black fabric stays pitch-black.
-            // Credits: Kawwabi
-            else if(id == 13200){
-                material.ambient = 1.0;
-                material.emissive = 0.02;
-            }
-            
-            else if(id == 13202){
-                material.ambient = 0.40; // Make ancient fabric 40% brightness
-                material.emissive = 0.004; // Reduce emissive by about 20%
-            }
         #endif
 
         #if defined WATER || defined BLOCK
