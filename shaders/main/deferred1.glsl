@@ -60,14 +60,7 @@
         // Get buffer texture coordinates
         texCoord = gl_MultiTexCoord0.xy;
 
-        #ifdef VANILLA_SKY_PASS
-            // Scale vanilla fog color to match the dimdoors skybox background (#282828)
-            // #404040 * 0.625 = #282828 in sRGB space
-            // Credits: Kawwabi
-            skyCol = toLinear(SKY_COLOR_DATA_BLOCK * 0.625);
-        #else
-            skyCol = (toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash) + toLinear(SKY_COLOR_DATA_BLOCK);
-        #endif
+        skyCol = (toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash) + toLinear(SKY_COLOR_DATA_BLOCK);
 
         #ifdef WORLD_LIGHT
             #if CLOUD_TYPE >= 1 && !defined FORCE_DISABLE_CLOUDS
@@ -135,11 +128,6 @@
 
     uniform float darkEffectFactor;
     uniform float darknessLightFactor;
-
-    #ifdef VANILLA_SKY_PASS
-        uniform float nightVision;
-        uniform float lightningFlash;
-    #endif
 
     uniform float fragmentFrameTime;
 
@@ -298,17 +286,8 @@
 
         // If sky, do full sky render and return immediately
         if(screenPos.z == 1){
-            #ifdef VANILLA_SKY_PASS
-                // Boost only the red eye so it glows on the gray background
-                // Bloom will pick up the bright red and create a natural glow effect
-                // The gray background is filled with skyCol, scaled to match #282828
-                // Credits: Kawwabi
-                float eyeMask = smoothstep(0.1, 0.4, sceneColOut.r - max(sceneColOut.g, sceneColOut.b));
-                sceneColOut = max(skyCol, sceneColOut * (1.0 + eyeMask * 5.0)) * exp2(-borderFar * darkEffectFactor);
-            #else
-                // Calculate and output sky render
-                sceneColOut = getFullSkyRender(nEyePlayerPos, skyPos, currSkyCol + sceneColOut) * exp2(-borderFar * darkEffectFactor);
-            #endif
+            // Calculate and output sky render
+            sceneColOut = getFullSkyRender(nEyePlayerPos, skyPos, currSkyCol + sceneColOut) * exp2(-borderFar * darkEffectFactor);
             // Exit function immediately
             return;
         }
@@ -324,25 +303,17 @@
         vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
         vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
 
-        // Skip deferred shading for pixels with zero normal (fabric blocks)
-        // Credits: Kawwabi
-        if(length(normal) > 0.001){
-            // Apply deffered shading
-            sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, realSky);
-        }
+        // Apply deffered shading
+        sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, realSky);
 
         #if OUTLINES != 0
-            // Outline calculation — skip for fabric blocks (zero normal)
-            if(length(normal) > 0.001){
-                if(!realSky) sceneColOut *= 1.0 + getOutline(screenTexelCoord, screenPos.z) * OUTLINE_BRIGHTNESS;
-            }
+            // Outline calculation, rejecting materials with no normal and sky
+            if((normal.x + normal.y + normal.z != 0) && !realSky) sceneColOut *= 1.0 + getOutline(screenTexelCoord, screenPos.z) * OUTLINE_BRIGHTNESS;
         #endif
 
         #ifdef SSAO
-            // Apply ambient occlusion — skip for zero-normal pixels
-            if(length(normal) > 0.001){
-                sceneColOut *= getSSAOBoxBlur(screenTexelCoord);
-            }
+            // Apply ambient occlusion with simple blur
+            sceneColOut *= getSSAOBoxBlur(screenTexelCoord);
         #endif
 
         float viewDist = viewDot * viewDotInvSqrt;
@@ -357,11 +328,7 @@
             fogFactor = (fogFactor - 1.0) * getBorderFog(viewDist) + 1.0;
         #endif
 
-        // Apply fog and darkness fog — skip for fabric blocks (zero normal)
-        if(length(normal) > 0.001){
-            sceneColOut = ((fogSkyCol - sceneColOut) * fogFactor + sceneColOut) * getFogEffectFactor(viewDist);
-        }
-        // Clamp scene color to prevent NaNs during post processing
-        sceneColOut = max(sceneColOut, vec3(0));
+        // Apply fog and darkness fog
+        sceneColOut = ((fogSkyCol - sceneColOut) * fogFactor + sceneColOut) * getFogEffectFactor(viewDist);
     }
 #endif
