@@ -241,9 +241,10 @@
 
         float depth = getDepth(depthtex0, screenTexelCoord, 0);
 
+        realSky = depth == 1;
+
         // Distant Horizons apparently uses a different depth texture
         #ifdef DISTANT_HORIZONS
-            realSky = depth == 1;
             if(realSky) depth = texelFetch(dhDepthTex0, screenTexelCoord, 0).x;
         #endif
 
