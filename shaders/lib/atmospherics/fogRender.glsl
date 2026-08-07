@@ -24,5 +24,10 @@ float getFogFactor(in float viewDist, in float nEyePlayerPosY, in float worldPos
 
 float getFogEffectFactor(in float viewDist){
     // Blindness fog
+    // Made it not work in the pure light dimension that is the private pockets
+    #if WORLD_ID == -4
+        return 1.0;
+    #endif
+    
     return exp2(-viewDist * darkEffectFactor);
 }

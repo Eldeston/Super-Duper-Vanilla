@@ -244,6 +244,27 @@
     #include "/lib/lighting/complexShadingForward.glsl"
 
     void main(){
+        // Dimensional Doors fabric blocks by Kawwabi, pure unshaded texture colors.
+        // Zero normals prevents SSAO edge artifacts, zero material data
+        // prevents specular/fresnel variation. Every pixel on every face
+        // is perfectly uniform — no corner shadows, no washout.
+        // Read texture directly. gtexture returns sRGB (not linear), and the
+        // HDR buffer expects linear values, so toLinear is required.
+        if(blockId == 13200 || blockId == 13202){
+            vec2 texDerivX = dFdx(texCoord);
+            vec2 texDerivY = dFdy(texCoord);
+            vec4 rawAlbedo = textureGrad(gtexture, texCoord, texDerivX, texDerivY);
+
+            if(rawAlbedo.a < ALPHA_THRESHOLD) discard;
+
+            vec3 texCol = toLinear(rawAlbedo.rgb);
+            if(blockId == 13202) texCol *= 0.33333333 + abs(TBN[2].y) * 0.66666667 + abs(TBN[2].z) * 0.33333333; // Sculk blocks are slightly darker on the sides, like vanilla wool
+
+            sceneColOut = texCol; // Very, VERY specific number to get the same color as vanilla
+            normalDataOut = vec3(0); // Zero normals kill SSAO edge shadows
+            return;
+        }
+
         // Declare materials
         dataPBR material;
         getPBR(material, blockId);

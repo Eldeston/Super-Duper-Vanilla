@@ -307,8 +307,8 @@
         sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, realSky);
 
         #if OUTLINES != 0
-            // Outline calculation
-            if(!realSky) sceneColOut *= 1.0 + getOutline(screenTexelCoord, screenPos.z) * OUTLINE_BRIGHTNESS;
+            // Outline calculation, rejecting materials with no normal and sky
+            if((normal.x + normal.y + normal.z != 0) && !realSky) sceneColOut *= 1.0 + getOutline(screenTexelCoord, screenPos.z) * OUTLINE_BRIGHTNESS;
         #endif
 
         #ifdef SSAO
