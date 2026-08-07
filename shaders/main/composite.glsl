@@ -129,11 +129,6 @@
     uniform float darkEffectFactor;
     uniform float darknessLightFactor;
 
-    #ifdef VANILLA_SKY_PASS
-        uniform float nightVision;
-        uniform float lightningFlash;
-    #endif
-
     uniform float fragmentFrameTime;
 
     uniform vec3 fogColor;

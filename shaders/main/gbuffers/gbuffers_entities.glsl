@@ -210,13 +210,7 @@
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         // Write to HDR scene color
-        #ifdef WORLD_ENTITY_GLOW
-            // Make entities glow at full brightness (like a 15-level light source)
-            // Credits: Kawwabi
-            sceneColOut = vec4(material.albedo.rgb + material.albedo.rgb * 2.0, material.albedo.a);
-        #else
-            sceneColOut = complexShadingForward(material);
-        #endif
+        sceneColOut = complexShadingForward(material);
 
         // Write buffer datas
         normalDataOut = material.normal;

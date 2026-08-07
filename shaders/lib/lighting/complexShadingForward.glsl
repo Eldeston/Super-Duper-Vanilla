@@ -90,39 +90,17 @@ vec4 complexShadingForward(in dataPBR material){
     vec3 totalIllumination = (toLinear(SKY_COLOR_DATA_BLOCK) + lightningFlash) * skyLightSquared;
 
     // Calculate ambient lightning
-    // Kawwabi Added dimensional doors support
-    #ifdef WORLD_BLOCK_GLOW
-        #if WORLD_ID == -4 || WORLD_ID == -2
-            // For world-4 private pockets and world-2 public/dungeon pockets: set to full brightness like night vision.
-            totalIllumination = vec3(0.0);
-            skyLightSquared = 0.0;
-            blockLightSquared = 0.0;
-            totalIllumination += toLinear(1.0);
-        #else
-            // For other dimensions with WORLD_BLOCK_GLOW: keep the original behavior.
-            totalIllumination += toLinear(0.05);
-        #endif
-    #else
-        totalIllumination += toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
-    #endif
+    totalIllumination += toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 
     #if defined DIRECTIONAL_LIGHTMAPS && (defined TERRAIN || defined WATER)
         vec3 dirLightMapPos = fastNormalize(dFdx(vertexFeetPlayerPos) * dFdx(lmCoord.x) + dFdy(vertexFeetPlayerPos) * dFdy(lmCoord.x));
         float dirLightMap = min(1.0, max(0.0, dot(dirLightMapPos, material.normal)) * blockLightSquared * DIRECTIONAL_LIGHTMAP_STRENGTH + lmCoord.x);
 
         // Calculate block light
-        #ifdef WORLD_WHITE_LIGHTING
-            totalIllumination += toLinear((float(material.emissive == 0) * 0.25 + 1.0) * squared(dirLightMap) * vec3(1.0));
-        #else
-            totalIllumination += toLinear((float(material.emissive == 0) * 0.25 + 1.0) * squared(dirLightMap) * blockLightColor);
-        #endif
+        totalIllumination += toLinear((float(material.emissive == 0) * 0.25 + 1.0) * squared(dirLightMap) * blockLightColor);
     #else
         // Calculate block light
-        #ifdef WORLD_WHITE_LIGHTING
-            totalIllumination += toLinear((float(material.emissive == 0) * 0.25 + 1.0) * blockLightSquared * vec3(1.0));
-        #else
-            totalIllumination += toLinear((float(material.emissive == 0) * 0.25 + 1.0) * blockLightSquared * blockLightColor);
-        #endif
+        totalIllumination += toLinear((float(material.emissive == 0) * 0.25 + 1.0) * blockLightSquared * blockLightColor);
     #endif
 
     // Apply baked ambient occlussion

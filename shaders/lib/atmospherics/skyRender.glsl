@@ -81,13 +81,6 @@ vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){
     // Apply ambient lighting with sky col (not realistic I know)
     vec3 currSkyCol = skyCol;
 
-    #ifdef VANILLA_SKY_PASS
-        // Restore ambient lighting for dimdoors fog - the raw fog color
-        // is used as the sky background, but terrain fog needs ambient added.
-        // Credits: Kawwabi
-        currSkyCol += toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
-    #endif
-
     #ifdef WORLD_SKY_GROUND
         // currSkyCol.rg *= smoothen(saturate(1.0 + nEyePlayerPosY * 4.0));
         // if(nEyePlayerPosY < 0) currSkyCol *= smoothen(max(1.0 + nEyePlayerPosY / max(skyCol, 0.25), vec3(0.25)));
@@ -102,10 +95,6 @@ vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){
             float diffuseCycleAdjust = dayCycleAdjust * lightDiffuse;
             currSkyCol += skyPosZ > 0 ? sunCol * diffuseCycleAdjust : moonCol * (lightDiffuse - diffuseCycleAdjust);
         #endif
-    #endif
-
-    #ifdef VANILLA_SKY_PASS
-        currSkyCol += lightningFlash;
     #endif
 
     return currSkyCol;
