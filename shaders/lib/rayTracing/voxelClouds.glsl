@@ -3,7 +3,7 @@ const uint voxelSize = 16u;
 const float voxelScale = 1.0 / voxelSize;
 
 // My magnum opus, the ABSOLUTE Cinema, I present you...pure voxel traced DDA clouds.
-vec2 voxelClouds(in vec3 nFeetPlayerPos, in vec3 camPos, in float feetPlayerDist){
+vec2 voxelClouds(in vec3 nFeetPlayerPos, in vec3 camPos, in float feetPlayerDist, in bool isSky){
     // Create 2 analytical slabs
     float nFeetPlayerPosInvY = 1.0 / nFeetPlayerPos.y;
     float higherSlabDist = -camPos.y * nFeetPlayerPosInvY;
@@ -15,7 +15,7 @@ vec2 voxelClouds(in vec3 nFeetPlayerPos, in vec3 camPos, in float feetPlayerDist
 
     // Sphere bound capped by terrain distance (with an epilipson to avoid z-fighting)
     const float sphereNear = 0.0;
-    float sphereFar = min(cloudDistantFar, feetPlayerDist * 1.015625);
+    float sphereFar = feetPlayerDist < cloudDistantFar || isSky ? cloudDistantFar : feetPlayerDist * 1.015625;
 
     // Intersection of the slab and sphere here
     float rayStartDistance = max(slabNear, sphereNear);
