@@ -338,7 +338,7 @@
             vec3 cloudStartPos0 = vec3(cameraPosition.x + fragmentFrameTime, cameraPosition.y - volumetricCloudHeight, cameraPosition.z);
 
             // Get the volumetric clouds
-            vec2 cloudData = voxelClouds(nFeetPlayerPos, cloudStartPos0, feetPlayerDist);
+            vec2 cloudData = voxelClouds(nFeetPlayerPos, cloudStartPos0, feetPlayerDist, realSky);
 
             #ifdef DOUBLE_LAYERED_CLOUDS
                 // Get the 2nd layer of volumetric clouds position by reusing the 1st layer's position
@@ -346,7 +346,7 @@
 
                 // Variate by swizzling the 2 cloud channels
                 // cloudData = voxelClouds(nFeetPlayerPos, cloudStartPos1, feetPlayerDist).yx * (1.0 - cloudData * volumetricDepthInverse) + cloudData;
-                cloudData = max(voxelClouds(nFeetPlayerPos, cloudStartPos1, feetPlayerDist).yx, cloudData);
+                cloudData = max(voxelClouds(nFeetPlayerPos, cloudStartPos1, feetPlayerDist, realSky).yx, cloudData);
             #endif
 
             #ifdef DYNAMIC_CLOUDS
