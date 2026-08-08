@@ -250,7 +250,7 @@
         // is perfectly uniform — no corner shadows, no washout.
         // Read texture directly. gtexture returns sRGB (not linear), and the
         // HDR buffer expects linear values, so toLinear is required.
-        if(blockId == 13200 || blockId == 13202){
+        if(blockId == 11103 || blockId == 13200 || blockId == 13202){
             vec2 texDerivX = dFdx(texCoord);
             vec2 texDerivY = dFdy(texCoord);
             vec4 rawAlbedo = textureGrad(gtexture, texCoord, texDerivX, texDerivY);
