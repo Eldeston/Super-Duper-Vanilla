@@ -210,43 +210,8 @@
     }
 
     void main(){
-        // Dimensional Doors portal, credits to Kawwabi
-        if(blockEntityId == 13201){
-            // Get portal depth
-            float blockDepth = near / (1.0 - gl_FragCoord.z) - near / (1.0 - getDepth(depthtex0, ivec2(gl_FragCoord.xy), 0));
-
-            // Get start pos
-            vec2 startPos = vertexWorldPos.zy * TBN[2].x + vertexWorldPos.xz * TBN[2].y + vertexWorldPos.xy * TBN[2].z;
-
-            // Get end pos
-            vec3 endPos = vertexFeetPlayerPos.zyx * TBN[2].x + vertexFeetPlayerPos.xzy * TBN[2].y + vertexFeetPlayerPos.xyz * TBN[2].z;
-            endPos.xy /= endPos.z;
-            
-            // End star uv
-            float starSpeed = fragmentFrameTime * 0.0625;
-
-            float endStarField = getEndStarField(startPos, starSpeed);
-            endStarField += getEndStarField(startPos.yx - endPos.yx, starSpeed) * 0.66666667;
-            endStarField += getEndStarField(endPos.xy * 2.0 - startPos, starSpeed) * 0.33333333;
-
-            // Get the depth outline for the end portal
-            float edgeBrightness = exp2((blockDepth + 0.0625) * 8.0);
-
-            // Get noise color to variate the end portal color
-            vec3 noiseCol = getRng3(ivec2(startPos * 16.0) & 255) * 0.5 + 0.5;
-            vec3 finalCol = (noiseCol * endStarField + edgeBrightness) * vec3(0.25, 0.5, 1);
-
-            sceneColOut = vec4(toLinear(finalCol), 1);
-
-            // End portal fix
-            normalDataOut = vec3(0);
-            materialDataOut = vec3(0, 0, 0.5);
-
-            return; // Return immediately, no need for lighting calculation
-        }
-
         // End portal
-        if(blockEntityId == 12000){
+        if(blockEntityId == 12000 || blockEntityId == 13201){
             // Get portal depth
             float blockDepth = near / (1.0 - gl_FragCoord.z) - near / (1.0 - getDepth(depthtex0, ivec2(gl_FragCoord.xy), 0));
 
@@ -268,8 +233,9 @@
             float edgeBrightness = exp2((blockDepth + 0.0625) * 8.0);
 
             // Get noise color to variate the end portal color
-            vec3 noiseCol = getRng3(ivec2(startPos * 16.0) & 255) * 0.5 + 0.5;
-            vec3 finalCol = (noiseCol * endStarField + edgeBrightness) * EMISSIVE_INTENSITY * vertexColor.rgb;
+            vec3 noiseCol = sin(getRng3(ivec2(startPos * 16.0) & 255) * TAU + fragmentFrameTime * 2.0) * 0.25 + 0.75;
+            // Dimensional Doors portal, credits to Kawwabi
+            vec3 finalCol = (noiseCol * endStarField + edgeBrightness) * (blockEntityId == 13201 ? vec3(0.25, 0.5, 1) : EMISSIVE_INTENSITY * vertexColor.rgb);
 
             sceneColOut = vec4(toLinear(finalCol), 1);
 
