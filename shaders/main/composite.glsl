@@ -234,17 +234,15 @@
     #include "/lib/lighting/complexShadingDeferred.glsl"
 
     void main(){
+        bool realSky = false;
         // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
-
-        bool realSky = false;
-
+        // Get screen space depth
         float depth = getDepth(depthtex0, screenTexelCoord, 0);
-
-        realSky = depth == 1;
 
         // Distant Horizons apparently uses a different depth texture
         #ifdef DISTANT_HORIZONS
+            realSky = depth == 1;
             if(realSky) depth = texelFetch(dhDepthTex0, screenTexelCoord, 0).x;
         #endif
 
@@ -334,20 +332,23 @@
         #endif
 
         #if CLOUD_TYPE == 2 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
+            // Find the farthest distance to the clouds, capped by the terrain distance (with an epilipson to avoid z-fighting)
+            float sphereFar = isSky ? cloudDistantFar : min(feetPlayerDist * 1.015625, cloudDistantFar);
+
             // Get the 1st layer of volumetric clouds position
             // Note that the clouds needs to move westward just as in vanilla
             vec3 cloudStartPos0 = vec3(cameraPosition.x + fragmentFrameTime, cameraPosition.y - volumetricCloudHeight, cameraPosition.z);
 
             // Get the volumetric clouds
-            vec2 cloudData = voxelClouds(nFeetPlayerPos, cloudStartPos0, feetPlayerDist, realSky);
+            vec2 cloudData = voxelClouds(nFeetPlayerPos, cloudStartPos0, sphereFar);
 
             #ifdef DOUBLE_LAYERED_CLOUDS
                 // Get the 2nd layer of volumetric clouds position by reusing the 1st layer's position
                 vec3 cloudStartPos1 = vec3(cloudStartPos0.x - 2064.0, cloudStartPos0.y - SECOND_CLOUD_HEIGHT, cloudStartPos0.z - 2064.0);
 
                 // Variate by swizzling the 2 cloud channels
-                // cloudData = voxelClouds(nFeetPlayerPos, cloudStartPos1, feetPlayerDist).yx * (1.0 - cloudData * volumetricDepthInverse) + cloudData;
-                cloudData = max(voxelClouds(nFeetPlayerPos, cloudStartPos1, feetPlayerDist, realSky).yx, cloudData);
+                // cloudData = voxelClouds(nFeetPlayerPos, cloudStartPos1, sphereFar).yx * (1.0 - cloudData * volumetricDepthInverse) + cloudData;
+                cloudData = max(voxelClouds(nFeetPlayerPos, cloudStartPos1, sphereFar).yx, cloudData);
             #endif
 
             #ifdef DYNAMIC_CLOUDS
