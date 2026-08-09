@@ -1,5 +1,7 @@
 #if defined WORLD_LIGHT && defined SHADOW_MAPPING
-    vec3 getShdMapping(in vec3 normal, in float NLZ, in float parallaxShd, in float ss, in bool isShadow, in bool isSubSurface){
+    vec3 getShdMapping(in vec3 albedo, in vec3 normal, in float NLZ, in float parallaxShd, in float ss, in float ambient, in bool isShadow, in bool isSubSurface){
+        if(!isShadow && !isSubSurface) return vec3(0);
+
         vec3 feetPlayerPos = vertexFeetPlayerPos;
 
         #ifdef ENTITIES
@@ -51,30 +53,39 @@
                 float dither = texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x;
             #endif
 
+            // Multiply by TAU to get a full rotation
             dither *= TAU;
 
             #ifdef SUBSURFACE_SCATTERING
-                const float subSurfaceOffset = shadowDistanceInv;
-
                 // Use more samples for subsurface scattering
                 if(isSubSurface){
-                    float subSurfaceFactor = isShadow ? max(ss - ss * NLZ * 16.0, 0.0) : ss;
-                    float offSetSize = mix(shadowMapPixelSize, subSurfaceOffset, subSurfaceFactor);
+                    // Calculate the offset size based on the subsurface scattering material
+                    float subSurfaceFactor = 1.0 - ss;
+                    // Shadows in the direction of the light should be as sharp as normal shadows
+                    if(isShadow) subSurfaceFactor = min(NLZ * 16.0 + subSurfaceFactor, 1.0);
+                    // Switch between 1 block unit and shadow map pixel offset for shadows
+                    float offSetSize = mix(shadowDistanceInv, shadowMapPixelSize, subSurfaceFactor);
+                    // Sample the shadow map with the offset size and dither
+                    vec3 shdCol = getShdCol(shdPos, dither, offSetSize, 4u) * ambient;
 
-                    vec3 shdCol = getShdCol(shdPos, dither, offSetSize, 4u);
-                    float maxShdCol = maxOf(shdCol);
-                    // return (max(pow(maxShdCol, subSurfaceFactor * 3.0), 0.0) * (shdFactor / (0.015625 + maxShdCol))) * shdCol;
-                    return (mix(maxShdCol, cubed(maxShdCol), subSurfaceFactor) * (shdFactor / (0.015625 + maxShdCol))) * shdCol;
+                    // Calculate the subsurface shadow color based on albedo
+                    vec3 albedoCoEff = (5.0 * maxOf(albedo)) / albedo;
+                    // Normalize the shadow color and apply shdFactor
+                    float shadowTint = shdFactor / (0.0001 + maxOf(shdCol));
+
+                    // Calculate the shadow color with an extinction coefficient based on the albedo
+                    return (exp2((shdCol - 1.0) * albedoCoEff) * shadowTint) * shdCol;
                 }
             #endif
 
+            // Apply diffuse shadowing for non-subsurface scattering materials
             #if ANTI_ALIASING >= 2
-                return getShdCol(shdPos, dither, shadowMapPixelSize, 1u) * shdFactor;
+                return getShdCol(shdPos, dither, shadowMapPixelSize, 1u) * (shdFactor * NLZ);
             #else
-                return getShdCol(shdPos, dither, shadowMapPixelSize, 2u) * shdFactor;
+                return getShdCol(shdPos, dither, shadowMapPixelSize, 2u) * (shdFactor * NLZ);
             #endif
         #else
-            return getShdCol(shdPos) * shdFactor;
+            return getShdCol(shdPos) * (shdFactor * NLZ);
         #endif
     }
 #endif
@@ -120,10 +131,8 @@ vec4 complexShadingForward(in dataPBR material){
         bool isSubSurface = material.ss > 0;
 
         #ifdef SHADOW_MAPPING
-            vec3 shdCol = vec3(0);
-
             // If the area isn't shaded, apply shadow mapping
-            if(isShadow || isSubSurface) shdCol = getShdMapping(material.normal, NLZ, material.parallaxShd, material.ss, isShadow, isSubSurface);
+            vec3 shdCol = getShdMapping(material.albedo.rgb, material.normal, NLZ, material.parallaxShd, material.ss, material.ambient, isShadow, isSubSurface);
         #else
             // Calculate fake shadows
             float shdCol = saturate(hermiteMix(0.9, 1.0, lmCoord.y)) * shdFade;
@@ -133,29 +142,16 @@ vec4 complexShadingForward(in dataPBR material){
             #endif
         #endif
 
-        float dirLight = isShadow ? NLZ : 0.0;
-
-        #ifdef SUBSURFACE_SCATTERING
-            // Diffuse with simple SS approximation
-            if(isSubSurface) dirLight += (1.0 - dirLight) * material.ambient * material.ss;
-        #endif
-
-        #ifdef SHADOW_MAPPING
-            vec3 finalShadowCol = shdCol * dirLight;
-        #else
-            float finalShadowCol = shdCol * dirLight;
-        #endif
-
         #ifndef FORCE_DISABLE_WEATHER
             // Approximate rain diffusing light shadow
             float rainDiffuseAmount = rainStrength * 0.5;
-            finalShadowCol *= 1.0 - rainDiffuseAmount;
+            shdCol *= 1.0 - rainDiffuseAmount;
 
-            finalShadowCol += rainDiffuseAmount * material.ambient * skyLightSquared * (1.0 - shdFade);
+            shdCol += rainDiffuseAmount * material.ambient * skyLightSquared * (1.0 - shdFade);
         #endif
 
         // Calculate and add shadow diffuse
-        totalIllumination += toLinear(sRGBLightCol) * finalShadowCol;
+        totalIllumination += toLinear(sRGBLightCol) * shdCol;
     #endif
 
     // Get view direction
