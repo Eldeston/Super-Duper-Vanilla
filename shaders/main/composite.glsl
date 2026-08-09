@@ -333,7 +333,7 @@
 
         #if CLOUD_TYPE == 2 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
             // Find the farthest distance to the clouds, capped by the terrain distance (with an epilipson to avoid z-fighting)
-            float sphereFar = isSky ? cloudDistantFar : min(feetPlayerDist * 1.015625, cloudDistantFar);
+            float sphereFar = isSky || feetPlayerDist > cloudDistantFar ? cloudDistantFar : feetPlayerDist * 1.015625;
 
             // Get the 1st layer of volumetric clouds position
             // Note that the clouds needs to move westward just as in vanilla
