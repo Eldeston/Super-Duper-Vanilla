@@ -43,7 +43,6 @@ vec2 voxelClouds(in vec3 nFeetPlayerPos, in vec3 camPos, in float sphereFar){
     float closestDist = 0.0;
     vec2 cloudOutput = vec2(0);
 
-    // The loop sometimes run more than 64 iterations but it is capped
     while(closestDist < voxelDist){
         // Calculate the step's axis first, also fixes backface rendering
         uvec2 stepAxis = uvec2(equal(nextDist, vec2(closestDist)));
