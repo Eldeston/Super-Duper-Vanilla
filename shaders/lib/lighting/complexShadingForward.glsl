@@ -18,8 +18,19 @@
         float distortShape = getDistortShape(shdPos.xy);
         shdPos = getShdDistort(shdPos, distortShape);
 
+        // Cave light leak fix
+        float shdFactor = shdFade;
+
+        #if defined PARALLAX_OCCLUSION && defined PARALLAX_SHADOW
+            shdFactor *= parallaxShd;
+        #endif
+
+        #if defined TERRAIN || defined WATER
+            if(isEyeInWater == 0) shdFactor *= min(1.0, (lmCoord.y + eyeBrightFact) * 4.0);
+        #endif
+
         // Removes the extra blobs at the edges occurring from shadow distortion
-        if(shdPos.x < 0 || shdPos.x > 1 || shdPos.y < 0 || shdPos.y > 1) return vec3(1);
+        if(shdPos.x < 0 || shdPos.x > 1 || shdPos.y < 0 || shdPos.y > 1) return vec3(shdFactor * NLZ);
 
         // Items that are not subject to depth do not need a bias
         #if !defined HAND && !defined HAND_WATER
@@ -32,17 +43,6 @@
 
             // Apply normal slope scaled bias. Bias in the z-axis is need to be applied to be scaled up
             shdPos += vec3(NLX, NLY, NLZ * shadowProjection[2].z) * (distortShape + 1.0) * biasFactor;
-        #endif
-
-        // Cave light leak fix
-        float shdFactor = shdFade;
-
-        #if defined PARALLAX_OCCLUSION && defined PARALLAX_SHADOW
-            shdFactor *= parallaxShd;
-        #endif
-
-        #if defined TERRAIN || defined WATER
-            if(isEyeInWater == 0) shdFactor *= min(1.0, (lmCoord.y + eyeBrightFact) * 4.0);
         #endif
 
         // Sample shadows, reduce whenever possible
