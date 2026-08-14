@@ -249,6 +249,9 @@
         // Declare materials
         dataPBR material;
         getPBR(material, blockEntityId);
+        
+        // Alpha test, discard and return immediately
+        if(material.albedo.a < ALPHA_THRESHOLD){ discard; return; }
 
         // Convert to linear space
         material.albedo.rgb = toLinear(material.albedo.rgb);

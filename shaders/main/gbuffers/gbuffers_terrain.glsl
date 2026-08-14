@@ -268,6 +268,9 @@
         // Declare materials
         dataPBR material;
         getPBR(material, blockId);
+        
+        // Alpha test, discard and return immediately
+        if(material.albedo.a < ALPHA_THRESHOLD){ discard; return; }
 
         if(blockId == 11100 || blockId == 13005){
             vec2 blockUv = vertexWorldPos.zy * TBN[2].x + vertexWorldPos.xz * TBN[2].y + vertexWorldPos.xy * TBN[2].z;
