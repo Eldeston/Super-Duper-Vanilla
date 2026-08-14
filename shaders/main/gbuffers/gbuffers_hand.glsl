@@ -192,6 +192,9 @@
         // Declare materials
         dataPBR material;
         getPBR(material, 0);
+        
+        // Alpha test, discard and return immediately
+        if(material.albedo.a < ALPHA_THRESHOLD){ discard; return; }
 
         // Apply entity color tint
         material.albedo.rgb = mix(material.albedo.rgb, entityColor.rgb, entityColor.a);

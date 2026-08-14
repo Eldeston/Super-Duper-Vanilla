@@ -8,7 +8,7 @@ void getPBR(inout dataPBR material, in int id){
     material.albedo = textureGrad(gtexture, texCoord, dcdx, dcdy);
 
     // Alpha test, discard and return immediately
-    if(material.albedo.a < ALPHA_THRESHOLD){ discard; return; }
+    if(material.albedo.a < ALPHA_THRESHOLD) return;
 
     // Assign default normal map
     material.normal = TBN[2];

@@ -199,6 +199,9 @@
         // Declare materials
         dataPBR material;
         getPBR(material, entityId);
+        
+        // Alpha test, discard and return immediately
+        if(material.albedo.a < ALPHA_THRESHOLD){ discard; return; }
 
         // Nametag
         if(vertexAlpha >= 0.24 && vertexAlpha < 0.255) material.albedo.a *= vertexAlpha;
