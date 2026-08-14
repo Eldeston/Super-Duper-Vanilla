@@ -66,12 +66,13 @@
                     // Switch between 1 block unit and shadow map pixel offset for shadows
                     float offSetSize = mix(shadowDistanceInv, shadowMapPixelSize, subSurfaceFactor);
                     // Sample the shadow map with the offset size and dither
-                    vec3 shdCol = getShdCol(shdPos, dither, offSetSize, 4u) * ambient;
+                    vec3 shdCol = getShdCol(shdPos, dither, offSetSize, 4u);
 
                     // Calculate the subsurface shadow color based on albedo
                     vec3 albedoCoEff = (5.0 * maxOf(albedo)) / albedo;
                     // Normalize the shadow color and apply shdFactor
                     float shadowTint = shdFactor / (0.0001 + maxOf(shdCol));
+                    // shadowTint = mix(shadowTint, max(NLZ, 0.0), ss);
 
                     // Calculate the shadow color with an extinction coefficient based on the albedo
                     return (exp2((shdCol - 1.0) * albedoCoEff) * shadowTint) * shdCol;
@@ -128,11 +129,10 @@ vec4 complexShadingForward(in dataPBR material){
         float NLZ = dot(material.normal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z));
 
         bool isShadow = NLZ > 0;
-        bool isSubSurface = material.ss > 0;
 
         #ifdef SHADOW_MAPPING
             // If the area isn't shaded, apply shadow mapping
-            vec3 shdCol = getShdMapping(material.albedo.rgb, material.normal, NLZ, material.parallaxShd, material.ss, material.ambient, isShadow, isSubSurface);
+            vec3 shdCol = getShdMapping(material.albedo.rgb, material.normal, NLZ, material.parallaxShd, material.ss, material.ambient, isShadow, material.ss > 0);
         #else
             // Calculate fake shadows
             float shdCol = saturate(hermiteMix(0.9, 1.0, lmCoord.y)) * shdFade;
