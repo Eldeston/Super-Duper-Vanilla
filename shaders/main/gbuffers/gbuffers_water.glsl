@@ -242,6 +242,9 @@
         // Declare materials
         dataPBR material;
         getPBR(material, blockId);
+        
+        // Alpha test, discard and return immediately
+        if(material.albedo.a < ALPHA_THRESHOLD){ discard; return; }
 
         if(blockId == 11102 || blockId == 12100){
             // Fast depth linearization by DrDesten
