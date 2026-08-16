@@ -10,7 +10,7 @@ profile.MEDIUM = 中（默认）
 profile.HIGH = 高
 profile.ULTRA = 超高
 
-screen.DEBUG = Super Duper Vanilla v1.3.8
+screen.DEBUG = Super Duper Vanilla v1.3.9
 screen.DEBUG.comment = §b开发: §2Eldeston§f§r, 呈现: §9FlameRender (C) §9Studios. §e单击我打开光影调试设置! 内含颜色模式和噪波速度选项.
     option.COLOR_MODE = 颜色模式
     option.COLOR_MODE.comment = 更改反照率颜色的模式.

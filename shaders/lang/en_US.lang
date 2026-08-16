@@ -10,7 +10,7 @@ profile.MEDIUM = Medium (Default)
 profile.HIGH = High
 profile.ULTRA = Ultra
 
-screen.DEBUG = Super Duper Vanilla v1.3.8
+screen.DEBUG = Super Duper Vanilla v1.3.9
 screen.DEBUG.comment = §bDeveloped by §2Eldeston§f§r, presented by §9FlameRender (C) §9Studios. §eClick me to open shader debug settings! Contains color mode and noise speed options.
     option.COLOR_MODE = Color mode
     option.COLOR_MODE.comment = Changes albedo color mode.
