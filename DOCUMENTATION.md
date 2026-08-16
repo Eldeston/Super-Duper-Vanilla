@@ -130,11 +130,9 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 * Improve world properties calculation
 
 * Rebuild pipeline and include visualization (high priority)
-* Document the shader pipeline (high priority)
 
 * Separate iPBR for all gbuffers (medium priority)
 
-* Optimize alpha testing (high priority)
 * Optimize DOF calculations with noise (low priority)
 * Optimize block ids in block.properties (medium priority)
 * Optimize day and night transition calculations (medium priority)
@@ -152,16 +150,23 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 * Improve water absorption (low priority)
 * Improve tonemapping (medium priority)
 * Improve Distant Horizons depth
-* Improve subsurface scattering
-* Improve shadow filtering
 * Improve shader menu UI
+* Improve documentation (high priority)
+* Implement Voxy support
+
+* Find a way to separate sky light and terrain light, or implement a void sky property with permanent terrain light
+* Replace skybox clouds completely with voxelized clouds
+* Improve albedo calculation, separating it from getPBR(), also improve parallax occlusion mapping
 
 ## DONE
 * Abandon Optifine support (high priority)
 
-* Finish programming dh_generic (medium priority)
+* Optimize alpha testing (high priority)
 
+* Finish programming dh_generic (medium priority)
 * Fix dragon death beam (medium priority) ?
 * Fix FXAA, it was broken the whole time (high priority)
 
 * Implement portal depth for Nether and End
+* Improve subsurface scattering
+* Improve shadow filtering
