@@ -29,9 +29,6 @@
             if(isEyeInWater == 0) shdFactor *= min(1.0, (lmCoord.y + eyeBrightFact) * 4.0);
         #endif
 
-        // Removes the extra blobs at the edges occurring from shadow distortion
-        if(shdPos.x < 0 || shdPos.x > 1 || shdPos.y < 0 || shdPos.y > 1) return vec3(shdFactor * NLZ);
-
         // Items that are not subject to depth do not need a bias
         #if !defined HAND && !defined HAND_WATER
             // Bias mutilplier, adjusts according to the current resolution and shadow depth view scale
@@ -45,6 +42,20 @@
             shdPos += vec3(NLX, NLY, NLZ * shadowProjection[2].z) * (distortShape + 1.0) * biasFactor;
         #endif
 
+        // Removes the extra blobs at the edges occurring from shadow distortion
+        if(shdPos.x < 0 || shdPos.x > 1 || shdPos.y < 0 || shdPos.y > 1){
+            // Apply fake shadows using lightmaps
+            shdFactor *= squared(cubed(cubed(lmCoord.y)));
+
+            if(!isSubSurface) return vec3(shdFactor * NLZ);
+
+            // Approximate subsurface scattering shadowing
+            float approxShd = squared(0.5 - shdFactor * NLZ * 0.5) * 5.0;
+            vec3 approxCol = (-approxShd * maxOf(albedo)) / albedo;
+
+            return NLZ * (1.0 - ss) + exp2(approxCol);
+        }
+
         // Sample shadows, reduce whenever possible
         #ifdef SHADOW_FILTER
             #if ANTI_ALIASING >= 2
@@ -56,9 +67,9 @@
             // Multiply by TAU to get a full rotation
             dither *= TAU;
 
-            #ifdef SUBSURFACE_SCATTERING
-                // Use more samples for subsurface scattering
-                if(isSubSurface){
+            // Use more samples for subsurface scattering
+            if(isSubSurface){
+                #ifdef SUBSURFACE_SCATTERING
                     // Calculate the offset size based on the subsurface scattering material
                     float subSurfaceFactor = 1.0 - ss;
                     // Shadows in the direction of the light should be as sharp as normal shadows
@@ -66,18 +77,23 @@
                     // Switch between 1 block unit and shadow map pixel offset for shadows
                     float offSetSize = mix(shadowDistanceInv, shadowMapPixelSize, subSurfaceFactor);
                     // Sample the shadow map with the offset size and dither
-                    vec3 shdCol = getShdCol(shdPos, dither, offSetSize, 4u);
+                    vec3 shdCol = getShdCol(shdPos, dither, offSetSize, 4u) * shdFactor;
+                #else
+                    #if ANTI_ALIASING >= 2
+                        vec3 shdCol = getShdCol(shdPos, dither, offSetSize, 1u) * shdFactor;
+                    #else
+                        vec3 shdCol = getShdCol(shdPos, dither, offSetSize, 2u) * shdFactor;
+                    #endif
+                #endif
 
-                    // Calculate the subsurface shadow color based on albedo
-                    vec3 albedoCoEff = (5.0 * maxOf(albedo)) / albedo;
-                    // Normalize the shadow color and apply shdFactor
-                    float shadowTint = shdFactor / (0.0001 + maxOf(shdCol));
-                    // shadowTint = mix(shadowTint, max(NLZ, 0.0), ss);
+                // Calculate the subsurface shadow color based on albedo
+                vec3 albedoCoEff = (5.0 * maxOf(albedo)) / albedo;
+                // Normalize the shadow color and apply shdFactor
+                vec3 shadowTint = shdCol / (0.0001 + maxOf(shdCol));
 
-                    // Calculate the shadow color with an extinction coefficient based on the albedo
-                    return (exp2((shdCol - 1.0) * albedoCoEff) * shadowTint) * shdCol;
-                }
-            #endif
+                // Calculate the shadow color with an extinction coefficient based on the albedo
+                return exp2((shdCol - 1.0) * albedoCoEff) * shadowTint;
+            }
 
             // Apply diffuse shadowing for non-subsurface scattering materials
             #if ANTI_ALIASING >= 2
@@ -129,17 +145,30 @@ vec4 complexShadingForward(in dataPBR material){
         float NLZ = dot(material.normal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z));
 
         bool isShadow = NLZ > 0;
+        bool isSubSurface = material.ss > 0;
 
         #ifdef SHADOW_MAPPING
             // If the area isn't shaded, apply shadow mapping
-            vec3 shdCol = getShdMapping(material.albedo.rgb, material.normal, NLZ, material.parallaxShd, material.ss, material.ambient, isShadow, material.ss > 0);
+            vec3 shdCol = getShdMapping(material.albedo.rgb, material.normal, NLZ, material.parallaxShd, material.ss, material.ambient, isShadow, isSubSurface);
         #else
             // Calculate fake shadows
-            float shdCol = saturate(hermiteMix(0.9, 1.0, lmCoord.y)) * shdFade;
+            float shdFactor = squared(cubed(cubed(lmCoord.y))) * shdFade;
 
             #if defined PARALLAX_OCCLUSION && defined PARALLAX_SHADOW
-                shdCol *= material.parallaxShd;
+                shdFactor *= material.parallaxShd;
             #endif
+
+            float dirLight = isShadow ? NLZ : 0.0;
+
+            vec3 shdCol = vec3(shdFactor * dirLight);
+
+            if(isSubSurface){
+                // Approximate subsurface scattering shadowing
+                float approxShd = squared(1.0 - (NLZ * 0.5 + 0.5) * shdFactor) * 5.0;
+                vec3 approxCol = (-approxShd * maxOf(material.albedo.rgb)) / material.albedo.rgb;
+
+                shdCol = dirLight * (1.0 - material.ss) + exp2(approxCol);
+            }
         #endif
 
         #ifndef FORCE_DISABLE_WEATHER
