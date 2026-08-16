@@ -8,12 +8,14 @@ vec2 dcdx = dFdx(texCoord);
 vec2 dcdy = dFdy(texCoord);
 
 #ifdef PARALLAX_OCCLUSION
-    vec2 getParallaxOffset(in vec3 dirT){ return dirT.xy * (PARALLAX_DEPTH / dirT.z); }
+    const uint parallaxSteps = uint(PARALLAX_STEPS);
 
-    float getHeightMap(in vec2 uv){ return textureGrad(normals, fract(uv) * vTexCoordScale + vTexCoordPos, dcdx, dcdy).a; }
+    vec2 parallaxScaleUv(in vec2 uv){ return fract(uv) * vTexCoordScale + vTexCoordPos; }
+
+    float getHeightMap(in vec2 uv){ return textureGrad(normals, parallaxScaleUv(uv), dcdx, dcdy).a; }
 
     vec2 parallaxUv(in vec2 startUv, in vec2 endUv, out vec3 currPos){
-        const float stepSize = 1.0 / PARALLAX_STEPS;
+        const float stepSize = 1.0 / parallaxSteps;
         endUv *= stepSize * PARALLAX_DEPTH;
 
         float startDepth = 1.0;
@@ -23,7 +25,7 @@ vec2 dcdy = dFdy(texCoord);
         }
 
         /*
-        for(int i = 0; i < PARALLAX_STEPS; i++){
+        for(int i = 0; i < parallaxSteps; i++){
             if(getHeightMap(startUv) >= startDepth) break;
             startDepth -= stepSize;
             startUv += endUv;
@@ -38,6 +40,8 @@ vec2 dcdy = dFdy(texCoord);
     }
 
     #if defined PARALLAX_SHADOW && defined WORLD_LIGHT
+        vec2 getParallaxOffset(in vec3 dirT){ return dirT.xy * (PARALLAX_DEPTH / dirT.z); }
+
         float parallaxShadow(in vec3 currPos, in vec2 lightDir) {
             const float stepSize = 1.0 / PARALLAX_SHADOW_STEPS;
             vec2 stepOffset = stepSize * lightDir;
@@ -102,7 +106,7 @@ void getPBR(inout dataPBR material, in int id){
 
         vec3 currPos;
 
-        if(hasFallback) texUv = fract(parallaxUv(vTexCoord, viewDir.xy / -viewDir.z, currPos)) * vTexCoordScale + vTexCoordPos;
+        if(hasFallback) texUv = parallaxScaleUv(parallaxUv(vTexCoord, viewDir.xy / -viewDir.z, currPos));
     #endif
 
     // Assign albedo
