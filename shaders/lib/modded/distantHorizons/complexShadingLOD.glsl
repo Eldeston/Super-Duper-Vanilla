@@ -40,7 +40,7 @@ vec4 complexShadingLOD(in dataPBR material){
 
         if(material.ss > 0){
             // Approximate subsurface scattering shadowing
-            float approxShd = squared(1.0 - (NLZ * 0.5 + 0.5) * shdFactor) * 5.0;
+            float approxShd = cubed(1.0 - (NLZ * 0.5 + 0.5) * shdFactor) * 5.0;
             vec3 approxCol = (-approxShd * maxOf(material.albedo.rgb)) / material.albedo.rgb;
 
             shdCol = dirLight * (1.0 - material.ss) + exp2(approxCol);

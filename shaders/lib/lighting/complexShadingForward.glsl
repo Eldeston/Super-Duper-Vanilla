@@ -50,7 +50,7 @@
             if(!isSubSurface) return vec3(shdFactor * NLZ);
 
             // Approximate subsurface scattering shadowing
-            float approxShd = squared(0.5 - shdFactor * NLZ * 0.5) * 5.0;
+            float approxShd = cubed(1.0 - (NLZ * 0.5 + 0.5) * shdFactor) * 5.0;
             vec3 approxCol = (-approxShd * maxOf(albedo)) / albedo;
 
             return NLZ * (1.0 - ss) + exp2(approxCol);
@@ -164,7 +164,7 @@ vec4 complexShadingForward(in dataPBR material){
 
             if(isSubSurface){
                 // Approximate subsurface scattering shadowing
-                float approxShd = squared(1.0 - (NLZ * 0.5 + 0.5) * shdFactor) * 5.0;
+                float approxShd = cubed(1.0 - (NLZ * 0.5 + 0.5) * shdFactor) * 5.0;
                 vec3 approxCol = (-approxShd * maxOf(material.albedo.rgb)) / material.albedo.rgb;
 
                 shdCol = dirLight * (1.0 - material.ss) + exp2(approxCol);
