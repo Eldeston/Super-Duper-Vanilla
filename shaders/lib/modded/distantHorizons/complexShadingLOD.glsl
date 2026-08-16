@@ -32,27 +32,30 @@ vec4 complexShadingLOD(in dataPBR material){
         bool isShadow = NLZ > 0;
 
         // Calculate fake shadows
-        float shdCol = saturate(hermiteMix(0.9, 1.0, lmCoord.y)) * shdFade;
+        float shdFactor = squared(cubed(cubed(lmCoord.y))) * shdFade;
 
         float dirLight = isShadow ? NLZ : 0.0;
 
-        #ifdef SUBSURFACE_SCATTERING
-            // Diffuse with simple SS approximation
-            if(material.ss > 0) dirLight += (1.0 - dirLight) * material.ambient * material.ss * 0.5;
-        #endif
+        vec3 shdCol = vec3(shdFactor * dirLight);
 
-        float finalShadowCol = shdCol * dirLight;
+        if(material.ss > 0){
+            // Approximate subsurface scattering shadowing
+            float approxShd = squared(1.0 - (NLZ * 0.5 + 0.5) * shdFactor) * 5.0;
+            vec3 approxCol = (-approxShd * maxOf(material.albedo.rgb)) / material.albedo.rgb;
+
+            shdCol = dirLight * (1.0 - material.ss) + exp2(approxCol);
+        }
 
         #ifndef FORCE_DISABLE_WEATHER
             // Approximate rain diffusing light shadow
             float rainDiffuseAmount = rainStrength * 0.5;
-            finalShadowCol *= 1.0 - rainDiffuseAmount;
+            shdCol *= 1.0 - rainDiffuseAmount;
 
-            finalShadowCol += rainDiffuseAmount * material.ambient * skyLightSquared * (1.0 - shdFade);
+            shdCol += rainDiffuseAmount * material.ambient * skyLightSquared * (1.0 - shdFade);
         #endif
 
         // Calculate and add shadow diffuse
-        totalIllumination += toLinear(sRGBLightCol) * finalShadowCol;
+        totalIllumination += toLinear(sRGBLightCol) * shdCol;
     #endif
 
     // Get view direction
