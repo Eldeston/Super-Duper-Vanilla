@@ -80,9 +80,9 @@
                     vec3 shdCol = getShdCol(shdPos, dither, offSetSize, 4u) * shdFactor;
                 #else
                     #if ANTI_ALIASING >= 2
-                        vec3 shdCol = getShdCol(shdPos, dither, offSetSize, 1u) * shdFactor;
+                        vec3 shdCol = getShdCol(shdPos, dither, shadowMapPixelSize, 1u) * shdFactor;
                     #else
-                        vec3 shdCol = getShdCol(shdPos, dither, offSetSize, 2u) * shdFactor;
+                        vec3 shdCol = getShdCol(shdPos, dither, shadowMapPixelSize, 2u) * shdFactor;
                     #endif
                 #endif
 

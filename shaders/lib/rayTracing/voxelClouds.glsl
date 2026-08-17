@@ -62,7 +62,7 @@ vec2 voxelClouds(in vec3 nFeetPlayerPos, in vec3 camPos, in float sphereFar){
             float cloudShade = -currentPosY * cloudFog;
 
             // I'm so pro
-            // cloudOutput = max(cloudOutput, step(0.5, currCloudData) * cloudShade);
+            // cloudOutput = max(cloudOutput, vec2(currCloudData) * cloudShade);
             if(currCloudData.x) cloudOutput.x = max(cloudOutput.x, cloudShade);
             if(currCloudData.y) cloudOutput.y = max(cloudOutput.y, cloudShade);
         }
