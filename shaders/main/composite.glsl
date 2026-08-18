@@ -31,8 +31,13 @@
             flat out vec3 moonCol;
         #endif
 
-        #if CLOUD_TYPE >= 1 && !defined FORCE_DISABLE_CLOUDS
+        #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS
             flat out vec3 cloudCol;
+            flat out vec3 cloudStartPos0;
+
+            #ifdef DOUBLE_LAYERED_CLOUDS
+                flat out vec3 cloudStartPos1;
+            #endif
         #endif
     #endif
 
@@ -46,14 +51,20 @@
     #ifndef FORCE_DISABLE_DAY_CYCLE
         uniform float dayCycle;
         uniform float twilightPhase;
-
-        #if CLOUD_TYPE >= 1 && !defined FORCE_DISABLE_CLOUDS
-            uniform float dayCycleAdjust;
-        #endif
     #endif
 
     #ifdef WORLD_VANILLA_FOG_COLOR
         uniform vec3 fogColor;
+    #endif
+
+    #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
+        uniform float fragmentFrameTime;
+        
+        uniform vec3 cameraPosition;
+        
+        #ifndef FORCE_DISABLE_DAY_CYCLE
+            uniform float dayCycleAdjust;
+        #endif
     #endif
 
     void main(){
@@ -63,17 +74,9 @@
         skyCol = toLinear(SKY_COLOR_DATA_BLOCK);
 
         #ifdef WORLD_LIGHT
-            #if CLOUD_TYPE >= 1 && !defined FORCE_DISABLE_CLOUDS
-                cloudCol = (toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash) + skyCol;
-            #endif
-
             #ifdef FORCE_DISABLE_DAY_CYCLE
                 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
                 lightCol = toLinear(sRGBLightCol);
-
-                #if CLOUD_TYPE >= 1 && !defined FORCE_DISABLE_CLOUDS
-                    cloudCol += lightCol;
-                #endif
             #else
                 sRGBSunCol = SUN_COL_DATA_BLOCK;
                 sunCol = toLinear(sRGBSunCol);
@@ -82,9 +85,24 @@
 
                 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK1(sRGBSunCol, sRGBMoonCol);
                 lightCol = toLinear(sRGBLightCol);
+            #endif
 
-                #if CLOUD_TYPE >= 1 && !defined FORCE_DISABLE_CLOUDS
+            #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS
+                cloudCol = (toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash) + skyCol;
+
+                #ifdef FORCE_DISABLE_DAY_CYCLE
+                    cloudCol += lightCol;
+                #else
                     cloudCol += mix(moonCol, sunCol, dayCycleAdjust);
+                #endif
+
+                // Get the 1st layer of volumetric clouds position
+                // Note that the clouds needs to move westward just as in vanilla
+                cloudStartPos0 = vec3(cameraPosition.x + fragmentFrameTime, cameraPosition.y - volumetricCloudHeight, cameraPosition.z);
+
+                #ifdef DOUBLE_LAYERED_CLOUDS
+                    // Get the 2nd layer of volumetric clouds position by reusing the 1st layer's position
+                    cloudStartPos1 = vec3(cloudStartPos0.x - 2064.0, cloudStartPos0.y - SECOND_CLOUD_HEIGHT, cloudStartPos0.z - 2064.0);
                 #endif
             #endif
         #endif
@@ -112,8 +130,14 @@
             flat in vec3 moonCol;
         #endif
 
-        #if CLOUD_TYPE >= 1 && !defined FORCE_DISABLE_CLOUDS
+        #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS
             flat in vec3 cloudCol;
+
+            flat in vec3 cloudStartPos0;
+
+            #ifdef DOUBLE_LAYERED_CLOUDS
+                flat in vec3 cloudStartPos1;
+            #endif
         #endif
     #endif
 
@@ -124,7 +148,6 @@
     uniform float borderFar;
 
     uniform float far;
-    uniform float near;
 
     uniform float darkEffectFactor;
     uniform float darknessLightFactor;
@@ -217,13 +240,11 @@
     #endif
 
     #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
+        uniform float cloudDistantFar;
+
         uniform sampler2D colortex0;
 
-        #if CLOUD_TYPE == 2
-            uniform float cloudDistantFar;
-
-            #include "/lib/rayTracing/voxelClouds.glsl"
-        #endif
+        #include "/lib/rayTracing/voxelClouds.glsl"
     #endif
 
     #include "/lib/utility/noiseFunctions.glsl"
@@ -315,7 +336,7 @@
         // Apply darkness pulsing effect
         sceneColOut *= 1.0 - darknessLightFactor;
 
-        #if defined WORLD_LIGHT || !defined FORCE_DISABLE_CLOUDS && CLOUD_TYPE == 2
+        #if defined WORLD_LIGHT || CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
             bool isSky = depth == 1;
 
             float feetPlayerDot = lengthSquared(feetPlayerPos);
@@ -331,21 +352,14 @@
                 sceneColOut += getVolumetricLight(nFeetPlayerPos, feetPlayerDist, fogFactor, borderFog, dither.x, isSky);
         #endif
 
-        #if CLOUD_TYPE == 2 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
+        #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
             // Find the farthest distance to the clouds, capped by the terrain distance (with an epilipson to avoid z-fighting)
             float sphereFar = isSky || feetPlayerDist > cloudDistantFar ? cloudDistantFar : feetPlayerDist * 1.015625;
 
-            // Get the 1st layer of volumetric clouds position
-            // Note that the clouds needs to move westward just as in vanilla
-            vec3 cloudStartPos0 = vec3(cameraPosition.x + fragmentFrameTime, cameraPosition.y - volumetricCloudHeight, cameraPosition.z);
-
-            // Get the volumetric clouds
+            // Get voxelized clouds
             vec2 cloudData = voxelClouds(nFeetPlayerPos, cloudStartPos0, sphereFar);
 
             #ifdef DOUBLE_LAYERED_CLOUDS
-                // Get the 2nd layer of volumetric clouds position by reusing the 1st layer's position
-                vec3 cloudStartPos1 = vec3(cloudStartPos0.x - 2064.0, cloudStartPos0.y - SECOND_CLOUD_HEIGHT, cloudStartPos0.z - 2064.0);
-
                 // Variate by swizzling the 2 cloud channels
                 // cloudData = voxelClouds(nFeetPlayerPos, cloudStartPos1, sphereFar).yx * (1.0 - cloudData * volumetricDepthInverse) + cloudData;
                 cloudData = max(voxelClouds(nFeetPlayerPos, cloudStartPos1, sphereFar).yx, cloudData);

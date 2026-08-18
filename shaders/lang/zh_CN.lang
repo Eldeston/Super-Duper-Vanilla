@@ -191,8 +191,7 @@ screen.ATMOSPHERICS.comment = §6大气系统效果, 包括日月, 云, 雾, 边
     option.CLOUD_TYPE = 云样式
     option.CLOUD_TYPE.comment = 更改云的样式.
         value.CLOUD_TYPE.0 = 原版
-        value.CLOUD_TYPE.1 = 天空盒
-        value.CLOUD_TYPE.2 = 体积
+        value.CLOUD_TYPE.1 = 体积
 
     option.SUN_MOON_INTENSITY = 日月强度
     option.SUN_MOON_INTENSITY.comment = 太阳或月亮的强度.也会影响镜面反射.

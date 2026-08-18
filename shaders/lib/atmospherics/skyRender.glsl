@@ -11,72 +11,6 @@ float getSunMoonShape(in vec2 skyPos){
     return min(1.0, exp2((WORLD_SUN_MOON_SIZE - pow(abs(skyPos.x * skyPos.x * skyPos.x) + abs(skyPos.y * skyPos.y * skyPos.y), 0.33333333)) * 256.0));
 }
 
-#if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
-    // Depth size / cloud steps
-    const uint skyBoxCloudSteps = uint(SKYBOX_CLOUD_STEPS);
-    const float cloudStepSize = 1.0 / skyBoxCloudSteps;
-    const float depthSize = SKYBOX_CLOUD_DEPTH * cloudStepSize;
-
-    vec2 cloudParallaxDynamic(in vec2 start, in vec2 cameraPos){
-        // Apply depth size
-        vec2 end = start * depthSize;
-
-        // Scales and moves the clouds based on world position
-        start += cameraPos * 0.0625;
-
-        vec2 cloudData = vec2(0);
-        for(uint i = 1u; i <= skyBoxCloudSteps; i++){
-            vec2 cloudMap = texelFetch(colortex0, ivec2(start) & 255, 0).xy;
-            if(cloudMap.x > 0.5) cloudData.x = i;
-            if(cloudMap.y > 0.5) cloudData.y = i;
-            start -= end;
-        }
-
-        return cloudData;
-    }
-
-    // Sky clouds render
-    vec3 getSkyClouds(in vec3 nEyePlayerPos, in vec3 currSkyCol){
-        float cloudHeightFade = nEyePlayerPos.y - 0.1;
-
-        #ifdef FORCE_DISABLE_WEATHER
-            cloudHeightFade *= 6.0;
-        #else
-            cloudHeightFade -= rainStrength * 0.2;
-            cloudHeightFade *= 6.0 - rainStrength * 5.0;
-        #endif
-
-        if(cloudHeightFade <= 0) return currSkyCol;
-        if(cloudHeightFade > 1) cloudHeightFade = 1.0;
-
-        vec2 planeUv = nEyePlayerPos.xz * (6.0 / nEyePlayerPos.y);
-
-        vec2 planePos = vec2(cameraPosition.x + fragmentFrameTime, cameraPosition.z);
-
-        vec2 cloudData = cloudParallaxDynamic(planeUv, planePos);
-
-        #ifdef DOUBLE_LAYERED_CLOUDS
-            cloudData = max(cloudParallaxDynamic(planeUv * 2.0, planePos - 2064.0).yx * 0.25, cloudData);
-        #endif
-
-        #ifdef DYNAMIC_CLOUDS
-            float fadeTime = saturate(cos(fragmentFrameTime * FADE_SPEED) + 0.5);
-
-            float clouds = mix(mix(cloudData.x, cloudData.y, fadeTime), max(cloudData.x, cloudData.y), rainStrength);
-        #else
-            float clouds = mix(cloudData.x, max(cloudData.x, cloudData.y), rainStrength);
-        #endif
-
-        clouds *= cloudHeightFade * cloudStepSize;
-
-        #if CLOUD_TYPE >= 1 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
-            currSkyCol = mix(currSkyCol, cloudCol, clouds);
-        #endif
-
-        return currSkyCol;
-    }
-#endif
-
 vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){
     // Apply ambient lighting with sky col (not realistic I know)
     vec3 currSkyCol = skyCol;
@@ -222,9 +156,25 @@ vec3 getSkyReflection(in vec3 reflectViewDir){
 
     vec3 finalCol = getSkyHalf(reflectPlayerDir, skyPos, getSkyBasic(reflectPlayerDir.y, skyPos.z));
 
-    // Skybox clouds should render in reflections when volumetrics are on
     #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
-        finalCol = getSkyClouds(reflectPlayerDir, finalCol);
+        // Get voxelized clouds
+        vec2 cloudData = voxelClouds(reflectPlayerDir, cloudStartPos0, cloudDistantFar);
+
+        #ifdef DOUBLE_LAYERED_CLOUDS
+            // Variate by swizzling the 2 cloud channels
+            // cloudData = voxelClouds(nFeetPlayerPos, cloudStartPos1, cloudDistantFar).yx * (1.0 - cloudData * volumetricDepthInverse) + cloudData;
+            cloudData = max(voxelClouds(reflectPlayerDir, cloudStartPos1, cloudDistantFar).yx, cloudData);
+        #endif
+
+        #ifdef DYNAMIC_CLOUDS
+            float fadeTime = saturate(cos(fragmentFrameTime * FADE_SPEED) + 0.5);
+
+            float cloudFinal = mix(mix(cloudData.x, cloudData.y, fadeTime), max(cloudData.x, cloudData.y), rainStrength) * volumetricDepthInverse;
+        #else
+            float cloudFinal = mix(cloudData.x, max(cloudData.x, cloudData.y), rainStrength) * volumetricDepthInverse;
+        #endif
+
+        finalCol = mix(finalCol, cloudCol, cloudFinal);
     #endif
 
     // Do a simple void gradient calculation when underwater
@@ -291,10 +241,6 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol)
 
     // Combine sky box color and sky half color
     currSkyCol = getSkyHalf(nEyePlayerPos, skyPos, currSkyCol);
-
-    #if CLOUD_TYPE == 1 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
-        currSkyCol = getSkyClouds(nEyePlayerPos, currSkyCol);
-    #endif
 
     // Do a simple void gradient calculation when underwater
     if(isEyeInWater == 1) return currSkyCol * saturate(nEyePlayerPos.y * 1.66666667 - 0.16666667);

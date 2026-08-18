@@ -31,8 +31,13 @@
             flat out vec3 moonCol;
         #endif
 
-        #if CLOUD_TYPE >= 1 && !defined FORCE_DISABLE_CLOUDS
+        #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS
             flat out vec3 cloudCol;
+            flat out vec3 cloudStartPos0;
+
+            #ifdef DOUBLE_LAYERED_CLOUDS
+                flat out vec3 cloudStartPos1;
+            #endif
         #endif
     #endif
 
@@ -46,14 +51,20 @@
     #ifndef FORCE_DISABLE_DAY_CYCLE
         uniform float dayCycle;
         uniform float twilightPhase;
-
-        #if CLOUD_TYPE >= 1 && !defined FORCE_DISABLE_CLOUDS
-            uniform float dayCycleAdjust;
-        #endif
     #endif
 
     #ifdef WORLD_VANILLA_FOG_COLOR
         uniform vec3 fogColor;
+    #endif
+
+    #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
+        uniform float fragmentFrameTime;
+        
+        uniform vec3 cameraPosition;
+        
+        #ifndef FORCE_DISABLE_DAY_CYCLE
+            uniform float dayCycleAdjust;
+        #endif
     #endif
 
     void main(){
@@ -63,17 +74,9 @@
         skyCol = (toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash) + toLinear(SKY_COLOR_DATA_BLOCK);
 
         #ifdef WORLD_LIGHT
-            #if CLOUD_TYPE >= 1 && !defined FORCE_DISABLE_CLOUDS
-                cloudCol = skyCol;
-            #endif
-
             #ifdef FORCE_DISABLE_DAY_CYCLE
                 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
                 lightCol = toLinear(sRGBLightCol);
-
-                #if CLOUD_TYPE >= 1 && !defined FORCE_DISABLE_CLOUDS
-                    cloudCol += lightCol;
-                #endif
             #else
                 sRGBSunCol = SUN_COL_DATA_BLOCK;
                 sunCol = toLinear(sRGBSunCol);
@@ -82,9 +85,24 @@
 
                 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK1(sRGBSunCol, sRGBMoonCol);
                 lightCol = toLinear(sRGBLightCol);
+            #endif
 
-                #if CLOUD_TYPE >= 1 && !defined FORCE_DISABLE_CLOUDS
+            #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS
+                cloudCol = (toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash) + skyCol;
+
+                #ifdef FORCE_DISABLE_DAY_CYCLE
+                    cloudCol += lightCol;
+                #else
                     cloudCol += mix(moonCol, sunCol, dayCycleAdjust);
+                #endif
+
+                // Get the 1st layer of volumetric clouds position
+                // Note that the clouds needs to move westward just as in vanilla
+                cloudStartPos0 = vec3(cameraPosition.x + fragmentFrameTime, cameraPosition.y - volumetricCloudHeight, cameraPosition.z);
+
+                #ifdef DOUBLE_LAYERED_CLOUDS
+                    // Get the 2nd layer of volumetric clouds position by reusing the 1st layer's position
+                    cloudStartPos1 = vec3(cloudStartPos0.x - 2064.0, cloudStartPos0.y - SECOND_CLOUD_HEIGHT, cloudStartPos0.z - 2064.0);
                 #endif
             #endif
         #endif
@@ -112,8 +130,14 @@
             flat in vec3 moonCol;
         #endif
 
-        #if CLOUD_TYPE >= 1 && !defined FORCE_DISABLE_CLOUDS
+        #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS
             flat in vec3 cloudCol;
+
+            flat in vec3 cloudStartPos0;
+
+            #ifdef DOUBLE_LAYERED_CLOUDS
+                flat in vec3 cloudStartPos1;
+            #endif
         #endif
     #endif
 
@@ -127,7 +151,6 @@
     uniform float near;
 
     uniform float darkEffectFactor;
-    uniform float darknessLightFactor;
 
     uniform float fragmentFrameTime;
 
@@ -169,10 +192,6 @@
         uniform float dayCycleAdjust;
     #endif
 
-    #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
-        uniform sampler2D colortex0;
-    #endif
-
     #ifdef DISTANT_HORIZONS
         uniform mat4 dhProjectionInverse;
 
@@ -209,6 +228,14 @@
         uniform sampler2D colortex5;
 
         #include "/lib/utility/prevProjectionFunctions.glsl"
+    #endif
+
+    #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
+        uniform float cloudDistantFar;
+
+        uniform sampler2D colortex0;
+
+        #include "/lib/rayTracing/voxelClouds.glsl"
     #endif
 
     #ifdef SSAO
