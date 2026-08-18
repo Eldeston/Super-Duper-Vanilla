@@ -1,4 +1,4 @@
-## Language format v1.1.2
+## Language format v1.1.3
 ## All other .lang files must update to the latest language format version on this main .lang file
 
 ## Profiles
@@ -191,8 +191,7 @@ screen.ATMOSPHERICS.comment = §6Atmospheric effects including sun/moon, clouds,
     option.CLOUD_TYPE = Cloud type
     option.CLOUD_TYPE.comment = Changes cloud type.
         value.CLOUD_TYPE.0 = Vanilla
-        value.CLOUD_TYPE.1 = Skybox
-        value.CLOUD_TYPE.2 = Voxel
+        value.CLOUD_TYPE.1 = Voxel
 
     option.SUN_MOON_INTENSITY = Sun/moon intensity
     option.SUN_MOON_INTENSITY.comment = The sun or moon's intensity. Also affects specular reflections.
