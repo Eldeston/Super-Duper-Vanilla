@@ -43,10 +43,33 @@
         uniform sampler2D colortex0;
 
         uniform float pixelHeight;
+
+        bool isBloomTile(in vec3 bloomCol, in vec2 bloomPos, in int scale, in int LOD){
+            // Get bloom UV
+            vec2 bloomUv = bloomPos * scale;
+
+            // Apply padding
+            if(bloomUv.x < 0 || bloomUv.x > 1 || bloomUv.y < 0 || bloomUv.y > 1) return true;
+
+            // Output bloom
+            return false;
+        }
     #endif
 
     void main(){
         #ifdef BLOOM
+            // Skip empty spaces
+            if(
+                isBloomTile(vec3(0), texCoord, 4, 2) &&
+                isBloomTile(bloomColOut, vec2(texCoord.x, texCoord.y - 0.2578125), 8, 3) &&
+                isBloomTile(bloomColOut, vec2(texCoord.x - 0.12890625, texCoord.y - 0.2578125), 16, 4) &&
+                isBloomTile(bloomColOut, vec2(texCoord.x - 0.1953125, texCoord.y - 0.2578125), 32, 5) &&
+                isBloomTile(bloomColOut, vec2(texCoord.x - 0.12890625, texCoord.y - 0.328125), 64, 6)
+            ){
+                bloomColOut = vec3(0);
+                return;
+            }
+
             // Optimized 9x9 gaussian blur with only 5 texture fetches
             // Technique from https://www.rastergrid.com/blog/2010/09/efficient-gaussian-blur-with-linear-sampling/
             
