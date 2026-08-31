@@ -162,16 +162,16 @@ vec3 getSkyReflection(in vec3 reflectViewDir){
 
         #ifdef DOUBLE_LAYERED_CLOUDS
             // Variate by swizzling the 2 cloud channels
-            // cloudData = voxelClouds(nFeetPlayerPos, cloudStartPos1, cloudDistantFar).yx * (1.0 - cloudData * volumetricDepthInverse) + cloudData;
+            // cloudData = voxelClouds(nFeetPlayerPos, cloudStartPos1, cloudDistantFar).yx * (1.0 - cloudData * cloudDepthInverse) + cloudData;
             cloudData = max(voxelClouds(reflectPlayerDir, cloudStartPos1, cloudDistantFar).yx, cloudData);
         #endif
 
         #ifdef DYNAMIC_CLOUDS
             float fadeTime = saturate(cos(fragmentFrameTime * FADE_SPEED) + 0.5);
 
-            float cloudFinal = mix(mix(cloudData.x, cloudData.y, fadeTime), max(cloudData.x, cloudData.y), rainStrength) * volumetricDepthInverse;
+            float cloudFinal = mix(mix(cloudData.x, cloudData.y, fadeTime), max(cloudData.x, cloudData.y), rainStrength) * cloudDepthInverse;
         #else
-            float cloudFinal = mix(cloudData.x, max(cloudData.x, cloudData.y), rainStrength) * volumetricDepthInverse;
+            float cloudFinal = mix(cloudData.x, max(cloudData.x, cloudData.y), rainStrength) * cloudDepthInverse;
         #endif
 
         finalCol = mix(finalCol, cloudCol, cloudFinal);

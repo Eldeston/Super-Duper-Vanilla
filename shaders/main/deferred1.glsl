@@ -98,7 +98,7 @@
 
                 // Get the 1st layer of volumetric clouds position
                 // Note that the clouds needs to move westward just as in vanilla
-                cloudStartPos0 = vec3(cameraPosition.x + fragmentFrameTime, cameraPosition.y - volumetricCloudHeight, cameraPosition.z);
+                cloudStartPos0 = vec3(cameraPosition.x + fragmentFrameTime, cameraPosition.y - cloudHeight, cameraPosition.z);
 
                 #ifdef DOUBLE_LAYERED_CLOUDS
                     // Get the 2nd layer of volumetric clouds position by reusing the 1st layer's position

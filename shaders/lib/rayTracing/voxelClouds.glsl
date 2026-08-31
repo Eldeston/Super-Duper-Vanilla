@@ -43,10 +43,9 @@ vec2 voxelClouds(in vec3 nFeetPlayerPos, in vec3 camPos, in float sphereFar){
     float closestDist = 0.0;
     vec2 cloudOutput = vec2(0);
 
-    while(closestDist < voxelDist){
-        // Calculate the step's axis first, also fixes backface rendering
-        uvec2 stepAxis = uvec2(equal(nextDist, vec2(closestDist)));
-
+    // The actual cap is 64-90 considering the settings used,
+    // but I got lazy and capped it at 100 instead fixing the shader crash at startup
+    for(uint i = 0u; closestDist < voxelDist && i < 100u; i++){
         // Sample cloud pixels (same texture, same indexing)
         bvec2 currCloudData = lessThan(vec2(0.5), texelFetch(colortex0, ivec2(voxelPos) & 255, 0).xy);
 
@@ -57,9 +56,9 @@ vec2 voxelClouds(in vec3 nFeetPlayerPos, in vec3 camPos, in float sphereFar){
             // Local vertical shading
             float currentPosY = camPos.y + nFeetPlayerPos.y * currDistance;
             // Cloud fog
-            float cloudFog = 1.0 - currDistance * invCloudFar;
+            float cloudFog = currDistance * invCloudFar - 1.0;
             // Cloud shading
-            float cloudShade = -currentPosY * cloudFog;
+            float cloudShade = currentPosY * cloudFog;
 
             // I'm so pro
             // cloudOutput = max(cloudOutput, vec2(currCloudData) * cloudShade);
@@ -67,8 +66,12 @@ vec2 voxelClouds(in vec3 nFeetPlayerPos, in vec3 camPos, in float sphereFar){
             if(currCloudData.y) cloudOutput.y = max(cloudOutput.y, cloudShade);
         }
 
+        // Calculate the step's axis first, also fixes backface rendering
+        uvec2 stepAxis = uvec2(equal(nextDist, vec2(closestDist)));
         // Find the closest voxel distance
         closestDist = minOf(nextDist);
+
+        // Continue voxel tracing!
         voxelPos += stepAxis * stepDir;
         nextDist += stepAxis * stepSizes;
     }
@@ -83,9 +86,9 @@ vec2 voxelClouds(in vec3 nFeetPlayerPos, in vec3 camPos, in float sphereFar){
         // If any of the voxels is populated...shading time!
         if(currCloudData.x || currCloudData.y){
             // Fog is really easy to calculate at this point
-            float cloudFog = 1.0 - rayEndDistance * invCloudFar;
+            float cloudFog = rayEndDistance * invCloudFar - 1.0;
             // Cloud shading
-            float cloudShade = -planePos.y * cloudFog;
+            float cloudShade = planePos.y * cloudFog;
 
             // I'm so pro (3)
             // cloudOutput = max(cloudOutput, step(0.5, currCloudData) * cloudShade);
