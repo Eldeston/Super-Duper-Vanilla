@@ -1,3 +1,5 @@
+#include "shdSampleVar.glsl"
+
 // Shadow opaque
 uniform sampler2DShadow shadowtex0;
 
