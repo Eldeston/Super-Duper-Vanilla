@@ -225,12 +225,6 @@ screen.ATMOSPHERICS.comment = §6Atmospheric effects including sun/moon, clouds,
         option.CLOUD_THICKNESS = Cloud thickness
         option.CLOUD_THICKNESS.comment = Determines the story mode clouds' thickness in blocks.
 
-        option.SKYBOX_CLOUD_STEPS = Skybox steps
-        option.SKYBOX_CLOUD_STEPS.comment = Skybox story mode clouds steps. Increasing may improve quality and demand more performance.
-
-        option.SKYBOX_CLOUD_DEPTH = Skybox depth
-        option.SKYBOX_CLOUD_DEPTH.comment = Determines the skybox story mode clouds' thickness in value.
-
     option.SKYBOX_BRIGHTNESS = Skybox brightness
     option.SKYBOX_BRIGHTNESS.comment = Sky box brightness.
 

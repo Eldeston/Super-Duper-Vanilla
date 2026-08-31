@@ -228,12 +228,6 @@ screen.ATMOSPHERICS.comment = §6大气系统效果, 包括日月, 云, 雾, 边
         option.VOLUMETRIC_CLOUD_DEPTH = 体积云深度
         option.VOLUMETRIC_CLOUD_DEPTH.comment = 决定故事模式云的厚度.
 
-        option.SKYBOX_CLOUD_STEPS = 天空盒云步进
-        option.SKYBOX_CLOUD_STEPS.comment = 天空盒云步进次数. 增加可能提升云的质量且需要更多性能.
-
-        option.SKYBOX_CLOUD_DEPTH = 天空盒云深度
-        option.SKYBOX_CLOUD_DEPTH.comment = 决定天空盒云的厚度.
-
     option.SKYBOX_BRIGHTNESS = 天空盒亮度
     option.SKYBOX_BRIGHTNESS.comment = 天空盒的亮度.
 
