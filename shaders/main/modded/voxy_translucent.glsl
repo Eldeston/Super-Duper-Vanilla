@@ -22,96 +22,53 @@
     layout(location = 2) out vec3 albedoDataOut; // colortex2
     layout(location = 3) out vec3 materialDataOut; // colortex3
 
-    flat in int blockId;
-
-    flat in vec2 lmCoord;
-
-    in float vertexViewDist;
-
-    in vec2 waterNoiseUv;
-
-    in vec3 vertexFeetPlayerPos;
-    in vec3 vertexWorldPos;
-
-    uniform int isEyeInWater;
-
-    uniform float far;
-
-    uniform float nightVision;
-    uniform float lightningFlash;
-
-    uniform mat4 gbufferProjectionInverse;
-
-    uniform sampler2D depthtex0;
-    uniform sampler2D dhDepthTex1;
-
-    #ifndef FORCE_DISABLE_WEATHER
-        uniform float rainStrength;
-    #endif
-
-    #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
-        uniform float dhNearPlane;
-    #endif
-
-    #ifndef FORCE_DISABLE_DAY_CYCLE
-        uniform float dayCycle;
-        uniform float twilightPhase;
-    #endif
-
-    #ifdef WORLD_VANILLA_FOG_COLOR
-        uniform vec3 fogColor;
-    #endif
-
     #ifdef WORLD_CUSTOM_SKYLIGHT
         const float eyeBrightFact = WORLD_CUSTOM_SKYLIGHT;
     #else
-        uniform float eyeSkylight;
-        
         float eyeBrightFact = eyeSkylight;
     #endif
 
     #ifdef WORLD_LIGHT
-        uniform float shdFade;
-
-        uniform mat4 shadowModelView;
-
         #include "/lib/lighting/GGX.glsl"
     #endif
 
     #include "/lib/PBR/dataStructs.glsl"
 
-    #include "/lib/utility/noiseFunctions.glsl"
-
     #if defined WATER_NORMAL || defined WATER_NOISE
-        uniform float fragmentFrameTime;
-
         #include "/lib/surface/water.glsl"
     #endif
 
     #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
-        uniform float isPrecipitationRain;
-
         #include "/lib/PBR/enviroPBR.glsl"
     #endif
 
-    #include "/lib/modded/distantHorizons/complexShadingLOD.glsl"
+    #include "/lib/utility/projectionFunctions.glsl"
+
+    #include "/lib/modded/distantHorizons+voxy/complexShadingLOD.glsl"
 
     void voxy_emitFragment(VoxyFragmentParameters parameters){
+        // Get screen position
+        vec3 screenPos = gl_FragCoord.xyz;
+        // Get view position
+        vec3 viewPos = getViewPos(vxProjInv, screenPos);
+        // Get eye player position
+        vec3 feetPlayerPos = mat3(vxModelViewInv) * viewPos + vxModelViewInv[3].xyz;
+        // Get world position
+        vec3 worldPos = feetPlayerPos + cameraPosition;
+
         // Prevents overdraw
-        if(far > vertexViewDist){ discard; return; }
+        if(48000.0 > length(viewPos)){ discard; return; }
 
         // Fix for Distant Horizons translucents rendering over real geometry
         if(getDepth(depthtex0, ivec2(gl_FragCoord.xy), 0) != 1.0){ discard; return; }
 
-        vec3 voxyNormal = vec3(uint((face >> 1) == 2), uint((face >> 1) == 0), uint((face >> 1) == 1)) * (float(int(face) & 1) * 2 - 1);
-        vec2 noiseUv = vertexWorldPos.zy * voxyNormal.x + vertexWorldPos.xz * voxyNormal.y + vertexWorldPos.xy * voxyNormal.z;
-        vec2 noiseCol = texelFetch(noisetex, ivec2(noiseUv * 4.0) & 255, 0).xy;
-        float dhNoise = (noiseCol.x + noiseCol.y) * 0.2 + 0.8;
+        vec3 voxyNormal = vec3(uint((parameters.face >> 1) == 2), uint((parameters.face >> 1) == 0), uint((parameters.face >> 1) == 1)) * (float(int(parameters.face) & 1) * 2 - 1);
+        vec2 noiseUv = worldPos.zy * voxyNormal.x + worldPos.xz * voxyNormal.y + worldPos.xy * voxyNormal.z;
 
         // Declare materials
         dataPBR material;
         material.normal = voxyNormal;
-        material.albedo = vec4(min(parameters.sampledColour * dhNoise, vec3(1)), 1);
+        material.albedo = parameters.sampledColour;
 
         #if COLOR_MODE == 1
             material.albedo.rgb = vec3(1);
@@ -130,25 +87,26 @@
         material.ambient = 1.0;
 
         // If water
-        if(blockId == DH_BLOCK_WATER){
+        // Do nether portal later
+        if(parameters.customId == 11102){
             float waterNoise = WATER_BRIGHTNESS;
 
             #ifdef WATER_NORMAL
-                vec4 waterData = H2NWater(waterNoiseUv).xzyw;
+                vec4 waterData = H2NWater(noiseUv * waterTileSizeInv).xzyw;
                 material.normal = fastNormalize(waterData.yxz * voxyNormal.x + waterData.xyz * voxyNormal.y + waterData.xzy * voxyNormal.z);
 
                 #ifdef WATER_NOISE
                     waterNoise *= squared(0.128 + waterData.w * 0.5);
                 #endif
             #elif defined WATER_NOISE
-                float waterData = getCellNoise(waterNoiseUv);
+                float waterData = getCellNoise(noiseUv * waterTileSizeInv);
 
                 waterNoise *= squared(0.128 + waterData * 0.5);
             #endif
 
             #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
                 // Water color and foam. Fast depth linearization by DrDesten
-                float waterDepth = dhNearPlane / (1.0 - gl_FragCoord.z) - dhNearPlane / (1.0 - texelFetch(dhDepthTex1, ivec2(gl_FragCoord.xy), 0).x);
+                float waterDepth = 16.0 / (1.0 - gl_FragCoord.z) - 16.0 / (1.0 - texelFetch(vxDepthTexTrans, ivec2(gl_FragCoord.xy), 0).x);
             #endif
 
             #ifdef WATER_STYLIZE_ABSORPTION
@@ -171,11 +129,11 @@
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
-            if(blockId != DH_BLOCK_WATER) enviroPBR(material, voxyNormal);
+            if(parameters.customId == 11102) enviroPBR(material, parameters.lightMap, voxyNormal, worldPos);
         #endif
 
         // Apply simple shading
-        sceneColOut = complexShadingLOD(material);
+        sceneColOut = complexShadingLOD(material, parameters.lightMap, feetPlayerPos);
     
         // Write buffer datas
         normalDataOut = material.normal;

@@ -1,6 +1,3 @@
-// Fragment GL version
-#version 330 compatibility
-
 #define VOXY_GBUFFERS
 #define VOXY_WATER
 #define FRAGMENT

@@ -1,7 +1,27 @@
 {
     "version": 1,
-    "uniforms": [],
-    "samplers": {},
+    "uniforms": [
+        "isEyeInWater",
+        "nightVision",
+        "lightningFlash",
+        "rainStrength",
+        "dayCycle",
+        "twilightPhase",
+        "fogColor",
+        "eyeSkylight",
+        "shdFade",
+        "fragmentFrameTime",
+        "isPrecipitationRain",
+        "cameraPosition",
+        "shadowModelView",
+        "vxProjInv",
+        "vxModelViewInv"
+    ],
+    "samplers": {
+        "noisetex": "sampler2D",
+        "depthtex0": "sampler2D",
+        "vxDepthTexTrans": "sampler2D"
+    },
     "opaqueDrawBuffers": [
         4,
         1,
@@ -13,5 +33,9 @@
         1,
         2,
         3
-    ]
+    ],
+    "blending": {
+        -1: "off",
+        0: "SRC_ALPHA ONE_MINUS_SRC_ALPHA ONE ONE_MINUS_SRC_ALPHA"
+    }
 }

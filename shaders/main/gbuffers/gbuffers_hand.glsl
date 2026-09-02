@@ -16,7 +16,7 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    flat out vec2 lmCoord;
+    flat out vec2 vertexLightMap;
 
     flat out vec3 vertexColor;
 
@@ -58,9 +58,9 @@
 
         // Lightmap fix for mods
         #ifdef WORLD_CUSTOM_SKYLIGHT
-            lmCoord = vec2(lightMapCoord(gl_MultiTexCoord1.x), WORLD_CUSTOM_SKYLIGHT);
+            vertexLightMap = vec2(lightMapCoord(gl_MultiTexCoord1.x), WORLD_CUSTOM_SKYLIGHT);
         #else
-            lmCoord = lightMapCoord(gl_MultiTexCoord1.xy);
+            vertexLightMap = lightMapCoord(gl_MultiTexCoord1.xy);
         #endif
 
         // Get vertex tangent
@@ -108,7 +108,7 @@
     layout(location = 2) out vec3 albedoDataOut; // colortex2
     layout(location = 3) out vec3 materialDataOut; // colortex3
 
-    flat in vec2 lmCoord;
+    flat in vec2 vertexLightMap;
 
     flat in vec3 vertexColor;
 
@@ -203,7 +203,7 @@
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         // Write to HDR scene color
-        sceneColOut = complexShadingForward(material);
+        sceneColOut = complexShadingForward(material, vertexLightMap, vertexFeetPlayerPos);
 
         // Write buffer datas
         normalDataOut = material.normal;

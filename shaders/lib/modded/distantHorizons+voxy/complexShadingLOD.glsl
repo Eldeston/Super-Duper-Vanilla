@@ -1,4 +1,4 @@
-vec4 complexShadingLOD(in dataPBR material){
+vec4 complexShadingLOD(in dataPBR material, in vec2 lmCoord, in vec3 feetPlayerPos){
     // Calculate sky diffusion first, begining with the sky itself
     vec3 totalIllumination = toLinear(SKY_COLOR_DATA_BLOCK);
 
@@ -59,7 +59,7 @@ vec4 complexShadingLOD(in dataPBR material){
     #endif
 
     // Get view direction
-    vec3 viewDir = -fastNormalize(vertexFeetPlayerPos);
+    vec3 viewDir = -fastNormalize(feetPlayerPos);
 
     // Modified version of BSL's reflection PBR calculation
     // vec3 fresnel = (F0 + (1.0 - F0) * cosTheta) * smoothness

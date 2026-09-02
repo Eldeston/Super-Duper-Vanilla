@@ -194,6 +194,12 @@
         uniform sampler2D dhDepthTex0;
     #endif
 
+    #ifdef VOXY
+        uniform mat4 vxProjInv;
+
+        uniform sampler2D vxDepthTexOpaque;
+    #endif
+
     #ifdef WORLD_CUSTOM_SKYLIGHT
         const float eyeBrightFact = WORLD_CUSTOM_SKYLIGHT;
     #else

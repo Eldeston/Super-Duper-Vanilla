@@ -1,5 +1,5 @@
 #if defined WORLD_LIGHT && defined SHADOW_MAPPING
-    vec3 getShdMapping(in vec3 albedo, in vec3 normal, in float NLZ, in float parallaxShd, in float ss, in float ambient, in bool isShadow, in bool isSubSurface){
+    vec3 getShdMapping(in vec3 albedo, in vec3 normal, in vec2 lmCoord, in float NLZ, in float parallaxShd, in float ss, in float ambient, in bool isShadow, in bool isSubSurface){
         if(!isShadow && !isSubSurface) return vec3(0);
 
         vec3 feetPlayerPos = vertexFeetPlayerPos;
@@ -107,7 +107,7 @@
     }
 #endif
 
-vec4 complexShadingForward(in dataPBR material){
+vec4 complexShadingForward(in dataPBR material, in vec2 lmCoord, in vec3 feetPlayerPos){
     // Get block light squared
     float blockLightSquared = squared(lmCoord.x);
     // Get sky light squared
@@ -121,7 +121,7 @@ vec4 complexShadingForward(in dataPBR material){
     totalIllumination += toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 
     #if defined DIRECTIONAL_LIGHTMAPS && (defined TERRAIN || defined WATER)
-        vec3 dirLightMapPos = fastNormalize(dFdx(vertexFeetPlayerPos) * dFdx(lmCoord.x) + dFdy(vertexFeetPlayerPos) * dFdy(lmCoord.x));
+        vec3 dirLightMapPos = fastNormalize(dFdx(feetPlayerPos) * dFdx(lmCoord.x) + dFdy(feetPlayerPos) * dFdy(lmCoord.x));
         float dirLightMap = min(1.0, max(0.0, dot(dirLightMapPos, material.normal)) * blockLightSquared * DIRECTIONAL_LIGHTMAP_STRENGTH + lmCoord.x);
 
         // Calculate block light
@@ -149,7 +149,7 @@ vec4 complexShadingForward(in dataPBR material){
 
         #ifdef SHADOW_MAPPING
             // If the area isn't shaded, apply shadow mapping
-            vec3 shdCol = getShdMapping(material.albedo.rgb, material.normal, NLZ, material.parallaxShd, material.ss, material.ambient, isShadow, isSubSurface);
+            vec3 shdCol = getShdMapping(material.albedo.rgb, material.normal, lmCoord, NLZ, material.parallaxShd, material.ss, material.ambient, isShadow, isSubSurface);
         #else
             // Calculate fake shadows
             float shdFactor = squared(cubed(cubed(lmCoord.y))) * shdFade;
@@ -184,7 +184,7 @@ vec4 complexShadingForward(in dataPBR material){
     #endif
 
     // Get view direction
-    vec3 viewDir = -fastNormalize(vertexFeetPlayerPos);
+    vec3 viewDir = -fastNormalize(feetPlayerPos);
 
     // Modified version of BSL's reflection PBR calculation
     // vec3 fresnel = (F0 + (1.0 - F0) * cosTheta) * smoothness

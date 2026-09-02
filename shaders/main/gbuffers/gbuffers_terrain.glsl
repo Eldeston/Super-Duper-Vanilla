@@ -22,7 +22,7 @@
 
     out float vertexAO;
 
-    out vec2 lmCoord;
+    out vec2 vertexLightMap;
     out vec2 texCoord;
 
     out vec3 vertexColor;
@@ -81,9 +81,9 @@
 
         // Lightmap fix for mods
         #ifdef WORLD_CUSTOM_SKYLIGHT
-            lmCoord = vec2(lightMapCoord(gl_MultiTexCoord1.x), WORLD_CUSTOM_SKYLIGHT);
+            vertexLightMap = vec2(lightMapCoord(gl_MultiTexCoord1.x), WORLD_CUSTOM_SKYLIGHT);
         #else
-            lmCoord = lightMapCoord(gl_MultiTexCoord1.xy);
+            vertexLightMap = lightMapCoord(gl_MultiTexCoord1.xy);
         #endif
 
         // Get vertex normal
@@ -113,7 +113,7 @@
 
         #ifdef TERRAIN_ANIMATION
             // Apply terrain wave animation
-            vertexFeetPlayerPos = getTerrainWave(vertexFeetPlayerPos, vertexWorldPos.xz, at_midBlock.y * 0.015625, mc_Entity.x, lmCoord.y, vertexFrameTime);
+            vertexFeetPlayerPos = getTerrainWave(vertexFeetPlayerPos, vertexWorldPos.xz, at_midBlock.y * 0.015625, mc_Entity.x, vertexLightMap.y, vertexFrameTime);
         #endif
 
         #ifdef WORLD_CURVATURE
@@ -154,7 +154,7 @@
 
     in float vertexAO;
 
-    in vec2 lmCoord;
+    in vec2 vertexLightMap;
     in vec2 texCoord;
 
     in vec3 vertexColor;
@@ -302,11 +302,11 @@
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
-            if(blockId != 11100 && blockId != 12101) enviroPBR(material, TBN[2]);
+            if(blockId != 11100 && blockId != 12101) enviroPBR(material, vertexLightMap, TBN[2], vertexWorldPos);
         #endif
 
         // Write to HDR scene color
-        sceneColOut = complexShadingForward(material).rgb;
+        sceneColOut = complexShadingForward(material, vertexLightMap, vertexFeetPlayerPos).rgb;
 
         // Write buffer datas
         normalDataOut = material.normal;

@@ -1,5 +1,5 @@
 // Environment PBR calculation
-void enviroPBR(inout dataPBR material, in vec3 normal){
+void enviroPBR(inout dataPBR material, in vec2 lmCoord, in vec3 normal, in vec3 worldPos){
     if(normal.y < 0.005) return;
 
     float skyLightDelta = lmCoord.y - 0.8;
@@ -8,7 +8,7 @@ void enviroPBR(inout dataPBR material, in vec3 normal){
 
     float rainMatFact = (1.0 - material.porosity) * skyLightDelta * isPrecipitationRain * normal.y * 5.0;
 
-    rainMatFact *= saturate(sumOf(textureLod(noisetex, vertexWorldPos.xz * 0.001953125, 0).xy) - 0.5);
+    rainMatFact *= saturate(sumOf(textureLod(noisetex, worldPos.xz * 0.001953125, 0).xy) - 0.5);
 
     material.normal = mix(material.normal, normal, rainMatFact);
     material.metallic = max(0.02 * rainMatFact, material.metallic);

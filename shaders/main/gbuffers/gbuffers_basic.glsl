@@ -16,7 +16,7 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    flat out vec2 lmCoord;
+    flat out vec2 vertexLightMap;
 
     flat out vec4 vertexColor;
 
@@ -55,9 +55,9 @@
 
         // Lightmap fix for mods
         #ifdef WORLD_CUSTOM_SKYLIGHT
-            lmCoord = vec2(lightMapCoord(gl_MultiTexCoord1.x), WORLD_CUSTOM_SKYLIGHT);
+            vertexLightMap = vec2(lightMapCoord(gl_MultiTexCoord1.x), WORLD_CUSTOM_SKYLIGHT);
         #else
-            lmCoord = lightMapCoord(gl_MultiTexCoord1.xy);
+            vertexLightMap = lightMapCoord(gl_MultiTexCoord1.xy);
         #endif
 
         // Get vertex view position
@@ -102,7 +102,7 @@
     layout(location = 0) out vec3 sceneColOut; // colortex4
     layout(location = 1) out vec3 materialDataOut; // colortex3
 
-    flat in vec2 lmCoord;
+    flat in vec2 vertexLightMap;
 
     flat in vec4 vertexColor;
 
@@ -172,7 +172,7 @@
         albedo.rgb = toLinear(albedo.rgb);
 
         // Apply simple shading
-        sceneColOut = basicShadingForward(albedo.rgb);
+        sceneColOut = basicShadingForward(albedo.rgb, vertexLightMap);
     
         // Write material data
         materialDataOut = vec3(0);

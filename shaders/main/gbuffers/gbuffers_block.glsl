@@ -18,7 +18,7 @@
 #ifdef VERTEX
     flat out mat3 TBN;
 
-    out vec2 lmCoord;
+    out vec2 vertexLightMap;
     out vec2 texCoord;
 
     out vec3 vertexColor;
@@ -63,9 +63,9 @@
 
         // Lightmap fix for mods
         #ifdef WORLD_CUSTOM_SKYLIGHT
-            lmCoord = vec2(lightMapCoord(gl_MultiTexCoord1.x), WORLD_CUSTOM_SKYLIGHT);
+            vertexLightMap = vec2(lightMapCoord(gl_MultiTexCoord1.x), WORLD_CUSTOM_SKYLIGHT);
         #else
-            lmCoord = lightMapCoord(gl_MultiTexCoord1.xy);
+            vertexLightMap = lightMapCoord(gl_MultiTexCoord1.xy);
         #endif
 
         // Get vertex normal
@@ -125,7 +125,7 @@
     
     flat in mat3 TBN;
 
-    in vec2 lmCoord;
+    in vec2 vertexLightMap;
     in vec2 texCoord;
 
     in vec3 vertexColor;
@@ -257,7 +257,7 @@
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         // Write to HDR scene color
-        sceneColOut = complexShadingForward(material);
+        sceneColOut = complexShadingForward(material, vertexLightMap, vertexFeetPlayerPos);
 
         // Write buffer datas
         normalDataOut = material.normal;

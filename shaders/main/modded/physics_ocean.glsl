@@ -21,7 +21,7 @@
 
     out vec2 physics_localPosition;
 
-    out vec2 lmCoord;
+    out vec2 vertexLightMap;
     out vec2 texCoord;
     out vec2 waterNoiseUv;
 
@@ -64,9 +64,9 @@
 
         // Lightmap fix for mods
         #ifdef WORLD_CUSTOM_SKYLIGHT
-            lmCoord = vec2(lightMapCoord(gl_MultiTexCoord1.x), WORLD_CUSTOM_SKYLIGHT);
+            vertexLightMap = vec2(lightMapCoord(gl_MultiTexCoord1.x), WORLD_CUSTOM_SKYLIGHT);
         #else
-            lmCoord = lightMapCoord(gl_MultiTexCoord1.xy);
+            vertexLightMap = lightMapCoord(gl_MultiTexCoord1.xy);
         #endif
 
         // Get vertex normal
@@ -132,7 +132,7 @@
 
     in vec2 physics_localPosition;
 
-    in vec2 lmCoord;
+    in vec2 vertexLightMap;
     in vec2 texCoord;
     in vec2 waterNoiseUv;
 

@@ -16,7 +16,7 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    flat out vec2 lmCoord;
+    flat out vec2 vertexLightMap;
 
     flat out vec3 vertexColor;
 
@@ -59,9 +59,9 @@
 
         // Lightmap fix for mods
         #ifdef WORLD_CUSTOM_SKYLIGHT
-            lmCoord = vec2(lightMapCoord(gl_MultiTexCoord1.x), WORLD_CUSTOM_SKYLIGHT);
+            vertexLightMap = vec2(lightMapCoord(gl_MultiTexCoord1.x), WORLD_CUSTOM_SKYLIGHT);
         #else
-            lmCoord = lightMapCoord(gl_MultiTexCoord1.xy);
+            vertexLightMap = lightMapCoord(gl_MultiTexCoord1.xy);
         #endif
 
         // Get vertex view position
@@ -106,7 +106,7 @@
     layout(location = 0) out vec4 sceneColOut; // colortex4
     layout(location = 1) out vec3 materialDataOut; // colortex3
 
-    flat in vec2 lmCoord;
+    flat in vec2 vertexLightMap;
 
     flat in vec3 vertexColor;
 
@@ -173,7 +173,7 @@
         if(albedo.a < ALPHA_THRESHOLD){ discard; return; }
 
         // Particle emissives
-        if((vertexColor.r * 0.5 > vertexColor.g + vertexColor.b || (vertexColor.r + vertexColor.b > vertexColor.g * 2.0 && abs(vertexColor.r - vertexColor.b) < 0.2) || ((albedo.r + albedo.g + albedo.b > 1.6 || (vertexColor.r != vertexColor.g && vertexColor.g != vertexColor.b)) && lmCoord.x == 1)) && atlasSize.x <= 1024 && atlasSize.x > 0){
+        if((vertexColor.r * 0.5 > vertexColor.g + vertexColor.b || (vertexColor.r + vertexColor.b > vertexColor.g * 2.0 && abs(vertexColor.r - vertexColor.b) < 0.2) || ((albedo.r + albedo.g + albedo.b > 1.6 || (vertexColor.r != vertexColor.g && vertexColor.g != vertexColor.b)) && vertexLightMap.x == 1)) && atlasSize.x <= 1024 && atlasSize.x > 0){
             sceneColOut = vec4(toLinear(albedo.rgb * vertexColor) * EMISSIVE_INTENSITY, albedo.a);
             return; // Return immediately, no need for lighting calculation
         }
@@ -192,7 +192,7 @@
         albedo.rgb = toLinear(albedo.rgb);
 
         // Apply simple shading
-        sceneColOut = vec4(basicShadingForward(albedo.rgb), albedo.a);
+        sceneColOut = vec4(basicShadingForward(albedo.rgb, vertexLightMap), albedo.a);
 
         // Write material data
         materialDataOut = vec3(0, 0, 0.5);

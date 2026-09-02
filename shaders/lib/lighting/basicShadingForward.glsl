@@ -1,4 +1,4 @@
-vec3 basicShadingForward(in vec3 albedo){
+vec3 basicShadingForward(in vec3 albedo, in vec2 lmCoord){
     // Get sky light squared
     float skyLightSquared = squared(lmCoord.y);
 

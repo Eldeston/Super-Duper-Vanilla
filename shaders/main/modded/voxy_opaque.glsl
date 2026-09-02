@@ -22,82 +22,50 @@
     layout(location = 2) out vec3 albedoDataOut; // colortex2
     layout(location = 3) out vec3 materialDataOut; // colortex3
 
-    flat in int blockId;
-
-    flat in vec2 lmCoord;
-
-    in float vertexViewDist;
-
-    in vec3 vertexFeetPlayerPos;
-    in vec3 vertexWorldPos;
-
-    uniform int isEyeInWater;
-
-    uniform float far;
-
-    uniform float nightVision;
-    uniform float lightningFlash;
-
-    #ifndef FORCE_DISABLE_WEATHER
-        uniform float rainStrength;
-    #endif
-
-    #ifndef FORCE_DISABLE_DAY_CYCLE
-        uniform float dayCycle;
-        uniform float twilightPhase;
-    #endif
-
-    #ifdef WORLD_VANILLA_FOG_COLOR
-        uniform vec3 fogColor;
-    #endif
-
     #ifdef WORLD_CUSTOM_SKYLIGHT
         const float eyeBrightFact = WORLD_CUSTOM_SKYLIGHT;
     #else
-        uniform float eyeSkylight;
-        
         float eyeBrightFact = eyeSkylight;
     #endif
 
     #ifdef WORLD_LIGHT
-        uniform float shdFade;
-
-        uniform mat4 shadowModelView;
-
         #include "/lib/lighting/GGX.glsl"
     #endif
 
     #include "/lib/PBR/dataStructs.glsl"
 
-    #include "/lib/utility/noiseFunctions.glsl"
-
     #ifdef LAVA_NOISE
-        uniform float fragmentFrameTime;
-
         #include "/lib/surface/lava.glsl"
     #endif
 
     #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
-        uniform float isPrecipitationRain;
-
         #include "/lib/PBR/enviroPBR.glsl"
     #endif
 
-    #include "/lib/modded/distantHorizons/complexShadingLOD.glsl"
+    #include "/lib/utility/projectionFunctions.glsl"
+
+    #include "/lib/modded/distantHorizons+voxy/complexShadingLOD.glsl"
 
     void voxy_emitFragment(VoxyFragmentParameters parameters){
-        // Prevents overdraw
-        if(far > vertexViewDist){ discard; return; }
+        // Get screen position
+        vec3 screenPos = gl_FragCoord.xyz;
+        // Get view position
+        vec3 viewPos = getViewPos(vxProjInv, screenPos);
+        // Get eye player position
+        vec3 feetPlayerPos = mat3(vxModelViewInv) * viewPos + vxModelViewInv[3].xyz;
+        // Get world position
+        vec3 worldPos = feetPlayerPos + cameraPosition;
 
-        vec3 voxyNormal = vec3(uint((face >> 1) == 2), uint((face >> 1) == 0), uint((face >> 1) == 1)) * (float(int(face) & 1) * 2 - 1);
-        vec2 noiseUv = vertexWorldPos.zy * voxyNormal.x + vertexWorldPos.xz * voxyNormal.y + vertexWorldPos.xy * voxyNormal.z;
-        vec2 noiseCol = texelFetch(noisetex, ivec2(noiseUv * 4.0) & 255, 0).xy;
-        float dhNoise = (noiseCol.x + noiseCol.y) * 0.2 + 0.8;
+        // Prevents overdraw
+        if(48000.0 > length(viewPos)){ discard; return; }
+
+        vec3 voxyNormal = vec3(uint((parameters.face >> 1) == 2), uint((parameters.face >> 1) == 0), uint((parameters.face >> 1) == 1)) * (float(int(parameters.face) & 1) * 2 - 1);
+        vec2 noiseUv = worldPos.zy * voxyNormal.x + worldPos.xz * voxyNormal.y + worldPos.xy * voxyNormal.z;
 
         // Declare materials
         dataPBR material;
         material.normal = voxyNormal;
-        material.albedo = vec4(min(parameters.sampledColour * dhNoise, vec3(1)), 1);
+        material.albedo = parameters.sampledColour;
 
         #if COLOR_MODE == 1
             material.albedo.rgb = vec3(1);
@@ -115,11 +83,8 @@
         material.parallaxShd = 1.0;
         material.ambient = 1.0;
 
-        // If illuminated block
-        if(blockId == DH_BLOCK_ILLUMINATED) material.emissive = 1.0;
-
         // If lava
-        else if(blockId == DH_BLOCK_LAVA){
+        if(parameters.customId == 11100){
             #ifdef LAVA_NOISE
                 // Lava tile size inverse
                 const float lavaTileSizeInv = 1.0 / LAVA_TILE_SIZE;
@@ -134,17 +99,17 @@
         }
 
         // If leaves
-        else if(blockId == DH_BLOCK_LEAVES) material.ss = 0.5;
+        else if((parameters.customId >= 10000 && parameters.customId <= 10800) || (parameters.customId >= 11600 && parameters.customId <= 11799) || parameters.customId == 10900 || parameters.customId == 11101 || parameters.customId == 12200) material.ss = 1.0;
 
         // Convert to linear space
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
-            if(blockId != DH_BLOCK_LAVA && blockId != DH_BLOCK_ILLUMINATED) enviroPBR(material, voxyNormal);
+            if(parameters.customId == 11100) enviroPBR(material, parameters.lightMap, voxyNormal, worldPos);
         #endif
 
         // Apply simple shading
-        sceneColOut = complexShadingLOD(material).rgb;
+        sceneColOut = complexShadingLOD(material, parameters.lightMap, feetPlayerPos).rgb;
 
         // Write buffer datas
         normalDataOut = material.normal;

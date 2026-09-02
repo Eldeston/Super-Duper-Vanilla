@@ -18,7 +18,7 @@
 #ifdef VERTEX
     flat out int blockId;
 
-    out vec2 lmCoord;
+    out vec2 vertexLightMap;
     out vec2 texCoord;
     out vec2 waterNoiseUv;
 
@@ -76,9 +76,9 @@
 
         // Lightmap fix for mods
         #ifdef WORLD_CUSTOM_SKYLIGHT
-            lmCoord = vec2(lightMapCoord(gl_MultiTexCoord1.x), WORLD_CUSTOM_SKYLIGHT);
+            vertexLightMap = vec2(lightMapCoord(gl_MultiTexCoord1.x), WORLD_CUSTOM_SKYLIGHT);
         #else
-            lmCoord = lightMapCoord(gl_MultiTexCoord1.xy);
+            vertexLightMap = lightMapCoord(gl_MultiTexCoord1.xy);
         #endif
 
         // Get vertex normal
@@ -147,7 +147,7 @@
 
     flat in int blockId;
 
-    in vec2 lmCoord;
+    in vec2 vertexLightMap;
     in vec2 texCoord;
     in vec2 waterNoiseUv;
 
@@ -293,11 +293,11 @@
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
-            if(blockId != 11102) enviroPBR(material, TBN[2]);
+            if(blockId != 11102) enviroPBR(material, vertexLightMap, TBN[2], vertexWorldPos);
         #endif
 
         // Write to HDR scene color
-        sceneColOut = complexShadingForward(material);
+        sceneColOut = complexShadingForward(material, vertexLightMap, vertexFeetPlayerPos);
 
         // Write buffer datas
         normalDataOut = material.normal;

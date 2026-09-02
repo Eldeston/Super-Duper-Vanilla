@@ -21,7 +21,7 @@
             gl_Position = vec4(-10);
         }
     #else
-        flat out float lmCoordX;
+        flat out float vertexLightMapX;
 
         out vec2 texCoord;
 
@@ -49,7 +49,7 @@
 
         void main(){
             // Lightmap fix for mods
-            lmCoordX = lightMapCoord(gl_MultiTexCoord1.x);
+            vertexLightMapX = lightMapCoord(gl_MultiTexCoord1.x);
             // Get buffer texture coordinates
             texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
 
@@ -97,7 +97,7 @@
         /* RENDERTARGETS: 4 */
         layout(location = 0) out vec4 sceneColOut; // colortex4
 
-        flat in float lmCoordX;
+        flat in float vertexLightMapX;
 
         in vec2 texCoord;
 
@@ -124,7 +124,7 @@
             // Convert to linear space
             albedo.rgb = toLinear(albedo.rgb);
 
-            vec3 totalDiffuse = toLinear(SKY_COLOR_DATA_BLOCK) + toLinear(lmCoordX * blockLightColor) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
+            vec3 totalDiffuse = toLinear(SKY_COLOR_DATA_BLOCK) + toLinear(vertexLightMapX * blockLightColor) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 
             totalDiffuse += lightningFlash;
 

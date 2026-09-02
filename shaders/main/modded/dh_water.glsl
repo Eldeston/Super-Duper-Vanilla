@@ -18,7 +18,7 @@
 #ifdef VERTEX
     flat out int blockId;
 
-    flat out vec2 lmCoord;
+    flat out vec2 vertexLightMap;
 
     flat out vec3 vertexNormal;
 
@@ -59,9 +59,9 @@
 
         // Distant horizons lightmap calculation
         #ifdef WORLD_CUSTOM_SKYLIGHT
-            lmCoord = vec2(min((gl_MultiTexCoord1.x - 0.03125) * 1.06666667, 1.0), WORLD_CUSTOM_SKYLIGHT);
+            vertexLightMap = vec2(min((gl_MultiTexCoord1.x - 0.03125) * 1.06666667, 1.0), WORLD_CUSTOM_SKYLIGHT);
         #else
-            lmCoord = min((gl_MultiTexCoord1.xy - 0.03125) * 1.06666667, vec2(1));
+            vertexLightMap = min((gl_MultiTexCoord1.xy - 0.03125) * 1.06666667, vec2(1));
         #endif
 
         // Get vertex normal
@@ -112,7 +112,7 @@
 
     flat in int blockId;
 
-    flat in vec2 lmCoord;
+    flat in vec2 vertexLightMap;
 
     flat in vec3 vertexNormal;
 
@@ -130,8 +130,6 @@
 
     uniform float nightVision;
     uniform float lightningFlash;
-
-    uniform mat4 gbufferProjectionInverse;
 
     uniform sampler2D depthtex0;
     uniform sampler2D dhDepthTex1;
@@ -185,7 +183,7 @@
         #include "/lib/PBR/enviroPBR.glsl"
     #endif
 
-    #include "/lib/modded/distantHorizons/complexShadingLOD.glsl"
+    #include "/lib/modded/distantHorizons+voxy/complexShadingLOD.glsl"
 
     void main(){
         // Prevents overdraw
@@ -261,11 +259,11 @@
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
-            if(blockId != DH_BLOCK_WATER) enviroPBR(material, vertexNormal);
+            if(blockId != DH_BLOCK_WATER) enviroPBR(material, vertexLightMap, vertexNormal, vertexWorldPos);
         #endif
 
         // Apply simple shading
-        sceneColOut = complexShadingLOD(material);
+        sceneColOut = complexShadingLOD(material, vertexLightMap, vertexFeetPlayerPos);
     
         // Write buffer datas
         normalDataOut = material.normal;
