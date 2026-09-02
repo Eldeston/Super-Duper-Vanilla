@@ -13,89 +13,6 @@
 
 /// Buffer features: TAA jittering, simple shading, and world curvature
 
-/// -------------------------------- /// Vertex Shader /// -------------------------------- ///
-
-#ifdef VERTEX
-    flat out int blockId;
-
-    flat out vec2 lmCoord;
-
-    flat out vec3 vertexNormal;
-
-    out float vertexViewDist;
-
-    out vec3 vertexColor;
-    out vec3 vertexFeetPlayerPos;
-    out vec3 vertexWorldPos;
-
-    uniform vec3 cameraPosition;
-
-    uniform mat4 gbufferModelViewInverse;
-
-    #ifdef WORLD_CURVATURE
-        uniform mat4 gbufferModelView;
-    #endif
-
-    #ifdef WORLD_LIGHT
-        uniform mat4 shadowModelView;
-    #endif
-
-    #if ANTI_ALIASING == 2
-        uniform int frameMod;
-
-        uniform float pixelWidth;
-        uniform float pixelHeight;
-
-        #include "/lib/utility/taaJitter.glsl"
-    #endif
-    
-    void main(){
-        // Get block id
-        blockId = dhMaterialId;
-        // Distant horizons terrain color is stored here
-        vertexColor = gl_Color.rgb;
-
-        // Distant horizons lightmap calculation
-        #ifdef WORLD_CUSTOM_SKYLIGHT
-            lmCoord = vec2(min((gl_MultiTexCoord1.x - 0.03125) * 1.06666667, 1.0), WORLD_CUSTOM_SKYLIGHT);
-        #else
-            lmCoord = min((gl_MultiTexCoord1.xy - 0.03125) * 1.06666667, vec2(1));
-        #endif
-
-        // Get vertex normal
-        vertexNormal = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * fastNormalize(gl_Normal));
-
-        // Get vertex view position
-        vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
-        // Get vertex feet player position
-        vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos + gbufferModelViewInverse[3].xyz;
-        // Output view distance
-        vertexViewDist = length(vertexViewPos) + 8.0;
-
-        // Get world position
-        vertexWorldPos = vertexFeetPlayerPos + cameraPosition;
-
-        #ifdef WORLD_CURVATURE
-            // Apply curvature distortion
-            vertexFeetPlayerPos.y -= lengthSquared(vertexFeetPlayerPos.xz) * worldCurvatureInv;
-
-            // Convert back to vertex view position
-            vertexViewPos = mat3(gbufferModelView) * vertexFeetPlayerPos + gbufferModelView[3].xyz;
-        #endif
-
-        // Convert to clip position and output as final position
-        // gl_Position = gl_ProjectionMatrix * vertexViewPos;
-        gl_Position.xyz = getMatScale(mat3(gl_ProjectionMatrix)) * vertexViewPos;
-        gl_Position.z += gl_ProjectionMatrix[3].z;
-
-        gl_Position.w = -vertexViewPos.z;
-
-        #if ANTI_ALIASING == 2
-            gl_Position.xy += jitterPos(gl_Position.w);
-        #endif
-    }
-#endif
-
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
@@ -109,11 +26,8 @@
 
     flat in vec2 lmCoord;
 
-    flat in vec3 vertexNormal;
-
     in float vertexViewDist;
 
-    in vec3 vertexColor;
     in vec3 vertexFeetPlayerPos;
     in vec3 vertexWorldPos;
 
@@ -171,25 +85,26 @@
 
     #include "/lib/modded/distantHorizons/complexShadingLOD.glsl"
 
-    void main(){
+    void voxy_emitFragment(VoxyFragmentParameters parameters){
         // Prevents overdraw
         if(far > vertexViewDist){ discard; return; }
 
-        vec2 noiseUv = vertexWorldPos.zy * vertexNormal.x + vertexWorldPos.xz * vertexNormal.y + vertexWorldPos.xy * vertexNormal.z;
+        vec3 voxyNormal = vec3(uint((face >> 1) == 2), uint((face >> 1) == 0), uint((face >> 1) == 1)) * (float(int(face) & 1) * 2 - 1);
+        vec2 noiseUv = vertexWorldPos.zy * voxyNormal.x + vertexWorldPos.xz * voxyNormal.y + vertexWorldPos.xy * voxyNormal.z;
         vec2 noiseCol = texelFetch(noisetex, ivec2(noiseUv * 4.0) & 255, 0).xy;
         float dhNoise = (noiseCol.x + noiseCol.y) * 0.2 + 0.8;
 
         // Declare materials
         dataPBR material;
-        material.normal = vertexNormal;
-        material.albedo = vec4(min(vertexColor * dhNoise, vec3(1)), 1);
+        material.normal = voxyNormal;
+        material.albedo = vec4(min(parameters.sampledColour * dhNoise, vec3(1)), 1);
 
         #if COLOR_MODE == 1
             material.albedo.rgb = vec3(1);
         #elif COLOR_MODE == 2
             material.albedo.rgb = vec3(0);
         #elif COLOR_MODE == 3
-            material.albedo.rgb = vertexColor;
+            material.albedo.rgb = parameters.sampledColour;
         #endif
 
         material.smoothness = 0.0; material.emissive = 0.0;
@@ -225,7 +140,7 @@
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
-            if(blockId != DH_BLOCK_LAVA && blockId != DH_BLOCK_ILLUMINATED) enviroPBR(material, vertexNormal);
+            if(blockId != DH_BLOCK_LAVA && blockId != DH_BLOCK_ILLUMINATED) enviroPBR(material, voxyNormal);
         #endif
 
         // Apply simple shading
