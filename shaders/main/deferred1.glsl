@@ -277,18 +277,23 @@
 
         float depth = getDepth(depthtex0, screenTexelCoord, 0);
 
-        // Distant Horizons apparently uses a different depth texture
-        #ifdef DISTANT_HORIZONS
+        // Distant Horizons and Voxy apparently uses a different depth texture
+        #if defined DISTANT_HORIZONS
             realSky = depth == 1;
             if(realSky) depth = texelFetch(dhDepthTex0, screenTexelCoord, 0).x;
+        #elif defined VOXY
+            realSky = depth == 1;
+            if(realSky) depth = texelFetch(vxDepthTexOpaque, screenTexelCoord, 0).x;
         #endif
 
         // Get screen pos
         vec3 screenPos = vec3(texCoord, depth);
 
-        // Distant Horizons apparently uses a different projection matrix
-        #ifdef DISTANT_HORIZONS
+        // Distant Horizons and Voxy apparently uses a different projection matrix
+        #if defined DISTANT_HORIZONS
             vec3 viewPos = getViewPos(realSky ? dhProjectionInverse : gbufferProjectionInverse, screenPos);
+        #elif defined VOXY
+            vec3 viewPos = getViewPos(realSky ? vxProjInv : gbufferProjectionInverse, screenPos);
         #else
             vec3 viewPos = getViewPos(gbufferProjectionInverse, screenPos);
         #endif

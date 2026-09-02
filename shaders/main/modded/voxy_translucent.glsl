@@ -48,7 +48,7 @@
 
     void voxy_emitFragment(VoxyFragmentParameters parameters){
         // Get screen position
-        vec3 screenPos = gl_FragCoord.xyz;
+        vec3 screenPos = vec3(gl_FragCoord.x * pixelWidth, gl_FragCoord.y * pixelHeight, gl_FragCoord.z);
         // Get view position
         vec3 viewPos = getViewPos(vxProjInv, screenPos);
         // Get eye player position
@@ -57,28 +57,27 @@
         vec3 worldPos = feetPlayerPos + cameraPosition;
 
         // Prevents overdraw
-        if(48000.0 > length(viewPos)){ discard; return; }
+        if(far > length(viewPos)){ discard; return; }
 
         // Fix for Distant Horizons translucents rendering over real geometry
         if(getDepth(depthtex0, ivec2(gl_FragCoord.xy), 0) != 1.0){ discard; return; }
 
         vec3 voxyNormal = vec3(uint((parameters.face >> 1) == 2), uint((parameters.face >> 1) == 0), uint((parameters.face >> 1) == 1)) * (float(int(parameters.face) & 1) * 2 - 1);
-        vec2 noiseUv = worldPos.zy * voxyNormal.x + worldPos.xz * voxyNormal.y + worldPos.xy * voxyNormal.z;
 
         // Declare materials
         dataPBR material;
         material.normal = voxyNormal;
-        material.albedo = parameters.sampledColour;
+        material.albedo = parameters.sampledColour * parameters.tinting;
 
         #if COLOR_MODE == 1
             material.albedo.rgb = vec3(1);
         #elif COLOR_MODE == 2
             material.albedo.rgb = vec3(0);
         #elif COLOR_MODE == 3
-            material.albedo.rgb = parameters.sampledColour;
+            material.albedo.rgb = parameters.tinting;
         #endif
 
-        material.smoothness = 0.96; material.emissive = 0.0;
+        material.smoothness = 0.0; material.emissive = 0.0;
         material.metallic = 0.04; material.porosity = 0.0;
         material.ss = 0.0;
         
@@ -89,17 +88,19 @@
         // If water
         // Do nether portal later
         if(parameters.customId == 11102){
+            material.smoothness = 0.96;
+
             float waterNoise = WATER_BRIGHTNESS;
 
             #ifdef WATER_NORMAL
-                vec4 waterData = H2NWater(noiseUv * waterTileSizeInv).xzyw;
+                vec4 waterData = H2NWater(worldPos.xz * waterTileSizeInv).xzyw;
                 material.normal = fastNormalize(waterData.yxz * voxyNormal.x + waterData.xyz * voxyNormal.y + waterData.xzy * voxyNormal.z);
 
                 #ifdef WATER_NOISE
                     waterNoise *= squared(0.128 + waterData.w * 0.5);
                 #endif
             #elif defined WATER_NOISE
-                float waterData = getCellNoise(noiseUv * waterTileSizeInv);
+                float waterData = getCellNoise(worldPos.xz * waterTileSizeInv);
 
                 waterNoise *= squared(0.128 + waterData * 0.5);
             #endif
@@ -132,8 +133,15 @@
             if(parameters.customId == 11102) enviroPBR(material, parameters.lightMap, voxyNormal, worldPos);
         #endif
 
+        // Voxy lightmap calculation
+        #ifdef WORLD_CUSTOM_SKYLIGHT
+            vec2 voxyLightMap = vec2(min((parameters.lightMap.x - 0.03125) * 1.06666667, 1.0), WORLD_CUSTOM_SKYLIGHT);
+        #else
+            vec2 voxyLightMap = min((parameters.lightMap.xy - 0.03125) * 1.06666667, vec2(1));
+        #endif
+
         // Apply simple shading
-        sceneColOut = complexShadingLOD(material, parameters.lightMap, feetPlayerPos);
+        sceneColOut = complexShadingLOD(material, voxyLightMap, feetPlayerPos);
     
         // Write buffer datas
         normalDataOut = material.normal;

@@ -148,6 +148,10 @@
             uniform sampler2D dhDepthTex1;
         #endif
 
+        #ifdef VOXY
+            uniform sampler2D vxDepthTexTranslucent;
+        #endif
+
         #ifndef FORCE_DISABLE_WEATHER
             uniform float rainStrength;
         #endif
@@ -183,8 +187,10 @@
         #endif
 
         #if defined LENS_FLARE && defined WORLD_LIGHT
-            #ifdef DISTANT_HORIZONS
+            #if defined DISTANT_HORIZONS
                 bool isSky = textureLod(dhDepthTex1, shdLightDirScreenSpace.xy, 0).x == 1 && getDepth(depthtex0, shdLightDirScreenSpace.xy, 0) == 1;
+            #elif defined VOXY
+                bool isSky = textureLod(vxDepthTexTranslucent, shdLightDirScreenSpace.xy, 0).x == 1 && getDepth(depthtex0, shdLightDirScreenSpace.xy, 0) == 1;
             #else
                 bool isSky = getDepth(depthtex0, shdLightDirScreenSpace.xy, 0) == 1;
             #endif

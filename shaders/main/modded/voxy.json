@@ -1,6 +1,9 @@
 {
     "version": 1,
     "uniforms": [
+        "far",
+        "pixelWidth",
+        "pixelHeight",
         "isEyeInWater",
         "nightVision",
         "lightningFlash",

@@ -36,7 +36,7 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
         // Get SSR screen coordinates
         vec3 SSRCoord = rayTraceScene(screenPos, viewPos, reflectViewDir, dither.z);
 
-        #ifdef DISTANT_HORIZONS
+        #if defined DISTANT_HORIZONS || defined VOXY
             if(realSky) SSRCoord.z = 0.0;
         #endif
 
