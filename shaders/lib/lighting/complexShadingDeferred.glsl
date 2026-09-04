@@ -68,7 +68,7 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
             vec3 reflectCol = isSkyReflection ? getSkyReflection(feetPlayerPos, reflectPlayerDir) : texelFetch(colortex4, ivec2(SSRCoord.xy), 0).rgb;
         #endif
     #else
-        vec3 reflectCol = getSkyReflection(feetPlayerPos, reflectViewDir);
+        vec3 reflectCol = getSkyReflection(feetPlayerPos, reflectPlayerDir);
     #endif
 
     // Modified version of BSL's reflection PBR calculation
