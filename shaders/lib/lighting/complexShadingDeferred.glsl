@@ -51,8 +51,12 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
             // This masks only the reflections in view
             if(reflectDirF.z < viewPos.z){
                 vec3 SSRDH = getScreenPos(gbufferProjection, reflectDirF);
-                // SSRDH.xy *= vec2(viewWidth, viewHeight);
-                if(SSRDH.x >= 0 && SSRDH.y >= 0 && SSRDH.x <= 1 && SSRDH.y <= 1 && getDepthTex(SSRDH.xy) != 1) SSRCoord = vec3(SSRDH.xy * vec2(viewWidth, viewHeight), 1);
+                SSRDH.xy *= vec2(viewWidth, viewHeight);
+
+                if(SSRDH.x >= 0 && SSRDH.x <= viewWidth && SSRDH.y >= 0 && SSRDH.y <= viewHeight && getDepthTex(ivec2(SSRDH.xy)) != 1){
+                    isSkyReflection = false;
+                    SSRCoord = SSRDH;
+                }
             }
         }
 
