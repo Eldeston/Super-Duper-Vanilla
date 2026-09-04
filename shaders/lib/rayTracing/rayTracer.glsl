@@ -29,7 +29,7 @@ vec2 binaryRefinement(in vec3 screenRayPos, in vec3 screenRayDir, in float sampl
 // Basically an upgrade to Shadax's raytracer https://github.com/Shadax-stack/MinecraftSSR
 vec3 rayTraceScene(in vec3 screenPos, in vec3 viewPos, in vec3 rayDir, in float dither){
     // Fix for the blob when player is near a surface. From Bálint#1673
-    if(rayDir.z > -viewPos.z) return vec3(0);
+    if(rayDir.z > -viewPos.z) return vec3(0, 0, 1);
 
     // Get screenspace ray direction
     vec3 screenRayDir = getScreenPos(gbufferProjection, viewPos + rayDir) - screenPos;
@@ -61,13 +61,13 @@ vec3 rayTraceScene(in vec3 screenPos, in vec3 viewPos, in vec3 rayDir, in float 
         screenRayPos += screenRayDir;
 
         // If current pos is out of bounds, exit immediately
-        if(screenRayPos.x < 0 || screenRayPos.y < 0 || screenRayPos.x > viewWidth || screenRayPos.y > viewHeight) return vec3(0);
+        if(screenRayPos.x < 0 || screenRayPos.y < 0 || screenRayPos.x > viewWidth || screenRayPos.y > viewHeight) return vec3(0, 0, 1);
 
         // Get current texture depth
         sampledDepth = getDepth(depthtex0, ivec2(screenRayPos.xy), 0);
 
         // If hand return immediately
-        if(sampledDepth <= 0.56) return vec3(0);
+        if(sampledDepth <= 0.56) return vec3(0, 0, 1);
 
         // Check intersection
         intersection = sampledDepth <= screenRayPos.z;
@@ -77,12 +77,12 @@ vec3 rayTraceScene(in vec3 screenPos, in vec3 viewPos, in vec3 rayDir, in float 
     }
 
     // If sky or no intersection has been found return immediately
-    if(sampledDepth == 1 || !intersection) return vec3(0);
+    if(sampledDepth == 1 || !intersection) return vec3(0, 0, 1);
 
     // Do binary refinement
     #if RAYTRACER_BISTEPS != 0
-        return vec3(binaryRefinement(screenRayPos, screenRayDir, sampledDepth, intersection), 1);
+        return vec3(binaryRefinement(screenRayPos, screenRayDir, sampledDepth, intersection), 0);
     #else
-        return vec3(screenRayPos.xy, 1);
+        return vec3(screenRayPos.xy, 0);
     #endif
 }

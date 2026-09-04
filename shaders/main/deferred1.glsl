@@ -33,7 +33,7 @@
 
         #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS
             flat out vec3 cloudCol;
-            flat out vec3 cloudStartPos0;
+            flat out vec3 cloudStartPos;
 
             #ifdef DOUBLE_LAYERED_CLOUDS
                 flat out vec3 cloudStartPos1;
@@ -98,12 +98,7 @@
 
                 // Get the 1st layer of volumetric clouds position
                 // Note that the clouds needs to move westward just as in vanilla
-                cloudStartPos0 = vec3(cameraPosition.x + fragmentFrameTime, cameraPosition.y - cloudHeight, cameraPosition.z);
-
-                #ifdef DOUBLE_LAYERED_CLOUDS
-                    // Get the 2nd layer of volumetric clouds position by reusing the 1st layer's position
-                    cloudStartPos1 = vec3(cloudStartPos0.x - 2064.0, cloudStartPos0.y - SECOND_CLOUD_HEIGHT, cloudStartPos0.z - 2064.0);
-                #endif
+                cloudStartPos = vec3(cameraPosition.x + fragmentFrameTime, cameraPosition.y - cloudHeight, cameraPosition.z);
             #endif
         #endif
 
@@ -133,7 +128,7 @@
         #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS
             flat in vec3 cloudCol;
 
-            flat in vec3 cloudStartPos0;
+            flat in vec3 cloudStartPos;
 
             #ifdef DOUBLE_LAYERED_CLOUDS
                 flat in vec3 cloudStartPos1;
@@ -342,7 +337,7 @@
         vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
 
         // Apply deffered shading
-        sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, realSky);
+        sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, eyePlayerPos + gbufferModelViewInverse[3].xyz, mat3(gbufferModelView) * normal, albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, realSky);
 
         #if OUTLINES != 0
             // Outline calculation, rejecting materials with no normal and sky

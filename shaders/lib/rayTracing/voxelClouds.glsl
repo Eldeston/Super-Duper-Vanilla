@@ -99,3 +99,28 @@ vec2 voxelClouds(in vec3 nFeetPlayerPos, in vec3 camPos, in float sphereFar){
 
     return cloudOutput;
 }
+
+// Create a common function to render the clouds for portability
+vec3 getVoxelClouds(in vec3 sceneCol, in vec3 cloudStartPos0, in vec3 nFeetPlayerPos, in float sphereFar){
+    // Get voxelized clouds
+    vec2 cloudData = voxelClouds(nFeetPlayerPos, cloudStartPos0, sphereFar);
+
+    #ifdef DOUBLE_LAYERED_CLOUDS
+        // Get the 2nd layer of volumetric clouds position by reusing the 1st layer's position
+        vec3 cloudStartPos1 = vec3(cloudStartPos0.x - 2048.0, cloudStartPos0.y - SECOND_CLOUD_HEIGHT, cloudStartPos0.z - 2048.0);
+
+        // Variate by swizzling the 2 cloud channels
+        // cloudData = voxelClouds(nFeetPlayerPos, cloudStartPos1, sphereFar).yx * (1.0 - cloudData * cloudDepthInverse) + cloudData;
+        cloudData = max(voxelClouds(nFeetPlayerPos, cloudStartPos1, sphereFar).yx, cloudData);
+    #endif
+
+    #ifdef DYNAMIC_CLOUDS
+        float fadeTime = saturate(cos(fragmentFrameTime * FADE_SPEED) + 0.5);
+
+        float cloudFinal = mix(mix(cloudData.x, cloudData.y, fadeTime), max(cloudData.x, cloudData.y), rainStrength) * cloudDepthInverse;
+    #else
+        float cloudFinal = mix(cloudData.x, max(cloudData.x, cloudData.y), rainStrength) * cloudDepthInverse;
+    #endif
+
+    return mix(sceneCol, cloudCol, cloudFinal);
+}

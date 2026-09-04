@@ -1,4 +1,4 @@
-vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos, in vec3 normal, in vec3 albedo, in vec3 dither, in float viewDotInvSqrt, in float metallic, in float smoothness, in bool realSky){
+vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos, in vec3 feetPlayerPos, in vec3 normal, in vec3 albedo, in vec3 dither, in float viewDotInvSqrt, in float metallic, in float smoothness, in bool realSky){
     #if defined ROUGH_REFLECTIONS || defined SSGI
         vec3 noiseUnitVector = generateUnitVector(dither.xy);
     #endif
@@ -30,18 +30,21 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
     // reflect(direction, normal) = direction - 2.0 * dot(normal, direction) * normal
     float NV = dot(normal, -nViewPos);
     vec3 reflectViewDir = nViewPos + (2.0 * NV) * normal;
+    vec3 reflectPlayerDir = mat3(gbufferModelViewInverse) * reflectViewDir;
 
     // Calculate SSR and sky reflections
     #ifdef SSR
         // Get SSR screen coordinates
         vec3 SSRCoord = rayTraceScene(screenPos, viewPos, reflectViewDir, dither.z);
+        // Check if sky reflection has been hit
+        bool isSkyReflection = SSRCoord.z == 1;
 
         #if defined DISTANT_HORIZONS || defined VOXY
-            if(realSky) SSRCoord.z = 0.0;
+            if(realSky) isSkyReflection = true;
         #endif
 
         // Fake reflections, also helps with improving reflection quality
-        if(SSRCoord.z < 0.5){
+        if(isSkyReflection){
             // Using the original ray direction, get the reflected ray and increase its length
             vec3 reflectDirF = viewPos + reflectViewDir * borderFar;
 
@@ -55,13 +58,13 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
 
         #ifdef PREVIOUS_FRAME
             // Get reflections and check for sky
-            vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyReflection(reflectViewDir) : texelFetch(colortex5, ivec2(getPrevScreenCoord(SSRCoord.xy * vec2(pixelWidth, pixelHeight)) * vec2(viewWidth, viewHeight)), 0).rgb;
+            vec3 reflectCol = isSkyReflection ? getSkyReflection(feetPlayerPos, reflectPlayerDir) : texelFetch(colortex5, ivec2(getPrevScreenCoord(SSRCoord.xy * vec2(pixelWidth, pixelHeight)) * vec2(viewWidth, viewHeight)), 0).rgb;
         #else
             // Get reflections and check for sky
-            vec3 reflectCol = SSRCoord.z < 0.5 ? getSkyReflection(reflectViewDir) : texelFetch(colortex4, ivec2(SSRCoord.xy), 0).rgb;
+            vec3 reflectCol = isSkyReflection ? getSkyReflection(feetPlayerPos, reflectPlayerDir) : texelFetch(colortex4, ivec2(SSRCoord.xy), 0).rgb;
         #endif
     #else
-        vec3 reflectCol = getSkyReflection(reflectViewDir);
+        vec3 reflectCol = getSkyReflection(feetPlayerPos, reflectViewDir);
     #endif
 
     // Modified version of BSL's reflection PBR calculation

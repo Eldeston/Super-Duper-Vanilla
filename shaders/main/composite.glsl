@@ -33,7 +33,7 @@
 
         #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS
             flat out vec3 cloudCol;
-            flat out vec3 cloudStartPos0;
+            flat out vec3 cloudStartPos;
 
             #ifdef DOUBLE_LAYERED_CLOUDS
                 flat out vec3 cloudStartPos1;
@@ -98,12 +98,7 @@
 
                 // Get the 1st layer of volumetric clouds position
                 // Note that the clouds needs to move westward just as in vanilla
-                cloudStartPos0 = vec3(cameraPosition.x + fragmentFrameTime, cameraPosition.y - cloudHeight, cameraPosition.z);
-
-                #ifdef DOUBLE_LAYERED_CLOUDS
-                    // Get the 2nd layer of volumetric clouds position by reusing the 1st layer's position
-                    cloudStartPos1 = vec3(cloudStartPos0.x - 2064.0, cloudStartPos0.y - SECOND_CLOUD_HEIGHT, cloudStartPos0.z - 2064.0);
-                #endif
+                cloudStartPos = vec3(cameraPosition.x + fragmentFrameTime, cameraPosition.y - cloudHeight, cameraPosition.z);
             #endif
         #endif
 
@@ -133,7 +128,7 @@
         #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS
             flat in vec3 cloudCol;
 
-            flat in vec3 cloudStartPos0;
+            flat in vec3 cloudStartPos;
 
             #ifdef DOUBLE_LAYERED_CLOUDS
                 flat in vec3 cloudStartPos1;
@@ -330,7 +325,7 @@
             vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
 
             // Apply deffered shading
-            sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, realSky);
+            sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, feetPlayerPos, mat3(gbufferModelView) * normal, albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, realSky);
 
             // Get basic sky fog color
             vec3 fogSkyCol = getSkyFogRender(nEyePlayerPos);
@@ -368,23 +363,7 @@
             float sphereFar = isSky || feetPlayerDist > cloudDistantFar ? cloudDistantFar : feetPlayerDist * 1.015625;
 
             // Get voxelized clouds
-            vec2 cloudData = voxelClouds(nFeetPlayerPos, cloudStartPos0, sphereFar);
-
-            #ifdef DOUBLE_LAYERED_CLOUDS
-                // Variate by swizzling the 2 cloud channels
-                // cloudData = voxelClouds(nFeetPlayerPos, cloudStartPos1, sphereFar).yx * (1.0 - cloudData * cloudDepthInverse) + cloudData;
-                cloudData = max(voxelClouds(nFeetPlayerPos, cloudStartPos1, sphereFar).yx, cloudData);
-            #endif
-
-            #ifdef DYNAMIC_CLOUDS
-                float fadeTime = saturate(cos(fragmentFrameTime * FADE_SPEED) + 0.5);
-
-                float cloudFinal = mix(mix(cloudData.x, cloudData.y, fadeTime), max(cloudData.x, cloudData.y), rainStrength) * cloudDepthInverse;
-            #else
-                float cloudFinal = mix(cloudData.x, max(cloudData.x, cloudData.y), rainStrength) * cloudDepthInverse;
-            #endif
-
-            sceneColOut = mix(sceneColOut, cloudCol, cloudFinal);
+            sceneColOut = getVoxelClouds(sceneColOut, cloudStartPos, nFeetPlayerPos, sphereFar);
         #endif
 
         // Clamp scene color to prevent NaNs during post processing

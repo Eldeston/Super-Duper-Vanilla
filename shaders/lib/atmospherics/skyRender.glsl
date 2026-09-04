@@ -140,11 +140,9 @@ vec3 getSkyFogRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
 }
 
 // Sky reflection
-vec3 getSkyReflection(in vec3 reflectViewDir){
+vec3 getSkyReflection(in vec3 feetPlayerPos, in vec3 reflectPlayerDir){
     // If player is in lava, return fog color
     if(isEyeInWater == 2) return fogColor;
-
-    vec3 reflectPlayerDir = mat3(gbufferModelViewInverse) * reflectViewDir;
 
     // Rotate normalized player position to shadow space
     vec3 skyPos = mat3(shadowModelView) * reflectPlayerDir;
@@ -157,26 +155,8 @@ vec3 getSkyReflection(in vec3 reflectViewDir){
     vec3 finalCol = getSkyHalf(reflectPlayerDir, skyPos, getSkyBasic(reflectPlayerDir.y, skyPos.z));
 
     #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
-        if(eyeBrightFact > 0.00390625){
-            // Get voxelized clouds
-            vec2 cloudData = voxelClouds(reflectPlayerDir, cloudStartPos0, cloudDistantFar);
-
-            #ifdef DOUBLE_LAYERED_CLOUDS
-                // Variate by swizzling the 2 cloud channels
-                // cloudData = voxelClouds(nFeetPlayerPos, cloudStartPos1, cloudDistantFar).yx * (1.0 - cloudData * cloudDepthInverse) + cloudData;
-                cloudData = max(voxelClouds(reflectPlayerDir, cloudStartPos1, cloudDistantFar).yx, cloudData);
-            #endif
-
-            #ifdef DYNAMIC_CLOUDS
-                float fadeTime = saturate(cos(fragmentFrameTime * FADE_SPEED) + 0.5);
-
-                float cloudFinal = mix(mix(cloudData.x, cloudData.y, fadeTime), max(cloudData.x, cloudData.y), rainStrength) * cloudDepthInverse;
-            #else
-                float cloudFinal = mix(cloudData.x, max(cloudData.x, cloudData.y), rainStrength) * cloudDepthInverse;
-            #endif
-
-            finalCol = mix(finalCol, cloudCol, cloudFinal);
-        }
+        // Get voxelized clouds
+        if(eyeBrightFact > 0.00390625) finalCol = getVoxelClouds(finalCol, cloudStartPos + feetPlayerPos, reflectPlayerDir, cloudDistantFar);
     #endif
 
     // Do a simple void gradient calculation when underwater
