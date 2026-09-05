@@ -143,7 +143,6 @@
     uniform float borderFar;
 
     uniform float far;
-    uniform float near;
 
     uniform float darkEffectFactor;
 
@@ -254,6 +253,8 @@
     #endif
 
     #if OUTLINES != 0
+        uniform float near;
+
         #include "/lib/post/outline.glsl"
     #endif
 
@@ -265,11 +266,10 @@
     #include "/lib/lighting/complexShadingDeferred.glsl"
 
     void main(){
+        bool realSky = false;
         // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
-
-        bool realSky = false;
-
+        // Get screen space depth
         float depth = getDepth(depthtex0, screenTexelCoord, 0);
 
         // Distant Horizons and Voxy apparently uses a different depth texture
@@ -295,6 +295,8 @@
 
         // Get eye player pos
         vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
+        // Get feet player pos
+        vec3 feetPlayerPos = eyePlayerPos + gbufferModelViewInverse[3].xyz;
 
         // Get view distance
         float viewDot = lengthSquared(viewPos);
@@ -337,7 +339,7 @@
         vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
 
         // Apply deffered shading
-        sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, eyePlayerPos + gbufferModelViewInverse[3].xyz, mat3(gbufferModelView) * normal, albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, realSky);
+        sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, feetPlayerPos, mat3(gbufferModelView) * normal, albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, realSky);
 
         #if OUTLINES != 0
             // Outline calculation, rejecting materials with no normal and sky
@@ -354,7 +356,7 @@
         // Get basic sky fog color
         vec3 fogSkyCol = getSkyFogRender(nEyePlayerPos, skyPos, currSkyCol);
         // Get fog factor
-        float fogFactor = getFogFactor(viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
+        float fogFactor = getFogFactor(viewDist, nEyePlayerPos.y, feetPlayerPos.y + cameraPosition.y);
 
         // Border fog
         #ifdef BORDER_FOG

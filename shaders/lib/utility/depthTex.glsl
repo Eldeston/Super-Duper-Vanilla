@@ -1,3 +1,11 @@
+// Not needed yet, too expensive for LODs
+// #ifdef DISTANT_HORIZONS
+//     float resizeDepthDH(in float oldDepth){
+//         float newDepth = getViewDepth(dhProjectionInverse, oldDepth);
+//         return min(1.0, getScreenDepth(gbufferProjection, newDepth));
+//     }
+// #endif
+
 float getDepthTex(in ivec2 screenTexelCoord){
     #if defined DISTANT_HORIZONS
         float mainDepth = getDepth(depthtex0, screenTexelCoord, 0);
