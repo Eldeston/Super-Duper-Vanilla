@@ -46,7 +46,7 @@
 
     uniform sampler2D colortex4;
 
-    #ifdef BLOOM
+    #if defined LENS_FLARE && defined WORLD_LIGHT || defined BLOOM
         uniform sampler2D colortex0;
     #endif
 
