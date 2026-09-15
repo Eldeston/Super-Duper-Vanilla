@@ -81,46 +81,46 @@
 
         uniform sampler2D colortex0;
 
-        vec3 getBloomTile(in vec2 coords, in float invScale){
-            // Remap to bloom tile texture coordinates
-            vec2 baseCoord = texCoord * invScale + coords;
-
-            // Pixel size
-            vec2 pixelSize = vec2(bloomPixelWidth, bloomPixelHeight);
-
-            vec2 topRightCorner = baseCoord + pixelSize;
-            vec2 bottomLeftCorner = baseCoord - pixelSize;
-
-            // Apply box blur all tiles
-            return (textureLod(colortex0, bottomLeftCorner, 0).rgb + textureLod(colortex0, topRightCorner, 0).rgb +
-                textureLod(colortex0, vec2(bottomLeftCorner.x, topRightCorner.y), 0).rgb + textureLod(colortex0, vec2(topRightCorner.x, bottomLeftCorner.y), 0).rgb) * 0.25;
-        }
-
-        // 9‑tap tent filter
         // vec3 getBloomTile(in vec2 coords, in float invScale){
         //     // Remap to bloom tile texture coordinates
         //     vec2 baseCoord = texCoord * invScale + coords;
 
-        //     // Bloom pixel size
-        //     vec2 pixelOffSet = vec2(bloomPixelWidth, bloomPixelHeight) * 2.0;
+        //     // Pixel size
+        //     vec2 pixelSize = vec2(bloomPixelWidth, bloomPixelHeight);
 
-        //     // Axial neighbors
-        //     vec3 bloomCol0 = textureLod(colortex0, vec2(baseCoord.x + pixelOffSet.x, baseCoord.y), 0).rgb;
-        //     bloomCol0 += textureLod(colortex0, vec2(baseCoord.x - pixelOffSet.x, baseCoord.y), 0).rgb;
-        //     bloomCol0 += textureLod(colortex0, vec2(baseCoord.x, baseCoord.y + pixelOffSet.y), 0).rgb;
-        //     bloomCol0 += textureLod(colortex0, vec2(baseCoord.x, baseCoord.y - pixelOffSet.y), 0).rgb;
+        //     vec2 topRightCorner = baseCoord + pixelSize;
+        //     vec2 bottomLeftCorner = baseCoord - pixelSize;
 
-        //     vec2 topRight = baseCoord + pixelOffSet * 0.5;
-        //     vec2 bottomLeft = baseCoord - pixelOffSet * 0.5;
-
-        //     // Diagonals
-        //     vec3 bloomCol1 = textureLod(colortex0, topRight, 0).rgb;
-        //     bloomCol1 += textureLod(colortex0, bottomLeft, 0).rgb;
-        //     bloomCol1 += textureLod(colortex0, vec2(topRight.x, bottomLeft.y), 0).rgb;
-        //     bloomCol1 += textureLod(colortex0, vec2(bottomLeft.x, topRight.y), 0).rgb;
-
-        //     return (bloomCol0 + bloomCol1 * 2.0) / 12.0;
+        //     // Apply box blur all tiles
+        //     return (textureLod(colortex0, bottomLeftCorner, 0).rgb + textureLod(colortex0, topRightCorner, 0).rgb +
+        //         textureLod(colortex0, vec2(bottomLeftCorner.x, topRightCorner.y), 0).rgb + textureLod(colortex0, vec2(topRightCorner.x, bottomLeftCorner.y), 0).rgb) * 0.25;
         // }
+
+        // 9‑tap tent filter
+        vec3 getBloomTile(in vec2 coords, in float invScale){
+            // Remap to bloom tile texture coordinates
+            vec2 baseCoord = texCoord * invScale + coords;
+
+            // Bloom pixel size
+            vec2 pixelOffSet = vec2(bloomPixelWidth, bloomPixelHeight) * 2.0;
+
+            // Axial neighbors
+            vec3 bloomCol0 = textureLod(colortex0, vec2(baseCoord.x + pixelOffSet.x, baseCoord.y), 0).rgb;
+            bloomCol0 += textureLod(colortex0, vec2(baseCoord.x - pixelOffSet.x, baseCoord.y), 0).rgb;
+            bloomCol0 += textureLod(colortex0, vec2(baseCoord.x, baseCoord.y + pixelOffSet.y), 0).rgb;
+            bloomCol0 += textureLod(colortex0, vec2(baseCoord.x, baseCoord.y - pixelOffSet.y), 0).rgb;
+
+            vec2 topRight = baseCoord + pixelOffSet * 0.5;
+            vec2 bottomLeft = baseCoord - pixelOffSet * 0.5;
+
+            // Diagonals
+            vec3 bloomCol1 = textureLod(colortex0, topRight, 0).rgb;
+            bloomCol1 += textureLod(colortex0, bottomLeft, 0).rgb;
+            bloomCol1 += textureLod(colortex0, vec2(topRight.x, bottomLeft.y), 0).rgb;
+            bloomCol1 += textureLod(colortex0, vec2(bottomLeft.x, topRight.y), 0).rgb;
+
+            return (bloomCol0 + bloomCol1 * 2.0) / 12.0;
+        }
     #endif
 
     #if defined LENS_FLARE && defined WORLD_LIGHT
