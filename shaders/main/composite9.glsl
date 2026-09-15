@@ -16,39 +16,13 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    #if defined LENS_FLARE && defined WORLD_LIGHT
-        flat out vec3 sRGBLightCol;
-        flat out vec3 shdLightDirScreenSpace;
-    #endif
-
-    noperspective out vec2 texCoord;
-
-    #if defined LENS_FLARE && defined WORLD_LIGHT
-        uniform mat4 gbufferProjection;
-        uniform mat4 gbufferModelView;
-        uniform mat4 shadowModelView;
-
-        #ifndef FORCE_DISABLE_WEATHER
-            uniform float rainStrength;
-        #endif
-
-        #ifndef FORCE_DISABLE_DAY_CYCLE
-            uniform float dayCycle;
-            uniform float twilightPhase;
-        #endif
-
-        #include "/lib/utility/projectionFunctions.glsl"
+    #ifdef VIGNETTE
+        noperspective out vec2 texCoord;
     #endif
 
     void main(){
-        texCoord = gl_MultiTexCoord0.xy;
-
-        #if defined LENS_FLARE && defined WORLD_LIGHT
-            // Get sRGB light postColOut
-            sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
-
-            // Get shadow light view direction in screen space
-            shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), gbufferProjection[1].y * 0.72794047);
+        #ifdef VIGNETTE
+            texCoord = gl_MultiTexCoord0.xy;
         #endif
 
         gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
@@ -66,12 +40,9 @@
         layout(location = 1) out vec4 temporalDataOut; // colortex5
     #endif
 
-    #if defined LENS_FLARE && defined WORLD_LIGHT
-        flat in vec3 sRGBLightCol;
-        flat in vec3 shdLightDirScreenSpace;
+    #ifdef VIGNETTE
+        noperspective in vec2 texCoord;
     #endif
-
-    noperspective in vec2 texCoord;
 
     uniform sampler2D colortex4;
 
@@ -85,30 +56,6 @@
         uniform sampler2D colortex5;
     #endif
 
-    #if defined LENS_FLARE && defined WORLD_LIGHT
-        uniform float aspectRatio;
-
-        uniform float blindness;
-        uniform float darknessFactor;
-
-        uniform sampler2D depthtex0;
-
-        #ifdef DISTANT_HORIZONS
-            uniform sampler2D dhDepthTex0;
-        #endif
-
-        #ifdef VOXY
-            uniform sampler2D vxDepthTexOpaque;
-        #endif
-
-        #ifndef FORCE_DISABLE_WEATHER
-            uniform float rainStrength;
-        #endif
-
-        #include "/lib/post/lensFlare.glsl"
-        #include "/lib/utility/depthTex.glsl"
-    #endif
-
     #include "/lib/utility/noiseFunctions.glsl"
 
     #include "/lib/post/tonemap.glsl"
@@ -120,15 +67,10 @@
         // Get scene color
         postColOut = texelFetch(colortex4, screenTexelCoord, 0).rgb;
 
-        #ifdef BLOOM
+        #if defined LENS_FLARE && defined WORLD_LIGHT || defined BLOOM
             // Uncompress the HDR colors and upscale
             vec3 bloomCol = texelFetch(colortex0, ivec2(gl_FragCoord.xy * 0.5), 0).rgb;
             postColOut += bloomCol;
-        #endif
-
-        #if defined LENS_FLARE && defined WORLD_LIGHT
-            if(getDepthTex(shdLightDirScreenSpace.xy) == 1)
-                postColOut += getLensFlare(texCoord - 0.5, shdLightDirScreenSpace.xy - 0.5);
         #endif
 
         #ifdef AUTO_EXPOSURE

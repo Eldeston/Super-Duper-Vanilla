@@ -11,19 +11,49 @@
 ================================ /// Super Duper Vanilla v1.3.9 /// ================================
 */
 
-/// Buffer features: Bloom blur 2nd pass
+/// Buffer features: Bloom blur upsampling
 
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    #ifdef BLOOM
+    #if defined LENS_FLARE && defined WORLD_LIGHT
+        flat out vec3 sRGBLightCol;
+        flat out vec3 shdLightDirScreenSpace;
+    #endif
+
+    #if defined LENS_FLARE && defined WORLD_LIGHT || defined BLOOM
         noperspective out vec2 texCoord;
+    #endif
+
+    #if defined LENS_FLARE && defined WORLD_LIGHT
+        uniform mat4 gbufferProjection;
+        uniform mat4 gbufferModelView;
+        uniform mat4 shadowModelView;
+
+        #ifndef FORCE_DISABLE_WEATHER
+            uniform float rainStrength;
+        #endif
+
+        #ifndef FORCE_DISABLE_DAY_CYCLE
+            uniform float dayCycle;
+            uniform float twilightPhase;
+        #endif
+
+        #include "/lib/utility/projectionFunctions.glsl"
     #endif
 
     void main(){
         #ifdef BLOOM
             // Get buffer texture coordinates
             texCoord = gl_MultiTexCoord0.xy;
+        #endif
+
+        #if defined LENS_FLARE && defined WORLD_LIGHT
+            // Get sRGB light postColOut
+            sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
+
+            // Get shadow light view direction in screen space
+            shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), gbufferProjection[1].y * 0.72794047);
         #endif
 
         gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
@@ -34,11 +64,18 @@
 
 #ifdef FRAGMENT
     /* RENDERTARGETS: 0 */
-    layout(location = 0) out vec3 bloomColOut; // colortex0
+    layout(location = 0) out vec3 postColOut; // colortex0
+
+    #if defined LENS_FLARE && defined WORLD_LIGHT
+        flat in vec3 sRGBLightCol;
+        flat in vec3 shdLightDirScreenSpace;
+    #endif
+
+    #if defined LENS_FLARE && defined WORLD_LIGHT || defined BLOOM
+        noperspective in vec2 texCoord;
+    #endif
 
     #ifdef BLOOM
-        noperspective in vec2 texCoord;
-
         uniform float bloomPixelWidth;
         uniform float bloomPixelHeight;
 
@@ -86,7 +123,33 @@
         // }
     #endif
 
+    #if defined LENS_FLARE && defined WORLD_LIGHT
+        uniform float aspectRatio;
+
+        uniform float blindness;
+        uniform float darknessFactor;
+
+        uniform sampler2D depthtex0;
+
+        #ifdef DISTANT_HORIZONS
+            uniform sampler2D dhDepthTex0;
+        #endif
+
+        #ifdef VOXY
+            uniform sampler2D vxDepthTexOpaque;
+        #endif
+
+        #ifndef FORCE_DISABLE_WEATHER
+            uniform float rainStrength;
+        #endif
+
+        #include "/lib/post/lensFlare.glsl"
+        #include "/lib/utility/depthTex.glsl"
+    #endif
+
     void main(){
+        postColOut = vec3(0);
+
         #ifdef BLOOM
             // Uncompress the HDR colors and upscale
             vec3 bloomCol = getBloomTile(vec2(0, 0), 0.5);
@@ -100,9 +163,12 @@
 
             float bloomLuma = sumOf(bloomCol);
             // Apply bloom by tonemapped luma and BLOOM_STRENGTH
-            bloomColOut = bloomCol * ((BLOOM_STRENGTH * bloomLuma) / (3.0 + bloomLuma));
-        #else
-            bloomColOut = vec3(0);
+            postColOut += bloomCol * ((BLOOM_STRENGTH * bloomLuma) / (3.0 + bloomLuma));
+        #endif
+
+        #if defined LENS_FLARE && defined WORLD_LIGHT
+            if(getDepthTex(shdLightDirScreenSpace.xy) == 1)
+                postColOut += getLensFlare(texCoord - 0.5, shdLightDirScreenSpace.xy - 0.5);
         #endif
     }
 #endif

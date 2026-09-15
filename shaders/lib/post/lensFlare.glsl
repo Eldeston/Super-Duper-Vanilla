@@ -1,8 +1,8 @@
 float lensShape(in vec2 lensCoord){
     #if WORLD_SUN_MOON == 2
-        return abs(length(lensCoord) - cubed(WORLD_SUN_MOON_SIZE));
+        return abs(length(lensCoord) - cubed(WORLD_SUN_MOON_SIZE) * 4.0);
     #else
-        return length(lensCoord) - cubed(WORLD_SUN_MOON_SIZE);
+        return length(lensCoord) - cubed(WORLD_SUN_MOON_SIZE) * 4.0;
     #endif
 }
 
