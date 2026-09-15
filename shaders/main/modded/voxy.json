@@ -1,5 +1,6 @@
 {
     "version": 1,
+    "excludeLodsFromVanillaDepth": true,
     "uniforms": [
         "far",
         "pixelWidth",
