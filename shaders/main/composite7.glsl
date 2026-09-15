@@ -11,46 +11,27 @@
 ================================ /// Super Duper Vanilla v1.3.9 /// ================================
 */
 
-/// Buffer features: Lens flare, applied bloom, auto exposure, tonemapping, vignette and postColOut grading
+/// Buffer features: Bloom blur 2nd pass
 
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    #if defined LENS_FLARE && defined WORLD_LIGHT
-        flat out vec3 sRGBLightCol;
-        flat out vec3 shdLightDirScreenSpace;
-    #endif
+    #ifdef BLOOM
+        flat out float offSet0;
+        flat out float offSet1;
 
-    noperspective out vec2 texCoord;
+        noperspective out vec2 texCoord;
 
-    #if defined LENS_FLARE && defined WORLD_LIGHT
-        uniform mat4 gbufferProjection;
-
-        uniform mat4 gbufferModelView;
-
-        uniform mat4 shadowModelView;
-
-        #ifndef FORCE_DISABLE_WEATHER
-            uniform float rainStrength;
-        #endif
-
-        #ifndef FORCE_DISABLE_DAY_CYCLE
-            uniform float dayCycle;
-            uniform float twilightPhase;
-        #endif
-
-        #include "/lib/utility/projectionFunctions.glsl"
+        uniform float bloomPixelHeight;
     #endif
 
     void main(){
-        texCoord = gl_MultiTexCoord0.xy;
+        #ifdef BLOOM
+            offSet0 = bloomPixelHeight * 3.2307692308;
+            offSet1 = bloomPixelHeight * 1.3846153846;
 
-        #if defined LENS_FLARE && defined WORLD_LIGHT
-            // Get sRGB light postColOut
-            sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
-
-            // Get shadow light view direction in screen space
-            shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), gbufferProjection[1].y * 0.72794047);
+            // Get buffer texture coordinates
+            texCoord = gl_MultiTexCoord0.xy;
         #endif
 
         gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
@@ -60,183 +41,68 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    /* RENDERTARGETS: 3 */
-    layout(location = 0) out vec3 postColOut; // colortex3
-
-    #ifdef AUTO_EXPOSURE
-        /* RENDERTARGETS: 3,5 */
-        layout(location = 1) out vec4 temporalDataOut; // colortex5
-    #endif
-
-    #if defined LENS_FLARE && defined WORLD_LIGHT
-        flat in vec3 sRGBLightCol;
-        flat in vec3 shdLightDirScreenSpace;
-    #endif
-
-    noperspective in vec2 texCoord;
-
-    uniform sampler2D colortex4;
-
-    #ifdef AUTO_EXPOSURE
-        uniform float frameTime;
-
-        uniform sampler2D colortex5;
-    #endif
+    /* RENDERTARGETS: 0 */
+    layout(location = 0) out vec3 bloomColOut; // colortex0
 
     #ifdef BLOOM
-        uniform float viewWidth;
-        uniform float viewHeight;
+        flat in float offSet0;
+        flat in float offSet1;
 
-        uniform float pixelWidth;
-        uniform float pixelHeight;
+        noperspective in vec2 texCoord;
 
+        // uniform float bloomPixelWidth;
+        // uniform float bloomPixelHeight;
+
+        // No need to use mipmapping in this 2nd bloom pass, so we'll utilize texelFetch for some sweet, sweet performance
         uniform sampler2D colortex0;
 
-        // from http://www.java-gaming.org/index.php?topic=35123.0
-        vec4 cubic(float v){
-            const float cubicConst = 1.0 / 6.0;
+        bool isBloomTile(in vec3 bloomCol, in vec2 bloomPos, in int scale, in int LOD){
+            // Get bloom UV
+            vec2 bloomUv = bloomPos * scale;
 
-            vec4 n = vec4(1, 2, 3, 4) - v;
-            vec4 s = n * n * n;
-            float x = s.x;
-            float y = s.y - 4.0 * s.x;
-            float z = s.z - 4.0 * s.y + 6.0 * s.x;
-            float w = 6.0 - x - y - z;
-            return vec4(x, y, z, w) * cubicConst;
-        }
-
-        vec3 getBloomTile(in vec2 coords, in float invScale){
-            vec2 texSize = vec2(viewWidth, viewHeight);
-            vec2 invTexSize = vec2(pixelWidth, pixelHeight);
-            
-            vec2 texCoords = (texCoord * invScale + coords) * texSize - 0.5;
-        
-            vec2 fxy = fract(texCoords);
-            texCoords -= fxy;
-
-            vec4 xcubic = cubic(fxy.x);
-            vec4 ycubic = cubic(fxy.y);
-
-            vec4 c = texCoords.xxyy + vec2(-0.5, 1.5).xyxy;
-            
-            vec4 s = vec4(xcubic.xz + xcubic.yw, ycubic.xz + ycubic.yw);
-            vec4 offset = c + vec4(xcubic.yw, ycubic.yw) / s;
-            
-            offset *= invTexSize.xxyy;
-            
-            vec3 sample0 = textureLod(colortex0, offset.xz, 0).rgb;
-            vec3 sample1 = textureLod(colortex0, offset.yz, 0).rgb;
-            vec3 sample2 = textureLod(colortex0, offset.xw, 0).rgb;
-            vec3 sample3 = textureLod(colortex0, offset.yw, 0).rgb;
-
-            float sx = s.x / (s.x + s.y);
-            float sy = s.z / (s.z + s.w);
-
-            return mix(mix(sample3, sample2, sx), mix(sample1, sample0, sx), sy);
+            // Apply padding
+            return bloomUv.x < 0 || bloomUv.x > 1 || bloomUv.y < 0 || bloomUv.y > 1;
         }
     #endif
-
-    #if defined LENS_FLARE && defined WORLD_LIGHT
-        uniform float blindness;
-        uniform float darknessFactor;
-
-        uniform float aspectRatio;
-
-        uniform sampler2D depthtex0;
-
-        #ifdef DISTANT_HORIZONS
-            uniform sampler2D dhDepthTex1;
-        #endif
-
-        #ifdef VOXY
-            uniform sampler2D vxDepthTexTranslucent;
-        #endif
-
-        #ifndef FORCE_DISABLE_WEATHER
-            uniform float rainStrength;
-        #endif
-
-        #include "/lib/post/lensFlare.glsl"
-    #endif
-
-    #include "/lib/utility/noiseFunctions.glsl"
-
-    #include "/lib/post/tonemap.glsl"
 
     void main(){
-        // Screen texel coordinates
-        ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
-
-        // Get scene color
-        postColOut = texelFetch(colortex4, screenTexelCoord, 0).rgb;
-
         #ifdef BLOOM
-            // Uncompress the HDR colors and upscale
-            vec3 bloomCol = getBloomTile(vec2(0), 0.25);
-            bloomCol += getBloomTile(vec2(0, 0.2578125), 0.125);
-            bloomCol += getBloomTile(vec2(0.12890625, 0.2578125), 0.0625);
-            bloomCol += getBloomTile(vec2(0.1953125, 0.2578125), 0.03125);
-            bloomCol += getBloomTile(vec2(0.12890625, 0.328125), 0.015625);
+            // Skip empty spaces
+            if(
+                isBloomTile(vec3(0), texCoord, 2, 1) &&
+                isBloomTile(bloomColOut, vec2(texCoord.x, texCoord.y - 0.5078125), 4, 2) &&
+                isBloomTile(bloomColOut, vec2(texCoord.x - 0.2578125, texCoord.y - 0.5078125), 8, 3) &&
+                isBloomTile(bloomColOut, vec2(texCoord.x - 0.390625, texCoord.y - 0.5078125), 16, 4) &&
+                isBloomTile(bloomColOut, vec2(texCoord.x - 0.4609375, texCoord.y - 0.5078125), 32, 5)
+            ){
+                bloomColOut = vec3(0);
+                return;
+            }
 
-            // Average the total samples (1 / 5 bloom tiles multiplied by 1 / 4 samples used for the box blur)
-            bloomCol *= 0.2;
+            // Optimized 9x9 gaussian blur with only 5 texture fetches
+            // Technique from https://www.rastergrid.com/blog/2010/09/efficient-gaussian-blur-with-linear-sampling/
+            vec3 sample0 = textureLod(colortex0, vec2(texCoord.x, texCoord.y - offSet0), 0).rgb +
+                textureLod(colortex0, vec2(texCoord.x, texCoord.y + offSet0), 0).rgb;
+            vec3 sample1 = textureLod(colortex0, vec2(texCoord.x, texCoord.y - offSet1), 0).rgb +
+                textureLod(colortex0, vec2(texCoord.x, texCoord.y + offSet1), 0).rgb;
+            vec3 center = textureLod(colortex0, texCoord, 0).rgb;
 
-            float bloomLuma = sumOf(bloomCol);
-            // Apply bloom by tonemapped luma and BLOOM_STRENGTH
-            postColOut += bloomCol * ((BLOOM_STRENGTH * bloomLuma) / (3.0 + bloomLuma));
+            bloomColOut = sample0 * 0.0702702703 + sample1 * 0.3162162162 + center * 0.2270270270;
+
+            // vec2 pixelOffSet = vec2(bloomPixelWidth, bloomPixelHeight) * 0.75;
+
+            // // center
+            // vec3 kawaseCol = textureLod(colortex0, texCoord, 0).rgb * 4.0;
+
+            // // diagonals
+            // kawaseCol += textureLod(colortex0, texCoord + vec2(-pixelOffSet.x, -pixelOffSet.y), 0).rgb;
+            // kawaseCol += textureLod(colortex0, texCoord + vec2( pixelOffSet.x, -pixelOffSet.y), 0).rgb;
+            // kawaseCol += textureLod(colortex0, texCoord + vec2(-pixelOffSet.x,  pixelOffSet.y), 0).rgb;
+            // kawaseCol += textureLod(colortex0, texCoord + vec2( pixelOffSet.x,  pixelOffSet.y), 0).rgb;
+
+            // bloomColOut = kawaseCol * 0.125;
+        #else
+            bloomColOut = vec3(0);
         #endif
-
-        #if defined LENS_FLARE && defined WORLD_LIGHT
-            #if defined DISTANT_HORIZONS
-                bool isSky = textureLod(dhDepthTex1, shdLightDirScreenSpace.xy, 0).x == 1 && getDepth(depthtex0, shdLightDirScreenSpace.xy, 0) == 1;
-            #elif defined VOXY
-                bool isSky = textureLod(vxDepthTexTranslucent, shdLightDirScreenSpace.xy, 0).x == 1 && getDepth(depthtex0, shdLightDirScreenSpace.xy, 0) == 1;
-            #else
-                bool isSky = getDepth(depthtex0, shdLightDirScreenSpace.xy, 0) == 1;
-            #endif
-
-            #ifdef FORCE_DISABLE_WEATHER
-                if(isSky) postColOut += getLensFlare(texCoord - 0.5, shdLightDirScreenSpace.xy - 0.5) * (1.0 - blindness) * (1.0 - darknessFactor);
-            #else
-                if(isSky) postColOut += getLensFlare(texCoord - 0.5, shdLightDirScreenSpace.xy - 0.5) * (1.0 - blindness) * (1.0 - darknessFactor) * (1.0 - rainStrength);
-            #endif
-        #endif
-
-        #ifdef AUTO_EXPOSURE
-            // Get center pixel current average scene luminance and mix previous and current pixel...
-            float centerPixLuminance = sumOf(textureLod(colortex4, vec2(0.5), 8).rgb);
-
-            // Accumulate current luminance
-            float frameTimeExposure = AUTO_EXPOSURE_SPEED * frameTime;
-            float tempPixLuminance = mix(texelFetch(colortex5, ivec2(1), 0).a, centerPixLuminance, frameTimeExposure / (1.0 + frameTimeExposure));
-
-            // Apply auto exposure by dividing it by the pixel's luminance in sRGB
-            const float invMinimumExposure = 1.0 / MINIMUM_EXPOSURE;
-            postColOut *= min(inversesqrt(tempPixLuminance), invMinimumExposure);
-
-            #if (defined PREVIOUS_FRAME && (defined SSR || defined SSGI)) || ANTI_ALIASING >= 2
-                temporalDataOut = vec4(texelFetch(colortex5, screenTexelCoord, 0).rgb, tempPixLuminance);
-            #else
-                temporalDataOut = vec4(0, 0, 0, tempPixLuminance);
-            #endif
-        #endif
-
-        #ifdef VIGNETTE
-            postColOut *= max(0.0, 1.0 - lengthSquared(texCoord - 0.5) * VIGNETTE_STRENGTH);
-        #endif
-
-        // Color tinting, exposure, and tonemapping
-        const vec3 exposureTint = vec3(TINT_R, TINT_G, TINT_B) * (EXPOSURE * 0.00392156863);
-        postColOut = modifiedReinhardJodieExtended(postColOut * exposureTint);
-
-        // Gamma correction
-        postColOut = toSRGB(postColOut);
-
-        // Contrast and saturation
-        postColOut = contrast(postColOut, CONTRAST);
-        postColOut = saturation(postColOut, SATURATION);
-
-        // Apply dithering to break postColOut banding
-        postColOut += (texelFetch(noisetex, screenTexelCoord & 255, 0).x - 0.5) * 0.00392156863;
     }
 #endif

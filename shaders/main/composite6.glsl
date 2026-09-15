@@ -17,11 +17,19 @@
 
 #ifdef VERTEX
     #ifdef BLOOM
+        flat out float offSet0;
+        flat out float offSet1;
+
         noperspective out vec2 texCoord;
+
+        uniform float bloomPixelWidth;
     #endif
 
     void main(){
         #ifdef BLOOM
+            offSet0 = bloomPixelWidth * 3.2307692308;
+            offSet1 = bloomPixelWidth * 1.3846153846;
+
             // Get buffer texture coordinates
             texCoord = gl_MultiTexCoord0.xy;
         #endif
@@ -37,22 +45,23 @@
     layout(location = 0) out vec3 bloomColOut; // colortex0
 
     #ifdef BLOOM
+        flat in float offSet0;
+        flat in float offSet1;
+
         noperspective in vec2 texCoord;
+
+        // uniform float bloomPixelWidth;
+        // uniform float bloomPixelHeight;
 
         // No need to use mipmapping in this 2nd bloom pass, so we'll utilize texelFetch for some sweet, sweet performance
         uniform sampler2D colortex0;
-
-        uniform float pixelHeight;
 
         bool isBloomTile(in vec3 bloomCol, in vec2 bloomPos, in int scale, in int LOD){
             // Get bloom UV
             vec2 bloomUv = bloomPos * scale;
 
             // Apply padding
-            if(bloomUv.x < 0 || bloomUv.x > 1 || bloomUv.y < 0 || bloomUv.y > 1) return true;
-
-            // Output bloom
-            return false;
+            return bloomUv.x < 0 || bloomUv.x > 1 || bloomUv.y < 0 || bloomUv.y > 1;
         }
     #endif
 
@@ -60,11 +69,11 @@
         #ifdef BLOOM
             // Skip empty spaces
             if(
-                isBloomTile(vec3(0), texCoord, 4, 2) &&
-                isBloomTile(bloomColOut, vec2(texCoord.x, texCoord.y - 0.2578125), 8, 3) &&
-                isBloomTile(bloomColOut, vec2(texCoord.x - 0.12890625, texCoord.y - 0.2578125), 16, 4) &&
-                isBloomTile(bloomColOut, vec2(texCoord.x - 0.1953125, texCoord.y - 0.2578125), 32, 5) &&
-                isBloomTile(bloomColOut, vec2(texCoord.x - 0.12890625, texCoord.y - 0.328125), 64, 6)
+                isBloomTile(vec3(0), texCoord, 2, 1) &&
+                isBloomTile(bloomColOut, vec2(texCoord.x, texCoord.y - 0.5078125), 4, 2) &&
+                isBloomTile(bloomColOut, vec2(texCoord.x - 0.2578125, texCoord.y - 0.5078125), 8, 3) &&
+                isBloomTile(bloomColOut, vec2(texCoord.x - 0.390625, texCoord.y - 0.5078125), 16, 4) &&
+                isBloomTile(bloomColOut, vec2(texCoord.x - 0.4609375, texCoord.y - 0.5078125), 32, 5)
             ){
                 bloomColOut = vec3(0);
                 return;
@@ -72,14 +81,26 @@
 
             // Optimized 9x9 gaussian blur with only 5 texture fetches
             // Technique from https://www.rastergrid.com/blog/2010/09/efficient-gaussian-blur-with-linear-sampling/
-            
-            vec3 sample0 = textureLod(colortex0, vec2(texCoord.x, texCoord.y - pixelHeight * 3.2307692308), 0).rgb +
-                textureLod(colortex0, vec2(texCoord.x, texCoord.y + pixelHeight * 3.2307692308), 0).rgb;
-            vec3 sample1 = textureLod(colortex0, vec2(texCoord.x, texCoord.y - pixelHeight * 1.3846153846), 0).rgb +
-                textureLod(colortex0, vec2(texCoord.x, texCoord.y + pixelHeight * 1.3846153846), 0).rgb;
-            vec3 center = textureLod(colortex0, texCoord.xy, 0).rgb;
+            vec3 sample0 = textureLod(colortex0, vec2(texCoord.x - offSet0, texCoord.y), 0).rgb +
+                textureLod(colortex0, vec2(texCoord.x + offSet0, texCoord.y), 0).rgb;
+            vec3 sample1 = textureLod(colortex0, vec2(texCoord.x - offSet1, texCoord.y), 0).rgb +
+                textureLod(colortex0, vec2(texCoord.x + offSet1, texCoord.y), 0).rgb;
+            vec3 center = textureLod(colortex0, texCoord, 0).rgb;
 
             bloomColOut = sample0 * 0.0702702703 + sample1 * 0.3162162162 + center * 0.2270270270;
+
+            // vec2 pixelOffSet = vec2(bloomPixelWidth, bloomPixelHeight) * 0.75;
+
+            // // center
+            // vec3 kawaseCol = textureLod(colortex0, texCoord, 0).rgb * 4.0;
+
+            // // diagonals
+            // kawaseCol += textureLod(colortex0, texCoord + vec2(-pixelOffSet.x, -pixelOffSet.y), 0).rgb;
+            // kawaseCol += textureLod(colortex0, texCoord + vec2( pixelOffSet.x, -pixelOffSet.y), 0).rgb;
+            // kawaseCol += textureLod(colortex0, texCoord + vec2(-pixelOffSet.x,  pixelOffSet.y), 0).rgb;
+            // kawaseCol += textureLod(colortex0, texCoord + vec2( pixelOffSet.x,  pixelOffSet.y), 0).rgb;
+
+            // bloomColOut = kawaseCol * 0.125;
         #else
             bloomColOut = vec3(0);
         #endif

@@ -11,25 +11,19 @@
 ================================ /// Super Duper Vanilla v1.3.9 /// ================================
 */
 
-/// Buffer features: DOF blur
+/// Buffer features: Motion blur
 
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    #ifdef DOF
-        flat out float fovMult;
-
+    #ifdef MOTION_BLUR
         noperspective out vec2 texCoord;
-
-        uniform mat4 gbufferProjection;
     #endif
 
     void main(){
-        #ifdef DOF
+        #ifdef MOTION_BLUR
             // Get buffer texture coordinates
             texCoord = gl_MultiTexCoord0.xy;
-
-            fovMult = gbufferProjection[1].y * 0.04549628; // 0.72794047 * 0.0625
         #endif
 
         gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
@@ -44,75 +38,46 @@
 
     uniform sampler2D colortex4;
 
-    #ifdef DOF
-        // Needs to be enabled by force to be able to use LOD fully even with textureLod
-        const bool colortex4MipmapEnabled = true;
-
-        // Precalculated dof offsets by vec2(cos(x), sin(x))
-        const vec2 dofOffSets[15] = vec2[15](
-            vec2(0.91354546, 0.40673664),
-            vec2(0.66913061, 0.74314483),
-            vec2(0.30901699, 0.95105652),
-            vec2(-0.10452846, 0.99452190),
-            vec2(-0.5, 0.86602540),
-            vec2(-0.80901699, 0.58778525),
-            vec2(-0.97814760, 0.20791169),
-            vec2(-0.97814760, -0.20791169),
-            vec2(-0.80901699, -0.58778525),
-            vec2(-0.5, -0.86602540),
-            vec2(-0.10452846, -0.99452190),
-            vec2(0.30901699, -0.95105652),
-            vec2(0.66913061, -0.74314483),
-            vec2(0.91354546, -0.40673664),
-            vec2(1, 0)
-        );
-
-        flat in float fovMult;
-
+    #ifdef MOTION_BLUR
         noperspective in vec2 texCoord;
 
         uniform float viewWidth;
         uniform float viewHeight;
-        uniform float centerDepthSmooth;
 
-        uniform sampler2D depthtex1;
+        uniform vec3 camPosDelta;
+
+        uniform mat4 gbufferModelViewInverse;
+        uniform mat4 gbufferPreviousModelView;
+
+        uniform mat4 gbufferProjectionInverse;
+        uniform mat4 gbufferPreviousProjection;
+
+        uniform sampler2D depthtex0;
+
+        #include "/lib/utility/projectionFunctions.glsl"
+        #include "/lib/utility/prevProjectionFunctions.glsl"
+
+        #include "/lib/utility/noiseFunctions.glsl"
+
+        #include "/lib/post/motionBlur.glsl"
     #endif
 
     void main(){
         // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
 
-        #ifdef DOF
+        // Get scene color
+        sceneColOut = texelFetch(colortex4, screenTexelCoord, 0).rgb;
+
+        #ifdef MOTION_BLUR
             // Declare and get positions
-            float depth = getDepth(depthtex1, screenTexelCoord, 0);
+            float depth = getDepth(depthtex0, screenTexelCoord, 0);
 
             // Return immediately if player hand
-            if(depth <= 0.56){
-                sceneColOut = texelFetch(colortex4, screenTexelCoord, 0).rgb;
-                return;
-            }
-            
-            // CoC calculation by Capt Tatsu from BSL
-            float CoC = max(0.0, abs(depth - centerDepthSmooth) * DOF_STRENGTH - 0.01);
-            CoC = CoC * inversesqrt(CoC * CoC + 0.1);
+            if(depth <= 0.56) return;
 
-            // We'll use a total of 16 samples for this blur (1 / 16)
-            float blurRadius = min(viewWidth, viewHeight) * fovMult * CoC;
-            float currDofLOD = log2(blurRadius);
-            vec2 blurRes = blurRadius / vec2(viewWidth, viewHeight);
-
-            // Get center pixel color with LOD
-            vec3 dofColor = textureLod(colortex4, texCoord, currDofLOD).rgb;
-            for(uint i = 0u; i < 15u; i++){
-                // Rotate offsets and sample
-                dofColor += textureLod(colortex4, texCoord - dofOffSets[i] * blurRes, currDofLOD).rgb;
-            }
-
-            // 15 offsetted samples + 1 sample (1 / 16)
-            sceneColOut = dofColor * 0.0625;
-        #else
-            // Get scene color
-            sceneColOut = texelFetch(colortex4, screenTexelCoord, 0).rgb;
+            // Apply motion blur
+            sceneColOut = motionBlur(sceneColOut, depth, texelFetch(noisetex, screenTexelCoord & 255, 0).x);
         #endif
     }
 #endif
