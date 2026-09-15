@@ -19,6 +19,9 @@ vec4 complexShadingLOD(in dataPBR material, in vec2 lmCoord, in vec3 feetPlayerP
     // Calculate block light
     totalIllumination += toLinear((float(material.emissive == 0) * 0.25 + 1.0) * blockLightSquared * blockLightColor);
 
+    // Get view direction
+    vec3 viewDir = -fastNormalize(feetPlayerPos);
+
     #ifdef WORLD_LIGHT
         // Get sRGB light color
         vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
@@ -46,6 +49,11 @@ vec4 complexShadingLOD(in dataPBR material, in vec2 lmCoord, in vec3 feetPlayerP
             shdCol = dirLight * (1.0 - material.ss) + exp2(approxCol);
         }
 
+        // Normalize the shadow color and apply shdFactor
+        vec3 shadowTint = shdCol / (0.0001 + maxOf(shdCol));
+        // To give more light concentration at the point of light
+        shdCol += exp2(dot(vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), -viewDir) * 16.0 - 16.0) * shadowTint;
+
         #ifndef FORCE_DISABLE_WEATHER
             // Approximate rain diffusing light shadow
             float rainDiffuseAmount = rainStrength * 0.5;
@@ -57,9 +65,6 @@ vec4 complexShadingLOD(in dataPBR material, in vec2 lmCoord, in vec3 feetPlayerP
         // Calculate and add shadow diffuse
         totalIllumination += toLinear(sRGBLightCol) * shdCol;
     #endif
-
-    // Get view direction
-    vec3 viewDir = -fastNormalize(feetPlayerPos);
 
     // Modified version of BSL's reflection PBR calculation
     // vec3 fresnel = (F0 + (1.0 - F0) * cosTheta) * smoothness
