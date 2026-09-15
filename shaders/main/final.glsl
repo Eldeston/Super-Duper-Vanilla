@@ -57,6 +57,8 @@
     const bool shadowcolor0Clear = false;
     const bool colortex0Clear = false;
     const bool colortex2Clear = false;
+    const bool colortex3Clear = false;
+    const bool colortex4Clear = false;
 
     // Needed for temporal filtering
     const bool colortex5Clear = false;
