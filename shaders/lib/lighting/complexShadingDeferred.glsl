@@ -39,7 +39,7 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
         // Check if sky reflection has been hit
         bool isSkyReflection = SSRCoord.z == 1;
 
-        #if defined DISTANT_HORIZONS || defined VOXY
+        #ifdef DISTANT_HORIZONS
             if(realSky) isSkyReflection = true;
         #endif
 
@@ -50,12 +50,12 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
 
             // This masks only the reflections in view
             if(reflectDirF.z < viewPos.z){
-                vec3 SSRDH = getScreenPos(gbufferProjection, reflectDirF);
-                SSRDH.xy *= vec2(viewWidth, viewHeight);
+                vec2 SSRDH = getScreenCoord(gbufferProjection, reflectDirF) * vec2(viewWidth, viewHeight);
+                float depthSSRDH = getDepthTex(ivec2(SSRDH));
 
-                if(SSRDH.x >= 0 && SSRDH.x <= viewWidth && SSRDH.y >= 0 && SSRDH.y <= viewHeight && getDepthTex(ivec2(SSRDH.xy)) != 1){
+                if(SSRDH.x >= 0 && SSRDH.x <= viewWidth && SSRDH.y >= 0 && SSRDH.y <= viewHeight && depthSSRDH != 1){
                     isSkyReflection = false;
-                    SSRCoord = SSRDH;
+                    SSRCoord = vec3(SSRDH, depthSSRDH);
                 }
             }
         }

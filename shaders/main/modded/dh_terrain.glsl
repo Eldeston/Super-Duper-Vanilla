@@ -24,6 +24,8 @@
 
     out float vertexViewDist;
 
+    out vec2 surfaceNoiseUV;
+
     out vec3 vertexColor;
     out vec3 vertexFeetPlayerPos;
     out vec3 vertexWorldPos;
@@ -74,7 +76,9 @@
 
         // Get world position
         vertexWorldPos = vertexFeetPlayerPos + cameraPosition;
-
+        // Get surface noise uv position
+        surfaceNoiseUV = (vertexWorldPos.zy * vertexNormal.x + vertexWorldPos.xz * vertexNormal.y + vertexWorldPos.xy * vertexNormal.z) * 4.0;
+        
         #ifdef WORLD_CURVATURE
             // Apply curvature distortion
             vertexFeetPlayerPos.y -= lengthSquared(vertexFeetPlayerPos.xz) * worldCurvatureInv;
@@ -112,6 +116,8 @@
     flat in vec3 vertexNormal;
 
     in float vertexViewDist;
+
+    in vec2 surfaceNoiseUV;
 
     in vec3 vertexColor;
     in vec3 vertexFeetPlayerPos;
@@ -175,8 +181,7 @@
         // Prevents overdraw
         if(far > vertexViewDist){ discard; return; }
 
-        vec2 noiseUv = vertexWorldPos.zy * vertexNormal.x + vertexWorldPos.xz * vertexNormal.y + vertexWorldPos.xy * vertexNormal.z;
-        vec2 noiseCol = texelFetch(noisetex, ivec2(noiseUv * 4.0) & 255, 0).xy;
+        vec2 noiseCol = texelFetch(noisetex, ivec2(surfaceNoiseUV) & 255, 0).xy;
         float dhNoise = (noiseCol.x + noiseCol.y) * 0.2 + 0.8;
 
         // Declare materials
@@ -209,7 +214,7 @@
                 // Lava tile size inverse
                 const float lavaTileSizeInv = 1.0 / LAVA_TILE_SIZE;
 
-                float lavaNoise = saturate(max(getLavaNoise(noiseUv * lavaTileSizeInv) * 3.0, sumOf(material.albedo.rgb)) - 1.0);
+                float lavaNoise = saturate(max(getLavaNoise(surfaceNoiseUV * lavaTileSizeInv) * 3.0, sumOf(material.albedo.rgb)) - 1.0);
                 material.albedo.rgb = floor(material.albedo.rgb * lavaNoise * LAVA_BRIGHTNESS * 32.0) * 0.03125;
             #else
                 material.albedo.rgb = material.albedo.rgb * LAVA_BRIGHTNESS;

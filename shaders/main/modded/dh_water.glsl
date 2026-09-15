@@ -24,7 +24,8 @@
 
     out float vertexViewDist;
 
-    out vec2 waterNoiseUv;
+    out vec2 waterNoiseUV;
+    out vec2 surfaceNoiseUV;
 
     out vec3 vertexColor;
     out vec3 vertexFeetPlayerPos;
@@ -78,7 +79,9 @@
         vertexWorldPos = vertexFeetPlayerPos + cameraPosition;
 
         // Get water noise uv position
-        waterNoiseUv = vertexWorldPos.xz * waterTileSizeInv;
+        waterNoiseUV = vertexWorldPos.xz * waterTileSizeInv;
+        // Get surface noise uv position
+        surfaceNoiseUV = (vertexWorldPos.zy * vertexNormal.x + vertexWorldPos.xz * vertexNormal.y + vertexWorldPos.xy * vertexNormal.z) * 4.0;
 
         #ifdef WORLD_CURVATURE
             // Apply curvature distortion
@@ -118,7 +121,8 @@
 
     in float vertexViewDist;
 
-    in vec2 waterNoiseUv;
+    in vec2 waterNoiseUV;
+    in vec2 surfaceNoiseUV;
 
     in vec3 vertexColor;
     in vec3 vertexFeetPlayerPos;
@@ -192,8 +196,7 @@
         // Fix for Distant Horizons translucents rendering over real geometry
         if(getDepth(depthtex0, ivec2(gl_FragCoord.xy), 0) != 1.0){ discard; return; }
 
-        vec2 noiseUv = vertexWorldPos.zy * vertexNormal.x + vertexWorldPos.xz * vertexNormal.y + vertexWorldPos.xy * vertexNormal.z;
-        vec2 noiseCol = texelFetch(noisetex, ivec2(noiseUv * 4.0) & 255, 0).xy;
+        vec2 noiseCol = texelFetch(noisetex, ivec2(surfaceNoiseUV) & 255, 0).xy;
         float dhNoise = (noiseCol.x + noiseCol.y) * 0.2 + 0.8;
 
         // Declare materials
@@ -222,14 +225,14 @@
             float waterNoise = WATER_BRIGHTNESS;
 
             #ifdef WATER_NORMAL
-                vec4 waterData = H2NWater(waterNoiseUv).xzyw;
+                vec4 waterData = H2NWater(waterNoiseUV).xzyw;
                 material.normal = fastNormalize(waterData.yxz * vertexNormal.x + waterData.xyz * vertexNormal.y + waterData.xzy * vertexNormal.z);
 
                 #ifdef WATER_NOISE
                     waterNoise *= squared(0.128 + waterData.w * 0.5);
                 #endif
             #elif defined WATER_NOISE
-                float waterData = getCellNoise(waterNoiseUv);
+                float waterData = getCellNoise(waterNoiseUV);
 
                 waterNoise *= squared(0.128 + waterData * 0.5);
             #endif
