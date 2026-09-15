@@ -5,6 +5,8 @@ These standards must be kept in order to keep the code format consistent and rea
 * Follow the rules of code formatting. See [CONTRIBUTION.md](CONTRIBUTION.md) for more information.
 * Document and explain your code if possible.
 
+Here's a rule of thumb to keep in mind when it comes to handling code complexity: Keep the main program's code simplified while included files can be as complex as needed. Helper functions are encouraged for code versitility and portability.
+
 # GLSL Version
 The shader version used for this pipeline is **GLSL 3.3 compatibility**. There is an exception however for the program `gbuffers_line` where it uses **GLSL 3.3 core**.
 
