@@ -19,7 +19,7 @@ float getFogFactor(in float viewDist, in float nEyePlayerPosY, in float worldPos
     #endif
 
     // Return fog, need to cap world position to prevent further fogging
-    return min(1.0, getAtmosphericFog(nEyePlayerPosY, max(0.0, worldPosY), viewDist, totalFogDensity, verticalFogDensity)) * min(1.0, GROUND_FOG_STRENGTH + GROUND_FOG_STRENGTH * isEyeInWater);
+    return min(1.0, getAtmosphericFog(nEyePlayerPosY, max(0.0, worldPosY), viewDist, totalFogDensity, verticalFogDensity) * (GROUND_FOG_STRENGTH + GROUND_FOG_STRENGTH * isEyeInWater));
 }
 
 float getFogEffectFactor(in float viewDist){

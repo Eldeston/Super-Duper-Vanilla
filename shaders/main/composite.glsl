@@ -273,7 +273,7 @@
 
         // Get screen pos
         vec3 screenPos = vec3(texCoord, depth);
-        
+
         // Distant Horizons and Voxy apparently uses a different projection matrix
         #if defined DISTANT_HORIZONS
             vec3 viewPos = getViewPos(realSky ? dhProjectionInverse : gbufferProjectionInverse, screenPos);
