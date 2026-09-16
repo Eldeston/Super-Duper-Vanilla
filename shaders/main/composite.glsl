@@ -230,15 +230,6 @@
     #ifdef WORLD_LIGHT
         uniform float shdFade;
 
-        #if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING
-            uniform mat4 shadowProjection;
-
-            #include "/lib/lighting/shdDistort.glsl"
-            #include "/lib/lighting/shdSampleTexel.glsl"
-        #endif
-
-        #include "/lib/rayTracing/volumetricLight.glsl"
-
         #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS
             uniform float cloudDistantFar;
 
@@ -297,29 +288,19 @@
             vec3 dither = getRng3(screenTexelCoord & 255);
         #endif
 
-        // Get view distance
-        float viewDot = lengthSquared(viewPos);
-        float viewDotInvSqrt = inversesqrt(viewDot);
-        float viewDist = viewDot * viewDotInvSqrt;
-
-        // Get normalized eyePlayerPos
-        vec3 nEyePlayerPos = eyePlayerPos * viewDotInvSqrt;
-
-        // Get fog factor
-        float fogFactor = getFogFactor(viewDist, nEyePlayerPos.y, feetPlayerPos.y + cameraPosition.y);
-
-        // Border fog
-        #ifdef BORDER_FOG
-            float borderFog = getBorderFog(viewDist);
-        #else
-            float borderFog = 0.0;
-        #endif
-
         // Materials and programs that come after deferred mask
         vec3 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xyz;
 
         // If the object renders after deferred apply separate lighting
         if(matRaw0.z > 0 && matRaw0.z < 1){
+            // Get view distance
+            float viewDot = lengthSquared(viewPos);
+            float viewDotInvSqrt = inversesqrt(viewDot);
+            float viewDist = viewDot * viewDotInvSqrt;
+
+            // Get normalized eyePlayerPos
+            vec3 nEyePlayerPos = eyePlayerPos * viewDotInvSqrt;
+
             // Declare and get materials
             vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
             vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
@@ -330,9 +311,12 @@
             // Get basic sky fog color
             vec3 fogSkyCol = getSkyFogRender(nEyePlayerPos);
 
+            // Get fog factor
+            float fogFactor = getFogFactor(viewDist, nEyePlayerPos.y, feetPlayerPos.y + cameraPosition.y);
+
             // Border fog
             #ifdef BORDER_FOG
-                fogFactor = (fogFactor - 1.0) * borderFog + 1.0;
+                fogFactor = (fogFactor - 1.0) * getBorderFog(viewDist) + 1.0;
             #endif
 
             // Apply fog and darkness fog
@@ -342,7 +326,7 @@
         // Apply darkness pulsing effect
         sceneColOut *= 1.0 - darknessLightFactor;
 
-        #if defined WORLD_LIGHT || CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
+        #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
             bool isSky = depth == 1;
 
             float feetPlayerDot = lengthSquared(feetPlayerPos);
@@ -350,23 +334,12 @@
             float feetPlayerDist = feetPlayerDot * feetPlayerDotInvSqrt;
 
             vec3 nFeetPlayerPos = feetPlayerPos * feetPlayerDotInvSqrt;
-        #endif
-
-        #ifdef WORLD_LIGHT
-            // Apply volumetric light
-            if(VOLUMETRIC_LIGHTING_STRENGTH != 0 && isEyeInWater != 2)
-                sceneColOut += getVolumetricLight(nFeetPlayerPos, feetPlayerDist, fogFactor, borderFog, dither.x, isSky);
-        #endif
-
-        #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
+            
             // Find the farthest distance to the clouds, capped by the terrain distance (with an epilipson to avoid z-fighting)
             float sphereFar = isSky || feetPlayerDist > cloudDistantFar ? cloudDistantFar : feetPlayerDist * 1.015625;
 
             // Get voxelized clouds
             sceneColOut = getVoxelClouds(sceneColOut, cloudStartPos, nFeetPlayerPos, sphereFar);
         #endif
-
-        // Clamp scene color to prevent NaNs during post processing
-        sceneColOut = max(sceneColOut, vec3(0));
     }
 #endif

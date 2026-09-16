@@ -11,27 +11,25 @@
 ================================ /// Super Duper Vanilla v1.3.9 /// ================================
 */
 
-/// Buffer features: Bloom blur 2nd pass
+/// Buffer features: DOF blur
 
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    #ifdef BLOOM
-        flat out float offSet0;
-        flat out float offSet1;
+    #ifdef DOF
+        flat out float fovMult;
 
         noperspective out vec2 texCoord;
 
-        uniform float bloomPixelHeight;
+        uniform mat4 gbufferProjection;
     #endif
 
     void main(){
-        #ifdef BLOOM
-            offSet0 = bloomPixelHeight * 3.2307692308;
-            offSet1 = bloomPixelHeight * 1.3846153846;
-
+        #ifdef DOF
             // Get buffer texture coordinates
             texCoord = gl_MultiTexCoord0.xy;
+
+            fovMult = gbufferProjection[1].y * 0.04549628; // 0.72794047 * 0.0625
         #endif
 
         gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
@@ -41,68 +39,80 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    /* RENDERTARGETS: 0 */
-    layout(location = 0) out vec3 bloomColOut; // colortex0
+    /* RENDERTARGETS: 4 */
+    layout(location = 0) out vec3 sceneColOut; // colortex4
 
-    #ifdef BLOOM
-        flat in float offSet0;
-        flat in float offSet1;
+    uniform sampler2D colortex4;
+
+    #ifdef DOF
+        // Needs to be enabled by force to be able to use LOD fully even with textureLod
+        const bool colortex4MipmapEnabled = true;
+
+        // Precalculated dof offsets by vec2(cos(x), sin(x))
+        const vec2 dofOffSets[15] = vec2[15](
+            vec2(0.91354546, 0.40673664),
+            vec2(0.66913061, 0.74314483),
+            vec2(0.30901699, 0.95105652),
+            vec2(-0.10452846, 0.99452190),
+            vec2(-0.5, 0.86602540),
+            vec2(-0.80901699, 0.58778525),
+            vec2(-0.97814760, 0.20791169),
+            vec2(-0.97814760, -0.20791169),
+            vec2(-0.80901699, -0.58778525),
+            vec2(-0.5, -0.86602540),
+            vec2(-0.10452846, -0.99452190),
+            vec2(0.30901699, -0.95105652),
+            vec2(0.66913061, -0.74314483),
+            vec2(0.91354546, -0.40673664),
+            vec2(1, 0)
+        );
+
+        flat in float fovMult;
 
         noperspective in vec2 texCoord;
 
-        // uniform float bloomPixelWidth;
-        // uniform float bloomPixelHeight;
+        uniform float viewWidth;
+        uniform float viewHeight;
+        uniform float centerDepthSmooth;
 
-        // No need to use mipmapping in this 2nd bloom pass, so we'll utilize texelFetch for some sweet, sweet performance
-        uniform sampler2D colortex0;
-
-        bool isBloomTile(in vec3 bloomCol, in vec2 bloomPos, in int scale, in int LOD){
-            // Get bloom UV
-            vec2 bloomUv = bloomPos * scale;
-
-            // Apply padding
-            return bloomUv.x < 0 || bloomUv.x > 1 || bloomUv.y < 0 || bloomUv.y > 1;
-        }
+        uniform sampler2D depthtex1;
     #endif
 
     void main(){
-        #ifdef BLOOM
-            // Skip empty spaces
-            if(
-                isBloomTile(vec3(0), texCoord, 2, 1) &&
-                isBloomTile(bloomColOut, vec2(texCoord.x, texCoord.y - 0.5078125), 4, 2) &&
-                isBloomTile(bloomColOut, vec2(texCoord.x - 0.2578125, texCoord.y - 0.5078125), 8, 3) &&
-                isBloomTile(bloomColOut, vec2(texCoord.x - 0.390625, texCoord.y - 0.5078125), 16, 4) &&
-                isBloomTile(bloomColOut, vec2(texCoord.x - 0.4609375, texCoord.y - 0.5078125), 32, 5)
-            ){
-                bloomColOut = vec3(0);
+        // Screen texel coordinates
+        ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
+
+        #ifdef DOF
+            // Declare and get positions
+            float depth = getDepth(depthtex1, screenTexelCoord, 0);
+
+            // Return immediately if player hand
+            if(depth <= 0.56){
+                sceneColOut = texelFetch(colortex4, screenTexelCoord, 0).rgb;
                 return;
             }
+            
+            // CoC calculation by Capt Tatsu from BSL
+            float CoC = max(0.0, abs(depth - centerDepthSmooth) * DOF_STRENGTH - 0.01);
+            CoC = CoC * inversesqrt(CoC * CoC + 0.1);
 
-            // Optimized 9x9 gaussian blur with only 5 texture fetches
-            // Technique from https://www.rastergrid.com/blog/2010/09/efficient-gaussian-blur-with-linear-sampling/
-            vec3 sample0 = textureLod(colortex0, vec2(texCoord.x, texCoord.y - offSet0), 0).rgb +
-                textureLod(colortex0, vec2(texCoord.x, texCoord.y + offSet0), 0).rgb;
-            vec3 sample1 = textureLod(colortex0, vec2(texCoord.x, texCoord.y - offSet1), 0).rgb +
-                textureLod(colortex0, vec2(texCoord.x, texCoord.y + offSet1), 0).rgb;
-            vec3 center = textureLod(colortex0, texCoord, 0).rgb;
+            // We'll use a total of 16 samples for this blur (1 / 16)
+            float blurRadius = min(viewWidth, viewHeight) * fovMult * CoC;
+            float currDofLOD = log2(blurRadius);
+            vec2 blurRes = blurRadius / vec2(viewWidth, viewHeight);
 
-            bloomColOut = sample0 * 0.0702702703 + sample1 * 0.3162162162 + center * 0.2270270270;
+            // Get center pixel color with LOD
+            vec3 dofColor = textureLod(colortex4, texCoord, currDofLOD).rgb;
+            for(uint i = 0u; i < 15u; i++){
+                // Rotate offsets and sample
+                dofColor += textureLod(colortex4, texCoord - dofOffSets[i] * blurRes, currDofLOD).rgb;
+            }
 
-            // vec2 pixelOffSet = vec2(bloomPixelWidth, bloomPixelHeight) * 0.75;
-
-            // // center
-            // vec3 kawaseCol = textureLod(colortex0, texCoord, 0).rgb * 4.0;
-
-            // // diagonals
-            // kawaseCol += textureLod(colortex0, texCoord + vec2(-pixelOffSet.x, -pixelOffSet.y), 0).rgb;
-            // kawaseCol += textureLod(colortex0, texCoord + vec2( pixelOffSet.x, -pixelOffSet.y), 0).rgb;
-            // kawaseCol += textureLod(colortex0, texCoord + vec2(-pixelOffSet.x,  pixelOffSet.y), 0).rgb;
-            // kawaseCol += textureLod(colortex0, texCoord + vec2( pixelOffSet.x,  pixelOffSet.y), 0).rgb;
-
-            // bloomColOut = kawaseCol * 0.125;
+            // 15 offsetted samples + 1 sample (1 / 16)
+            sceneColOut = dofColor * 0.0625;
         #else
-            bloomColOut = vec3(0);
+            // Get scene color
+            sceneColOut = texelFetch(colortex4, screenTexelCoord, 0).rgb;
         #endif
     }
 #endif

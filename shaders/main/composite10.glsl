@@ -22,13 +22,13 @@
 
         noperspective out vec2 texCoord;
 
-        uniform float bloomPixelWidth;
+        uniform float bloomPixelHeight;
     #endif
 
     void main(){
         #ifdef BLOOM
-            offSet0 = bloomPixelWidth * 3.2307692308;
-            offSet1 = bloomPixelWidth * 1.3846153846;
+            offSet0 = bloomPixelHeight * 3.2307692308;
+            offSet1 = bloomPixelHeight * 1.3846153846;
 
             // Get buffer texture coordinates
             texCoord = gl_MultiTexCoord0.xy;
@@ -49,9 +49,6 @@
         flat in float offSet1;
 
         noperspective in vec2 texCoord;
-
-        // Needs to be enabled by force to be able to use LOD fully even with textureLod
-        const bool colortex0MipmapEnabled = false;
 
         // uniform float bloomPixelWidth;
         // uniform float bloomPixelHeight;
@@ -84,10 +81,10 @@
 
             // Optimized 9x9 gaussian blur with only 5 texture fetches
             // Technique from https://www.rastergrid.com/blog/2010/09/efficient-gaussian-blur-with-linear-sampling/
-            vec3 sample0 = textureLod(colortex0, vec2(texCoord.x - offSet0, texCoord.y), 0).rgb +
-                textureLod(colortex0, vec2(texCoord.x + offSet0, texCoord.y), 0).rgb;
-            vec3 sample1 = textureLod(colortex0, vec2(texCoord.x - offSet1, texCoord.y), 0).rgb +
-                textureLod(colortex0, vec2(texCoord.x + offSet1, texCoord.y), 0).rgb;
+            vec3 sample0 = textureLod(colortex0, vec2(texCoord.x, texCoord.y - offSet0), 0).rgb +
+                textureLod(colortex0, vec2(texCoord.x, texCoord.y + offSet0), 0).rgb;
+            vec3 sample1 = textureLod(colortex0, vec2(texCoord.x, texCoord.y - offSet1), 0).rgb +
+                textureLod(colortex0, vec2(texCoord.x, texCoord.y + offSet1), 0).rgb;
             vec3 center = textureLod(colortex0, texCoord, 0).rgb;
 
             bloomColOut = sample0 * 0.0702702703 + sample1 * 0.3162162162 + center * 0.2270270270;

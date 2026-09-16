@@ -11,25 +11,19 @@
 ================================ /// Super Duper Vanilla v1.3.9 /// ================================
 */
 
-/// Buffer features: DOF blur
+/// Buffer features: Temporal Anti-Aliasing (TAA)
 
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    #ifdef DOF
-        flat out float fovMult;
-
+    #if (defined PREVIOUS_FRAME && (defined SSR || defined SSGI)) || ANTI_ALIASING >= 2
         noperspective out vec2 texCoord;
-
-        uniform mat4 gbufferProjection;
     #endif
 
     void main(){
-        #ifdef DOF
+        #if (defined PREVIOUS_FRAME && (defined SSR || defined SSGI)) || ANTI_ALIASING >= 2
             // Get buffer texture coordinates
             texCoord = gl_MultiTexCoord0.xy;
-
-            fovMult = gbufferProjection[1].y * 0.04549628; // 0.72794047 * 0.0625
         #endif
 
         gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
@@ -42,77 +36,51 @@
     /* RENDERTARGETS: 4 */
     layout(location = 0) out vec3 sceneColOut; // colortex4
 
-    uniform sampler2D colortex4;
-
-    #ifdef DOF
-        // Needs to be enabled by force to be able to use LOD fully even with textureLod
-        const bool colortex4MipmapEnabled = true;
-
-        // Precalculated dof offsets by vec2(cos(x), sin(x))
-        const vec2 dofOffSets[15] = vec2[15](
-            vec2(0.91354546, 0.40673664),
-            vec2(0.66913061, 0.74314483),
-            vec2(0.30901699, 0.95105652),
-            vec2(-0.10452846, 0.99452190),
-            vec2(-0.5, 0.86602540),
-            vec2(-0.80901699, 0.58778525),
-            vec2(-0.97814760, 0.20791169),
-            vec2(-0.97814760, -0.20791169),
-            vec2(-0.80901699, -0.58778525),
-            vec2(-0.5, -0.86602540),
-            vec2(-0.10452846, -0.99452190),
-            vec2(0.30901699, -0.95105652),
-            vec2(0.66913061, -0.74314483),
-            vec2(0.91354546, -0.40673664),
-            vec2(1, 0)
-        );
-
-        flat in float fovMult;
-
+    #if (defined PREVIOUS_FRAME && (defined SSR || defined SSGI)) || ANTI_ALIASING >= 2
+        /* RENDERTARGETS: 4,5 */
+        #ifdef AUTO_EXPOSURE
+            layout(location = 1) out vec4 temporalDataOut; // colortex5
+        #else
+            layout(location = 1) out vec3 temporalDataOut; // colortex5
+        #endif
+        
         noperspective in vec2 texCoord;
 
-        uniform float viewWidth;
-        uniform float viewHeight;
-        uniform float centerDepthSmooth;
+        uniform sampler2D colortex5;
+    #endif
 
-        uniform sampler2D depthtex1;
+    uniform sampler2D colortex4;
+
+    #if ANTI_ALIASING >= 2
+        uniform vec3 camPosDelta;
+
+        uniform mat4 gbufferModelViewInverse;
+        uniform mat4 gbufferPreviousModelView;
+
+        uniform mat4 gbufferProjectionInverse;
+        uniform mat4 gbufferPreviousProjection;
+
+        uniform sampler2D depthtex0;
+
+        #include "/lib/utility/projectionFunctions.glsl"
+        #include "/lib/utility/prevProjectionFunctions.glsl"
+
+        #include "/lib/antialiasing/taa.glsl"
     #endif
 
     void main(){
-        // Screen texel coordinates
-        ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
-
-        #ifdef DOF
-            // Declare and get positions
-            float depth = getDepth(depthtex1, screenTexelCoord, 0);
-
-            // Return immediately if player hand
-            if(depth <= 0.56){
-                sceneColOut = texelFetch(colortex4, screenTexelCoord, 0).rgb;
-                return;
-            }
-            
-            // CoC calculation by Capt Tatsu from BSL
-            float CoC = max(0.0, abs(depth - centerDepthSmooth) * DOF_STRENGTH - 0.01);
-            CoC = CoC * inversesqrt(CoC * CoC + 0.1);
-
-            // We'll use a total of 16 samples for this blur (1 / 16)
-            float blurRadius = min(viewWidth, viewHeight) * fovMult * CoC;
-            float currDofLOD = log2(blurRadius);
-            vec2 blurRes = blurRadius / vec2(viewWidth, viewHeight);
-
-            // Get center pixel color with LOD
-            vec3 dofColor = textureLod(colortex4, texCoord, currDofLOD).rgb;
-            for(uint i = 0u; i < 15u; i++){
-                // Rotate offsets and sample
-                dofColor += textureLod(colortex4, texCoord - dofOffSets[i] * blurRes, currDofLOD).rgb;
-            }
-
-            // 15 offsetted samples + 1 sample (1 / 16)
-            sceneColOut = dofColor * 0.0625;
+        #if ANTI_ALIASING >= 2
+            sceneColOut = textureTAA(ivec2(gl_FragCoord.xy));
         #else
-            // Get scene color
-            sceneColOut = texelFetch(colortex4, screenTexelCoord, 0).rgb;
+            sceneColOut = texelFetch(colortex4, ivec2(gl_FragCoord.xy), 0).rgb;
+        #endif
+
+        #if (defined PREVIOUS_FRAME && (defined SSR || defined SSGI)) || ANTI_ALIASING >= 2
+            #ifdef AUTO_EXPOSURE
+                temporalDataOut = vec4(sceneColOut, texelFetch(colortex5, ivec2(0), 0).a);
+            #else
+                temporalDataOut = sceneColOut;
+            #endif
         #endif
     }
 #endif

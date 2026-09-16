@@ -1,7 +1,5 @@
 #define VOLUMETRIC_LIGHT_STEPS 8u
 
-const float volumetricStepsInverse = 1.0 / VOLUMETRIC_LIGHT_STEPS;
-
 vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in float fogFactor, in float borderFog, in float dither, in bool isSky){
     float totalFogDensity = FOG_TOTAL_DENSITY;
 
@@ -42,11 +40,8 @@ vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in floa
         float rayReduction = 1.0 - maxOf(abs(texCoord - 0.5)) * 1.5;
 
         // Calculate steps that dynamically increase with distance
-        // uint dynamicVolumetricLightSteps = uint(mix(1.0, VOLUMETRIC_LIGHT_STEPS, min(rayLength * rayReduction / (rayLength + 1.0), 1.0)));
         uint dynamicVolumetricLightSteps = clamp(uint(rayLength * rayReduction * VOLUMETRIC_LIGHT_STEPS), 1u, VOLUMETRIC_LIGHT_STEPS);
         float dynamicVolumetricLightStepsInv = 1.0 / dynamicVolumetricLightSteps;
-
-        // Change or nah? Hmmmm...
 
         // Normalize then unormalize with feetPlayerDist and clamping it at minimum distance between far and current shadowDistance
         vec3 endPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * nFeetPlayerPos);

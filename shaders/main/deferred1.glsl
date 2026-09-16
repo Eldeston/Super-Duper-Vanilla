@@ -34,10 +34,6 @@
         #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS
             flat out vec3 cloudCol;
             flat out vec3 cloudStartPos;
-
-            #ifdef DOUBLE_LAYERED_CLOUDS
-                flat out vec3 cloudStartPos1;
-            #endif
         #endif
     #endif
 
@@ -127,12 +123,7 @@
 
         #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS
             flat in vec3 cloudCol;
-
             flat in vec3 cloudStartPos;
-
-            #ifdef DOUBLE_LAYERED_CLOUDS
-                flat in vec3 cloudStartPos1;
-            #endif
         #endif
     #endif
 

@@ -11,17 +11,17 @@
 ================================ /// Super Duper Vanilla v1.3.9 /// ================================
 */
 
-/// Buffer features: Bloom blur 1st pass
+/// Buffer features: Fast Approximate Anti-Aliasing (FXAA)
 
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    #ifdef BLOOM
+    #if ANTI_ALIASING == 1 || ANTI_ALIASING == 3
         noperspective out vec2 texCoord;
     #endif
 
     void main(){
-        #ifdef BLOOM
+        #if ANTI_ALIASING == 1 || ANTI_ALIASING == 3
             // Get buffer texture coordinates
             texCoord = gl_MultiTexCoord0.xy;
         #endif
@@ -33,38 +33,25 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    /* RENDERTARGETS: 0 */
-    layout(location = 0) out vec3 bloomColOut; // colortex0
+    /* RENDERTARGETS: 3 */
+    layout(location = 0) out vec3 postColOut; // colortex3
 
-    #ifdef BLOOM
+    uniform sampler2D colortex3;
+
+    #if ANTI_ALIASING == 1 || ANTI_ALIASING == 3
         noperspective in vec2 texCoord;
 
-        // Needs to be enabled by force to be able to use LOD fully even with textureLod
-        const bool colortex4MipmapEnabled = true;
+        uniform float pixelWidth;
+        uniform float pixelHeight;
 
-        uniform sampler2D colortex4;
-
-        vec3 bloomTile(in vec3 bloomCol, in vec2 bloomPos, in int scale, in int LOD){
-            // Get bloom UV
-            vec2 bloomUv = bloomPos * scale;
-
-            // Apply padding
-            if(bloomUv.x < 0 || bloomUv.x > 1 || bloomUv.y < 0 || bloomUv.y > 1) return bloomCol;
-
-            // Output bloom
-            return textureLod(colortex4, bloomUv, LOD).rgb;
-        }
+        #include "/lib/antialiasing/fxaa.glsl"
     #endif
 
     void main(){
-        #ifdef BLOOM
-            bloomColOut = bloomTile(vec3(0), texCoord, 2, 1);
-            bloomColOut = bloomTile(bloomColOut, vec2(texCoord.x, texCoord.y - 0.5078125), 4, 2);
-            bloomColOut = bloomTile(bloomColOut, vec2(texCoord.x - 0.2578125, texCoord.y - 0.5078125), 8, 3);
-            bloomColOut = bloomTile(bloomColOut, vec2(texCoord.x - 0.390625, texCoord.y - 0.5078125), 16, 4);
-            bloomColOut = bloomTile(bloomColOut, vec2(texCoord.x - 0.4609375, texCoord.y - 0.5078125), 32, 5);
+        #if ANTI_ALIASING == 1 || ANTI_ALIASING == 3
+            postColOut = textureFXAA(ivec2(gl_FragCoord.xy));
         #else
-            bloomColOut = vec3(0);
+            postColOut = texelFetch(colortex3, ivec2(gl_FragCoord.xy), 0).rgb;
         #endif
     }
 #endif
