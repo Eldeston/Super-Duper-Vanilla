@@ -20,9 +20,28 @@
         noperspective out vec2 texCoord;
     #endif
 
+    #ifdef AUTO_EXPOSURE
+        flat out float tempPixLuminance;
+        
+        uniform float frameTime;
+
+        uniform sampler2D colortex4;
+        uniform sampler2D colortex5;
+    #endif
+
     void main(){
         #ifdef VIGNETTE
             texCoord = gl_MultiTexCoord0.xy;
+        #endif
+
+        #ifdef AUTO_EXPOSURE
+            // Accumulate current luminance
+            float frameTimeExposure = AUTO_EXPOSURE_SPEED * frameTime;
+            frameTimeExposure /= (1.0 + frameTimeExposure);
+
+            // Get center pixel current average scene luminance and mix previous and current pixel...
+            float centerPixLuminance = sumOf(textureLod(colortex4, vec2(0.5), 8).rgb);
+            tempPixLuminance = mix(texelFetch(colortex5, ivec2(1), 0).a, centerPixLuminance, frameTimeExposure);
         #endif
 
         gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
@@ -38,8 +57,8 @@
     #ifdef AUTO_EXPOSURE
         /* RENDERTARGETS: 3,5 */
         layout(location = 1) out vec4 temporalDataOut; // colortex5
-        
-        uniform float frameTime;
+
+        flat in float tempPixLuminance;
 
         uniform sampler2D colortex5;
     #endif
@@ -72,13 +91,6 @@
         #endif
 
         #ifdef AUTO_EXPOSURE
-            // Get center pixel current average scene luminance and mix previous and current pixel...
-            float centerPixLuminance = sumOf(textureLod(colortex4, vec2(0.5), 8).rgb);
-
-            // Accumulate current luminance
-            float frameTimeExposure = AUTO_EXPOSURE_SPEED * frameTime;
-            float tempPixLuminance = mix(texelFetch(colortex5, ivec2(1), 0).a, centerPixLuminance, frameTimeExposure / (1.0 + frameTimeExposure));
-
             // Apply auto exposure by dividing it by the pixel's luminance in sRGB
             const float invMinimumExposure = 1.0 / MINIMUM_EXPOSURE;
             postColOut *= min(inversesqrt(tempPixLuminance), invMinimumExposure);

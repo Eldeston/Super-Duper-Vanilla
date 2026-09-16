@@ -37,10 +37,10 @@
     layout(location = 0) out vec3 bloomColOut; // colortex0
 
     #ifdef BLOOM
+        noperspective in vec2 texCoord;
+
         // Needs to be enabled by force to be able to use LOD fully even with textureLod
         const bool colortex4MipmapEnabled = true;
-
-        noperspective in vec2 texCoord;
 
         uniform sampler2D colortex4;
 

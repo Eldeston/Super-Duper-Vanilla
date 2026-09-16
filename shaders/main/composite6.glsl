@@ -50,6 +50,9 @@
 
         noperspective in vec2 texCoord;
 
+        // Needs to be enabled by force to be able to use LOD fully even with textureLod
+        const bool colortex0MipmapEnabled = false;
+
         // uniform float bloomPixelWidth;
         // uniform float bloomPixelHeight;
 

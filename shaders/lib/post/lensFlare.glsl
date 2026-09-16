@@ -33,19 +33,13 @@ vec3 getLensFlare(in vec2 centerCoord, in vec2 lightDir){
     
     vec3 chromaLens = chromaLens(centerCoord, lightDir, 0.05, 0.05, -0.5);
 
-    float lensFlareStrength = (1.0 - blindness) * (1.0 - darknessFactor) * LENS_FLARE_STRENGTH;
-
-    #ifndef FORCE_DISABLE_WEATHER
-        lensFlareStrength *= 1.0 - rainStrength;
-    #endif
-
     #if WORLD_SUN_MOON == 2
-        return (lens1 + (lens0 + lens2) * 0.125 + chromaLens) * lensFlareStrength * sRGBLightCol;
+        return (lens1 + (lens0 + lens2) * 0.125 + chromaLens) * sRGBLightCol;
     #elif SUN_MOON_TYPE == 2
         float rays = lensFlareRays(centerCoord, lightDir, 8.0, 0.05, -1.0);
-        return (lens1 + (lens0 + lens2) * 0.125 + rays + chromaLens) * lensFlareStrength * sRGBLightCol;
+        return (lens1 + (lens0 + lens2) * 0.125 + rays + chromaLens) * sRGBLightCol;
     #else
         float rays = lensFlareRays(centerCoord, lightDir, 8.0, 0.1, -1.0);
-        return (lens1 + (lens0 + lens2) * 0.125 + rays + chromaLens) * lensFlareStrength * sRGBLightCol;
+        return (lens1 + (lens0 + lens2) * 0.125 + rays + chromaLens) * sRGBLightCol;
     #endif
 }
