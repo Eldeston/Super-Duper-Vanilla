@@ -38,6 +38,10 @@
     #ifdef AUTO_EXPOSURE
         /* RENDERTARGETS: 3,5 */
         layout(location = 1) out vec4 temporalDataOut; // colortex5
+        
+        uniform float frameTime;
+
+        uniform sampler2D colortex5;
     #endif
 
     #ifdef VIGNETTE
@@ -48,12 +52,6 @@
 
     #if defined LENS_FLARE && defined WORLD_LIGHT || defined BLOOM
         uniform sampler2D colortex0;
-    #endif
-
-    #ifdef AUTO_EXPOSURE
-        uniform float frameTime;
-
-        uniform sampler2D colortex5;
     #endif
 
     #include "/lib/utility/noiseFunctions.glsl"

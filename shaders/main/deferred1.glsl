@@ -163,15 +163,12 @@
     // Main HDR buffer
     uniform sampler2D colortex4;
     uniform sampler2D colortex1;
+
     // For SSAO and material masks
     uniform sampler2D colortex2;
     uniform sampler2D colortex3;
     
     uniform sampler2D depthtex0;
-
-    #ifdef WORLD_LIGHT
-        uniform float shdFade;
-    #endif
 
     #if ANTI_ALIASING >= 2
         uniform float frameFract;
@@ -217,25 +214,29 @@
 
         #include "/lib/utility/depthTex.glsl"
         #include "/lib/rayTracing/rayTracer.glsl"
+
+        #ifdef PREVIOUS_FRAME
+            uniform vec3 camPosDelta;
+
+            uniform mat4 gbufferPreviousModelView;
+            uniform mat4 gbufferPreviousProjection;
+
+            uniform sampler2D colortex5;
+
+            #include "/lib/utility/prevProjectionFunctions.glsl"
+        #endif
     #endif
 
-    #if (defined SSR || defined SSGI) && defined PREVIOUS_FRAME
-        uniform vec3 camPosDelta;
+    #ifdef WORLD_LIGHT
+        uniform float shdFade;
 
-        uniform mat4 gbufferPreviousModelView;
-        uniform mat4 gbufferPreviousProjection;
+        #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS
+            uniform float cloudDistantFar;
 
-        uniform sampler2D colortex5;
+            uniform sampler2D colortex0;
 
-        #include "/lib/utility/prevProjectionFunctions.glsl"
-    #endif
-
-    #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
-        uniform float cloudDistantFar;
-
-        uniform sampler2D colortex0;
-
-        #include "/lib/rayTracing/voxelClouds.glsl"
+            #include "/lib/rayTracing/voxelClouds.glsl"
+        #endif
     #endif
 
     #ifdef SSAO

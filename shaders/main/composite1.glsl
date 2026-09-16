@@ -16,11 +16,15 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    noperspective out vec2 texCoord;
+    #if (defined PREVIOUS_FRAME && (defined SSR || defined SSGI)) || ANTI_ALIASING >= 2
+        noperspective out vec2 texCoord;
+    #endif
 
     void main(){
-        // Get buffer texture coordinates
-        texCoord = gl_MultiTexCoord0.xy;
+        #if (defined PREVIOUS_FRAME && (defined SSR || defined SSGI)) || ANTI_ALIASING >= 2
+            // Get buffer texture coordinates
+            texCoord = gl_MultiTexCoord0.xy;
+        #endif
 
         gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
     }
@@ -35,19 +39,17 @@
     #if (defined PREVIOUS_FRAME && (defined SSR || defined SSGI)) || ANTI_ALIASING >= 2
         /* RENDERTARGETS: 4,5 */
         #ifdef AUTO_EXPOSURE
-            out vec4 temporalDataOut; // colortex5
+            layout(location = 1) out vec4 temporalDataOut; // colortex5
         #else
-            out vec3 temporalDataOut; // colortex5
+            layout(location = 1) out vec3 temporalDataOut; // colortex5
         #endif
-    #endif
+        
+        noperspective in vec2 texCoord;
 
-    noperspective in vec2 texCoord;
-
-    uniform sampler2D colortex4;
-
-    #if (defined PREVIOUS_FRAME && (defined SSR || defined SSGI)) || ANTI_ALIASING >= 2
         uniform sampler2D colortex5;
     #endif
+
+    uniform sampler2D colortex4;
 
     #if ANTI_ALIASING >= 2
         uniform vec3 camPosDelta;

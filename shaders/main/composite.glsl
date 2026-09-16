@@ -214,17 +214,17 @@
 
         #include "/lib/utility/depthTex.glsl"
         #include "/lib/rayTracing/rayTracer.glsl"
-    #endif
 
-    #if (defined SSR || defined SSGI) && defined PREVIOUS_FRAME
-        uniform vec3 camPosDelta;
+        #ifdef PREVIOUS_FRAME
+            uniform vec3 camPosDelta;
 
-        uniform mat4 gbufferPreviousModelView;
-        uniform mat4 gbufferPreviousProjection;
+            uniform mat4 gbufferPreviousModelView;
+            uniform mat4 gbufferPreviousProjection;
 
-        uniform sampler2D colortex5;
+            uniform sampler2D colortex5;
 
-        #include "/lib/utility/prevProjectionFunctions.glsl"
+            #include "/lib/utility/prevProjectionFunctions.glsl"
+        #endif
     #endif
 
     #ifdef WORLD_LIGHT
@@ -238,14 +238,14 @@
         #endif
 
         #include "/lib/rayTracing/volumetricLight.glsl"
-    #endif
 
-    #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
-        uniform float cloudDistantFar;
+        #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS
+            uniform float cloudDistantFar;
 
-        uniform sampler2D colortex0;
+            uniform sampler2D colortex0;
 
-        #include "/lib/rayTracing/voxelClouds.glsl"
+            #include "/lib/rayTracing/voxelClouds.glsl"
+        #endif
     #endif
 
     #include "/lib/utility/noiseFunctions.glsl"
