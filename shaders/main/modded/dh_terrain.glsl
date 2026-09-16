@@ -212,7 +212,7 @@
         else if(blockId == DH_BLOCK_LAVA){
             #ifdef LAVA_NOISE
                 // Lava tile size inverse
-                const float lavaTileSizeInv = 1.0 / LAVA_TILE_SIZE;
+                const float lavaTileSizeInv = 0.25 / LAVA_TILE_SIZE;
 
                 float lavaNoise = saturate(max(getLavaNoise(surfaceNoiseUV * lavaTileSizeInv) * 3.0, sumOf(material.albedo.rgb)) - 1.0);
                 material.albedo.rgb = floor(material.albedo.rgb * lavaNoise * LAVA_BRIGHTNESS * 32.0) * 0.03125;
