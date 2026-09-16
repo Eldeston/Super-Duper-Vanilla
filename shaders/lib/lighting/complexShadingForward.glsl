@@ -102,6 +102,18 @@
                 return getShdCol(shdPos, dither, shadowMapPixelSize, 2u) * (shdFactor * NLZ);
             #endif
         #else
+            // Use more samples for subsurface scattering
+            if(isSubSurface){
+                vec3 shdCol = cubed(1.0 - (NLZ * 0.5 + 0.5) * getShdCol(shdPos)) * shdFactor;
+                // Calculate the subsurface shadow color based on albedo
+                vec3 albedoCoEff = (5.0 * maxOf(albedo)) / albedo;
+                // Normalize the shadow color and apply shdFactor
+                vec3 shadowTint = shdCol / (0.0001 + maxOf(shdCol));
+
+                // Calculate the shadow color with an extinction coefficient based on the albedo
+                return exp2(-shdCol * albedoCoEff) * shadowTint;
+            }
+
             return getShdCol(shdPos) * (shdFactor * NLZ);
         #endif
     }
@@ -174,10 +186,14 @@ vec4 complexShadingForward(in dataPBR material, in vec2 lmCoord, in vec3 feetPla
             }
         #endif
 
-        // Normalize the shadow color and apply shdFactor
-        vec3 shadowTint = shdCol / (0.0001 + maxOf(shdCol));
-        // To give more light concentration at the point of light
-        shdCol += exp2(dot(vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), -viewDir) * 16.0 - 16.0) * shadowTint;
+        if(isSubSurface){
+            // Normalize the shadow color for subsurface scattering
+            vec3 shadowTint = shdCol / (0.015625 + maxOf(shdCol)) - shdCol;
+            // Get the subsurface scattering transmitted light
+            float transmittance = exp2(dot(vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), -viewDir) * 20.0 - 20.0) * material.ss;
+            // To give more light concentration at the point of light
+            shdCol += transmittance * shadowTint;
+        }
 
         #ifndef FORCE_DISABLE_WEATHER
             // Approximate rain diffusing light shadow

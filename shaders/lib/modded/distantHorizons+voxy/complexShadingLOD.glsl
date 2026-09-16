@@ -47,12 +47,14 @@ vec4 complexShadingLOD(in dataPBR material, in vec2 lmCoord, in vec3 feetPlayerP
             vec3 approxCol = (-approxShd * maxOf(material.albedo.rgb)) / material.albedo.rgb;
 
             shdCol = dirLight * (1.0 - material.ss) + exp2(approxCol);
-        }
 
-        // Normalize the shadow color and apply shdFactor
-        vec3 shadowTint = shdCol / (0.0001 + maxOf(shdCol));
-        // To give more light concentration at the point of light
-        shdCol += exp2(dot(vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), -viewDir) * 16.0 - 16.0) * shadowTint;
+            // Normalize the shadow color for subsurface scattering
+            vec3 shadowTint = shdCol / (0.015625 + maxOf(shdCol)) - shdCol;
+            // Get the subsurface scattering transmitted light
+            float transmittance = exp2(dot(vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), -viewDir) * 20.0 - 20.0) * material.ss;
+            // To give more light concentration at the point of light
+            shdCol += transmittance * shadowTint;
+        }
 
         #ifndef FORCE_DISABLE_WEATHER
             // Approximate rain diffusing light shadow
