@@ -1,7 +1,7 @@
 // Vertex GL version
 #version 330 compatibility
 
-#define COMPOSITE5
+#define COMPOSITE 5
 #define VERTEX
 
 #include "/lib/settings.glsl"

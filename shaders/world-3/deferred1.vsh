@@ -1,7 +1,7 @@
 // Vertex GL version
 #version 330 compatibility
 
-#define DEFERRED1
+#define DEFERRED 1
 #define VERTEX
 
 #include "/lib/settings.glsl"

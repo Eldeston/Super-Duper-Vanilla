@@ -1,7 +1,7 @@
 // Fragment GL version
 #version 330 compatibility
 
-#define DEFERRED0
+#define DEFERRED 0
 #define FRAGMENT
 
 #include "/lib/settings.glsl"

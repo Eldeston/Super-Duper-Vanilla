@@ -1,7 +1,7 @@
 // Fragment GL version
 #version 330 compatibility
 
-#define COMPOSITE2
+#define COMPOSITE 2
 #define FRAGMENT
 
 #include "/lib/settings.glsl"
