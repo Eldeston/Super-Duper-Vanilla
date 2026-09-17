@@ -282,12 +282,6 @@
         // Get scene color
         sceneColOut = texelFetch(colortex4, screenTexelCoord, 0).rgb;
 
-        #if ANTI_ALIASING >= 2
-            vec3 dither = fract(getRng3(screenTexelCoord & 255) + frameFract);
-        #else
-            vec3 dither = getRng3(screenTexelCoord & 255);
-        #endif
-
         // Materials and programs that come after deferred mask
         vec3 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xyz;
 
@@ -304,6 +298,12 @@
             // Declare and get materials
             vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
             vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
+
+            #if ANTI_ALIASING >= 2
+                vec3 dither = fract(getRng3(screenTexelCoord & 255) + frameFract);
+            #else
+                vec3 dither = getRng3(screenTexelCoord & 255);
+            #endif
 
             // Apply deffered shading
             sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, feetPlayerPos, mat3(gbufferModelView) * normal, albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, realSky);
