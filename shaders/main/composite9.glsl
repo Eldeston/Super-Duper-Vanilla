@@ -92,18 +92,23 @@
 
             bloomColOut = sample0 * 0.0702702703 + sample1 * 0.3162162162 + center * 0.2270270270;
 
-            // vec2 pixelOffSet = vec2(bloomPixelWidth, bloomPixelHeight) * 0.75;
+            // Find the initial offset for Kawase blur
+            // vec2 pixelOffSet = vec2(bloomPixelWidth, bloomPixelHeight) * 0.5;
 
-            // // center
-            // vec3 kawaseCol = textureLod(colortex0, texCoord, 0).rgb * 4.0;
+            // // Calculate offsets
+            // vec2 topRight = texCoord + pixelOffSet;
+            // vec2 bottomLeft = texCoord - pixelOffSet;
 
-            // // diagonals
-            // kawaseCol += textureLod(colortex0, texCoord + vec2(-pixelOffSet.x, -pixelOffSet.y), 0).rgb;
-            // kawaseCol += textureLod(colortex0, texCoord + vec2( pixelOffSet.x, -pixelOffSet.y), 0).rgb;
-            // kawaseCol += textureLod(colortex0, texCoord + vec2(-pixelOffSet.x,  pixelOffSet.y), 0).rgb;
-            // kawaseCol += textureLod(colortex0, texCoord + vec2( pixelOffSet.x,  pixelOffSet.y), 0).rgb;
+            // // Center
+            // vec3 kawaseCol = textureLod(colortex0, texCoord, 0).rgb;
 
-            // bloomColOut = kawaseCol * 0.125;
+            // // Diagonals
+            // kawaseCol += textureLod(colortex0, topRight, 0).rgb;
+            // kawaseCol += textureLod(colortex0, bottomLeft, 0).rgb;
+            // kawaseCol += textureLod(colortex0, vec2(topRight.x, bottomLeft.y), 0).rgb;
+            // kawaseCol += textureLod(colortex0, vec2(bottomLeft.x, topRight.y), 0).rgb;
+
+            // bloomColOut = kawaseCol * 0.2;
         #else
             bloomColOut = vec3(0);
         #endif

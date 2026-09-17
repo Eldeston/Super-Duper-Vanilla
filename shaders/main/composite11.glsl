@@ -75,7 +75,7 @@
                 shdLightDirScreenSpace.w *= 1.0 - rainStrength;
             #endif
 
-            // Get sRGB light postColOut
+            // Get sRGB light halfPostColOut
             sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
             sRGBLightCol *= shdLightDirScreenSpace.w;
         #endif
@@ -88,7 +88,7 @@
 
 #ifdef FRAGMENT
     /* RENDERTARGETS: 0 */
-    layout(location = 0) out vec3 postColOut; // colortex0
+    layout(location = 0) out vec3 halfPostColOut; // colortex0
 
     #if defined LENS_FLARE && defined WORLD_LIGHT
         flat in vec3 sRGBLightCol;
@@ -127,7 +127,7 @@
             vec2 baseCoord = texCoord * invScale + coords;
 
             // Bloom pixel size
-            vec2 pixelOffSet = vec2(bloomPixelWidth, bloomPixelHeight) * 2.0;
+            vec2 pixelOffSet = vec2(bloomPixelWidth, bloomPixelHeight);
 
             // Axial neighbors
             vec3 bloomCol0 = textureLod(colortex0, vec2(baseCoord.x + pixelOffSet.x, baseCoord.y), 0).rgb;
@@ -144,7 +144,7 @@
             bloomCol1 += textureLod(colortex0, vec2(topRight.x, bottomLeft.y), 0).rgb;
             bloomCol1 += textureLod(colortex0, vec2(bottomLeft.x, topRight.y), 0).rgb;
 
-            return (bloomCol0 + bloomCol1 * 2.0) / 12.0;
+            return (bloomCol0 + bloomCol1 * 2.0) * 0.08333333;
         }
     #endif
 
@@ -155,7 +155,7 @@
     #endif
 
     void main(){
-        postColOut = vec3(0);
+        halfPostColOut = vec3(0);
 
         #ifdef BLOOM
             // Uncompress the HDR colors and upscale
@@ -168,13 +168,12 @@
             // Average the total samples (1 / 5 bloom tiles multiplied by 1 / 4 samples used for the box blur)
             bloomCol *= 0.2;
 
-            float bloomLuma = sumOf(bloomCol);
             // Apply bloom by tonemapped luma and BLOOM_STRENGTH
-            postColOut = bloomCol * ((BLOOM_STRENGTH * bloomLuma) / (3.0 + bloomLuma));
+            halfPostColOut = bloomCol;
         #endif
 
         #if defined LENS_FLARE && defined WORLD_LIGHT
-            if(shdLightDirScreenSpace.w != 0) postColOut += getLensFlare(texCoord - 0.5, shdLightDirScreenSpace.xy - 0.5);
+            if(shdLightDirScreenSpace.w != 0) halfPostColOut += getLensFlare(texCoord - 0.5, shdLightDirScreenSpace.xy - 0.5);
         #endif
     }
 #endif

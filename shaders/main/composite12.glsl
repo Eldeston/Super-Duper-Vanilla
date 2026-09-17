@@ -87,7 +87,8 @@
         #if defined LENS_FLARE && defined WORLD_LIGHT || defined BLOOM
             // Uncompress the HDR colors and upscale
             vec3 bloomCol = texelFetch(colortex0, ivec2(gl_FragCoord.xy * 0.5), 0).rgb;
-            postColOut += bloomCol;
+            float bloomLuma = sumOf(bloomCol);
+            postColOut += (bloomCol - postColOut) * ((BLOOM_STRENGTH * bloomLuma) / (3.0 + bloomLuma));
         #endif
 
         #ifdef AUTO_EXPOSURE
