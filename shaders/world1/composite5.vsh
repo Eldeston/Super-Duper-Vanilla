@@ -8,4 +8,4 @@
 #include "/lib/utility/common.glsl"
 
 #include "world.glsl"
-#include "/main/composite5.glsl"
+#include "/main/composite5_bloom_pass2.glsl"

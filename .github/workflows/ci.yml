@@ -1,0 +1,42 @@
+name: CI & Quality Gate
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  quality-gate-and-build:
+    name: Quality Gate & Shaderpack Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install glslangValidator
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y glslang-tools
+
+      - name: Install Task
+        uses: arduino/setup-task@v2
+        with:
+          version: 3.x
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run CI Pipeline (Clean, Quality Gate, Build)
+        run: task ci
+
+      - name: Upload Shaderpack Archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: Super-Duper-Vanilla-Shaderpack
+          path: dist/*.zip
+          if-no-files-found: error

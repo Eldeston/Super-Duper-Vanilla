@@ -8,4 +8,4 @@
 #include "/lib/utility/common.glsl"
 
 #include "world.glsl"
-#include "/main/composite3.glsl"
+#include "/main/composite3_dof.glsl"

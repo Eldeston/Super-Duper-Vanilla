@@ -81,6 +81,7 @@ screen.LIGHTING = Iluminação
 
     option.SSAO = SSAO
     option.AMBIENT_LIGHTING = Iluminação Ambiente
+    option.WEATHER_DIRECT_LIGHT = Luz Direta no Mau Tempo
 
     screen.RAY_TRACING = Configurações de Ray Tracing
         option.SSGI = SSGI

@@ -41,7 +41,7 @@
         uniform float twilightPhase;
     #endif
 
-    #ifdef WORLD_VANILLA_FOG_COLOR
+    #if defined WORLD_VANILLA_FOG_COLOR || !defined FORCE_DISABLE_WEATHER
         uniform vec3 fogColor;
     #endif
 
@@ -49,7 +49,13 @@
         // Get buffer texture coordinates
         texCoord = gl_MultiTexCoord0.xy;
 
-        skyCol = toLinear(SKY_COLOR_DATA_BLOCK);
+        #if !defined FORCE_DISABLE_WEATHER && defined WORLD_LIGHT
+            vec3 defaultSkyCol = toLinear(SKY_COLOR_DATA_BLOCK);
+            vec3 weatherSkyCol = vec3(dot(toLinear(fogColor), vec3(0.2126, 0.7152, 0.0722)));
+            skyCol = mix(defaultSkyCol, weatherSkyCol, rainStrength);
+        #else
+            skyCol = toLinear(SKY_COLOR_DATA_BLOCK);
+        #endif
 
         #ifdef WORLD_LIGHT
             #ifdef FORCE_DISABLE_DAY_CYCLE
@@ -286,12 +292,8 @@
 
         #if defined WORLD_LIGHT || !defined FORCE_DISABLE_CLOUDS && CLOUD_TYPE == 2
             bool isSky = depth == 1.0;
-
-            float feetPlayerDot = lengthSquared(feetPlayerPos);
-            float feetPlayerDotInvSqrt = inversesqrt(feetPlayerDot);
-            float feetPlayerDist = feetPlayerDot * feetPlayerDotInvSqrt;
-
-            vec3 nFeetPlayerPos = feetPlayerPos * feetPlayerDotInvSqrt;
+            float feetPlayerDist = length(feetPlayerPos);
+            vec3 nFeetPlayerPos = feetPlayerPos / max(0.0001, feetPlayerDist);
         #endif
 
         #ifdef WORLD_LIGHT
@@ -325,10 +327,20 @@
             #endif
 
             #ifdef FORCE_DISABLE_DAY_CYCLE
-                sceneColOut = mix(sceneColOut, ((toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash) + lightCol + skyCol), cloudFinal);
+                vec3 cloudCelestialLight = lightCol;
             #else
-                sceneColOut = mix(sceneColOut, ((toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash) + mix(moonCol, sunCol, dayCycleAdjust) + skyCol), cloudFinal);
+                vec3 cloudCelestialLight = mix(moonCol, sunCol, dayCycleAdjust);
             #endif
+
+            #ifndef FORCE_DISABLE_WEATHER
+                cloudCelestialLight *= 1.0 - rainStrength;
+                vec3 cloudSkyLight = mix(skyCol, skyCol * 0.35, rainStrength);
+            #else
+                vec3 cloudSkyLight = skyCol;
+            #endif
+
+            vec3 cloudAmbient = vec3(toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash);
+            sceneColOut = mix(sceneColOut, cloudAmbient + cloudCelestialLight + cloudSkyLight, cloudFinal);
         #endif
 
         // Clamp scene color to prevent NaNs during post processing

@@ -80,13 +80,24 @@
             uniform float twilightPhase;
         #endif
 
-        #ifdef WORLD_VANILLA_FOG_COLOR
+        #if defined WORLD_VANILLA_FOG_COLOR || !defined FORCE_DISABLE_WEATHER
             uniform vec3 fogColor;
+        #endif
+
+        #ifndef FORCE_DISABLE_WEATHER
+            uniform float rainStrength;
         #endif
 
         void main(){
             // Apply simple shading
-            sceneColOut = (toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash) + toLinear(SKY_COLOR_DATA_BLOCK) + toLinear(LIGHT_COLOR_DATA_BLOCK0) * squared(cloudGradient);
+            #ifndef FORCE_DISABLE_WEATHER
+                vec3 weatherSky = vec3(dot(toLinear(fogColor), vec3(0.2126, 0.7152, 0.0722)));
+                vec3 cloudBaseSky = mix(toLinear(SKY_COLOR_DATA_BLOCK), weatherSky * 0.35, rainStrength);
+                vec3 cloudDirectLight = toLinear(LIGHT_COLOR_DATA_BLOCK0) * ((1.0 - rainStrength) * squared(cloudGradient));
+                sceneColOut = (toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash) + cloudBaseSky + cloudDirectLight;
+            #else
+                sceneColOut = (toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash) + toLinear(SKY_COLOR_DATA_BLOCK) + toLinear(LIGHT_COLOR_DATA_BLOCK0) * squared(cloudGradient);
+            #endif
         }
     #endif
 #endif

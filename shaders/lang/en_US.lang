@@ -160,6 +160,9 @@ screen.LIGHTING.comment = §6Lighting and shadow options including shadow mappin
     option.AMBIENT_LIGHTING = Ambient lighting
     option.AMBIENT_LIGHTING.comment = Overall ambient lighting value. Increase if you dislike the pitch black darkness, higher values may make lighting unrealistic. Set it to zero for a more realistic approach if you have SSGI enabled. Set it to 0.50 for nightvision.
 
+    option.WEATHER_DIRECT_LIGHT = Weather direct lighting
+    option.WEATHER_DIRECT_LIGHT.comment = Direct lighting and shadow strength from the sun and moon during bad weather (rain and thunder). Set to 0.00 to eliminate sharp celestial shadows in rain.
+
     screen.RAY_TRACING = Ray tracing settings
     screen.RAY_TRACING.comment = §6Ray tracing features such as SSGI, SSR, raytracer steps, and rough reflections.
         option.SSGI = SSGI

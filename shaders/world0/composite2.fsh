@@ -8,4 +8,4 @@
 #include "/lib/utility/common.glsl"
 
 #include "world.glsl"
-#include "/main/composite2.glsl"
+#include "/main/composite2_motionblur.glsl"

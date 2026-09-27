@@ -1,0 +1,24 @@
+# See https://pre-commit.com for more information
+repos:
+  - repo: local
+    hooks:
+      - id: glslang-validator
+        name: Validate GLSL Shaders (glslangValidator)
+        entry: python3 scripts/lint.py --staged
+        language: system
+        files: \.(vsh|fsh|gsh|csh|glsl)$
+        pass_filenames: false
+
+      - id: i18n-validator
+        name: Validate i18n & Translations
+        entry: python3 scripts/lint_i18n.py --staged
+        language: system
+        files: (\.lang|shaders\.properties)$
+        pass_filenames: false
+
+      - id: quality-gate-staged
+        name: Continuous Validation Quality Gate
+        entry: python3 scripts/quality_gate.py --staged
+        language: system
+        always_run: true
+        pass_filenames: false

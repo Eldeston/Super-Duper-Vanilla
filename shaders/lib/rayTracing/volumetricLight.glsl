@@ -52,14 +52,24 @@ vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in floa
 			// We continue tracing!
 			startPos += endPos;
 		}
+
+		#ifndef FORCE_DISABLE_WEATHER
+			volumeData *= 1.0 - rainStrength * (1.0 - WEATHER_DIRECT_LIGHT);
+		#endif
 		
 		return volumeData * lightCol * (min(1.0, VOLUMETRIC_LIGHTING_STRENGTH + VOLUMETRIC_LIGHTING_STRENGTH * isEyeInWater) * squared(heightFade) * volumetricFogDensity * volumetricStepsInverse);
 	#else
-		if(isEyeInWater == 1) return lightCol * toLinear(fogColor) * (min(1.0, VOLUMETRIC_LIGHTING_STRENGTH * 2.0) * volumetricFogDensity);
-		#ifdef WORLD_CUSTOM_SKYLIGHT
-			else return lightCol * (volumetricFogDensity * VOLUMETRIC_LIGHTING_STRENGTH);
+		#ifndef FORCE_DISABLE_WEATHER
+			float weatherVLFactor = 1.0 - rainStrength * (1.0 - WEATHER_DIRECT_LIGHT);
 		#else
-			else return lightCol * (squared(eyeBrightFact) * volumetricFogDensity * VOLUMETRIC_LIGHTING_STRENGTH);
+			const float weatherVLFactor = 1.0;
+		#endif
+
+		if(isEyeInWater == 1) return lightCol * toLinear(fogColor) * (min(1.0, VOLUMETRIC_LIGHTING_STRENGTH * 2.0) * volumetricFogDensity) * weatherVLFactor;
+		#ifdef WORLD_CUSTOM_SKYLIGHT
+			else return lightCol * (volumetricFogDensity * VOLUMETRIC_LIGHTING_STRENGTH) * weatherVLFactor;
+		#else
+			else return lightCol * (squared(eyeBrightFact) * volumetricFogDensity * VOLUMETRIC_LIGHTING_STRENGTH) * weatherVLFactor;
 		#endif
 	#endif
 }

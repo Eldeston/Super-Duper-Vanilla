@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Git pre-commit hook for Super Duper Vanilla
+# Enforces quality gates (GLSL compilation, i18n validation, and include integrity) on staged changes before commits.
+
+set -e
+
+# Change to repository root
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
+
+echo "Running pre-commit quality gates..."
+
+# Execute staged quality gate
+if python3 scripts/quality_gate.py --staged; then
+    echo "✓ Pre-commit quality gates passed."
+    exit 0
+else
+    echo ""
+    echo "✖ Commit blocked: Quality gate validation failed."
+    echo "  Please fix the errors above and re-stage your changes."
+    echo "  To test manually, run: task gate or python3 scripts/quality_gate.py"
+    exit 1
+fi

@@ -8,4 +8,4 @@
 #include "/lib/utility/common.glsl"
 
 #include "world.glsl"
-#include "/main/composite6.glsl"
+#include "/main/composite6_tonemap.glsl"

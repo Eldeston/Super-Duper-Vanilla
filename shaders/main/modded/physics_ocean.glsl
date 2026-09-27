@@ -168,7 +168,7 @@
         uniform float twilightPhase;
     #endif
 
-    #ifdef WORLD_VANILLA_FOG_COLOR
+    #if defined WORLD_VANILLA_FOG_COLOR || !defined FORCE_DISABLE_WEATHER
         uniform vec3 fogColor;
     #endif
 

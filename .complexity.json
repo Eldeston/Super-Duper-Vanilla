@@ -1,0 +1,47 @@
+{
+  "rules": {
+    "max_file_lines": 500,
+    "warn_file_lines": 350,
+    "max_function_lines": 140,
+    "warn_function_lines": 80,
+    "max_cyclomatic_complexity": 20,
+    "warn_cyclomatic_complexity": 15
+  },
+  "file_overrides": {
+    "shaders/lib/PBR/integratedPBR.glsl": {
+      "max_cyclomatic_complexity": 95,
+      "max_function_lines": 320,
+      "warn_cyclomatic_complexity": 92,
+      "warn_function_lines": 310,
+      "reason": "Large PBR material mapping lookup table for Minecraft blocks"
+    },
+    "shaders/lib/PBR/labPBR.glsl": {
+      "max_cyclomatic_complexity": 40,
+      "max_function_lines": 150,
+      "warn_cyclomatic_complexity": 38,
+      "warn_function_lines": 140,
+      "reason": "LabPBR material standard decoder"
+    },
+    "shaders/lib/lighting/complexShadingForward.glsl": {
+      "max_cyclomatic_complexity": 30,
+      "max_function_lines": 180,
+      "warn_cyclomatic_complexity": 29,
+      "warn_function_lines": 170,
+      "reason": "Forward shading lighting evaluation pipeline"
+    },
+    "shaders/lib/antialiasing/fxaa.glsl": {
+      "max_cyclomatic_complexity": 26,
+      "max_function_lines": 180,
+      "warn_cyclomatic_complexity": 25,
+      "warn_function_lines": 175,
+      "reason": "FXAA 3.11 quality preset algorithm"
+    }
+  },
+  "exclude": [
+    "dist/**",
+    "build/**",
+    "*.zip",
+    "*.spv",
+    "__pycache__/**"
+  ]
+}

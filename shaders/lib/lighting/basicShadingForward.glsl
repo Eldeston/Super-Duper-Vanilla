@@ -2,9 +2,15 @@ vec3 basicShadingForward(in vec3 albedo){
 	// Get sky light squared
 	float skyLightSquared = squared(lmCoord.y);
 
+	#ifndef FORCE_DISABLE_WEATHER
+		vec3 linearSkyCol = mix(toLinear(SKY_COLOR_DATA_BLOCK), vec3(dot(toLinear(fogColor), vec3(0.2126, 0.7152, 0.0722))), rainStrength);
+	#else
+		vec3 linearSkyCol = toLinear(SKY_COLOR_DATA_BLOCK);
+	#endif
+
 	// Calculate sky diffusion first, begining with the sky itself
 	// Occlude the appled sky and thunder flash calculation by sky light amount
-	vec3 totalDiffuse = (toLinear(SKY_COLOR_DATA_BLOCK) + lightningFlash) * skyLightSquared;
+	vec3 totalDiffuse = (linearSkyCol + lightningFlash) * skyLightSquared;
 
 	// Calculate block light
 	totalDiffuse += toLinear(squared(lmCoord.x) * blockLightColor * 1.25);
@@ -38,9 +44,10 @@ vec3 basicShadingForward(in vec3 albedo){
 
 		#ifndef FORCE_DISABLE_WEATHER
 			// Approximate rain diffusing light shadow
-			float rainDiffuseAmount = rainStrength * 0.5;
+			float rainDirectAmount = 1.0 - rainStrength * (1.0 - WEATHER_DIRECT_LIGHT);
+			shdCol *= rainDirectAmount;
 
-			shdCol *= 1.0 - rainDiffuseAmount;
+			float rainDiffuseAmount = rainStrength * WEATHER_DIRECT_LIGHT;
 			shdCol += rainDiffuseAmount * skyLightSquared;
 		#endif
 

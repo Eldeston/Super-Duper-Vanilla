@@ -4,9 +4,15 @@ vec3 complexShadingForward(in dataPBR material){
 	// Get sky light squared
 	float skyLightSquared = squared(lmCoord.y);
 
+	#ifndef FORCE_DISABLE_WEATHER
+		vec3 linearSkyCol = mix(toLinear(SKY_COLOR_DATA_BLOCK), vec3(dot(toLinear(fogColor), vec3(0.2126, 0.7152, 0.0722))), rainStrength);
+	#else
+		vec3 linearSkyCol = toLinear(SKY_COLOR_DATA_BLOCK);
+	#endif
+
 	// Calculate sky diffusion first, begining with the sky itself
 	// Occlude the appled sky and thunder flash calculation by sky light amount
-	vec3 totalIllumination = (toLinear(SKY_COLOR_DATA_BLOCK) + lightningFlash) * skyLightSquared;
+	vec3 totalIllumination = (linearSkyCol + lightningFlash) * skyLightSquared;
 
 	// Calculate ambient lightning
 	totalIllumination += toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
@@ -119,9 +125,10 @@ vec3 complexShadingForward(in dataPBR material){
 
 		#ifndef FORCE_DISABLE_WEATHER
 			// Approximate rain diffusing light shadow
-			float rainDiffuseAmount = rainStrength * 0.5;
-			shdCol *= 1.0 - rainDiffuseAmount;
+			float rainDirectAmount = 1.0 - rainStrength * (1.0 - WEATHER_DIRECT_LIGHT);
+			shdCol *= rainDirectAmount;
 
+			float rainDiffuseAmount = rainStrength * WEATHER_DIRECT_LIGHT;
 			shdCol += rainDiffuseAmount * material.ambient * skyLightSquared * (1.0 - shdFade);
 		#endif
 

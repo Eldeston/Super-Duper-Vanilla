@@ -160,6 +160,9 @@ screen.LIGHTING.comment = §6光照和阴影选项, 包括阴影映射, 实体�
     option.AMBIENT_LIGHTING = 环境光
     option.AMBIENT_LIGHTING.comment = 控制全局环境光照值. 如果你不喜欢漆黑一片就增加该值, 但过高的值会导致光照失真. 启用 SSGI 时设置为零以获得更真实的效果. 设置为 0.50 可获得夜视.
 
+    option.WEATHER_DIRECT_LIGHT = 恶劣天气直射光
+    option.WEATHER_DIRECT_LIGHT.comment = 恶劣天气（雨、雷暴）时来自太阳和月亮的直射光及阴影强度. 设置为 0.00 可完全消除雨天的硬边缘直射阴影.
+
     screen.RAY_TRACING = 光线追踪设置
     screen.RAY_TRACING.comment = §6光线追踪功能, 如 SSGI, SSR, 光线追踪步进, 及粗糙反射.
         option.SSGI = SSGI

@@ -69,10 +69,20 @@ float getSunMoonShape(in vec2 skyPos){
 
         clouds *= cloudHeightFade * cloudStepSize;
 
-        #ifdef FORCE_DISABLE_DAY_CYCLE
-            currSkyCol += lightCol * clouds;
+        #ifndef FORCE_DISABLE_WEATHER
+            #ifdef FORCE_DISABLE_DAY_CYCLE
+                vec3 cloudLight = lightCol * (1.0 - rainStrength);
+            #else
+                vec3 cloudLight = mix(moonCol, sunCol, dayCycleAdjust) * (1.0 - rainStrength);
+            #endif
+            currSkyCol += cloudLight * clouds;
+            currSkyCol -= currSkyCol * (clouds * rainStrength * 0.65);
         #else
-            currSkyCol += mix(moonCol, sunCol, dayCycleAdjust) * clouds;
+            #ifdef FORCE_DISABLE_DAY_CYCLE
+                currSkyCol += lightCol * clouds;
+            #else
+                currSkyCol += mix(moonCol, sunCol, dayCycleAdjust) * clouds;
+            #endif
         #endif
 
         return currSkyCol;
@@ -91,10 +101,15 @@ vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){
     #endif
 
     #if defined WORLD_LIGHT && WORLD_SUN_MOON == 1
-        #ifdef FORCE_DISABLE_DAY_CYCLE
-            if(skyPosZ > 0) currSkyCol += lightCol * pow(skyPosZ * skyPosZ, abs(nEyePlayerPosY) + 1.0);
+        #ifndef FORCE_DISABLE_WEATHER
+            float celestialFade = 1.0 - rainStrength;
         #else
-            float lightDiffuse = pow(skyPosZ * skyPosZ, abs(nEyePlayerPosY) + 1.0);
+            const float celestialFade = 1.0;
+        #endif
+        #ifdef FORCE_DISABLE_DAY_CYCLE
+            if(skyPosZ > 0) currSkyCol += lightCol * (pow(skyPosZ * skyPosZ, abs(nEyePlayerPosY) + 1.0) * celestialFade);
+        #else
+            float lightDiffuse = pow(skyPosZ * skyPosZ, abs(nEyePlayerPosY) + 1.0) * celestialFade;
             float diffuseCycleAdjust = dayCycleAdjust * lightDiffuse;
             currSkyCol += skyPosZ > 0 ? sunCol * diffuseCycleAdjust : moonCol * (lightDiffuse - diffuseCycleAdjust);
         #endif
@@ -135,7 +150,7 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
         #ifdef FORCE_DISABLE_WEATHER
             currSkyCol += stars * WORLD_STARS;
         #else
-            currSkyCol += (1.0 - rainStrength) * stars * WORLD_STARS;
+            if(rainStrength < 1.0) currSkyCol += (1.0 - rainStrength) * stars * WORLD_STARS;
         #endif
     #endif
 
@@ -272,9 +287,9 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol)
 
             #ifndef FORCE_DISABLE_WEATHER
                 #ifdef FORCE_DISABLE_DAY_CYCLE
-                    currSkyCol += sRGBLightCol * (sunMoonShape - rainStrength * sunMoonShape);
+                    currSkyCol += sRGBLightCol * (sunMoonShape * (1.0 - rainStrength));
                 #else
-                    currSkyCol += (skyPos.z > 0 ? sRGBSunCol : sRGBMoonCol) * (sunMoonShape - rainStrength * sunMoonShape);
+                    currSkyCol += (skyPos.z > 0 ? sRGBSunCol : sRGBMoonCol) * (sunMoonShape * (1.0 - rainStrength));
                 #endif
             #endif
         #elif WORLD_SUN_MOON == 2

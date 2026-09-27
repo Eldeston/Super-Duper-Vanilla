@@ -1,0 +1,26 @@
+# Build & Distribution artifacts
+dist/
+build/
+*.zip
+*.spv
+
+# Gradle & Loom Mod Dev Client Environment
+.gradle/
+run/
+*.log
+gradle/identity-mappings.jar
+
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# OS and Editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/

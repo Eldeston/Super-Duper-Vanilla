@@ -41,7 +41,7 @@
         uniform float twilightPhase;
     #endif
 
-    #ifdef WORLD_VANILLA_FOG_COLOR
+    #if defined WORLD_VANILLA_FOG_COLOR || !defined FORCE_DISABLE_WEATHER
         uniform vec3 fogColor;
     #endif
 
@@ -49,7 +49,13 @@
         // Get buffer texture coordinates
         texCoord = gl_MultiTexCoord0.xy;
 
-        skyCol = toLinear(SKY_COLOR_DATA_BLOCK);
+        #if !defined FORCE_DISABLE_WEATHER && defined WORLD_LIGHT
+            vec3 defaultSkyCol = toLinear(SKY_COLOR_DATA_BLOCK);
+            vec3 weatherSkyCol = vec3(dot(toLinear(fogColor), vec3(0.2126, 0.7152, 0.0722)));
+            skyCol = mix(defaultSkyCol, weatherSkyCol, rainStrength);
+        #else
+            skyCol = toLinear(SKY_COLOR_DATA_BLOCK);
+        #endif
 
         #ifdef WORLD_LIGHT
             #ifdef FORCE_DISABLE_DAY_CYCLE

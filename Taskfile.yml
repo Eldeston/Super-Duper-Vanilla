@@ -1,0 +1,131 @@
+# https://taskfile.dev
+version: '3'
+
+vars:
+  PYTHON: python3
+  OUTPUT_DIR: dist
+
+tasks:
+  default:
+    desc: 'Run the continuous validation quality gate'
+    cmds:
+      - task: gate
+
+  # ============================================================================
+  # Game Execution Tasks (Loom Dev Environment — like mod dev runClient)
+  # ============================================================================
+  run:
+    desc: 'Launch Minecraft client with Iris and shaderpack (like mod dev runClient)'
+    aliases: [runClient]
+    summary: |
+      Launches a standalone Minecraft client using Gradle and Quilt Loader with
+      Sodium and Iris preconfigured for Minecraft 26.3.
+      The shaderpack is automatically symlinked into the test client's shaderpacks directory.
+      Usage:
+        task run
+        task runClient
+        task run -- --offline
+    cmds:
+      - ./gradlew runClient {{.CLI_ARGS}}
+
+  'clean:run':
+    desc: 'Reset the local Minecraft client run directory'
+    cmds:
+      - rm -rf run/
+      - echo "✓ Cleaned local run/ directory."
+
+  # ============================================================================
+  # Linting Tasks
+  # ============================================================================
+  lint:
+    desc: 'Run all linters (GLSL shaders + i18n + file length & complexity)'
+    cmds:
+      - task: 'lint:glsl'
+      - task: 'lint:i18n'
+      - task: 'lint:complexity'
+
+  'lint:glsl':
+    desc: 'Validate GLSL shaders using glslangValidator'
+    summary: |
+      Preprocesses includes, injects Iris/DH runtime definitions, and validates
+      all shaders in parallel using glslangValidator.
+    cmds:
+      - '{{.PYTHON}} scripts/lint.py {{.CLI_ARGS}}'
+
+  'lint:i18n':
+    desc: 'Validate i18n .lang files, syntax, duplicate keys, and canonical coverage'
+    summary: |
+      Verifies .lang file formatting, duplicate key absence, and checks coverage
+      against shaders.properties and en_US.lang.
+    cmds:
+      - '{{.PYTHON}} scripts/lint_i18n.py {{.CLI_ARGS}}'
+
+  'lint:complexity':
+    desc: 'Enforce file length gates and cyclomatic complexity limits (SRP / KISS)'
+    summary: |
+      Analyzes GLSL and Python code against max file length, function length,
+      and cyclomatic complexity thresholds.
+    cmds:
+      - '{{.PYTHON}} scripts/complexity.py {{.CLI_ARGS}}'
+
+  'lint:staged':
+    desc: 'Validate only git-staged shader, language, and script files'
+    cmds:
+      - '{{.PYTHON}} scripts/lint.py --staged'
+      - '{{.PYTHON}} scripts/lint_i18n.py --staged'
+      - '{{.PYTHON}} scripts/complexity.py --staged'
+
+  # ============================================================================
+  # Quality Gates for Continuous Validation
+  # ============================================================================
+  gate:
+    desc: 'Run full continuous validation quality gate (GLSL, i18n, complexity, integrity)'
+    aliases: [check, quality-gate]
+    cmds:
+      - '{{.PYTHON}} scripts/quality_gate.py {{.CLI_ARGS}}'
+
+  'gate:strict':
+    desc: 'Run quality gate in strict mode (fails on warnings/orphans)'
+    cmds:
+      - '{{.PYTHON}} scripts/quality_gate.py --strict'
+
+  'gate:staged':
+    desc: 'Run quality gate on git-staged changes (used by pre-commit)'
+    cmds:
+      - '{{.PYTHON}} scripts/quality_gate.py --staged'
+
+  # ============================================================================
+  # CI/CD Build and Clean Tasks
+  # ============================================================================
+  clean:
+    desc: 'Remove build artifacts, distribution packages, and cache files'
+    cmds:
+      - rm -rf {{.OUTPUT_DIR}} build/ *.zip .pytest_cache/
+      - find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+      - find . -type f -name "*.pyc" -delete 2>/dev/null || true
+      - echo "✓ Cleaned build artifacts and temporary files."
+
+  build:
+    desc: 'Build production shaderpack ZIP archive for release / CI/CD'
+    deps: [clean]
+    cmds:
+      - '{{.PYTHON}} scripts/build.py --output-dir "{{.OUTPUT_DIR}}"'
+
+  ci:
+    desc: 'Complete CI pipeline (clean, validate quality gates, and build release package)'
+    cmds:
+      - task: clean
+      - task: gate
+      - task: build
+      - echo "✓ CI pipeline completed successfully!"
+
+  # ============================================================================
+  # Developer Tooling & Git Hooks
+  # ============================================================================
+  'hooks:install':
+    desc: 'Install and configure Git pre-commit hook'
+    aliases: [setup-hooks]
+    cmds:
+      - chmod +x .githooks/pre-commit
+      - git config core.hooksPath .githooks
+      - echo "✓ Configured git hooks path to .githooks/"

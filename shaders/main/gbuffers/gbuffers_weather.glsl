@@ -110,8 +110,12 @@
             uniform float dayCycle;
         #endif
 
-        #ifdef WORLD_VANILLA_FOG_COLOR
+        #if defined WORLD_VANILLA_FOG_COLOR || !defined FORCE_DISABLE_WEATHER
             uniform vec3 fogColor;
+        #endif
+
+        #ifndef FORCE_DISABLE_WEATHER
+            uniform float rainStrength;
         #endif
         
         void main(){
@@ -124,7 +128,12 @@
             // Convert to linear space
             albedo.rgb = toLinear(albedo.rgb);
 
-            vec3 totalDiffuse = toLinear(SKY_COLOR_DATA_BLOCK) + toLinear(lmCoordX * blockLightColor) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
+            #ifndef FORCE_DISABLE_WEATHER
+                vec3 skyLightDiffuse = mix(toLinear(SKY_COLOR_DATA_BLOCK), vec3(dot(toLinear(fogColor), vec3(0.2126, 0.7152, 0.0722))), rainStrength);
+            #else
+                vec3 skyLightDiffuse = toLinear(SKY_COLOR_DATA_BLOCK);
+            #endif
+            vec3 totalDiffuse = skyLightDiffuse + toLinear(lmCoordX * blockLightColor) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 
             totalDiffuse += lightningFlash;
 
