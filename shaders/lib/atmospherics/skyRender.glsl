@@ -136,7 +136,7 @@ vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){
     currSkyCol += lightningFlash;
 
     #if WORLD_ID == 1
-        currSkyCol += toLinear(vec3(0.4, 0.25, 0.55) * (endFlashIntensity * 1.5));
+        currSkyCol += toLinear(vec3(0.18, 0.10, 0.26)) * (endFlashIntensity * 0.4);
     #endif
 
     return currSkyCol;

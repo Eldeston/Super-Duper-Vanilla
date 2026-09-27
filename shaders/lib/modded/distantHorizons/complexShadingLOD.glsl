@@ -25,7 +25,7 @@ vec3 complexShadingLOD(in dataPBR material){
 	totalIllumination *= skyLightSquared;
 
 	#if WORLD_ID == 1
-		totalIllumination += toLinear(vec3(0.35, 0.25, 0.45) * endFlashIntensity);
+		totalIllumination += toLinear(vec3(0.12, 0.08, 0.16) * endFlashIntensity);
 	#endif
 
 	// Lastly, calculate ambient lightning
@@ -36,7 +36,7 @@ vec3 complexShadingLOD(in dataPBR material){
 
 	#ifdef WORLD_LIGHT
 		#if WORLD_ID == 1
-			vec3 sRGBLightCol = mix(LIGHT_COLOR_DATA_BLOCK0 * 0.25, vec3(1.2, 1.0, 1.5) * 4.5, endFlashIntensity);
+			vec3 sRGBLightCol = mix(LIGHT_COLOR_DATA_BLOCK0, LIGHT_COLOR_DATA_BLOCK0 * 1.5 + vec3(0.3, 0.1, 0.4), endFlashIntensity);
 		#else
 			// Get sRGB light color
 			vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
@@ -61,10 +61,6 @@ vec3 complexShadingLOD(in dataPBR material){
 		#endif
 
 		shdCol *= dirLight;
-
-		#if WORLD_ID == 1
-			shdCol *= max(endFlashIntensity, 0.05);
-		#endif
 
 		#ifndef FORCE_DISABLE_WEATHER
 			// Approximate rain diffusing light shadow

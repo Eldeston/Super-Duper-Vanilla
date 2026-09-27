@@ -22,7 +22,7 @@ vec3 complexShadingForward(in dataPBR material){
 	vec3 totalIllumination = (linearSkyCol + lightningFlash) * skyLightSquared;
 
 	#if WORLD_ID == 1
-		totalIllumination += toLinear(vec3(0.35, 0.25, 0.45) * endFlashIntensity);
+		totalIllumination += toLinear(vec3(0.12, 0.08, 0.16) * endFlashIntensity);
 	#endif
 
 	// Calculate ambient lightning
@@ -44,8 +44,7 @@ vec3 complexShadingForward(in dataPBR material){
 
 	#ifdef WORLD_LIGHT
 		#if WORLD_ID == 1
-			// End flash directional light overpowers black hole light
-			vec3 sRGBLightCol = mix(LIGHT_COLOR_DATA_BLOCK0 * 0.25, vec3(1.2, 1.0, 1.5) * 4.5, endFlashIntensity);
+			vec3 sRGBLightCol = mix(LIGHT_COLOR_DATA_BLOCK0, LIGHT_COLOR_DATA_BLOCK0 * 1.5 + vec3(0.3, 0.1, 0.4), endFlashIntensity);
 		#else
 			// Get sRGB light color
 			vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
@@ -125,10 +124,6 @@ vec3 complexShadingForward(in dataPBR material){
 
 		shdCol *= dirLight;
 
-		#if WORLD_ID == 1
-			shdCol *= max(endFlashIntensity, 0.05);
-		#endif
-
 		#ifndef FORCE_DISABLE_WEATHER
 			// Approximate rain diffusing light shadow
 			float rainDirectAmount = 1.0 - weatherFade * (1.0 - WEATHER_DIRECT_LIGHT);
@@ -140,12 +135,6 @@ vec3 complexShadingForward(in dataPBR material){
 
 		// Calculate and add shadow diffuse
 		totalIllumination += toLinear(sRGBLightCol) * shdCol;
-
-		#if WORLD_ID == 1
-			// Directional black hole light from fixed celestial West direction vec3(-1, 0, 0)
-			float NL_BH = max(0.0, -material.normal.x);
-			totalIllumination += toLinear(LIGHT_COLOR_DATA_BLOCK0) * (NL_BH * (0.25 * (1.0 - endFlashIntensity * 0.75)));
-		#endif
 	#endif
 
 	// Get view direction

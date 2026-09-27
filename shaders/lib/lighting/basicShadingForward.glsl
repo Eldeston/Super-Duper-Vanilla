@@ -20,7 +20,7 @@ vec3 basicShadingForward(in vec3 albedo){
 	vec3 totalDiffuse = (linearSkyCol + lightningFlash) * skyLightSquared;
 
 	#if WORLD_ID == 1
-		totalDiffuse += toLinear(vec3(0.35, 0.25, 0.45) * endFlashIntensity);
+		totalDiffuse += toLinear(vec3(0.12, 0.08, 0.16) * endFlashIntensity);
 	#endif
 
 	// Calculate block light
@@ -63,8 +63,7 @@ vec3 basicShadingForward(in vec3 albedo){
 		#endif
 
 		#if WORLD_ID == 1
-			vec3 sRGBLightCol = mix(LIGHT_COLOR_DATA_BLOCK0 * 0.25, vec3(1.2, 1.0, 1.5) * 4.5, endFlashIntensity);
-			shdCol *= max(endFlashIntensity, 0.05);
+			vec3 sRGBLightCol = mix(LIGHT_COLOR_DATA_BLOCK0, LIGHT_COLOR_DATA_BLOCK0 * 1.5 + vec3(0.3, 0.1, 0.4), endFlashIntensity);
 			totalDiffuse += shdCol * toLinear(sRGBLightCol);
 		#else
 			// Calculate and add shadow diffuse

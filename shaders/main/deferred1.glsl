@@ -270,17 +270,8 @@
         // Get scene color
         sceneColOut = texelFetch(colortex4, screenTexelCoord, 0).rgb;
 
-        // Get sky pos by shadow model view (or fixed black hole matrix in the End)
-        #if WORLD_ID == 1
-            const mat3 blackHoleSkyMatrix = mat3(
-                 0.0,  0.0,  1.0,
-                -1.0,  0.0,  0.0,
-                 0.0, -1.0,  0.0
-            );
-            vec3 skyPos = blackHoleSkyMatrix * nEyePlayerPos;
-        #else
-            vec3 skyPos = mat3(shadowModelView) * nEyePlayerPos;
-        #endif
+        // Get sky pos by shadow model view
+        vec3 skyPos = mat3(shadowModelView) * nEyePlayerPos;
 
         #if defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
             // Flip if the sun has gone below the horizon

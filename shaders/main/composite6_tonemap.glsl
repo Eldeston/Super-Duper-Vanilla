@@ -50,13 +50,8 @@
             // Get sRGB light postColOut
             sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
 
-            #if WORLD_ID == 1
-                // Black hole is at fixed celestial direction vec3(1.0, 0.0, 0.0)
-                shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, mat3(gbufferModelView) * vec3(1.0, 0.0, 0.0)), gbufferProjection[1].y * 0.72794047);
-            #else
-                // Get shadow light view direction in screen space
-                shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), gbufferProjection[1].y * 0.72794047);
-            #endif
+            // Get shadow light view direction in screen space
+            shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), gbufferProjection[1].y * 0.72794047);
         #endif
 
         gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
