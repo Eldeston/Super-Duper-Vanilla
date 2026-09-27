@@ -44,7 +44,7 @@ vec3 complexShadingForward(in dataPBR material){
 
 	#ifdef WORLD_LIGHT
 		#if WORLD_ID == 1
-			vec3 sRGBLightCol = mix(LIGHT_COLOR_DATA_BLOCK0, LIGHT_COLOR_DATA_BLOCK0 * 1.5 + vec3(0.3, 0.1, 0.4), endFlashIntensity);
+			vec3 sRGBLightCol = (LIGHT_COLOR_DATA_BLOCK0 * 1.5 + vec3(0.3, 0.1, 0.4)) * endFlashIntensity;
 		#else
 			// Get sRGB light color
 			vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
