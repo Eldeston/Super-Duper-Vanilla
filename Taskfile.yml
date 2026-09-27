@@ -15,11 +15,11 @@ tasks:
   # Game Execution Tasks (Loom Dev Environment — like mod dev runClient)
   # ============================================================================
   run:
-    desc: 'Launch Minecraft client with Iris and shaderpack (like mod dev runClient)'
+    desc: 'Launch Minecraft client with Iris, Litematica, and shaderpack (like mod dev runClient)'
     aliases: [runClient]
     summary: |
       Launches a standalone Minecraft client using Gradle and Quilt Loader with
-      Sodium and Iris preconfigured for Minecraft 26.3.
+      Sodium, Iris, and Litematica preconfigured for Minecraft 26.3.
       The shaderpack is automatically symlinked into the test client's shaderpacks directory.
       Usage:
         task run

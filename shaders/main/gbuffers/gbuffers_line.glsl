@@ -16,7 +16,7 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    flat out vec3 vertexColor;
+    flat out vec4 vertexColor;
 
     uniform float pixelWidth;
     uniform float pixelHeight;
@@ -43,8 +43,8 @@
     in vec4 vaColor;
 
     void main(){
-        // Get vertex color
-        vertexColor = vaColor.rgb;
+        // Get vertex color with alpha in linear color space
+        vertexColor = vec4(toLinear(vaColor.rgb), vaColor.a);
 
         // Feet player pos
         vec3 linePosStart = mat3(modelViewMatrix) * vaPosition + modelViewMatrix[3].xyz;
@@ -61,22 +61,49 @@
             linePosEnd = mat3(gbufferModelView) * linePosEnd;
         #endif
 
-        vec2 vertexClipCoordStart = vec2(projectionMatrix[0].x, projectionMatrix[1].y) * linePosStart.xy;
-        vec2 vertexClipCoordEnd = vec2(projectionMatrix[0].x, projectionMatrix[1].y) * linePosEnd.xy;
+        // View space near-plane clipping
+        // Avoid division by near-zero or positive Z which causes wild stretching triangles across screen (Issue #1140)
+        const float NEAR_CLIP = -0.05;
 
-        vec2 lineScreenDir = fastNormalize(vertexClipCoordStart / linePosStart.z - vertexClipCoordEnd / linePosEnd.z);
+        // If both endpoints are behind the near-plane, cull the line segment
+        if(linePosStart.z > NEAR_CLIP && linePosEnd.z > NEAR_CLIP){
+            gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
+            return;
+        }
+
+        vec3 p1 = linePosStart;
+        vec3 p2 = linePosEnd;
+
+        if(p1.z > NEAR_CLIP){
+            float t = (NEAR_CLIP - p1.z) / (p2.z - p1.z);
+            p1 = mix(p1, p2, t);
+        }
+        if(p2.z > NEAR_CLIP){
+            float t = (NEAR_CLIP - p1.z) / (p2.z - p1.z);
+            p2 = mix(p1, p2, t);
+        }
+
+        // Apply slight view scale depth offset like vanilla (0.99609375 = 1.0 - 1.0/256.0)
+        vec4 clipStart = projectionMatrix * vec4(p1 * 0.99609375, 1.0);
+        vec4 clipEnd = projectionMatrix * vec4(p2 * 0.99609375, 1.0);
+
+        vec3 ndc1 = clipStart.xyz / clipStart.w;
+        vec3 ndc2 = clipEnd.xyz / clipEnd.w;
+
+        vec2 lineScreenDir = (ndc2.xy - ndc1.xy) * vec2(1.0 / pixelWidth, 1.0 / pixelHeight);
+        float dirLen = length(lineScreenDir);
+        if(dirLen > 1e-5){
+            lineScreenDir /= dirLen;
+        } else {
+            lineScreenDir = vec2(1.0, 0.0);
+        }
+
         vec2 lineOffset = vec2(-lineScreenDir.y * pixelWidth, lineScreenDir.x * pixelHeight);
 
-        if(lineOffset.x < 0) lineOffset = -lineOffset;
+        if(lineOffset.x < 0.0) lineOffset = -lineOffset;
         if(gl_VertexID % 2 != 0) lineOffset = -lineOffset;
 
-        // Apply view scaling here
-        // 1.0 - (1.0 / 256.0) = 0.99609375
-        float vertexViewDepth = linePosStart.z * 0.99609375;
-        float vertexClipDepth = projectionMatrix[2].z * vertexViewDepth + projectionMatrix[3].z;
-
-        gl_Position.xyz = vec3(vertexClipCoordStart - lineOffset * (vertexViewDepth * 2.0), vertexClipDepth);
-        gl_Position.w = -vertexViewDepth;
+        gl_Position = vec4((ndc1.xy + lineOffset) * clipStart.w, clipStart.z, clipStart.w);
 
         #if ANTI_ALIASING == 2
             gl_Position.xy += jitterPos(gl_Position.w);
@@ -88,11 +115,12 @@
 
 #ifdef FRAGMENT
     /* RENDERTARGETS: 4 */
-    layout(location = 0) out vec3 sceneColOut; // colortex4
+    layout(location = 0) out vec4 sceneColOut; // colortex4
 
-    flat in vec3 vertexColor;
+    flat in vec4 vertexColor;
 
     void main(){
+        if(vertexColor.a <= 0.001){ discard; return; }
         sceneColOut = vertexColor;
     }
 #endif

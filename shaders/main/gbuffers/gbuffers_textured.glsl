@@ -89,7 +89,7 @@
         albedo.a *= vertexColor.a;
 
         // Alpha test, discard and return immediately
-        if(albedo.a < ALPHA_THRESHOLD){ discard; return; }
+        if(albedo.a <= 0.001){ discard; return; }
 
         #if COLOR_MODE == 0
             albedo.rgb *= vertexColor.rgb;

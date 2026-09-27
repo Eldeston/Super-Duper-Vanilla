@@ -1,11 +1,7 @@
-// Texture coordinate derivatives
-vec2 dcdx = dFdx(texCoord);
-vec2 dcdy = dFdy(texCoord);
-
 // The Integrated PBR calculation
 void getPBR(inout dataPBR material, in int id){
     // Assign albedo
-    material.albedo = textureGrad(gtexture, texCoord, dcdx, dcdy);
+    material.albedo = texture(gtexture, texCoord);
 
     // Alpha test, discard and return immediately
     if(material.albedo.a < ALPHA_THRESHOLD){ discard; return; }
@@ -16,6 +12,8 @@ void getPBR(inout dataPBR material, in int id){
     // Generate bumped normals
     #if (defined TERRAIN || defined WATER || defined BLOCK || defined BLOCK_TRANSLUCENT) && defined NORMAL_GENERATION
         if(id != 11100 && id != 11102 && id != 12101){
+            vec2 dcdx = dFdx(texCoord);
+            vec2 dcdy = dFdy(texCoord);
             const float autoGenNormPixSize = 1.0 / NORMAL_GENERATION_RESOLUTION;
             vec2 topRightCorner = fract(vTexCoord - autoGenNormPixSize) * vTexCoordScale + vTexCoordPos;
             vec2 bottomLeftCorner = fract(vTexCoord + autoGenNormPixSize) * vTexCoordScale + vTexCoordPos;
@@ -296,12 +294,12 @@ void getPBR(inout dataPBR material, in int id){
     #endif
 
     #if COLOR_MODE == 0
-        material.albedo.rgb *= vertexColor;
+        material.albedo.rgb *= vertexColor.rgb;
     #elif COLOR_MODE == 1
         material.albedo.rgb = vec3(1);
     #elif COLOR_MODE == 2
         material.albedo.rgb = vec3(0);
     #elif COLOR_MODE == 3
-        material.albedo.rgb = vertexColor;
+        material.albedo.rgb = vertexColor.rgb;
     #endif
 }

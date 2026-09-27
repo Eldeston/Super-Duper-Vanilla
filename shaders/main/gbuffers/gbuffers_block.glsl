@@ -21,7 +21,7 @@
     out vec2 lmCoord;
     out vec2 texCoord;
 
-    out vec3 vertexColor;
+    out vec4 vertexColor;
     out vec3 vertexFeetPlayerPos;
     out vec3 vertexWorldPos;
 
@@ -59,7 +59,7 @@
         // Get buffer texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         // Get vertex color
-        vertexColor = gl_Color.rgb;
+        vertexColor = gl_Color;
 
         // Lightmap fix for mods
         #ifdef WORLD_CUSTOM_SKYLIGHT
@@ -128,7 +128,7 @@
     in vec2 lmCoord;
     in vec2 texCoord;
 
-    in vec3 vertexColor;
+    in vec4 vertexColor;
     in vec3 vertexFeetPlayerPos;
     in vec3 vertexWorldPos;
 
@@ -248,6 +248,10 @@
 	    // Declare materials
 	    dataPBR material;
         getPBR(material, blockEntityId);
+
+        // Apply vertex alpha for modded translucent rendering (e.g. Litematica ghost blocks)
+        material.albedo.a *= vertexColor.a;
+        if(material.albedo.a <= 0.001){ discard; return; }
 
         // Convert to linear space
         material.albedo.rgb = toLinear(material.albedo.rgb);

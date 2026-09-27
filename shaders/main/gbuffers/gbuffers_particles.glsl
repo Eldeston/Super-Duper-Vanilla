@@ -18,7 +18,7 @@
 #ifdef VERTEX
     flat out vec2 lmCoord;
 
-    flat out vec3 vertexColor;
+    flat out vec4 vertexColor;
 
     out vec2 texCoord;
 
@@ -55,7 +55,7 @@
         // Get buffer texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         // Get vertex color
-        vertexColor = gl_Color.rgb;
+        vertexColor = gl_Color;
 
         // Lightmap fix for mods
         #ifdef WORLD_CUSTOM_SKYLIGHT
@@ -110,7 +110,7 @@
 
     flat in vec2 lmCoord;
 
-    flat in vec3 vertexColor;
+    flat in vec4 vertexColor;
 
     in vec2 texCoord;
 
@@ -170,24 +170,25 @@
     void main(){
         // Get albedo
         vec4 albedo = textureLod(gtexture, texCoord, 0);
+        albedo.a *= vertexColor.a;
 
         // Alpha test, discard and return immediately
-        if(albedo.a < ALPHA_THRESHOLD){ discard; return; }
+        if(albedo.a <= 0.001){ discard; return; }
 
         // Particle emissives
         if((vertexColor.r * 0.5 > vertexColor.g + vertexColor.b || (vertexColor.r + vertexColor.b > vertexColor.g * 2.0 && abs(vertexColor.r - vertexColor.b) < 0.2) || ((albedo.r + albedo.g + albedo.b > 1.6 || (vertexColor.r != vertexColor.g && vertexColor.g != vertexColor.b)) && lmCoord.x == 1)) && atlasSize.x <= 1024 && atlasSize.x > 0){
-            sceneColOut = vec4(toLinear(albedo.rgb * vertexColor) * EMISSIVE_INTENSITY, albedo.a);
+            sceneColOut = vec4(toLinear(albedo.rgb * vertexColor.rgb) * EMISSIVE_INTENSITY, albedo.a);
             return; // Return immediately, no need for lighting calculation
         }
 
         #if COLOR_MODE == 0
-            albedo.rgb *= vertexColor;
+            albedo.rgb *= vertexColor.rgb;
         #elif COLOR_MODE == 1
             albedo.rgb = vec3(1);
         #elif COLOR_MODE == 2
             albedo.rgb = vec3(0);
         #elif COLOR_MODE == 3
-            albedo.rgb = vertexColor;
+            albedo.rgb = vertexColor.rgb;
         #endif
 
         // Convert to linear space

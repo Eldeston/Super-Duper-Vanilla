@@ -22,7 +22,7 @@
     out vec2 texCoord;
     out vec2 waterNoiseUv;
 
-    out vec3 vertexColor;
+    out vec4 vertexColor;
     out vec3 vertexFeetPlayerPos;
     out vec3 vertexWorldPos;
 
@@ -72,7 +72,7 @@
         // Get buffer texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         // Get vertex color
-        vertexColor = gl_Color.rgb;
+        vertexColor = gl_Color;
 
         // Lightmap fix for mods
         #ifdef WORLD_CUSTOM_SKYLIGHT
@@ -110,7 +110,9 @@
         #endif
 
         #ifdef WATER_ANIMATION
-            vertexFeetPlayerPos = getWaterWave(vertexFeetPlayerPos, vertexWorldPos.xz, mc_Entity.x, vertexFrameTime);
+            if(gl_Color.a >= 0.999){
+                vertexFeetPlayerPos = getWaterWave(vertexFeetPlayerPos, vertexWorldPos.xz, mc_Entity.x, vertexFrameTime);
+            }
         #endif
 
         #ifdef WORLD_CURVATURE
@@ -151,7 +153,7 @@
     in vec2 texCoord;
     in vec2 waterNoiseUv;
 
-    in vec3 vertexColor;
+    in vec4 vertexColor;
     in vec3 vertexFeetPlayerPos;
     in vec3 vertexWorldPos;
 
@@ -239,11 +241,17 @@
     #include "/lib/lighting/complexShadingForward.glsl"
 
     void main(){
+        int effectiveBlockId = (vertexColor.a < 0.999) ? 0 : blockId;
+
 	    // Declare materials
 	    dataPBR material;
-        getPBR(material, blockId);
+        getPBR(material, effectiveBlockId);
 
-        if(blockId == 11102 || blockId == 12100){
+        // Apply vertex alpha for modded translucent rendering (e.g. Litematica ghost blocks)
+        material.albedo.a *= vertexColor.a;
+        if(material.albedo.a <= 0.001){ discard; return; }
+
+        if((effectiveBlockId == 11102 || effectiveBlockId == 12100) && vertexColor.a >= 0.999){
             // Fast depth linearization by DrDesten
             // Not great, but plausible for most scenarios
             float blockDepth = near / (1.0 - gl_FragCoord.z) - near / (1.0 - texelFetch(depthtex1, ivec2(gl_FragCoord.xy), 0).x);
@@ -251,7 +259,7 @@
             float edgeBrightness = exp2((blockDepth + 0.0625) * 8.0);
 
             // Water
-            if(blockId == 11102){
+            if(effectiveBlockId == 11102){
                 float waterNoise = WATER_BRIGHTNESS;
 
                 #if defined WATER_NORMAL
@@ -290,7 +298,7 @@
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
-            if(blockId != 11102) enviroPBR(material, TBN[2]);
+            if(effectiveBlockId != 11102 && vertexColor.a >= 0.999) enviroPBR(material, TBN[2]);
         #endif
 
         // Write to HDR scene color
@@ -299,6 +307,6 @@
         // Write buffer datas
         normalDataOut = material.normal;
         albedoDataOut = material.albedo.rgb;
-        materialDataOut = vec3(material.metallic, material.smoothness, 0.5);
+        materialDataOut = (vertexColor.a < 0.999) ? vec3(0.0) : vec3(material.metallic, material.smoothness, 0.5);
     }
 #endif

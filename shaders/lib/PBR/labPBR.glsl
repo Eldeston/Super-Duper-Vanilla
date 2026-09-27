@@ -197,13 +197,13 @@ void getPBR(inout dataPBR material, in int id){
     #endif
 
     #if COLOR_MODE == 0
-        material.albedo.rgb *= vertexColor;
+        material.albedo.rgb *= vertexColor.rgb;
     #elif COLOR_MODE == 1
         material.albedo.rgb = vec3(1);
     #elif COLOR_MODE == 2
         material.albedo.rgb = vec3(0);
     #elif COLOR_MODE == 3
-        material.albedo.rgb = vertexColor;
+        material.albedo.rgb = vertexColor.rgb;
     #endif
 
     // Get parallax shadows
