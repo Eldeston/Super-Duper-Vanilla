@@ -1,10 +1,14 @@
 #ifdef WORLD_AETHER
 #endif
 
+float getSunMoonDist(in vec2 coord, in float halfSize){
+    float r = SUN_MOON_ROUNDNESS * halfSize;
+    vec2 q = abs(coord) - vec2(halfSize - r);
+    return min(max(q.x, q.y), 0.0) + length(max(q, vec2(0.0))) - r + halfSize;
+}
+
 float getSunMoonDist(in vec2 coord){
-    float squareDist = max(abs(coord.x), abs(coord.y));
-    float roundDist = length(coord);
-    return mix(squareDist, roundDist, SUN_MOON_ROUNDNESS);
+    return getSunMoonDist(coord, WORLD_SUN_MOON_SIZE);
 }
 
 // Round sun and moon
@@ -14,7 +18,7 @@ float getSunMoonShape(in float skyPosZ){
 
 // Shape-adjusted sun and moon
 float getSunMoonShape(in vec2 skyPos){
-    return min(1.0, exp2((WORLD_SUN_MOON_SIZE - getSunMoonDist(skyPos)) * 256.0));
+    return min(1.0, exp2((WORLD_SUN_MOON_SIZE - getSunMoonDist(skyPos, WORLD_SUN_MOON_SIZE)) * 256.0));
 }
 
 #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
@@ -286,7 +290,7 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol)
         #if WORLD_SUN_MOON == 1
             #ifndef FORCE_DISABLE_WEATHER
                 if(weatherFade < 1.0 && abs(skyPos.z) > 0.7){
-                    float sunMoonShape = getSunMoonShape(skyPos.xy) * sunMoonIntensitySqrd;
+                    float sunMoonShape = getSunMoonShape(skyPos.xy / abs(skyPos.z)) * sunMoonIntensitySqrd;
                     #ifdef FORCE_DISABLE_DAY_CYCLE
                         currSkyCol += sRGBLightCol * (sunMoonShape * (1.0 - weatherFade));
                     #else
@@ -295,7 +299,7 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol)
                 }
             #else
                 if(abs(skyPos.z) > 0.7){
-                    float sunMoonShape = getSunMoonShape(skyPos.xy) * sunMoonIntensitySqrd;
+                    float sunMoonShape = getSunMoonShape(skyPos.xy / abs(skyPos.z)) * sunMoonIntensitySqrd;
                     #ifdef FORCE_DISABLE_DAY_CYCLE
                         currSkyCol += sRGBLightCol * sunMoonShape;
                     #else
@@ -305,22 +309,28 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol)
             #endif
         #elif WORLD_SUN_MOON == 2
             // If current world uses shader black hole
-            const float blackHoleSize = 1024.0 - WORLD_SUN_MOON_SIZE * 64.0;
-            float dist = getSunMoonDist(skyPos.xy);
-            float shapeZ = skyPos.z > 0.0 ? sqrt(max(0.0, 1.0 - dist * dist)) : skyPos.z;
-            float blackHole = blackHoleSize - shapeZ * 1024.0;
+            if(skyPos.z > 0.0){
+                const float blackHoleSize = 1024.0 - WORLD_SUN_MOON_SIZE * 64.0;
+                const float z0 = blackHoleSize / 1024.0;
+                const float bhHalfSize = sqrt(1.0 - z0 * z0) / z0;
 
-            // If black hole return nothing
-            if(blackHole <= 0) return vec3(0);
-            blackHole = 1.0 / max(1.0, blackHole);
+                vec2 projPos = skyPos.xy / skyPos.z;
+                float dist = getSunMoonDist(projPos, bhHalfSize);
+                float shapeZ = inversesqrt(dist * dist + 1.0);
+                float blackHole = blackHoleSize - shapeZ * 1024.0;
 
-            // Distortion application
-            const float rotationFactor = TAU * 16.0;
-            skyPos.xy = rot2D(blackHole * rotationFactor) * skyPos.xy;
+                // If black hole return nothing
+                if(blackHole <= 0.0) return vec3(0.0);
+                blackHole = max(0.0, 1.0 / max(1.0, blackHole) - (1.0 / blackHoleSize));
 
-            float rings = textureLod(noisetex, vec2(skyPos.x * blackHole, fragmentFrameTime * 0.0009765625), 0).x;
+                // Distortion application (only for accretion rings, do not mutate skyPos!)
+                const float rotationFactor = TAU * 16.0;
+                vec2 ringPos = rot2D(blackHole * rotationFactor) * skyPos.xy;
 
-            currSkyCol += ((rings * blackHole * 0.9 + blackHole * 0.1) * sunMoonIntensitySqrd) * lightCol;
+                float rings = textureLod(noisetex, vec2(ringPos.x * blackHole, fragmentFrameTime * 0.0009765625), 0).x;
+
+                currSkyCol += ((rings * blackHole * 0.9 + blackHole * 0.1) * sunMoonIntensitySqrd) * lightCol;
+            }
         #endif
     #endif
 

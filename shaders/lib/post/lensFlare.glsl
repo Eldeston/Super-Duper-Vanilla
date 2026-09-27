@@ -1,15 +1,16 @@
-float getLensDist(in vec2 lensCoord){
-    float squareDist = max(abs(lensCoord.x), abs(lensCoord.y));
-    float roundDist = length(lensCoord);
-    return mix(squareDist, roundDist, SUN_MOON_ROUNDNESS);
+float getLensDist(in vec2 lensCoord, in float halfSize){
+    float r = SUN_MOON_ROUNDNESS * halfSize;
+    vec2 q = abs(lensCoord) - vec2(halfSize - r);
+    return min(max(q.x, q.y), 0.0) + length(max(q, vec2(0.0))) - r + halfSize;
 }
 
 float lensShape(in vec2 lensCoord){
-    float dist = getLensDist(lensCoord);
+    float halfSize = cubed(WORLD_SUN_MOON_SIZE);
+    float dist = getLensDist(lensCoord, halfSize);
     #if WORLD_SUN_MOON == 2
-        return abs(dist - cubed(WORLD_SUN_MOON_SIZE));
+        return abs(dist - halfSize);
     #else
-        return dist - cubed(WORLD_SUN_MOON_SIZE);
+        return dist - halfSize;
     #endif
 }
 
