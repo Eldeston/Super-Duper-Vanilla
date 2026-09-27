@@ -4,3 +4,4 @@
 * [@Felix14_v2](https://github.com/Felix14-v2) (Russian)
 * [@ItIsNotAPlayer](https://github.com/ItIsNotAPlayer) (Simplified Chinese)
 * [@Chocotoneg](https://github.com/chocotoneg) (Brazillian Portuguese)
+* [@porkyoot](https://github.com/porkyoot) (French)

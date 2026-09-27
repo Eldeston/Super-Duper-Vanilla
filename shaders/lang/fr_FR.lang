@@ -1,0 +1,538 @@
+## Language format v1.1.0
+## Tous les autres fichiers .lang doivent adopter la version la plus récente du format de ce fichier principal
+
+## Profils
+profile.comment = Modifie le profil de performance pour améliorer les performances ou la qualité
+
+profile.POTATO = Patate
+profile.LOW = Basse
+profile.MEDIUM = Moyenne (Par défaut)
+profile.HIGH = Élevée
+profile.ULTRA = Ultra
+
+screen.DEBUG = Super Duper Vanilla v1.3.8
+screen.DEBUG.comment = §bDéveloppé par §2Eldeston§f§r, présenté par §9FlameRender (C) §9Studios. §eCliquez ici pour ouvrir les paramètres de débogage du shader ! Contient les options de mode de couleur et de vitesse du bruit.
+    option.COLOR_MODE = Mode de couleur
+    option.COLOR_MODE.comment = Modifie le mode de couleur de l'albédo.
+        value.COLOR_MODE.0 = Désactivé
+        value.COLOR_MODE.1 = Mode blanc
+        value.COLOR_MODE.2 = Mode noir
+        value.COLOR_MODE.3 = Mode feuillage
+
+    option.NOISE_SPEED = Vitesse du bruit
+    option.NOISE_SPEED.comment = Modifie la vitesse temporelle du bruit
+
+screen.POST = Post-traitement
+screen.POST.comment = §6Effets de post-traitement tels que les contours, l'anticrénelage, le filtre rétro et la netteté de l'image.
+    option.OUTLINES = Contours
+    option.OUTLINES.comment = Active les contours. Définissez sur Standard pour des blocs aux contours classiques, ou Dungeons pour des contours dans le style Dungeons/SDGP.
+        value.OUTLINES.0 = Désactivé
+        value.OUTLINES.1 = Standard
+        value.OUTLINES.2 = Dungeons
+
+    option.OUTLINE_BRIGHTNESS = Luminosité des contours
+    option.OUTLINE_BRIGHTNESS.comment = Luminosité des contours. Définissez sur -1 pour des contours noirs, ou sur 1 pour des contours lumineux.
+
+    option.OUTLINE_PIXEL_SIZE = Épaisseur des contours
+    option.OUTLINE_PIXEL_SIZE.comment = Épaisseur des contours en pixels. Ajustez pour modifier la largeur des contours.
+
+    option.RETRO_FILTER = Filtre rétro
+    option.RETRO_FILTER.comment = Active le filtre rétro. Fonctionne mieux à faible résolution de rendu.
+
+    option.ANTI_ALIASING = Anticrénelage
+    option.ANTI_ALIASING.comment = Active l'anticrénelage. Le FXAA est rapide et fonctionne avec les captures d'écran. Le TAA est plus lent, incompatible avec les captures d'écran personnalisées, mais adoucit le bruit. Désactivez l'anticrénelage dans le menu de votre shader avant d'utiliser cette fonctionnalité !
+        value.ANTI_ALIASING.0 = Désactivé
+        value.ANTI_ALIASING.1 = FXAA
+        value.ANTI_ALIASING.2 = TAA
+        value.ANTI_ALIASING.3 = Lite TAA + FXAA
+
+    option.SHARPEN_FILTER = Filtre de netteté
+    option.SHARPEN_FILTER.comment = Active la netteté de l'image. À utiliser avec l'anticrénelage activé si l'image semble floue.
+
+    screen.CAMERA = Paramètres de la caméra
+    screen.CAMERA.comment = §6Effets de caméra et d'objectif incluant la profondeur de champ, l'aberration chromatique, le bloom, les reflets de lentille, le vignettage et le flou de mouvement.
+        option.DOF = Profondeur de champ
+        option.DOF.comment = Active la profondeur de champ. Activez l'anticrénelage pour de meilleurs résultats.
+
+        option.DOF_STRENGTH = Intensité de la profondeur de champ
+        option.DOF_STRENGTH.comment = Intensité de l'effet de profondeur de champ.
+
+        option.CHROMATIC_ABERRATION = Aberration chromatique
+        option.CHROMATIC_ABERRATION.comment = Active l'aberration chromatique.
+
+        option.ABERRATION_PIXEL_SIZE = Taille de l'aberration
+        option.ABERRATION_PIXEL_SIZE.comment = Portée de l'aberration chromatique en pixels. Augmentez pour des effets plus prononcés.
+
+        option.BLOOM = Bloom
+        option.BLOOM.comment = Active le bloom.
+
+        option.BLOOM_STRENGTH = Intensité du bloom
+        option.BLOOM_STRENGTH.comment = Luminosité de l'effet de bloom.
+
+        option.LENS_FLARE = Reflets de lentille
+        option.LENS_FLARE.comment = Active les reflets de lentille (lens flare).
+
+        option.LENS_FLARE_STRENGTH = Intensité des reflets
+        option.LENS_FLARE_STRENGTH.comment = Intensité des reflets de lentille.
+
+        option.VIGNETTE = Vignettage
+        option.VIGNETTE.comment = Active le vignettage.
+
+        option.VIGNETTE_STRENGTH = Intensité du vignettage
+        option.VIGNETTE_STRENGTH.comment = Intensité de l'effet de vignettage.
+
+        option.MOTION_BLUR = Flou de mouvement
+        option.MOTION_BLUR.comment = Active le flou de mouvement.
+
+        option.MOTION_BLUR_STRENGTH = Intensité du flou de mouvement
+        option.MOTION_BLUR_STRENGTH.comment = Intensité du flou de mouvement.
+
+    screen.TONEMAP = Paramètres du mappage tonal
+    screen.TONEMAP.comment = §6Contrôles du mappage tonal et de l'étalonnage colorimétrique tels que le contraste, la saturation, l'exposition et la teinte de couleur.
+        option.CONTRAST = Contraste
+        option.CONTRAST.comment = Ajuste le contraste des couleurs.
+
+        option.SATURATION = Saturation
+        option.SATURATION.comment = Ajuste le niveau de saturation des couleurs.
+
+        option.WHITE_POINT = Point blanc
+        option.WHITE_POINT.comment = Point blanc du mappage tonal.
+
+        option.SHOULDER_STRENGTH = Force de transition des hautes lumières
+        option.SHOULDER_STRENGTH.comment = Force de la courbe des hautes lumières (shoulder) du mappage tonal.
+
+        option.AUTO_EXPOSURE = Exposition automatique
+        option.AUTO_EXPOSURE.comment = Active l'exposition automatique en temps réel. Ne fonctionne pas avec les résolutions de capture personnalisées d'OptiFine !
+
+        option.AUTO_EXPOSURE_SPEED = Vitesse de l'exposition auto
+        option.AUTO_EXPOSURE_SPEED.comment = Vitesse d'adaptation temporelle de l'exposition automatique. Détermine la vitesse à laquelle l'exposition s'ajuste à l'écran. Des valeurs plus petites signifient plus lent, des valeurs plus grandes signifient plus rapide.
+
+        option.EXPOSURE = Exposition
+        option.EXPOSURE.comment = Ajuste l'exposition des couleurs.
+
+        option.MINIMUM_EXPOSURE = Exposition minimale
+        option.MINIMUM_EXPOSURE.comment = Valeur minimale de l'exposition automatique. Des valeurs plus faibles peuvent augmenter l'exposition des scènes sombres si l'exposition auto est activée.
+
+        option.TINT_R = Teinte rouge
+        option.TINT_R.comment = Valeur de la teinte rouge.
+
+        option.TINT_G = Teinte verte
+        option.TINT_G.comment = Valeur de la teinte verte.
+
+        option.TINT_B = Teinte bleue
+        option.TINT_B.comment = Valeur de la teinte bleue.
+
+screen.LIGHTING = Éclairage
+screen.LIGHTING.comment = §6Options d'éclairage et d'ombres incluant le shadow mapping, les ombres des entités, l'éclairage ambiant et le SSAO.
+    option.SHADOW_MAPPING = Shadow mapping
+    option.SHADOW_MAPPING.comment = Active les ombres portées (shadow mapping). Désactivez pour utiliser de fausses ombres avec la lightmap.
+
+    option.SHADOW_COLOR = Couleur des ombres
+    option.SHADOW_COLOR.comment = Active la couleur des ombres projetées par des objets transparents teintés.
+
+    option.SHADOW_FILTER = Filtrage des ombres
+    option.SHADOW_FILTER.comment = Active le filtrage adouci des ombres. Si activé, les ombres apparaîtront plus douces en utilisant du bruit. Peut impacter les performances.
+
+    option.ENTITY_SHADOWS = Ombres des entités
+    option.ENTITY_SHADOWS.comment = Active les ombres des entités.
+
+    option.BLOCK_ENTITY_SHADOWS = Ombres des blocs-entités
+    option.BLOCK_ENTITY_SHADOWS.comment = Active les ombres des blocs-entités.
+
+    option.shadowMapResolution = Résolution du shadow map
+    option.shadowMapResolution.comment = Résolution de la carte d'ombres.
+
+    option.shadowDistance = Distance des ombres
+    option.shadowDistance.comment = Distance de rendu des ombres portées.
+
+    option.sunPathRotation = Angle de trajectoire de la lumière
+    option.sunPathRotation.comment = Angle de la trajectoire de la lumière. Affecte également l'angle du ciel.
+
+    option.UNDERWATER_CAUSTICS = Caustiques sous-marines
+    option.UNDERWATER_CAUSTICS.comment = Active les caustiques sous-marines. La couleur des ombres doit être activée !
+        value.UNDERWATER_CAUSTICS.0 = Désactivé
+        value.UNDERWATER_CAUSTICS.1 = Sous l'eau
+        value.UNDERWATER_CAUSTICS.2 = Complet
+
+    option.SSAO = SSAO
+    option.SSAO.comment = Active l'occlusion ambiante dans l'espace écran (SSAO).
+
+    option.AMBIENT_LIGHTING = Éclairage ambiant
+    option.AMBIENT_LIGHTING.comment = Valeur globale de l'éclairage ambiant. Augmentez si vous n'aimez pas l'obscurité totale ; des valeurs élevées peuvent rendre l'éclairage irréaliste. Réglez sur zéro pour une approche plus réaliste si le SSGI est activé. Réglez sur 0.50 pour une vision nocturne.
+
+    option.WEATHER_DIRECT_LIGHT = Lumière directe météo
+    option.WEATHER_DIRECT_LIGHT.comment = Intensité de la lumière directe et des ombres du soleil et de la lune par mauvais temps (pluie et orage). Réglez sur 0.00 pour éliminer les ombres célestes nettes sous la pluie.
+
+    screen.RAY_TRACING = Paramètres du ray tracing
+    screen.RAY_TRACING.comment = §6Fonctionnalités de ray tracing telles que le SSGI, le SSR, les pas du raytracer et les réflexions rugueuses.
+        option.SSGI = SSGI
+        option.SSGI.comment = Active l'illumination globale dans l'espace écran (SSGI) pour un éclairage indirect plus réaliste.
+
+        option.SSR = SSR
+        option.SSR.comment = Active les réflexions dans l'espace écran (SSR) pour les surfaces réfléchissantes comme l'eau et les métaux.
+
+        option.RAYTRACER_STEPS = Pas du raytracer
+        option.RAYTRACER_STEPS.comment = Nombre d'étapes pour le ray tracing. Des valeurs plus élevées augmentent la qualité mais réduisent les performances.
+
+        option.RAYTRACER_BISTEPS = Pas de raffinement du raytracer
+        option.RAYTRACER_BISTEPS.comment = Nombre d'étapes de raffinement pour le ray tracing. Améliore les détails des réflexions et de l'illumination globale.
+
+        option.ROUGH_REFLECTIONS = Réflexions rugueuses
+        option.ROUGH_REFLECTIONS.comment = Active les réflexions rugueuses pour les surfaces non réfléchissantes comme un miroir, simulant des reflets flous.
+
+        option.PREVIOUS_FRAME = Tampon d'image précédente
+        option.PREVIOUS_FRAME.comment = Utilise les données de l'image précédente pour les effets temporels et le débruitage en ray tracing.
+
+screen.ATMOSPHERICS = Atmosphère
+screen.ATMOSPHERICS.comment = §6Effets atmosphériques incluant le soleil/lune, les nuages, le brouillard, le brouillard de bordure et l'éclairage volumétrique.
+    option.SUN_MOON_ROUNDNESS = Rondeur soleil/lune
+    option.SUN_MOON_ROUNDNESS.comment = Ajuste la forme des astres et de leur éclat, de carré (0.0) à rond (1.0).
+        value.SUN_MOON_ROUNDNESS.0.00 = Carré
+        value.SUN_MOON_ROUNDNESS.0.50 = Arrondi
+        value.SUN_MOON_ROUNDNESS.1.00 = Rond
+    
+    option.CLOUD_TYPE = Type de nuages
+    option.CLOUD_TYPE.comment = Modifie le type de nuages.
+        value.CLOUD_TYPE.0 = Vanilla
+        value.CLOUD_TYPE.1 = Skybox
+        value.CLOUD_TYPE.2 = Volumétrique
+
+    option.SUN_MOON_INTENSITY = Intensité soleil/lune
+    option.SUN_MOON_INTENSITY.comment = Intensité du soleil ou de la lune. Affecte également les reflets spéculaires.
+
+    option.VOLUMETRIC_LIGHTING = Éclairage volumétrique
+    option.VOLUMETRIC_LIGHTING.comment = Active l'éclairage volumétrique.
+
+    option.VOLUMETRIC_LIGHTING_STRENGTH = Intensité éclairage volumétrique
+    option.VOLUMETRIC_LIGHTING_STRENGTH.comment = Intensité de l'éclairage volumétrique, définissez sur zéro pour le désactiver.
+
+    option.BORDER_FOG = Brouillard de bordure
+    option.BORDER_FOG.comment = Active le brouillard de bordure pour masquer les limites du monde chargé.
+
+    option.GROUND_FOG_STRENGTH = Intensité du brouillard au sol
+    option.GROUND_FOG_STRENGTH.comment = Intensité de la brume / du brouillard au ras du sol.
+
+    screen.CLOUD_SETTINGS = Paramètres des nuages
+    screen.CLOUD_SETTINGS.comment = §eOptions de rendu des nuages telles que les nuages à double couche, les nuages dynamiques et la qualité/épaisseur des nuages.
+        option.DOUBLE_LAYERED_CLOUDS = Nuages à double couche
+        option.DOUBLE_LAYERED_CLOUDS.comment = Ajoute une seconde couche de nuages (fonctionne avec les nuages vanilla et du shader), peut impacter les performances.
+
+        option.DYNAMIC_CLOUDS = Nuages dynamiques
+        option.DYNAMIC_CLOUDS.comment = Rend les nuages plus dynamiques et sensibles à la météo (affecte les nuages vanilla et Story Mode).
+
+        option.FADE_SPEED = Vitesse de fondu
+        option.FADE_SPEED.comment = Vitesse d'apparition et de disparition des nuages.
+
+        option.SECOND_CLOUD_HEIGHT = Altitude de la 2e couche
+        option.SECOND_CLOUD_HEIGHT.comment = Altitude de la 2e couche de nuages, si les doubles nuages vanilla sont activés.
+
+        option.VOLUMETRIC_CLOUD_STEPS = Pas volumétriques
+        option.VOLUMETRIC_CLOUD_STEPS.comment = Nombre d'étapes pour les nuages Story Mode. Augmenter peut améliorer la qualité et consommer plus de performances.
+
+        option.VOLUMETRIC_CLOUD_DEPTH = Épaisseur volumétrique
+        option.VOLUMETRIC_CLOUD_DEPTH.comment = Détermine l'épaisseur des nuages Story Mode.
+
+        option.SKYBOX_CLOUD_STEPS = Pas de la skybox
+        option.SKYBOX_CLOUD_STEPS.comment = Nombre d'étapes pour les nuages de la skybox. Augmenter peut améliorer la qualité et consommer plus de performances.
+
+        option.SKYBOX_CLOUD_DEPTH = Épaisseur de la skybox
+        option.SKYBOX_CLOUD_DEPTH.comment = Détermine l'épaisseur des nuages de la skybox.
+
+    option.SKYBOX_BRIGHTNESS = Luminosité de la skybox
+    option.SKYBOX_BRIGHTNESS.comment = Luminosité de la boîte céleste (skybox).
+
+screen.WORLD = Monde
+screen.WORLD.comment = §6Options d'environnement et d'animations du monde incluant le terrain, l'eau, la météo, le vent et la courbure du monde.
+    option.TERRAIN_ANIMATION = Animation du terrain
+    option.TERRAIN_ANIMATION.comment = Active l'animation d'ondulation du terrain.
+
+    option.WATER_ANIMATION = Animation de l'eau
+    option.WATER_ANIMATION.comment = Active l'animation d'ondulation de l'eau.
+
+    option.WEATHER_ANIMATION = Animation de la météo
+    option.WEATHER_ANIMATION.comment = Active l'animation d'ondulation de la pluie.
+
+    option.TIMELAPSE_MODE = Mode timelapse
+    option.TIMELAPSE_MODE.comment = Active le mode timelapse. Lisse les transitions d'animation du ciel, du mouvement des feuilles, etc. selon le temps actuel du monde au lieu du temps des images. Définissez sur Fragment pour les normales d'eau et le ciel uniquement, et sur Complet pour les normales d'eau, le ciel et les ondulations. Cette fonctionnalité ne fonctionne pas sur les nuages vanilla, la skybox, ni le soleil et la lune.
+        value.TIMELAPSE_MODE.0 = Désactivé
+        value.TIMELAPSE_MODE.1 = Fragment
+        value.TIMELAPSE_MODE.2 = Complet
+
+    option.WIND_SPEED = Vitesse du vent
+    option.WIND_SPEED.comment = Ajuste la vitesse du vent. Affecte les plantes, les objets suspendus et la météo. Augmente la vitesse d'animation.
+
+    option.CURRENT_SPEED = Vitesse du courant
+    option.CURRENT_SPEED.comment = Ajuste la vitesse d'écoulement des liquides et sous l'eau. Affecte les plantes aquatiques et les liquides. Augmente la vitesse d'animation.
+
+    option.WIND_FREQUENCY = Fréquence du vent
+    option.WIND_FREQUENCY.comment = Ajuste la fréquence du vent. Affecte les plantes, les objets suspendus et la météo. Augmente la fréquence des changements d'animation.
+
+    option.CURRENT_FREQUENCY = Fréquence du courant
+    option.CURRENT_FREQUENCY.comment = Ajuste la fréquence d'écoulement des liquides et sous l'eau. Affecte les plantes aquatiques et les liquides. Augmente la fréquence des changements d'animation.
+
+    option.WORLD_CURVATURE = Courbure du monde
+    option.WORLD_CURVATURE.comment = Active la courbure du monde.
+
+    option.WORLD_CURVATURE_SIZE = Échelle de courbure du monde
+    option.WORLD_CURVATURE_SIZE.comment = Rayon de courbure du monde.
+
+screen.PBR = PBR
+screen.PBR.comment = §6Options de rendu basé sur la physique (PBR) incluant le mode PBR, les reflets spéculaires, les matériaux d'environnement et l'occlusion de parallaxe.
+    option.PBR_MODE = Mode PBR
+    option.PBR_MODE.comment = Active le PBR. Le PBR intégré exploite les textures d'albédo vanilla pour générer les matériaux. Le PBR de pack de ressources utilise le PBR de votre pack de ressources, si disponible. Le PBR de pack nécessite la dernière version de LabPBR !
+        value.PBR_MODE.0 = Désactivé
+        value.PBR_MODE.1 = PBR intégré
+        value.PBR_MODE.2 = Lab PBR 1.3
+
+    option.SPECULAR_HIGHLIGHTS = Reflets spéculaires
+    option.SPECULAR_HIGHLIGHTS.comment = Active les reflets spéculaires. Les reflets spéculaires représentent les reflets approchés du soleil.
+
+    option.ENVIRONMENT_PBR = Matériaux d'environnement PBR
+    option.ENVIRONMENT_PBR.comment = Active les matériaux d'environnement. Les matériaux d'environnement affectent votre environnement selon les conditions météo, comme la pluie.
+
+    option.SUBSURFACE_SCATTERING = Diffusion sous la surface (SSS)
+    option.SUBSURFACE_SCATTERING.comment = Active la diffusion lumineuse sous la surface (subsurface scattering).
+
+    option.EMISSIVE_INTENSITY = Intensité émissive
+    option.EMISSIVE_INTENSITY.comment = Intensité des cartes émissives. N'affecte pas les lightmaps et nécessite le PBR activé.
+
+    option.NORMAL_STRENGTH = Force des normales
+    option.NORMAL_STRENGTH.comment = Force de la carte de normales. Effectif uniquement si le PBR est activé avec les normales du pack de ressources, et que les normales de pente sont désactivées.
+
+    option.SLOPE_NORMALS = Normales de pente
+    option.SLOPE_NORMALS.comment = Active les normales de pente. Désactivez cette option si vous utilisez un pack haute résolution avec des cartes de normales.
+
+    option.DIRECTIONAL_LIGHTMAPS = Lightmaps directionnelles
+    option.DIRECTIONAL_LIGHTMAPS.comment = Active les lightmaps directionnelles. Effectif uniquement si les normales auto-générées ou les cartes de normales issues du PBR sont activées.
+
+    option.DIRECTIONAL_LIGHTMAP_STRENGTH = Force des lightmaps directionnelles
+    option.DIRECTIONAL_LIGHTMAP_STRENGTH.comment = Intensité des cartes de lumière directionnelles. Effectif si les lightmaps directionnelles sont activées.
+
+    screen.POM_SETTINGS = Paramètres d'occlusion de parallaxe
+    screen.POM_SETTINGS.comment = §eOptions de cartographie par occlusion de parallaxe et d'ombrage pour des détails de surface accrus.
+        option.PARALLAX_OCCLUSION = Occlusion de parallaxe
+        option.PARALLAX_OCCLUSION.comment = Active le parallax occlusion mapping pour simuler du relief et des détails de surface.
+
+        option.PARALLAX_DEPTH = Profondeur de parallaxe
+        option.PARALLAX_DEPTH.comment = Définit la profondeur maximale pour l'occlusion de parallaxe. Des valeurs plus élevées augmentent l'effet.
+
+        option.PARALLAX_STEPS = Pas de parallaxe
+        option.PARALLAX_STEPS.comment = Nombre d'étapes pour l'occlusion de parallaxe. Davantage d'étapes améliorent la qualité mais réduisent les performances.
+
+        option.PARALLAX_SHADOW = Ombres de parallaxe
+        option.PARALLAX_SHADOW.comment = Active l'auto-ombrage pour les surfaces avec occlusion de parallaxe.
+
+        option.PARALLAX_SHADOW_STEPS = Pas d'ombres de parallaxe
+        option.PARALLAX_SHADOW_STEPS.comment = Nombre d'étapes pour l'ombrage de parallaxe. Des valeurs plus élevées améliorent les détails des ombres.
+
+    screen.IPBR_SETTINGS = Paramètres iPBR
+    screen.IPBR_SETTINGS.comment = §eParamètres de matériaux avancés pour l'eau, la lave, le sculk et la génération de normales.
+        screen.WATER_SETTINGS = Paramètres du matériau de l'eau
+        screen.WATER_SETTINGS.comment = §bPropriétés du matériau de l'eau telles que le bruit, la luminosité, la carte de normales, le flou, la profondeur, le pavage, l'absorption, l'écume et la couleur unie.
+            option.WATER_NOISE = Bruit de l'eau
+            option.WATER_NOISE.comment = Contrôle la quantité de bruit et de distorsion sur les surfaces d'eau.
+
+            option.WATER_BRIGHTNESS = Luminosité de l'eau
+            option.WATER_BRIGHTNESS.comment = Ajuste la luminosité des matériaux d'eau.
+
+            option.WATER_NORMAL = Carte de normales de l'eau
+            option.WATER_NORMAL.comment = Active ou ajuste la carte de normales de l'eau, affectant les détails de surface.
+
+            option.WATER_BLUR_SIZE = Rayon de flou des normales d'eau
+            option.WATER_BLUR_SIZE.comment = Définit le rayon de flou de la carte de normales de l'eau pour adoucir les détails.
+
+            option.WATER_DEPTH_SIZE = Profondeur des normales d'eau
+            option.WATER_DEPTH_SIZE.comment = Contrôle l'intensité de l'effet de profondeur dans la carte de normales de l'eau.
+
+            option.WATER_TILE_SIZE = Échelle de répétition de l'eau
+            option.WATER_TILE_SIZE.comment = Définit l'échelle de répétition des textures d'eau.
+
+            option.WATER_STYLIZE_ABSORPTION = Absorption de l'eau
+            option.WATER_STYLIZE_ABSORPTION.comment = Ajuste la quantité de lumière absorbée par l'eau, affectant la couleur et la clarté.
+
+            option.WATER_FOAM = Écume de l'eau
+            option.WATER_FOAM.comment = Active ou ajuste les effets d'écume sur les surfaces d'eau.
+
+            option.WATER_FLAT = Albédo d'eau uniforme
+            option.WATER_FLAT.comment = Utilise une couleur d'albédo unie pour l'eau, en ignorant les détails de texture.
+
+        screen.LAVA_SETTINGS = Paramètres du matériau de lave
+        screen.LAVA_SETTINGS.comment = §bPropriétés du matériau de lave telles que la luminosité, le bruit et la répétition.
+            option.LAVA_BRIGHTNESS = Luminosité de la lave
+            option.LAVA_BRIGHTNESS.comment = Ajuste la luminosité des matériaux de lave.
+
+            option.LAVA_NOISE = Bruit de la lave
+            option.LAVA_NOISE.comment = Contrôle la quantité de bruit et de distorsion sur les surfaces de lave.
+
+            option.LAVA_TILE_SIZE = Échelle de répétition de la lave
+            option.LAVA_TILE_SIZE.comment = Définit l'échelle de répétition des textures de lave.
+
+        screen.SCULK_SETTINGS = Paramètres du matériau de sculk
+        screen.SCULK_SETTINGS.comment = §bPropriétés du matériau de sculk telles que la luminosité, le bruit et la répétition.
+            option.SCULK_BRIGHTNESS = Luminosité du sculk
+            option.SCULK_BRIGHTNESS.comment = Ajuste la luminosité des matériaux de sculk.
+
+            option.SCULK_NOISE = Bruit du sculk
+            option.SCULK_NOISE.comment = Contrôle la quantité de bruit et de distorsion sur les surfaces de sculk.
+
+            option.SCULK_TILE_SIZE = Échelle de répétition du sculk
+            option.SCULK_TILE_SIZE.comment = Définit l'échelle de répétition des textures de sculk.
+
+        option.NORMAL_GENERATION = Génération auto des normales
+        option.NORMAL_GENERATION.comment = Active la génération automatique de cartes de normales pour les matériaux.
+
+        option.NORMAL_GENERATION_RESOLUTION = Résolution des normales auto
+        option.NORMAL_GENERATION_RESOLUTION.comment = Définit la résolution des cartes de normales générées automatiquement.
+
+screen.CONFIGURATION = Configuration
+screen.CONFIGURATION.comment = §6Configuration des dimensions et environnements pour le Monde normal, le Nether, l'End et les paramètres de brouillard.
+    screen.OVERWORLD_SETTINGS = Paramètres du Monde normal
+    screen.OVERWORLD_SETTINGS.comment = §aParamètres d'éclairage, du ciel et de couleur du brouillard du Monde normal pour le jour, la nuit et le crépuscule.
+        screen.DAY_SETTINGS = Paramètres du jour
+        screen.DAY_SETTINGS.comment = §bConfiguration de la lumière et de la couleur du ciel diurne.
+            option.LIGHT0_DR = Rouge de la lumière
+            option.LIGHT0_DR.comment = Canal rouge de la couleur de lumière du jour.
+            
+            option.LIGHT0_DG = Vert de la lumière
+            option.LIGHT0_DG.comment = Canal vert de la couleur de lumière du jour.
+            
+            option.LIGHT0_DB = Bleu de la lumière
+            option.LIGHT0_DB.comment = Canal bleu de la couleur de lumière du jour.
+            
+            option.LIGHT0_DI = Intensité de la lumière
+            option.LIGHT0_DI.comment = Intensité de la couleur de lumière du jour.
+
+            option.SKY0_DR = Rouge du ciel
+            option.SKY0_DR.comment = Canal rouge de la couleur du ciel du jour.
+            
+            option.SKY0_DG = Vert du ciel
+            option.SKY0_DG.comment = Canal vert de la couleur du ciel du jour.
+            
+            option.SKY0_DB = Bleu du ciel
+            option.SKY0_DB.comment = Canal bleu de la couleur du ciel du jour.
+            
+            option.SKY0_DI = Intensité du ciel
+            option.SKY0_DI.comment = Intensité de la couleur du ciel du jour.
+
+        screen.NIGHT_SETTINGS = Paramètres de la nuit
+        screen.NIGHT_SETTINGS.comment = §1Configuration de la lumière et de la couleur du ciel nocturne.
+            option.LIGHT0_NR = Rouge de la lumière
+            option.LIGHT0_NR.comment = Canal rouge de la couleur de lumière nocturne.
+            
+            option.LIGHT0_NG = Vert de la lumière
+            option.LIGHT0_NG.comment = Canal vert de la couleur de lumière nocturne.
+            
+            option.LIGHT0_NB = Bleu de la lumière
+            option.LIGHT0_NB.comment = Canal bleu de la couleur de lumière nocturne.
+            
+            option.LIGHT0_NI = Intensité de la lumière
+            option.LIGHT0_NI.comment = Intensité de la couleur de lumière nocturne.
+
+            option.SKY0_NR = Rouge du ciel
+            option.SKY0_NR.comment = Canal rouge de la couleur du ciel nocturne.
+            
+            option.SKY0_NG = Vert du ciel
+            option.SKY0_NG.comment = Canal vert de la couleur du ciel nocturne.
+            
+            option.SKY0_NB = Bleu du ciel
+            option.SKY0_NB.comment = Canal bleu de la couleur du ciel nocturne.
+            
+            option.SKY0_NI = Intensité du ciel
+            option.SKY0_NI.comment = Intensité de la couleur du ciel nocturne.
+
+        screen.TWILIGHT_SETTINGS = Paramètres du crépuscule
+        screen.TWILIGHT_SETTINGS.comment = §dConfiguration de la lumière et de la couleur du ciel au crépuscule.
+            option.LIGHT0_TR = Rouge de la lumière
+            option.LIGHT0_TR.comment = Canal rouge de la couleur de lumière au crépuscule.
+            
+            option.LIGHT0_TG = Vert de la lumière
+            option.LIGHT0_TG.comment = Canal vert de la couleur de lumière au crépuscule.
+            
+            option.LIGHT0_TB = Bleu de la lumière
+            option.LIGHT0_TB.comment = Canal bleu de la couleur de lumière au crépuscule.
+            
+            option.LIGHT0_TI = Intensité de la lumière
+            option.LIGHT0_TI.comment = Intensité de la couleur de lumière au crépuscule.
+
+            option.SKY0_TR = Rouge du ciel
+            option.SKY0_TR.comment = Canal rouge de la couleur du ciel au crépuscule.
+            
+            option.SKY0_TG = Vert du ciel
+            option.SKY0_TG.comment = Canal vert de la couleur du ciel au crépuscule.
+            
+            option.SKY0_TB = Bleu du ciel
+            option.SKY0_TB.comment = Canal bleu de la couleur du ciel au crépuscule.
+            
+            option.SKY0_TI = Intensité du ciel
+            option.SKY0_TI.comment = Intensité de la couleur du ciel au crépuscule.
+
+        screen.FOG_SETTINGS0 = Paramètres du brouillard
+        screen.FOG_SETTINGS0.comment = §7Densité et paramètres de couleur du brouillard pour le Monde normal.
+            option.FOG0_VERTICAL_DENSITY_D = Densité verticale jour
+            option.FOG0_VERTICAL_DENSITY_D.comment = Densité verticale du brouillard de jour. Des valeurs plus élevées = brouillard plus fin en altitude, plus dense en bas.
+            
+            option.FOG0_VERTICAL_DENSITY_N = Densité verticale nuit
+            option.FOG0_VERTICAL_DENSITY_N.comment = Densité verticale du brouillard de nuit.
+            
+            option.FOG0_VERTICAL_DENSITY_T = Densité verticale crépuscule
+            option.FOG0_VERTICAL_DENSITY_T.comment = Densité verticale du brouillard au crépuscule.
+            
+            option.FOG0_TOTAL_DENSITY = Densité totale
+            option.FOG0_TOTAL_DENSITY.comment = Densité totale du brouillard pour le Monde normal. Des valeurs plus élevées = brouillard plus épais.
+
+    screen.NETHER_SETTINGS = Paramètres du Nether
+    screen.NETHER_SETTINGS.comment = §cConfiguration du brouillard et de la couleur du ciel du Nether.
+        option.FOGn1_VERTICAL_DENSITY = Densité verticale
+        option.FOGn1_VERTICAL_DENSITY.comment = Densité verticale du brouillard dans le Nether. Des valeurs plus élevées = brouillard plus fin en altitude, plus dense en bas.
+
+        option.FOGn1_TOTAL_DENSITY = Densité totale
+        option.FOGn1_TOTAL_DENSITY.comment = Densité totale du brouillard pour le Nether. Des valeurs plus élevées = brouillard plus épais.
+
+        option.WORLDn1_VANILLA_FOGCOLI = Intensité du ciel
+        option.WORLDn1_VANILLA_FOGCOLI.comment = Intensité de la couleur du brouillard vanilla du Nether.
+
+    screen.END_SETTINGS = Paramètres de l'End
+    screen.END_SETTINGS.comment = §5Configuration de la lumière, du ciel et de la couleur du brouillard de la dimension de l'End.
+        option.LIGHT1_CR = Rouge de la lumière
+        option.LIGHT1_CR.comment = Canal rouge de la couleur de lumière de l'End.
+
+        option.LIGHT1_CG = Vert de la lumière
+        option.LIGHT1_CG.comment = Canal vert de la couleur de lumière de l'End.
+
+        option.LIGHT1_CB = Bleu de la lumière
+        option.LIGHT1_CB.comment = Canal bleu de la couleur de lumière de l'End.
+
+        option.LIGHT1_CI = Intensité de la lumière
+        option.LIGHT1_CI.comment = Intensité de la couleur de lumière de l'End.
+
+        option.SKY1_CR = Rouge du ciel
+        option.SKY1_CR.comment = Canal rouge de la couleur du ciel de l'End.
+
+        option.SKY1_CG = Vert du ciel
+        option.SKY1_CG.comment = Canal vert de la couleur du ciel de l'End.
+
+        option.SKY1_CB = Bleu du ciel
+        option.SKY1_CB.comment = Canal bleu de la couleur du ciel de l'End.
+
+        option.SKY1_CI = Intensité ciel
+        option.SKY1_CI.comment = Intensité de la couleur du ciel de l'End.
+
+        option.FOG1_VERTICAL_DENSITY = Densité verticale
+        option.FOG1_VERTICAL_DENSITY.comment = Densité verticale du brouillard dans l'End. Des valeurs plus élevées = brouillard plus fin en altitude, plus dense en bas.
+
+        option.FOG1_TOTAL_DENSITY = Densité totale
+        option.FOG1_TOTAL_DENSITY.comment = Densité totale du brouillard pour l'End. Des valeurs plus élevées = brouillard plus épais.
+
+    screen.BLOCK_LIGHT_COLOR = Paramètres de lumière des blocs
+    screen.BLOCK_LIGHT_COLOR.comment = §eConfiguration de la couleur et de l'intensité de la lumière des blocs.
+        option.BLOCKLIGHT_R = Rouge lumière des blocs
+        option.BLOCKLIGHT_R.comment = Canal rouge de la couleur de lumière des blocs.
+
+        option.BLOCKLIGHT_G = Vert lumière des blocs
+        option.BLOCKLIGHT_G.comment = Canal vert de la couleur de lumière des blocs.
+
+        option.BLOCKLIGHT_B = Bleu lumière des blocs
+        option.BLOCKLIGHT_B.comment = Canal bleu de la couleur de lumière des blocs.
+
+        option.BLOCKLIGHT_I = Intensité lumière des blocs
+        option.BLOCKLIGHT_I.comment = Intensité de la couleur de lumière des blocs.
