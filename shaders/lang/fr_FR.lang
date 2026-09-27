@@ -215,7 +215,7 @@ screen.ATMOSPHERICS.comment = §6Effets atmosphériques incluant le soleil/lune,
     screen.CLOUD_SETTINGS = Paramètres des nuages
     screen.CLOUD_SETTINGS.comment = §eOptions de rendu des nuages telles que les nuages à double couche, les nuages dynamiques et la qualité/épaisseur des nuages.
         option.DOUBLE_LAYERED_CLOUDS = Nuages à double couche
-        option.DOUBLE_LAYERED_CLOUDS.comment = Ajoute une seconde couche de nuages (fonctionne avec les nuages vanilla et du shader), peut impacter les performances.
+        option.DOUBLE_LAYERED_CLOUDS.comment = Ajoute une seconde couche de nuages de haute altitude (cirrus), peut impacter les performances.
 
         option.DYNAMIC_CLOUDS = Nuages dynamiques
         option.DYNAMIC_CLOUDS.comment = Rend les nuages plus dynamiques et sensibles à la météo (affecte les nuages vanilla et Story Mode).
@@ -223,8 +223,8 @@ screen.ATMOSPHERICS.comment = §6Effets atmosphériques incluant le soleil/lune,
         option.FADE_SPEED = Vitesse de fondu
         option.FADE_SPEED.comment = Vitesse d'apparition et de disparition des nuages.
 
-        option.SECOND_CLOUD_HEIGHT = Altitude de la 2e couche
-        option.SECOND_CLOUD_HEIGHT.comment = Altitude de la 2e couche de nuages, si les doubles nuages vanilla sont activés.
+        option.SECOND_CLOUD_HEIGHT = Altitude nuages de haute altitude
+        option.SECOND_CLOUD_HEIGHT.comment = Décalage d'altitude pour la couche de nuages de haute altitude (cirrus).
 
         option.VOLUMETRIC_CLOUD_STEPS = Pas volumétriques
         option.VOLUMETRIC_CLOUD_STEPS.comment = Nombre d'étapes pour les nuages Story Mode. Augmenter peut améliorer la qualité et consommer plus de performances.

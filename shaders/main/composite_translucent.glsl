@@ -312,10 +312,10 @@
 
             #ifdef DOUBLE_LAYERED_CLOUDS
                 // Get the 2nd layer of volumetric clouds position by reusing the 1st layer's position
-                vec3 cloudStartPos1 = vec3(cloudStartPos0.x, cloudStartPos0.y - SECOND_CLOUD_HEIGHT, cloudStartPos0.z);
+                vec3 cloudStartPos1 = vec3(cloudStartPos0.x + fragmentFrameTime * 0.25, cloudStartPos0.y - SECOND_CLOUD_HEIGHT, cloudStartPos0.z);
 
                 // Variate by swizzling the 2 cloud channels
-                cloudData = max(volumetricClouds(nFeetPlayerPos, cloudStartPos1, feetPlayerDist, dither.x, isSky).yx, cloudData);
+                cloudData = max(volumetricClouds(nFeetPlayerPos, cloudStartPos1, feetPlayerDist, dither.x, isSky, true).yx, cloudData);
             #endif
 
             #ifdef DYNAMIC_CLOUDS

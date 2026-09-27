@@ -4,13 +4,15 @@ const float volumetricCenterDepth = VOLUMETRIC_CLOUD_DEPTH * 0.5;
 const float volumetricCloudHeight = 195.0 + volumetricCenterDepth;
 
 // This took me a while to finally understand how this all works
-vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPlayerDist, in float dither, in bool isSky){
+vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPlayerDist, in float dither, in bool isSky, in bool isCirrus){
+    float depth = isCirrus ? (VOLUMETRIC_CLOUD_DEPTH * 0.5) : VOLUMETRIC_CLOUD_DEPTH;
+
     // Minimum cloud distance, if terrain, caps distance to the minimum cloud distance
     float cloudFar = isSky ? volumetricCloudFar : min(volumetricCloudFar, feetPlayerDist);
     float invCloudFarSqrd = 1.0 / squared(volumetricCloudFar);
 
     // Sets the bounding box vertically
-    float lowerBoundDist = (-VOLUMETRIC_CLOUD_DEPTH - cameraPos.y) / nFeetPlayerPos.y;
+    float lowerBoundDist = (-depth - cameraPos.y) / nFeetPlayerPos.y;
     float higherBoundDist = -cameraPos.y / nFeetPlayerPos.y;
 
     // Finds the nearest and furthest plane
@@ -41,13 +43,14 @@ vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPl
         // Get cloud fog
         float cloudFog = 1.0 - lengthSquared(startPos - cameraPos) * invCloudFarSqrd;
 
-        // Get cloud texture
-        vec2 cloudData = texelFetch(colortex0, ivec2(startPos.xz * 0.0625) & 255, 0).xy;
+        // Get cloud texture (lean, stretched wisps for high altitude cirrus)
+        vec2 uv = isCirrus ? vec2(startPos.x * 0.02 + startPos.z * 0.008, startPos.z * 0.10) : startPos.xz * 0.0625;
+        vec2 cloudData = texelFetch(colortex0, ivec2(uv) & 255, 0).xy;
 
-        // Apply cloud gradiante'
-        // Check if ray is inside a cloud
-        if(cloudData.x > 0.5) clouds.x = max(clouds.x, -startPos.y * cloudFog);
-        if(cloudData.y > 0.5) clouds.y = max(clouds.y, -startPos.y * cloudFog);
+        // Apply cloud gradiante' (fainter opacity for cirrus clouds)
+        float density = isCirrus ? (-startPos.y * cloudFog * 0.5) : (-startPos.y * cloudFog);
+        if(cloudData.x > 0.5) clouds.x = max(clouds.x, density);
+        if(cloudData.y > 0.5) clouds.y = max(clouds.y, density);
 
         // Continue tracing
         startPos += endPos;
@@ -55,4 +58,8 @@ vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPl
 
     // Otherwise, return nothing
     return clouds;
+}
+
+vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPlayerDist, in float dither, in bool isSky){
+    return volumetricClouds(nFeetPlayerPos, cameraPos, feetPlayerDist, dither, isSky, false);
 }

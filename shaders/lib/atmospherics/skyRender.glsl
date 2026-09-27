@@ -67,13 +67,14 @@ float getSunMoonShape(in vec2 skyPos){
         if(cloudHeightFade > 1) cloudHeightFade = 1.0;
 
         vec2 planeUv = nEyePlayerPos.xz * (6.0 / nEyePlayerPos.y);
-
         vec2 planePos = vec2(cameraPosition.x + fragmentFrameTime, cameraPosition.z);
-
         vec2 cloudData = cloudParallaxDynamic(planeUv, planePos);
 
         #ifdef DOUBLE_LAYERED_CLOUDS
-            cloudData = max(cloudParallaxDynamic(planeUv * 2.0, planePos).yx * 0.25, cloudData);
+            vec2 cirrusUv = nEyePlayerPos.xz * ((6.0 + (SECOND_CLOUD_HEIGHT / 195.0) * 6.0) / nEyePlayerPos.y);
+            vec2 cirrusStart = vec2(cirrusUv.x * 0.32 + cirrusUv.y * 0.128, cirrusUv.y * 1.6);
+            vec2 cirrusCam = vec2(planePos.x * 0.32 + planePos.y * 0.128, planePos.y * 1.6);
+            cloudData = max(cloudParallaxDynamic(cirrusStart, cirrusCam).yx * 0.20, cloudData);
         #endif
 
         #ifdef DYNAMIC_CLOUDS

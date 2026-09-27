@@ -215,7 +215,7 @@ screen.ATMOSPHERICS.comment = §6Atmospheric effects including sun/moon, clouds,
     screen.CLOUD_SETTINGS = Cloud settings
     screen.CLOUD_SETTINGS.comment = §eCloud rendering options such as double layered clouds, dynamic clouds, and cloud quality/depth.
         option.DOUBLE_LAYERED_CLOUDS = Double layered clouds
-        option.DOUBLE_LAYERED_CLOUDS.comment = Adds another layer of clouds (works on both vanilla and shader clouds), may use up performance.
+        option.DOUBLE_LAYERED_CLOUDS.comment = Adds a high altitude second layer of clouds (cirrus clouds), may use up performance.
 
         option.DYNAMIC_CLOUDS = Dynamic clouds
         option.DYNAMIC_CLOUDS.comment = Makes clouds more dynamic and allows weather to affect it. (affects on both vanilla and story mode clouds).
@@ -223,8 +223,8 @@ screen.ATMOSPHERICS.comment = §6Atmospheric effects including sun/moon, clouds,
         option.FADE_SPEED = Fade speed
         option.FADE_SPEED.comment = Cloud fade speed.
 
-        option.SECOND_CLOUD_HEIGHT = 2nd cloud height
-        option.SECOND_CLOUD_HEIGHT.comment = 2nd layer cloud height, if double vanilla clouds is on.
+        option.SECOND_CLOUD_HEIGHT = High altitude cloud height
+        option.SECOND_CLOUD_HEIGHT.comment = Altitude offset for the high altitude cloud layer (cirrus clouds).
 
         option.VOLUMETRIC_CLOUD_STEPS = Volumetric steps
         option.VOLUMETRIC_CLOUD_STEPS.comment = Story mode clouds steps. Increasing may improve quality and demand more performance.
