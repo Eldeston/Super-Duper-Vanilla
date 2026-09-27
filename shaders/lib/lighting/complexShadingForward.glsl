@@ -7,13 +7,15 @@
 		illumination += toLinear(vec3(0.20, 0.12, 0.28)) * (endFlashIntensity * skyLightSq);
 		#ifdef END_BH_LIGHT
 			if(END_BH_LIGHT <= 0.0) return;
-			float NL = dot(normal, vec3(0.0, 0.8660254, -0.5));
-			if(NL > 0.0 || ss > 0.0){
-				float bhLight = max(0.0, NL);
+			const vec3 blackHoleDir = vec3(0.0, 0.8660254, -0.5);
+			float NL_BH = dot(normal, blackHoleDir);
+			if(NL_BH > 0.0 || ss > 0.0){
+				float bhDiffuse = max(0.0, NL_BH);
 				#ifdef SUBSURFACE_SCATTERING
-					if(ss > 0.0) bhLight += (1.0 - bhLight) * ambient * ss * 0.5;
+					if(ss > 0.0) bhDiffuse += (1.0 - bhDiffuse) * ambient * ss * 0.5;
 				#endif
-				illumination += toLinear(LIGHT_COLOR_DATA_BLOCK0 * END_BH_LIGHT) * (saturate(hermiteMix(0.8, 1.0, lmCoordY)) * ambient * bhLight);
+				float skyOcclusion = saturate(lmCoordY / max(WORLD1_CUSTOM_SKYLIGHT, 0.1));
+				illumination += toLinear(LIGHT_COLOR_DATA_BLOCK0) * (bhDiffuse * skyOcclusion * ambient * (END_BH_LIGHT * 1.5));
 			}
 		#endif
 	}
@@ -21,14 +23,18 @@
 	#ifdef END_BH_LIGHT
 		void addEndBHSpecular(in vec3 normal, in vec3 viewDir, in float smoothness, in float metallic, in float ambient, in float lmCoordY, inout vec3 lighting){
 			if(END_BH_LIGHT <= 0.0) return;
-			float NL = dot(normal, vec3(0.0, 0.8660254, -0.5));
-			if(NL > 0.0){
-				vec3 bhH = fastNormalize(vec3(0.0, 0.8660254, -0.5) + viewDir);
+			const vec3 blackHoleDir = vec3(0.0, 0.8660254, -0.5);
+			float NL_BH = dot(normal, blackHoleDir);
+			if(NL_BH > 0.0){
+				vec3 bhH = fastNormalize(blackHoleDir + viewDir);
 				float bhSpec = pow(max(0.0, dot(normal, bhH)), mix(4.0, 64.0, smoothness)) * smoothness * (metallic * 0.5 + 0.5);
-				lighting += toLinear(LIGHT_COLOR_DATA_BLOCK0 * END_BH_LIGHT) * (bhSpec * saturate(hermiteMix(0.8, 1.0, lmCoordY)) * ambient);
+				float skyOcclusion = saturate(lmCoordY / max(WORLD1_CUSTOM_SKYLIGHT, 0.1));
+				lighting += toLinear(LIGHT_COLOR_DATA_BLOCK0) * (bhSpec * skyOcclusion * ambient * (END_BH_LIGHT * 1.5));
 			}
 		}
 	#endif
+#else
+	#define addEndBHSpecular(normal, viewDir, smoothness, metallic, ambient, lmCoordY, lighting)
 #endif
 
 vec3 complexShadingForward(in dataPBR material){
@@ -120,7 +126,11 @@ vec3 complexShadingForward(in dataPBR material){
 				#endif
 
 				// Cave light leak fix
-				float shdFactor = shdFade;
+				#ifdef FORCE_DISABLE_DAY_CYCLE
+					float shdFactor = 1.0;
+				#else
+					float shdFactor = shdFade;
+				#endif
 
 				#if defined PARALLAX_OCCLUSION && defined PARALLAX_SHADOW
 					shdFactor *= material.parallaxShd;
@@ -134,7 +144,11 @@ vec3 complexShadingForward(in dataPBR material){
 			}
 		#else
 			// Calculate fake shadows
-			float shdCol = saturate(hermiteMix(0.9, 1.0, lmCoord.y)) * shdFade;
+			#ifdef FORCE_DISABLE_DAY_CYCLE
+				float shdCol = saturate(lmCoord.y / max(WORLD1_CUSTOM_SKYLIGHT, 0.1));
+			#else
+				float shdCol = saturate(hermiteMix(0.9, 1.0, lmCoord.y)) * shdFade;
+			#endif
 
 			#if defined PARALLAX_OCCLUSION && defined PARALLAX_SHADOW
 				shdCol *= material.parallaxShd;

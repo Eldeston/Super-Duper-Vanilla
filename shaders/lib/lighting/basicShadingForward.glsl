@@ -22,7 +22,7 @@ vec3 basicShadingForward(in vec3 albedo){
 	#if WORLD_ID == 1
 		totalDiffuse += toLinear(vec3(0.20, 0.12, 0.28)) * (endFlashIntensity * skyLightSquared);
 		#ifdef END_BH_LIGHT
-			if(END_BH_LIGHT > 0.0) totalDiffuse += toLinear(LIGHT_COLOR_DATA_BLOCK0 * (END_BH_LIGHT * 0.5)) * skyLightSquared;
+			if(END_BH_LIGHT > 0.0) totalDiffuse += toLinear(LIGHT_COLOR_DATA_BLOCK0) * (END_BH_LIGHT * 1.5 * saturate(lmCoord.y / max(WORLD1_CUSTOM_SKYLIGHT, 0.1)) * 0.5);
 		#endif
 	#endif
 
@@ -50,10 +50,16 @@ vec3 basicShadingForward(in vec3 albedo){
 				vec3 shdCol = getShdCol(shdPos);
 			#endif
 
-			shdCol *= shdFade;
+			#ifndef FORCE_DISABLE_DAY_CYCLE
+				shdCol *= shdFade;
+			#endif
 		#else
 			// Sample fake shadows
-			float shdCol = saturate(hermiteMix(0.9, 1.0, lmCoord.y)) * shdFade;
+			#ifdef FORCE_DISABLE_DAY_CYCLE
+				float shdCol = saturate(lmCoord.y / max(WORLD1_CUSTOM_SKYLIGHT, 0.1));
+			#else
+				float shdCol = saturate(hermiteMix(0.9, 1.0, lmCoord.y)) * shdFade;
+			#endif
 		#endif
 
 		#ifndef FORCE_DISABLE_WEATHER
