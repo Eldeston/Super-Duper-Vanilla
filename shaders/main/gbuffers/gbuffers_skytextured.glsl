@@ -65,12 +65,6 @@
 
     uniform int renderStage;
 
-    #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
-        uniform float twilightPhase;
-        #ifndef FORCE_DISABLE_WEATHER
-            uniform float rainStrength;
-        #endif
-    #endif
 
     uniform sampler2D gtexture;
     
@@ -81,32 +75,9 @@
         // Alpha test, discard and return immediately
         if(albedo.a < ALPHA_THRESHOLD){ discard; return; }
 
-        #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
-            #ifndef FORCE_DISABLE_WEATHER
-                if(rainStrength >= 1.0){ discard; return; }
-                float celestialWeatherFade = 1.0 - rainStrength;
-            #else
-                const float celestialWeatherFade = 1.0;
-            #endif
-
-            // Detect sun
-            if(renderStage == MC_RENDER_STAGE_SUN){
-                // Convert to linear space
-                sceneColOut = toLinear(albedo.rgb * albedo.a) * (SUN_COL_DATA_BLOCK * (sunMoonIntensitySqrd * celestialWeatherFade));
-                return;
-            }
-
-            // Detect moon
-            if(renderStage == MC_RENDER_STAGE_MOON){
-                // Convert to linear space
-                sceneColOut = toLinear(albedo.rgb * albedo.a) * (MOON_COL_DATA_BLOCK * (sunMoonIntensitySqrd * celestialWeatherFade));
-                return;
-            }
-        #else
-            // Otherwise BEGONE
-            if(renderStage == MC_RENDER_STAGE_SUN){ discard; return; }
-            if(renderStage == MC_RENDER_STAGE_MOON){ discard; return; }
-        #endif
+        // Vanilla sun and moon are drawn procedurally in skyRender with custom roundness
+        if(renderStage == MC_RENDER_STAGE_SUN){ discard; return; }
+        if(renderStage == MC_RENDER_STAGE_MOON){ discard; return; }
 
         // Otherwise calculate skybox
         sceneColOut = toLinear(albedo.rgb * albedo.a) * skyBoxIntensitySqrd;

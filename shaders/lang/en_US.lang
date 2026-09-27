@@ -185,11 +185,11 @@ screen.LIGHTING.comment = §6Lighting and shadow options including shadow mappin
 
 screen.ATMOSPHERICS = Atmospherics
 screen.ATMOSPHERICS.comment = §6Atmospheric effects including sun/moon, clouds, fog, border fog, and volumetric lighting.
-    option.SUN_MOON_TYPE = Sun/moon type
-    option.SUN_MOON_TYPE.comment = Changes sun and moon type.
-        value.SUN_MOON_TYPE.0 = Default
-        value.SUN_MOON_TYPE.1 = Round
-        value.SUN_MOON_TYPE.2 = Vanilla
+    option.SUN_MOON_ROUNDNESS = Sun/moon roundness
+    option.SUN_MOON_ROUNDNESS.comment = Adjust celestial body and flare roundness from square (0.0) to circle (1.0).
+        value.SUN_MOON_ROUNDNESS.0.00 = Square
+        value.SUN_MOON_ROUNDNESS.0.50 = Rounded
+        value.SUN_MOON_ROUNDNESS.1.00 = Circle
     
     option.CLOUD_TYPE = Cloud type
     option.CLOUD_TYPE.comment = Changes cloud type.

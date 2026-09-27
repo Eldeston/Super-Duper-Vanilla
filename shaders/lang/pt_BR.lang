@@ -92,10 +92,10 @@ screen.LIGHTING = Iluminação
         option.PREVIOUS_FRAME = Buffer do Quadro Anterior
 
 screen.ATMOSPHERICS = Atmosféricos
-    option.SUN_MOON_TYPE = Tipos de Sol/Lua
-        value.SUN_MOON_TYPE.0 = Padrão
-        value.SUN_MOON_TYPE.1 = Arredondado
-        value.SUN_MOON_TYPE.2 = Vanilla
+    option.SUN_MOON_ROUNDNESS = Arredondamento de Sol/Lua
+        value.SUN_MOON_ROUNDNESS.0.00 = Quadrado
+        value.SUN_MOON_ROUNDNESS.0.50 = Arredondado
+        value.SUN_MOON_ROUNDNESS.1.00 = Redondo
 
     option.SUN_MOON_INTENSITY = Intensidade do Sol/Lua
     option.VOLUMETRIC_LIGHTING = Iluminação Volumétrica

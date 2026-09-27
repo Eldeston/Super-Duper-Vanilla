@@ -185,11 +185,11 @@ screen.LIGHTING.comment = §6光照和阴影选项, 包括阴影映射, 实体�
 
 screen.ATMOSPHERICS = 大气系统
 screen.ATMOSPHERICS.comment = §6大气系统效果, 包括日月, 云, 雾, 边界雾, 及体积光.
-    option.SUN_MOON_TYPE = 日月样式
-    option.SUN_MOON_TYPE.comment = 更改太阳和月亮的样式.
-        value.SUN_MOON_TYPE.0 = 默认
-        value.SUN_MOON_TYPE.1 = 圆形
-        value.SUN_MOON_TYPE.2 = 原版
+    option.SUN_MOON_ROUNDNESS = 日月圆角
+    option.SUN_MOON_ROUNDNESS.comment = 调整天体和耀斑的圆角程度, 从正方形 (0.0) 到圆角 (0.5) 再到圆形 (1.0).
+        value.SUN_MOON_ROUNDNESS.0.00 = 方形
+        value.SUN_MOON_ROUNDNESS.0.50 = 圆角
+        value.SUN_MOON_ROUNDNESS.1.00 = 圆形
     
     option.CLOUD_TYPE = 云样式
     option.CLOUD_TYPE.comment = 更改云的样式.

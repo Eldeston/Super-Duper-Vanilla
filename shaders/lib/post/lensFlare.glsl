@@ -1,8 +1,15 @@
+float getLensDist(in vec2 lensCoord){
+    float squareDist = max(abs(lensCoord.x), abs(lensCoord.y));
+    float roundDist = length(lensCoord);
+    return mix(squareDist, roundDist, SUN_MOON_ROUNDNESS);
+}
+
 float lensShape(in vec2 lensCoord){
+    float dist = getLensDist(lensCoord);
     #if WORLD_SUN_MOON == 2
-        return abs(length(lensCoord) - cubed(WORLD_SUN_MOON_SIZE));
+        return abs(dist - cubed(WORLD_SUN_MOON_SIZE));
     #else
-        return length(lensCoord) - cubed(WORLD_SUN_MOON_SIZE);
+        return dist - cubed(WORLD_SUN_MOON_SIZE);
     #endif
 }
 
@@ -35,11 +42,9 @@ vec3 getLensFlare(in vec2 centerCoord, in vec2 lightDir){
 
     #if WORLD_SUN_MOON == 2
         return (lens1 + (lens0 + lens2) * 0.125 + chromaLens) * LENS_FLARE_STRENGTH * sRGBLightCol;
-    #elif SUN_MOON_TYPE == 2
-        float rays = lensFlareRays(centerCoord, lightDir, 8.0, 0.05, -1.0);
-        return (lens1 + (lens0 + lens2) * 0.125 + rays + chromaLens) * LENS_FLARE_STRENGTH * sRGBLightCol;
     #else
-        float rays = lensFlareRays(centerCoord, lightDir, 8.0, 0.1, -1.0);
+        float raySize = mix(0.05, 0.1, SUN_MOON_ROUNDNESS);
+        float rays = lensFlareRays(centerCoord, lightDir, 8.0, raySize, -1.0);
         return (lens1 + (lens0 + lens2) * 0.125 + rays + chromaLens) * LENS_FLARE_STRENGTH * sRGBLightCol;
     #endif
 }

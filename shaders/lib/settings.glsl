@@ -75,7 +75,7 @@ const float sunPathRotation = 30.0; // Light path angle. This also affects sky a
 
 /// -------------------------------- /// Atmospherics /// -------------------------------- ///
 
-#define SUN_MOON_TYPE 0 // Changes sun and moon type [0 1 2]
+#define SUN_MOON_ROUNDNESS 0.00 // Roundness of sun, moon, black hole, and flares. 0.00 is perfect square, 0.50 is rounded, 1.00 is circle. [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00]
 #define SUN_MOON_INTENSITY 4 // The sun or moon's intensity. Also affects specular reflections. [0 1 2 3 4 5 6 7 8]
 
 #define VOLUMETRIC_LIGHTING // Enables volumetric lighting.

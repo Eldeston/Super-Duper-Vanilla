@@ -49,24 +49,45 @@ dependencies {
     "runtimeOnly"("org.quiltmc:quilt-config:1.3.3")
     "runtimeOnly"("net.fabricmc:sponge-mixin:0.17.4+mixin.0.8.7")
 
-    // Shader stack: Sodium + Sodium Extra + Iris
+    // Shader stack: Sodium + Sodium Extra + Iris + FerriteCore (Memory Optimization)
     clientMods("maven.modrinth:sodium:${project.property("sodium_version")}")
     clientMods("maven.modrinth:sodium-extra:${project.property("sodium_extra_version")}")
     clientMods("maven.modrinth:iris:${project.property("iris_version")}")
+    clientMods("maven.modrinth:ferrite-core:${project.property("ferrite_core_version")}")
 
     "modImplementation"("maven.modrinth:sodium:${project.property("sodium_version")}")
     "modRuntimeOnly"("maven.modrinth:sodium-extra:${project.property("sodium_extra_version")}")
     "modRuntimeOnly"("maven.modrinth:iris:${project.property("iris_version")}")
+    "modRuntimeOnly"("maven.modrinth:ferrite-core:${project.property("ferrite_core_version")}")
 }
 
 loom.runs.named("client") {
     configName = "Minecraft Client"
     runDir = "run/client"
+    vmArg("-Xmx6G")
+    vmArg("-XX:+UseG1GC")
+}
+
+val deployClientMods = tasks.register("deployClientMods") {
+    group = "loom"
+    description = "Deploys client runtime mods into run/client/mods."
+    doLast {
+        val modsDir = file("run/client/mods")
+        modsDir.mkdirs()
+        clientMods.resolvedConfiguration.resolvedArtifacts.forEach { artifact ->
+            val dest = file("run/client/mods/${artifact.file.name}")
+            if (!dest.exists()) {
+                artifact.file.copyTo(dest, overwrite = true)
+                println("✓ Deployed mod -> ${dest.name}")
+            }
+        }
+    }
 }
 
 tasks.named("runClient") {
     group = "loom"
     description = "Runs Minecraft Client with Quilt, Iris, Sodium, Sodium Extra and local Super Duper Vanilla shaderpack."
+    dependsOn(deployClientMods)
 
     doFirst {
         // Link shaderpack
@@ -79,17 +100,6 @@ tasks.named("runClient") {
                 println("✓ Linked shaderpack -> ${target.absolutePath}")
             }.onFailure {
                 println("Note: Symlink skipped (${it.message})")
-            }
-        }
-
-        // Deploy mods into run/client/mods for Quilt Loader discovery
-        val modsDir = file("run/client/mods")
-        modsDir.mkdirs()
-        clientMods.resolvedConfiguration.resolvedArtifacts.forEach { artifact ->
-            val dest = file("run/client/mods/${artifact.file.name}")
-            if (!dest.exists()) {
-                artifact.file.copyTo(dest, overwrite = true)
-                println("✓ Deployed mod -> ${dest.name}")
             }
         }
     }

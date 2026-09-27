@@ -92,10 +92,10 @@ screen.LIGHTING = Освещение
         option.PREVIOUS_FRAME = Буфер предыдущего кадра
 
 screen.ATMOSPHERICS = Атмосферность
-    option.SUN_MOON_TYPE = Солнце и Луна
-        value.SUN_MOON_TYPE.0 = Яркие
-        value.SUN_MOON_TYPE.1 = Круглые
-        value.SUN_MOON_TYPE.2 = Обычные
+    option.SUN_MOON_ROUNDNESS = Скругление Солнца и Луны
+        value.SUN_MOON_ROUNDNESS.0.00 = Квадратные
+        value.SUN_MOON_ROUNDNESS.0.50 = Скругленные
+        value.SUN_MOON_ROUNDNESS.1.00 = Круглые
 
     option.SUN_MOON_INTENSITY = Яркость небесных светил
     option.VOLUMETRIC_LIGHTING = Объёмные лучи
@@ -298,7 +298,7 @@ option.LAVA_BRIGHTNESS.comment = Яркость видимого свечени�
 option.LAVA_NOISE.comment = Эффект перепадов температуры на поверхности лавы.. Заключается в случайном изменении её яркости, аналогично лаве в Minecraft Dungeons..
 option.LAVA_TILE_SIZE.comment = Размер пятен с пониженной температурой и светимостью..
 
-option.SUN_MOON_TYPE.comment = Внешний вид Солнца и Луны..
+option.SUN_MOON_ROUNDNESS.comment = Внешний вид Солнца и Луны..
 option.SUN_MOON_INTENSITY.comment = Яркость Солнца, Луны и Чёрной дыры.. Также влияет на зеркальные отражения..
 option.VOLUMETRIC_LIGHTING.comment = Требует включения карты теней..
 option.VOLUMETRIC_LIGHTING_STRENGTH.comment = Чем выше плотность, тем лучше заметен эффект объёмных лучей..

@@ -1,14 +1,20 @@
 #ifdef WORLD_AETHER
 #endif
 
+float getSunMoonDist(in vec2 coord){
+    float squareDist = max(abs(coord.x), abs(coord.y));
+    float roundDist = length(coord);
+    return mix(squareDist, roundDist, SUN_MOON_ROUNDNESS);
+}
+
 // Round sun and moon
 float getSunMoonShape(in float skyPosZ){
     return min(1.0, exp2((WORLD_SUN_MOON_SIZE - sqrt(1.0 - skyPosZ * skyPosZ)) * 256.0));
 }
 
-// Default sun and moon
+// Shape-adjusted sun and moon
 float getSunMoonShape(in vec2 skyPos){
-    return min(1.0, exp2((WORLD_SUN_MOON_SIZE - pow(abs(skyPos.x * skyPos.x * skyPos.x) + abs(skyPos.y * skyPos.y * skyPos.y), 0.33333333)) * 256.0));
+    return min(1.0, exp2((WORLD_SUN_MOON_SIZE - getSunMoonDist(skyPos)) * 256.0));
 }
 
 #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
@@ -277,25 +283,32 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol)
     if(isEyeInWater == 2) return fogColor;
 
     #ifdef WORLD_LIGHT
-        #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE != 2
-            // If current world uses shader sun and moon but not vanilla sun and moon
-            #if SUN_MOON_TYPE == 1
-                float sunMoonShape = getSunMoonShape(skyPos.z) * sunMoonIntensitySqrd;
-            #else
-                float sunMoonShape = getSunMoonShape(skyPos.xy) * sunMoonIntensitySqrd;
-            #endif
-
+        #if WORLD_SUN_MOON == 1
             #ifndef FORCE_DISABLE_WEATHER
-                #ifdef FORCE_DISABLE_DAY_CYCLE
-                    currSkyCol += sRGBLightCol * (sunMoonShape * (1.0 - rainStrength));
-                #else
-                    currSkyCol += (skyPos.z > 0 ? sRGBSunCol : sRGBMoonCol) * (sunMoonShape * (1.0 - rainStrength));
-                #endif
+                if(rainStrength < 1.0 && abs(skyPos.z) > 0.7){
+                    float sunMoonShape = getSunMoonShape(skyPos.xy) * sunMoonIntensitySqrd;
+                    #ifdef FORCE_DISABLE_DAY_CYCLE
+                        currSkyCol += sRGBLightCol * (sunMoonShape * (1.0 - rainStrength));
+                    #else
+                        currSkyCol += (skyPos.z > 0 ? sRGBSunCol : sRGBMoonCol) * (sunMoonShape * (1.0 - rainStrength));
+                    #endif
+                }
+            #else
+                if(abs(skyPos.z) > 0.7){
+                    float sunMoonShape = getSunMoonShape(skyPos.xy) * sunMoonIntensitySqrd;
+                    #ifdef FORCE_DISABLE_DAY_CYCLE
+                        currSkyCol += sRGBLightCol * sunMoonShape;
+                    #else
+                        currSkyCol += (skyPos.z > 0 ? sRGBSunCol : sRGBMoonCol) * sunMoonShape;
+                    #endif
+                }
             #endif
         #elif WORLD_SUN_MOON == 2
             // If current world uses shader black hole
             const float blackHoleSize = 1024.0 - WORLD_SUN_MOON_SIZE * 64.0;
-            float blackHole = blackHoleSize - skyPos.z * 1024.0;
+            float dist = getSunMoonDist(skyPos.xy);
+            float shapeZ = skyPos.z > 0.0 ? sqrt(max(0.0, 1.0 - dist * dist)) : skyPos.z;
+            float blackHole = blackHoleSize - shapeZ * 1024.0;
 
             // If black hole return nothing
             if(blackHole <= 0) return vec3(0);
