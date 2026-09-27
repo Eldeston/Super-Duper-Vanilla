@@ -30,6 +30,11 @@
 
         uniform mat4 shadowModelView;
 
+        #if WORLD_ID == 1
+            uniform float endFlashIntensity;
+            uniform vec3 endFlashPosition;
+        #endif
+
         #ifndef FORCE_DISABLE_WEATHER
             uniform float rainStrength;
             uniform float weatherFade;
@@ -47,11 +52,22 @@
         texCoord = gl_MultiTexCoord0.xy;
 
         #if defined LENS_FLARE && defined WORLD_LIGHT
-            // Get sRGB light postColOut
-            sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
+            #if WORLD_ID == 1
+                const vec3 blackHoleDir = vec3(0.0, 0.8660254, -0.5);
+                if (endFlashIntensity > 0.001) {
+                    sRGBLightCol = mix(LIGHT_COLOR_DATA_BLOCK0 * 0.5, vec3(1.2, 1.0, 1.5), endFlashIntensity);
+                    shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, normalize(endFlashPosition)), gbufferProjection[1].y * 0.72794047);
+                } else {
+                    sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0 * 0.65;
+                    shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, mat3(gbufferModelView) * blackHoleDir), gbufferProjection[1].y * 0.72794047);
+                }
+            #else
+                // Get sRGB light postColOut
+                sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
 
-            // Get shadow light view direction in screen space
-            shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), gbufferProjection[1].y * 0.72794047);
+                // Get shadow light view direction in screen space
+                shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), gbufferProjection[1].y * 0.72794047);
+            #endif
         #endif
 
         gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);

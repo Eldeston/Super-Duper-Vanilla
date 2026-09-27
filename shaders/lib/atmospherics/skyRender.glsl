@@ -2,6 +2,7 @@
 	#ifndef END_FLASH_UNIFORM_DECLARED
 		#define END_FLASH_UNIFORM_DECLARED
 		uniform float endFlashIntensity;
+		uniform vec3 endFlashPosition;
 	#endif
 #endif
 
@@ -341,7 +342,21 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol)
 
                 float rings = textureLod(noisetex, vec2(ringPos.x * blackHole, fragmentFrameTime * 0.0009765625), 0).x;
 
-                currSkyCol += ((rings * blackHole * 0.9 + blackHole * 0.1) * sunMoonIntensitySqrd) * lightCol;
+                currSkyCol += (((rings * blackHole * 0.9 + blackHole * 0.1) * (sunMoonIntensitySqrd * 0.35)) * lightCol);
+            }
+        #endif
+
+        #if WORLD_ID == 1
+            if(endFlashIntensity > 0.001){
+                vec3 flashDir = fastNormalize(mat3(gbufferModelViewInverse) * endFlashPosition);
+                float flashDot = dot(nEyePlayerPos, flashDir);
+                if(flashDot > 0.0){
+                    float flashCore = pow(flashDot, 128.0);
+                    float flashGlow = pow(flashDot, 16.0);
+                    float flashAura = pow(flashDot, 2.0);
+                    float flashBurst = (flashCore * 6.0 + flashGlow * 1.5 + flashAura * 0.3) * endFlashIntensity;
+                    currSkyCol += toLinear(vec3(0.85, 0.75, 1.0)) * flashBurst;
+                }
             }
         #endif
     #endif
