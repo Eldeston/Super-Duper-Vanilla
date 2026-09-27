@@ -18,6 +18,13 @@ uniform sampler2DShadow shadowtex0;
 	uniform sampler2D shadowcolor0;
 #endif
 
+#if WORLD_ID == 1
+	#ifndef HEAVY_FOG_UNIFORM_DECLARED
+		#define HEAVY_FOG_UNIFORM_DECLARED
+		uniform int heavyFog;
+	#endif
+#endif
+
 vec3 getShdCol(in vec3 shdPos){
 	#ifdef SHADOW_COLOR
 		// Sample shadows
@@ -38,7 +45,14 @@ vec3 getShdCol(in vec3 shdPos){
 }
 
 vec3 getShdCol(in vec3 shdPos, in float dither){
-	vec2 randVec = vec2(cos(dither), sin(dither)) * shadowMapPixelSize;
+	#if WORLD_ID == 1
+		if(heavyFog == 0) return getShdCol(shdPos);
+		float filterScale = 2.0;
+	#else
+		const float filterScale = 1.0;
+	#endif
+
+	vec2 randVec = vec2(cos(dither), sin(dither)) * (shadowMapPixelSize * filterScale);
 
 	#if ANTI_ALIASING >= 2
 		return getShdCol(vec3(shdPos.xy + randVec, shdPos.z));

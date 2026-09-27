@@ -517,6 +517,9 @@ screen.CONFIGURATION.comment = §6维度和环境配置, 含主世界, 下界, �
         option.SKY1_CI = 天空强度
         option.SKY1_CI.comment = 末地天空颜色的强度.
 
+        option.WORLD1_CUSTOM_SKYLIGHT = 天空光照
+        option.WORLD1_CUSTOM_SKYLIGHT.comment = 末地维度的天空光照亮度.
+
         option.FOG1_VERTICAL_DENSITY = 垂直密度
         option.FOG1_VERTICAL_DENSITY.comment = 末地的垂直雾密度. 值越高 = 高高度雾越薄, 低高度越厚.
 

@@ -26,7 +26,8 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 #define WORLD_AETHER
 
 // Use a sky light amount if your world has an undefined sky lighting environment like The End or the Nether
-#define WORLD_CUSTOM_SKYLIGHT 1.00
+#define WORLD1_CUSTOM_SKYLIGHT 0.15 // Sky light value [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00]
+#define WORLD_CUSTOM_SKYLIGHT WORLD1_CUSTOM_SKYLIGHT
 
 // Enable stars in your world
 #define WORLD_STARS 16.0

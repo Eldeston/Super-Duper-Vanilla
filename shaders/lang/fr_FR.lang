@@ -31,7 +31,7 @@ screen.POST.comment = §6Effets de post-traitement tels que les contours, l'anti
         value.OUTLINES.2 = Dungeons
 
     option.OUTLINE_BRIGHTNESS = Luminosité des contours
-    option.OUTLINE_BRIGHTNESS.comment = Luminosité des contours. Définissez sur -1 pour des contours noirs, ou sur 1 pour des contours lumineux.
+    option.OUTLINE_BRIGHTNESS.comment = Luminosité des contours. Définissez sur -1 pour des contours foncés, ou sur 1 pour des contours lumineux.
 
     option.OUTLINE_PIXEL_SIZE = Épaisseur des contours
     option.OUTLINE_PIXEL_SIZE.comment = Épaisseur des contours en pixels. Ajustez pour modifier la largeur des contours.
@@ -516,6 +516,9 @@ screen.CONFIGURATION.comment = §6Configuration des dimensions et environnements
 
         option.SKY1_CI = Intensité ciel
         option.SKY1_CI.comment = Intensité de la couleur du ciel de l'End.
+
+        option.WORLD1_CUSTOM_SKYLIGHT = Lumière du ciel
+        option.WORLD1_CUSTOM_SKYLIGHT.comment = Luminosité de la lumière du ciel pour la dimension de l'End.
 
         option.FOG1_VERTICAL_DENSITY = Densité verticale
         option.FOG1_VERTICAL_DENSITY.comment = Densité verticale du brouillard dans l'End. Des valeurs plus élevées = brouillard plus fin en altitude, plus dense en bas.

@@ -1,3 +1,10 @@
+#if WORLD_ID == 1
+	#ifndef END_FLASH_UNIFORM_DECLARED
+		#define END_FLASH_UNIFORM_DECLARED
+		uniform float endFlashIntensity;
+	#endif
+#endif
+
 vec3 basicShadingForward(in vec3 albedo){
 	// Get sky light squared
 	float skyLightSquared = squared(lmCoord.y);
@@ -11,6 +18,10 @@ vec3 basicShadingForward(in vec3 albedo){
 	// Calculate sky diffusion first, begining with the sky itself
 	// Occlude the appled sky and thunder flash calculation by sky light amount
 	vec3 totalDiffuse = (linearSkyCol + lightningFlash) * skyLightSquared;
+
+	#if WORLD_ID == 1
+		totalDiffuse += toLinear(vec3(0.35, 0.25, 0.45) * endFlashIntensity);
+	#endif
 
 	// Calculate block light
 	totalDiffuse += toLinear(squared(lmCoord.x) * blockLightColor * 1.25);
@@ -51,8 +62,14 @@ vec3 basicShadingForward(in vec3 albedo){
 			shdCol += rainDiffuseAmount * skyLightSquared;
 		#endif
 
-		// Calculate and add shadow diffuse
-		totalDiffuse += shdCol * toLinear(LIGHT_COLOR_DATA_BLOCK0);
+		#if WORLD_ID == 1
+			vec3 sRGBLightCol = mix(LIGHT_COLOR_DATA_BLOCK0 * 0.25, vec3(1.2, 1.0, 1.5) * 4.5, endFlashIntensity);
+			shdCol *= max(endFlashIntensity, 0.05);
+			totalDiffuse += shdCol * toLinear(sRGBLightCol);
+		#else
+			// Calculate and add shadow diffuse
+			totalDiffuse += shdCol * toLinear(LIGHT_COLOR_DATA_BLOCK0);
+		#endif
 	#endif
 
 	// Return final result

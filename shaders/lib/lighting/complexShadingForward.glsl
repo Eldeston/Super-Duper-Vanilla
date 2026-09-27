@@ -1,3 +1,10 @@
+#if WORLD_ID == 1
+	#ifndef END_FLASH_UNIFORM_DECLARED
+		#define END_FLASH_UNIFORM_DECLARED
+		uniform float endFlashIntensity;
+	#endif
+#endif
+
 vec3 complexShadingForward(in dataPBR material){
 	// Get block light squared
 	float blockLightSquared = squared(lmCoord.x);
@@ -13,6 +20,10 @@ vec3 complexShadingForward(in dataPBR material){
 	// Calculate sky diffusion first, begining with the sky itself
 	// Occlude the appled sky and thunder flash calculation by sky light amount
 	vec3 totalIllumination = (linearSkyCol + lightningFlash) * skyLightSquared;
+
+	#if WORLD_ID == 1
+		totalIllumination += toLinear(vec3(0.35, 0.25, 0.45) * endFlashIntensity);
+	#endif
 
 	// Calculate ambient lightning
 	totalIllumination += toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
@@ -32,15 +43,15 @@ vec3 complexShadingForward(in dataPBR material){
 	totalIllumination *= material.ambient;
 
 	#ifdef WORLD_LIGHT
-		// Get sRGB light color
-		vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
+		#if WORLD_ID == 1
+			// End flash directional light overpowers black hole light
+			vec3 sRGBLightCol = mix(LIGHT_COLOR_DATA_BLOCK0 * 0.25, vec3(1.2, 1.0, 1.5) * 4.5, endFlashIntensity);
+		#else
+			// Get sRGB light color
+			vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
+		#endif
 
 		float NLZ = dot(material.normal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z));
-		// also equivalent to:
-		// vec3(0, 0, 1) * mat3(shadowModelView) = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)
-    	// shadowLightPosition is broken in other dimensions. The current is equivalent to:
-    	// (mat3(gbufferModelViewInverse) * shadowLightPosition + gbufferModelViewInverse[3].xyz) * 0.01
-
 		bool isShadow = NLZ > 0;
 		bool isSubSurface = material.ss > 0;
 
@@ -53,7 +64,6 @@ vec3 complexShadingForward(in dataPBR material){
 
 				#ifdef ENTITIES
 					// Fixes boats having water shadows inside them
-					// Not the best fix for a water leak in a boat
 					if(entityId == 10133) feetPlayerPos.y += 0.2;
 				#endif
 
@@ -64,18 +74,10 @@ vec3 complexShadingForward(in dataPBR material){
 				// Apply shadow distortion and transform to shadow screen space
 				shdPos = vec3(shdPos.xy / (length(shdPos.xy) * 2.0 + 0.2), shdPos.z * 0.1) + 0.5;
 
-				// Items that are not subject to depth do not need a bias
 				#if !defined HAND && !defined HAND_WATER
-					// Bias mutilplier, adjusts according to the current resolution
-					// The Z is instead a constant and the only extra bias that isn't accounted for is shadow distortion "blobs"
-					// 0.00006103515625 = exp2(-14)
 					const vec3 biasAdjustFactor = vec3(shadowMapPixelSize * 2.0, shadowMapPixelSize * 2.0, -0.00006103515625);
-
-					// Since we already have NLZ, we just need NLX and NLY to complete the shadow normal
 					float NLX = dot(material.normal, vec3(shadowModelView[0].x, shadowModelView[1].x, shadowModelView[2].x));
 					float NLY = dot(material.normal, vec3(shadowModelView[0].y, shadowModelView[1].y, shadowModelView[2].y));
-
-					// Apply normal based bias
 					shdPos += vec3(NLX, NLY, NLZ) * biasAdjustFactor;
 				#endif
 
@@ -123,6 +125,10 @@ vec3 complexShadingForward(in dataPBR material){
 
 		shdCol *= dirLight;
 
+		#if WORLD_ID == 1
+			shdCol *= max(endFlashIntensity, 0.05);
+		#endif
+
 		#ifndef FORCE_DISABLE_WEATHER
 			// Approximate rain diffusing light shadow
 			float rainDirectAmount = 1.0 - weatherFade * (1.0 - WEATHER_DIRECT_LIGHT);
@@ -134,14 +140,18 @@ vec3 complexShadingForward(in dataPBR material){
 
 		// Calculate and add shadow diffuse
 		totalIllumination += toLinear(sRGBLightCol) * shdCol;
+
+		#if WORLD_ID == 1
+			// Directional black hole light from fixed celestial West direction vec3(-1, 0, 0)
+			float NL_BH = max(0.0, -material.normal.x);
+			totalIllumination += toLinear(LIGHT_COLOR_DATA_BLOCK0) * (NL_BH * (0.25 * (1.0 - endFlashIntensity * 0.75)));
+		#endif
 	#endif
 
 	// Get view direction
 	vec3 viewDir = -fastNormalize(vertexFeetPlayerPos);
 
-	// Modified version of BSL's reflection PBR calculation
-	// vec3 fresnel = (F0 + (1.0 - F0) * cosTheta) * smoothness
-	// Fresnel calculation derived and optimized from this equation
+	// Calculate reflection PBR factor
 	float NV = dot(material.normal, viewDir);
 	float smoothCosTheta = NV > 0 ? exp2(-9.28 * NV) * material.smoothness : material.smoothness;
 	float oneMinusCosTheta = material.smoothness - smoothCosTheta;

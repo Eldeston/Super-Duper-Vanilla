@@ -1,3 +1,10 @@
+#if WORLD_ID == 1
+	#ifndef END_FLASH_UNIFORM_DECLARED
+		#define END_FLASH_UNIFORM_DECLARED
+		uniform float endFlashIntensity;
+	#endif
+#endif
+
 #ifdef WORLD_AETHER
 #endif
 
@@ -126,6 +133,10 @@ vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){
     #endif
 
     currSkyCol += lightningFlash;
+
+    #if WORLD_ID == 1
+        currSkyCol += toLinear(vec3(0.4, 0.25, 0.55) * (endFlashIntensity * 1.5));
+    #endif
 
     return currSkyCol;
 }
