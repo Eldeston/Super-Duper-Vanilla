@@ -3,6 +3,32 @@
 		#define END_FLASH_UNIFORM_DECLARED
 		uniform float endFlashIntensity;
 	#endif
+	void addEndDiffuseLighting(in vec3 normal, in float ambient, in float lmCoordY, in float skyLightSq, in float ss, inout vec3 illumination){
+		illumination += toLinear(vec3(0.20, 0.12, 0.28)) * (endFlashIntensity * skyLightSq);
+		#ifdef END_BH_LIGHT
+			if(END_BH_LIGHT <= 0.0) return;
+			float NL = dot(normal, vec3(0.0, 0.8660254, -0.5));
+			if(NL > 0.0 || ss > 0.0){
+				float bhLight = max(0.0, NL);
+				#ifdef SUBSURFACE_SCATTERING
+					if(ss > 0.0) bhLight += (1.0 - bhLight) * ambient * ss * 0.5;
+				#endif
+				illumination += toLinear(LIGHT_COLOR_DATA_BLOCK0 * END_BH_LIGHT) * (saturate(hermiteMix(0.8, 1.0, lmCoordY)) * ambient * bhLight);
+			}
+		#endif
+	}
+
+	#ifdef END_BH_LIGHT
+		void addEndBHSpecular(in vec3 normal, in vec3 viewDir, in float smoothness, in float metallic, in float ambient, in float lmCoordY, inout vec3 lighting){
+			if(END_BH_LIGHT <= 0.0) return;
+			float NL = dot(normal, vec3(0.0, 0.8660254, -0.5));
+			if(NL > 0.0){
+				vec3 bhH = fastNormalize(vec3(0.0, 0.8660254, -0.5) + viewDir);
+				float bhSpec = pow(max(0.0, dot(normal, bhH)), mix(4.0, 64.0, smoothness)) * smoothness * (metallic * 0.5 + 0.5);
+				lighting += toLinear(LIGHT_COLOR_DATA_BLOCK0 * END_BH_LIGHT) * (bhSpec * saturate(hermiteMix(0.8, 1.0, lmCoordY)) * ambient);
+			}
+		}
+	#endif
 #endif
 
 vec3 complexShadingForward(in dataPBR material){
@@ -22,7 +48,7 @@ vec3 complexShadingForward(in dataPBR material){
 	vec3 totalIllumination = (linearSkyCol + lightningFlash) * skyLightSquared;
 
 	#if WORLD_ID == 1
-		totalIllumination += toLinear(vec3(0.12, 0.08, 0.16) * endFlashIntensity);
+		addEndDiffuseLighting(material.normal, material.ambient, lmCoord.y, skyLightSquared, material.ss, totalIllumination);
 	#endif
 
 	// Calculate ambient lightning
@@ -159,6 +185,9 @@ vec3 complexShadingForward(in dataPBR material){
 			vec3 specCol = getSpecularBRDF(viewDir, material.normal, material.albedo.rgb, NLZ, NV, material.metallic, material.smoothness);
 			totalLighting += specCol * shdCol * sRGBLightCol;
 		}
+		#ifdef END_BH_LIGHT
+			addEndBHSpecular(material.normal, viewDir, material.smoothness, material.metallic, material.ambient, lmCoord.y, totalLighting);
+		#endif
 	#endif
 
 	return totalLighting;

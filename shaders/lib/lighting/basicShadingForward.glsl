@@ -20,7 +20,10 @@ vec3 basicShadingForward(in vec3 albedo){
 	vec3 totalDiffuse = (linearSkyCol + lightningFlash) * skyLightSquared;
 
 	#if WORLD_ID == 1
-		totalDiffuse += toLinear(vec3(0.12, 0.08, 0.16) * endFlashIntensity);
+		totalDiffuse += toLinear(vec3(0.20, 0.12, 0.28)) * (endFlashIntensity * skyLightSquared);
+		#ifdef END_BH_LIGHT
+			if(END_BH_LIGHT > 0.0) totalDiffuse += toLinear(LIGHT_COLOR_DATA_BLOCK0 * (END_BH_LIGHT * 0.5)) * skyLightSquared;
+		#endif
 	#endif
 
 	// Calculate block light

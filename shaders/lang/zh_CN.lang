@@ -520,6 +520,9 @@ screen.CONFIGURATION.comment = §6维度和环境配置, 含主世界, 下界, �
         option.WORLD1_CUSTOM_SKYLIGHT = 天空光照
         option.WORLD1_CUSTOM_SKYLIGHT.comment = 末地维度的天空光照亮度.
 
+        option.END_BH_LIGHT = 黑洞光照
+        option.END_BH_LIGHT.comment = 黑洞发出的持久而微弱的定向光照强度.
+
         option.FOG1_VERTICAL_DENSITY = 垂直密度
         option.FOG1_VERTICAL_DENSITY.comment = 末地的垂直雾密度. 值越高 = 高高度雾越薄, 低高度越厚.
 

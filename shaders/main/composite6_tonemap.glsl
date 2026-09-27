@@ -58,8 +58,18 @@
                     sRGBLightCol = vec3(1.2, 1.0, 1.5) * endFlashIntensity;
                     shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, normalize(endFlashPosition)), gbufferProjection[1].y * 0.72794047);
                 } else {
-                    sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0 * 0.65;
-                    shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, mat3(gbufferModelView) * blackHoleDir), gbufferProjection[1].y * 0.72794047);
+                    #ifdef END_BH_LIGHT
+                        if(END_BH_LIGHT > 0.0){
+                            sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0 * (END_BH_LIGHT * 0.65);
+                            shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, mat3(gbufferModelView) * blackHoleDir), gbufferProjection[1].y * 0.72794047);
+                        } else {
+                            sRGBLightCol = vec3(0.0);
+                            shdLightDirScreenSpace = vec3(0.0);
+                        }
+                    #else
+                        sRGBLightCol = vec3(0.0);
+                        shdLightDirScreenSpace = vec3(0.0);
+                    #endif
                 }
             #else
                 // Get sRGB light postColOut

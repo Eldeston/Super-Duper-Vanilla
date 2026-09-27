@@ -520,6 +520,9 @@ screen.CONFIGURATION.comment = §6Configuration des dimensions et environnements
         option.WORLD1_CUSTOM_SKYLIGHT = Lumière du ciel
         option.WORLD1_CUSTOM_SKYLIGHT.comment = Luminosité de la lumière du ciel pour la dimension de l'End.
 
+        option.END_BH_LIGHT = Lumière du trou noir
+        option.END_BH_LIGHT.comment = Intensité de la lumière directionnelle faible et permanente émise par le trou noir.
+
         option.FOG1_VERTICAL_DENSITY = Densité verticale
         option.FOG1_VERTICAL_DENSITY.comment = Densité verticale du brouillard dans l'End. Des valeurs plus élevées = brouillard plus fin en altitude, plus dense en bas.
 

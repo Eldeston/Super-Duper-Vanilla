@@ -520,6 +520,9 @@ screen.CONFIGURATION.comment = §6Dimension and environment configuration for ov
         option.WORLD1_CUSTOM_SKYLIGHT = Sky light
         option.WORLD1_CUSTOM_SKYLIGHT.comment = Sky light brightness for the End dimension.
 
+        option.END_BH_LIGHT = Black Hole Light
+        option.END_BH_LIGHT.comment = Intensity of the permanent faint directional light cast from the Black Hole.
+
         option.FOG1_VERTICAL_DENSITY = Vertical density
         option.FOG1_VERTICAL_DENSITY.comment = Vertical fog density for the End. Higher values = thinner fog at high altitudes, thicker at low.
 

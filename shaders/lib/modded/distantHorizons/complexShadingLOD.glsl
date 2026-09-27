@@ -25,7 +25,7 @@ vec3 complexShadingLOD(in dataPBR material){
 	totalIllumination *= skyLightSquared;
 
 	#if WORLD_ID == 1
-		totalIllumination += toLinear(vec3(0.12, 0.08, 0.16) * endFlashIntensity);
+		totalIllumination += toLinear(vec3(0.20, 0.12, 0.28)) * (endFlashIntensity * skyLightSquared);
 	#endif
 
 	// Lastly, calculate ambient lightning
@@ -37,6 +37,13 @@ vec3 complexShadingLOD(in dataPBR material){
 	#ifdef WORLD_LIGHT
 		#if WORLD_ID == 1
 			vec3 sRGBLightCol = (LIGHT_COLOR_DATA_BLOCK0 * 1.5 + vec3(0.3, 0.1, 0.4)) * endFlashIntensity;
+			#ifdef END_BH_LIGHT
+				float NL_BH = dot(material.normal, vec3(0.0, 0.8660254, -0.5));
+				if(END_BH_LIGHT > 0.0 && NL_BH > 0.0){
+					float bhShd = saturate(hermiteMix(0.9, 1.0, lmCoord.y)) * material.ambient;
+					totalIllumination += toLinear(LIGHT_COLOR_DATA_BLOCK0 * END_BH_LIGHT) * (bhShd * NL_BH);
+				}
+			#endif
 		#else
 			// Get sRGB light color
 			vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
