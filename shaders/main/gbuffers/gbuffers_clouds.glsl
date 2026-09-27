@@ -86,14 +86,15 @@
 
         #ifndef FORCE_DISABLE_WEATHER
             uniform float rainStrength;
+            uniform float weatherFade;
         #endif
 
         void main(){
             // Apply simple shading
             #ifndef FORCE_DISABLE_WEATHER
                 vec3 weatherSky = vec3(dot(toLinear(fogColor), vec3(0.2126, 0.7152, 0.0722)));
-                vec3 cloudBaseSky = mix(toLinear(SKY_COLOR_DATA_BLOCK), weatherSky * 0.35, rainStrength);
-                vec3 cloudDirectLight = toLinear(LIGHT_COLOR_DATA_BLOCK0) * ((1.0 - rainStrength) * squared(cloudGradient));
+                vec3 cloudBaseSky = mix(toLinear(SKY_COLOR_DATA_BLOCK), weatherSky * 0.35, weatherFade);
+                vec3 cloudDirectLight = toLinear(LIGHT_COLOR_DATA_BLOCK0) * ((1.0 - weatherFade) * squared(cloudGradient));
                 sceneColOut = (toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash) + cloudBaseSky + cloudDirectLight;
             #else
                 sceneColOut = (toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash) + toLinear(SKY_COLOR_DATA_BLOCK) + toLinear(LIGHT_COLOR_DATA_BLOCK0) * squared(cloudGradient);

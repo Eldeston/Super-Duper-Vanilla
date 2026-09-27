@@ -8,7 +8,7 @@ vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in floa
 	#ifdef FORCE_DISABLE_WEATHER
 		if(isEyeInWater != 0) totalFogDensity *= TAU;
     #else
-		totalFogDensity *= isEyeInWater == 0 ? (rainStrength * PI + 1.0) : TAU;
+		totalFogDensity *= isEyeInWater == 0 ? (weatherFade * PI + 1.0) : TAU;
     #endif
 
 	float heightFade = 1.0;
@@ -20,7 +20,7 @@ vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in floa
 
 		#ifndef WORLD_CUSTOM_SKYLIGHT
 			#ifndef FORCE_DISABLE_WEATHER
-				heightFade += (1.0 - heightFade) * max(1.0 - eyeBrightFact, rainStrength * 0.5);
+				heightFade += (1.0 - heightFade) * max(1.0 - eyeBrightFact, weatherFade * 0.5);
 			#else
 				heightFade += (1.0 - heightFade) * (1.0 - eyeBrightFact);
 			#endif
@@ -54,13 +54,13 @@ vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in floa
 		}
 
 		#ifndef FORCE_DISABLE_WEATHER
-			volumeData *= 1.0 - rainStrength * (1.0 - WEATHER_DIRECT_LIGHT);
+			volumeData *= 1.0 - weatherFade * (1.0 - WEATHER_DIRECT_LIGHT);
 		#endif
 		
 		return volumeData * lightCol * (min(1.0, VOLUMETRIC_LIGHTING_STRENGTH + VOLUMETRIC_LIGHTING_STRENGTH * isEyeInWater) * squared(heightFade) * volumetricFogDensity * volumetricStepsInverse);
 	#else
 		#ifndef FORCE_DISABLE_WEATHER
-			float weatherVLFactor = 1.0 - rainStrength * (1.0 - WEATHER_DIRECT_LIGHT);
+			float weatherVLFactor = 1.0 - weatherFade * (1.0 - WEATHER_DIRECT_LIGHT);
 		#else
 			const float weatherVLFactor = 1.0;
 		#endif

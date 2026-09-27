@@ -116,6 +116,7 @@
 
         #ifndef FORCE_DISABLE_WEATHER
             uniform float rainStrength;
+            uniform float weatherFade;
         #endif
         
         void main(){
@@ -129,7 +130,7 @@
             albedo.rgb = toLinear(albedo.rgb);
 
             #ifndef FORCE_DISABLE_WEATHER
-                vec3 skyLightDiffuse = mix(toLinear(SKY_COLOR_DATA_BLOCK), vec3(dot(toLinear(fogColor), vec3(0.2126, 0.7152, 0.0722))), rainStrength);
+                vec3 skyLightDiffuse = mix(toLinear(SKY_COLOR_DATA_BLOCK), vec3(dot(toLinear(fogColor), vec3(0.2126, 0.7152, 0.0722))), weatherFade);
             #else
                 vec3 skyLightDiffuse = toLinear(SKY_COLOR_DATA_BLOCK);
             #endif

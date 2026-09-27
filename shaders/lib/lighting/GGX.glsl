@@ -80,7 +80,7 @@ vec3 getSpecularBRDF(in vec3 V, in vec3 N, in vec3 albedo, in float NL, in float
 
     // Rain occlusion
     #ifndef FORCE_DISABLE_WEATHER
-        distribution *= 1.0 - rainStrength;
+        distribution *= 1.0 - weatherFade;
     #endif
 
     // Calculate and apply fresnel and return final specular

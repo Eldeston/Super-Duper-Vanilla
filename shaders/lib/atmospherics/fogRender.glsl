@@ -14,8 +14,8 @@ float getFogFactor(in float viewDist, in float nEyePlayerPosY, in float worldPos
         float verticalFogDensity = isEyeInWater == 0 ? FOG_VERTICAL_DENSITY : FOG_VERTICAL_DENSITY * 0.2;
         float totalFogDensity = isEyeInWater == 0 ? FOG_TOTAL_DENSITY : FOG_TOTAL_DENSITY * TAU;
     #else
-        float verticalFogDensity = isEyeInWater == 0 ? FOG_VERTICAL_DENSITY - FOG_VERTICAL_DENSITY * rainStrength * 0.8 : FOG_VERTICAL_DENSITY * 0.2;
-        float totalFogDensity = isEyeInWater == 0 ? FOG_TOTAL_DENSITY * (rainStrength * eyeBrightFact * PI + 1.0) : FOG_TOTAL_DENSITY * TAU;
+        float verticalFogDensity = isEyeInWater == 0 ? FOG_VERTICAL_DENSITY - FOG_VERTICAL_DENSITY * weatherFade * 0.8 : FOG_VERTICAL_DENSITY * 0.2;
+        float totalFogDensity = isEyeInWater == 0 ? FOG_TOTAL_DENSITY * (weatherFade * eyeBrightFact * PI + 1.0) : FOG_TOTAL_DENSITY * TAU;
     #endif
 
     // Return fog, need to cap world position to prevent further fogging

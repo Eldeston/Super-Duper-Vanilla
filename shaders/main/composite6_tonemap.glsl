@@ -32,6 +32,7 @@
 
         #ifndef FORCE_DISABLE_WEATHER
             uniform float rainStrength;
+            uniform float weatherFade;
         #endif
 
         #ifndef FORCE_DISABLE_DAY_CYCLE
@@ -119,6 +120,7 @@
 
         #ifndef FORCE_DISABLE_WEATHER
             uniform float rainStrength;
+            uniform float weatherFade;
         #endif
 
         #include "/lib/post/lensFlare.glsl"
@@ -161,7 +163,7 @@
             #ifdef FORCE_DISABLE_WEATHER
                 if(isSky) postColOut += getLensFlare(texCoord - 0.5, shdLightDirScreenSpace.xy - 0.5) * (1.0 - blindness) * (1.0 - darknessFactor);
             #else
-                if(isSky && rainStrength < 1.0) postColOut += getLensFlare(texCoord - 0.5, shdLightDirScreenSpace.xy - 0.5) * (1.0 - blindness) * (1.0 - darknessFactor) * (1.0 - rainStrength);
+                if(isSky && weatherFade < 1.0) postColOut += getLensFlare(texCoord - 0.5, shdLightDirScreenSpace.xy - 0.5) * (1.0 - blindness) * (1.0 - darknessFactor) * (1.0 - weatherFade);
             #endif
         #endif
 

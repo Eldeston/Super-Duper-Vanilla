@@ -34,6 +34,7 @@
 
     #ifndef FORCE_DISABLE_WEATHER
         uniform float rainStrength;
+        uniform float weatherFade;
     #endif
 
     #ifndef FORCE_DISABLE_DAY_CYCLE
@@ -52,7 +53,7 @@
         #if !defined FORCE_DISABLE_WEATHER && defined WORLD_LIGHT
             vec3 defaultSkyCol = toLinear(SKY_COLOR_DATA_BLOCK);
             vec3 weatherSkyCol = vec3(dot(toLinear(fogColor), vec3(0.2126, 0.7152, 0.0722)));
-            skyCol = mix(defaultSkyCol, weatherSkyCol, rainStrength);
+            skyCol = mix(defaultSkyCol, weatherSkyCol, weatherFade);
         #else
             skyCol = toLinear(SKY_COLOR_DATA_BLOCK);
         #endif
@@ -142,6 +143,7 @@
 
     #ifndef FORCE_DISABLE_WEATHER
         uniform float rainStrength;
+        uniform float weatherFade;
     #endif
 
     #ifndef FORCE_DISABLE_DAY_CYCLE

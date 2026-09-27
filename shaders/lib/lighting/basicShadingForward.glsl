@@ -3,7 +3,7 @@ vec3 basicShadingForward(in vec3 albedo){
 	float skyLightSquared = squared(lmCoord.y);
 
 	#ifndef FORCE_DISABLE_WEATHER
-		vec3 linearSkyCol = mix(toLinear(SKY_COLOR_DATA_BLOCK), vec3(dot(toLinear(fogColor), vec3(0.2126, 0.7152, 0.0722))), rainStrength);
+		vec3 linearSkyCol = mix(toLinear(SKY_COLOR_DATA_BLOCK), vec3(dot(toLinear(fogColor), vec3(0.2126, 0.7152, 0.0722))), weatherFade);
 	#else
 		vec3 linearSkyCol = toLinear(SKY_COLOR_DATA_BLOCK);
 	#endif
@@ -44,10 +44,10 @@ vec3 basicShadingForward(in vec3 albedo){
 
 		#ifndef FORCE_DISABLE_WEATHER
 			// Approximate rain diffusing light shadow
-			float rainDirectAmount = 1.0 - rainStrength * (1.0 - WEATHER_DIRECT_LIGHT);
+			float rainDirectAmount = 1.0 - weatherFade * (1.0 - WEATHER_DIRECT_LIGHT);
 			shdCol *= rainDirectAmount;
 
-			float rainDiffuseAmount = rainStrength * WEATHER_DIRECT_LIGHT;
+			float rainDiffuseAmount = weatherFade * WEATHER_DIRECT_LIGHT;
 			shdCol += rainDiffuseAmount * skyLightSquared;
 		#endif
 

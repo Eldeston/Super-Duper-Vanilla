@@ -138,6 +138,7 @@
 
     #ifndef FORCE_DISABLE_WEATHER
         uniform float rainStrength;
+        uniform float weatherFade;
     #endif
 
     #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM

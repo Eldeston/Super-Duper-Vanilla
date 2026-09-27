@@ -156,6 +156,7 @@
 
     #ifndef FORCE_DISABLE_WEATHER
         uniform float rainStrength;
+        uniform float weatherFade;
     #endif
 
     #if defined SHADOW_FILTER && ANTI_ALIASING >= 2

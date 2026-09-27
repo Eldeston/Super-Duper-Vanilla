@@ -33,7 +33,7 @@
     #endif
 
     #ifndef FORCE_DISABLE_WEATHER
-        uniform float rainStrength;
+        uniform float rainStrength, weatherFade;
     #endif
 
     #ifndef FORCE_DISABLE_DAY_CYCLE
@@ -52,7 +52,7 @@
         #if !defined FORCE_DISABLE_WEATHER && defined WORLD_LIGHT
             vec3 defaultSkyCol = toLinear(SKY_COLOR_DATA_BLOCK);
             vec3 weatherSkyCol = vec3(dot(toLinear(fogColor), vec3(0.2126, 0.7152, 0.0722)));
-            skyCol = mix(defaultSkyCol, weatherSkyCol, rainStrength);
+            skyCol = mix(defaultSkyCol, weatherSkyCol, weatherFade);
         #else
             skyCol = toLinear(SKY_COLOR_DATA_BLOCK);
         #endif
@@ -135,7 +135,7 @@
     #endif
 
     #ifndef FORCE_DISABLE_WEATHER
-        uniform float rainStrength;
+        uniform float rainStrength, weatherFade;
     #endif
 
     #ifndef FORCE_DISABLE_DAY_CYCLE
@@ -321,9 +321,9 @@
             #ifdef DYNAMIC_CLOUDS
                 float fadeTime = saturate(sin(fragmentFrameTime * FADE_SPEED) * 0.8 + 0.5);
 
-                float cloudFinal = mix(mix(cloudData.x, cloudData.y, fadeTime), max(cloudData.x, cloudData.y), rainStrength) * 0.125;
+                float cloudFinal = mix(mix(cloudData.x, cloudData.y, fadeTime), max(cloudData.x, cloudData.y), weatherFade) * 0.125;
             #else
-                float cloudFinal = mix(cloudData.x, max(cloudData.x, cloudData.y), rainStrength) * 0.125;
+                float cloudFinal = mix(cloudData.x, max(cloudData.x, cloudData.y), weatherFade) * 0.125;
             #endif
 
             #ifdef FORCE_DISABLE_DAY_CYCLE
@@ -333,8 +333,8 @@
             #endif
 
             #ifndef FORCE_DISABLE_WEATHER
-                cloudCelestialLight *= 1.0 - rainStrength;
-                vec3 cloudSkyLight = mix(skyCol, skyCol * 0.35, rainStrength);
+                cloudCelestialLight *= 1.0 - weatherFade;
+                vec3 cloudSkyLight = mix(skyCol, skyCol * 0.35, weatherFade);
             #else
                 vec3 cloudSkyLight = skyCol;
             #endif

@@ -124,6 +124,7 @@
 
     #ifndef FORCE_DISABLE_WEATHER
         uniform float rainStrength;
+        uniform float weatherFade;
     #endif
 
     #ifndef FORCE_DISABLE_DAY_CYCLE
