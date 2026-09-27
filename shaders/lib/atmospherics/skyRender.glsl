@@ -336,11 +336,11 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol)
                 if(blackHole <= 0.0) return vec3(0.0);
                 blackHole = max(0.0, 1.0 / max(1.0, blackHole) - (1.0 / blackHoleSize));
 
-                // Distortion application (only for accretion rings, do not mutate skyPos!)
+                // Distortion application (spiral wrapping around the black hole)
                 const float rotationFactor = TAU * 16.0;
-                vec2 ringPos = rot2D(blackHole * rotationFactor) * skyPos.xy;
+                skyPos.xy = rot2D(blackHole * rotationFactor) * skyPos.xy;
 
-                float rings = textureLod(noisetex, vec2(ringPos.x * blackHole, fragmentFrameTime * 0.0009765625), 0).x;
+                float rings = textureLod(noisetex, vec2(skyPos.x * blackHole, fragmentFrameTime * 0.0009765625), 0).x;
 
                 currSkyCol += (((rings * blackHole * 0.9 + blackHole * 0.1) * (sunMoonIntensitySqrd * 0.35)) * lightCol);
             }
