@@ -136,8 +136,6 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 * Format the goodness knows how much nesting I used in my code because BROTHA EWWHH (maximum priority)
 
 ## CURRENT
-* Implement bit packing for optimization
-
 * Refactor parallax occlusion mapping
 * Change cloud texture
 
@@ -151,6 +149,7 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 
 ## DONE
 * Abandon Optifine support (high priority)
+* Implement bit packing & encoding library (`shaders/lib/utility/bitPacking.glsl`) for octahedral normals, 2x8/4x8/2x16 UNORM data, lightmaps, and PBR material flags
 * Consolidate FXAA into final.glsl and eliminate composite7 pass across dimensions
 * Specular & smoothness guard in deferred1 and composite passes to bypass matte albedo/normal lookups
 * Eliminate transcendental powers in skyRender and SSR bisection lookups in rayTracer
