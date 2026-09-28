@@ -26,16 +26,19 @@ uniform sampler2DShadow shadowtex0;
 #endif
 
 vec3 getShdCol(in vec3 shdPos){
+	// Early exit if sample point is outside shadow frustum bounds
+	if(shdPos.z > 1.0 || shdPos.z < 0.0 || shdPos.x < 0.0 || shdPos.x > 1.0 || shdPos.y < 0.0 || shdPos.y > 1.0) return vec3(1.0);
+
 	#ifdef SHADOW_COLOR
 		// Sample shadows
 		float shd0 = textureLod(shadowtex0, shdPos, 0);
 		// If not in shadow, return "white"
-		if(shd0 == 1) return vec3(1);
+		if(shd0 == 1.0) return vec3(1.0);
 
 		// Sample opaque only shadows
 		float shd1 = textureLod(shadowtex1, shdPos, 0);
 		// If in shadow, return "black"
-		if(shd1 == 0) return vec3(0);
+		if(shd1 == 0.0) return vec3(0.0);
 		// Otherwise, calculate the full shadow color
 		return texelFetch(shadowcolor0, ivec2(shdPos.xy * shadowMapResolution), 0).rgb * (1.0 - shd0) * shd1 + shd0;
 	#else
@@ -45,6 +48,9 @@ vec3 getShdCol(in vec3 shdPos){
 }
 
 vec3 getShdCol(in vec3 shdPos, in float dither){
+	// Early exit if outside shadow frustum bounds before computing dither offsets
+	if(shdPos.z > 1.0 || shdPos.z < 0.0 || shdPos.x < 0.0 || shdPos.x > 1.0 || shdPos.y < 0.0 || shdPos.y > 1.0) return vec3(1.0);
+
 	#if WORLD_ID == 1
 		if(heavyFog == 0) return getShdCol(shdPos);
 		float filterScale = 2.0;

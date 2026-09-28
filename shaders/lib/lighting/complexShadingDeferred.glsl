@@ -33,8 +33,8 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
 
 	// Calculate SSR and sky reflections
 	#ifdef SSR
-		// Get SSR screen coordinates
-		vec3 SSRCoord = rayTraceScene(screenPos, viewPos, reflectViewDir, dither.z);
+		// Get SSR screen coordinates only for front-facing surfaces
+		vec3 SSRCoord = (NV > 0.0) ? rayTraceScene(screenPos, viewPos, reflectViewDir, dither.z) : vec3(0.0);
 
 		#ifdef DISTANT_HORIZONS
 			if(realSky) SSRCoord.z = 0.0;

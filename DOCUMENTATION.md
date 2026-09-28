@@ -154,6 +154,10 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 * Consolidate FXAA into final.glsl and eliminate composite7 pass across dimensions
 * Specular & smoothness guard in deferred1 and composite passes to bypass matte albedo/normal lookups
 * Eliminate transcendental powers in skyRender and SSR bisection lookups in rayTracer
+* Conditional pass elimination via `shaders.properties` (`program.<name>.enabled = false`) for inactive passes (composite2 motion blur, composite3 DOF, composite4/5 bloom, deferred SSAO, shadow passes)
+* Frustum bounding box early-exit checks in `shdMapping.glsl` to avoid sampling shadow maps outside light projection bounds
+* View frustum depth bounds check `[0.0, 1.0]` in `rayTracer.glsl` to stop raymarching past far plane or behind camera
+* Front-facing normal check (`NV > 0.0`) in `complexShadingDeferred.glsl` to prevent SSR raymarches on backfacing surfaces
 
 * Finish programming dh_generic (medium priority)
 
