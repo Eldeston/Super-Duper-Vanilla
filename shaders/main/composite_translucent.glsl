@@ -207,6 +207,48 @@
 
     #include "/lib/lighting/complexShadingDeferred.glsl"
 
+    #if !defined FORCE_DISABLE_CLOUDS && CLOUD_TYPE == 2
+        vec3 renderTranslucentClouds(in vec3 sceneCol, in vec3 nFeetPlayerPos, in float feetPlayerDist, in float ditherX, in bool isSky){
+            // Get the 1st layer of volumetric clouds position
+            vec3 cloudStartPos0 = vec3(cameraPosition.x + fragmentFrameTime, cameraPosition.y - volumetricCloudHeight, cameraPosition.z);
+
+            // Get the volumetric clouds
+            vec2 cloudData = volumetricClouds(nFeetPlayerPos, cloudStartPos0, feetPlayerDist, ditherX, isSky);
+
+            #ifdef DOUBLE_LAYERED_CLOUDS
+                // Get the 2nd layer of volumetric clouds position by reusing the 1st layer's position
+                vec3 cloudStartPos1 = vec3(cloudStartPos0.x + fragmentFrameTime * 0.25, cloudStartPos0.y - SECOND_CLOUD_HEIGHT, cloudStartPos0.z);
+
+                // Variate by swizzling the 2 cloud channels
+                cloudData = max(volumetricClouds(nFeetPlayerPos, cloudStartPos1, feetPlayerDist, ditherX, isSky, true).yx, cloudData);
+            #endif
+
+            #ifdef DYNAMIC_CLOUDS
+                float fadeTime = saturate(sin(fragmentFrameTime * FADE_SPEED) * 0.8 + 0.5);
+
+                float cloudFinal = mix(mix(cloudData.x, cloudData.y, fadeTime), max(cloudData.x, cloudData.y), weatherFade) * 0.125;
+            #else
+                float cloudFinal = mix(cloudData.x, max(cloudData.x, cloudData.y), weatherFade) * 0.125;
+            #endif
+
+            #ifdef FORCE_DISABLE_DAY_CYCLE
+                vec3 cloudCelestialLight = lightCol;
+            #else
+                vec3 cloudCelestialLight = mix(moonCol, sunCol, dayCycleAdjust);
+            #endif
+
+            #ifndef FORCE_DISABLE_WEATHER
+                cloudCelestialLight *= 1.0 - weatherFade;
+                vec3 cloudSkyLight = mix(skyCol, skyCol * 0.35, weatherFade);
+            #else
+                vec3 cloudSkyLight = skyCol;
+            #endif
+
+            vec3 cloudAmbient = vec3(toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash);
+            return mix(sceneCol, cloudAmbient + cloudCelestialLight + cloudSkyLight, cloudFinal);
+        }
+    #endif
+
     void main(){
         // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
@@ -268,12 +310,20 @@
 
         // If the object renders after deferred apply separate lighting
         if(matRaw0.z > 0 && matRaw0.z < 1){
-            // Declare and get materials
-            vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
-            vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
+            #if defined SSGI
+                const bool needsComplex = true;
+            #else
+                bool needsComplex = matRaw0.y >= 0.005;
+            #endif
 
-            // Apply deffered shading
-            sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, realSky);
+            if(needsComplex){
+                // Declare and get materials
+                vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
+                vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
+
+                // Apply deferred shading
+                sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, realSky);
+            }
 
             // Get basic sky fog color
             vec3 fogSkyCol = getSkyFogRender(nEyePlayerPos);
@@ -303,44 +353,7 @@
         #endif
 
         #if !defined FORCE_DISABLE_CLOUDS && CLOUD_TYPE == 2
-            // Get the 1st layer of volumetric clouds position
-            // Note that the clouds needs to move westward just as in vanilla
-            vec3 cloudStartPos0 = vec3(cameraPosition.x + fragmentFrameTime, cameraPosition.y - volumetricCloudHeight, cameraPosition.z);
-
-            // Get the volumetric clouds
-            vec2 cloudData = volumetricClouds(nFeetPlayerPos, cloudStartPos0, feetPlayerDist, dither.x, isSky);
-
-            #ifdef DOUBLE_LAYERED_CLOUDS
-                // Get the 2nd layer of volumetric clouds position by reusing the 1st layer's position
-                vec3 cloudStartPos1 = vec3(cloudStartPos0.x + fragmentFrameTime * 0.25, cloudStartPos0.y - SECOND_CLOUD_HEIGHT, cloudStartPos0.z);
-
-                // Variate by swizzling the 2 cloud channels
-                cloudData = max(volumetricClouds(nFeetPlayerPos, cloudStartPos1, feetPlayerDist, dither.x, isSky, true).yx, cloudData);
-            #endif
-
-            #ifdef DYNAMIC_CLOUDS
-                float fadeTime = saturate(sin(fragmentFrameTime * FADE_SPEED) * 0.8 + 0.5);
-
-                float cloudFinal = mix(mix(cloudData.x, cloudData.y, fadeTime), max(cloudData.x, cloudData.y), weatherFade) * 0.125;
-            #else
-                float cloudFinal = mix(cloudData.x, max(cloudData.x, cloudData.y), weatherFade) * 0.125;
-            #endif
-
-            #ifdef FORCE_DISABLE_DAY_CYCLE
-                vec3 cloudCelestialLight = lightCol;
-            #else
-                vec3 cloudCelestialLight = mix(moonCol, sunCol, dayCycleAdjust);
-            #endif
-
-            #ifndef FORCE_DISABLE_WEATHER
-                cloudCelestialLight *= 1.0 - weatherFade;
-                vec3 cloudSkyLight = mix(skyCol, skyCol * 0.35, weatherFade);
-            #else
-                vec3 cloudSkyLight = skyCol;
-            #endif
-
-            vec3 cloudAmbient = vec3(toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash);
-            sceneColOut = mix(sceneColOut, cloudAmbient + cloudCelestialLight + cloudSkyLight, cloudFinal);
+            sceneColOut = renderTranslucentClouds(sceneColOut, nFeetPlayerPos, feetPlayerDist, dither.x, isSky);
         #endif
 
         // Clamp scene color to prevent NaNs during post processing

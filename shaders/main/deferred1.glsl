@@ -306,11 +306,20 @@
 
         // Declare and get materials
         vec2 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xy;
-        vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
-        vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
 
-        // Apply deffered shading
-        sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, realSky);
+        #if defined SSGI
+            const bool needsComplex = true;
+        #else
+            bool needsComplex = matRaw0.y >= 0.005;
+        #endif
+
+        if(needsComplex){
+            vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
+            vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
+
+            // Apply deferred shading
+            sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, realSky);
+        }
 
         #if OUTLINES != 0
             // Outline calculation

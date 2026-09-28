@@ -57,6 +57,13 @@
         uniform float viewHeight;
     #endif
 
+    #if ANTI_ALIASING == 1 || ANTI_ALIASING == 3
+        uniform float pixelWidth;
+        uniform float pixelHeight;
+
+        #include "/lib/antialiasing/fxaa.glsl"
+    #endif
+
     #if ANTI_ALIASING != 0 && defined SHARPEN_FILTER
         // https://www.shadertoy.com/view/lslGRr
         vec3 sharpenFilter(in vec3 color, in vec2 uv, in vec2 pixelSize){
@@ -83,7 +90,9 @@
             #define texCoord retroCoord
         #endif
 
-        #ifdef CHROMATIC_ABERRATION
+        #if ANTI_ALIASING == 1 || ANTI_ALIASING == 3
+            finalColOut = textureFXAA(ivec2(gl_FragCoord.xy));
+        #elif defined CHROMATIC_ABERRATION
             vec2 chromaStrength = ((texCoord - 0.5) * ABERRATION_PIXEL_SIZE) * pixelSize;
 
             finalColOut = vec3(

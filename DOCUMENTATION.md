@@ -151,6 +151,9 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 
 ## DONE
 * Abandon Optifine support (high priority)
+* Consolidate FXAA into final.glsl and eliminate composite7 pass across dimensions
+* Specular & smoothness guard in deferred1 and composite passes to bypass matte albedo/normal lookups
+* Eliminate transcendental powers in skyRender and SSR bisection lookups in rayTracer
 
 * Finish programming dh_generic (medium priority)
 
