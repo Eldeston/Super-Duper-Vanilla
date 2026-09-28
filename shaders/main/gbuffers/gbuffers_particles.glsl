@@ -168,6 +168,9 @@
     #include "/lib/lighting/basicShadingForward.glsl"
 
     void main(){
+        // Early out if vertex is fully transparent
+        if(vertexColor.a <= 0.001){ discard; return; }
+
         // Get albedo
         vec4 albedo = textureLod(gtexture, texCoord, 0);
         albedo.a *= vertexColor.a;
@@ -176,7 +179,8 @@
         if(albedo.a <= 0.001){ discard; return; }
 
         // Particle emissives
-        if((vertexColor.r * 0.5 > vertexColor.g + vertexColor.b || (vertexColor.r + vertexColor.b > vertexColor.g * 2.0 && abs(vertexColor.r - vertexColor.b) < 0.2) || ((albedo.r + albedo.g + albedo.b > 1.6 || (vertexColor.r != vertexColor.g && vertexColor.g != vertexColor.b)) && lmCoord.x == 1)) && atlasSize.x <= 1024 && atlasSize.x > 0){
+        if(atlasSize.x > 0 && atlasSize.x <= 1024 && (vertexColor.r * 0.5 > vertexColor.g + vertexColor.b || (vertexColor.r + vertexColor.b > vertexColor.g * 2.0 && abs(vertexColor.r - vertexColor.b) < 0.2) || ((albedo.r + albedo.g + albedo.b > 1.6 || (vertexColor.r != vertexColor.g && vertexColor.g != vertexColor.b)) && lmCoord.x == 1))){
+            materialDataOut = vec3(0, 0, 0.5);
             sceneColOut = vec4(toLinear(albedo.rgb * vertexColor.rgb) * EMISSIVE_INTENSITY, albedo.a);
             return; // Return immediately, no need for lighting calculation
         }

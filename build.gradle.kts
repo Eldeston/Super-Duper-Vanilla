@@ -55,119 +55,24 @@ dependencies {
     "runtimeOnly"("org.quiltmc:quilt-config:1.3.3")
     "runtimeOnly"("net.fabricmc:sponge-mixin:0.17.4+mixin.0.8.7")
 
-    // Shader stack: Sodium + Sodium Extra + Iris + FerriteCore (Memory Optimization) + Litematica & MaLiLib
+    // Shader stack: Sodium + Sodium Extra + Iris + FerriteCore (Memory Optimization) + Litematica & MaLiLib + Spark + GFX Debuggers
     clientMods("maven.modrinth:sodium:${project.property("sodium_version")}")
     clientMods("maven.modrinth:sodium-extra:${project.property("sodium_extra_version")}")
     clientMods("maven.modrinth:iris:${project.property("iris_version")}")
     clientMods("maven.modrinth:ferrite-core:${project.property("ferrite_core_version")}")
     clientMods("maven.modrinth:malilib:${project.property("malilib_version")}")
     clientMods("maven.modrinth:litematica:${project.property("litematica_version")}")
+    clientMods("maven.modrinth:spark:${project.property("spark_version")}")
+    clientMods("net.fabricmc.fabric-api:fabric-command-api-v2:${project.property("fabric_command_api_version")}")
+    clientMods("maven.modrinth:gfx-debuggers:${project.property("gfx_debuggers_version")}")
 
     "modImplementation"("maven.modrinth:sodium:${project.property("sodium_version")}")
     "modRuntimeOnly"("maven.modrinth:sodium-extra:${project.property("sodium_extra_version")}")
     "modRuntimeOnly"("maven.modrinth:iris:${project.property("iris_version")}")
     "modRuntimeOnly"("maven.modrinth:ferrite-core:${project.property("ferrite_core_version")}")
-}
-
-fun isMalilibUnpatched(file: File): Boolean {
-    if (!file.exists()) return false
-    return runCatching {
-        ZipFile(file).use { zip ->
-            val entry = zip.getEntry("mixins.malilib.json") ?: return false
-            zip.getInputStream(entry).bufferedReader().use { it.readText() }.contains("test.MixinSharedConstants")
-        }
-    }.getOrDefault(false)
-}
-
-fun patchMalilibJar(src: File, dest: File) {
-    val tempFile = File(dest.parentFile, "${dest.name}.tmp")
-    ZipFile(src).use { zip ->
-        ZipOutputStream(tempFile.outputStream()).use { zos ->
-            for (entry in zip.entries().asSequence()) {
-                zos.putNextEntry(ZipEntry(entry.name))
-                if (entry.name == "mixins.malilib.json") {
-                    val content = zip.getInputStream(entry).bufferedReader().use { it.readText() }
-                    val patched = content.replace(Regex(",\\r?\\n\\s*\"test\\.MixinSharedConstants\""), "")
-                    zos.write(patched.toByteArray(Charsets.UTF_8))
-                } else {
-                    zip.getInputStream(entry).use { it.copyTo(zos) }
-                }
-                zos.closeEntry()
-            }
-        }
-    }
-    if (dest.exists()) {
-        dest.delete()
-    }
-    tempFile.renameTo(dest)
-}
-
-fun isLitematicaUnpatched(file: File): Boolean {
-    if (!file.exists()) return false
-    return runCatching {
-        ZipFile(file).use { zip ->
-            val entry = zip.getEntry("fi/dy/masa/litematica/render/schematic/WorldRendererSchematic.class") ?: return false
-            val bytes = zip.getInputStream(entry).use { it.readBytes() }
-            var hasLinearInSampler = false
-            ClassReader(bytes).accept(object : ClassVisitor(Opcodes.ASM9) {
-                override fun visitMethod(access: Int, name: String, descriptor: String, signature: String?, exceptions: Array<out String>?): MethodVisitor? {
-                    if (name == "getGpuSampler") {
-                        return object : MethodVisitor(Opcodes.ASM9) {
-                            override fun visitFieldInsn(opcode: Int, owner: String, fieldName: String, fieldDescriptor: String) {
-                                if (opcode == Opcodes.GETSTATIC && owner == "com/mojang/renderpearl/api/textures/FilterMode" && fieldName == "LINEAR") {
-                                    hasLinearInSampler = true
-                                }
-                            }
-                        }
-                    }
-                    return null
-                }
-            }, 0)
-            hasLinearInSampler
-        }
-    }.getOrDefault(false)
-}
-
-fun patchLitematicaJar(src: File, dest: File) {
-    val tempFile = File(dest.parentFile, "${dest.name}.tmp")
-    ZipFile(src).use { zip ->
-        ZipOutputStream(tempFile.outputStream()).use { zos ->
-            for (entry in zip.entries().asSequence()) {
-                zos.putNextEntry(ZipEntry(entry.name))
-                if (entry.name == "fi/dy/masa/litematica/render/schematic/WorldRendererSchematic.class") {
-                    val bytes = zip.getInputStream(entry).use { it.readBytes() }
-                    val reader = ClassReader(bytes)
-                    val writer = ClassWriter(reader, 0)
-                    val cv = object : ClassVisitor(Opcodes.ASM9, writer) {
-                        override fun visitMethod(access: Int, name: String, descriptor: String, signature: String?, exceptions: Array<out String>?): MethodVisitor {
-                            val mv = super.visitMethod(access, name, descriptor, signature, exceptions)
-                            if (name == "getGpuSampler") {
-                                return object : MethodVisitor(Opcodes.ASM9, mv) {
-                                    override fun visitFieldInsn(opcode: Int, owner: String, fieldName: String, fieldDescriptor: String) {
-                                        if (opcode == Opcodes.GETSTATIC && owner == "com/mojang/renderpearl/api/textures/FilterMode" && fieldName == "LINEAR") {
-                                            super.visitFieldInsn(opcode, owner, "NEAREST", fieldDescriptor)
-                                        } else {
-                                            super.visitFieldInsn(opcode, owner, fieldName, fieldDescriptor)
-                                        }
-                                    }
-                                }
-                            }
-                            return mv
-                        }
-                    }
-                    reader.accept(cv, 0)
-                    zos.write(writer.toByteArray())
-                } else {
-                    zip.getInputStream(entry).use { it.copyTo(zos) }
-                }
-                zos.closeEntry()
-            }
-        }
-    }
-    if (dest.exists()) {
-        dest.delete()
-    }
-    tempFile.renameTo(dest)
+    "modRuntimeOnly"("maven.modrinth:spark:${project.property("spark_version")}")
+    "modRuntimeOnly"("net.fabricmc.fabric-api:fabric-command-api-v2:${project.property("fabric_command_api_version")}")
+    "modRuntimeOnly"("maven.modrinth:gfx-debuggers:${project.property("gfx_debuggers_version")}")
 }
 
 loom.runs.named("client") {
@@ -175,6 +80,8 @@ loom.runs.named("client") {
     runDir = "run/client"
     vmArg("-Xmx6G")
     vmArg("-XX:+UseG1GC")
+    vmArg("-javaagent:${file("gradle/dev-runtime-agent.jar").absolutePath}")
+    vmArg("-Ddebugger=skip")
 }
 
 val deployClientMods = tasks.register("deployClientMods") {
@@ -185,39 +92,18 @@ val deployClientMods = tasks.register("deployClientMods") {
         modsDir.mkdirs()
         clientMods.resolvedConfiguration.resolvedArtifacts.forEach { artifact ->
             val dest = file("run/client/mods/${artifact.file.name}")
-            val isMalilib = artifact.file.name.contains("malilib")
-            val isLitematica = artifact.file.name.contains("litematica")
-            val needsDeploy = !dest.exists() ||
-                (isMalilib && isMalilibUnpatched(dest)) ||
-                (isLitematica && isLitematicaUnpatched(dest))
-            if (needsDeploy) {
-                if (isMalilib) {
-                    patchMalilibJar(artifact.file, dest)
-                    val quiltCache = file("run/client/.cache/quilt_loader")
-                    if (quiltCache.exists()) {
-                        quiltCache.deleteRecursively()
-                    }
-                    println("✓ Deployed & patched mod -> ${dest.name} (removed test mixin)")
-                } else if (isLitematica) {
-                    patchLitematicaJar(artifact.file, dest)
-                    val quiltCache = file("run/client/.cache/quilt_loader")
-                    if (quiltCache.exists()) {
-                        quiltCache.deleteRecursively()
-                    }
-                    println("✓ Deployed & patched mod -> ${dest.name} (enforced NEAREST texture filter)")
-                } else {
-                    artifact.file.copyTo(dest, overwrite = true)
-                    println("✓ Deployed mod -> ${dest.name}")
-                }
-            }
+            artifact.file.copyTo(dest, overwrite = true)
+            println("✓ Deployed unmodified mod -> ${dest.name}")
         }
     }
 }
 
-tasks.named("runClient") {
+tasks.named<JavaExec>("runClient") {
     group = "loom"
-    description = "Runs Minecraft Client with Quilt, Iris, Sodium, Sodium Extra, Litematica, and local Super Duper Vanilla shaderpack."
+    description = "Runs Minecraft Client with Quilt, Iris, Sodium, Sodium Extra, Litematica, Spark, GFX Debuggers, and local Super Duper Vanilla shaderpack."
     dependsOn(deployClientMods)
+    jvmArgs("-javaagent:${file("gradle/dev-runtime-agent.jar").absolutePath}")
+    systemProperty("debugger", System.getProperty("debugger", "skip"))
 
     doFirst {
         // Link shaderpack

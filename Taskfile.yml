@@ -28,11 +28,42 @@ tasks:
     cmds:
       - ./gradlew runClient {{.CLI_ARGS}}
 
+  'run:renderdoc':
+    desc: 'Launch Minecraft client with RenderDoc graphics debugger injection'
+    summary: Launches Minecraft client hooked into RenderDoc for GPU frame capture and shader inspection.
+    cmds:
+      - ./gradlew runClient -Ddebugger=renderdoc {{.CLI_ARGS}}
+
+  'run:nsight':
+    desc: 'Launch Minecraft client with NVIDIA Nsight GPU Trace injection'
+    summary: Launches Minecraft client hooked into NVIDIA Nsight Graphics for hardware counter profiling.
+    cmds:
+      - ./gradlew runClient -Ddebugger=nsight-gpu {{.CLI_ARGS}}
+
   'clean:run':
     desc: 'Reset the local Minecraft client run directory'
     cmds:
       - rm -rf run/
       - echo "✓ Cleaned local run/ directory."
+
+  # ============================================================================
+  # Performance Profiling & Optimization Tasks
+  # ============================================================================
+  profile:
+    desc: 'Profile shader performance drivers (texture fetches, heavy math, loops, cost ranking)'
+    aliases: ['profile:shaders', 'bench:shaders']
+    summary: |
+      Analyzes all shaders across dimensions to quantify GPU cost drivers,
+      texture bandwidth hotspots, transcendental math overhead, and branching.
+      Usage:
+        task profile
+        task profile -- --top 20
+        task profile -- --stage frag
+        task profile -- --json baseline.json
+        task profile -- --compare baseline.json current.json
+    cmds:
+      - '{{.PYTHON}} scripts/profile_shaders.py {{.CLI_ARGS}}'
+
 
   # ============================================================================
   # Linting Tasks

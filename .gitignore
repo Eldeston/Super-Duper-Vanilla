@@ -3,6 +3,9 @@ dist/
 build/
 *.zip
 *.spv
+*baseline*.json
+*current*.json
+*profile*.json
 
 # Gradle & Loom Mod Dev Client Environment
 .gradle/

@@ -245,6 +245,9 @@
             return; // Return immediately, no need for lighting calculation
         }
 
+        // Early discard if vertex is transparent
+        if(vertexColor.a <= 0.001){ discard; return; }
+
 	    // Declare materials
 	    dataPBR material;
         getPBR(material, blockEntityId);

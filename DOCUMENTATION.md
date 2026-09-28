@@ -158,3 +158,37 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 * Fix FXAA, it was broken the whole time (high priority)
 
 * Implement portal depth for Nether and End
+
+# Performance Profiling & Optimization Tooling
+
+Performance and resource efficiency are top priority in Super Duper Vanilla. The following instrumentation stack is configured for testing and continuous optimization:
+
+## In-Game Profiling & Instrumentation
+
+* **Spark Profiler**:
+  - Measures CPU performance, tick rate, render thread execution, and GC allocation churn.
+  - Client Commands:
+    - `/sparkc profiler start` — Start sampling client threads (render thread, worker threads).
+    - `/sparkc profiler stop` — Stop sampling and generate an online call-tree flame graph.
+    - `/sparkc health` — View TPS, tick times, system RAM, CPU load, and GC metrics.
+    - `/sparkc heapsummary` — Inspect heap allocation rates to eliminate GC pause stutters.
+    - `/sparkc tickmonitor` — Monitor real-time frame/tick latency spikes.
+* **Iris Live Reload & Debug Options**:
+  - **Instant Live Reload**: Press `R` in-game to recompile modified shaders in real time without restarting Minecraft.
+  - **F3 Debug Overlay**: Displays active shader program names, pass timings, and shadow map metrics.
+  - **Wireframe Mode**: Debug geometry tessellation and depth boundaries.
+  - **OpenGL Driver Diagnostics**: Driver warnings and `KHR_debug` callbacks logged to `run/client/logs/latest.log`.
+* **Sodium Extra Performance HUD**:
+  - Real-time on-screen FPS display with minimum and average frame time tracking.
+* **Graphics Debugger Injection (RenderDoc & NVIDIA Nsight Graphics)**:
+  - `task run:renderdoc` — Launch with RenderDoc hooked for frame capture, draw call inspection, and texture analysis.
+  - `task run:nsight` — Launch with NVIDIA Nsight Graphics hooked for GPU hardware performance counter profiling.
+
+## Offline Shader Analysis & Static Profiler
+
+* **Shader Performance Profiler** (`task profile` / `scripts/profile_shaders.py`):
+  - Preprocesses all shaders across Overworld, Nether, and End dimensions.
+  - Quantifies GPU cost drivers: texture fetch counts, distinct samplers, transcendental math operations (`pow`, `exp`, `sin`, `cos`, `atan`, `inverse`), loop iterations, and branching.
+  - Computes weighted GPU Cost Index ranking every pass from heaviest to lightest.
+  - Flags actionable optimization opportunities (e.g. `pow(x, 2.0)` -> `x * x`, high texture fetch pressure).
+  - Supports `--json` export and `--compare baseline.json current.json` to benchmark optimization wins before and after code changes.

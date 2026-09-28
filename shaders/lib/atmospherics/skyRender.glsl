@@ -294,6 +294,7 @@ vec3 getSkyReflection(in vec3 reflectViewDir){
     return finalCol * saturate(reflectPlayerDir.y + eyeBrightFact * 3.0 - 1.0);
 }
 
+#ifndef COMPOSITE0
 // Full sky render
 vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
     // If player is in lava, return fog color
@@ -351,10 +352,10 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol)
                 vec3 flashDir = fastNormalize(mat3(gbufferModelViewInverse) * endFlashPosition);
                 float flashDot = dot(nEyePlayerPos, flashDir);
                 if(flashDot > 0.0){
-                    float flashCore = pow(flashDot, 128.0);
-                    float flashGlow = pow(flashDot, 16.0);
-                    float flashAura = pow(flashDot, 2.0);
-                    float flashBurst = (flashCore * 6.0 + flashGlow * 1.5 + flashAura * 0.3) * endFlashIntensity;
+                    float d2 = flashDot * flashDot; float d4 = d2 * d2; float d8 = d4 * d4;
+                    float flashGlow = d8 * d8; float d32 = flashGlow * flashGlow; float d64 = d32 * d32;
+                    float flashCore = d64 * d64;
+                    float flashBurst = (flashCore * 6.0 + flashGlow * 1.5 + d2 * 0.3) * endFlashIntensity;
                     currSkyCol += toLinear(vec3(0.85, 0.75, 1.0)) * flashBurst;
                 }
             }
@@ -372,3 +373,4 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol)
     if(isEyeInWater == 1) return currSkyCol * saturate(nEyePlayerPos.y * 1.66666667 - 0.16666667);
     return currSkyCol * saturate(nEyePlayerPos.y + eyeBrightFact * 3.0 - 1.0);
 }
+#endif // !COMPOSITE0

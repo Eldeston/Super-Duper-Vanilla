@@ -73,7 +73,6 @@
 
         uniform float viewWidth;
         uniform float viewHeight;
-        uniform float centerDepthSmooth;
 
         uniform sampler2D depthtex1;
     #endif
@@ -92,8 +91,11 @@
             // Return immediately if player hand
             if(depth <= 0.56) return;
             
+            float centerDepth = texelFetch(depthtex1, ivec2(int(viewWidth * 0.5), int(viewHeight * 0.5)), 0).x;
+
             // CoC calculation by Capt Tatsu from BSL
-            float CoC = max(0.0, abs(depth - centerDepthSmooth) * DOF_STRENGTH - 0.01);
+            float CoC = max(0.0, abs(depth - centerDepth) * DOF_STRENGTH - 0.01);
+            if(CoC <= 0.0) return;
             CoC = CoC * inversesqrt(CoC * CoC + 0.1);
 
             // We'll use a total of 16 samples for this blur (1 / 16)

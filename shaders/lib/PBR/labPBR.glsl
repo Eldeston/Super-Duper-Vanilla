@@ -56,9 +56,9 @@ vec2 dcdy = dFdy(texCoord);
         }
     #endif
 
-    #ifdef SLOPE_NORMALS
-        uniform ivec2 atlasSize;
+    uniform ivec2 atlasSize;
 
+    #ifdef SLOPE_NORMALS
         // Slope normals by @null511
         vec2 getSlopeNormals(in vec3 viewT, in vec2 texUv, in float startDepth){
             vec2 texPixSize = 1.0 / atlasSize;
@@ -89,6 +89,13 @@ vec2 dcdy = dFdy(texCoord);
     #endif
 #endif
 
+vec4 sampleCrispAlbedoLab(in vec2 uv, in vec2 dcdx, in vec2 dcdy){
+    vec2 atlasRes = atlasSize.x > 0 ? vec2(atlasSize) : vec2(textureSize(gtexture, 0));
+    vec2 invAtlasRes = 1.0 / atlasRes;
+    vec2 snappedUv = (floor(uv * atlasRes) + 0.5) * invAtlasRes;
+    return textureGrad(gtexture, snappedUv, dcdx, dcdy);
+}
+
 // The lab PBR standard 1.3
 void getPBR(inout dataPBR material, in int id){
     vec2 texUv = texCoord;
@@ -102,11 +109,11 @@ void getPBR(inout dataPBR material, in int id){
 
         vec3 currPos;
 
-        if(hasFallback) texUv = fract(parallaxUv(vTexCoord, viewDir.xy / -viewDir.z, currPos)) * vTexCoordScale + vTexCoordPos;
+        if(hasFallback && id > 0) texUv = fract(parallaxUv(vTexCoord, viewDir.xy / -viewDir.z, currPos)) * vTexCoordScale + vTexCoordPos;
     #endif
 
-    // Assign albedo
-    material.albedo = textureGrad(gtexture, texUv, dcdx, dcdy);
+    // Assign albedo with crisp texel center alignment for authentic pixel art
+    material.albedo = sampleCrispAlbedoLab(texUv, dcdx, dcdy);
 
     // Alpha test, discard and return immediately
     if(material.albedo.a < ALPHA_THRESHOLD){ discard; return; }

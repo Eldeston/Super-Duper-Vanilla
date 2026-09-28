@@ -1,6 +1,7 @@
 const uint rayTraceSteps = uint(RAYTRACER_STEPS);
 const uint rayTraceBiSteps = uint(RAYTRACER_BISTEPS);
 
+
 // This raytracer is so fast I swear...
 // Based from Belmu's raytracer https://github.com/BelmuTM/NobleRT
 // Basically an upgrade to Shadax's raytracer https://github.com/Shadax-stack/MinecraftSSR
@@ -36,7 +37,7 @@ vec3 rayTraceScene(in vec3 screenPos, in vec3 viewPos, in vec3 rayDir, in float 
 			#if RAYTRACER_BISTEPS != 0
 				for(uint i = 0u; i < rayTraceBiSteps; i++){
 					// If sky return immediately
-					if(getDepthTex(startPos.xy) == 1) return vec3(0);
+					if(currDepth == 1.0) return vec3(0);
 
 					// Continue refinement
 					screenPosRayDir *= 0.5;
@@ -47,9 +48,10 @@ vec3 rayTraceScene(in vec3 screenPos, in vec3 viewPos, in vec3 rayDir, in float 
 					// Check intersection
 					intersection = currDepth < startPos.z;
 				}
+				if(currDepth == 1.0) return vec3(0);
 			#else
 				// If sky return immediately
-				if(getDepthTex(startPos.xy) == 1) return vec3(0);
+				if(currDepth == 1.0) return vec3(0);
 			#endif
 
 			// Return final results

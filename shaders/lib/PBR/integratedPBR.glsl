@@ -1,7 +1,21 @@
+uniform ivec2 atlasSize;
+
+// Sample texture with crisp texel center alignment to guarantee authentic pixel art
+// even under modded linear samplers (such as unmodified Litematica schematic rendering)
+vec4 sampleCrispAlbedo(in vec2 coord, in vec2 dcdx, in vec2 dcdy){
+    vec2 atlasRes = atlasSize.x > 0 ? vec2(atlasSize) : vec2(textureSize(gtexture, 0));
+    vec2 invAtlasRes = 1.0 / atlasRes;
+    vec2 snappedCoord = (floor(coord * atlasRes) + 0.5) * invAtlasRes;
+    return textureGrad(gtexture, snappedCoord, dcdx, dcdy);
+}
+
 // The Integrated PBR calculation
 void getPBR(inout dataPBR material, in int id){
+    vec2 dcdx = dFdx(texCoord);
+    vec2 dcdy = dFdy(texCoord);
+
     // Assign albedo
-    material.albedo = texture(gtexture, texCoord);
+    material.albedo = sampleCrispAlbedo(texCoord, dcdx, dcdy);
 
     // Alpha test, discard and return immediately
     if(material.albedo.a < ALPHA_THRESHOLD){ discard; return; }
@@ -11,9 +25,7 @@ void getPBR(inout dataPBR material, in int id){
 
     // Generate bumped normals
     #if (defined TERRAIN || defined WATER || defined BLOCK || defined BLOCK_TRANSLUCENT) && defined NORMAL_GENERATION
-        if(id != 11100 && id != 11102 && id != 12101){
-            vec2 dcdx = dFdx(texCoord);
-            vec2 dcdy = dFdy(texCoord);
+        if(id != 0 && id != 11100 && id != 11102 && id != 12101){
             const float autoGenNormPixSize = 1.0 / NORMAL_GENERATION_RESOLUTION;
             vec2 topRightCorner = fract(vTexCoord - autoGenNormPixSize) * vTexCoordScale + vTexCoordPos;
             vec2 bottomLeftCorner = fract(vTexCoord + autoGenNormPixSize) * vTexCoordScale + vTexCoordPos;
