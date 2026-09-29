@@ -87,6 +87,8 @@ const float sunPathRotation = 30.0; // Light path angle. This also affects sky a
 
 #define MILKY_WAY // Enables procedural Minecraft-style Milky Way in the night sky.
 #define MILKY_WAY_BRIGHTNESS 1.00 // Milky Way brightness. [0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00 1.10 1.20 1.30 1.40 1.50 1.60 1.70 1.80 1.90 2.00]
+#define AURORA // Enables volumetric pixelized aurora curtains in cold and snowy biomes.
+#define AURORA_BRIGHTNESS 1.00 // Aurora brightness. [0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00 1.10 1.20 1.30 1.40 1.50 1.60 1.70 1.80 1.90 2.00]
 #define STAR_ROTATION 0 // Star rotation mode. Aligned keeps all square stars axis-aligned. Random rotates each star at an individual random angle. [0 1]
 
 /// -------------------------------- /// Cloud settings /// -------------------------------- ///

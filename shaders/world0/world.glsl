@@ -34,6 +34,9 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 // Enable milky way in your world (appears gradually later in the night)
 #define WORLD_MILKY_WAY toLinear(0.70 * smoothstep(0.60, 0.10, dayCycle))
 
+// Enable aurora in your world (smooth fade in during night)
+#define WORLD_AURORA toLinear(1.2 * smoothstep(0.90, 0.25, dayCycle))
+
 // If the world utilizes vanilla sky color
 // #define WORLD_VANILLA_FOG_COLOR
 // Enable if your world uses a specific world color that uses the vanilla fog color, overrides sky colors

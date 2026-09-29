@@ -256,6 +256,11 @@ screen.ATMOSPHERICS.comment = §6Effets atmosphériques incluant le soleil/lune,
     option.MILKY_WAY_BRIGHTNESS = Luminosité Voie lactée
     option.MILKY_WAY_BRIGHTNESS.comment = Ajuste la luminosité de la Voie lactée procédurale.
 
+    option.AURORA = Aurore boréale
+    option.AURORA.comment = Active des aurores boréales volumétriques avec des rideaux verticaux ondulants qui s'entrecroisent dans les biomes froids et enneigés. Rendu pixélisé façon nuages avec un dégradé du rose (haut) au vert puis au bleu (bas).
+    option.AURORA_BRIGHTNESS = Luminosité de l'aurore
+    option.AURORA_BRIGHTNESS.comment = Ajuste la luminosité des rideaux volumétriques d'aurore.
+
     option.STAR_ROTATION = Rotation des étoiles
     option.STAR_ROTATION.comment = Style de rotation des étoiles. Aligné garde les étoiles carrées alignées sur la grille céleste. Aléatoire donne à chaque étoile un angle de rotation aléatoire. Appliqué à la Voie lactée et au ciel.
     value.STAR_ROTATION.0 = Alignée

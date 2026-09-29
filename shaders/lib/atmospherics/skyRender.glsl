@@ -10,6 +10,7 @@
 #endif
 
 #include "/lib/atmospherics/milkyWay.glsl"
+#include "/lib/atmospherics/aurora.glsl"
 
 #include "/lib/atmospherics/celestialRender.glsl"
 
@@ -174,6 +175,30 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
         #else
             if(weatherFade < 1.0) currSkyCol += (1.0 - weatherFade) * milkyWay;
         #endif
+    #endif
+    #endif
+
+    #ifdef AURORA
+    #if defined WORLD_LIGHT && defined WORLD_AURORA
+        // Procedural volumetric pixelized aurora curtains (appears in cold/snowy biomes at night, not during heavy weather)
+        float auroraCold = max(isColdBiome, float(biome_precipitation == 2 || biome_category == 1 || biome_category == 7));
+        if(auroraCold > 0.001 && nEyePlayerPos.y > 0.035){
+            #ifdef FORCE_DISABLE_WEATHER
+                float auroraWeather = 1.0;
+            #else
+                float auroraWeather = 1.0 - weatherFade;
+            #endif
+            if(auroraWeather > 0.001){
+                float auroraMoonFade = mix(1.0, 0.70, MOON_PHASE_FACTOR);
+                vec3 aurora = getVolumetricAurora(nEyePlayerPos, fragmentFrameTime) * (WORLD_AURORA * AURORA_BRIGHTNESS * auroraCold * auroraWeather * auroraMoonFade);
+
+                #ifdef FORCE_DISABLE_WEATHER
+                    currSkyCol += aurora;
+                #else
+                    if(weatherFade < 1.0) currSkyCol += (1.0 - weatherFade) * aurora;
+                #endif
+            }
+        }
     #endif
     #endif
 

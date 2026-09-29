@@ -256,6 +256,11 @@ screen.ATMOSPHERICS.comment = §6Atmospheric effects including sun/moon, clouds,
     option.MILKY_WAY_BRIGHTNESS = Milky Way Brightness
     option.MILKY_WAY_BRIGHTNESS.comment = Adjusts the brightness of the procedural Milky Way.
 
+    option.AURORA = Aurora Borealis
+    option.AURORA.comment = Enables volumetric Minecraft-style auroras with dancing, intersecting vertical curtains in cold, snowy, and icy biomes. Features a pixelized cloud-like look with colors transitioning from pink at the top to green in the middle and electric blue at the bottom.
+    option.AURORA_BRIGHTNESS = Aurora Brightness
+    option.AURORA_BRIGHTNESS.comment = Adjusts the brightness of the volumetric aurora curtains.
+
     option.STAR_ROTATION = Star Rotation
     option.STAR_ROTATION.comment = Star rotation style. Aligned keeps all square stars axis-aligned. Random gives each star an individual random rotation angle. Enforced for both the Milky Way and the night sky.
     value.STAR_ROTATION.0 = Aligned
