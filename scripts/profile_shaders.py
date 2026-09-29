@@ -195,7 +195,7 @@ def print_profile_row(item: Dict[str, Any]) -> None:
     print(row)
 
 
-def print_summary_report(profiles: List[Dict[str, Any]], top_n: int) -> None:
+def print_summary_report(profiles: List[Dict[str, Any]], top_n: int, show_all: bool = False) -> None:
     """Render terminal report with summary statistics and top hotspots."""
     total_shaders = len(profiles)
     total_tex = sum(p["tex_calls"] for p in profiles)
@@ -218,11 +218,12 @@ def print_summary_report(profiles: List[Dict[str, Any]], top_n: int) -> None:
     flagged = [p for p in profiles if p["warnings"]]
     if flagged:
         print(f"\n{CLR_BOLD}{CLR_YELLOW}Optimization Opportunities & Warnings ({len(flagged)} files):{CLR_RESET}")
-        for p in flagged[:8]:
+        display_flagged = flagged if show_all else flagged[:8]
+        for p in display_flagged:
             for w in p["warnings"]:
                 print(f"  • {CLR_CYAN}{p['file']}{CLR_RESET}: {w}")
-        if len(flagged) > 8:
-            print(f"  {CLR_GRAY}... and {len(flagged) - 8} more notices (run with --all to view).{CLR_RESET}")
+        if len(flagged) > len(display_flagged):
+            print(f"  {CLR_GRAY}... and {len(flagged) - len(display_flagged)} more notices (run with --all to view).{CLR_RESET}")
     print()
 
 
@@ -290,7 +291,7 @@ def main() -> int:
     duration = time.perf_counter() - start_t
 
     top_n = len(profiles) if args.all else args.top
-    print_summary_report(profiles, top_n)
+    print_summary_report(profiles, top_n, show_all=args.all)
     print(f"{CLR_GRAY}Analysis completed in {duration:.2f}s.{CLR_RESET}\n")
 
     if args.json_out:

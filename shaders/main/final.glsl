@@ -52,6 +52,10 @@
 
     uniform sampler2D colortex3;
 
+    #ifdef CHROMATIC_ABERRATION
+        #define HAS_CHROMATIC_ABERRATION
+    #endif
+
     #if (ANTI_ALIASING != 0 && defined SHARPEN_FILTER) || defined CHROMATIC_ABERRATION || defined RETRO_FILTER
         uniform float viewWidth;
         uniform float viewHeight;

@@ -60,6 +60,7 @@ float getSunMoonShape(in vec2 skyPos){
         
         // Clamped exponential shape: 1.0 inside moon disc, smooth falloff outside (never overflows)
         float shape = min(1.0, exp2((WORLD_SUN_MOON_SIZE - dist) * 256.0));
+        if(shape <= 0.0001) return vec3(0.0);
         
         // Anti-aliased boundary mask (1.0 inside moon disc, 0.0 outside)
         float moonDisc = saturate((WORLD_SUN_MOON_SIZE - dist) / max(fwidth(dist), 0.001));
@@ -121,6 +122,7 @@ float getSunMoonShape(in vec2 skyPos){
         
         // Clamped exponential shape: 1.0 inside sun disc, smooth falloff outside (never overflows)
         float shape = min(1.0, exp2((WORLD_SUN_MOON_SIZE - dist) * 256.0));
+        if(shape <= 0.0001) return vec3(0.0);
         
         // Anti-aliased boundary mask (1.0 inside sun disc, 0.0 outside)
         float sunDisc = saturate((WORLD_SUN_MOON_SIZE - dist) / max(fwidth(dist), 0.001));

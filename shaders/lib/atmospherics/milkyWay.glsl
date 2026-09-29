@@ -124,7 +124,7 @@ vec3 getProceduralSquareStars(in vec3 v, in float time){
             // Faint background stars (heavily washed out under full moon)
             float rank = h.z / 0.70;
             size = 0.085;
-            magnitude = (0.35 + pow(rank, 2.0) * 0.65) * mix(1.0, 0.18, moonIllum);
+            magnitude = (0.35 + (rank * rank) * 0.65) * mix(1.0, 0.18, moonIllum);
             col = mix(vec3(0.82, 0.90, 1.0), vec3(0.98, 0.94, 0.85), h.y);
         }
         
@@ -250,7 +250,7 @@ vec3 getProceduralMilkyWay(in vec3 skyPos, in float time){
         float starShape = saturate((starRadius - sqDist) / max(edge, 0.001));
         
         if(starShape > 0.0){
-            float lum = (pow(sHash.z, 2.0) * 1.6 + 0.35) * (1.0 + coreBulge * 0.4) * mix(1.0, 0.20, MOON_PHASE_FACTOR);
+            float lum = ((sHash.z * sHash.z) * 1.6 + 0.35) * (1.0 + coreBulge * 0.4) * mix(1.0, 0.20, MOON_PHASE_FACTOR);
             vec3 tint = mix(vec3(0.85, 0.92, 1.0), vec3(1.0, 0.88, 0.72), sHash.y);
             float twinkle = sin(time * 2.2 + sHash.x * 45.0) * 0.2 + 0.8;
             mwColor += tint * (lum * twinkle * starShape * 0.85);
