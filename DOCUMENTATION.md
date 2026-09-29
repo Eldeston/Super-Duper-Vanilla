@@ -69,6 +69,7 @@ This list's purpose is to fully realize the shader pipeline (based on Iris) and 
 | --------------------- | ----------- | ---------------- | ------------ | ---------------- |
 | DH_TERRAIN            | Solid       | DH_GBUFFERS      | Complex      | Distant Horizons |
 | DH_GENERIC            | Solid       | DH_GBUFFERS      | Basic        | Distant Horizons |
+| VOXY_OPAQUE           | Solid       | VOXY_PIPELINE    | Complex      | Voxy             |
 | ARMOR_GLINT           | Add         | GBUFFER          | Simple       | Iris/Optifine    |
 | BASIC                 | Solid       | GBUFFER          | Basic        | Iris/Optifine    |
 | BEACON_BEAM           | Add         | GBUFFER          | Simple       | Iris/Optifine    |
@@ -92,6 +93,7 @@ This list's purpose is to fully realize the shader pipeline (based on Iris) and 
 | --------------------- | ----------- | ---------------- | ------------ | ---------------- |
 | PHYSICS_OCEAN         | Solid       | PHYSICS_GBUFFERS | Complex      | Physics Mod      |
 | DH_WATER              | Transparent | DH_GBUFFERS      | Complex      | Distant Horizons |
+| VOXY_TRANSLUCENT      | Transparent | VOXY_PIPELINE    | Complex      | Voxy             |
 | CLOUDS                | Transparent | GBUFFER          | Simple       | Iris/Optifine    |
 | LIGHTNING             | Add         | GBUFFER          | Basic        | Iris             |
 | TEXTURED              | Transparent | GBUFFER          | Basic        | Iris/Optifine    |
@@ -148,7 +150,7 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 * Improve shader menu UI
 
 ## DONE
-* Abandon Optifine support (high priority)
+* Full compatibility with Voxy LOD mod (voxy.json pipeline across world0/world-1/world1, custom UBO layout, PBR materials, depthTex fallbacks, borderFar atmospheric fog integration, seamless sunlight matching, and SSR reflection loop prevention)
 * Implement bit packing & encoding library (`shaders/lib/utility/bitPacking.glsl`) for octahedral normals, 2x8/4x8/2x16 UNORM data, lightmaps, and PBR material flags
 * Consolidate FXAA into final.glsl and eliminate composite7 pass across dimensions
 * Specular & smoothness guard in deferred1 and composite passes to bypass matte albedo/normal lookups

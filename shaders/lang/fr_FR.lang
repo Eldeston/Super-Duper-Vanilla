@@ -22,6 +22,13 @@ screen.DEBUG.comment = §bDéveloppé par §2Eldeston§f§r, présenté par §9F
     option.NOISE_SPEED = Vitesse du bruit
     option.NOISE_SPEED.comment = Modifie la vitesse temporelle du bruit
 
+    option.VOXY_DEBUG = Débogage LOD Voxy
+    option.VOXY_DEBUG.comment = Incrustation d'instrumentation pour inspecter l'alignement et les différences du terrain LOD Voxy.
+        value.VOXY_DEBUG.0 = Désactivé
+        value.VOXY_DEBUG.1 = Bordure
+        value.VOXY_DEBUG.2 = UV Lightmap
+        value.VOXY_DEBUG.3 = Normales
+
 screen.POST = Post-traitement
 screen.POST.comment = §6Effets de post-traitement tels que les contours, l'anticrénelage, le filtre rétro et la netteté de l'image.
     option.OUTLINES = Contours

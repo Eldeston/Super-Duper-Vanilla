@@ -110,9 +110,7 @@
         #endif
 
         #ifdef WATER_ANIMATION
-            if(gl_Color.a >= 0.999){
-                vertexFeetPlayerPos = getWaterWave(vertexFeetPlayerPos, vertexWorldPos.xz, mc_Entity.x, vertexFrameTime);
-            }
+            vertexFeetPlayerPos = getWaterWave(vertexFeetPlayerPos, vertexWorldPos.xz, mc_Entity.x, vertexFrameTime);
         #endif
 
         #ifdef WORLD_CURVATURE
@@ -241,17 +239,15 @@
     #include "/lib/lighting/complexShadingForward.glsl"
 
     void main(){
-        int effectiveBlockId = (vertexColor.a < 0.999) ? 0 : blockId;
-
 	    // Declare materials
 	    dataPBR material;
-        getPBR(material, effectiveBlockId);
+        getPBR(material, blockId);
 
         // Apply vertex alpha for modded translucent rendering (e.g. Litematica ghost blocks)
-        material.albedo.a *= vertexColor.a;
+        if(blockId != 11102 && blockId != 12100) material.albedo.a *= vertexColor.a;
         if(material.albedo.a <= 0.001){ discard; return; }
 
-        if((effectiveBlockId == 11102 || effectiveBlockId == 12100) && vertexColor.a >= 0.999){
+        if(blockId == 11102 || blockId == 12100){
             // Fast depth linearization by DrDesten
             // Not great, but plausible for most scenarios
             float blockDepth = near / (1.0 - gl_FragCoord.z) - near / (1.0 - texelFetch(depthtex1, ivec2(gl_FragCoord.xy), 0).x);
@@ -259,7 +255,7 @@
             float edgeBrightness = exp2((blockDepth + 0.0625) * 8.0);
 
             // Water
-            if(effectiveBlockId == 11102){
+            if(blockId == 11102){
                 float waterNoise = WATER_BRIGHTNESS;
 
                 #if defined WATER_NORMAL
@@ -298,15 +294,23 @@
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
         #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
-            if(effectiveBlockId != 11102 && vertexColor.a >= 0.999) enviroPBR(material, TBN[2]);
+            if(blockId != 11102) enviroPBR(material, TBN[2]);
         #endif
 
         // Write to HDR scene color
         sceneColOut = vec4(complexShadingForward(material), material.albedo.a);
 
+        #if VOXY_DEBUG == 1
+            sceneColOut.rgb = mix(sceneColOut.rgb, vec3(0.2, 0.8, 1.0), 0.15);
+        #elif VOXY_DEBUG == 2
+            sceneColOut.rgb = vec3(lmCoord.x, lmCoord.y, 0.0);
+        #elif VOXY_DEBUG == 3
+            sceneColOut.rgb = material.normal * 0.5 + 0.5;
+        #endif
+
         // Write buffer datas
         normalDataOut = material.normal;
         albedoDataOut = material.albedo.rgb;
-        materialDataOut = (vertexColor.a < 0.999) ? vec3(0.0) : vec3(material.metallic, material.smoothness, 0.5);
+        materialDataOut = vec3(material.metallic, material.smoothness, 0.5);
     }
 #endif

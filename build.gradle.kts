@@ -55,7 +55,7 @@ dependencies {
     "runtimeOnly"("org.quiltmc:quilt-config:1.3.3")
     "runtimeOnly"("net.fabricmc:sponge-mixin:0.17.4+mixin.0.8.7")
 
-    // Shader stack: Sodium + Sodium Extra + Iris + FerriteCore (Memory Optimization) + Litematica & MaLiLib + Spark + GFX Debuggers
+    // Shader stack: Sodium + Sodium Extra + Iris + FerriteCore (Memory Optimization) + Litematica & MaLiLib + Spark + Fabric API + GFX Debuggers + Voxy
     clientMods("maven.modrinth:sodium:${project.property("sodium_version")}")
     clientMods("maven.modrinth:sodium-extra:${project.property("sodium_extra_version")}")
     clientMods("maven.modrinth:iris:${project.property("iris_version")}")
@@ -63,16 +63,18 @@ dependencies {
     clientMods("maven.modrinth:malilib:${project.property("malilib_version")}")
     clientMods("maven.modrinth:litematica:${project.property("litematica_version")}")
     clientMods("maven.modrinth:spark:${project.property("spark_version")}")
-    clientMods("net.fabricmc.fabric-api:fabric-command-api-v2:${project.property("fabric_command_api_version")}")
+    clientMods("maven.modrinth:fabric-api:${project.property("fabric_api_version")}")
     clientMods("maven.modrinth:gfx-debuggers:${project.property("gfx_debuggers_version")}")
+    clientMods(files("libs/voxy-${project.property("voxy_version")}.jar"))
 
     "modImplementation"("maven.modrinth:sodium:${project.property("sodium_version")}")
     "modRuntimeOnly"("maven.modrinth:sodium-extra:${project.property("sodium_extra_version")}")
     "modRuntimeOnly"("maven.modrinth:iris:${project.property("iris_version")}")
     "modRuntimeOnly"("maven.modrinth:ferrite-core:${project.property("ferrite_core_version")}")
     "modRuntimeOnly"("maven.modrinth:spark:${project.property("spark_version")}")
-    "modRuntimeOnly"("net.fabricmc.fabric-api:fabric-command-api-v2:${project.property("fabric_command_api_version")}")
+    "modRuntimeOnly"("maven.modrinth:fabric-api:${project.property("fabric_api_version")}")
     "modRuntimeOnly"("maven.modrinth:gfx-debuggers:${project.property("gfx_debuggers_version")}")
+    "modRuntimeOnly"(files("libs/voxy-${project.property("voxy_version")}.jar"))
 }
 
 loom.runs.named("client") {
@@ -90,17 +92,25 @@ val deployClientMods = tasks.register("deployClientMods") {
     doLast {
         val modsDir = file("run/client/mods")
         modsDir.mkdirs()
-        clientMods.resolvedConfiguration.resolvedArtifacts.forEach { artifact ->
-            val dest = file("run/client/mods/${artifact.file.name}")
-            artifact.file.copyTo(dest, overwrite = true)
-            println("✓ Deployed unmodified mod -> ${dest.name}")
+        val deployedNames = mutableSetOf<String>()
+        clientMods.resolve().forEach { jarFile ->
+            val dest = file("run/client/mods/${jarFile.name}")
+            deployedNames.add(jarFile.name)
+            jarFile.copyTo(dest, overwrite = true)
+            println("✓ Deployed mod -> ${dest.name}")
+        }
+        modsDir.listFiles()?.forEach { f ->
+            if (f.isFile && !deployedNames.contains(f.name)) {
+                f.delete()
+                println("✓ Cleaned stale mod -> ${f.name}")
+            }
         }
     }
 }
 
 tasks.named<JavaExec>("runClient") {
     group = "loom"
-    description = "Runs Minecraft Client with Quilt, Iris, Sodium, Sodium Extra, Litematica, Spark, GFX Debuggers, and local Super Duper Vanilla shaderpack."
+    description = "Runs Minecraft Client with Quilt, Iris, Sodium, Sodium Extra, Voxy, Litematica, Spark, GFX Debuggers, and local Super Duper Vanilla shaderpack."
     dependsOn(deployClientMods)
     jvmArgs("-javaagent:${file("gradle/dev-runtime-agent.jar").absolutePath}")
     systemProperty("debugger", System.getProperty("debugger", "skip"))

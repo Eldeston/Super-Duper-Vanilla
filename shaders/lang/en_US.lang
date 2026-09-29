@@ -22,6 +22,13 @@ screen.DEBUG.comment = §bDeveloped by §2Eldeston§f§r, presented by §9FlameR
     option.NOISE_SPEED = Noise speed
     option.NOISE_SPEED.comment = Changes temporal noise speed
 
+    option.VOXY_DEBUG = Voxy LOD debug
+    option.VOXY_DEBUG.comment = Instrumentation overlay for inspecting Voxy LOD terrain alignment and differences.
+        value.VOXY_DEBUG.0 = OFF
+        value.VOXY_DEBUG.1 = Boundary
+        value.VOXY_DEBUG.2 = Lightmap UV
+        value.VOXY_DEBUG.3 = Normals
+
 screen.POST = Post
 screen.POST.comment = §6Post-processing effects such as outlines, anti-aliasing, retro filter, and image sharpening.
     option.OUTLINES = Outlines

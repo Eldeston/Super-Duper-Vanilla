@@ -62,7 +62,7 @@ vec3 complexShadingLOD(in dataPBR material){
 		#if WORLD_ID == 1
 			float shdCol = saturate(lmCoord.y / max(WORLD1_CUSTOM_SKYLIGHT, 0.1));
 		#else
-			float shdCol = saturate(hermiteMix(0.9, 1.0, lmCoord.y)) * shdFade;
+			float shdCol = saturate(hermiteMix(0.8, 1.0, lmCoord.y)) * shdFade;
 		#endif
 
 		float dirLight = isShadow ? NLZ : 0.0;
@@ -109,7 +109,7 @@ vec3 complexShadingLOD(in dataPBR material){
 		if(isShadow){
 			// Get specular GGX
 			vec3 specCol = getSpecularBRDF(viewDir, material.normal, material.albedo.rgb, NLZ, NV, material.metallic, material.smoothness);
-			totalLighting += specCol * shdCol * sRGBLightCol;
+			totalLighting += min(specCol * shdCol * sRGBLightCol, vec3(5.0));
 		}
 	#endif
 

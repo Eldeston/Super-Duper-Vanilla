@@ -36,6 +36,7 @@ IRIS_DH_BUILTINS_VERT = """
 #define DH_BLOCK_ILLUMINATED 5
 #define DH_BLOCK_LEAVES 6
 attribute int dhMaterialId;
+#define VOXY 2
 #endif
 """
 
@@ -71,5 +72,6 @@ IRIS_DH_BUILTINS_FRAG = """
 #define DH_BLOCK_SOLID 4
 #define DH_BLOCK_ILLUMINATED 5
 #define DH_BLOCK_LEAVES 6
+#define VOXY 2
 #endif
 """

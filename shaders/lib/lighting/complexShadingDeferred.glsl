@@ -1,3 +1,7 @@
+#if defined DISTANT_HORIZONS || defined VOXY
+	#define LOD_ACTIVE
+#endif
+
 vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos, in vec3 normal, in vec3 albedo, in vec3 dither, in float viewDotInvSqrt, in float metallic, in float smoothness, in bool realSky){
 	#if defined ROUGH_REFLECTIONS || defined SSGI
 		vec3 noiseUnitVector = generateUnitVector(dither.xy);
@@ -33,24 +37,26 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
 
 	// Calculate SSR and sky reflections
 	#ifdef SSR
-		// Get SSR screen coordinates only for front-facing surfaces
-		vec3 SSRCoord = (NV > 0.0) ? rayTraceScene(screenPos, viewPos, reflectViewDir, dither.z) : vec3(0.0);
+		// Get SSR screen coordinates only for front-facing surfaces on non-LOD terrain
+		#ifdef LOD_ACTIVE
+			vec3 SSRCoord = (!realSky && NV > 0.0) ? rayTraceScene(screenPos, viewPos, reflectViewDir, dither.z) : vec3(0.0);
 
-		#ifdef DISTANT_HORIZONS
-			if(realSky) SSRCoord.z = 0.0;
+			// Fake reflections for non-LOD terrain, also helps with improving reflection quality
+			if(!realSky && SSRCoord.z < 0.5){
+		#else
+			vec3 SSRCoord = (NV > 0.0) ? rayTraceScene(screenPos, viewPos, reflectViewDir, dither.z) : vec3(0.0);
+
+			if(SSRCoord.z < 0.5){
 		#endif
+				// Using the original ray direction, get the reflected ray and increase its length
+				vec3 reflectDirF = viewPos + reflectViewDir * borderFar;
 
-		// Fake reflections, also helps with improving reflection quality
-		if(SSRCoord.z < 0.5){
-			// Using the original ray direction, get the reflected ray and increase its length
-			vec3 reflectDirF = viewPos + reflectViewDir * borderFar;
-
-			// This masks only the reflections in view
-			if(reflectDirF.z < viewPos.z){
-				vec3 SSRDH = getScreenPos(gbufferProjection, reflectDirF);
-				if(SSRDH.x >= 0 && SSRDH.y >= 0 && SSRDH.x <= 1 && SSRDH.y <= 1 && getDepthTex(SSRDH.xy) != 1) SSRCoord = vec3(SSRDH.xy, 1);
+				// This masks only the reflections in view
+				if(reflectDirF.z < viewPos.z){
+					vec3 SSRDH = getScreenPos(gbufferProjection, reflectDirF);
+					if(clamp(SSRDH.xy, 0.0, 1.0) == SSRDH.xy && getDepthTex(SSRDH.xy) != 1.0) SSRCoord = vec3(SSRDH.xy, 1.0);
+				}
 			}
-		}
 
 		#ifdef PREVIOUS_FRAME
 			// Get reflections and check for sky
@@ -62,6 +68,9 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
 	#else
 		vec3 reflectCol = getSkyReflection(reflectViewDir);
 	#endif
+
+	// Sanitize reflection color to prevent HDR feedback overflow and NaN explosion
+	reflectCol = clamp(reflectCol, vec3(0.0), vec3(16.0));
 
 	// Modified version of BSL's reflection PBR calculation
 	// vec3 fresnel = (F0 + (1.0 - F0) * cosTheta) * smoothness

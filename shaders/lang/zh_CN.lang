@@ -22,6 +22,13 @@ screen.DEBUG.comment = §b开发: §2Eldeston§f§r, 呈现: §9FlameRender (C) 
     option.NOISE_SPEED = 噪波速度
     option.NOISE_SPEED.comment = 更改时域噪波的速度
 
+    option.VOXY_DEBUG = Voxy LOD 调试
+    option.VOXY_DEBUG.comment = 用于检查 Voxy LOD 地形对齐和差异的仪表覆盖层.
+        value.VOXY_DEBUG.0 = 关
+        value.VOXY_DEBUG.1 = 边界
+        value.VOXY_DEBUG.2 = 光照贴图 UV
+        value.VOXY_DEBUG.3 = 法线
+
 screen.POST = 后期处理
 screen.POST.comment = §6后期处理效果, 如描边, 抗锯齿, 复古滤镜和图像锐化.
     option.OUTLINES = 描边

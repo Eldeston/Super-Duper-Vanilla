@@ -181,6 +181,7 @@ const vec3 blockLightColor = vec3(BLOCKLIGHT_R, BLOCKLIGHT_G, BLOCKLIGHT_B) * (B
 
 #define COLOR_MODE 0 // Albedo color mode. White mode makes everything white. Black mode makes everything black. Foliage mode shows only foliage colors. Keeps materials on. [0 1 2 3]
 #define NOISE_SPEED 8 // The speed in which the noise randomises each frame. Useful for TAA. This effect is visible only when TAA is enabled. [2 4 8 16 32]
+#define VOXY_DEBUG 0 // Voxy LOD debug instrumentation. 1: Chunk boundary highlight, 2: Lightmap UV, 3: Surface normals. [0 1 2 3]
 
 /// -------------------------------- /// Physics mod settings /// -------------------------------- ///
 

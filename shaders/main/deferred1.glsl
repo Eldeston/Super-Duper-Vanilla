@@ -160,6 +160,11 @@
         uniform mat4 dhProjectionInverse;
 
         uniform sampler2D dhDepthTex0;
+    #elif defined VOXY
+        uniform mat4 vxProj;
+        uniform mat4 vxProjInv;
+
+        uniform sampler2D vxDepthTexOpaque;
     #endif
 
     #ifdef WORLD_CUSTOM_SKYLIGHT
@@ -233,10 +238,13 @@
 
         float depth = texelFetch(depthtex0, screenTexelCoord, 0).x;
 
-        // Distant Horizons apparently uses a different depth texture
-        #ifdef DISTANT_HORIZONS
+        // Distant Horizons / Voxy depth texture fallback
+        #if defined DISTANT_HORIZONS
             realSky = depth == 1;
             if(realSky) depth = texelFetch(dhDepthTex0, screenTexelCoord, 0).x;
+        #elif defined VOXY
+            realSky = depth == 1;
+            if(realSky) depth = texelFetch(vxDepthTexOpaque, screenTexelCoord, 0).x;
         #endif
 
         // Get screen pos
@@ -250,9 +258,11 @@
             if(skyMask) screenPos.xy += jitterPos(-0.5);
         #endif
 
-        // Distant Horizons apparently uses a different projection matrix
+        // Distant Horizons / Voxy use separate projection matrices for LOD depth
         #ifdef DISTANT_HORIZONS
             vec3 viewPos = getViewPos(realSky ? dhProjectionInverse : gbufferProjectionInverse, screenPos);
+        #elif defined VOXY
+            vec3 viewPos = getViewPos(realSky ? vxProjInv : gbufferProjectionInverse, screenPos);
         #else
             vec3 viewPos = getViewPos(gbufferProjectionInverse, screenPos);
         #endif
@@ -345,6 +355,11 @@
 
         // Apply fog and darkness fog
         sceneColOut = ((fogSkyCol - sceneColOut) * fogFactor + sceneColOut) * getFogEffectFactor(viewDist);
+
+        #if VOXY_DEBUG == 1
+            if(realSky && !skyMask) sceneColOut = mix(sceneColOut, vec3(1.0, 0.2, 0.2), 0.35);
+        #endif
+
         // Clamp scene color to prevent NaNs during post processing
         sceneColOut = max(sceneColOut, vec3(0));
     }

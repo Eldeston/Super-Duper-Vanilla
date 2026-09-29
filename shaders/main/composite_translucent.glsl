@@ -161,6 +161,12 @@
         uniform mat4 dhProjectionInverse;
 
         uniform sampler2D dhDepthTex0;
+    #elif defined VOXY
+        uniform mat4 vxProj;
+        uniform mat4 vxProjInv;
+
+        uniform sampler2D vxDepthTexOpaque;
+        uniform sampler2D vxDepthTexTrans;
     #endif
 
     #ifdef WORLD_CUSTOM_SKYLIGHT
@@ -249,29 +255,42 @@
         }
     #endif
 
+    void getTranslucentSceneDepth(in ivec2 screenTexelCoord, out float depth, out bool realSky){
+        depth = texelFetch(depthtex0, screenTexelCoord, 0).x;
+        realSky = depth == 1.0;
+        #if defined DISTANT_HORIZONS
+            if(realSky) depth = texelFetch(dhDepthTex0, screenTexelCoord, 0).x;
+        #elif defined VOXY
+            if(realSky){
+                float vxOpaque = texelFetch(vxDepthTexOpaque, screenTexelCoord, 0).x;
+                float vxTrans = texelFetch(vxDepthTexTrans, screenTexelCoord, 0).x;
+                depth = min(vxOpaque, vxTrans);
+            }
+        #endif
+    }
+
+    vec3 getTranslucentViewPos(in bool realSky, in vec3 screenPos){
+        #ifdef DISTANT_HORIZONS
+            return getViewPos(realSky ? dhProjectionInverse : gbufferProjectionInverse, screenPos);
+        #elif defined VOXY
+            return getViewPos(realSky ? vxProjInv : gbufferProjectionInverse, screenPos);
+        #else
+            return getViewPos(gbufferProjectionInverse, screenPos);
+        #endif
+    }
+
     void main(){
         // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
 
-        bool realSky = false;
-
-        float depth = texelFetch(depthtex0, screenTexelCoord, 0).x;
-
-        // Distant Horizons apparently uses a different depth texture
-        #ifdef DISTANT_HORIZONS
-            realSky = depth == 1;
-            if(realSky) depth = texelFetch(dhDepthTex0, screenTexelCoord, 0).x;
-        #endif
+        bool realSky;
+        float depth;
+        getTranslucentSceneDepth(screenTexelCoord, depth, realSky);
 
         // Get screen pos
         vec3 screenPos = vec3(texCoord, depth);
         
-        // Distant Horizons apparently uses a different projection matrix
-        #ifdef DISTANT_HORIZONS
-            vec3 viewPos = getViewPos(realSky ? dhProjectionInverse : gbufferProjectionInverse, screenPos);
-        #else
-            vec3 viewPos = getViewPos(gbufferProjectionInverse, screenPos);
-        #endif
+        vec3 viewPos = getTranslucentViewPos(realSky, screenPos);
 
         // Get eye player pos
         vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
@@ -336,6 +355,10 @@
             // Apply fog and darkness fog
             sceneColOut = ((fogSkyCol - sceneColOut) * fogFactor + sceneColOut) * getFogEffectFactor(viewDist);
         }
+
+        #if VOXY_DEBUG == 1
+            if(realSky && depth < 1.0) sceneColOut = mix(sceneColOut, vec3(1.0, 0.2, 0.2), 0.35);
+        #endif
 
         // Apply darkness pulsing effect
         sceneColOut *= 1.0 - darknessLightFactor;
