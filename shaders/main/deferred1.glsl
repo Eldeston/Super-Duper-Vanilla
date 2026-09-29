@@ -163,6 +163,7 @@
     #elif defined VOXY
         uniform mat4 vxProj;
         uniform mat4 vxProjInv;
+        uniform int vxRenderDistance;
 
         uniform sampler2D vxDepthTexOpaque;
     #endif
@@ -230,6 +231,35 @@
 
     #include "/lib/lighting/complexShadingDeferred.glsl"
 
+    vec3 getDeferredViewPos(in bool realSky, in vec3 screenPos){
+        #ifdef DISTANT_HORIZONS
+            return getViewPos(realSky ? dhProjectionInverse : gbufferProjectionInverse, screenPos);
+        #elif defined VOXY
+            if(realSky){
+                vec4 viewPosH = vxProjInv * vec4(screenPos * 2.0 - 1.0, 1.0);
+                return viewPosH.xyz / viewPosH.w;
+            } else {
+                return getViewPos(gbufferProjectionInverse, screenPos);
+            }
+        #else
+            return getViewPos(gbufferProjectionInverse, screenPos);
+        #endif
+    }
+
+    #ifdef BORDER_FOG
+        float getDeferredBorderFog(in float viewDist, in float fogFactor){
+            #ifdef VOXY
+                float effectiveBorderFar = max(float(vxRenderDistance), borderFar);
+                return (fogFactor - 1.0) * exp2(-exp2(viewDist / effectiveBorderFar * 21.0 - 18.0)) + 1.0;
+            #elif defined DISTANT_HORIZONS
+                float effectiveBorderFar = max(dhRenderDistance, borderFar);
+                return (fogFactor - 1.0) * exp2(-exp2(viewDist / effectiveBorderFar * 21.0 - 18.0)) + 1.0;
+            #else
+                return (fogFactor - 1.0) * getBorderFog(viewDist) + 1.0;
+            #endif
+        }
+    #endif
+
     void main(){
         // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
@@ -258,14 +288,7 @@
             if(skyMask) screenPos.xy += jitterPos(-0.5);
         #endif
 
-        // Distant Horizons / Voxy use separate projection matrices for LOD depth
-        #ifdef DISTANT_HORIZONS
-            vec3 viewPos = getViewPos(realSky ? dhProjectionInverse : gbufferProjectionInverse, screenPos);
-        #elif defined VOXY
-            vec3 viewPos = getViewPos(realSky ? vxProjInv : gbufferProjectionInverse, screenPos);
-        #else
-            vec3 viewPos = getViewPos(gbufferProjectionInverse, screenPos);
-        #endif
+        vec3 viewPos = getDeferredViewPos(realSky, screenPos);
 
         // Get eye player pos
         vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
@@ -350,7 +373,7 @@
 
         // Border fog
         #ifdef BORDER_FOG
-            fogFactor = (fogFactor - 1.0) * getBorderFog(viewDist) + 1.0;
+            fogFactor = getDeferredBorderFog(viewDist, fogFactor);
         #endif
 
         // Apply fog and darkness fog

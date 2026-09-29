@@ -164,6 +164,7 @@
     #elif defined VOXY
         uniform mat4 vxProj;
         uniform mat4 vxProjInv;
+        uniform int vxRenderDistance;
 
         uniform sampler2D vxDepthTexOpaque;
         uniform sampler2D vxDepthTexTrans;
@@ -273,7 +274,12 @@
         #ifdef DISTANT_HORIZONS
             return getViewPos(realSky ? dhProjectionInverse : gbufferProjectionInverse, screenPos);
         #elif defined VOXY
-            return getViewPos(realSky ? vxProjInv : gbufferProjectionInverse, screenPos);
+            if(realSky){
+                vec4 viewPosH = vxProjInv * vec4(screenPos * 2.0 - 1.0, 1.0);
+                return viewPosH.xyz / viewPosH.w;
+            } else {
+                return getViewPos(gbufferProjectionInverse, screenPos);
+            }
         #else
             return getViewPos(gbufferProjectionInverse, screenPos);
         #endif
@@ -319,7 +325,15 @@
 
         // Border fog
         #ifdef BORDER_FOG
-            float borderFog = getBorderFog(viewDist);
+            #ifdef VOXY
+                float effectiveBorderFar = max(float(vxRenderDistance), borderFar);
+                float borderFog = exp2(-exp2(viewDist / effectiveBorderFar * 21.0 - 18.0));
+            #elif defined DISTANT_HORIZONS
+                float effectiveBorderFar = max(dhRenderDistance, borderFar);
+                float borderFog = exp2(-exp2(viewDist / effectiveBorderFar * 21.0 - 18.0));
+            #else
+                float borderFog = getBorderFog(viewDist);
+            #endif
         #else
             float borderFog = 0.0;
         #endif

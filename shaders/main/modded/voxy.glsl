@@ -109,6 +109,7 @@ void applyVoxyBlockProperties(inout dataPBR material, in uint blockId, in vec2 n
                 waterNoise *= squared(0.128 + waterData * 0.5);
             #endif
             material.albedo.rgb *= waterNoise;
+            material.albedo.a = clamp(material.albedo.a, 0.6, 0.85);
             mask = 0.5;
         } else {
             material.smoothness = 0.90;
@@ -139,9 +140,9 @@ void voxy_emitFragment(VoxyFragmentParameters parameters){
     // Decode Minecraft lightmap coordinates from Voxy's normalized UVs
     vec2 mcLight = saturate((parameters.lightMap - (0.5 / 16.0)) * (16.0 / 15.0)) * 240.0;
     #ifdef WORLD_CUSTOM_SKYLIGHT
-        lmCoord = vec2(lightMapCoord(mcLight.y), WORLD_CUSTOM_SKYLIGHT);
+        lmCoord = vec2(lightMapCoord(mcLight.x), WORLD_CUSTOM_SKYLIGHT);
     #else
-        lmCoord = vec2(lightMapCoord(mcLight.y), lightMapCoord(mcLight.x));
+        lmCoord = lightMapCoord(mcLight);
     #endif
 
     // Sampled color and biome tinting
@@ -152,6 +153,12 @@ void voxy_emitFragment(VoxyFragmentParameters parameters){
 
     // Block texture UV for lava and block animations
     vec2 noiseUv = vertexWorldPos.zy * vertexNormal.x + vertexWorldPos.xz * vertexNormal.y + vertexWorldPos.xy * vertexNormal.z;
+
+    #ifndef TRANSLUCENT
+        vec2 noiseCol = texelFetch(noisetex, ivec2(noiseUv * 4.0) & 255, 0).xy;
+        float lodNoise = (noiseCol.x + noiseCol.y) * 0.2 + 0.8;
+        albedo.rgb = min(albedo.rgb * lodNoise, vec3(1.0));
+    #endif
 
     #if COLOR_MODE == 1
         albedo.rgb = vec3(1.0);
