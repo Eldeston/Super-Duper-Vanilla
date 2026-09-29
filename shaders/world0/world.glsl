@@ -29,7 +29,7 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 // #define WORLD_CUSTOM_SKYLIGHT 1.00
 
 // Enable stars in your world (smooth fade in during dusk, fade out during dawn)
-#define WORLD_STARS toLinear(4.0 * smoothstep(1.1, 0.4, dayCycle))
+#define WORLD_STARS toLinear(2.2 * smoothstep(1.1, 0.4, dayCycle))
 
 // Enable milky way in your world (appears gradually later in the night)
 #define WORLD_MILKY_WAY toLinear(0.70 * smoothstep(0.60, 0.10, dayCycle))

@@ -219,6 +219,15 @@ screen.ATMOSPHERICS.comment = §6大气系统效果, 包括日月, 云, 雾, 边
     option.GROUND_FOG_STRENGTH = 地表雾强度
     option.GROUND_FOG_STRENGTH.comment = 薄雾/地表雾的强度.
 
+    option.MILKY_WAY = 银河
+    option.MILKY_WAY.comment = 在夜空中启用Minecraft风格的程序化银河, 包含方形星星和阶梯星云边缘.
+    option.MILKY_WAY_BRIGHTNESS = 银河亮度
+    option.MILKY_WAY_BRIGHTNESS.comment = 调整程序化银河的亮度.
+    option.STAR_ROTATION = 星星旋转
+    option.STAR_ROTATION.comment = 星星旋转样式. 对齐保持所有方形星星对齐天球网格. 随机赋予每颗星星单独的随机旋转角度. 同时应用于银河与夜空.
+    value.STAR_ROTATION.0 = 对齐
+    value.STAR_ROTATION.1 = 随机
+
     screen.CLOUD_SETTINGS = 云设置
     screen.CLOUD_SETTINGS.comment = §e云渲染选项, 如第二云层, 动态云层, 及云质量/深度.
         option.DOUBLE_LAYERED_CLOUDS = 第二云层

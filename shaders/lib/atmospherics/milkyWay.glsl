@@ -4,6 +4,9 @@
 #ifndef TAU
     #define TAU 6.28318531
 #endif
+#ifndef STAR_ROTATION
+    #define STAR_ROTATION 0
+#endif
 
 float hash12(in vec2 p){
     vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -38,12 +41,9 @@ const vec3 gCore = vec3( 0.70710678, -0.70710678,  0.0);
 const vec3 gSide = vec3( 0.40824829,  0.40824829, -0.81649658);
 const vec3 gPole = vec3( 0.57735027,  0.57735027,  0.57735027);
 
-// Procedural square background stars across the entire celestial sphere (cubemap projection)
-vec3 getProceduralSquareStars(in vec3 v, in float time){
+void getCelestialCubemap(in vec3 v, out vec2 faceUV, out float faceId){
     vec3 a = abs(v);
     float maxAxis = max(a.x, max(a.y, a.z));
-    vec2 faceUV;
-    float faceId;
     if(maxAxis == a.z){
         faceUV = v.xy / a.z;
         faceId = v.z > 0.0 ? 0.0 : 1.0;
@@ -54,26 +54,86 @@ vec3 getProceduralSquareStars(in vec3 v, in float time){
         faceUV = v.xz / a.y;
         faceId = v.y > 0.0 ? 4.0 : 5.0;
     }
+}
+
+// Procedural square background stars across the entire celestial sphere (cubemap projection)
+vec3 getProceduralSquareStars(in vec3 v, in float time){
+    vec2 faceUV;
+    float faceId;
+    getCelestialCubemap(v, faceUV, faceId);
     
-    const float BG_STAR_GRID = 180.0;
+    // Balanced grid resolution (~100x100 per face for realistic star density and spacing)
+    const float BG_STAR_GRID = 100.0;
     vec2 gridPos = (faceUV * 0.5 + 0.5) * BG_STAR_GRID;
     vec2 cell = floor(gridPos);
     vec2 fracPos = fract(gridPos) - 0.5;
     
     vec3 h = hash32(cell + faceId * 113.7);
     
+    // Realistic astronomical distribution:
+    // Star density naturally increases slightly toward the galactic plane
+    float gLat = dot(v, gPole);
+    float galBias = saturate(1.0 - abs(gLat) * 0.7);
+    float starThreshold = 0.985 - galBias * 0.010;
+    
     vec3 starOut = vec3(0.0);
-    if(h.x > 0.965){
-        float d = max(abs(fracPos.x), abs(fracPos.y));
-        float size = h.y > 0.88 ? 0.32 : (h.y > 0.50 ? 0.20 : 0.12);
+    if(h.x > starThreshold){
+        #if STAR_ROTATION != 0
+            float starAngle = h.y * TAU;
+            vec2 rPos = rot2D(starAngle) * fracPos;
+            float d = max(abs(rPos.x), abs(rPos.y));
+        #else
+            float d = max(abs(fracPos.x), abs(fracPos.y));
+        #endif
+        
+        // Multi-tier stellar magnitude:
+        // ~7% prominent constellation anchor stars (quite bright, distinct spectral colors)
+        // ~23% medium prominent stars
+        // ~70% faint background pinpricks
+        bool isConstellation = h.z > 0.93;
+        float size;
+        float magnitude;
+        vec3 col;
+        
+        if(isConstellation){
+            // Bright constellation beacons (Sirius, Vega, Rigel, Betelgeuse class)
+            float rank = (h.z - 0.93) / 0.07;
+            size = 0.25 + rank * 0.06;
+            magnitude = 3.2 + pow(rank, 1.4) * 4.5;
+            
+            // Astronomical stellar spectral colors for prominent constellation stars:
+            // 0.00-0.35: Blue-white (O/B/A), 0.35-0.70: Pure white / pale gold (F/G), 0.70-1.00: Warm amber/orange (K/M)
+            if(h.y < 0.35){
+                col = mix(vec3(0.78, 0.88, 1.0), vec3(0.90, 0.95, 1.0), h.y / 0.35);
+            } else if(h.y < 0.70){
+                col = mix(vec3(0.96, 0.98, 1.0), vec3(1.0, 0.93, 0.74), (h.y - 0.35) / 0.35);
+            } else {
+                col = mix(vec3(1.0, 0.88, 0.65), vec3(1.0, 0.65, 0.42), (h.y - 0.70) / 0.30);
+            }
+        } else if(h.z > 0.70){
+            // Medium prominent stars
+            float rank = (h.z - 0.70) / 0.23;
+            size = 0.15;
+            magnitude = 1.0 + pow(rank, 1.8) * 1.4;
+            col = mix(vec3(0.85, 0.92, 1.0), vec3(1.0, 0.92, 0.80), h.y);
+        } else {
+            // Faint background stars
+            float rank = h.z / 0.70;
+            size = 0.085;
+            magnitude = 0.35 + pow(rank, 2.0) * 0.65;
+            col = mix(vec3(0.82, 0.90, 1.0), vec3(0.98, 0.94, 0.85), h.y);
+        }
+        
         float edge = fwidth(d);
         float shape = saturate((size - d) / max(edge, 0.001));
         
         if(shape > 0.0){
-            float bright = h.z * 1.6 + 0.4;
-            float twinkle = sin(time * 1.8 + h.x * 55.0) * 0.2 + 0.8;
-            vec3 col = mix(vec3(0.85, 0.92, 1.0), vec3(1.0, 0.90, 0.78), h.y);
-            starOut = col * (bright * twinkle * shape);
+            float twinkleRate = isConstellation ? 1.2 : 1.6;
+            float twinkleDepth = isConstellation ? 0.12 : 0.20;
+            float twinkle = sin(time * twinkleRate + h.x * 55.0) * twinkleDepth + (1.0 - twinkleDepth);
+            
+            // Base output multiplier: calibrated for crisp visibility and clear magnitude contrast
+            starOut = col * (magnitude * twinkle * shape * 0.085);
         }
     }
     return starOut;
@@ -151,26 +211,37 @@ vec3 getProceduralMilkyWay(in vec3 skyPos, in float time){
         mwColor *= 0.18;
     }
     
-    // Dense square stars inside the Milky Way
-    float starX = floor(normLon * 900.0);
-    float starY = floor(bandLat * (900.0 / TAU));
-    vec2 starCell = vec2(mod(starX, 900.0), starY);
-    vec2 starFrac = vec2(fract(normLon * 900.0), fract(bandLat * (900.0 / TAU))) - 0.5;
+    // Delicate square stars inside the Milky Way
+    // Uses the EXACT SAME celestial cubemap projection as sky stars for 100% rotation consistency
+    vec2 mwFaceUV;
+    float mwFaceId;
+    getCelestialCubemap(skyPos, mwFaceUV, mwFaceId);
     
-    vec3 sHash = hash32(starCell + 73.1);
-    float starChance = 0.86 - combinedDensity * 0.14 - coreBulge * 0.08;
+    const float MW_STAR_GRID = 180.0;
+    vec2 mwGridPos = (mwFaceUV * 0.5 + 0.5) * MW_STAR_GRID;
+    vec2 mwCell = floor(mwGridPos);
+    vec2 mwFrac = fract(mwGridPos) - 0.5;
+    
+    vec3 sHash = hash32(mwCell + mwFaceId * 157.3);
+    float starChance = 0.91 - combinedDensity * 0.09 - coreBulge * 0.05;
     
     if(sHash.x > starChance && combinedDensity > 0.10){
-        float sqDist = max(abs(starFrac.x), abs(starFrac.y));
-        float starRadius = sHash.y > 0.88 ? 0.36 : (sHash.y > 0.50 ? 0.22 : 0.12);
+        #if STAR_ROTATION != 0
+            float starAngle = sHash.y * TAU;
+            vec2 rFrac = rot2D(starAngle) * mwFrac;
+            float sqDist = max(abs(rFrac.x), abs(rFrac.y));
+        #else
+            float sqDist = max(abs(mwFrac.x), abs(mwFrac.y));
+        #endif
+        float starRadius = sHash.y > 0.90 ? 0.22 : (sHash.y > 0.55 ? 0.13 : 0.07);
         float edge = fwidth(sqDist);
         float starShape = saturate((starRadius - sqDist) / max(edge, 0.001));
         
         if(starShape > 0.0){
-            float lum = (sHash.z * 1.3 + 0.4) * (1.0 + coreBulge * 0.6);
+            float lum = (pow(sHash.z, 2.0) * 1.6 + 0.35) * (1.0 + coreBulge * 0.4);
             vec3 tint = mix(vec3(0.85, 0.92, 1.0), vec3(1.0, 0.88, 0.72), sHash.y);
             float twinkle = sin(time * 2.2 + sHash.x * 45.0) * 0.2 + 0.8;
-            mwColor += tint * (lum * twinkle * starShape * 1.4);
+            mwColor += tint * (lum * twinkle * starShape * 0.85);
         }
     }
     

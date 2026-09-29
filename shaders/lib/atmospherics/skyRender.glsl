@@ -176,7 +176,8 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
         #endif
     #endif
 
-    #if defined WORLD_STARS && defined WORLD_MILKY_WAY && defined MILKY_WAY
+    #ifdef MILKY_WAY
+    #if defined WORLD_STARS && defined WORLD_MILKY_WAY
         // Procedural Minecraft-style Milky Way (appears gradually later in the night only when stars are visible, not during rain)
         float mwHorizonFade = saturate(nEyePlayerPos.y * 6.0);
         vec3 milkyWay = getProceduralMilkyWay(skyPos, fragmentFrameTime) * (mwHorizonFade * WORLD_MILKY_WAY * MILKY_WAY_BRIGHTNESS);
@@ -186,6 +187,7 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
         #else
             if(weatherFade < 1.0) currSkyCol += (1.0 - weatherFade) * milkyWay;
         #endif
+    #endif
     #endif
 
     return currSkyCol;

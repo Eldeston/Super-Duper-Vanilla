@@ -253,6 +253,11 @@ screen.ATMOSPHERICS.comment = §6Effets atmosphériques incluant le soleil/lune,
     option.MILKY_WAY_BRIGHTNESS = Luminosité Voie lactée
     option.MILKY_WAY_BRIGHTNESS.comment = Ajuste la luminosité de la Voie lactée procédurale.
 
+    option.STAR_ROTATION = Rotation des étoiles
+    option.STAR_ROTATION.comment = Style de rotation des étoiles. Aligné garde les étoiles carrées alignées sur la grille céleste. Aléatoire donne à chaque étoile un angle de rotation aléatoire. Appliqué à la Voie lactée et au ciel.
+    value.STAR_ROTATION.0 = Alignée
+    value.STAR_ROTATION.1 = Aléatoire
+
 screen.WORLD = Monde
 screen.WORLD.comment = §6Options d'environnement et d'animations du monde incluant le terrain, l'eau, la météo, le vent et la courbure du monde.
     option.TERRAIN_ANIMATION = Animation du terrain
