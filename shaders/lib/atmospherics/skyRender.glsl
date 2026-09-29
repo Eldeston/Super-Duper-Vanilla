@@ -9,10 +9,9 @@
 #ifdef WORLD_AETHER
 #endif
 
+#include "/lib/atmospherics/celestialRender.glsl"
 #include "/lib/atmospherics/milkyWay.glsl"
 #include "/lib/atmospherics/aurora.glsl"
-
-#include "/lib/atmospherics/celestialRender.glsl"
 
 #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
     // Depth size / cloud steps
@@ -319,6 +318,28 @@ vec3 getSkyReflection(in vec3 reflectViewDir){
     return finalCol * saturate(reflectPlayerDir.y + eyeBrightFact * 3.0 - 1.0);
 }
 
+#if WORLD_ID == 1
+    vec3 getEndFlash(in vec3 nEyePlayerPos){
+        vec3 flashDir = fastNormalize(mat3(gbufferModelViewInverse) * endFlashPosition);
+        float flashDot = dot(nEyePlayerPos, flashDir);
+        if(flashDot <= 0.0) return vec3(0.0);
+
+        vec3 upRef = abs(flashDir.y) < 0.999 ? vec3(0.0, 1.0, 0.0) : vec3(0.0, 0.0, 1.0);
+        vec3 tanX = fastNormalize(cross(upRef, flashDir));
+        vec3 tanY = cross(flashDir, tanX);
+        vec2 projPos = vec2(dot(nEyePlayerPos, tanX), dot(nEyePlayerPos, tanY)) / max(flashDot, 0.0001);
+
+        float dist = getSunMoonDist(projPos, WORLD_SUN_MOON_SIZE);
+        float shapeZ = inversesqrt(dist * dist + 1.0);
+
+        float d2 = shapeZ * shapeZ; float d4 = d2 * d2; float d8 = d4 * d4;
+        float flashGlow = d8 * d8; float d32 = flashGlow * flashGlow; float d64 = d32 * d32;
+        float flashCore = d64 * d64;
+        float flashBurst = (flashCore * 6.0 + flashGlow * 1.5 + d2 * 0.3) * endFlashIntensity;
+        return toLinear(vec3(0.85, 0.75, 1.0)) * flashBurst;
+    }
+#endif
+
 #ifndef COMPOSITE0
 // Full sky render
 vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
@@ -382,15 +403,7 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol)
 
         #if WORLD_ID == 1
             if(endFlashIntensity > 0.001){
-                vec3 flashDir = fastNormalize(mat3(gbufferModelViewInverse) * endFlashPosition);
-                float flashDot = dot(nEyePlayerPos, flashDir);
-                if(flashDot > 0.0){
-                    float d2 = flashDot * flashDot; float d4 = d2 * d2; float d8 = d4 * d4;
-                    float flashGlow = d8 * d8; float d32 = flashGlow * flashGlow; float d64 = d32 * d32;
-                    float flashCore = d64 * d64;
-                    float flashBurst = (flashCore * 6.0 + flashGlow * 1.5 + d2 * 0.3) * endFlashIntensity;
-                    currSkyCol += toLinear(vec3(0.85, 0.75, 1.0)) * flashBurst;
-                }
+                currSkyCol += getEndFlash(nEyePlayerPos);
             }
         #endif
     #endif

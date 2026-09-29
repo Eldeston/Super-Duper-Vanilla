@@ -8,6 +8,10 @@
     #define STAR_ROTATION 0
 #endif
 
+#ifndef CELESTIAL_RENDER_GLSL
+    #include "/lib/atmospherics/celestialRender.glsl"
+#endif
+
 float hash12(in vec2 p){
     vec3 p3 = fract(vec3(p.xyx) * 0.1031);
     p3 += dot(p3, p3.yzx + 33.33);
@@ -59,7 +63,9 @@ void getCelestialCubemap(in vec3 v, out vec2 faceUV, out float faceId){
 // Procedural square background stars across the entire celestial sphere (cubemap projection)
 vec3 getProceduralSquareStars(in vec3 v, in float time){
     // Occlude stars directly behind the moon disk
-    if(v.z < -0.7 && max(abs(v.x), abs(v.y)) <= WORLD_SUN_MOON_SIZE * (-v.z)) return vec3(0.0);
+    #if WORLD_SUN_MOON == 1
+        if(v.z < -0.7 && getSunMoonDist(v.xy, WORLD_SUN_MOON_SIZE * (-v.z)) <= WORLD_SUN_MOON_SIZE * (-v.z)) return vec3(0.0);
+    #endif
 
     vec2 faceUV;
     float faceId;
@@ -81,14 +87,6 @@ vec3 getProceduralSquareStars(in vec3 v, in float time){
     
     vec3 starOut = vec3(0.0);
     if(h.x > starThreshold){
-        #if STAR_ROTATION != 0
-            float starAngle = h.y * TAU;
-            vec2 rPos = rot2D(starAngle) * fracPos;
-            float d = max(abs(rPos.x), abs(rPos.y));
-        #else
-            float d = max(abs(fracPos.x), abs(fracPos.y));
-        #endif
-        
         #ifndef MOON_PHASE_FACTOR
             #define MOON_PHASE_FACTOR 1.0
         #endif
@@ -129,6 +127,14 @@ vec3 getProceduralSquareStars(in vec3 v, in float time){
             magnitude = (0.35 + pow(rank, 2.0) * 0.65) * mix(1.0, 0.18, moonIllum);
             col = mix(vec3(0.82, 0.90, 1.0), vec3(0.98, 0.94, 0.85), h.y);
         }
+        
+        #if STAR_ROTATION != 0
+            float starAngle = h.y * TAU;
+            vec2 rPos = rot2D(starAngle) * fracPos;
+            float d = getSunMoonDist(rPos, size);
+        #else
+            float d = getSunMoonDist(fracPos, size);
+        #endif
         
         float edge = fwidth(d);
         float shape = saturate((size - d) / max(edge, 0.001));
@@ -232,14 +238,14 @@ vec3 getProceduralMilkyWay(in vec3 skyPos, in float time){
     float starChance = 0.91 - combinedDensity * 0.09 - coreBulge * 0.05;
     
     if(sHash.x > starChance && combinedDensity > 0.10){
+        float starRadius = sHash.y > 0.90 ? 0.22 : (sHash.y > 0.55 ? 0.13 : 0.07);
         #if STAR_ROTATION != 0
             float starAngle = sHash.y * TAU;
             vec2 rFrac = rot2D(starAngle) * mwFrac;
-            float sqDist = max(abs(rFrac.x), abs(rFrac.y));
+            float sqDist = getSunMoonDist(rFrac, starRadius);
         #else
-            float sqDist = max(abs(mwFrac.x), abs(mwFrac.y));
+            float sqDist = getSunMoonDist(mwFrac, starRadius);
         #endif
-        float starRadius = sHash.y > 0.90 ? 0.22 : (sHash.y > 0.55 ? 0.13 : 0.07);
         float edge = fwidth(sqDist);
         float starShape = saturate((starRadius - sqDist) / max(edge, 0.001));
         

@@ -306,7 +306,7 @@ option.LAVA_BRIGHTNESS.comment = Яркость видимого свечени�
 option.LAVA_NOISE.comment = Эффект перепадов температуры на поверхности лавы.. Заключается в случайном изменении её яркости, аналогично лаве в Minecraft Dungeons..
 option.LAVA_TILE_SIZE.comment = Размер пятен с пониженной температурой и светимостью..
 
-option.SUN_MOON_ROUNDNESS.comment = Внешний вид Солнца и Луны..
+option.SUN_MOON_ROUNDNESS.comment = Внешний вид Солнца, Луны, звезд и вспышек Энда..
 option.SUN_MOON_INTENSITY.comment = Яркость Солнца, Луны и Чёрной дыры.. Также влияет на зеркальные отражения..
 option.SUN_MOON_SIZE.comment = Настройте размер солнца, луны и черной дыры на небе..
 option.VOLUMETRIC_LIGHTING.comment = Требует включения карты теней..
