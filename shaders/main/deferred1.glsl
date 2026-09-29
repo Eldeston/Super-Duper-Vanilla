@@ -236,7 +236,7 @@
             return getViewPos(isLOD ? dhProjectionInverse : gbufferProjectionInverse, screenPos);
         #elif defined VOXY
             if(isLOD){
-                vec4 viewPosH = vxProjInv * vec4(screenPos * 2.0 - 1.0, 1.0);
+                vec4 viewPosH = vxProjInv * vec4(screenPos.xy * 2.0 - 1.0, screenPos.z, 1.0);
                 return viewPosH.xyz / viewPosH.w;
             } else {
                 return getViewPos(gbufferProjectionInverse, screenPos);
@@ -260,16 +260,12 @@
         }
     #endif
 
-    void main(){
-        // Screen texel coordinates
-        ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
-
-        bool isLOD = false;
-        float depth = texelFetch(depthtex0, screenTexelCoord, 0).x;
-
-        // Distant Horizons / Voxy depth texture fallback
+    void getDeferredSceneDepth(in ivec2 screenTexelCoord, out float depth, out bool isLOD){
+        float vanillaDepth = texelFetch(depthtex0, screenTexelCoord, 0).x;
+        depth = vanillaDepth;
+        isLOD = false;
         #if defined DISTANT_HORIZONS
-            if(depth == 1.0){
+            if(vanillaDepth == 1.0){
                 float dhDepth = texelFetch(dhDepthTex0, screenTexelCoord, 0).x;
                 if(dhDepth < 1.0){
                     depth = dhDepth;
@@ -277,14 +273,23 @@
                 }
             }
         #elif defined VOXY
-            if(depth == 1.0){
+            if(vanillaDepth == 1.0){
                 float vxDepth = texelFetch(vxDepthTexOpaque, screenTexelCoord, 0).x;
-                if(vxDepth < 1.0){
+                if(vxDepth < 1.0 && vxDepth > 0.0){
                     depth = vxDepth;
                     isLOD = true;
                 }
             }
         #endif
+    }
+
+    void main(){
+        // Screen texel coordinates
+        ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
+
+        bool isLOD;
+        float depth;
+        getDeferredSceneDepth(screenTexelCoord, depth, isLOD);
 
         // Get screen pos
         vec3 screenPos = vec3(texCoord, depth);

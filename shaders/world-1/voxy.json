@@ -1,7 +1,17 @@
 {
     "version": 1,
-    "opaqueDrawBuffers": [4, 1, 2, 3],
-    "translucentDrawBuffers": [4, 1, 2, 3],
+    "opaqueDrawBuffers": [
+        4,
+        1,
+        2,
+        3
+    ],
+    "translucentDrawBuffers": [
+        4,
+        1,
+        2,
+        3
+    ],
     "uniforms": [
         "gbufferModelView",
         "gbufferModelViewInverse",
@@ -19,6 +29,7 @@
         "weatherFade",
         "dayCycle",
         "twilightPhase",
+        "moonPhase",
         "eyeSkylight",
         "shdFade",
         "pixelWidth",
