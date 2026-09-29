@@ -131,8 +131,7 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 
 * Optimize alpha testing (high priority)
 * Optimize DOF calculations with noise (low priority)
-* Optimize block ids in block.properties (medium priority)
-* Optimize day and night transition calculations (medium priority)
+
 
 * Refactor uniform usage and remove unecessary ones (medium priority)
 * Format the goodness knows how much nesting I used in my code because BROTHA EWWHH (maximum priority)
@@ -149,7 +148,11 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 * Improve shadow filtering
 * Improve shader menu UI
 
+* Optimize block ids in block.properties (medium priority)
+
 ## DONE
+* C1 continuous smooth interpolation (`smoothLerp`, smoothstep) for day/night ambient sky gradients, twilight phases, and star fade curves
+* Hermite-smoothed shadow fade (`shdFade`) with zero-intensity horizon crossing band to seamlessly mask Iris shadow camera transitions
 * Full compatibility with Voxy LOD mod (voxy.json pipeline across world0/world-1/world1, custom UBO layout, PBR materials, depthTex fallbacks, borderFar atmospheric fog integration, seamless sunlight matching, and SSR reflection loop prevention)
 * Implement bit packing & encoding library (`shaders/lib/utility/bitPacking.glsl`) for octahedral normals, 2x8/4x8/2x16 UNORM data, lightmaps, and PBR material flags
 * Consolidate FXAA into final.glsl and eliminate composite7 pass across dimensions

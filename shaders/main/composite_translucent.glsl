@@ -256,25 +256,36 @@
         }
     #endif
 
-    void getTranslucentSceneDepth(in ivec2 screenTexelCoord, out float depth, out bool realSky){
-        depth = texelFetch(depthtex0, screenTexelCoord, 0).x;
-        realSky = depth == 1.0;
+    void getTranslucentSceneDepth(in ivec2 screenTexelCoord, out float depth, out bool isLOD){
+        float vanillaDepth = texelFetch(depthtex0, screenTexelCoord, 0).x;
+        depth = vanillaDepth;
+        isLOD = false;
         #if defined DISTANT_HORIZONS
-            if(realSky) depth = texelFetch(dhDepthTex0, screenTexelCoord, 0).x;
+            if(vanillaDepth == 1.0){
+                float dhDepth = texelFetch(dhDepthTex0, screenTexelCoord, 0).x;
+                if(dhDepth < 1.0){
+                    depth = dhDepth;
+                    isLOD = true;
+                }
+            }
         #elif defined VOXY
-            if(realSky){
+            if(vanillaDepth == 1.0){
                 float vxOpaque = texelFetch(vxDepthTexOpaque, screenTexelCoord, 0).x;
                 float vxTrans = texelFetch(vxDepthTexTrans, screenTexelCoord, 0).x;
-                depth = min(vxOpaque, vxTrans);
+                float vxDepth = min(vxOpaque, vxTrans);
+                if(vxDepth < 1.0){
+                    depth = vxDepth;
+                    isLOD = true;
+                }
             }
         #endif
     }
 
-    vec3 getTranslucentViewPos(in bool realSky, in vec3 screenPos){
+    vec3 getTranslucentViewPos(in bool isLOD, in vec3 screenPos){
         #ifdef DISTANT_HORIZONS
-            return getViewPos(realSky ? dhProjectionInverse : gbufferProjectionInverse, screenPos);
+            return getViewPos(isLOD ? dhProjectionInverse : gbufferProjectionInverse, screenPos);
         #elif defined VOXY
-            if(realSky){
+            if(isLOD){
                 vec4 viewPosH = vxProjInv * vec4(screenPos * 2.0 - 1.0, 1.0);
                 return viewPosH.xyz / viewPosH.w;
             } else {
@@ -289,14 +300,14 @@
         // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
 
-        bool realSky;
+        bool isLOD;
         float depth;
-        getTranslucentSceneDepth(screenTexelCoord, depth, realSky);
+        getTranslucentSceneDepth(screenTexelCoord, depth, isLOD);
 
         // Get screen pos
         vec3 screenPos = vec3(texCoord, depth);
         
-        vec3 viewPos = getTranslucentViewPos(realSky, screenPos);
+        vec3 viewPos = getTranslucentViewPos(isLOD, screenPos);
 
         // Get eye player pos
         vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
@@ -355,7 +366,7 @@
                 vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
 
                 // Apply deferred shading
-                sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, realSky);
+                sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, isLOD);
             }
 
             // Get basic sky fog color
@@ -371,7 +382,7 @@
         }
 
         #if VOXY_DEBUG == 1
-            if(realSky && depth < 1.0) sceneColOut = mix(sceneColOut, vec3(1.0, 0.2, 0.2), 0.35);
+            if(isLOD && depth < 1.0) sceneColOut = mix(sceneColOut, vec3(1.0, 0.2, 0.2), 0.35);
         #endif
 
         // Apply darkness pulsing effect

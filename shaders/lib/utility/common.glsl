@@ -80,15 +80,24 @@ uint maxOf(in uvec2 x){ return max(x.x, x.y); }
 uint maxOf(in uvec3 x){ return max(x.x, max(x.y, x.z)); }
 uint maxOf(in uvec4 x){ return max(max(x.x, x.y), max(x.z, x.w)); }
 
-// Linear interpolation functions
+// Smooth interpolation functions (C1 continuous Hermite across the midpoint d=1.0)
+float smoothLerp(in float a, in float b, in float c, in float d){
+	if(d < 1.0) return mix(a, b, smoothstep(0.0, 1.0, d));
+	return mix(b, c, smoothstep(1.0, 2.0, d));
+}
+
+vec3 smoothLerp(in vec3 a, in vec3 b, in vec3 c, in float d){
+	if(d < 1.0) return mix(a, b, smoothstep(0.0, 1.0, d));
+	return mix(b, c, smoothstep(1.0, 2.0, d));
+}
+
+// Linear interpolation functions (aliased to smoothLerp for seamless transitions)
 float lerp(float a, float b, float c, float d){
-	if(d < 1) return mix(a, b, d);
-    return mix(b, c, d - 1.0);
+	return smoothLerp(a, b, c, d);
 }
 
 vec3 lerp(vec3 a, vec3 b, vec3 c, float d){
-	if(d < 1) return mix(a, b, d);
-    return mix(b, c, d - 1.0);
+	return smoothLerp(a, b, c, d);
 }
 
 // Hermite interpolation

@@ -28,8 +28,8 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 // Use a sky light amount if your world has an undefined sky lighting environment like The End or the Nether
 // #define WORLD_CUSTOM_SKYLIGHT 1.00
 
-// Enable stars in your world
-#define WORLD_STARS toLinear(4.0 - dayCycle * 2.0)
+// Enable stars in your world (smooth fade in during dusk, fade out during dawn)
+#define WORLD_STARS toLinear(4.0 * smoothstep(1.1, 0.4, dayCycle))
 
 // If the world utilizes vanilla sky color
 // #define WORLD_VANILLA_FOG_COLOR
@@ -95,7 +95,7 @@ const vec3 skyTwilightColor = vec3(SKY0_TR, SKY0_TG, SKY0_TB) * (SKY0_TI * 0.003
 #define SUN_COL_DATA_BLOCK mix(lightTwilightColor, lightDayColor, twilightPhase)
 #define MOON_COL_DATA_BLOCK lightNightColor
 
-#define LIGHT_COLOR_DATA_BLOCK0 (dayCycle > 1 ? mix(lightTwilightColor, lightDayColor, twilightPhase) : lightNightColor)
+#define LIGHT_COLOR_DATA_BLOCK0 (dayCycle > 1 ? SUN_COL_DATA_BLOCK : MOON_COL_DATA_BLOCK)
 #define LIGHT_COLOR_DATA_BLOCK1(S, M) (dayCycle > 1 ? S : M)
 
 #define SKY_COLOR_DATA_BLOCK lerp(skyNightColor, skyTwilightColor, skyDayColor, dayCycle)

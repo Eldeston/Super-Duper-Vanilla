@@ -231,11 +231,11 @@
 
     #include "/lib/lighting/complexShadingDeferred.glsl"
 
-    vec3 getDeferredViewPos(in bool realSky, in vec3 screenPos){
+    vec3 getDeferredViewPos(in bool isLOD, in vec3 screenPos){
         #ifdef DISTANT_HORIZONS
-            return getViewPos(realSky ? dhProjectionInverse : gbufferProjectionInverse, screenPos);
+            return getViewPos(isLOD ? dhProjectionInverse : gbufferProjectionInverse, screenPos);
         #elif defined VOXY
-            if(realSky){
+            if(isLOD){
                 vec4 viewPosH = vxProjInv * vec4(screenPos * 2.0 - 1.0, 1.0);
                 return viewPosH.xyz / viewPosH.w;
             } else {
@@ -264,31 +264,40 @@
         // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
 
-        bool realSky = false;
-
+        bool isLOD = false;
         float depth = texelFetch(depthtex0, screenTexelCoord, 0).x;
 
         // Distant Horizons / Voxy depth texture fallback
         #if defined DISTANT_HORIZONS
-            realSky = depth == 1;
-            if(realSky) depth = texelFetch(dhDepthTex0, screenTexelCoord, 0).x;
+            if(depth == 1.0){
+                float dhDepth = texelFetch(dhDepthTex0, screenTexelCoord, 0).x;
+                if(dhDepth < 1.0){
+                    depth = dhDepth;
+                    isLOD = true;
+                }
+            }
         #elif defined VOXY
-            realSky = depth == 1;
-            if(realSky) depth = texelFetch(vxDepthTexOpaque, screenTexelCoord, 0).x;
+            if(depth == 1.0){
+                float vxDepth = texelFetch(vxDepthTexOpaque, screenTexelCoord, 0).x;
+                if(vxDepth < 1.0){
+                    depth = vxDepth;
+                    isLOD = true;
+                }
+            }
         #endif
 
         // Get screen pos
         vec3 screenPos = vec3(texCoord, depth);
 
         // Get sky mask
-        bool skyMask = screenPos.z == 1;
+        bool skyMask = screenPos.z == 1.0;
 
         // Jitter the sky only
         #if ANTI_ALIASING == 2
             if(skyMask) screenPos.xy += jitterPos(-0.5);
         #endif
 
-        vec3 viewPos = getDeferredViewPos(realSky, screenPos);
+        vec3 viewPos = getDeferredViewPos(isLOD, screenPos);
 
         // Get eye player pos
         vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
@@ -351,7 +360,7 @@
             vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
 
             // Apply deferred shading
-            sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, realSky);
+            sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, isLOD);
         }
 
         #if OUTLINES != 0
