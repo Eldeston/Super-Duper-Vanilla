@@ -41,10 +41,19 @@ vec3 getLensFlare(in vec2 centerCoord, in vec2 lightDir){
     
     vec3 chromaLens = chromaLens(centerCoord, lightDir, 0.05, 0.05, -0.5);
 
+    #ifndef MOON_PHASE_FACTOR
+        #define MOON_PHASE_FACTOR 1.0
+    #endif
+    #ifdef FORCE_DISABLE_DAY_CYCLE
+        float flarePhase = 1.0;
+    #else
+        float flarePhase = dayCycle > 1.0 ? 1.0 : (MOON_PHASE_FACTOR * MOON_PHASE_FACTOR);
+    #endif
+
     #if WORLD_SUN_MOON == 2
         return (lens1 + (lens0 + lens2) * 0.125 + chromaLens) * (LENS_FLARE_STRENGTH * 0.25) * sRGBLightCol;
     #else
         float rays = lensFlareRays(centerCoord, lightDir, 8.0, 0.1, -1.0);
-        return (lens1 + (lens0 + lens2) * 0.125 + rays + chromaLens) * LENS_FLARE_STRENGTH * sRGBLightCol;
+        return (lens1 + (lens0 + lens2) * 0.125 + rays + chromaLens) * (LENS_FLARE_STRENGTH * flarePhase) * sRGBLightCol;
     #endif
 }

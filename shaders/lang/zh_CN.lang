@@ -207,6 +207,9 @@ screen.ATMOSPHERICS.comment = §6大气系统效果, 包括日月, 云, 雾, 边
     option.SUN_MOON_INTENSITY = 日月强度
     option.SUN_MOON_INTENSITY.comment = 太阳或月亮的强度.也会影响镜面反射.
 
+    option.SUN_MOON_SIZE = 日月大小
+    option.SUN_MOON_SIZE.comment = 调整天空中太阳、月亮和黑洞的大小。
+
     option.VOLUMETRIC_LIGHTING = 体积光
     option.VOLUMETRIC_LIGHTING.comment = 启用体积光.
 

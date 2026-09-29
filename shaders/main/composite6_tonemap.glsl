@@ -151,6 +151,10 @@
             uniform float weatherFade;
         #endif
 
+        #ifndef FORCE_DISABLE_DAY_CYCLE
+            uniform float dayCycle;
+        #endif
+
         #include "/lib/post/lensFlare.glsl"
     #endif
 

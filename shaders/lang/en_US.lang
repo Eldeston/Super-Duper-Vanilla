@@ -207,6 +207,9 @@ screen.ATMOSPHERICS.comment = §6Atmospheric effects including sun/moon, clouds,
     option.SUN_MOON_INTENSITY = Sun/moon intensity
     option.SUN_MOON_INTENSITY.comment = The sun or moon's intensity. Also affects specular reflections.
 
+    option.SUN_MOON_SIZE = Sun/moon size
+    option.SUN_MOON_SIZE.comment = Adjust the size of the sun, moon, and black hole in the sky.
+
     option.VOLUMETRIC_LIGHTING = Volumetric lighting
     option.VOLUMETRIC_LIGHTING.comment = Enables volumetric lighting.
 

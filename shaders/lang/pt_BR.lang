@@ -98,6 +98,7 @@ screen.ATMOSPHERICS = Atmosféricos
         value.SUN_MOON_ROUNDNESS.1.00 = Redondo
 
     option.SUN_MOON_INTENSITY = Intensidade do Sol/Lua
+    option.SUN_MOON_SIZE = Tamanho do Sol/Lua
     option.VOLUMETRIC_LIGHTING = Iluminação Volumétrica
     option.VOLUMETRIC_LIGHTING_STRENGTH = Intensidade da Iluminação Volumétrica
     option.BORDER_FOG = Névoa da Borda

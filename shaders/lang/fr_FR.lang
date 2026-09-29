@@ -207,6 +207,9 @@ screen.ATMOSPHERICS.comment = §6Effets atmosphériques incluant le soleil/lune,
     option.SUN_MOON_INTENSITY = Intensité soleil/lune
     option.SUN_MOON_INTENSITY.comment = Intensité du soleil ou de la lune. Affecte également les reflets spéculaires.
 
+    option.SUN_MOON_SIZE = Taille soleil/lune
+    option.SUN_MOON_SIZE.comment = Ajuste la taille du soleil, de la lune et du trou noir dans le ciel.
+
     option.VOLUMETRIC_LIGHTING = Éclairage volumétrique
     option.VOLUMETRIC_LIGHTING.comment = Active l'éclairage volumétrique.
 

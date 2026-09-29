@@ -11,25 +11,7 @@
 
 #include "/lib/atmospherics/milkyWay.glsl"
 
-float getSunMoonDist(in vec2 coord, in float halfSize){
-    float r = SUN_MOON_ROUNDNESS * halfSize;
-    vec2 q = abs(coord) - vec2(halfSize - r);
-    return min(max(q.x, q.y), 0.0) + length(max(q, vec2(0.0))) - r + halfSize;
-}
-
-float getSunMoonDist(in vec2 coord){
-    return getSunMoonDist(coord, WORLD_SUN_MOON_SIZE);
-}
-
-// Round sun and moon
-float getSunMoonShape(in float skyPosZ){
-    return min(1.0, exp2((WORLD_SUN_MOON_SIZE - sqrt(1.0 - skyPosZ * skyPosZ)) * 256.0));
-}
-
-// Shape-adjusted sun and moon
-float getSunMoonShape(in vec2 skyPos){
-    return min(1.0, exp2((WORLD_SUN_MOON_SIZE - getSunMoonDist(skyPos, WORLD_SUN_MOON_SIZE)) * 256.0));
-}
+#include "/lib/atmospherics/celestialRender.glsl"
 
 #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
     // Depth size / cloud steps
@@ -166,8 +148,12 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
     #endif
 
     #ifdef WORLD_STARS
-        // Procedural Minecraft-style square star field
-        vec3 stars = getProceduralSquareStars(skyPos, fragmentFrameTime) * WORLD_STARS;
+        #ifndef MOON_PHASE_FACTOR
+            #define MOON_PHASE_FACTOR 1.0
+        #endif
+        // Moonlight washes out faint stars and the Milky Way at night
+        float starMoonFade = mix(1.0, 0.45, MOON_PHASE_FACTOR);
+        vec3 stars = getProceduralSquareStars(skyPos, fragmentFrameTime) * (WORLD_STARS * starMoonFade);
 
         #ifdef FORCE_DISABLE_WEATHER
             currSkyCol += stars;
@@ -180,7 +166,8 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
     #if defined WORLD_STARS && defined WORLD_MILKY_WAY
         // Procedural Minecraft-style Milky Way (appears gradually later in the night only when stars are visible, not during rain)
         float mwHorizonFade = saturate(nEyePlayerPos.y * 6.0);
-        vec3 milkyWay = getProceduralMilkyWay(skyPos, fragmentFrameTime) * (mwHorizonFade * WORLD_MILKY_WAY * MILKY_WAY_BRIGHTNESS);
+        float mwMoonFade = mix(1.0, 0.15, MOON_PHASE_FACTOR);
+        vec3 milkyWay = getProceduralMilkyWay(skyPos, fragmentFrameTime) * (mwHorizonFade * WORLD_MILKY_WAY * MILKY_WAY_BRIGHTNESS * mwMoonFade);
 
         #ifdef FORCE_DISABLE_WEATHER
             currSkyCol += milkyWay;
@@ -317,29 +304,37 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol)
         #if WORLD_SUN_MOON == 1
             #ifndef FORCE_DISABLE_WEATHER
                 if(weatherFade < 1.0 && abs(skyPos.z) > 0.7){
-                    float sunMoonShape = getSunMoonShape(skyPos.xy / abs(skyPos.z)) * sunMoonIntensitySqrd;
                     #ifdef FORCE_DISABLE_DAY_CYCLE
+                        float sunMoonShape = getSunMoonShape(skyPos.xy / abs(skyPos.z)) * sunMoonIntensitySqrd;
                         currSkyCol += sRGBLightCol * (sunMoonShape * (1.0 - weatherFade));
                     #else
-                        currSkyCol += (skyPos.z > 0 ? sRGBSunCol : sRGBMoonCol) * (sunMoonShape * (1.0 - weatherFade));
+                        if(skyPos.z > 0.0){
+                            currSkyCol += getSunRender(skyPos.xy / abs(skyPos.z), sRGBSunCol, weatherFade);
+                        } else {
+                            currSkyCol += getMoonRender(skyPos.xy / abs(skyPos.z), sRGBMoonCol, weatherFade);
+                        }
                     #endif
                 }
             #else
                 if(abs(skyPos.z) > 0.7){
-                    float sunMoonShape = getSunMoonShape(skyPos.xy / abs(skyPos.z)) * sunMoonIntensitySqrd;
                     #ifdef FORCE_DISABLE_DAY_CYCLE
+                        float sunMoonShape = getSunMoonShape(skyPos.xy / abs(skyPos.z)) * sunMoonIntensitySqrd;
                         currSkyCol += sRGBLightCol * sunMoonShape;
                     #else
-                        currSkyCol += (skyPos.z > 0 ? sRGBSunCol : sRGBMoonCol) * sunMoonShape;
+                        if(skyPos.z > 0.0){
+                            currSkyCol += getSunRender(skyPos.xy / abs(skyPos.z), sRGBSunCol, 0.0);
+                        } else {
+                            currSkyCol += getMoonRender(skyPos.xy / abs(skyPos.z), sRGBMoonCol, 0.0);
+                        }
                     #endif
                 }
             #endif
         #elif WORLD_SUN_MOON == 2
             // If current world uses shader black hole
             if(skyPos.z > 0.0){
-                const float blackHoleSize = 1024.0 - WORLD_SUN_MOON_SIZE * 64.0;
-                const float z0 = blackHoleSize / 1024.0;
-                const float bhHalfSize = sqrt(1.0 - z0 * z0) / z0;
+                const float bhHalfSize = WORLD_SUN_MOON_SIZE;
+                const float z0 = inversesqrt(bhHalfSize * bhHalfSize + 1.0);
+                const float blackHoleSize = z0 * 1024.0;
 
                 vec2 projPos = skyPos.xy / skyPos.z;
                 float dist = getSunMoonDist(projPos, bhHalfSize);

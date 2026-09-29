@@ -98,6 +98,7 @@ screen.ATMOSPHERICS = Атмосферность
         value.SUN_MOON_ROUNDNESS.1.00 = Круглые
 
     option.SUN_MOON_INTENSITY = Яркость небесных светил
+    option.SUN_MOON_SIZE = Размер небесных светил
     option.VOLUMETRIC_LIGHTING = Объёмные лучи
     option.VOLUMETRIC_LIGHTING_STRENGTH = Плотность среды
     option.BORDER_FOG = Туман
@@ -305,6 +306,7 @@ option.LAVA_TILE_SIZE.comment = Размер пятен с пониженной 
 
 option.SUN_MOON_ROUNDNESS.comment = Внешний вид Солнца и Луны..
 option.SUN_MOON_INTENSITY.comment = Яркость Солнца, Луны и Чёрной дыры.. Также влияет на зеркальные отражения..
+option.SUN_MOON_SIZE.comment = Настройте размер солнца, луны и черной дыры на небе..
 option.VOLUMETRIC_LIGHTING.comment = Требует включения карты теней..
 option.VOLUMETRIC_LIGHTING_STRENGTH.comment = Чем выше плотность, тем лучше заметен эффект объёмных лучей..
 option.BORDER_FOG.comment = Туман по краям видимой местности для скрытия её границ..

@@ -75,9 +75,12 @@
         // Alpha test, discard and return immediately
         if(albedo.a < ALPHA_THRESHOLD){ discard; return; }
 
-        // Vanilla sun and moon are drawn procedurally in skyRender with custom roundness
+        // Vanilla sun and moon are drawn in skyRender with custom roundness, size, bloom, and glare
         if(renderStage == MC_RENDER_STAGE_SUN){ discard; return; }
+
+        #ifdef MC_RENDER_STAGE_MOON
         if(renderStage == MC_RENDER_STAGE_MOON){ discard; return; }
+        #endif
 
         // Otherwise calculate skybox
         sceneColOut = toLinear(albedo.rgb * albedo.a) * skyBoxIntensitySqrd;

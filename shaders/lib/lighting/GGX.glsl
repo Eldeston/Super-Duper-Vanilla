@@ -1,39 +1,63 @@
 // Source: https://www.guerrilla-games.com/read/decima-engine-advances-in-lighting-and-aa
-float getNoHSquared(in float NoL, in float NoV, in float VoL){
-    // radiusTan == WORLD_SUN_MOON_SIZE
-    // radiusCos can be precalculated if radiusTan is a directional light
-    const float radiusCos = inversesqrt(1.0 + WORLD_SUN_MOON_SIZE * WORLD_SUN_MOON_SIZE);
+float getNoHSquared(in float NoL, in float NoV, in float VoL, in vec3 V, in vec3 N){
+    // Light basis vectors in view space from shadowModelView
+    vec3 lightDir  = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
+    vec3 lightTanX = vec3(shadowModelView[0].x, shadowModelView[1].x, shadowModelView[2].x);
+    vec3 lightTanY = vec3(shadowModelView[0].y, shadowModelView[1].y, shadowModelView[2].y);
 
-    // Early out if R falls within the disc
-    float NoLNoV = 2.0 * NoL * NoV;
-    float RoL = NoLNoV - VoL;
-    if(RoL >= radiusCos) return 1.0;
+    // Reflected view ray: R = reflect(-V, N) = 2.0 * NoV * N - V
+    vec3 R = (2.0 * NoV) * N - V;
 
-    const float radiusCosScale = radiusCos * WORLD_SUN_MOON_SIZE;
+    float RoL = dot(R, lightDir);
+    float Rx  = dot(R, lightTanX);
+    float Ry  = dot(R, lightTanY);
+
+    float effRadiusTan = WORLD_SUN_MOON_SIZE;
+    float effRadiusCos = inversesqrt(1.0 + effRadiusTan * effRadiusTan);
+
+    if(RoL > 0.0){
+        vec2 coord = vec2(Rx, Ry) / RoL;
+        
+        // Squircle distance function matching getSunMoonDist in skyRender.glsl
+        float r = SUN_MOON_ROUNDNESS * WORLD_SUN_MOON_SIZE;
+        vec2 q = abs(coord) - vec2(WORLD_SUN_MOON_SIZE - r);
+        float dist = min(max(q.x, q.y), 0.0) + length(max(q, vec2(0.0))) - r + WORLD_SUN_MOON_SIZE;
+
+        // Early out if reflected ray R falls within the celestial body (square, squircle, or disc)
+        if(dist <= WORLD_SUN_MOON_SIZE) return 1.0;
+
+        // Effective angular radius at this angle for Decima area light falloff
+        effRadiusTan = length(coord) * (WORLD_SUN_MOON_SIZE / max(dist, 0.0001));
+        effRadiusCos = inversesqrt(1.0 + effRadiusTan * effRadiusTan);
+    } else {
+        if(RoL >= effRadiusCos) return 1.0;
+    }
+
+    float radiusCosScale = effRadiusCos * effRadiusTan;
 
     float NoVSqrd = NoV * NoV;
 
-    float rOverLengthT = inversesqrt(1.0 - RoL * RoL) * radiusCosScale;
+    float rOverLengthT = inversesqrt(max(0.0001, 1.0 - RoL * RoL)) * radiusCosScale;
     float NoTr = rOverLengthT * (NoV - RoL * NoL);
     float VoTr = rOverLengthT * (2.0 * NoVSqrd - 1.0 - RoL * VoL);
 
-    // Calculate dot(cross(N, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), V). This could already be calculated and available.
-    float tripleDelta = 1.0 - NoL * NoL - NoVSqrd - VoL * VoL + NoLNoV * VoL;
-    float tripleAlpha = tripleDelta > 0 ? rOverLengthT * sqrt(tripleDelta) : 0.0;
+    // Calculate dot(cross(N, lightDir), V)
+    float tripleDelta = 1.0 - NoL * NoL - NoVSqrd - VoL * VoL + (2.0 * NoL * NoV) * VoL;
+    float tripleAlpha = tripleDelta > 0.0 ? rOverLengthT * sqrt(tripleDelta) : 0.0;
 
     // Do one Newton iteration to improve the bent light vector
     float NoBr = tripleAlpha;
     float VoBr = 2.0 * tripleAlpha * NoV;
-    float NoLVTr = NoL * radiusCos + NoV + NoTr;
-    float VoLVTr = VoL * radiusCos + 1.0 + VoTr;
+    float NoLVTr = NoL * effRadiusCos + NoV + NoTr;
+    float VoLVTr = VoL * effRadiusCos + 1.0 + VoTr;
 
     float p = NoBr * VoLVTr;
     float q = NoLVTr * VoLVTr;
     float s = VoBr * NoLVTr;
 
     float xNum = q * (0.25 * s - 0.5 * p);
-    float xDenom = p * p + s * (s - 2.0 * p) + NoLVTr * ((NoL * radiusCos + NoV) * VoLVTr * VoLVTr -
-        q * (0.5 * (VoLVTr + VoL * radiusCos) + 0.5));
+    float xDenom = p * p + s * (s - 2.0 * p) + NoLVTr * ((NoL * effRadiusCos + NoV) * VoLVTr * VoLVTr -
+        q * (0.5 * (VoLVTr + VoL * effRadiusCos) + 0.5));
 
     float twoX1 = 2.0 * xNum / (xDenom * xDenom + xNum * xNum);
     float sinTheta = twoX1 * xDenom;
@@ -45,8 +69,8 @@ float getNoHSquared(in float NoL, in float NoV, in float VoL){
     VoTr = cosTheta * VoTr + sinTheta * VoBr;
 
     // Calculate (N.H) ^ 2 based on the bent light vector
-    float newNoL = NoL * radiusCos + NoTr;
-    float newVoL = VoL * radiusCos + VoTr;
+    float newNoL = NoL * effRadiusCos + NoTr;
+    float newVoL = VoL * effRadiusCos + VoTr;
 
     float NoH = NoV + newNoL;
     float HoH = 2.0 * newVoL + 2.0;
@@ -74,7 +98,7 @@ vec3 getSpecularBRDF(in vec3 V, in vec3 N, in vec3 albedo, in float NL, in float
     float specIntensity = sunMoonIntensitySqrd * specularMult;
 
     // Distribution
-    float NHSqr = getNoHSquared(NL, NV, dot(V, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)));
+    float NHSqr = getNoHSquared(NL, NV, dot(V, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), V, N);
     float denominator = squared(NHSqr * (alphaSqrd - 1.0) + 1.0);
     float distribution = (specularMult * alphaSqrd * NL) / (denominator * visibility * PI);
 

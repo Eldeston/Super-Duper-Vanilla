@@ -58,6 +58,9 @@ void getCelestialCubemap(in vec3 v, out vec2 faceUV, out float faceId){
 
 // Procedural square background stars across the entire celestial sphere (cubemap projection)
 vec3 getProceduralSquareStars(in vec3 v, in float time){
+    // Occlude stars directly behind the moon disk
+    if(v.z < -0.7 && max(abs(v.x), abs(v.y)) <= WORLD_SUN_MOON_SIZE * (-v.z)) return vec3(0.0);
+
     vec2 faceUV;
     float faceId;
     getCelestialCubemap(v, faceUV, faceId);
@@ -86,10 +89,13 @@ vec3 getProceduralSquareStars(in vec3 v, in float time){
             float d = max(abs(fracPos.x), abs(fracPos.y));
         #endif
         
-        // Multi-tier stellar magnitude:
-        // ~7% prominent constellation anchor stars (quite bright, distinct spectral colors)
-        // ~23% medium prominent stars
-        // ~70% faint background pinpricks
+        #ifndef MOON_PHASE_FACTOR
+            #define MOON_PHASE_FACTOR 1.0
+        #endif
+        float moonIllum = MOON_PHASE_FACTOR;
+        
+        // Multi-tier stellar magnitude modulated by moon phase:
+        // Constellation stars cut through bright moonlight, while faint stars are heavily washed out
         bool isConstellation = h.z > 0.93;
         float size;
         float magnitude;
@@ -99,7 +105,7 @@ vec3 getProceduralSquareStars(in vec3 v, in float time){
             // Bright constellation beacons (Sirius, Vega, Rigel, Betelgeuse class)
             float rank = (h.z - 0.93) / 0.07;
             size = 0.25 + rank * 0.06;
-            magnitude = 3.2 + pow(rank, 1.4) * 4.5;
+            magnitude = (3.2 + pow(rank, 1.4) * 4.5) * mix(1.0, 0.80, moonIllum);
             
             // Astronomical stellar spectral colors for prominent constellation stars:
             // 0.00-0.35: Blue-white (O/B/A), 0.35-0.70: Pure white / pale gold (F/G), 0.70-1.00: Warm amber/orange (K/M)
@@ -114,13 +120,13 @@ vec3 getProceduralSquareStars(in vec3 v, in float time){
             // Medium prominent stars
             float rank = (h.z - 0.70) / 0.23;
             size = 0.15;
-            magnitude = 1.0 + pow(rank, 1.8) * 1.4;
+            magnitude = (1.0 + pow(rank, 1.8) * 1.4) * mix(1.0, 0.45, moonIllum);
             col = mix(vec3(0.85, 0.92, 1.0), vec3(1.0, 0.92, 0.80), h.y);
         } else {
-            // Faint background stars
+            // Faint background stars (heavily washed out under full moon)
             float rank = h.z / 0.70;
             size = 0.085;
-            magnitude = 0.35 + pow(rank, 2.0) * 0.65;
+            magnitude = (0.35 + pow(rank, 2.0) * 0.65) * mix(1.0, 0.18, moonIllum);
             col = mix(vec3(0.82, 0.90, 1.0), vec3(0.98, 0.94, 0.85), h.y);
         }
         
@@ -238,7 +244,7 @@ vec3 getProceduralMilkyWay(in vec3 skyPos, in float time){
         float starShape = saturate((starRadius - sqDist) / max(edge, 0.001));
         
         if(starShape > 0.0){
-            float lum = (pow(sHash.z, 2.0) * 1.6 + 0.35) * (1.0 + coreBulge * 0.4);
+            float lum = (pow(sHash.z, 2.0) * 1.6 + 0.35) * (1.0 + coreBulge * 0.4) * mix(1.0, 0.20, MOON_PHASE_FACTOR);
             vec3 tint = mix(vec3(0.85, 0.92, 1.0), vec3(1.0, 0.88, 0.72), sHash.y);
             float twinkle = sin(time * 2.2 + sHash.x * 45.0) * 0.2 + 0.8;
             mwColor += tint * (lum * twinkle * starShape * 0.85);
