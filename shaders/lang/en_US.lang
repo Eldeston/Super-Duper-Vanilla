@@ -248,6 +248,11 @@ screen.ATMOSPHERICS.comment = §6Atmospheric effects including sun/moon, clouds,
     option.SKYBOX_BRIGHTNESS = Skybox brightness
     option.SKYBOX_BRIGHTNESS.comment = Sky box brightness.
 
+    option.MILKY_WAY = Milky Way
+    option.MILKY_WAY.comment = Enables a procedural Minecraft-style Milky Way in the night sky with square stars and nebula edges.
+    option.MILKY_WAY_BRIGHTNESS = Milky Way Brightness
+    option.MILKY_WAY_BRIGHTNESS.comment = Adjusts the brightness of the procedural Milky Way.
+
 screen.WORLD = World
 screen.WORLD.comment = §6World animation and environment options including terrain, water, weather, wind, and world curvature.
     option.TERRAIN_ANIMATION = Terrain animation

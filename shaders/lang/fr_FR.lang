@@ -248,6 +248,11 @@ screen.ATMOSPHERICS.comment = §6Effets atmosphériques incluant le soleil/lune,
     option.SKYBOX_BRIGHTNESS = Luminosité de la skybox
     option.SKYBOX_BRIGHTNESS.comment = Luminosité de la boîte céleste (skybox).
 
+    option.MILKY_WAY = Voie lactée
+    option.MILKY_WAY.comment = Active une Voie lactée procédurale style Minecraft dans le ciel nocturne avec des étoiles et bords de nébuleuse carrés.
+    option.MILKY_WAY_BRIGHTNESS = Luminosité Voie lactée
+    option.MILKY_WAY_BRIGHTNESS.comment = Ajuste la luminosité de la Voie lactée procédurale.
+
 screen.WORLD = Monde
 screen.WORLD.comment = §6Options d'environnement et d'animations du monde incluant le terrain, l'eau, la météo, le vent et la courbure du monde.
     option.TERRAIN_ANIMATION = Animation du terrain

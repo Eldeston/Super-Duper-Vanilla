@@ -9,6 +9,8 @@
 #ifdef WORLD_AETHER
 #endif
 
+#include "/lib/atmospherics/milkyWay.glsl"
+
 float getSunMoonDist(in vec2 coord, in float halfSize){
     float r = SUN_MOON_ROUNDNESS * halfSize;
     vec2 q = abs(coord) - vec2(halfSize - r);
@@ -145,12 +147,10 @@ vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){
 
 // Sky half render
 vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
-    #if (defined WORLD_AETHER && defined WORLD_LIGHT) || defined WORLD_STARS
+    #if defined WORLD_AETHER && defined WORLD_LIGHT
         // Scaled by noise resolution
         vec2 skyCoordScale = skyPos.xy * 256.0;
-    #endif
 
-    #if defined WORLD_AETHER && defined WORLD_LIGHT
         int aetherAnimationSpeed = int(fragmentFrameTime * 8.0);
 
         // Looks complex, but all it does is move the noise texture in 3 different directions
@@ -166,14 +166,25 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
     #endif
 
     #ifdef WORLD_STARS
-        // Star field generation
-        vec2 starData = texelFetch(noisetex, ivec2(skyCoordScale / (abs(skyPos.z) + sqrt(1.0 - skyPos.z * skyPos.z))) & 255, 0).xy;
-        float stars = exp(starData.x * starData.y * 64.0 - 64.0);
+        // Procedural Minecraft-style square star field
+        vec3 stars = getProceduralSquareStars(skyPos, fragmentFrameTime) * WORLD_STARS;
 
         #ifdef FORCE_DISABLE_WEATHER
-            currSkyCol += stars * WORLD_STARS;
+            currSkyCol += stars;
         #else
-            if(weatherFade < 1.0) currSkyCol += (1.0 - weatherFade) * stars * WORLD_STARS;
+            if(weatherFade < 1.0) currSkyCol += (1.0 - weatherFade) * stars;
+        #endif
+    #endif
+
+    #if defined WORLD_STARS && defined WORLD_MILKY_WAY && defined MILKY_WAY
+        // Procedural Minecraft-style Milky Way (appears gradually later in the night only when stars are visible, not during rain)
+        float mwHorizonFade = saturate(nEyePlayerPos.y * 6.0);
+        vec3 milkyWay = getProceduralMilkyWay(skyPos, fragmentFrameTime) * (mwHorizonFade * WORLD_MILKY_WAY * MILKY_WAY_BRIGHTNESS);
+
+        #ifdef FORCE_DISABLE_WEATHER
+            currSkyCol += milkyWay;
+        #else
+            if(weatherFade < 1.0) currSkyCol += (1.0 - weatherFade) * milkyWay;
         #endif
     #endif
 
