@@ -22,12 +22,14 @@ float getSunMoonDist(in vec2 coord){
 
 // Round sun and moon
 float getSunMoonShape(in float skyPosZ){
-    return min(1.0, exp2((WORLD_SUN_MOON_SIZE - sqrt(1.0 - skyPosZ * skyPosZ)) * 256.0));
+    float glowRadius = WORLD_SUN_MOON_SIZE * 0.5;
+    return min(1.0, exp2((glowRadius - sqrt(1.0 - skyPosZ * skyPosZ)) * (1.5 / WORLD_SUN_MOON_SIZE)));
 }
 
 // Shape-adjusted sun and moon
 float getSunMoonShape(in vec2 skyPos){
-    return min(1.0, exp2((WORLD_SUN_MOON_SIZE - getSunMoonDist(skyPos, WORLD_SUN_MOON_SIZE)) * 256.0));
+    float glowRadius = WORLD_SUN_MOON_SIZE * 0.5;
+    return min(1.0, exp2((glowRadius - getSunMoonDist(skyPos, glowRadius)) * (1.5 / WORLD_SUN_MOON_SIZE)));
 }
 
 #if WORLD_SUN_MOON == 1
@@ -58,12 +60,14 @@ float getSunMoonShape(in vec2 skyPos){
     vec3 getMoonRender(in vec2 moonCoord, in vec3 moonColor, in float weatherFadeAmount){
         float dist = getSunMoonDist(moonCoord, WORLD_SUN_MOON_SIZE);
         
-        // Clamped exponential shape: 1.0 inside moon disc, smooth falloff outside (never overflows)
-        float shape = min(1.0, exp2((WORLD_SUN_MOON_SIZE - dist) * 256.0));
-        if(shape <= 0.0001) return vec3(0.0);
-        
         // Anti-aliased boundary mask (1.0 inside moon disc, 0.0 outside)
         float moonDisc = saturate((WORLD_SUN_MOON_SIZE - dist) / max(fwidth(dist), 0.001));
+        
+        // Glow with radius smaller than the texture, extending smoothly into the sky
+        float glowRadius = WORLD_SUN_MOON_SIZE * 0.5;
+        float distGlow = getSunMoonDist(moonCoord, glowRadius);
+        float glow = min(1.0, exp2((glowRadius - distGlow) * (1.5 / WORLD_SUN_MOON_SIZE)));
+        if(glow <= 0.0001 && moonDisc <= 0.0) return vec3(0.0);
         
         #if WORLD_ID == 0
             vec2 normCoord = moonCoord / WORLD_SUN_MOON_SIZE;
@@ -73,7 +77,7 @@ float getSunMoonShape(in vec2 skyPos){
             // Check if resource pack fills entire texture or uses vanilla centered [12..20]/32
             vec4 corner = fetchMoonTex(vec2(0.0625), p);
             bool isFullQuad = corner.a > 0.1 && (corner.r + corner.g + corner.b) > 0.25;
-            vec2 sampleUV = isFullQuad ? uvInMoon : (vec2(12.0) + saturate(uvInMoon) * 8.0) / 32.0;
+            vec2 sampleUV = isFullQuad ? uvInMoon : (vec2(12.5) + saturate(uvInMoon) * 7.0) / 32.0;
             
             vec4 moonSample = fetchMoonTex(sampleUV, p);
             
@@ -106,13 +110,13 @@ float getSunMoonShape(in vec2 skyPos){
             
             // Outside glare scales with moon phase luminosity
             float glarePhase = MOON_PHASE_FACTOR * MOON_PHASE_FACTOR;
-            vec3 glareCol = moonColor * (shape * glarePhase);
+            vec3 glareCol = moonColor * (glow * glarePhase);
             
             // Combine body (inside disc) and outside glare (beyond disc)
-            vec3 moonPattern = mix(glareCol, bodyCol, moonDisc);
+            vec3 moonPattern = mix(glareCol, glareCol * (1.0 - litMask) + bodyCol, moonDisc);
             return moonPattern * (sunMoonIntensitySqrd * (1.0 - weatherFadeAmount));
         #else
-            float sunMoonShape = shape * sunMoonIntensitySqrd;
+            float sunMoonShape = glow * sunMoonIntensitySqrd;
             return moonColor * (sunMoonShape * (1.0 - weatherFadeAmount));
         #endif
     }
@@ -120,12 +124,14 @@ float getSunMoonShape(in vec2 skyPos){
     vec3 getSunRender(in vec2 sunCoord, in vec3 sunColor, in float weatherFadeAmount){
         float dist = getSunMoonDist(sunCoord, WORLD_SUN_MOON_SIZE);
         
-        // Clamped exponential shape: 1.0 inside sun disc, smooth falloff outside (never overflows)
-        float shape = min(1.0, exp2((WORLD_SUN_MOON_SIZE - dist) * 256.0));
-        if(shape <= 0.0001) return vec3(0.0);
-        
         // Anti-aliased boundary mask (1.0 inside sun disc, 0.0 outside)
         float sunDisc = saturate((WORLD_SUN_MOON_SIZE - dist) / max(fwidth(dist), 0.001));
+        
+        // Glow with radius smaller than the texture, extending smoothly into the sky
+        float glowRadius = WORLD_SUN_MOON_SIZE * 0.5;
+        float distGlow = getSunMoonDist(sunCoord, glowRadius);
+        float glow = min(1.0, exp2((glowRadius - distGlow) * (1.5 / WORLD_SUN_MOON_SIZE)));
+        if(glow <= 0.0001 && sunDisc <= 0.0) return vec3(0.0);
         
         #if WORLD_ID == 0
             vec2 normCoord = sunCoord / WORLD_SUN_MOON_SIZE;
@@ -134,7 +140,7 @@ float getSunMoonShape(in vec2 skyPos){
             // Check if resource pack fills entire texture or uses vanilla centered [12..20]/32
             vec4 corner = textureLod(sunTex, vec2(0.0625), 0.0);
             bool isFullQuad = corner.a > 0.1 && (corner.r + corner.g + corner.b) > 0.25;
-            vec2 sampleUV = isFullQuad ? uvInBody : (vec2(12.0) + saturate(uvInBody) * 8.0) / 32.0;
+            vec2 sampleUV = isFullQuad ? uvInBody : (vec2(12.5) + saturate(uvInBody) * 7.0) / 32.0;
             
             vec4 sunSample = textureLod(sunTex, sampleUV, 0.0);
             
@@ -150,12 +156,12 @@ float getSunMoonShape(in vec2 skyPos){
             }
             
             vec3 bodyCol = sunColor * sunTexCol;
-            vec3 glareCol = sunColor * shape;
+            vec3 glareCol = sunColor * glow;
             
             vec3 sunPattern = mix(glareCol, bodyCol, sunDisc);
             return sunPattern * (sunMoonIntensitySqrd * (1.0 - weatherFadeAmount));
         #else
-            float sunShape = shape * sunMoonIntensitySqrd;
+            float sunShape = glow * sunMoonIntensitySqrd;
             return sunColor * (sunShape * (1.0 - weatherFadeAmount));
         #endif
     }
