@@ -56,10 +56,19 @@
         vec2 cloudData = cloudParallaxDynamic(planeUv, planePos);
 
         #ifdef DOUBLE_LAYERED_CLOUDS
-            vec2 cirrusUv = nEyePlayerPos.xz * ((6.0 + (SECOND_CLOUD_HEIGHT / 195.0) * 6.0) / nEyePlayerPos.y);
-            vec2 cirrusStart = vec2(cirrusUv.x * 0.32 + cirrusUv.y * 0.128, cirrusUv.y * 1.6);
-            vec2 cirrusCam = vec2(planePos.x * 0.32 + planePos.y * 0.128, planePos.y * 1.6);
-            cloudData = max(cloudParallaxDynamic(cirrusStart, cirrusCam).yx * 0.20, cloudData);
+            #ifndef FORCE_DISABLE_WEATHER
+                if(weatherFade < 1.0){
+                    vec2 cirrusUv = nEyePlayerPos.xz * ((6.0 + (SECOND_CLOUD_HEIGHT / 195.0) * 6.0) / nEyePlayerPos.y);
+                    vec2 cirrusStart = vec2(cirrusUv.x * 0.32 + cirrusUv.y * 0.128, cirrusUv.y * 1.6);
+                    vec2 cirrusCam = vec2(planePos.x * 0.32 + planePos.y * 0.128, planePos.y * 1.6);
+                    cloudData = max(cloudParallaxDynamic(cirrusStart, cirrusCam).yx * (0.20 * (1.0 - weatherFade)), cloudData);
+                }
+            #else
+                vec2 cirrusUv = nEyePlayerPos.xz * ((6.0 + (SECOND_CLOUD_HEIGHT / 195.0) * 6.0) / nEyePlayerPos.y);
+                vec2 cirrusStart = vec2(cirrusUv.x * 0.32 + cirrusUv.y * 0.128, cirrusUv.y * 1.6);
+                vec2 cirrusCam = vec2(planePos.x * 0.32 + planePos.y * 0.128, planePos.y * 1.6);
+                cloudData = max(cloudParallaxDynamic(cirrusStart, cirrusCam).yx * 0.20, cloudData);
+            #endif
         #endif
 
         #ifdef DYNAMIC_CLOUDS

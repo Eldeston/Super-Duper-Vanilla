@@ -97,7 +97,9 @@ const vec3 lightTwilightColor = vec3(LIGHT0_TR, LIGHT0_TG, LIGHT0_TB) * (LIGHT0_
 
 const vec3 skyTwilightColor = vec3(SKY0_TR, SKY0_TG, SKY0_TB) * (SKY0_TI * 0.00392156863);
 
+#if !defined(PATCHED_SHADER) && !defined(VOXY_SHADING)
 uniform int moonPhase;
+#endif
 
 // Moon phase factor: 0.0 (New Moon) to 1.0 (Full Moon)
 // Phase 0: Full (1.0), Phase 1/7: Gibbous (0.75), Phase 2/6: Quarter (0.50), Phase 3/5: Crescent (0.25), Phase 4: New (0.00)
