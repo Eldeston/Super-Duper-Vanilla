@@ -298,7 +298,7 @@
             return getViewPos(isLOD ? dhProjectionInverse : gbufferProjectionInverse, screenPos);
         #elif defined VOXY
             if(isLOD){
-                vec4 viewPosH = vxProjInv * vec4(screenPos.xy * 2.0 - 1.0, screenPos.z, 1.0);
+                vec4 viewPosH = vxProjInv * vec4(screenPos * 2.0 - 1.0, 1.0);
                 return viewPosH.xyz / viewPosH.w;
             } else {
                 return getViewPos(gbufferProjectionInverse, screenPos);

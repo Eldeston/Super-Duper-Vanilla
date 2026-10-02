@@ -166,6 +166,7 @@
         uniform int vxRenderDistance;
 
         uniform sampler2D vxDepthTexOpaque;
+        uniform sampler2D vxDepthTexTrans;
     #endif
 
     #ifdef WORLD_CUSTOM_SKYLIGHT
@@ -236,7 +237,7 @@
             return getViewPos(isLOD ? dhProjectionInverse : gbufferProjectionInverse, screenPos);
         #elif defined VOXY
             if(isLOD){
-                vec4 viewPosH = vxProjInv * vec4(screenPos.xy * 2.0 - 1.0, screenPos.z, 1.0);
+                vec4 viewPosH = vxProjInv * vec4(screenPos * 2.0 - 1.0, 1.0);
                 return viewPosH.xyz / viewPosH.w;
             } else {
                 return getViewPos(gbufferProjectionInverse, screenPos);
@@ -274,8 +275,12 @@
             }
         #elif defined VOXY
             if(vanillaDepth == 1.0){
-                float vxDepth = texelFetch(vxDepthTexOpaque, screenTexelCoord, 0).x;
-                if(vxDepth < 1.0 && vxDepth > 0.0){
+                float vxOpaque = texelFetch(vxDepthTexOpaque, screenTexelCoord, 0).x;
+                float vxTrans = texelFetch(vxDepthTexTrans, screenTexelCoord, 0).x;
+                float vxDepth = 1.0;
+                if(vxOpaque > 0.0 && vxOpaque < 1.0) vxDepth = vxOpaque;
+                if(vxTrans > 0.0 && vxTrans < vxDepth) vxDepth = vxTrans;
+                if(vxDepth < 1.0){
                     depth = vxDepth;
                     isLOD = true;
                 }
