@@ -87,29 +87,47 @@
             #else
                 vec3 cloudLight = mix(moonCol, sunCol, dayCycleAdjust) * (1.0 - weatherFade);
             #endif
-            currSkyCol += cloudLight * clouds;
-            currSkyCol -= currSkyCol * (clouds * weatherFade * 0.65);
+            vec3 cloudSkyLight = mix(skyCol, skyCol * 0.35, weatherFade);
         #else
             #ifdef FORCE_DISABLE_DAY_CYCLE
-                currSkyCol += lightCol * clouds;
+                vec3 cloudLight = lightCol;
             #else
-                currSkyCol += mix(moonCol, sunCol, dayCycleAdjust) * clouds;
+                vec3 cloudLight = mix(moonCol, sunCol, dayCycleAdjust);
             #endif
+            vec3 cloudSkyLight = skyCol;
         #endif
 
-        return currSkyCol;
+        float cloudAlpha = saturate(clouds * 1.6);
+        vec3 celestialExcess = max(vec3(0.0), currSkyCol - cloudSkyLight);
+        vec3 occludedSky = min(currSkyCol, cloudSkyLight) + celestialExcess * exp2(-cloudAlpha * 8.0);
+        return mix(occludedSky, cloudSkyLight + cloudLight, cloudAlpha);
     }
 
 #endif
 
 vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){
+    vec3 baseSky = skyCol;
+
+    #if defined WORLD_LIGHT && WORLD_SUN_MOON == 1 && !defined FORCE_DISABLE_DAY_CYCLE
+        // Night sky gradient: smoothly darker away from the moon
+        float moonAlignment = saturate(-skyPosZ * 0.5 + 0.5);
+        float nightFactor = saturate(1.0 - dayCycle);
+        #ifndef FORCE_DISABLE_WEATHER
+            float weatherSkyGrad = 1.0 - weatherFade;
+        #else
+            const float weatherSkyGrad = 1.0;
+        #endif
+        float moonSkyGrad = mix(1.0, mix(0.65, 1.0, smoothstep(0.0, 1.0, moonAlignment)), nightFactor * weatherSkyGrad);
+        baseSky *= moonSkyGrad;
+    #endif
+
     // Apply ambient lighting with sky col (not realistic I know)
-    vec3 currSkyCol = skyCol + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
+    vec3 currSkyCol = baseSky + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 
     #ifdef WORLD_SKY_GROUND
         // currSkyCol.rg *= smoothen(saturate(1.0 + nEyePlayerPosY * 4.0));
         // if(nEyePlayerPosY < 0) currSkyCol *= smoothen(max(1.0 + nEyePlayerPosY / max(skyCol, 0.25), vec3(0.25)));
-        if(nEyePlayerPosY < 0 && isEyeInWater == 0) currSkyCol *= exp2(-(nEyePlayerPosY * nEyePlayerPosY * 8.0) / max(skyCol * skyCol, vec3(0.125)));
+        if(nEyePlayerPosY < 0 && isEyeInWater == 0) currSkyCol *= exp2(-(nEyePlayerPosY * nEyePlayerPosY * 8.0) / max(baseSky * baseSky, vec3(0.125)));
     #endif
 
     #if defined WORLD_LIGHT && WORLD_SUN_MOON == 1
@@ -123,7 +141,11 @@ vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){
         #else
             float lightDiffuse = pow(skyPosZ * skyPosZ, abs(nEyePlayerPosY) + 1.0) * celestialFade;
             float diffuseCycleAdjust = dayCycleAdjust * lightDiffuse;
-            currSkyCol += skyPosZ > 0 ? sunCol * diffuseCycleAdjust : moonCol * (lightDiffuse - diffuseCycleAdjust);
+            #ifndef MOON_PHASE_FACTOR
+                #define MOON_PHASE_FACTOR 1.0
+            #endif
+            float moonSkyDiffuse = (lightDiffuse - diffuseCycleAdjust) * (0.25 * mix(0.05, 1.0, MOON_PHASE_FACTOR));
+            currSkyCol += skyPosZ > 0 ? sunCol * diffuseCycleAdjust : moonCol * moonSkyDiffuse;
         #endif
     #endif
 
@@ -173,7 +195,7 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
 
     #ifdef MILKY_WAY
     #if defined WORLD_STARS && defined WORLD_MILKY_WAY
-        // Procedural Minecraft-style Milky Way (appears gradually later in the night only when stars are visible, not during rain)
+        // Procedural Minecraft-style Milky Way (appears smoothly alongside stars during dusk, not during rain)
         float mwHorizonFade = saturate(nEyePlayerPos.y * 6.0);
         float mwMoonFade = mix(1.0, 0.15, MOON_PHASE_FACTOR);
         vec3 milkyWay = getProceduralMilkyWay(skyPos, fragmentFrameTime) * (mwHorizonFade * WORLD_MILKY_WAY * MILKY_WAY_BRIGHTNESS * mwMoonFade);
@@ -188,8 +210,7 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
 
     #ifdef AURORA
     #if defined WORLD_LIGHT && defined WORLD_AURORA
-        // Procedural volumetric pixelized aurora curtains (appears in cold/snowy biomes at night, not during heavy weather)
-        float auroraCold = max(isColdBiome, float(biome_precipitation == 2 || biome_category == 1 || biome_category == 7));
+        float auroraCold = isColdBiome;
         if(auroraCold > 0.001 && nEyePlayerPos.y > 0.035){
             #ifdef FORCE_DISABLE_WEATHER
                 float auroraWeather = 1.0;

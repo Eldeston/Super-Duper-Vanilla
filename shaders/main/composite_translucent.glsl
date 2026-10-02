@@ -262,7 +262,11 @@
             #endif
 
             vec3 cloudAmbient = vec3(toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash);
-            return mix(sceneCol, cloudAmbient + cloudCelestialLight + cloudSkyLight, cloudFinal);
+
+            float cloudAlpha = saturate(cloudFinal * 1.6);
+            vec3 celestialExcess = max(vec3(0.0), sceneCol - cloudSkyLight);
+            vec3 occludedScene = min(sceneCol, cloudSkyLight) + celestialExcess * exp2(-cloudAlpha * 8.0);
+            return mix(occludedScene, cloudAmbient + cloudCelestialLight + cloudSkyLight, cloudAlpha);
         }
     #endif
 

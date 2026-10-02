@@ -55,13 +55,24 @@
             #if WORLD_ID == 1
                 const vec3 blackHoleDir = vec3(0.0, 0.6691306, -0.7431448);
                 if (endFlashIntensity > 0.01) {
-                    sRGBLightCol = vec3(1.2, 1.0, 1.5) * endFlashIntensity;
-                    shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, normalize(endFlashPosition)), gbufferProjection[1].y * 0.72794047);
+                    if(endFlashPosition.z < -0.01){
+                        sRGBLightCol = vec3(1.2, 1.0, 1.5) * endFlashIntensity;
+                        shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, normalize(endFlashPosition)), gbufferProjection[1].y * 0.72794047);
+                    } else {
+                        sRGBLightCol = vec3(0.0);
+                        shdLightDirScreenSpace = vec3(-10.0, -10.0, 0.0);
+                    }
                 } else {
                     #ifdef END_BH_LIGHT
                         if(END_BH_LIGHT > 0.0){
-                            sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0 * (END_BH_LIGHT * 0.65);
-                            shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, mat3(gbufferModelView) * blackHoleDir), gbufferProjection[1].y * 0.72794047);
+                            vec3 bhViewDir = mat3(gbufferModelView) * blackHoleDir;
+                            if(bhViewDir.z < -0.01){
+                                sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0 * (END_BH_LIGHT * 0.65);
+                                shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, bhViewDir), gbufferProjection[1].y * 0.72794047);
+                            } else {
+                                sRGBLightCol = vec3(0.0);
+                                shdLightDirScreenSpace = vec3(-10.0, -10.0, 0.0);
+                            }
                         } else {
                             sRGBLightCol = vec3(0.0);
                             shdLightDirScreenSpace = vec3(0.0);
@@ -76,7 +87,12 @@
                 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
 
                 // Get shadow light view direction in screen space
-                shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), gbufferProjection[1].y * 0.72794047);
+                vec3 lightViewDir = mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
+                if(lightViewDir.z < -0.001){
+                    shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, lightViewDir), gbufferProjection[1].y * 0.72794047);
+                } else {
+                    shdLightDirScreenSpace = vec3(-10.0, -10.0, 0.0);
+                }
             #endif
         #endif
 
@@ -162,6 +178,26 @@
 
     #include "/lib/post/tonemap.glsl"
 
+    #if defined LENS_FLARE && defined WORLD_LIGHT
+        float getCloudFlareOcclusion(in vec2 lightScreenPos){
+            bool onScreen = lightScreenPos.x >= 0.0 && lightScreenPos.x <= 1.0 && lightScreenPos.y >= 0.0 && lightScreenPos.y <= 1.0;
+            if(!onScreen) return 1.0;
+
+            vec2 sunOffset = vec2(0.012 / aspectRatio, 0.012);
+            vec3 s0 = textureLod(colortex4, lightScreenPos, 0.0).rgb;
+            vec3 s1 = textureLod(colortex4, lightScreenPos + vec2(sunOffset.x, 0.0), 0.0).rgb;
+            vec3 s2 = textureLod(colortex4, lightScreenPos - vec2(sunOffset.x, 0.0), 0.0).rgb;
+            vec3 s3 = textureLod(colortex4, lightScreenPos + vec2(0.0, sunOffset.y), 0.0).rgb;
+            vec3 s4 = textureLod(colortex4, lightScreenPos - vec2(0.0, sunOffset.y), 0.0).rgb;
+            vec3 celestialSample = (s0 * 2.0 + s1 + s2 + s3 + s4) * (1.0 / 6.0);
+
+            float lightLuma = getLuminance(celestialSample);
+            float baseLightLuma = max(getLuminance(toLinear(sRGBLightCol)), 0.005);
+            float lumaRatio = lightLuma / baseLightLuma;
+            return smoothstep(2.8, 5.5, lumaRatio);
+        }
+    #endif
+
     void main(){
         // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
@@ -186,19 +222,29 @@
         #endif
 
         #if defined LENS_FLARE && defined WORLD_LIGHT
-            #ifdef DISTANT_HORIZONS
-                bool isSky = textureLod(dhDepthTex1, shdLightDirScreenSpace.xy, 0).x == 1 && textureLod(depthtex0, shdLightDirScreenSpace.xy, 0).x == 1;
-            #elif defined VOXY
-                bool isSky = textureLod(vxDepthTexOpaque, shdLightDirScreenSpace.xy, 0).x == 1 && textureLod(depthtex0, shdLightDirScreenSpace.xy, 0).x == 1;
-            #else
-                bool isSky = textureLod(depthtex0, shdLightDirScreenSpace.xy, 0).x == 1;
-            #endif
+            if(shdLightDirScreenSpace.z > 0.0){
+                #ifdef DISTANT_HORIZONS
+                    bool isSky = textureLod(dhDepthTex1, shdLightDirScreenSpace.xy, 0).x == 1 && textureLod(depthtex0, shdLightDirScreenSpace.xy, 0).x == 1;
+                #elif defined VOXY
+                    bool isSky = textureLod(vxDepthTexOpaque, shdLightDirScreenSpace.xy, 0).x == 1 && textureLod(depthtex0, shdLightDirScreenSpace.xy, 0).x == 1;
+                #else
+                    bool isSky = textureLod(depthtex0, shdLightDirScreenSpace.xy, 0).x == 1;
+                #endif
 
-            #ifdef FORCE_DISABLE_WEATHER
-                if(isSky) postColOut += getLensFlare(texCoord - 0.5, shdLightDirScreenSpace.xy - 0.5) * (1.0 - blindness) * (1.0 - darknessFactor);
-            #else
-                if(isSky && weatherFade < 1.0) postColOut += getLensFlare(texCoord - 0.5, shdLightDirScreenSpace.xy - 0.5) * (1.0 - blindness) * (1.0 - darknessFactor) * (1.0 - weatherFade);
-            #endif
+                if(isSky){
+                    #ifdef FORCE_DISABLE_WEATHER
+                        float weatherFlare = 1.0;
+                    #else
+                        float weatherFlare = 1.0 - weatherFade;
+                    #endif
+                    if(weatherFlare > 0.0){
+                        float cloudFlare = getCloudFlareOcclusion(shdLightDirScreenSpace.xy);
+                        if(cloudFlare > 0.001){
+                            postColOut += getLensFlare(texCoord - 0.5, shdLightDirScreenSpace.xy - 0.5) * (cloudFlare * weatherFlare * (1.0 - blindness) * (1.0 - darknessFactor));
+                        }
+                    }
+                }
+            }
         #endif
 
         #ifdef AUTO_EXPOSURE

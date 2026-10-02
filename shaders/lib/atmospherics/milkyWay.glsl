@@ -178,15 +178,17 @@ vec3 getProceduralMilkyWay(in vec3 skyPos, in float time){
     float n3 = periodicValueNoise(mwBlock * 0.16 + vec2(15.7, 3.9), 48.0);
     float nebulaNoise = n1 * 0.55 + n2 * 0.30 + n3 * 0.15;
     
-    // Galactic core bulge (wider vertically)
-    float dLon = (normLon - 0.5) * TAU;
-    float dLat = bandLat;
-    float coreDist = sqrt(dLon * dLon * 1.8 + dLat * dLat * 9.0);
+    float blockLonNorm = (blockX + 0.5) / BLOCKS_X;
+    float blockLatNorm = (blockY + 0.5) / BLOCKS_Y;
+    float blockDLon = (blockLonNorm - 0.5) * TAU;
+    float blockDLat = blockLatNorm;
+    
+    // Galactic core bulge (evaluated on pixel grid for pure blocky Minecraft steps, no rounded artifacts)
+    float coreDist = sqrt(blockDLon * blockDLon * 1.8 + blockDLat * blockDLat * 9.0);
     float coreBulge = saturate(1.0 - coreDist * 1.2);
     coreBulge = coreBulge * coreBulge;
     
-    // Latitude band falloff (stepped per row for blocky structure - wider band)
-    float blockLatNorm = (blockY + 0.5) / BLOCKS_Y;
+    // Latitude band falloff (stepped per row for blocky structure)
     float latEnvelope = saturate(1.0 - abs(blockLatNorm) * 2.1);
     latEnvelope = latEnvelope * latEnvelope;
     
@@ -194,33 +196,33 @@ vec3 getProceduralMilkyWay(in vec3 skyPos, in float time){
     
     vec3 mwColor = vec3(0.0);
     
-    // Tier 1: Outer cosmic violet
-    if(combinedDensity > 0.16){
-        mwColor = vec3(0.045, 0.015, 0.10);
+    // Tier 1: Outer cosmic deep violet (darker, subtle background blend)
+    if(combinedDensity > 0.14){
+        mwColor = vec3(0.045, 0.012, 0.095);
     }
-    // Tier 2: Mid magenta / amethyst
-    if(combinedDensity > 0.28){
-        mwColor = vec3(0.13, 0.04, 0.18);
+    // Tier 2: Mid amethyst / deep magenta
+    if(combinedDensity > 0.26){
+        mwColor = vec3(0.16, 0.038, 0.22);
     }
-    // Tier 3: Inner celestial orchid & cyan accents
-    if(combinedDensity > 0.44){
+    // Tier 3: Inner celestial orchid & vibrant rose-pink accents (harmonious pink/purple palette)
+    if(combinedDensity > 0.40){
         float accent = hash12(mwBlock + vec2(57.3, 29.1));
-        mwColor = accent > 0.80 ? vec3(0.08, 0.20, 0.25) : vec3(0.26, 0.09, 0.24);
+        mwColor = accent > 0.72 ? vec3(0.38, 0.12, 0.34) : vec3(0.26, 0.07, 0.28);
     }
-    // Tier 4: Core warm starlight
-    if(combinedDensity > 0.60){
-        float coreFactor = saturate((combinedDensity - 0.60) * 3.5);
-        mwColor = mix(vec3(0.45, 0.34, 0.28), vec3(0.72, 0.65, 0.58), coreFactor);
+    // Tier 4: Core glowing starlight (soft celestial lavender-white, no muddy yellow/brown)
+    if(combinedDensity > 0.56){
+        float coreFactor = saturate((combinedDensity - 0.56) * 3.2);
+        mwColor = mix(vec3(0.44, 0.18, 0.40), vec3(0.85, 0.75, 0.92), coreFactor);
     }
     
-    // Luminous core center radiation
-    mwColor += vec3(0.42, 0.30, 0.24) * (coreBulge * step(0.22, combinedDensity) * 0.4);
+    // Luminous core center radiation (soft lavender-pink glow)
+    mwColor += vec3(0.35, 0.18, 0.38) * (coreBulge * step(0.18, combinedDensity) * 0.45);
     
     // Dark dust rift (Great Rift)
     float dustN = periodicValueNoise(mwBlock * 0.08 + vec2(15.0, 7.0), 24.0);
-    float inRift = step(0.50, dustN) * step(abs(blockLatNorm - 0.02 * sin(dLon * 3.0)), 0.12) * step(abs(dLon - 0.1), 0.85);
-    if(inRift > 0.5 && combinedDensity > 0.22){
-        mwColor *= 0.18;
+    float inRift = step(0.50, dustN) * step(abs(blockLatNorm - 0.02 * sin(blockDLon * 3.0)), 0.12) * step(abs(blockDLon - 0.1), 0.85);
+    if(inRift > 0.5 && combinedDensity > 0.20){
+        mwColor *= 0.22;
     }
     
     // Delicate square stars inside the Milky Way
@@ -235,10 +237,10 @@ vec3 getProceduralMilkyWay(in vec3 skyPos, in float time){
     vec2 mwFrac = fract(mwGridPos) - 0.5;
     
     vec3 sHash = hash32(mwCell + mwFaceId * 157.3);
-    float starChance = 0.91 - combinedDensity * 0.09 - coreBulge * 0.05;
+    float starChance = 0.89 - combinedDensity * 0.11 - coreBulge * 0.06;
     
-    if(sHash.x > starChance && combinedDensity > 0.10){
-        float starRadius = sHash.y > 0.90 ? 0.22 : (sHash.y > 0.55 ? 0.13 : 0.07);
+    if(sHash.x > starChance && combinedDensity > 0.08){
+        float starRadius = sHash.y > 0.90 ? 0.24 : (sHash.y > 0.55 ? 0.14 : 0.08);
         #if STAR_ROTATION != 0
             float starAngle = sHash.y * TAU;
             vec2 rFrac = rot2D(starAngle) * mwFrac;
@@ -250,10 +252,10 @@ vec3 getProceduralMilkyWay(in vec3 skyPos, in float time){
         float starShape = saturate((starRadius - sqDist) / max(edge, 0.001));
         
         if(starShape > 0.0){
-            float lum = ((sHash.z * sHash.z) * 1.6 + 0.35) * (1.0 + coreBulge * 0.4) * mix(1.0, 0.20, MOON_PHASE_FACTOR);
+            float lum = ((sHash.z * sHash.z) * 2.0 + 0.45) * (1.0 + coreBulge * 0.5) * mix(1.0, 0.20, MOON_PHASE_FACTOR);
             vec3 tint = mix(vec3(0.85, 0.92, 1.0), vec3(1.0, 0.88, 0.72), sHash.y);
             float twinkle = sin(time * 2.2 + sHash.x * 45.0) * 0.2 + 0.8;
-            mwColor += tint * (lum * twinkle * starShape * 0.85);
+            mwColor += tint * (lum * twinkle * starShape * 1.05);
         }
     }
     
