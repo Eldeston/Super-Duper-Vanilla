@@ -27,6 +27,7 @@
         "lightningFlash",
         "rainStrength",
         "weatherFade",
+        "overcastIntensity",
         "dayCycle",
         "twilightPhase",
         "moonPhase",

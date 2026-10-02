@@ -193,7 +193,7 @@ screen.LIGHTING.comment = §6Lighting and shadow options including shadow mappin
 screen.ATMOSPHERICS = Atmospherics
 screen.ATMOSPHERICS.comment = §6Atmospheric effects including sun/moon, clouds, fog, border fog, and volumetric lighting.
     option.SUN_MOON_ROUNDNESS = Sun/moon roundness
-    option.SUN_MOON_ROUNDNESS.comment = Adjust celestial body, star, flare, and End flash roundness from square (0.0) to circle (1.0).
+    option.SUN_MOON_ROUNDNESS.comment = Adjust celestial body, star, rainbow/rainsquare, flare, and End flash roundness from square (0.0) to circle (1.0).
         value.SUN_MOON_ROUNDNESS.0.00 = Square
         value.SUN_MOON_ROUNDNESS.0.50 = Rounded
         value.SUN_MOON_ROUNDNESS.1.00 = Circle
@@ -236,6 +236,9 @@ screen.ATMOSPHERICS.comment = §6Atmospheric effects including sun/moon, clouds,
         option.SECOND_CLOUD_HEIGHT = High altitude cloud height
         option.SECOND_CLOUD_HEIGHT.comment = Altitude offset for the high altitude cloud layer (cirrus clouds).
 
+        option.DYNAMIC_WEATHER = Dynamic weather
+        option.DYNAMIC_WEATHER.comment = Generates a procedural weather system with random overcast intensity that dictates cloud coverage in the sky, ranging from totally clear days and nights to completely overcast skies. Rain can happen with partial overcast.
+
         option.VOLUMETRIC_CLOUD_STEPS = Volumetric steps
         option.VOLUMETRIC_CLOUD_STEPS.comment = Story mode clouds steps. Increasing may improve quality and demand more performance.
 
@@ -260,6 +263,11 @@ screen.ATMOSPHERICS.comment = §6Atmospheric effects including sun/moon, clouds,
     option.AURORA.comment = Enables volumetric Minecraft-style auroras with dancing, intersecting vertical curtains in cold, snowy, and icy biomes. Features a pixelized cloud-like look with colors transitioning from pink at the top to green in the middle and electric blue at the bottom.
     option.AURORA_BRIGHTNESS = Aurora Brightness
     option.AURORA_BRIGHTNESS.comment = Adjusts the brightness of the volumetric aurora curtains.
+
+    option.RAINBOW = Rainbow
+    option.RAINBOW.comment = Enables a procedural double rainbow (or rainsquare) when raining and not totally overcast. Appears opposite the sun during the day or opposite the moon at night, featuring a vivid primary bow and a fainter secondary outer bow. Follows Sun/Moon Roundness.
+    option.RAINBOW_BRIGHTNESS = Rainbow Brightness
+    option.RAINBOW_BRIGHTNESS.comment = Adjusts the brightness of the double rainbow.
 
     option.STAR_ROTATION = Star Rotation
     option.STAR_ROTATION.comment = Star rotation style. Aligned keeps all square stars axis-aligned. Random gives each star an individual random rotation angle. Enforced for both the Milky Way and the night sky.

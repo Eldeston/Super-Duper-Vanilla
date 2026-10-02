@@ -92,6 +92,9 @@
         void main(){
             // Apply simple shading
             #ifndef FORCE_DISABLE_WEATHER
+                #ifdef DYNAMIC_WEATHER
+                    if(weatherFade <= 0.001){ discard; return; }
+                #endif
                 vec3 weatherSky = vec3(dot(toLinear(fogColor), vec3(0.2126, 0.7152, 0.0722)));
                 vec3 cloudBaseSky = mix(toLinear(SKY_COLOR_DATA_BLOCK), weatherSky * 0.35, weatherFade);
                 vec3 cloudDirectLight = toLinear(LIGHT_COLOR_DATA_BLOCK0) * ((1.0 - weatherFade) * squared(cloudGradient));

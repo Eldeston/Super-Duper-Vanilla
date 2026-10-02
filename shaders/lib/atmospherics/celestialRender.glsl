@@ -117,10 +117,12 @@ float getSunMoonShape(in vec2 skyPos){
             
             // Combine body (inside disc) and outside glare (beyond disc)
             vec3 moonPattern = mix(glareCol, glareCol * (1.0 - litMask) + bodyCol, moonDisc);
-            return moonPattern * (sunMoonIntensitySqrd * (1.0 - weatherFadeAmount));
+            float celestialVis = 1.0 - smoothstep(0.70, 0.95, weatherFadeAmount);
+            return moonPattern * (sunMoonIntensitySqrd * celestialVis);
         #else
             float sunMoonShape = glow * sunMoonIntensitySqrd;
-            return moonColor * (sunMoonShape * (1.0 - weatherFadeAmount));
+            float celestialVis = 1.0 - smoothstep(0.70, 0.95, weatherFadeAmount);
+            return moonColor * (sunMoonShape * celestialVis);
         #endif
     }
 
@@ -162,10 +164,12 @@ float getSunMoonShape(in vec2 skyPos){
             vec3 glareCol = sunColor * glow;
             
             vec3 sunPattern = mix(glareCol, bodyCol, sunDisc);
-            return sunPattern * (sunMoonIntensitySqrd * (1.0 - weatherFadeAmount));
+            float celestialVis = 1.0 - smoothstep(0.70, 0.95, weatherFadeAmount);
+            return sunPattern * (sunMoonIntensitySqrd * celestialVis);
         #else
             float sunShape = glow * sunMoonIntensitySqrd;
-            return sunColor * (sunShape * (1.0 - weatherFadeAmount));
+            float celestialVis = 1.0 - smoothstep(0.70, 0.95, weatherFadeAmount);
+            return sunColor * (sunShape * celestialVis);
         #endif
     }
 #endif // WORLD_SUN_MOON == 1

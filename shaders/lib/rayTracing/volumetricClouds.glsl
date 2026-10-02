@@ -20,14 +20,15 @@ vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPl
 	float furthestPlane = min(cloudFar, max(lowerBoundDist, higherBoundDist));
 
     // If the clouds are outside the bounding box, return nothing
-    if(furthestPlane < 0) return vec2(0);
+    if(furthestPlane <= nearestPlane || furthestPlane < 0.0) return vec2(0);
 
     // Get distance inside the cloud
     float distInsideCloud = furthestPlane - nearestPlane;
+    if(distInsideCloud <= 0.0) return vec2(0);
 
     // Calculate cloud steps that dynamically increase with distance
-    uint dynamicVolumetricCloudSteps = min(uint(distInsideCloud), volumetricCloudSteps);
-    float volumetricCloudStepsInverse = 1.0 / dynamicVolumetricCloudSteps;
+    uint dynamicVolumetricCloudSteps = max(1u, min(uint(distInsideCloud), volumetricCloudSteps));
+    float volumetricCloudStepsInverse = 1.0 / float(dynamicVolumetricCloudSteps);
 
     // Multiply by volumetricCloudStepsInverse to get the step size and scale with distance
     vec3 endPos = nFeetPlayerPos * (distInsideCloud * volumetricCloudStepsInverse);

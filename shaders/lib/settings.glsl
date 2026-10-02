@@ -75,7 +75,7 @@ const float sunPathRotation = 30.0; // Light path angle. This also affects sky a
 
 /// -------------------------------- /// Atmospherics /// -------------------------------- ///
 
-#define SUN_MOON_ROUNDNESS 0.00 // Roundness of sun, moon, stars, black hole, flares, and end flashes. 0.00 is perfect square, 0.50 is rounded, 1.00 is circle. [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00]
+#define SUN_MOON_ROUNDNESS 0.00 // Roundness of sun, moon, stars, rainbow/rainsquare, black hole, flares, and end flashes. 0.00 is perfect square, 0.50 is rounded, 1.00 is circle. [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00]
 #define SUN_MOON_INTENSITY 4 // The sun or moon's intensity. Also affects specular reflections. [0 1 2 3 4 5 6 7 8]
 #define SUN_MOON_SIZE 0.10 // Size of sun, moon, and black hole in the sky. [0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50]
 
@@ -89,6 +89,8 @@ const float sunPathRotation = 30.0; // Light path angle. This also affects sky a
 #define MILKY_WAY_BRIGHTNESS 1.00 // Milky Way brightness. [0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00 1.10 1.20 1.30 1.40 1.50 1.60 1.70 1.80 1.90 2.00]
 #define AURORA // Enables volumetric pixelized aurora curtains in cold and snowy biomes.
 #define AURORA_BRIGHTNESS 1.00 // Aurora brightness. [0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00 1.10 1.20 1.30 1.40 1.50 1.60 1.70 1.80 1.90 2.00]
+#define RAINBOW // Enables procedural double rainbow / rainsquare when raining and not totally overcast.
+#define RAINBOW_BRIGHTNESS 1.00 // Rainbow brightness. [0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00 1.10 1.20 1.30 1.40 1.50 1.60 1.70 1.80 1.90 2.00]
 #define STAR_ROTATION 0 // Star rotation mode. Aligned keeps all square stars axis-aligned. Random rotates each star at an individual random angle. [0 1]
 
 /// -------------------------------- /// Cloud settings /// -------------------------------- ///
@@ -96,6 +98,7 @@ const float sunPathRotation = 30.0; // Light path angle. This also affects sky a
 #define CLOUD_TYPE 2 // Changes cloud type. [0 1 2]
 #define DOUBLE_LAYERED_CLOUDS // Adds another layer of clouds (works on both vanilla and shader clouds), may use up performance.
 #define DYNAMIC_CLOUDS // Makes clouds more dynamic and allows weather to affect it. (affects on both vanilla and story mode clouds).
+#define DYNAMIC_WEATHER // Enables procedural dynamic weather and overcast system.
 #define FADE_SPEED 0.20 // Cloud fade speed [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.05 1.10 1.15 1.20 1.25 1.30 1.35 1.40 1.45 1.50 1.55 1.60 1.65 1.70 1.75 1.80 1.85 1.90 1.95 2.00 2.05 2.10 2.15 2.20 2.25 2.30 2.35 2.40 2.45 2.50 2.55 2.60 2.65 2.70 2.75 2.80 2.85 2.90 2.95 3.00 3.05 3.10 3.15 3.20 3.25 3.30 3.35 3.40 3.45 3.50 3.55 3.60 3.65 3.70 3.75 3.80 3.85 3.90 3.95 4.00]
 #define SECOND_CLOUD_HEIGHT 256.0 // High altitude cloud height [0.0 8.0 16.0 24.0 32.0 40.0 48.0 56.0 64.0 72.0 80.0 88.0 96.0 104.0 112.0 120.0 128.0 144.0 160.0 176.0 192.0 208.0 224.0 240.0 256.0 288.0 320.0 352.0 384.0 416.0 448.0 480.0 512.0]
 

@@ -34,16 +34,13 @@
             #include "/lib/utility/taaJitter.glsl"
         #endif
 
+        uniform vec3 cameraPosition;
+        uniform mat4 gbufferModelView;
+        uniform mat4 gbufferModelViewInverse;
+
         #ifdef WEATHER_ANIMATION
             uniform float rainStrength;
-
             uniform float vertexFrameTime;
-
-            uniform vec3 cameraPosition;
-
-            uniform mat4 gbufferModelView;
-            uniform mat4 gbufferModelViewInverse;
-
             #include "/lib/vertex/weatherWave.glsl"
         #endif
 
@@ -56,10 +53,18 @@
             // Get vertex view position
             vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
 
-            #ifdef WEATHER_ANIMATION
-                // Get vertex eye player position
-                vec3 vertexEyePlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos;
+            // Get vertex eye player position
+            vec3 vertexEyePlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos;
 
+            // No rain above the clouds (cloud base ~192.0):
+            // Cull entire rain rendering if player is flying above clouds or if particles are above cloud altitude
+            float vertexWorldPosY = vertexEyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y;
+            if(cameraPosition.y >= 192.0 || vertexWorldPosY >= 192.0){
+                gl_Position = vec4(-10.0);
+                return;
+            }
+
+            #ifdef WEATHER_ANIMATION
                 // Get vertex feet player position
                 vec2 vertexFeetPlayerPosXZ = vertexEyePlayerPos.xz + gbufferModelViewInverse[3].xz;
                 // Get vertex world position
@@ -118,8 +123,16 @@
             uniform float rainStrength;
             uniform float weatherFade;
         #endif
+
+        #ifndef CAMERA_POSITION_DECLARED
+            #define CAMERA_POSITION_DECLARED
+            uniform vec3 cameraPosition;
+        #endif
         
         void main(){
+            // No rain above the clouds
+            if(cameraPosition.y >= 192.0){ discard; return; }
+
             // Get albedo color
             vec4 albedo = textureLod(gtexture, texCoord, 0);
 

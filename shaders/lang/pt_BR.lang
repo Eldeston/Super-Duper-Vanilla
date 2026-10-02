@@ -107,6 +107,8 @@ screen.ATMOSPHERICS = Atmosféricos
     option.MILKY_WAY_BRIGHTNESS = Brilho da Via Láctea
     option.AURORA = Aurora Boreal
     option.AURORA_BRIGHTNESS = Brilho da Aurora
+    option.RAINBOW = Arco-íris
+    option.RAINBOW_BRIGHTNESS = Brilho do Arco-íris
     option.STAR_ROTATION = Rotação das Estrelas
         value.STAR_ROTATION.0 = Alinhada
         value.STAR_ROTATION.1 = Aleatória
@@ -117,6 +119,7 @@ screen.ATMOSPHERICS = Atmosféricos
     option.CLOUD_STEPS = Passos da Nuvem
     option.CLOUD_DEPTH = Profundidade da Nuvem
     option.SECOND_CLOUD_HEIGHT = Altura da Segunda Camada de Nuvens
+    option.DYNAMIC_WEATHER = Clima Dinâmico
     option.SKYBOX_BRIGHTNESS = Brilho da Skybox
 
 screen.WORLD = Mundo

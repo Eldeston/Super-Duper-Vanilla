@@ -193,7 +193,7 @@ screen.LIGHTING.comment = §6光照和阴影选项, 包括阴影映射, 实体�
 screen.ATMOSPHERICS = 大气系统
 screen.ATMOSPHERICS.comment = §6大气系统效果, 包括日月, 云, 雾, 边界雾, 及体积光.
     option.SUN_MOON_ROUNDNESS = 日月圆角
-    option.SUN_MOON_ROUNDNESS.comment = 调整天体、星星、耀斑及末地闪光的圆角程度, 从正方形 (0.0) 到圆角 (0.5) 再到圆形 (1.0).
+    option.SUN_MOON_ROUNDNESS.comment = 调整天体、星星、彩虹/方彩虹、耀斑及末地闪光的圆角程度, 从正方形 (0.0) 到圆角 (0.5) 再到圆形 (1.0).
         value.SUN_MOON_ROUNDNESS.0.00 = 方形
         value.SUN_MOON_ROUNDNESS.0.50 = 圆角
         value.SUN_MOON_ROUNDNESS.1.00 = 圆形
@@ -230,6 +230,10 @@ screen.ATMOSPHERICS.comment = §6大气系统效果, 包括日月, 云, 雾, 边
     option.AURORA.comment = 在寒冷, 积雪和冰原生物群系中启用体积感像素风格的舞动相交垂直极光帷幔. 拥有类似云层的像素化质感, 颜色自顶部的粉红过渡到中部的翠绿及底部的电蓝色.
     option.AURORA_BRIGHTNESS = 极光亮度
     option.AURORA_BRIGHTNESS.comment = 调整体积极光帷幔的亮度.
+    option.RAINBOW = 彩虹
+    option.RAINBOW.comment = 在下雨且天空未完全阴沉时启用程序化双彩虹 (或方彩虹). 白天出现于太阳对侧, 夜间出现于月亮对侧, 包含鲜艳的主虹与较暗的外层副虹. 遵循日月圆角设置.
+    option.RAINBOW_BRIGHTNESS = 彩虹亮度
+    option.RAINBOW_BRIGHTNESS.comment = 调整双彩虹的亮度.
     option.STAR_ROTATION = 星星旋转
     option.STAR_ROTATION.comment = 星星旋转样式. 对齐保持所有方形星星对齐天球网格. 随机赋予每颗星星单独的随机旋转角度. 同时应用于银河与夜空.
     value.STAR_ROTATION.0 = 对齐
@@ -248,6 +252,9 @@ screen.ATMOSPHERICS.comment = §6大气系统效果, 包括日月, 云, 雾, 边
 
         option.SECOND_CLOUD_HEIGHT = 第二云层高度
         option.SECOND_CLOUD_HEIGHT.comment = 第二层云的高度, 仅在双层云启用时有效.
+
+        option.DYNAMIC_WEATHER = 动态天气
+        option.DYNAMIC_WEATHER.comment = 启用程序化动态天气系统, 阴天覆盖度随时间自然起伏, 呈现完全无云的晴朗昼夜至漫天阴云的阴雨天气. 下雨时天空亦可呈现部分多云状态.
 
         option.VOLUMETRIC_CLOUD_STEPS = 体积云步进
         option.VOLUMETRIC_CLOUD_STEPS.comment = 故事模式云步进次数. 增加可能提升云的质量且需要更多性能.

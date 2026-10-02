@@ -193,7 +193,7 @@ screen.LIGHTING.comment = §6Options d'éclairage et d'ombres incluant le shadow
 screen.ATMOSPHERICS = Atmosphère
 screen.ATMOSPHERICS.comment = §6Effets atmosphériques incluant le soleil/lune, les nuages, le brouillard, le brouillard de bordure et l'éclairage volumétrique.
     option.SUN_MOON_ROUNDNESS = Rondeur soleil/lune
-    option.SUN_MOON_ROUNDNESS.comment = Ajuste la forme des astres, étoiles, éclats et flashs de l'End, de carré (0.0) à rond (1.0).
+    option.SUN_MOON_ROUNDNESS.comment = Ajuste la forme des astres, étoiles, arc-en-ciel/carré, éclats et flashs de l'End, de carré (0.0) à rond (1.0).
         value.SUN_MOON_ROUNDNESS.0.00 = Carré
         value.SUN_MOON_ROUNDNESS.0.50 = Arrondi
         value.SUN_MOON_ROUNDNESS.1.00 = Rond
@@ -236,6 +236,9 @@ screen.ATMOSPHERICS.comment = §6Effets atmosphériques incluant le soleil/lune,
         option.SECOND_CLOUD_HEIGHT = Altitude nuages de haute altitude
         option.SECOND_CLOUD_HEIGHT.comment = Décalage d'altitude pour la couche de nuages de haute altitude (cirrus).
 
+        option.DYNAMIC_WEATHER = Météo dynamique
+        option.DYNAMIC_WEATHER.comment = Génère un système météorologique procédural avec une intensité de couverture nuageuse aléatoire, créant des jours et nuits totalement dégagés jusqu'à un ciel complètement couvert. La pluie peut survenir sous un ciel partiellement couvert.
+
         option.VOLUMETRIC_CLOUD_STEPS = Pas volumétriques
         option.VOLUMETRIC_CLOUD_STEPS.comment = Nombre d'étapes pour les nuages Story Mode. Augmenter peut améliorer la qualité et consommer plus de performances.
 
@@ -260,6 +263,11 @@ screen.ATMOSPHERICS.comment = §6Effets atmosphériques incluant le soleil/lune,
     option.AURORA.comment = Active des aurores boréales volumétriques avec des rideaux verticaux ondulants qui s'entrecroisent dans les biomes froids et enneigés. Rendu pixélisé façon nuages avec un dégradé du rose (haut) au vert puis au bleu (bas).
     option.AURORA_BRIGHTNESS = Luminosité de l'aurore
     option.AURORA_BRIGHTNESS.comment = Ajuste la luminosité des rideaux volumétriques d'aurore.
+
+    option.RAINBOW = Arc-en-ciel
+    option.RAINBOW.comment = Active un double arc-en-ciel procédural (ou carré de pluie) lorsqu'il pleut et que le ciel n'est pas totalement couvert. Apparaît à l'opposé du soleil en journée ou de la lune la nuit, avec un arc primaire éclatant et un arc secondaire plus discret. Suit la rondeur soleil/lune.
+    option.RAINBOW_BRIGHTNESS = Luminosité arc-en-ciel
+    option.RAINBOW_BRIGHTNESS.comment = Ajuste la luminosité du double arc-en-ciel.
 
     option.STAR_ROTATION = Rotation des étoiles
     option.STAR_ROTATION.comment = Style de rotation des étoiles. Aligné garde les étoiles carrées alignées sur la grille céleste. Aléatoire donne à chaque étoile un angle de rotation aléatoire. Appliqué à la Voie lactée et au ciel.

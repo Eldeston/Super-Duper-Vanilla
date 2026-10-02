@@ -12,6 +12,7 @@
 #include "/lib/atmospherics/celestialRender.glsl"
 #include "/lib/atmospherics/milkyWay.glsl"
 #include "/lib/atmospherics/aurora.glsl"
+#include "/lib/atmospherics/rainbow.glsl"
 
 #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
     // Depth size / cloud steps
@@ -39,6 +40,12 @@
 
     // Sky clouds render
     vec3 getSkyClouds(in vec3 nEyePlayerPos, in vec3 currSkyCol){
+        #ifndef FORCE_DISABLE_WEATHER
+            #ifdef DYNAMIC_WEATHER
+                if(weatherFade <= 0.001) return currSkyCol;
+            #endif
+        #endif
+
         float cloudHeightFade = nEyePlayerPos.y - 0.1;
 
         #ifdef FORCE_DISABLE_WEATHER
@@ -57,11 +64,12 @@
 
         #ifdef DOUBLE_LAYERED_CLOUDS
             #ifndef FORCE_DISABLE_WEATHER
-                if(weatherFade < 1.0){
+                if(weatherFade < 1.0 && weatherFade > 0.001){
                     vec2 cirrusUv = nEyePlayerPos.xz * ((6.0 + (SECOND_CLOUD_HEIGHT / 195.0) * 6.0) / nEyePlayerPos.y);
                     vec2 cirrusStart = vec2(cirrusUv.x * 0.32 + cirrusUv.y * 0.128, cirrusUv.y * 1.6);
                     vec2 cirrusCam = vec2(planePos.x * 0.32 + planePos.y * 0.128, planePos.y * 1.6);
-                    cloudData = max(cloudParallaxDynamic(cirrusStart, cirrusCam).yx * (0.20 * (1.0 - weatherFade)), cloudData);
+                    float cirrusFactor = smoothstep(0.0, 0.25, weatherFade) * (1.0 - weatherFade);
+                    cloudData = max(cloudParallaxDynamic(cirrusStart, cirrusCam).yx * (0.20 * cirrusFactor), cloudData);
                 }
             #else
                 vec2 cirrusUv = nEyePlayerPos.xz * ((6.0 + (SECOND_CLOUD_HEIGHT / 195.0) * 6.0) / nEyePlayerPos.y);
@@ -74,9 +82,28 @@
         #ifdef DYNAMIC_CLOUDS
             float fadeTime = saturate(sin(fragmentFrameTime * FADE_SPEED) * 0.8 + 0.5);
 
-            float clouds = mix(mix(cloudData.x, cloudData.y, fadeTime), max(cloudData.x, cloudData.y), weatherFade);
+            float baseClouds = mix(cloudData.x, cloudData.y, fadeTime);
         #else
-            float clouds = mix(cloudData.x, max(cloudData.x, cloudData.y), weatherFade);
+            float baseClouds = cloudData.x;
+        #endif
+
+        #ifndef FORCE_DISABLE_WEATHER
+            #ifdef DYNAMIC_WEATHER
+                // Scale clouds smoothly as overcast rises from clear to partly cloudy
+                float cloudPresence = smoothstep(0.0, 0.40, weatherFade);
+                baseClouds *= cloudPresence;
+
+                // Mix in expanded coverage from both channels
+                float expandedClouds = mix(baseClouds, max(cloudData.x, cloudData.y) * cloudPresence, weatherFade);
+
+                // As overcast approaches 1.0, an overcast cloud deck fills the sky
+                float overcastDeck = saturate((weatherFade - 0.70) * 4.0);
+                float clouds = mix(expandedClouds, max(expandedClouds, float(skyBoxCloudSteps) * 0.70), overcastDeck);
+            #else
+                float clouds = mix(baseClouds, max(cloudData.x, cloudData.y), weatherFade);
+            #endif
+        #else
+            float clouds = baseClouds;
         #endif
 
         clouds *= cloudHeightFade * cloudStepSize;
@@ -132,7 +159,7 @@ vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){
 
     #if defined WORLD_LIGHT && WORLD_SUN_MOON == 1
         #ifndef FORCE_DISABLE_WEATHER
-            float celestialFade = 1.0 - weatherFade;
+            float celestialFade = 1.0 - smoothstep(0.70, 0.95, weatherFade);
         #else
             const float celestialFade = 1.0;
         #endif
@@ -328,6 +355,14 @@ vec3 getSkyReflection(in vec3 reflectViewDir){
 
     vec3 finalCol = getSkyHalf(reflectPlayerDir, skyPos, getSkyBasic(reflectPlayerDir.y, skyPos.z));
 
+    #ifdef RAINBOW
+        #if WORLD_ID == 0 && defined WORLD_LIGHT
+            #ifndef FORCE_DISABLE_WEATHER
+                finalCol += getRainbowRender(reflectPlayerDir, skyPos);
+            #endif
+        #endif
+    #endif
+
     // Skybox clouds should render in reflections when volumetrics are on
     #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
         finalCol = getSkyClouds(reflectPlayerDir, finalCol);
@@ -388,10 +423,11 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol)
     #ifdef WORLD_LIGHT
         #if WORLD_SUN_MOON == 1
             #ifndef FORCE_DISABLE_WEATHER
-                if(weatherFade < 1.0 && abs(skyPos.z) > 0.7){
+                if(weatherFade < 0.95 && abs(skyPos.z) > 0.7){
                     #ifdef FORCE_DISABLE_DAY_CYCLE
                         float sunMoonShape = getSunMoonShape(skyPos.xy / abs(skyPos.z)) * sunMoonIntensitySqrd;
-                        currSkyCol += sRGBLightCol * (sunMoonShape * (1.0 - weatherFade));
+                        float celestialVis = 1.0 - smoothstep(0.70, 0.95, weatherFade);
+                        currSkyCol += sRGBLightCol * (sunMoonShape * celestialVis);
                     #else
                         if(skyPos.z > 0.0){
                             currSkyCol += getSunRender(skyPos.xy / abs(skyPos.z), sRGBSunCol, weatherFade);

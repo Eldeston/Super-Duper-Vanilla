@@ -216,6 +216,12 @@
 
     #if !defined FORCE_DISABLE_CLOUDS && CLOUD_TYPE == 2
         vec3 renderTranslucentClouds(in vec3 sceneCol, in vec3 nFeetPlayerPos, in float feetPlayerDist, in float ditherX, in bool isSky){
+            #ifndef FORCE_DISABLE_WEATHER
+                #ifdef DYNAMIC_WEATHER
+                    if(weatherFade <= 0.001) return sceneCol;
+                #endif
+            #endif
+
             // Get the 1st layer of volumetric clouds position
             vec3 cloudStartPos0 = vec3(cameraPosition.x + fragmentFrameTime, cameraPosition.y - volumetricCloudHeight, cameraPosition.z);
 
@@ -224,12 +230,15 @@
 
             #ifdef DOUBLE_LAYERED_CLOUDS
                 #ifndef FORCE_DISABLE_WEATHER
-                    if(weatherFade < 1.0){
+                    if(weatherFade < 1.0 && weatherFade > 0.001){
                         // Get the 2nd layer of volumetric clouds position by reusing the 1st layer's position
                         vec3 cloudStartPos1 = vec3(cloudStartPos0.x + fragmentFrameTime * 0.25, cloudStartPos0.y - SECOND_CLOUD_HEIGHT, cloudStartPos0.z);
 
+                        // Fade cirrus with cloud presence at low overcast, and hide during full overcast
+                        float cirrusFactor = smoothstep(0.0, 0.25, weatherFade) * (1.0 - weatherFade);
+
                         // Variate by swizzling the 2 cloud channels
-                        cloudData = max(volumetricClouds(nFeetPlayerPos, cloudStartPos1, feetPlayerDist, ditherX, isSky, true).yx * (1.0 - weatherFade), cloudData);
+                        cloudData = max(volumetricClouds(nFeetPlayerPos, cloudStartPos1, feetPlayerDist, ditherX, isSky, true).yx * cirrusFactor, cloudData);
                     }
                 #else
                     // Get the 2nd layer of volumetric clouds position by reusing the 1st layer's position
@@ -240,12 +249,30 @@
                 #endif
             #endif
 
+            if(cloudData.x <= 0.0001 && cloudData.y <= 0.0001) return sceneCol;
+
             #ifdef DYNAMIC_CLOUDS
                 float fadeTime = saturate(sin(fragmentFrameTime * FADE_SPEED) * 0.8 + 0.5);
 
-                float cloudFinal = mix(mix(cloudData.x, cloudData.y, fadeTime), max(cloudData.x, cloudData.y), weatherFade) * 0.125;
+                float baseCumulus = mix(cloudData.x, cloudData.y, fadeTime);
             #else
-                float cloudFinal = mix(cloudData.x, max(cloudData.x, cloudData.y), weatherFade) * 0.125;
+                float baseCumulus = cloudData.x;
+            #endif
+
+            #ifndef FORCE_DISABLE_WEATHER
+                #ifdef DYNAMIC_WEATHER
+                    // Scale cumulus clouds smoothly as overcast rises from clear to partly cloudy
+                    float cloudPresence = smoothstep(0.0, 0.40, weatherFade);
+                    baseCumulus *= cloudPresence;
+
+                    // Mix in expanded coverage from both channels
+                    float expandedCumulus = mix(baseCumulus, max(cloudData.x, cloudData.y) * cloudPresence, weatherFade);
+                    float cloudFinal = expandedCumulus * 0.125;
+                #else
+                    float cloudFinal = mix(baseCumulus, max(cloudData.x, cloudData.y), weatherFade) * 0.125;
+                #endif
+            #else
+                float cloudFinal = baseCumulus * 0.125;
             #endif
 
             #ifdef FORCE_DISABLE_DAY_CYCLE
@@ -263,10 +290,7 @@
 
             vec3 cloudAmbient = vec3(toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash);
 
-            float cloudAlpha = saturate(cloudFinal * 1.6);
-            vec3 celestialExcess = max(vec3(0.0), sceneCol - cloudSkyLight);
-            vec3 occludedScene = min(sceneCol, cloudSkyLight) + celestialExcess * exp2(-cloudAlpha * 8.0);
-            return mix(occludedScene, cloudAmbient + cloudCelestialLight + cloudSkyLight, cloudAlpha);
+            return mix(sceneCol, cloudAmbient + cloudCelestialLight + cloudSkyLight, saturate(cloudFinal));
         }
     #endif
 
@@ -418,6 +442,19 @@
 
         #if !defined FORCE_DISABLE_CLOUDS && CLOUD_TYPE == 2
             sceneColOut = renderTranslucentClouds(sceneColOut, nFeetPlayerPos, feetPlayerDist, dither.x, isSky);
+        #endif
+
+        // Procedural Double Rainbow / Rainsquare (rendered at fixed distance, lower/in front of clouds)
+        #ifdef RAINBOW
+            #if WORLD_ID == 0 && defined WORLD_LIGHT
+                #ifndef FORCE_DISABLE_WEATHER
+                    vec3 skyPos = mat3(shadowModelView) * nEyePlayerPos;
+                    #ifndef FORCE_DISABLE_DAY_CYCLE
+                        if(dayCycle < 1) skyPos.xz = -skyPos.xz;
+                    #endif
+                    sceneColOut += getRainbowRender(nEyePlayerPos, skyPos, viewDist, isSky);
+                #endif
+            #endif
         #endif
 
         // Clamp scene color to prevent NaNs during post processing
