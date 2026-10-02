@@ -194,8 +194,11 @@
     #ifdef WORLD_LIGHT
         uniform float shdFade;
 
-        #if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING
-            uniform mat4 shadowProjection;
+        #if defined SHADOW_MAPPING && (defined VOLUMETRIC_LIGHTING || defined RAINBOW)
+            #ifndef SHADOW_PROJECTION_DECLARED
+                #define SHADOW_PROJECTION_DECLARED
+                uniform mat4 shadowProjection;
+            #endif
 
             #include "/lib/lighting/shdMapping.glsl"
         #endif
@@ -336,6 +339,21 @@
         #endif
     }
 
+    #ifdef RAINBOW
+        #if WORLD_ID == 0 && defined WORLD_LIGHT
+            #ifndef FORCE_DISABLE_WEATHER
+                vec3 getTranslucentRainbow(in vec3 nEyePlayerPos, in float viewDist, in bool isSky, in vec3 feetPlayerPos, in bool isWater){
+                    if(isEyeInWater != 0 || isWater) return vec3(0.0);
+                    vec3 skyPos = mat3(shadowModelView) * nEyePlayerPos;
+                    #ifndef FORCE_DISABLE_DAY_CYCLE
+                        if(dayCycle < 1) skyPos.xz = -skyPos.xz;
+                    #endif
+                    return getRainbowRender(nEyePlayerPos, skyPos, viewDist, isSky, feetPlayerPos, isWater);
+                }
+            #endif
+        #endif
+    #endif
+
     void main(){
         // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
@@ -448,11 +466,7 @@
         #ifdef RAINBOW
             #if WORLD_ID == 0 && defined WORLD_LIGHT
                 #ifndef FORCE_DISABLE_WEATHER
-                    vec3 skyPos = mat3(shadowModelView) * nEyePlayerPos;
-                    #ifndef FORCE_DISABLE_DAY_CYCLE
-                        if(dayCycle < 1) skyPos.xz = -skyPos.xz;
-                    #endif
-                    sceneColOut += getRainbowRender(nEyePlayerPos, skyPos, viewDist, isSky);
+                    sceneColOut += getTranslucentRainbow(nEyePlayerPos, viewDist, isSky, feetPlayerPos, matRaw0.z > 0.0 && matRaw0.z < 1.0);
                 #endif
             #endif
         #endif

@@ -1,3 +1,6 @@
+#ifndef SHD_MAPPING_GLSL
+#define SHD_MAPPING_GLSL
+
 // Enable filtering on shadows
 const int shadowMapResolution = 1024; // Shadow map resolution. Increase for more resolution at the cost of performance. [512 1024 1536 2048 2560 3072 3584 4096 4608 5120 5632 6144 6656 7168 7680 8192]
 const float shadowMapPixelSize = 1.0 / shadowMapResolution; // Shadow map pixel size. Calculated as the reciprocal of the shadow map resolution.
@@ -66,3 +69,5 @@ vec3 getShdCol(in vec3 shdPos, in float dither){
 		return (getShdCol(vec3(shdPos.xy + randVec, shdPos.z)) + getShdCol(vec3(shdPos.xy - randVec, shdPos.z))) * 0.5;
 	#endif
 }
+
+#endif // SHD_MAPPING_GLSL
