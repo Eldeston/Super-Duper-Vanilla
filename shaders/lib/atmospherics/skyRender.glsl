@@ -404,12 +404,14 @@ vec3 getSkyReflection(in vec3 reflectViewDir){
         vec2 projPos = vec2(dot(nEyePlayerPos, tanX), dot(nEyePlayerPos, tanY)) / max(flashDot, 0.0001);
 
         float dist = getSunMoonDist(projPos, WORLD_SUN_MOON_SIZE);
-        float shapeZ = inversesqrt(dist * dist + 1.0);
+        float boxDist = mix(max(abs(projPos.x), abs(projPos.y)), dist, SUN_MOON_ROUNDNESS);
+        float shapeZ = inversesqrt(boxDist * boxDist + 1.0);
 
         float d2 = shapeZ * shapeZ; float d4 = d2 * d2; float d8 = d4 * d4;
         float flashGlow = d8 * d8; float d32 = flashGlow * flashGlow; float d64 = d32 * d32;
         float flashCore = d64 * d64;
-        float flashBurst = (flashCore * 6.0 + flashGlow * 1.5 + d2 * 0.3) * endFlashIntensity;
+        float flashAura = flashDot * flashDot;
+        float flashBurst = (flashCore * 6.0 + flashGlow * 1.5 + flashAura * 0.3) * endFlashIntensity;
         return toLinear(vec3(0.85, 0.75, 1.0)) * flashBurst;
     }
 #endif

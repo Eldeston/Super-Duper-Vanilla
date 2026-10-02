@@ -54,7 +54,7 @@
         #if defined LENS_FLARE && defined WORLD_LIGHT
             #if WORLD_ID == 1
                 const vec3 blackHoleDir = vec3(0.0, 0.6691306, -0.7431448);
-                if (endFlashIntensity > 0.01) {
+                if (endFlashIntensity > 0.001) {
                     if(endFlashPosition.z < -0.01){
                         sRGBLightCol = vec3(1.2, 1.0, 1.5) * endFlashIntensity;
                         shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, normalize(endFlashPosition)), gbufferProjection[1].y * 0.72794047);
@@ -178,7 +178,7 @@
 
     #include "/lib/post/tonemap.glsl"
 
-    #if defined LENS_FLARE && defined WORLD_LIGHT
+    #if defined LENS_FLARE && defined WORLD_LIGHT && !defined FORCE_DISABLE_CLOUDS && CLOUD_TYPE != 0
         float getCloudFlareOcclusion(in vec2 lightScreenPos){
             bool onScreen = lightScreenPos.x >= 0.0 && lightScreenPos.x <= 1.0 && lightScreenPos.y >= 0.0 && lightScreenPos.y <= 1.0;
             if(!onScreen) return 1.0;
@@ -226,7 +226,8 @@
                 #ifdef DISTANT_HORIZONS
                     bool isSky = textureLod(dhDepthTex1, shdLightDirScreenSpace.xy, 0).x == 1 && textureLod(depthtex0, shdLightDirScreenSpace.xy, 0).x == 1;
                 #elif defined VOXY
-                    bool isSky = textureLod(vxDepthTexOpaque, shdLightDirScreenSpace.xy, 0).x == 1 && textureLod(depthtex0, shdLightDirScreenSpace.xy, 0).x == 1;
+                    float vxDepth = textureLod(vxDepthTexOpaque, shdLightDirScreenSpace.xy, 0).x;
+                    bool isSky = (vxDepth >= 1.0 || vxDepth <= 0.0) && textureLod(depthtex0, shdLightDirScreenSpace.xy, 0).x == 1;
                 #else
                     bool isSky = textureLod(depthtex0, shdLightDirScreenSpace.xy, 0).x == 1;
                 #endif
@@ -238,7 +239,11 @@
                         float weatherFlare = 1.0 - weatherFade;
                     #endif
                     if(weatherFlare > 0.0){
-                        float cloudFlare = getCloudFlareOcclusion(shdLightDirScreenSpace.xy);
+                        #if defined FORCE_DISABLE_CLOUDS || CLOUD_TYPE == 0
+                            float cloudFlare = 1.0;
+                        #else
+                            float cloudFlare = getCloudFlareOcclusion(shdLightDirScreenSpace.xy);
+                        #endif
                         if(cloudFlare > 0.001){
                             postColOut += getLensFlare(texCoord - 0.5, shdLightDirScreenSpace.xy - 0.5) * (cloudFlare * weatherFlare * (1.0 - blindness) * (1.0 - darknessFactor));
                         }
