@@ -288,8 +288,17 @@ vec3 getSkyReflection(in vec3 reflectViewDir){
 
     vec3 reflectPlayerDir = mat3(gbufferModelViewInverse) * reflectViewDir;
 
-    // Rotate normalized player position to shadow space
-    vec3 skyPos = mat3(shadowModelView) * reflectPlayerDir;
+    // Rotate normalized player position to shadow space (or black hole matrix in the End)
+    #if WORLD_ID == 1
+        const mat3 blackHoleSkyMatrix = mat3(
+            1.0,  0.0,         0.0,
+            0.0, -0.7431448,   0.6691306,
+            0.0, -0.6691306,  -0.7431448
+        );
+        vec3 skyPos = blackHoleSkyMatrix * reflectPlayerDir;
+    #else
+        vec3 skyPos = mat3(shadowModelView) * reflectPlayerDir;
+    #endif
 
     #if defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
         // Flip if the sun has gone below the horizon
@@ -387,26 +396,10 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol)
         #elif WORLD_SUN_MOON == 2
             // If current world uses shader black hole
             if(skyPos.z > 0.0){
-                const float bhHalfSize = WORLD_SUN_MOON_SIZE;
-                const float z0 = inversesqrt(bhHalfSize * bhHalfSize + 1.0);
-                const float blackHoleSize = z0 * 1024.0;
-
-                vec2 projPos = skyPos.xy / skyPos.z;
-                float dist = getSunMoonDist(projPos, bhHalfSize);
-                float shapeZ = inversesqrt(dist * dist + 1.0);
-                float blackHole = blackHoleSize - shapeZ * 1024.0;
-
-                // If black hole return nothing
-                if(blackHole <= 0.0) return vec3(0.0);
-                blackHole = max(0.0, 1.0 / max(1.0, blackHole) - (1.0 / blackHoleSize));
-
-                // Distortion application (spiral wrapping around the black hole)
-                const float rotationFactor = TAU * 16.0;
-                skyPos.xy = rot2D(blackHole * rotationFactor) * skyPos.xy;
-
-                float rings = textureLod(noisetex, vec2(skyPos.x * blackHole, fragmentFrameTime * 0.0009765625), 0).x;
-
-                currSkyCol += (((rings * blackHole * 0.9 + blackHole * 0.1) * (sunMoonIntensitySqrd * 0.35)) * lightCol);
+                bool isHoleCore = false;
+                vec3 bhCol = getBlackHoleRender(skyPos, lightCol, sunMoonIntensitySqrd, fragmentFrameTime, isHoleCore);
+                if(isHoleCore) return vec3(0.0);
+                currSkyCol += bhCol;
             }
         #endif
 

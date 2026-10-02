@@ -325,9 +325,9 @@
         // Get sky pos by shadow model view (or fixed black hole matrix in the End)
         #if WORLD_ID == 1
             const mat3 blackHoleSkyMatrix = mat3(
-                1.0,  0.0,        0.0,
-                0.0, -0.5,        0.8660254,
-                0.0, -0.8660254, -0.5
+                1.0,  0.0,         0.0,
+                0.0, -0.7431448,   0.6691306,
+                0.0, -0.6691306,  -0.7431448
             );
             vec3 skyPos = blackHoleSkyMatrix * nEyePlayerPos;
         #else

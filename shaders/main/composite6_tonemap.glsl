@@ -53,7 +53,7 @@
 
         #if defined LENS_FLARE && defined WORLD_LIGHT
             #if WORLD_ID == 1
-                const vec3 blackHoleDir = vec3(0.0, 0.8660254, -0.5);
+                const vec3 blackHoleDir = vec3(0.0, 0.6691306, -0.7431448);
                 if (endFlashIntensity > 0.01) {
                     sRGBLightCol = vec3(1.2, 1.0, 1.5) * endFlashIntensity;
                     shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, normalize(endFlashPosition)), gbufferProjection[1].y * 0.72794047);

@@ -7,7 +7,7 @@
 		illumination += toLinear(vec3(0.20, 0.12, 0.28)) * (endFlashIntensity * skyLightSq);
 		#ifdef END_BH_LIGHT
 			if(END_BH_LIGHT <= 0.0) return;
-			const vec3 blackHoleDir = vec3(0.0, 0.8660254, -0.5);
+			const vec3 blackHoleDir = vec3(0.0, 0.6691306, -0.7431448);
 			float NL_BH = dot(normal, blackHoleDir);
 			if(NL_BH > 0.0 || ss > 0.0){
 				float bhDiffuse = max(0.0, NL_BH);
@@ -23,7 +23,7 @@
 	#ifdef END_BH_LIGHT
 		void addEndBHSpecular(in vec3 normal, in vec3 viewDir, in float smoothness, in float metallic, in float ambient, in float lmCoordY, inout vec3 lighting){
 			if(END_BH_LIGHT <= 0.0) return;
-			const vec3 blackHoleDir = vec3(0.0, 0.8660254, -0.5);
+			const vec3 blackHoleDir = vec3(0.0, 0.6691306, -0.7431448);
 			float NL_BH = dot(normal, blackHoleDir);
 			if(NL_BH > 0.0){
 				vec3 bhH = fastNormalize(blackHoleDir + viewDir);

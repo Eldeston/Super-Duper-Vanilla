@@ -32,8 +32,11 @@ float getSunMoonShape(in vec2 skyPos){
     return min(1.0, exp2((glowRadius - getSunMoonDist(skyPos, glowRadius)) * (1.5 / WORLD_SUN_MOON_SIZE)));
 }
 
-#if WORLD_SUN_MOON == 1
+#if WORLD_SUN_MOON == 1 || WORLD_SUN_MOON == 2
     uniform sampler2D sunTex;
+#endif
+
+#if WORLD_SUN_MOON == 1
     uniform sampler2D moonTex0;
     uniform sampler2D moonTex1;
     uniform sampler2D moonTex2;
@@ -167,4 +170,105 @@ float getSunMoonShape(in vec2 skyPos){
     }
 #endif // WORLD_SUN_MOON == 1
 
+#if WORLD_SUN_MOON == 2
+    vec3 sampleBlackHoleTex(in vec2 projPos, in float bhHalfSize){
+        vec2 normCoord = projPos / (bhHalfSize * 1.25);
+        vec2 uvInBody = vec2(normCoord.x, -normCoord.y) * 0.5 + 0.5;
+        vec4 corner = textureLod(sunTex, vec2(0.0625), 0.0);
+        bool isFullQuad = corner.a > 0.1 && (corner.r + corner.g + corner.b) > 0.25;
+        vec2 sampleUV = isFullQuad ? uvInBody : (vec2(12.5) + saturate(uvInBody) * 7.0) / 32.0;
+        vec4 sunSample = textureLod(sunTex, sampleUV, 0.0);
+
+        vec3 sunTexCol;
+        if(sunSample.a > 0.05 && (sunSample.r + sunSample.g + sunSample.b) > 0.05){
+            sunTexCol = toLinear(sunSample.rgb);
+            float maxVal = max(sunTexCol.r, max(sunTexCol.g, sunTexCol.b));
+            if(maxVal > 0.01) sunTexCol /= max(maxVal, 0.85);
+        } else {
+            sunTexCol = vec3(1.0);
+        }
+
+        float texBorderFade = saturate((1.0 - max(abs(normCoord.x), abs(normCoord.y))) * 8.0);
+        float texLum = dot(sunTexCol, vec3(0.299, 0.587, 0.114));
+        return mix(vec3(1.0), mix(vec3(texLum), sunTexCol, 0.20), texBorderFade);
+    }
+
+    vec3 getBlackHoleRender(
+        inout vec3 skyPos,
+        in vec3 lightCol,
+        in float sunMoonIntensitySqrd,
+        in float fragmentFrameTime,
+        out bool isHoleCore
+    ){
+        isHoleCore = false;
+        if(skyPos.z <= 0.0) return vec3(0.0);
+
+        const float bhHalfSize = WORLD_SUN_MOON_SIZE;
+        vec2 projPos = skyPos.xy / skyPos.z;
+        float dist = getSunMoonDist(projPos, bhHalfSize);
+        // Square box profile matching Minecraft celestials (respects SUN_MOON_ROUNDNESS)
+        float boxDist = mix(max(abs(projPos.x), abs(projPos.y)), dist, SUN_MOON_ROUNDNESS);
+        float edgeDist = max(0.0, boxDist - bhHalfSize);
+
+        // Anti-aliased square event horizon core mask
+        float fw = max(fwidth(boxDist), 0.001);
+        float coreMask = saturate((bhHalfSize - boxDist) / fw);
+        if(coreMask >= 0.999){
+            isHoleCore = true;
+            return vec3(0.0);
+        }
+
+        // Extended gravitational warping reach (near-field vortex + far-field well)
+        float normD = edgeDist / bhHalfSize;
+        float warpNear = 1.0 / (1.0 + 2.0 * normD + 2.5 * normD * normD);
+        float warpFar = exp2(-normD * 0.55) * saturate(1.0 - normD * 0.08);
+        float warpImpact = 0.58 * warpNear + 0.42 * warpFar;
+
+        // Apply rotational swirl and lensing deflection across surrounding sky
+        float rotAngle = warpImpact * (TAU * 4.0);
+        float lensDeflect = warpImpact * 0.35;
+        vec2 warpedProj = rot2D(rotAngle) * projPos * (1.0 + lensDeflect);
+        skyPos.xy = warpedProj * skyPos.z;
+
+        // Relativistic Doppler effect & beaming (tilted orbital plane)
+        vec2 tiltedPos = rot2D(0.21) * projPos;
+        float r = max(boxDist, 0.0001);
+        float losVel = clamp(-tiltedPos.x / r * sqrt(clamp(bhHalfSize / r, 0.0, 1.0)), -1.0, 1.0);
+        float dopplerBeaming = 1.0 + losVel * 0.32;
+        float dopplerT = losVel * 0.5 + 0.5;
+
+        // Subtle color shift: blueshifted left (electric violet-blue), redshifted right (plum-magenta)
+        vec3 dopplerTint = mix(
+            vec3(1.22, 0.55, 0.78),
+            vec3(0.68, 0.82, 1.38),
+            dopplerT
+        );
+        vec3 dopplerEffect = dopplerTint * dopplerBeaming;
+
+        // Sample sun celestial texture tightly fitted over the accretion rim
+        vec3 themedTexCol = sampleBlackHoleTex(projPos, bhHalfSize);
+
+        // Sleek, thin accretion rim following the square geometry
+        float diskOuter = bhHalfSize * 1.25;
+        float diskMask = saturate((diskOuter - boxDist) / max(fwidth(boxDist), 0.0015)) * (1.0 - coreMask);
+
+        float angle = atan(projPos.y, projPos.x);
+        float swirlCoord = angle * (1.0 / TAU) + fragmentFrameTime * 0.0025;
+        float radialCoord = edgeDist / max(bhHalfSize * 0.35, 0.001);
+        float diskNoise = textureLod(noisetex, vec2(swirlCoord, radialCoord), 0).x;
+        float diskNoise2 = textureLod(noisetex, vec2(swirlCoord * 2.0 - fragmentFrameTime * 0.0018, radialCoord * 1.5), 0).y;
+        float streamLines = mix(diskNoise, diskNoise2, 0.5);
+
+        // Sleek, compact outer glow following the square profile
+        float glow = exp2(-edgeDist * (7.5 / bhHalfSize)) * (1.0 - coreMask);
+
+        // Composite disk pattern, texture, and Doppler shift
+        float diskPattern = mix(0.85, 1.15, streamLines) * themedTexCol.r;
+        float diskIntensity = diskMask * diskPattern * 1.4 + glow * 0.45;
+        vec3 bhCol = lightCol * dopplerEffect * (diskIntensity * (sunMoonIntensitySqrd * 0.42));
+        return bhCol * (1.0 - coreMask);
+    }
+#endif // WORLD_SUN_MOON == 2
+
 #endif // CELESTIAL_RENDER_GLSL
+

@@ -28,7 +28,7 @@ vec3 complexShadingLOD(in dataPBR material){
 		totalIllumination += toLinear(vec3(0.20, 0.12, 0.28)) * (endFlashIntensity * skyLightSquared);
 		#ifdef END_BH_LIGHT
 			if(END_BH_LIGHT > 0.0){
-				const vec3 blackHoleDir = vec3(0.0, 0.8660254, -0.5);
+				const vec3 blackHoleDir = vec3(0.0, 0.6691306, -0.7431448);
 				float NL_BH = max(0.0, dot(material.normal, blackHoleDir));
 				float skyOcclusion = saturate(lmCoord.y / max(WORLD1_CUSTOM_SKYLIGHT, 0.1));
 				totalIllumination += toLinear(LIGHT_COLOR_DATA_BLOCK0) * (END_BH_LIGHT * 1.5 * NL_BH * skyOcclusion);
