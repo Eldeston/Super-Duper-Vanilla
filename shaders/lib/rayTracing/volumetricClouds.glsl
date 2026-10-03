@@ -1,11 +1,36 @@
 const uint volumetricCloudSteps = uint(VOLUMETRIC_CLOUD_STEPS);
 
-const float volumetricCenterDepth = VOLUMETRIC_CLOUD_DEPTH * 0.5;
+#ifdef STORY_MODE_CLOUDS
+    const float volumetricCenterDepth = VOLUMETRIC_CLOUD_DEPTH * 1.0;
+#else
+    const float volumetricCenterDepth = VOLUMETRIC_CLOUD_DEPTH * 0.5;
+#endif
 const float volumetricCloudHeight = 195.0 + volumetricCenterDepth;
+
+#if defined STORY_MODE_CLOUDS && defined SOFT_CLOUD_EDGE
+// Bilinear sampling of the 256x256 cloud texture
+vec2 sampleCloudMap(in vec2 coord){
+    vec2 p = coord - 0.5;
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    vec2 w = f * f * (3.0 - 2.0 * f);
+    ivec2 i0 = ivec2(i) & 255;
+    ivec2 i1 = (i0 + ivec2(1)) & 255;
+    vec2 c00 = texelFetch(colortex0, ivec2(i0.x, i0.y), 0).xy;
+    vec2 c10 = texelFetch(colortex0, ivec2(i1.x, i0.y), 0).xy;
+    vec2 c01 = texelFetch(colortex0, ivec2(i0.x, i1.y), 0).xy;
+    vec2 c11 = texelFetch(colortex0, ivec2(i1.x, i1.y), 0).xy;
+    return mix(mix(c00, c10, w.x), mix(c01, c11, w.x), w.y);
+}
+#endif
 
 // This took me a while to finally understand how this all works
 vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPlayerDist, in float dither, in bool isSky, in bool isCirrus){
-    float depth = isCirrus ? (VOLUMETRIC_CLOUD_DEPTH * 0.5) : VOLUMETRIC_CLOUD_DEPTH;
+    #ifdef STORY_MODE_CLOUDS
+        float depth = isCirrus ? (VOLUMETRIC_CLOUD_DEPTH * 0.5) : (VOLUMETRIC_CLOUD_DEPTH * 2.0);
+    #else
+        float depth = isCirrus ? (VOLUMETRIC_CLOUD_DEPTH * 0.5) : VOLUMETRIC_CLOUD_DEPTH;
+    #endif
 
     // Minimum cloud distance, if terrain, caps distance to the minimum cloud distance
     float cloudFar = isSky ? volumetricCloudFar : min(volumetricCloudFar, feetPlayerDist);
@@ -27,7 +52,12 @@ vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPl
     if(distInsideCloud <= 0.0) return vec2(0);
 
     // Calculate cloud steps that dynamically increase with distance
-    uint dynamicVolumetricCloudSteps = max(1u, min(uint(distInsideCloud), volumetricCloudSteps));
+    #ifdef STORY_MODE_CLOUDS
+        uint maxCloudSteps = min(uint(VOLUMETRIC_CLOUD_STEPS * 2), 36u);
+    #else
+        uint maxCloudSteps = volumetricCloudSteps;
+    #endif
+    uint dynamicVolumetricCloudSteps = max(1u, min(uint(distInsideCloud), maxCloudSteps));
     float volumetricCloudStepsInverse = 1.0 / float(dynamicVolumetricCloudSteps);
 
     // Multiply by volumetricCloudStepsInverse to get the step size and scale with distance
@@ -52,6 +82,12 @@ vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPl
         float cloudCutoff = 0.5;
     #endif
 
+    #ifdef STORY_MODE_CLOUDS
+        float invDepth = 1.0 / depth;
+        float playerCloudRelY = cameraPos.y + volumetricCenterDepth;
+        float modeBlend = smoothstep(-depth, depth, playerCloudRelY);
+    #endif
+
     // LESSS GOOOOO RAT RACING!!!11!!11!!11!!
     for(uint i = 0u; i < dynamicVolumetricCloudSteps; i++){
         // Get cloud fog
@@ -59,12 +95,37 @@ vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPl
 
         // Get cloud texture (lean, stretched wisps for high altitude cirrus)
         vec2 uv = isCirrus ? vec2(startPos.x * 0.02 + startPos.z * 0.008, startPos.z * 0.10) : startPos.xz * 0.0625;
-        vec2 cloudData = texelFetch(colortex0, ivec2(uv) & 255, 0).xy;
 
-        // Apply cloud gradiante' (fainter opacity for cirrus clouds)
-        float density = (isCirrus ? (-startPos.y * cloudFog * 0.5) : (-startPos.y * cloudFog)) * overcastDensityMult;
-        if(cloudData.x > cloudCutoff) clouds.x = max(clouds.x, density);
-        if(cloudData.y > cloudCutoff) clouds.y = max(clouds.y, density);
+        #ifdef STORY_MODE_CLOUDS
+            #ifdef SOFT_CLOUD_EDGE
+                vec2 cloudData = sampleCloudMap(uv);
+                float covX = smoothstep(cloudCutoff - 0.12, cloudCutoff + 0.12, cloudData.x);
+                float covY = smoothstep(cloudCutoff - 0.12, cloudCutoff + 0.12, cloudData.y);
+            #else
+                vec2 cloudData = texelFetch(colortex0, ivec2(uv) & 255, 0).xy;
+                float covX = float(cloudData.x > cloudCutoff);
+                float covY = float(cloudData.y > cloudCutoff);
+            #endif
+
+            // Bottom-to-top fade when below clouds; top-to-bottom fade when above clouds
+            float normY = clamp((startPos.y + depth) * invDepth, 0.0, 1.0);
+            float verticalGradient = mix(1.0 - normY, normY, modeBlend);
+
+            // Density scaled purely by vertical gradient, not blown out by overcast multipliers
+            float densityScale = (isCirrus ? 4.0 : 8.0) * cloudFog;
+            float densityX = covX * verticalGradient * densityScale;
+            float densityY = covY * verticalGradient * densityScale;
+
+            clouds.x = max(clouds.x, densityX);
+            clouds.y = max(clouds.y, densityY);
+        #else
+            vec2 cloudData = texelFetch(colortex0, ivec2(uv) & 255, 0).xy;
+
+            // Apply cloud gradiante' (fainter opacity for cirrus clouds)
+            float density = (isCirrus ? (-startPos.y * cloudFog * 0.5) : (-startPos.y * cloudFog)) * overcastDensityMult;
+            if(cloudData.x > cloudCutoff) clouds.x = max(clouds.x, density);
+            if(cloudData.y > cloudCutoff) clouds.y = max(clouds.y, density);
+        #endif
 
         // Continue tracing
         startPos += endPos;

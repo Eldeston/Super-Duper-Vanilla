@@ -68,7 +68,11 @@ float getCelestialTerrainVisibility(in vec2 lightPos){
 // Checks if the celestial disk is covered by clouds along the celestial light vector
 float getCelestialCloudVisibility(in vec3 lightDir){
     #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS
-        const float cHeight = 195.0 + VOLUMETRIC_CLOUD_DEPTH * 0.5;
+        #ifdef STORY_MODE_CLOUDS
+            const float cHeight = 195.0;
+        #else
+            const float cHeight = 195.0 + VOLUMETRIC_CLOUD_DEPTH * 0.5;
+        #endif
         float heightToCloud = cHeight - cameraPosition.y;
         if(lightDir.y <= 0.02 || heightToCloud <= 0.0) return 1.0;
 
@@ -106,7 +110,11 @@ float getCloudSkyTransmission(in vec2 clampedCoord, in float dTranslucent){
 
         if(nSkyWorldDir.y <= 0.02) return 1.0;
 
-        const float cHeight = 195.0 + VOLUMETRIC_CLOUD_DEPTH * 0.5;
+        #ifdef STORY_MODE_CLOUDS
+            const float cHeight = 195.0;
+        #else
+            const float cHeight = 195.0 + VOLUMETRIC_CLOUD_DEPTH * 0.5;
+        #endif
         float distToCloud = (cHeight - cameraPosition.y) / nSkyWorldDir.y;
         if(distToCloud <= 0.0) return 1.0;
 

@@ -5,7 +5,6 @@
 
     Copyright (C) 2023 Eldeston | FlameRender (C) Studios License
 
-
     By downloading this content you have agreed to the license and its terms of use.
 
 ================================ /// Super Duper Vanilla v1.3.8 /// ================================
@@ -15,18 +14,12 @@
 
 #ifdef VERTEX
     flat out vec3 skyCol;
-
     noperspective out vec2 texCoord;
 
     #ifdef WORLD_LIGHT
-        flat out vec3 sRGBLightCol;
-        flat out vec3 lightCol;
-
+        flat out vec3 sRGBLightCol, lightCol;
         #ifndef FORCE_DISABLE_DAY_CYCLE
-            flat out vec3 sRGBSunCol;
-            flat out vec3 sunCol;
-            flat out vec3 sRGBMoonCol;
-            flat out vec3 moonCol;
+            flat out vec3 sRGBSunCol, sunCol, sRGBMoonCol, moonCol;
         #endif
     #endif
 
@@ -80,16 +73,10 @@
     layout(location = 0) out vec3 sceneColOut; // colortex4
 
     flat in vec3 skyCol;
-
     #ifdef WORLD_LIGHT
-        flat in vec3 sRGBLightCol;
-        flat in vec3 lightCol;
-
+        flat in vec3 sRGBLightCol, lightCol;
         #ifndef FORCE_DISABLE_DAY_CYCLE
-            flat in vec3 sRGBSunCol;
-            flat in vec3 sunCol;
-            flat in vec3 sRGBMoonCol;
-            flat in vec3 moonCol;
+            flat in vec3 sRGBSunCol, sunCol, sRGBMoonCol, moonCol;
         #endif
     #endif
 
@@ -239,11 +226,11 @@
 
             #ifdef DOUBLE_LAYERED_CLOUDS
                 #ifndef FORCE_DISABLE_WEATHER
-                    if(weatherFade < 1.0 && weatherFade > 0.001){
+                    if(weatherFade < 0.65 && weatherFade > 0.001){
                         // Get the 2nd layer of volumetric clouds position by reusing the 1st layer's position
                         vec3 cloudStartPos1 = vec3(cloudStartPos0.x + fragmentFrameTime * 0.25, cloudStartPos0.y - SECOND_CLOUD_HEIGHT, cloudStartPos0.z);
-                        // Fade cirrus with cloud presence at low overcast, and hide during full overcast
-                        float cirrusFactor = smoothstep(0.0, 0.25, weatherFade) * (1.0 - weatherFade);
+                        // Fade cirrus with cloud presence at low overcast, and hide completely when overcast
+                        float cirrusFactor = smoothstep(0.0, 0.20, weatherFade) * (1.0 - smoothstep(0.30, 0.65, weatherFade));
                         // Variate by swizzling the 2 cloud channels
                         cloudData = max(volumetricClouds(nFeetPlayerPos, cloudStartPos1, feetPlayerDist, ditherX, isSky, true).yx * cirrusFactor, cloudData);
                     }
@@ -267,18 +254,23 @@
 
             #ifndef FORCE_DISABLE_WEATHER
                 #ifdef DYNAMIC_WEATHER
-                    // Scale cumulus clouds smoothly as overcast rises from clear to partly cloudy
-                    float cloudPresence = smoothstep(0.0, 0.40, weatherFade);
-                    baseCumulus *= cloudPresence;
-                    // Mix in expanded coverage from both channels
-                    float expandedCumulus = mix(baseCumulus, max(cloudData.x, cloudData.y) * cloudPresence, weatherFade);
-                    // Overcast scales the optical density of the first layer of clouds
-                    float firstLayerDensity = mix(0.75, 2.0, smoothstep(0.10, 0.85, weatherFade));
-                    // As overcast approaches 1.0, an overcast cloud deck fills the sky
-                    float overcastDeck = saturate((weatherFade - 0.70) * 3.5);
-                    expandedCumulus = mix(expandedCumulus, max(expandedCumulus, 8.0 * cloudPresence), overcastDeck);
-
-                    float cloudFinal = expandedCumulus * 0.125 * firstLayerDensity;
+                    #ifdef STORY_MODE_CLOUDS
+                        float cloudPresence = smoothstep(0.0, 0.25, weatherFade);
+                        float expandedCumulus = mix(baseCumulus, max(cloudData.x, cloudData.y), weatherFade) * cloudPresence;
+                        float cloudFinal = expandedCumulus * 0.125;
+                    #else
+                        // Scale cumulus clouds smoothly as overcast rises from clear to partly cloudy
+                        float cloudPresence = smoothstep(0.0, 0.40, weatherFade);
+                        baseCumulus *= cloudPresence;
+                        // Mix in expanded coverage from both channels
+                        float expandedCumulus = mix(baseCumulus, max(cloudData.x, cloudData.y) * cloudPresence, weatherFade);
+                        // Overcast scales the optical density of the first layer of clouds
+                        float firstLayerDensity = mix(0.75, 2.0, smoothstep(0.10, 0.85, weatherFade));
+                        // As overcast approaches 1.0, an overcast cloud deck fills the sky
+                        float overcastDeck = saturate((weatherFade - 0.70) * 3.5);
+                        expandedCumulus = mix(expandedCumulus, max(expandedCumulus, 8.0 * cloudPresence), overcastDeck);
+                        float cloudFinal = expandedCumulus * 0.125 * firstLayerDensity;
+                    #endif
                 #else
                     float cloudFinal = mix(baseCumulus, max(cloudData.x, cloudData.y), weatherFade) * 0.125;
                 #endif
@@ -294,7 +286,11 @@
 
             #ifndef FORCE_DISABLE_WEATHER
                 cloudCelestialLight *= 1.0 - weatherFade;
-                vec3 cloudSkyLight = mix(skyCol, skyCol * 0.35, weatherFade);
+                #ifdef STORY_MODE_CLOUDS
+                    vec3 cloudSkyLight = mix(skyCol, skyCol * 0.85, weatherFade);
+                #else
+                    vec3 cloudSkyLight = mix(skyCol, skyCol * 0.35, weatherFade);
+                #endif
             #else
                 vec3 cloudSkyLight = skyCol;
             #endif
@@ -303,6 +299,9 @@
             cloudCelestialLight *= getCloudCelestialOcclusion(lightDir, cameraPosition, fragmentFrameTime);
 
             vec3 cloudAmbient = vec3(toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash);
+            #ifdef STORY_MODE_CLOUDS
+                cloudAmbient += vec3(0.22 * weatherFade * dayCycleAdjust);
+            #endif
 
             float cloudDensity = saturate(cloudFinal);
             vec3 cloudBaseCol = cloudAmbient + cloudCelestialLight + cloudSkyLight;

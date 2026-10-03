@@ -245,6 +245,12 @@ screen.ATMOSPHERICS.comment = §6Atmospheric effects including sun/moon, clouds,
         option.DYNAMIC_WEATHER = Dynamic weather
         option.DYNAMIC_WEATHER.comment = Generates a procedural weather system with random overcast intensity that dictates cloud coverage in the sky, ranging from totally clear days and nights to completely overcast skies. Rain can happen with partial overcast.
 
+        option.STORY_MODE_CLOUDS = Story Mode
+        option.STORY_MODE_CLOUDS.comment = Makes clouds softer with a vertical gradient fading from an opaque bottom to a transparent top, with increased thickness.
+
+        option.SOFT_CLOUD_EDGE = Soft edge
+        option.SOFT_CLOUD_EDGE.comment = Smooths and rounds cloud edges instead of rendering hard blocky edges.
+
         option.VOLUMETRIC_CLOUD_STEPS = Volumetric steps
         option.VOLUMETRIC_CLOUD_STEPS.comment = Story mode clouds steps. Increasing may improve quality and demand more performance.
 

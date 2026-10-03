@@ -151,6 +151,7 @@ screen.ATMOSPHERICS = Atmosféricos
         value.STAR_ROTATION.0 = Alinhada
         value.STAR_ROTATION.1 = Aleatória
     option.STORY_MODE_CLOUDS = Nuvens do Modo História
+    option.SOFT_CLOUD_EDGE = Bordas Suaves
     option.DOUBLE_LAYERED_CLOUDS = Camada Dupla de Nuvens
     option.DYNAMIC_CLOUDS = Nuvens Dinâmicas
     option.FADE_SPEED = Velocidade de Desvanecimento

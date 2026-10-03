@@ -317,6 +317,12 @@ screen.ATMOSPHERICS.comment = §6大气系统效果, 包括日月, 云, 雾, 边
         option.DYNAMIC_WEATHER = 动态天气
         option.DYNAMIC_WEATHER.comment = 启用程序化动态天气系统, 阴天覆盖度随时间自然起伏, 呈现完全无云的晴朗昼夜至漫天阴云的阴雨天气. 下雨时天空亦可呈现部分多云状态.
 
+        option.STORY_MODE_CLOUDS = 故事模式
+        option.STORY_MODE_CLOUDS.comment = 使云层更加柔和，采用从底部不透明到顶部透明的垂直渐变，并增加厚度。
+
+        option.SOFT_CLOUD_EDGE = 柔和边缘
+        option.SOFT_CLOUD_EDGE.comment = 平滑并圆润云层边缘，而非呈现生硬的方块边缘。
+
         option.VOLUMETRIC_CLOUD_STEPS = 体积云步进
         option.VOLUMETRIC_CLOUD_STEPS.comment = 故事模式云步进次数. 增加可能提升云的质量且需要更多性能.
 

@@ -245,6 +245,12 @@ screen.ATMOSPHERICS.comment = §6Effets atmosphériques incluant le soleil/lune,
         option.DYNAMIC_WEATHER = Météo dynamique
         option.DYNAMIC_WEATHER.comment = Génère un système météorologique procédural avec une intensité de couverture nuageuse aléatoire, créant des jours et nuits totalement dégagés jusqu'à un ciel complètement couvert. La pluie peut survenir sous un ciel partiellement couvert.
 
+        option.STORY_MODE_CLOUDS = Mode Histoire
+        option.STORY_MODE_CLOUDS.comment = Rend les nuages plus doux avec un dégradé vertical passant d'une base opaque à un sommet transparent, avec une épaisseur accrue.
+
+        option.SOFT_CLOUD_EDGE = Bords doux
+        option.SOFT_CLOUD_EDGE.comment = Adoucit et arrondit les bords des nuages au lieu d'afficher des arêtes cubiques nettes.
+
         option.VOLUMETRIC_CLOUD_STEPS = Pas volumétriques
         option.VOLUMETRIC_CLOUD_STEPS.comment = Nombre d'étapes pour les nuages Story Mode. Augmenter peut améliorer la qualité et consommer plus de performances.
 

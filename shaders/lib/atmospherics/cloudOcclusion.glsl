@@ -19,7 +19,11 @@ float getCloudCelestialOcclusion(in vec3 lightDir, in vec3 cameraPos, in float f
     #endif
 
     #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS
-        const float cHeight = 195.0 + VOLUMETRIC_CLOUD_DEPTH * 0.5;
+        #ifdef STORY_MODE_CLOUDS
+            const float cHeight = 195.0;
+        #else
+            const float cHeight = 195.0 + VOLUMETRIC_CLOUD_DEPTH * 0.5;
+        #endif
         float heightToCloud = cHeight - cameraPos.y;
         if(lightDir.y <= 0.02 || heightToCloud <= 0.0) return 1.0;
 

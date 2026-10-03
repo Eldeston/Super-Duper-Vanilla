@@ -60,11 +60,11 @@
 
         #ifdef DOUBLE_LAYERED_CLOUDS
             #ifndef FORCE_DISABLE_WEATHER
-                if(weatherFade < 1.0 && weatherFade > 0.001){
+                if(weatherFade < 0.65 && weatherFade > 0.001){
                     vec2 cirrusUv = nEyePlayerPos.xz * ((6.0 + (SECOND_CLOUD_HEIGHT / 195.0) * 6.0) / nEyePlayerPos.y);
                     vec2 cirrusStart = vec2(cirrusUv.x * 0.32 + cirrusUv.y * 0.128, cirrusUv.y * 1.6);
                     vec2 cirrusCam = vec2(planePos.x * 0.32 + planePos.y * 0.128, planePos.y * 1.6);
-                    float cirrusFactor = smoothstep(0.0, 0.25, weatherFade) * (1.0 - weatherFade);
+                    float cirrusFactor = smoothstep(0.0, 0.20, weatherFade) * (1.0 - smoothstep(0.30, 0.65, weatherFade));
                     cloudData = max(cloudParallaxDynamic(cirrusStart, cirrusCam).yx * (0.20 * cirrusFactor), cloudData);
                 }
             #else
