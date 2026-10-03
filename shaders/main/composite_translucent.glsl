@@ -10,9 +10,7 @@
 
 ================================ /// Super Duper Vanilla v1.3.8 /// ================================
 */
-
 /// Buffer features: Transparent complex shading and volumetric lighting
-
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
@@ -75,7 +73,6 @@
         gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
     }
 #endif
-
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
@@ -122,7 +119,6 @@
     uniform mat4 gbufferModelViewInverse;
 
     uniform mat4 shadowModelView;
-
     // Main HDR buffer
     uniform sampler2D colortex4;
     uniform sampler2D colortex1;
@@ -226,10 +222,8 @@
                     if(weatherFade <= 0.001) return sceneCol;
                 #endif
             #endif
-
             // Get the 1st layer of volumetric clouds position
             vec3 cloudStartPos0 = vec3(cameraPosition.x + fragmentFrameTime, cameraPosition.y - volumetricCloudHeight, cameraPosition.z);
-
             // Get the volumetric clouds
             vec2 cloudData = volumetricClouds(nFeetPlayerPos, cloudStartPos0, feetPlayerDist, ditherX, isSky);
 
@@ -238,17 +232,14 @@
                     if(weatherFade < 1.0 && weatherFade > 0.001){
                         // Get the 2nd layer of volumetric clouds position by reusing the 1st layer's position
                         vec3 cloudStartPos1 = vec3(cloudStartPos0.x + fragmentFrameTime * 0.25, cloudStartPos0.y - SECOND_CLOUD_HEIGHT, cloudStartPos0.z);
-
                         // Fade cirrus with cloud presence at low overcast, and hide during full overcast
                         float cirrusFactor = smoothstep(0.0, 0.25, weatherFade) * (1.0 - weatherFade);
-
                         // Variate by swizzling the 2 cloud channels
                         cloudData = max(volumetricClouds(nFeetPlayerPos, cloudStartPos1, feetPlayerDist, ditherX, isSky, true).yx * cirrusFactor, cloudData);
                     }
                 #else
                     // Get the 2nd layer of volumetric clouds position by reusing the 1st layer's position
                     vec3 cloudStartPos1 = vec3(cloudStartPos0.x + fragmentFrameTime * 0.25, cloudStartPos0.y - SECOND_CLOUD_HEIGHT, cloudStartPos0.z);
-
                     // Variate by swizzling the 2 cloud channels
                     cloudData = max(volumetricClouds(nFeetPlayerPos, cloudStartPos1, feetPlayerDist, ditherX, isSky, true).yx, cloudData);
                 #endif
@@ -269,13 +260,10 @@
                     // Scale cumulus clouds smoothly as overcast rises from clear to partly cloudy
                     float cloudPresence = smoothstep(0.0, 0.40, weatherFade);
                     baseCumulus *= cloudPresence;
-
                     // Mix in expanded coverage from both channels
                     float expandedCumulus = mix(baseCumulus, max(cloudData.x, cloudData.y) * cloudPresence, weatherFade);
-
                     // Overcast scales the optical density of the first layer of clouds
                     float firstLayerDensity = mix(0.75, 2.0, smoothstep(0.10, 0.85, weatherFade));
-
                     // As overcast approaches 1.0, an overcast cloud deck fills the sky
                     float overcastDeck = saturate((weatherFade - 0.70) * 3.5);
                     expandedCumulus = mix(expandedCumulus, max(expandedCumulus, 8.0 * cloudPresence), overcastDeck);
@@ -307,9 +295,19 @@
             vec3 cloudAmbient = vec3(toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash);
 
             float cloudDensity = saturate(cloudFinal);
+            vec3 cloudBaseCol = cloudAmbient + cloudCelestialLight + cloudSkyLight;
+
+            #if WORLD_ID == 0 && defined PALE_GARDEN_FOG
+                float cloudFogAtten = isPaleGarden * min(1.0, PALE_GARDEN_FOG);
+                float horizonFade = exp2(-max(0.0, nFeetPlayerPos.y) * 4.5);
+                float totalCloudFog = saturate(cloudFogAtten * 0.85 + horizonFade * (0.35 * cloudFogAtten));
+                cloudDensity *= 1.0 - totalCloudFog * 0.80;
+                cloudBaseCol = mix(cloudBaseCol, getPaleGardenSkyColor(nFeetPlayerPos), isPaleGarden * 0.85);
+            #endif
+
             vec3 celestialExcess = max(vec3(0.0), sceneCol - cloudSkyLight);
             vec3 occludedScene = min(sceneCol, cloudSkyLight) + celestialExcess * exp2(-cloudDensity * 8.0);
-            return mix(occludedScene, cloudAmbient + cloudCelestialLight + cloudSkyLight, cloudDensity);
+            return mix(occludedScene, cloudBaseCol, cloudDensity);
         }
     #endif
 
@@ -381,17 +379,14 @@
         bool isLOD;
         float depth;
         getTranslucentSceneDepth(screenTexelCoord, depth, isLOD);
-
         // Get screen pos
         vec3 screenPos = vec3(texCoord, depth);
         
         vec3 viewPos = getTranslucentViewPos(isLOD, screenPos);
-
         // Get eye player pos
         vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
         // Get feet player pos
         vec3 feetPlayerPos = eyePlayerPos + gbufferModelViewInverse[3].xyz;
-
         // Get scene color
         sceneColOut = texelFetch(colortex4, screenTexelCoord, 0).rgb;
 

@@ -304,9 +304,9 @@ vec3 applyDeferredSkyEffects(in vec3 sceneCol, in vec3 nEyePlayerPos, in vec3 sk
     #endif
     #if WORLD_ID == 0 && defined PALE_GARDEN_FOG
         if(isEyeInWater == 0 && PALE_GARDEN_FOG > 0.0 && isPaleGarden > 0.001 && effectFactor < 0.01){
-            vec3 paleFogCol = getPaleGardenFogColor(nEyePlayerPos);
-            float horizonPaleFog = exp2(-max(0.0, nEyePlayerPos.y) * 6.5) * 0.90 + 0.10;
-            sceneCol = mix(sceneCol, paleFogCol, isPaleGarden * horizonPaleFog * min(1.0, PALE_GARDEN_FOG));
+            vec3 paleSkyCol = getPaleGardenSkyColor(nEyePlayerPos);
+            float skyMistFade = saturate(exp2(-max(0.0, nEyePlayerPos.y) * 1.6) * 0.28 + 0.72);
+            sceneCol = mix(sceneCol, paleSkyCol, isPaleGarden * skyMistFade * min(1.0, PALE_GARDEN_FOG));
         }
     #endif
     return sceneCol;

@@ -22,34 +22,36 @@ float getAtmosphericFog(in float nPlayerPosY, in float worldPosY, in float playe
 }
 
 #if WORLD_ID == 0 && defined PALE_GARDEN_FOG
-vec3 getPaleGardenFogColor(in vec3 nEyePlayerPos){
+vec3 getPaleGardenSkyColor(in vec3 nEyePlayerPos){
     #ifndef FORCE_DISABLE_DAY_CYCLE
         float dCycle = dayCycle;
     #else
         float dCycle = 1.0;
     #endif
 
-    // Pale light silvery gray base
-    vec3 paleDay = toLinear(vec3(0.76, 0.77, 0.79));
-    vec3 paleTwilight = toLinear(vec3(0.44, 0.44, 0.47));
-    vec3 paleNight = toLinear(vec3(0.12, 0.13, 0.16));
-    vec3 paleBase = lerp(paleNight, paleTwilight, paleDay, dCycle);
-
-    // Subtle blend with vanilla biome fog color for natural integration
-    float dayBrightness = 0.35 + 0.65 * saturate(dCycle * 0.5);
-    vec3 vanillaBiomeFog = toLinear(fogColor) * (1.15 * dayBrightness);
-    vec3 col = mix(paleBase, vanillaBiomeFog, 0.30);
+    // Bright luminous silvery-gray mist in the sky
+    vec3 paleSkyDay = toLinear(vec3(0.78, 0.79, 0.81));
+    vec3 paleSkyTwilight = toLinear(vec3(0.48, 0.47, 0.50));
+    vec3 paleSkyNight = toLinear(vec3(0.14, 0.15, 0.18));
+    vec3 col = lerp(paleSkyNight, paleSkyTwilight, paleSkyDay, dCycle);
 
     #ifndef FORCE_DISABLE_WEATHER
-        col = mix(col, toLinear(fogColor), weatherFade * 0.4);
+        col = mix(col, toLinear(fogColor), weatherFade * 0.35);
     #endif
 
     // Soft forward sun glow through the mist during the day
     vec3 sunDir = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
     float sunGlow = pow(saturate(dot(nEyePlayerPos, sunDir) * 0.5 + 0.5), 4.0);
-    col += toLinear(vec3(0.12, 0.10, 0.08)) * (sunGlow * saturate(dCycle - 1.0));
+    col += toLinear(vec3(0.14, 0.12, 0.10)) * (sunGlow * saturate(dCycle - 1.0));
 
     return col;
+}
+
+vec3 getPaleGardenFogColor(in vec3 nEyePlayerPos){
+    vec3 skyCol = getPaleGardenSkyColor(nEyePlayerPos);
+    // Terrain fog is slightly deeper to create natural aerial perspective:
+    // Distant terrain appears as a soft darker silhouette against the lighter sky
+    return skyCol * mix(0.66, 0.72, saturate(nEyePlayerPos.y * 2.0));
 }
 #endif
 
