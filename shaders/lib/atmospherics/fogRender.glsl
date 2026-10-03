@@ -3,6 +3,15 @@
     uniform float isPaleGarden;
 #endif
 
+#ifndef DYNAMIC_FOG_UNIFORM_DECLARED
+    #define DYNAMIC_FOG_UNIFORM_DECLARED
+    #ifdef DYNAMIC_FOG
+        uniform float dynamicFog;
+    #else
+        const float dynamicFog = 0.0;
+    #endif
+#endif
+
 // Modified Complementary border fog calculation, thanks Emin!
 float getBorderFog(in float playerPosLength){
     return exp2(-exp2(playerPosLength / borderFar * 21.0 - 18.0));
@@ -67,6 +76,43 @@ vec3 applyPaleGardenFogColor(in vec3 baseFogCol, in vec3 nEyePlayerPos){
 #define applyPaleGardenFogColor(col, nPos) (col)
 #endif
 
+#if WORLD_ID == 0 && defined DYNAMIC_FOG
+void applyDynamicFogModifiers(inout float totalDensity, inout float verticalDensity, inout float maxCap){
+    if(isEyeInWater != 0 || dynamicFog <= 0.001) return;
+    totalDensity *= 1.0 + dynamicFog * 2.8;
+    verticalDensity = mix(verticalDensity, verticalDensity * 1.35, dynamicFog * 0.5);
+    maxCap = min(1.0, maxCap * (1.0 + dynamicFog * 0.6));
+}
+#else
+#define applyDynamicFogModifiers(totalDensity, verticalDensity, maxCap)
+#endif
+
+#if WORLD_ID == 1 && defined END_BOSS_FOG
+float getEndBossFogAmount(in float viewDist, in float worldPosY){
+    bool isActive = isEyeInWater == 0 && END_BOSS_FOG > 0.0 && fogEnd <= 100.0 && (fogStart / max(fogEnd, 0.001)) < 0.60 && effectFactor < 0.01;
+    if(!isActive) return 0.0;
+    float bStart = max(0.0, fogStart * (0.8 / max(END_BOSS_FOG, 0.5)));
+    float bEnd = max(bStart + 25.0, fogEnd * (1.1 / pow(END_BOSS_FOG, 0.35)));
+    float bDistProgress = saturate((viewDist - bStart) / (bEnd - bStart));
+    float bossDensity = 1.0 - exp2(-pow(bDistProgress, 1.25) * (4.2 * END_BOSS_FOG));
+    float heightFade = saturate(1.0 - max(0.0, worldPosY - 80.0) * 0.012);
+    return bossDensity * mix(0.70, 1.0, heightFade);
+}
+#endif
+
+#if WORLD_ID == 0 && defined PALE_GARDEN_FOG
+float getPaleGardenFogAmount(in float viewDist, in float worldPosY){
+    bool isActive = isEyeInWater == 0 && PALE_GARDEN_FOG > 0.0 && isPaleGarden > 0.001 && effectFactor < 0.01;
+    if(!isActive) return 0.0;
+    float pgStart = 12.0 / max(PALE_GARDEN_FOG, 0.5);
+    float pgEnd = max(pgStart + 25.0, 70.0 / pow(PALE_GARDEN_FOG, 0.4));
+    float pgDistProgress = saturate((viewDist - pgStart) / (pgEnd - pgStart));
+    float pgDensity = 1.0 - exp2(-pow(pgDistProgress, 1.15) * (4.2 * PALE_GARDEN_FOG));
+    float heightFade = saturate(1.0 - max(0.0, worldPosY - 105.0) * 0.016);
+    return pgDensity * isPaleGarden * mix(0.70, 1.0, heightFade);
+}
+#endif
+
 float getFogFactor(in float viewDist, in float nEyePlayerPosY, in float worldPosY){
     #ifdef FORCE_DISABLE_WEATHER
         float verticalFogDensity = isEyeInWater == 0 ? FOG_VERTICAL_DENSITY : FOG_VERTICAL_DENSITY * 0.2;
@@ -77,31 +123,17 @@ float getFogFactor(in float viewDist, in float nEyePlayerPosY, in float worldPos
         float totalFogDensity = isEyeInWater == 0 ? FOG_TOTAL_DENSITY * (1.0 + weatherFade * 0.45) : FOG_TOTAL_DENSITY * TAU;
     #endif
 
-    // Return fog, capped with ground fog strength
-    float baseFog = min(1.0, getAtmosphericFog(nEyePlayerPosY, max(0.0, worldPosY), viewDist, totalFogDensity, verticalFogDensity) * min(1.0, GROUND_FOG_STRENGTH + GROUND_FOG_STRENGTH * isEyeInWater));
+    // Return fog, capped with ground fog strength and modulated by dynamic fog
+    float maxFogCap = min(1.0, GROUND_FOG_STRENGTH + GROUND_FOG_STRENGTH * isEyeInWater);
+    applyDynamicFogModifiers(totalFogDensity, verticalFogDensity, maxFogCap);
+    float baseFog = min(1.0, getAtmosphericFog(nEyePlayerPosY, max(0.0, worldPosY), viewDist, totalFogDensity, verticalFogDensity) * maxFogCap);
 
     #if WORLD_ID == 1 && defined END_BOSS_FOG
-        if(isEyeInWater == 0 && END_BOSS_FOG > 0.0 && fogEnd <= 100.0 && (fogStart / max(fogEnd, 0.001)) < 0.60 && effectFactor < 0.01){
-            float bStart = max(0.0, fogStart * (0.8 / max(END_BOSS_FOG, 0.5)));
-            float bEnd = max(bStart + 25.0, fogEnd * (1.1 / pow(END_BOSS_FOG, 0.35)));
-            float bDistProgress = saturate((viewDist - bStart) / (bEnd - bStart));
-            float bossDensity = 1.0 - exp2(-pow(bDistProgress, 1.25) * (4.2 * END_BOSS_FOG));
-            float heightFade = saturate(1.0 - max(0.0, worldPosY - 80.0) * 0.012);
-            float bossFogAmount = bossDensity * mix(0.70, 1.0, heightFade);
-            baseFog = max(baseFog, bossFogAmount);
-        }
+        baseFog = max(baseFog, getEndBossFogAmount(viewDist, worldPosY));
     #endif
 
     #if WORLD_ID == 0 && defined PALE_GARDEN_FOG
-        if(isEyeInWater == 0 && PALE_GARDEN_FOG > 0.0 && isPaleGarden > 0.001 && effectFactor < 0.01){
-            float pgStart = 12.0 / max(PALE_GARDEN_FOG, 0.5);
-            float pgEnd = max(pgStart + 25.0, 70.0 / pow(PALE_GARDEN_FOG, 0.4));
-            float pgDistProgress = saturate((viewDist - pgStart) / (pgEnd - pgStart));
-            float pgDensity = 1.0 - exp2(-pow(pgDistProgress, 1.15) * (4.2 * PALE_GARDEN_FOG));
-            float heightFade = saturate(1.0 - max(0.0, worldPosY - 105.0) * 0.016);
-            float paleFogAmount = pgDensity * isPaleGarden * mix(0.70, 1.0, heightFade);
-            baseFog = max(baseFog, paleFogAmount);
-        }
+        baseFog = max(baseFog, getPaleGardenFogAmount(viewDist, worldPosY));
     #endif
 
     return baseFog;

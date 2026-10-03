@@ -577,6 +577,9 @@ screen.CONFIGURATION.comment = §6维度和环境配置, 含主世界, 下界, �
             option.FOG0_TOTAL_DENSITY = 总体密度
             option.FOG0_TOTAL_DENSITY.comment = 主世界的总体雾密度. 值越高 = 雾越厚.
 
+            option.DYNAMIC_FOG = 动态迷雾
+            option.DYNAMIC_FOG.comment = 启用随动态天气系统演变并基于生物群系湿度概率的动态迷雾. 沼泽、河流与雨林等高湿度群系更容易产生浓郁晨雾与漫布薄雾, 干燥群系则保持通透清朗.
+
             option.PALE_GARDEN_FOG = 苍白之园迷雾
             option.PALE_GARDEN_FOG.comment = 苍白之园生物群系中的浅灰色大气迷雾强度.
 

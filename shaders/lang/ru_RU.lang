@@ -258,6 +258,7 @@ screen.CONFIGURATION = Настройки
             option.FOG0_VERTICAL_DENSITY_N = Сгущенность у земли ночью
             option.FOG0_VERTICAL_DENSITY_T = Сгущенность в сумерки
             option.FOG0_TOTAL_DENSITY = Общая плотность дымки
+            option.DYNAMIC_FOG = Динамический туман
             option.PALE_GARDEN_FOG = Туман Бледного сада
 
     screen.NETHER_SETTINGS = Незер
@@ -361,6 +362,7 @@ option.VOLUMETRIC_LIGHTING.comment = Требует включения карт�
 option.VOLUMETRIC_LIGHTING_STRENGTH.comment = Чем выше плотность, тем лучше заметен эффект объёмных лучей..
 option.BORDER_FOG.comment = Туман по краям видимой местности для скрытия её границ..
 option.GROUND_FOG_STRENGTH.comment = Яркость цвета дымки..
+option.DYNAMIC_FOG.comment = Включает динамический туман с вероятностью появления в зависимости от влажности биома, следующий за динамической погодой.. Влажные биомы (болота, реки, джунгли) чаще покрываются густым туманом, а засушливые остаются ясными..
 option.MILKY_WAY.comment = Включает процедурный Млечный Путь в ночном небе с квадратными звёздами и ступенчатыми краями туманности..
 option.MILKY_WAY_BRIGHTNESS.comment = Регулирует яркость процедурного Млечного Пути..
 option.AURORA.comment = Включает объёмные пиксельные занавеси северного сияния в холодных и снежных биомах с градиентом от розового сверху к зелёному и синему снизу..

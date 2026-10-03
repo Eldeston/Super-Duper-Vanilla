@@ -258,6 +258,7 @@ screen.CONFIGURATION = Configuração
             option.FOG0_VERTICAL_DENSITY_N = Densidade Vertical na Noite
             option.FOG0_VERTICAL_DENSITY_T = Densidade Vertical no Twilight
             option.FOG0_TOTAL_DENSITY = Densidade Total
+            option.DYNAMIC_FOG = Névoa Dinâmica
 
     screen.NETHER_SETTINGS = Configurações do Nether
         option.FOGn1_VERTICAL_DENSITY = Densidade Vertical

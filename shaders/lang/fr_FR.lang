@@ -580,6 +580,9 @@ screen.CONFIGURATION.comment = §6Configuration des dimensions et environnements
             option.FOG0_TOTAL_DENSITY = Densité totale
             option.FOG0_TOTAL_DENSITY.comment = Densité totale du brouillard pour le Monde normal. Des valeurs plus élevées = brouillard plus épais.
 
+            option.DYNAMIC_FOG = Brouillard dynamique
+            option.DYNAMIC_FOG.comment = Active le brouillard dynamique avec des probabilités par biome selon l'humidité et suivant la météo dynamique. Les biomes humides (marais, rivières, jungles) ont souvent une brume dense, tandis que les biomes arides restent dégagés.
+
             option.PALE_GARDEN_FOG = Brouillard du Jardin pâle
             option.PALE_GARDEN_FOG.comment = Intensité du brouillard atmosphérique gris clair dans le biome du Jardin pâle.
 
