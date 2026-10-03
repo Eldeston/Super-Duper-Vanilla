@@ -343,7 +343,7 @@
             return getViewPos(isLOD ? dhProjectionInverse : gbufferProjectionInverse, screenPos);
         #elif defined VOXY
             if(isLOD){
-                #if defined USE_ZERO_ONE_DEPTH || (defined VOXY && VOXY >= 3)
+                #if defined USE_ZERO_ONE_DEPTH || (defined VOXY && VOXY >= 3) || (defined MC_VERSION && MC_VERSION >= 260300)
                     vec4 viewPosH = vxProjInv * vec4(screenPos.xy * 2.0 - 1.0, screenPos.z, 1.0);
                 #else
                     vec4 viewPosH = vxProjInv * vec4(screenPos * 2.0 - 1.0, 1.0);

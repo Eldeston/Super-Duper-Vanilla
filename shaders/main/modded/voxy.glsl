@@ -122,19 +122,18 @@ void applyVoxyBlockProperties(inout dataPBR material, in uint blockId, in vec2 n
 void voxy_emitFragment(VoxyFragmentParameters parameters){
     // Reconstruct position in view and player space from depth using Voxy projection
     vec3 screenPos = vec3(gl_FragCoord.xy * vec2(pixelWidth, pixelHeight), gl_FragCoord.z);
-    #if defined USE_ZERO_ONE_DEPTH || (defined VOXY && VOXY >= 3)
-        // Under zero-to-one depth (USE_ZERO_ONE_DEPTH), NDC Z is [0, 1], so only XY are mapped to [-1, 1]
+    #if defined USE_ZERO_ONE_DEPTH || (defined VOXY && VOXY >= 3) || (defined MC_VERSION && MC_VERSION >= 260300)
+        // Under zero-to-one depth (MC 26.3+ / VOXY 3+), NDC Z is [0, 1]
         vec4 clipPos = vec4(screenPos.xy * 2.0 - 1.0, screenPos.z, 1.0);
     #else
-        // Standard OpenGL depth where NDC Z is [-1, 1]
+        // Standard OpenGL depth where NDC Z is [-1, 1] (MC 26.2 / VOXY 2)
         vec4 clipPos = vec4(screenPos * 2.0 - 1.0, 1.0);
     #endif
     vec4 viewPosH = vxProjInv * clipPos;
     vec3 viewPos = viewPosH.xyz / viewPosH.w;
     float viewDist = length(viewPos);
 
-    // Prevent overdraw against vanilla chunks
-    if(far > viewDist + 4.0){ discard; return; }
+    // Hardware depth testing against vanilla depth buffer prevents overdraw
 
     vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
     vertexFeetPlayerPos = eyePlayerPos + gbufferModelViewInverse[3].xyz;

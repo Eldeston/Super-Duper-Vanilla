@@ -23,7 +23,7 @@ repositories {
 val loom = extensions.getByType<net.fabricmc.loom.api.LoomGradleExtensionAPI>()
 loom.noIntermediateMappings()
 
-// Minecraft 26.3 is unobfuscated; generate empty identity mappings jar if missing
+// Minecraft 26.2 is unobfuscated; generate empty identity mappings jar if missing
 val identityMappingsJar = layout.projectDirectory.file("gradle/identity-mappings.jar").asFile
 if (!identityMappingsJar.exists()) {
     identityMappingsJar.parentFile.mkdirs()
@@ -44,7 +44,7 @@ dependencies {
     "minecraft"("com.mojang:minecraft:${project.property("minecraft_version")}")
     "mappings"(files(identityMappingsJar))
 
-    // Quilt Loader & required runtime libraries (ASM 9.10.1 for Java 25 / MC 26.3)
+    // Quilt Loader & required runtime libraries (ASM 9.10.1 for Java 25 / MC 26.2)
     "modImplementation"("org.quiltmc:quilt-loader:${project.property("quilt_loader_version")}")
     "runtimeOnly"("org.ow2.asm:asm:9.10.1")
     "runtimeOnly"("org.ow2.asm:asm-analysis:9.10.1")

@@ -56,5 +56,6 @@
         "2": "off",
         "3": "off"
     },
-    "excludeLodsFromVanillaDepth": true
+    "excludeLodsFromVanillaDepth": true,
+    "skipShaderDepthHackFix": true
 }
