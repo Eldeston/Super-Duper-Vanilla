@@ -114,7 +114,7 @@
     uniform sampler2D colortex3;
 
     uniform sampler2D depthtex0;
-    #ifdef GODRAYS
+    #if defined GODRAYS && GODRAYS_WATER_TRANSMISSION == 1
         uniform sampler2D depthtex1;
     #endif
 

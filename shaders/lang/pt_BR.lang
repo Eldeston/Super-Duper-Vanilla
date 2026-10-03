@@ -99,6 +99,15 @@ screen.ATMOSPHERICS = Atmosféricos
 
     option.SUN_MOON_INTENSITY = Intensidade do Sol/Lua
     option.SUN_MOON_SIZE = Tamanho do Sol/Lua
+    option.GODRAYS = Raios Crepusculares
+    screen.GODRAY_SETTINGS = Configurações dos Raios
+    option.GODRAYS_QUALITY = Qualidade dos Raios
+        value.GODRAYS_QUALITY.0 = Rápido (6 etapas)
+        value.GODRAYS_QUALITY.1 = Equilibrado (8 etapas)
+        value.GODRAYS_QUALITY.2 = Alto (12 etapas)
+        value.GODRAYS_QUALITY.3 = Ultra (16 etapas)
+    option.GODRAYS_DENSITY = Densidade dos Raios
+    option.GODRAYS_WATER_TRANSMISSION = Transmissão pela Água
     option.VOLUMETRIC_LIGHTING = Iluminação Volumétrica
     option.VOLUMETRIC_LIGHTING_STRENGTH = Intensidade da Iluminação Volumétrica
     option.BORDER_FOG = Névoa da Borda

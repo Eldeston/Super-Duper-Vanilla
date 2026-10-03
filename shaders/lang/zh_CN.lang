@@ -213,8 +213,21 @@ screen.ATMOSPHERICS.comment = §6大气系统效果, 包括日月, 云, 雾, 边
     option.GODRAYS = 丁达尔光线
     option.GODRAYS.comment = 启用穿透地形、云层与水体的高性能丁达尔光线（云隙光/耶稣光）.
 
+    screen.GODRAY_SETTINGS = 丁达尔光线设置
+    screen.GODRAY_SETTINGS.comment = §6配置丁达尔光线采样质量、强度与水体透射.
+
+    option.GODRAYS_QUALITY = 丁达尔光线质量
+    option.GODRAYS_QUALITY.comment = 光线步进采样步数与密度. 极速: 6步 (最高帧率), 平衡: 8步 (推荐), 高: 12步, 极致: 16步.
+        value.GODRAYS_QUALITY.0 = 极速 (6步)
+        value.GODRAYS_QUALITY.1 = 平衡 (8步)
+        value.GODRAYS_QUALITY.2 = 高 (12步)
+        value.GODRAYS_QUALITY.3 = 极致 (16步)
+
     option.GODRAYS_DENSITY = 丁达尔光线强度
     option.GODRAYS_DENSITY.comment = 调节丁达尔光线的明亮程度与强度, 设置为零以禁用.
+
+    option.GODRAYS_WATER_TRANSMISSION = 水体透射
+    option.GODRAYS_WATER_TRANSMISSION.comment = 允许丁达尔光线穿透半透明水体和染色玻璃. 关闭此项可跳过二次深度采样以获得极致性能.
 
     option.VOLUMETRIC_LIGHTING = 体积光
     option.VOLUMETRIC_LIGHTING.comment = 启用体积光.

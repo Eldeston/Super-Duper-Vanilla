@@ -213,8 +213,21 @@ screen.ATMOSPHERICS.comment = §6Atmospheric effects including sun/moon, clouds,
     option.GODRAYS = Godrays
     option.GODRAYS.comment = Enables performant atmospheric godrays (crepuscular rays) streaming through terrain, clouds, and water.
 
+    screen.GODRAY_SETTINGS = Godray settings
+    screen.GODRAY_SETTINGS.comment = §6Configure godray sample quality, density, and water transmission.
+
+    option.GODRAYS_QUALITY = Godray quality
+    option.GODRAYS_QUALITY.comment = Raymarching sample count and step density. Fast: 6 steps (maximum FPS), Balanced: 8 steps (recommended), High: 12 steps, Ultra: 16 steps.
+        value.GODRAYS_QUALITY.0 = Fast (6 steps)
+        value.GODRAYS_QUALITY.1 = Balanced (8 steps)
+        value.GODRAYS_QUALITY.2 = High (12 steps)
+        value.GODRAYS_QUALITY.3 = Ultra (16 steps)
+
     option.GODRAYS_DENSITY = Godrays density
     option.GODRAYS_DENSITY.comment = Adjusts the brightness and intensity of godrays, set it to zero to disable it.
+
+    option.GODRAYS_WATER_TRANSMISSION = Water transmission
+    option.GODRAYS_WATER_TRANSMISSION.comment = Allows godrays to penetrate and stream through translucent water and stained glass. Disabling skips secondary depth sampling for maximum performance.
 
     option.VOLUMETRIC_LIGHTING = Volumetric lighting
     option.VOLUMETRIC_LIGHTING.comment = Enables volumetric lighting.
