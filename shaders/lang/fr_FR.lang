@@ -229,6 +229,9 @@ screen.ATMOSPHERICS.comment = §6Effets atmosphériques incluant le soleil/lune,
     option.GODRAYS_WATER_TRANSMISSION = Transmission aquatique
     option.GODRAYS_WATER_TRANSMISSION.comment = Permet aux rayons de pénétrer l'eau translucide et le verre teinté. Désactiver évite la double profondeur pour un gain de performances maximal.
 
+    option.GODRAYS_ADAPTIVE_STEPS = Pas adaptatifs
+    option.GODRAYS_ADAPTIVE_STEPS.comment = Optimise dynamiquement les pas d'échantillonnage près du soleil pour doubler les performances sans perte visuelle.
+
     option.VOLUMETRIC_LIGHTING = Éclairage volumétrique
     option.VOLUMETRIC_LIGHTING.comment = Active l'éclairage volumétrique.
 

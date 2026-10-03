@@ -108,6 +108,7 @@ screen.ATMOSPHERICS = Atmosféricos
         value.GODRAYS_QUALITY.3 = Ultra (16 etapas)
     option.GODRAYS_DENSITY = Densidade dos Raios
     option.GODRAYS_WATER_TRANSMISSION = Transmissão pela Água
+    option.GODRAYS_ADAPTIVE_STEPS = Passos adaptativos
     option.VOLUMETRIC_LIGHTING = Iluminação Volumétrica
     option.VOLUMETRIC_LIGHTING_STRENGTH = Intensidade da Iluminação Volumétrica
     option.BORDER_FOG = Névoa da Borda

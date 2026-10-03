@@ -229,6 +229,9 @@ screen.ATMOSPHERICS.comment = §6大气系统效果, 包括日月, 云, 雾, 边
     option.GODRAYS_WATER_TRANSMISSION = 水体透射
     option.GODRAYS_WATER_TRANSMISSION.comment = 允许丁达尔光线穿透半透明水体和染色玻璃. 关闭此项可跳过二次深度采样以获得极致性能.
 
+    option.GODRAYS_ADAPTIVE_STEPS = 自适应步进
+    option.GODRAYS_ADAPTIVE_STEPS.comment = 靠近太阳时动态优化光线步进采样数，直视太阳时大幅提升帧率且画质无损。
+
     option.VOLUMETRIC_LIGHTING = 体积光
     option.VOLUMETRIC_LIGHTING.comment = 启用体积光.
 

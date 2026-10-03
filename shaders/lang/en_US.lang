@@ -229,6 +229,9 @@ screen.ATMOSPHERICS.comment = §6Atmospheric effects including sun/moon, clouds,
     option.GODRAYS_WATER_TRANSMISSION = Water transmission
     option.GODRAYS_WATER_TRANSMISSION.comment = Allows godrays to penetrate and stream through translucent water and stained glass. Disabling skips secondary depth sampling for maximum performance.
 
+    option.GODRAYS_ADAPTIVE_STEPS = Adaptive step count
+    option.GODRAYS_ADAPTIVE_STEPS.comment = Dynamically optimizes raymarching steps when near the sun, doubling performance when facing the sun with zero visual difference.
+
     option.VOLUMETRIC_LIGHTING = Volumetric lighting
     option.VOLUMETRIC_LIGHTING.comment = Enables volumetric lighting.
 
