@@ -223,7 +223,10 @@ float getSunMoonShape(in vec2 skyPos){
         }
 
         // Extended gravitational warping reach (near-field vortex + far-field well)
-        float normD = edgeDist / bhHalfSize;
+        // Uses smooth radial distance for gravitational lensing to avoid non-differentiable diagonal kinks and tearing in lensed stars
+        float radialDist = length(projPos);
+        float warpEdgeDist = max(0.0, radialDist - bhHalfSize);
+        float normD = warpEdgeDist / bhHalfSize;
         float warpNear = 1.0 / (1.0 + 2.0 * normD + 2.5 * normD * normD);
         float warpFar = exp2(-normD * 0.55) * saturate(1.0 - normD * 0.08);
         float warpImpact = 0.58 * warpNear + 0.42 * warpFar;
@@ -236,7 +239,7 @@ float getSunMoonShape(in vec2 skyPos){
 
         // Relativistic Doppler effect & beaming (tilted orbital plane)
         vec2 tiltedPos = rot2D(0.21) * projPos;
-        float r = max(boxDist, 0.0001);
+        float r = max(radialDist, 0.0001);
         float losVel = clamp(-tiltedPos.x / r * sqrt(clamp(bhHalfSize / r, 0.0, 1.0)), -1.0, 1.0);
         float dopplerBeaming = 1.0 + losVel * 0.32;
         float dopplerT = losVel * 0.5 + 0.5;
