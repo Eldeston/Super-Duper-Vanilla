@@ -122,8 +122,13 @@ void applyVoxyBlockProperties(inout dataPBR material, in uint blockId, in vec2 n
 void voxy_emitFragment(VoxyFragmentParameters parameters){
     // Reconstruct position in view and player space from depth using Voxy projection
     vec3 screenPos = vec3(gl_FragCoord.xy * vec2(pixelWidth, pixelHeight), gl_FragCoord.z);
-    // Under zero-to-one depth (USE_ZERO_ONE_DEPTH), NDC Z is [0, 1], so only XY are mapped to [-1, 1]
-    vec4 clipPos = vec4(screenPos.xy * 2.0 - 1.0, screenPos.z, 1.0);
+    #if defined USE_ZERO_ONE_DEPTH || (defined VOXY && VOXY >= 3)
+        // Under zero-to-one depth (USE_ZERO_ONE_DEPTH), NDC Z is [0, 1], so only XY are mapped to [-1, 1]
+        vec4 clipPos = vec4(screenPos.xy * 2.0 - 1.0, screenPos.z, 1.0);
+    #else
+        // Standard OpenGL depth where NDC Z is [-1, 1]
+        vec4 clipPos = vec4(screenPos * 2.0 - 1.0, 1.0);
+    #endif
     vec4 viewPosH = vxProjInv * clipPos;
     vec3 viewPos = viewPosH.xyz / viewPosH.w;
     float viewDist = length(viewPos);
