@@ -180,7 +180,7 @@ vec3 getGodRays(
     if(GODRAYS_DENSITY <= 0.0 || isEyeInWater == 2 || shdFade <= 0.001) return vec3(0.0);
 
     #ifndef FORCE_DISABLE_WEATHER
-        float weatherVis = 1.0 - smoothstep(0.25, 0.85, weatherFade);
+        float weatherVis = 1.0 - smoothstep(0.65, 0.95, weatherFade);
         if(weatherVis <= 0.001) return vec3(0.0);
     #else
         const float weatherVis = 1.0;
