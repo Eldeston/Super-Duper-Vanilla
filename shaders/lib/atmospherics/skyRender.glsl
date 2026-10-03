@@ -16,8 +16,7 @@
 #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
     // Depth size / cloud steps
     const uint skyBoxCloudSteps = uint(SKYBOX_CLOUD_STEPS);
-    const float cloudStepSize = 1.0 / skyBoxCloudSteps;
-    const float depthSize = SKYBOX_CLOUD_DEPTH * cloudStepSize;
+    const float cloudStepSize = 1.0 / skyBoxCloudSteps, depthSize = SKYBOX_CLOUD_DEPTH * cloudStepSize;
 
     vec2 cloudParallaxDynamic(in vec2 start, in vec2 cameraPos){
         // Apply depth size
@@ -111,7 +110,11 @@
             #else
                 vec3 cloudLight = mix(moonCol, sunCol, dayCycleAdjust) * (1.0 - weatherFade);
             #endif
-            vec3 cloudSkyLight = mix(skyCol, skyCol * 0.35, weatherFade);
+            #ifdef STORY_MODE_CLOUDS
+                vec3 cloudSkyLight = mix(skyCol, skyCol * 0.85, weatherFade);
+            #else
+                vec3 cloudSkyLight = mix(skyCol, skyCol * 0.35, weatherFade);
+            #endif
         #else
             #ifdef FORCE_DISABLE_DAY_CYCLE
                 vec3 cloudLight = lightCol;
@@ -148,8 +151,6 @@ vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){
     vec3 currSkyCol = baseSky + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 
     #ifdef WORLD_SKY_GROUND
-        // currSkyCol.rg *= smoothen(saturate(1.0 + nEyePlayerPosY * 4.0));
-        // if(nEyePlayerPosY < 0) currSkyCol *= smoothen(max(1.0 + nEyePlayerPosY / max(skyCol, 0.25), vec3(0.25)));
         if(nEyePlayerPosY < 0 && isEyeInWater == 0) currSkyCol *= exp2(-(nEyePlayerPosY * nEyePlayerPosY * 8.0) / max(baseSky * baseSky, vec3(0.125)));
     #endif
 
@@ -299,9 +300,7 @@ vec3 getSkyFogRender(in vec3 nEyePlayerPos){
         ivec2 aetherTexelCoord1 = ivec2(aetherTexelCoord0.x, int(skyCoordScale.y - aetherAnimationSpeed) & 255);
         ivec2 aetherTexelCoord2 = ivec2(int(skyCoordScale.x - aetherAnimationSpeed) & 255, aetherTexelCoord0.y);
 
-        vec3 aetherNoise = vec3(texelFetch(noisetex, aetherTexelCoord0, 0).z,
-            texelFetch(noisetex, aetherTexelCoord1, 0).z,
-            texelFetch(noisetex, aetherTexelCoord2, 0).z);
+        vec3 aetherNoise = vec3(texelFetch(noisetex, aetherTexelCoord0, 0).z, texelFetch(noisetex, aetherTexelCoord1, 0).z, texelFetch(noisetex, aetherTexelCoord2, 0).z);
 
         currSkyCol += exp2(-abs(nEyePlayerPos.y) * 8.0) * cubed(aetherNoise * lightCol + sumOf(aetherNoise) * 0.66666666) * lightCol;
     #endif
@@ -328,9 +327,7 @@ vec3 getSkyFogRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
         ivec2 aetherTexelCoord1 = ivec2(aetherTexelCoord0.x, int(skyCoordScale.y - aetherAnimationSpeed) & 255);
         ivec2 aetherTexelCoord2 = ivec2(int(skyCoordScale.x - aetherAnimationSpeed) & 255, aetherTexelCoord0.y);
 
-        vec3 aetherNoise = vec3(texelFetch(noisetex, aetherTexelCoord0, 0).z,
-            texelFetch(noisetex, aetherTexelCoord1, 0).z,
-            texelFetch(noisetex, aetherTexelCoord2, 0).z);
+        vec3 aetherNoise = vec3(texelFetch(noisetex, aetherTexelCoord0, 0).z, texelFetch(noisetex, aetherTexelCoord1, 0).z, texelFetch(noisetex, aetherTexelCoord2, 0).z);
 
         currSkyCol += exp2(-abs(nEyePlayerPos.y) * 8.0) * cubed(aetherNoise * lightCol + sumOf(aetherNoise) * 0.66666666) * lightCol;
     #endif
@@ -396,7 +393,11 @@ vec3 getSkyReflection(in vec3 reflectViewDir){
             VLBrightness *= heightFade;
         }
         
-        finalCol += lightCol * VLBrightness;
+        #ifndef FORCE_DISABLE_WEATHER
+            finalCol += mix(lightCol, skyCol, weatherFade) * VLBrightness;
+        #else
+            finalCol += lightCol * VLBrightness;
+        #endif
     #endif
 
     return finalCol * saturate(reflectPlayerDir.y * 2.0 + eyeBrightFact * 2.0);
