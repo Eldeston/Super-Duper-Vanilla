@@ -99,6 +99,8 @@ const vec3 skyTwilightColor = vec3(SKY0_TR, SKY0_TG, SKY0_TB) * (SKY0_TI * 0.003
 
 #if !defined(PATCHED_SHADER) && !defined(VOXY_SHADING)
 uniform int moonPhase;
+uniform float sunPower;
+uniform float moonPower;
 #endif
 
 // Moon phase factor: 0.0 (New Moon) to 1.0 (Full Moon)
@@ -106,8 +108,11 @@ uniform int moonPhase;
 #define MOON_PHASE_FACTOR (abs(float(moonPhase) - 4.0) * 0.25)
 
 // Holds the data on how the light will change according to multiple environmental factors
-#define SUN_COL_DATA_BLOCK mix(lightTwilightColor, lightDayColor, twilightPhase)
-#define MOON_COL_DATA_BLOCK (lightNightColor * mix(0.08, 1.00, MOON_PHASE_FACTOR))
+#define SUN_COLOR_BASE mix(lightTwilightColor, lightDayColor, twilightPhase)
+#define MOON_COLOR_BASE (lightNightColor * mix(0.08, 1.00, MOON_PHASE_FACTOR))
+
+#define SUN_COL_DATA_BLOCK (SUN_COLOR_BASE * sunPower)
+#define MOON_COL_DATA_BLOCK (MOON_COLOR_BASE * moonPower)
 
 #define LIGHT_COLOR_DATA_BLOCK0 (dayCycle > 1 ? SUN_COL_DATA_BLOCK : MOON_COL_DATA_BLOCK)
 #define LIGHT_COLOR_DATA_BLOCK1(S, M) (dayCycle > 1 ? S : M)

@@ -62,12 +62,12 @@
                 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
                 lightCol = toLinear(sRGBLightCol);
             #else
-                sRGBSunCol = SUN_COL_DATA_BLOCK;
-                sunCol = toLinear(sRGBSunCol);
-                sRGBMoonCol = MOON_COL_DATA_BLOCK;
-                moonCol = toLinear(sRGBMoonCol);
+                sRGBSunCol = SUN_COLOR_BASE;
+                sunCol = toLinear(SUN_COL_DATA_BLOCK);
+                sRGBMoonCol = MOON_COLOR_BASE;
+                moonCol = toLinear(MOON_COL_DATA_BLOCK);
 
-                sRGBLightCol = LIGHT_COLOR_DATA_BLOCK1(sRGBSunCol, sRGBMoonCol);
+                sRGBLightCol = LIGHT_COLOR_DATA_BLOCK1(SUN_COL_DATA_BLOCK, MOON_COL_DATA_BLOCK);
                 lightCol = toLinear(sRGBLightCol);
             #endif
         #endif
@@ -270,7 +270,15 @@
 
                     // Mix in expanded coverage from both channels
                     float expandedCumulus = mix(baseCumulus, max(cloudData.x, cloudData.y) * cloudPresence, weatherFade);
-                    float cloudFinal = expandedCumulus * 0.125;
+
+                    // Overcast scales the optical density of the first layer of clouds
+                    float firstLayerDensity = mix(0.75, 2.0, smoothstep(0.10, 0.85, weatherFade));
+
+                    // As overcast approaches 1.0, an overcast cloud deck fills the sky
+                    float overcastDeck = saturate((weatherFade - 0.70) * 3.5);
+                    expandedCumulus = mix(expandedCumulus, max(expandedCumulus, 8.0 * cloudPresence), overcastDeck);
+
+                    float cloudFinal = expandedCumulus * 0.125 * firstLayerDensity;
                 #else
                     float cloudFinal = mix(baseCumulus, max(cloudData.x, cloudData.y), weatherFade) * 0.125;
                 #endif
@@ -291,9 +299,15 @@
                 vec3 cloudSkyLight = skyCol;
             #endif
 
+            vec3 lightDir = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
+            cloudCelestialLight *= getCloudCelestialOcclusion(lightDir, cameraPosition, fragmentFrameTime);
+
             vec3 cloudAmbient = vec3(toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash);
 
-            return mix(sceneCol, cloudAmbient + cloudCelestialLight + cloudSkyLight, saturate(cloudFinal));
+            float cloudDensity = saturate(cloudFinal);
+            vec3 celestialExcess = max(vec3(0.0), sceneCol - cloudSkyLight);
+            vec3 occludedScene = min(sceneCol, cloudSkyLight) + celestialExcess * exp2(-cloudDensity * 8.0);
+            return mix(occludedScene, cloudAmbient + cloudCelestialLight + cloudSkyLight, cloudDensity);
         }
     #endif
 

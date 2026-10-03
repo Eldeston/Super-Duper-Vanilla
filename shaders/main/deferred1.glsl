@@ -63,11 +63,11 @@
                 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
                 lightCol = toLinear(sRGBLightCol);
             #else
-                sRGBSunCol = SUN_COL_DATA_BLOCK;
-                sunCol = toLinear(sRGBSunCol);
-                sRGBMoonCol = MOON_COL_DATA_BLOCK;
-                moonCol = toLinear(sRGBMoonCol);
-                sRGBLightCol = LIGHT_COLOR_DATA_BLOCK1(sRGBSunCol, sRGBMoonCol);
+                sRGBSunCol = SUN_COLOR_BASE;
+                sunCol = toLinear(SUN_COL_DATA_BLOCK);
+                sRGBMoonCol = MOON_COLOR_BASE;
+                moonCol = toLinear(MOON_COL_DATA_BLOCK);
+                sRGBLightCol = LIGHT_COLOR_DATA_BLOCK1(SUN_COL_DATA_BLOCK, MOON_COL_DATA_BLOCK);
                 lightCol = toLinear(sRGBLightCol);
             #endif
         #endif

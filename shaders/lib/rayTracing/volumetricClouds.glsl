@@ -39,6 +39,19 @@ vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPl
     // To store the cloud data for 2 cloud layers
     vec2 clouds = vec2(0);
 
+    #ifndef FORCE_DISABLE_WEATHER
+        #ifdef DYNAMIC_WEATHER
+            float overcastDensityMult = isCirrus ? 1.0 : mix(0.85, 1.35, weatherFade);
+            float cloudCutoff = isCirrus ? 0.5 : mix(0.5, 0.38, smoothstep(0.35, 0.90, weatherFade));
+        #else
+            float overcastDensityMult = 1.0;
+            float cloudCutoff = 0.5;
+        #endif
+    #else
+        float overcastDensityMult = 1.0;
+        float cloudCutoff = 0.5;
+    #endif
+
     // LESSS GOOOOO RAT RACING!!!11!!11!!11!!
     for(uint i = 0u; i < dynamicVolumetricCloudSteps; i++){
         // Get cloud fog
@@ -49,9 +62,9 @@ vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPl
         vec2 cloudData = texelFetch(colortex0, ivec2(uv) & 255, 0).xy;
 
         // Apply cloud gradiante' (fainter opacity for cirrus clouds)
-        float density = isCirrus ? (-startPos.y * cloudFog * 0.5) : (-startPos.y * cloudFog);
-        if(cloudData.x > 0.5) clouds.x = max(clouds.x, density);
-        if(cloudData.y > 0.5) clouds.y = max(clouds.y, density);
+        float density = (isCirrus ? (-startPos.y * cloudFog * 0.5) : (-startPos.y * cloudFog)) * overcastDensityMult;
+        if(cloudData.x > cloudCutoff) clouds.x = max(clouds.x, density);
+        if(cloudData.y > cloudCutoff) clouds.y = max(clouds.y, density);
 
         // Continue tracing
         startPos += endPos;

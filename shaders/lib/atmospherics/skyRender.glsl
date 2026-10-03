@@ -13,6 +13,7 @@
 #include "/lib/atmospherics/milkyWay.glsl"
 #include "/lib/atmospherics/aurora.glsl"
 #include "/lib/atmospherics/rainbow.glsl"
+#include "/lib/atmospherics/cloudOcclusion.glsl"
 
 #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
     // Depth size / cloud steps
@@ -96,9 +97,13 @@
                 // Mix in expanded coverage from both channels
                 float expandedClouds = mix(baseClouds, max(cloudData.x, cloudData.y) * cloudPresence, weatherFade);
 
+                // Overcast scales the optical density of the first layer of clouds
+                float firstLayerDensity = mix(0.75, 2.0, smoothstep(0.10, 0.85, weatherFade));
+
                 // As overcast approaches 1.0, an overcast cloud deck fills the sky
                 float overcastDeck = saturate((weatherFade - 0.70) * 4.0);
                 float clouds = mix(expandedClouds, max(expandedClouds, float(skyBoxCloudSteps) * 0.70), overcastDeck);
+                clouds *= firstLayerDensity;
             #else
                 float clouds = mix(baseClouds, max(cloudData.x, cloudData.y), weatherFade);
             #endif
@@ -426,28 +431,32 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol)
         #if WORLD_SUN_MOON == 1
             #ifndef FORCE_DISABLE_WEATHER
                 if(weatherFade < 1.0 && abs(skyPos.z) > 0.7){
+                    vec3 lightDir = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
+                    float cloudOcc = getCloudCelestialOcclusion(lightDir, cameraPosition, fragmentFrameTime);
                     #ifdef FORCE_DISABLE_DAY_CYCLE
                         float sunMoonShape = getSunMoonShape(skyPos.xy / abs(skyPos.z)) * sunMoonIntensitySqrd;
                         float celestialVis = 1.0 - weatherFade;
-                        currSkyCol += sRGBLightCol * (sunMoonShape * celestialVis);
+                        currSkyCol += sRGBLightCol * (sunMoonShape * (celestialVis * cloudOcc));
                     #else
                         if(skyPos.z > 0.0){
-                            currSkyCol += getSunRender(skyPos.xy / abs(skyPos.z), sRGBSunCol, weatherFade);
+                            currSkyCol += getSunRender(skyPos.xy / abs(skyPos.z), sRGBSunCol * (max(sunPower, 0.40) * cloudOcc), weatherFade);
                         } else {
-                            currSkyCol += getMoonRender(skyPos.xy / abs(skyPos.z), sRGBMoonCol, weatherFade);
+                            currSkyCol += getMoonRender(skyPos.xy / abs(skyPos.z), sRGBMoonCol * (max(moonPower, 0.40) * cloudOcc), weatherFade);
                         }
                     #endif
                 }
             #else
                 if(abs(skyPos.z) > 0.7){
+                    vec3 lightDir = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
+                    float cloudOcc = getCloudCelestialOcclusion(lightDir, cameraPosition, fragmentFrameTime);
                     #ifdef FORCE_DISABLE_DAY_CYCLE
                         float sunMoonShape = getSunMoonShape(skyPos.xy / abs(skyPos.z)) * sunMoonIntensitySqrd;
-                        currSkyCol += sRGBLightCol * sunMoonShape;
+                        currSkyCol += sRGBLightCol * (sunMoonShape * cloudOcc);
                     #else
                         if(skyPos.z > 0.0){
-                            currSkyCol += getSunRender(skyPos.xy / abs(skyPos.z), sRGBSunCol, 0.0);
+                            currSkyCol += getSunRender(skyPos.xy / abs(skyPos.z), sRGBSunCol * (max(sunPower, 0.40) * cloudOcc), 0.0);
                         } else {
-                            currSkyCol += getMoonRender(skyPos.xy / abs(skyPos.z), sRGBMoonCol, 0.0);
+                            currSkyCol += getMoonRender(skyPos.xy / abs(skyPos.z), sRGBMoonCol * (max(moonPower, 0.40) * cloudOcc), 0.0);
                         }
                     #endif
                 }

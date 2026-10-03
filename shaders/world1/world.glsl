@@ -64,6 +64,8 @@ const vec3 lightEndColor = vec3(LIGHT1_CR, LIGHT1_CG, LIGHT1_CB) * (LIGHT1_CI * 
 const vec3 skyEndColor = vec3(SKY1_CR, SKY1_CG, SKY1_CB) * (SKY1_CI * 0.00392156863);
 
 #define MOON_PHASE_FACTOR 1.0
+#define SUN_COLOR_BASE vec3(0.0)
+#define MOON_COLOR_BASE vec3(0.0)
 #define MOON_COL_DATA_BLOCK vec3(0.0)
 
 // Holds the data on how the light will change according to multiple environmental factors

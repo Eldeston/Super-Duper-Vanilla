@@ -33,6 +33,8 @@
         "moonPhase",
         "eyeSkylight",
         "shdFade",
+        "sunPower",
+        "moonPower",
         "pixelWidth",
         "pixelHeight",
         "frameMod",

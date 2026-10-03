@@ -53,6 +53,8 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 const vec3 skyNetherColor = vec3(SKYn1_CR, SKYn1_CG, SKYn1_CB) * SKYn1_CI;
 
 #define MOON_PHASE_FACTOR 1.0
+#define SUN_COLOR_BASE vec3(0.0)
+#define MOON_COLOR_BASE vec3(0.0)
 #define MOON_COL_DATA_BLOCK vec3(0.0)
 
 // Holds the data on how the light will change according to multiple environmental factors
