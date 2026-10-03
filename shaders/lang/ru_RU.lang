@@ -274,6 +274,7 @@ screen.CONFIGURATION = Настройки
 
         option.FOG1_VERTICAL_DENSITY = Сгущенность у земли
         option.FOG1_TOTAL_DENSITY = Общая плотность дымки
+        option.END_BOSS_FOG = Туман босса-дракона
 
     screen.BLOCK_LIGHT_COLOR = Цветное освещение блоков
         option.BLOCKLIGHT_R = Красный свет

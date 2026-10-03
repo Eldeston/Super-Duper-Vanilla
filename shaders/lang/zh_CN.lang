@@ -614,6 +614,9 @@ screen.CONFIGURATION.comment = §6维度和环境配置, 含主世界, 下界, �
         option.FOG1_TOTAL_DENSITY = 总体密度
         option.FOG1_TOTAL_DENSITY.comment = 末地的总体雾密度. 值越高 = 雾越厚.
 
+        option.END_BOSS_FOG = 末影龙Boss迷雾
+        option.END_BOSS_FOG.comment = 末影龙战斗期间的大气Boss迷雾强度.
+
     screen.BLOCK_LIGHT_COLOR = 方块光设置
     screen.BLOCK_LIGHT_COLOR.comment = §e方块光的颜色和强度配置.
         option.BLOCKLIGHT_R = 方块光红色

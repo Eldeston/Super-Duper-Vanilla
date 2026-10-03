@@ -31,6 +31,8 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 
 #define END_BH_LIGHT 0.20 // Faint permanent directional light from the Black Hole [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50]
 
+#define END_BOSS_FOG 1.50 // Ender Dragon atmospheric boss fog intensity [0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 2.25 2.50 2.75 3.00]
+
 // Enable stars in your world
 #define WORLD_STARS 16.0
 // #define WORLD_METEORS 2.0

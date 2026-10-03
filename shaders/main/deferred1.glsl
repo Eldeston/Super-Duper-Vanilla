@@ -113,6 +113,8 @@
     uniform float fragmentFrameTime;
 
     uniform vec3 fogColor;
+    uniform float fogStart;
+    uniform float fogEnd;
 
     uniform vec3 cameraPosition;
 
@@ -292,6 +294,17 @@
         #endif
     }
 
+vec3 applyDeferredSkyEffects(in vec3 sceneCol, in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
+    #if WORLD_ID == 1 && defined END_BOSS_FOG
+        if(isEyeInWater == 0 && END_BOSS_FOG > 0.0 && fogEnd <= 100.0 && (fogStart / max(fogEnd, 0.001)) < 0.60 && effectFactor < 0.01){
+            float horizonBossFog = exp2(-max(0.0, nEyePlayerPos.y) * (14.0 / max(END_BOSS_FOG, 0.5))) * (0.90 * min(1.0, END_BOSS_FOG));
+            vec3 bossSkyFogCol = getSkyFogRender(nEyePlayerPos, skyPos, currSkyCol);
+            sceneCol = mix(sceneCol, bossSkyFogCol, horizonBossFog);
+        }
+    #endif
+    return sceneCol;
+}
+
     void main(){
         // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
@@ -350,6 +363,7 @@
         if(skyMask){
             // Calculate and output sky render
             sceneColOut = getFullSkyRender(nEyePlayerPos, skyPos, currSkyCol + sceneColOut) * exp2(-borderFar * effectFactor);
+            sceneColOut = applyDeferredSkyEffects(sceneColOut, nEyePlayerPos, skyPos, currSkyCol);
             // Exit function immediately
             return;
         }

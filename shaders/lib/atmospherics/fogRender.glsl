@@ -27,7 +27,21 @@ float getFogFactor(in float viewDist, in float nEyePlayerPosY, in float worldPos
     #endif
 
     // Return fog, capped with ground fog strength
-    return min(1.0, getAtmosphericFog(nEyePlayerPosY, max(0.0, worldPosY), viewDist, totalFogDensity, verticalFogDensity) * min(1.0, GROUND_FOG_STRENGTH + GROUND_FOG_STRENGTH * isEyeInWater));
+    float baseFog = min(1.0, getAtmosphericFog(nEyePlayerPosY, max(0.0, worldPosY), viewDist, totalFogDensity, verticalFogDensity) * min(1.0, GROUND_FOG_STRENGTH + GROUND_FOG_STRENGTH * isEyeInWater));
+
+    #if WORLD_ID == 1 && defined END_BOSS_FOG
+        if(isEyeInWater == 0 && END_BOSS_FOG > 0.0 && fogEnd <= 100.0 && (fogStart / max(fogEnd, 0.001)) < 0.60 && effectFactor < 0.01){
+            float bStart = max(0.0, fogStart * (0.8 / max(END_BOSS_FOG, 0.5)));
+            float bEnd = max(bStart + 25.0, fogEnd * (1.1 / pow(END_BOSS_FOG, 0.35)));
+            float bDistProgress = saturate((viewDist - bStart) / (bEnd - bStart));
+            float bossDensity = 1.0 - exp2(-pow(bDistProgress, 1.25) * (4.2 * END_BOSS_FOG));
+            float heightFade = saturate(1.0 - max(0.0, worldPosY - 80.0) * 0.012);
+            float bossFogAmount = bossDensity * mix(0.70, 1.0, heightFade);
+            baseFog = max(baseFog, bossFogAmount);
+        }
+    #endif
+
+    return baseFog;
 }
 
 float getFogEffectFactor(in float viewDist){

@@ -110,6 +110,8 @@
     uniform float fragmentFrameTime;
 
     uniform vec3 fogColor;
+    uniform float fogStart;
+    uniform float fogEnd;
 
     uniform vec3 cameraPosition;
 
