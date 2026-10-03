@@ -500,6 +500,8 @@ screen.PBR.comment = §6Options de rendu basé sur la physique (PBR) incluant le
         option.NORMAL_GENERATION_RESOLUTION = Résolution des normales auto
         option.NORMAL_GENERATION_RESOLUTION.comment = Définit la résolution des cartes de normales générées automatiquement.
 
+screen.DIMENSIONS = Dimensions
+screen.DIMENSIONS.comment = §6Configuration des dimensions et environnements pour le Monde normal, le Nether, l'End et les paramètres de brouillard.
 screen.CONFIGURATION = Configuration
 screen.CONFIGURATION.comment = §6Configuration des dimensions et environnements pour le Monde normal, le Nether, l'End et les paramètres de brouillard.
     screen.OVERWORLD_SETTINGS = Paramètres du Monde normal

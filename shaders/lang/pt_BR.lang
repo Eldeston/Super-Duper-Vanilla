@@ -228,6 +228,7 @@ screen.PBR = PBR
         option.LAVA_NOISE = Ruído da Lava
         option.LAVA_TILE_SIZE = Tamanho das Telas da Lava
 
+screen.DIMENSIONS = Dimensões
 screen.CONFIGURATION = Configuração
     screen.OVERWORLD_SETTINGS = Configurações do Mundo
         screen.DAY_SETTINGS = Configurações do Dia

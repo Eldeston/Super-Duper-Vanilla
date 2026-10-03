@@ -226,6 +226,7 @@ screen.PBR = Физически корректный рендеринг
         option.LAVA_NOISE = Температурные перепады
         option.LAVA_TILE_SIZE = Размер холодных пятен
 
+screen.DIMENSIONS = Измерения
 screen.CONFIGURATION = Настройки
     screen.OVERWORLD_SETTINGS = Верхний мир
         screen.DAY_SETTINGS = День

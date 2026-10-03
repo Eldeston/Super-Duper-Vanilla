@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Shaderpack Build Script for Super Duper Vanilla.
+Shaderpack Build Script for HyperDuper Vanilla (SDV Fork).
 Packages the shaderpack into a clean, distributable ZIP archive for CI/CD and releases.
 """
 
@@ -48,7 +48,7 @@ def get_version(workspace_root: str) -> str:
         try:
             with open(props_path, "r", encoding="utf-8", errors="replace") as f:
                 content = f.read()
-                m = re.search(r"Super\s+Duper\s+Vanilla\s+(v[0-9a-zA-Z\.\-]+)", content, re.IGNORECASE)
+                m = re.search(r"(?:HyperDuper|Super\s+Duper)\s+Vanilla\s+(v[0-9a-zA-Z\.\-]+)", content, re.IGNORECASE)
                 if m:
                     return m.group(1)
         except OSError:
@@ -62,7 +62,7 @@ def get_version(workspace_root: str) -> str:
         try:
             with open(composite_path, "r", encoding="utf-8", errors="replace") as f:
                 content = f.read()
-                m = re.search(r"Super\s+Duper\s+Vanilla\s+(v[0-9a-zA-Z\.\-]+)", content, re.IGNORECASE)
+                m = re.search(r"(?:HyperDuper|Super\s+Duper)\s+Vanilla\s+(v[0-9a-zA-Z\.\-]+)", content, re.IGNORECASE)
                 if m:
                     return m.group(1)
         except OSError:
@@ -99,7 +99,7 @@ def build_shaderpack(
     Returns (zip_filepath, sha256_hash, file_count).
     """
     version = get_version(workspace_root)
-    base_name = custom_name or f"Super-Duper-Vanilla-{version}.zip"
+    base_name = custom_name or f"HyperDuper-Vanilla-{version}.zip"
     os.makedirs(output_dir, exist_ok=True)
     zip_path = os.path.join(output_dir, base_name)
 
@@ -142,7 +142,7 @@ def build_shaderpack(
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Build and package Super Duper Vanilla shaderpack.")
+    parser = argparse.ArgumentParser(description="Build and package HyperDuper Vanilla shaderpack.")
     parser.add_argument("--output-dir", default="dist", help="Output directory for build artifacts (default: dist).")
     parser.add_argument("--name", default=None, help="Custom filename for the output zip.")
     args = parser.parse_args()
@@ -152,7 +152,7 @@ def main() -> int:
     )
     output_dir = os.path.normpath(os.path.join(workspace_root, args.output_dir))
 
-    print(f"{CLR_CYAN}{CLR_BOLD}━━━ Packaging Super Duper Vanilla Shaderpack ━━━{CLR_RESET}")
+    print(f"{CLR_CYAN}{CLR_BOLD}━━━ Packaging HyperDuper Vanilla Shaderpack ━━━{CLR_RESET}")
     try:
         zip_path, sha256, count = build_shaderpack(workspace_root, output_dir, args.name)
         size_mb = os.path.getsize(zip_path) / (1024 * 1024)

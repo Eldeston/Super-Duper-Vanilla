@@ -1,672 +1,728 @@
-## Language format v1.1.0
-## All other .lang files must update to the latest language format version on this main .lang file
+## Language format v1.2.0
+## Super Duper Vanilla Shaderpack Language File
+## Optimized with Sodium-style didactic tooltips & visual/performance indicators
 
 ## Profiles
-profile.comment = Changes performance profile to improve performance or quality
+profile.comment = Selects a performance profile balancing visual fidelity and framerate.\n\n§e[Visual] §fToggles and tunes effects across all rendering passes.\n§a[Performance] §fPotato (fastest) to Ultra (highest quality).\n§b[Tip] §7Medium is the recommended baseline for most players.
 
 profile.POTATO = Potato
-profile.LOW = Low
-profile.MEDIUM = Medium (Default)
-profile.HIGH = High
-profile.ULTRA = Ultra
+profile.POTATO.comment = Maximum performance mode for low-end hardware and integrated graphics.\n\n§e[Visual] §fDisables dynamic shadows, volumetric lighting, godrays, SSAO, reflections, and bloom.\n§a[Performance: Very Low Load] §fMaximum FPS on laptops and budget PCs.\n§b[Tip] §7Ideal for handhelds or high refresh-rate competitive play.
 
-screen.DEBUG = Super Duper Vanilla v1.3.8
-screen.DEBUG.comment = §bDeveloped by §2Eldeston§f§r, presented by §9FlameRender (C) §9Studios. §eClick me to open shader debug settings! Contains color mode and noise speed options.
-    option.COLOR_MODE = Color mode
-    option.COLOR_MODE.comment = Changes albedo color mode.
+profile.LOW = Low
+profile.LOW.comment = Lightweight visual enhancements with minimal framerate overhead.\n\n§e[Visual] §fEnables fast godrays, basic sunlight shadows, subtle bloom, and simple caustics.\n§a[Performance: Low Impact] §fRuns smoothly on entry-level dedicated GPUs.\n§b[Tip] §7Great balance if you want shadows without sacrificing speed.
+
+profile.MEDIUM = Medium (Recommended)
+profile.MEDIUM.comment = The standard Super Duper Vanilla experience with rich atmospheric lighting.\n\n§e[Visual] §fFull volumetric lighting, soft shadows, SSAO, volumetric clouds, and TAA.\n§e[Performance: Moderate Impact] §fOptimized for modern mainstream gaming PCs.\n§b[Tip] §7Provides the best aesthetic balance as intended by the developers.
+
+profile.HIGH = High
+profile.HIGH.comment = Enhanced fidelity with deeper surface detail and refined reflections.\n\n§e[Visual] §fHigher shadow resolution, rough reflections, crisp sharpening, and high godray steps.\n§c[Performance: Heavy Impact] §fRecommended for mid-to-high-end dedicated graphics cards.\n§b[Tip] §7Pairs well with 1080p and 1440p displays.
+
+profile.ULTRA = Ultra
+profile.ULTRA.comment = Maximum graphical preset with uncompromising visual excellence.\n\n§e[Visual] §f4096p ultra-crisp shadows, maximum godray raymarching steps, and deep water caustics.\n§4[Performance: Very Heavy Impact] §fDesigned for high-end GPUs.\n§b[Tip] §7Best for cinematic recording and screenshot photography.
+
+## Debug Screen
+screen.DEBUG = HyperDuper Vanilla v1.4.0
+screen.DEBUG.comment = §dHyperDuper Vanilla §7(Fork of §bSuper Duper Vanilla§7 by §2Eldeston§7 & §9FlameRender Studios§7).\n\n§e[About] §fCrafted with AI vibecoding for high-velocity shader experimentation.\n§e[Status] §fProvided AS IS without warranty; maintenance may be inactive.\n§a[Performance: None] §fClick to open debug options.
+    option.COLOR_MODE = Color Mode
+    option.COLOR_MODE.comment = Overrides block albedo colors to inspect lighting, materials, and foliage isolation.\n\n§e[Visual] §fWhite/Black mode neutralizes textures; Foliage mode highlights plant life.\n§a[Performance: None] §fDebug visualization only.\n§b[Tip] §7Keep OFF for normal gameplay.
         value.COLOR_MODE.0 = OFF
         value.COLOR_MODE.1 = White Mode
         value.COLOR_MODE.2 = Black Mode
         value.COLOR_MODE.3 = Foliage Mode
 
-    option.NOISE_SPEED = Noise speed
-    option.NOISE_SPEED.comment = Changes temporal noise speed
+    option.NOISE_SPEED = Noise Speed
+    option.NOISE_SPEED.comment = Controls how rapidly the temporal blue noise pattern shifts each frame.\n\n§e[Visual] §fAffects how noise grain dissolves when using Temporal Anti-Aliasing (TAA).\n§a[Performance: None] §fTemporal noise calculation tweak.\n§b[Tip] §7Default 8 provides smooth noise convergence.
 
-    option.VOXY_DEBUG = Voxy LOD debug
-    option.VOXY_DEBUG.comment = Instrumentation overlay for inspecting Voxy LOD terrain alignment and differences.
+    option.VOXY_DEBUG = Voxy LOD Debug
+    option.VOXY_DEBUG.comment = Diagnostic overlay for inspecting Voxy Level-Of-Detail (LOD) distant terrain integration.\n\n§e[Visual] §fHighlights LOD chunk borders, lightmap coordinates, or surface normal vectors.\n§a[Performance: None] §fShader debug pass.\n§b[Tip] §7Useful for mod developers and pack debugging.
         value.VOXY_DEBUG.0 = OFF
         value.VOXY_DEBUG.1 = Boundary
         value.VOXY_DEBUG.2 = Lightmap UV
         value.VOXY_DEBUG.3 = Normals
 
-screen.POST = Post
-screen.POST.comment = §6Post-processing effects such as outlines, anti-aliasing, retro filter, and image sharpening.
-    option.OUTLINES = Outlines
-    option.OUTLINES.comment = Enables outlines. Set to standard for classic outlined blocks, or Dungeons for Dungeons/SDGP styled outlines.
+## Post-Processing Screen
+screen.POST = Post-Processing
+screen.POST.comment = Lens, camera, anti-aliasing, sharpening, and stylized outline effects.\n\n§e[Visual] §fAccess camera bloom, depth of field, tonemapping, and outlines.\n§a[Performance: Low to Moderate] §fVaries by enabled sub-effects.
+    option.OUTLINES = Block Outlines
+    option.OUTLINES.comment = Draws stylized borders around block edges and silhouette boundaries.\n\n§e[Visual] §fStandard gives classic ink lines; Dungeons gives Minecraft Dungeons cel-shaded style.\n§a[Performance: Very Low] §fSingle-pass normal and depth edge detector.\n§b[Tip] §7Looks fantastic for an illustrated or retro adventure aesthetic!
         value.OUTLINES.0 = OFF
         value.OUTLINES.1 = Standard
         value.OUTLINES.2 = Dungeons
 
-    option.OUTLINE_BRIGHTNESS = Outline brightness
-    option.OUTLINE_BRIGHTNESS.comment = Outline brightness. Set it to -1 for black outlines, or 1 to highlighted outlines.
+    option.OUTLINE_BRIGHTNESS = Outline Brightness
+    option.OUTLINE_BRIGHTNESS.comment = Controls the brightness and luminance tone of block outlines.\n\n§e[Visual] §fNegative values produce dark ink outlines; positive values produce luminous highlights.\n§a[Performance: None] §fColor scalar adjustment.\n§b[Tip] §7Set to -1.00 for bold dark comic outlines, or +1.00 for glowing edges.
 
-    option.OUTLINE_PIXEL_SIZE = Outline pixel size
-    option.OUTLINE_PIXEL_SIZE.comment = Outline pixel size. Adjust to change the thickness of the outlines.
+    option.OUTLINE_PIXEL_SIZE = Outline Thickness
+    option.OUTLINE_PIXEL_SIZE.comment = Adjusts outline width in screen pixels.\n\n§e[Visual] §fHigher values produce thicker, bolder contours around blocks.\n§a[Performance: None] §fKernel radius scalar.\n§b[Tip] §71 to 2 pixels is recommended for clean, modern readability.
 
-    option.RETRO_FILTER = Retro filter
-    option.RETRO_FILTER.comment = Enable retro filter. Works best at low render quality.
+    option.RETRO_FILTER = Retro Pixel Filter
+    option.RETRO_FILTER.comment = Snaps screen pixel coordinates to simulate vintage 90s console gaming.\n\n§e[Visual] §fCreates an authentic low-resolution pixelated look.\n§a[Performance: None] §fUV coordinate quantization.\n§b[Tip] §7Works best when lowering your render resolution for true nostalgia.
 
-    option.ANTI_ALIASING = Anti aliasing
-    option.ANTI_ALIASING.comment = Enables anti-aliasing. FXAA is fast and works with screenshot sizes. TAA is slower, doesn't work with custom screenshots, but smooths noise. Disable anti-aliasing on your shader menu before using this feature!
+    option.ANTI_ALIASING = Anti-Aliasing (AA)
+    option.ANTI_ALIASING.comment = Smooths jagged block edges and eliminates crawling shimmer during camera motion.\n\n§e[Visual] §fFXAA provides fast edge blur; TAA removes temporal shimmering and denoises lighting.\n§a[Performance: Low] §fFXAA has negligible cost; TAA has low-to-moderate cost.\n§b[Tip] §7Recommended: TAA or Lite TAA+FXAA for stable, noise-free raytracing.
         value.ANTI_ALIASING.0 = OFF
         value.ANTI_ALIASING.1 = FXAA
         value.ANTI_ALIASING.2 = TAA
         value.ANTI_ALIASING.3 = Lite TAA + FXAA
 
-    option.SHARPEN_FILTER = Sharpen filter
-    option.SHARPEN_FILTER.comment = Enables image sharpening. Use this with AA on if the image appears blurry.
+    option.SHARPEN_FILTER = Image Sharpening
+    option.SHARPEN_FILTER.comment = Applies an intelligent contrast-adaptive sharpening filter to the final frame.\n\n§e[Visual] §fEnhances texture clarity, block edges, and counteracts any TAA softness.\n§a[Performance: Very Low] §fFast 3x3 sharpening kernel.\n§b[Tip] §7Recommended whenever TAA is active for crisp, punchy visuals.
 
-    screen.CAMERA = Camera settings
-    screen.CAMERA.comment = §6Camera and lens effects including depth of field, chromatic aberration, bloom, lens flare, vignette, and motion blur.
-        option.DOF = Depth of field
-        option.DOF.comment = Enables depth of field. Enables anti-aliasing for better results.
+    ## Camera Screen
+    screen.CAMERA = Camera & Lens
+    screen.CAMERA.comment = Cinematic optical effects including depth of field, bloom, motion blur, and lens flare.\n\n§e[Visual] §fSimulates physical camera optics and lens properties.\n§a[Performance: Low to Moderate] §fModerate when Depth of Field is enabled.
+        option.DOF = Depth of Field (DoF)
+        option.DOF.comment = Blurs background or foreground objects outside the player's focal distance.\n\n§e[Visual] §fCreates beautiful cinematic bokeh blur focusing on the crosshair target.\n§e[Performance: Moderate Impact] §fCircle-of-confusion bokeh blur pass.\n§b[Tip] §7Amazing for close-up inspection, screenshot photography, and immersion!
 
-        option.DOF_STRENGTH = Depth of field strength
-        option.DOF_STRENGTH.comment = Depth of field strength.
+        option.DOF_STRENGTH = DoF Blur Strength
+        option.DOF_STRENGTH.comment = Controls the maximum radius and intensity of the depth of field blur.\n\n§e[Visual] §fHigher settings produce stronger, dreamier background blur.\n§a[Performance: None] §fBlur kernel radius multiplier.\n§b[Tip] §7Level 1 or 2 provides a natural, subtle photographic focus.
 
-        option.CHROMATIC_ABERRATION = Chromatic aberration
-        option.CHROMATIC_ABERRATION.comment = Enable chromatic aberration.
+        option.BLOOM = Bloom Glow
+        option.BLOOM.comment = Causes bright light sources and glowing surfaces to emit a soft, radiant aura.\n\n§e[Visual] §fSun, torches, lanterns, lava, and glowing blocks bleed light into the air.\n§a[Performance: Low] §fDownscaled Gaussian blur pyramid.\n§b[Tip] §7Adds atmospheric warmth and brilliance to caves and nighttime scenery.
 
-        option.ABERRATION_PIXEL_SIZE = Aberration pixel size
-        option.ABERRATION_PIXEL_SIZE.comment = Chromatic aberration length. Increase for stronger effects.
+        option.BLOOM_STRENGTH = Bloom Intensity
+        option.BLOOM_STRENGTH.comment = Controls how brightly and far glowing light bleeds across the screen.\n\n§e[Visual] §fHigher values create a more luminous, heavenly glow.\n§a[Performance: None] §fBloom composite brightness multiplier.\n§b[Tip] §7Default 0.75 gives vibrant radiance without washing out the screen.
 
-        option.BLOOM = Bloom
-        option.BLOOM.comment = Enables bloom.
+        option.MOTION_BLUR = Motion Blur
+        option.MOTION_BLUR.comment = Blurs the screen along camera rotation velocity vectors during fast turns.\n\n§e[Visual] §fProduces smooth, fluid cinematic movement when looking around.\n§a[Performance: Low] §fVelocity vector directional blur pass.\n§b[Tip] §7Makes 60 FPS gameplay feel significantly smoother.
 
-        option.BLOOM_STRENGTH = Bloom strength
-        option.BLOOM_STRENGTH.comment = Bloom brightness.
+        option.MOTION_BLUR_STRENGTH = Motion Blur Strength
+        option.MOTION_BLUR_STRENGTH.comment = Adjusts the intensity of the camera motion blur effect.\n\n§e[Visual] §fHigher values produce longer streaks during rapid head turns.\n§a[Performance: None] §fVelocity scaling factor.\n§b[Tip] §7Keep between 0.50 and 1.00 for comfortable, non-disorienting motion.
 
-        option.LENS_FLARE = Lens flare
-        option.LENS_FLARE.comment = Enables lens flare.
+        option.LENS_FLARE = Lens Flare
+        option.LENS_FLARE.comment = Produces anamorphic optical flare streaks when looking towards the sun or moon.\n\n§e[Visual] §fCinematic horizontal light flares radiating from bright celestial bodies.\n§a[Performance: Very Low] §fLightweight screen-space lens flare pass.\n§b[Tip] §7Gives outdoor vistas a grand cinematic movie aesthetic.
 
-        option.LENS_FLARE_STRENGTH = Lens flare strength
-        option.LENS_FLARE_STRENGTH.comment = Lens flare intensity.
+        option.LENS_FLARE_STRENGTH = Lens Flare Intensity
+        option.LENS_FLARE_STRENGTH.comment = Adjusts the brightness and visibility of celestial lens flare streaks.\n\n§e[Visual] §fHigher values make the optical lens glare more vivid.\n§a[Performance: None] §fIntensity scalar.\n§b[Tip] §7Set to 1.00 for balanced, elegant solar flares.
 
         option.VIGNETTE = Vignette
-        option.VIGNETTE.comment = Enables vignette.
+        option.VIGNETTE.comment = Subtly darkens the outer corners and borders of the screen.\n\n§e[Visual] §fDraws visual focus toward the center of your view like a real camera lens.\n§a[Performance: None] §fFast radial distance shading.\n§b[Tip] §7Enhances immersion and depth perception during gameplay.
 
-        option.VIGNETTE_STRENGTH = Vignette strength
-        option.VIGNETTE_STRENGTH.comment = Vignette intensity.
+        option.VIGNETTE_STRENGTH = Vignette Intensity
+        option.VIGNETTE_STRENGTH.comment = Adjusts the darkness and reach of the corner vignette shading.\n\n§e[Visual] §fHigher values increase edge darkening.\n§a[Performance: None] §fRadial falloff scalar.\n§b[Tip] §7A subtle value of 0.50 to 1.00 is pleasant for long play sessions.
 
-        option.MOTION_BLUR = Motion blur
-        option.MOTION_BLUR.comment = Enable motion blur.
+        option.CHROMATIC_ABERRATION = Chromatic Aberration
+        option.CHROMATIC_ABERRATION.comment = Simulates optical color fringing caused by real camera lens refraction.\n\n§e[Visual] §fSplits red, green, and blue color channels slightly toward the screen edges.\n§a[Performance: Very Low] §fSub-pixel color offset sampling.\n§b[Tip] §7Adds subtle analog camera charm to the periphery of your view.
 
-        option.MOTION_BLUR_STRENGTH = Motion blur strength
-        option.MOTION_BLUR_STRENGTH.comment = Motion blur strength.
+        option.ABERRATION_PIXEL_SIZE = Aberration Offset Size
+        option.ABERRATION_PIXEL_SIZE.comment = Adjusts the pixel separation distance between color channels.\n\n§e[Visual] §fHigher values create more pronounced color separation.\n§a[Performance: None] §fOffset distance scalar.\n§b[Tip] §7Values of 2 to 4 pixels give a tasteful, realistic lens fringe.
 
-    screen.TONEMAP = Tonemap settings
-    screen.TONEMAP.comment = §6Tonemapping and color grading controls such as contrast, saturation, exposure, and color tint.
+    ## Tonemap Screen
+    screen.TONEMAP = Tonemapping & Color
+    screen.TONEMAP.comment = Color grading controls including contrast, saturation, exposure, and color tinting.\n\n§e[Visual] §fSculpt the color mood, brightness, and warmth of the world.\n§a[Performance: None] §fArithmetic color grading with zero FPS impact.
         option.CONTRAST = Contrast
-        option.CONTRAST.comment = Controls color contrast.
+        option.CONTRAST.comment = Adjusts the separation between dark shadows and bright highlights.\n\n§e[Visual] §fHigher values make shadows deeper and highlights punchier.\n§a[Performance: None] §fColor curve exponent.\n§b[Tip] §7Default 1.00 gives balanced, natural dynamic range.
 
         option.SATURATION = Saturation
-        option.SATURATION.comment = Controls how much color saturation.
+        option.SATURATION.comment = Controls the richness and intensity of colors throughout the world.\n\n§e[Visual] §fHigher values make foliage, skies, and blocks deeply colorful and vibrant.\n§a[Performance: None] §fChroma vector scalar.\n§b[Tip] §7Raise to 1.15 if you prefer extra colorful, lush scenery!
 
-        option.WHITE_POINT = White point
-        option.WHITE_POINT.comment = Tonemap whitepoint.
+        option.WHITE_POINT = White Point
+        option.WHITE_POINT.comment = Controls the maximum scene luminance mapped to pure display white.\n\n§e[Visual] §fHigher values preserve more detail in intense sunlit highlights.\n§a[Performance: None] §fTonemap curve ceiling.\n§b[Tip] §7Default 2.0 provides smooth highlight rolloff.
 
-        option.SHOULDER_STRENGTH = Shoulder strength
-        option.SHOULDER_STRENGTH.comment = Tonemap shoulder strength.
+        option.SHOULDER_STRENGTH = Highlight Shoulder
+        option.SHOULDER_STRENGTH.comment = Controls how aggressively ultra-bright highlights roll off and compress.\n\n§e[Visual] §fPrevents harsh clipping on clouds, snow, and lava surfaces.\n§a[Performance: None] §fTonemap curve shoulder modifier.
 
-        option.AUTO_EXPOSURE = Auto exposure
-        option.AUTO_EXPOSURE.comment = Enables real time auto exposure. Does not work with custom Optifine screenshot resolutions!
+        option.AUTO_EXPOSURE = Auto Exposure
+        option.AUTO_EXPOSURE.comment = Dynamically adapts camera brightness as you move between dark caves and bright daylight.\n\n§e[Visual] §fSimulates eye adaptation when entering dark dungeons or emerging into the sun.\n§a[Performance: Very Low] §fLuminance buffer downsampling.\n§b[Tip] §7Cannot be used with OptiFine custom screenshot multipliers.
 
-        option.AUTO_EXPOSURE_SPEED = Auto exposure speed
-        option.AUTO_EXPOSURE_SPEED.comment = Auto exposure temporal speed. Changes how fast or slow the auto exposure will adjust to the screen's exposure. Smaller values means slower, bigger values means faster.
+        option.AUTO_EXPOSURE_SPEED = Adaptation Speed
+        option.AUTO_EXPOSURE_SPEED.comment = Controls how quickly exposure adjusts to changes in scene lighting.\n\n§e[Visual] §fHigher values cause faster eye adaptation; lower values adapt gradually.\n§a[Performance: None] §fTemporal smoothing coefficient.\n§b[Tip] §7Default 1.00 mimics natural human eye adaptation timing.
 
-        option.EXPOSURE = Exposure
-        option.EXPOSURE.comment = Controls color exposure.
+        option.EXPOSURE = Base Exposure
+        option.EXPOSURE.comment = Overall master brightness multiplier for the final image.\n\n§e[Visual] §fIncreases or decreases general scene illumination.\n§a[Performance: None] §fLinear color multiplier.\n§b[Tip] §7Adjust if your monitor is naturally dark or overly bright.
 
-        option.MINIMUM_EXPOSURE = Min exposure
-        option.MINIMUM_EXPOSURE.comment = Min auto exposure value. Lower values may increase exposure of dark scenes if auto exposure is on.
+        option.MINIMUM_EXPOSURE = Minimum Exposure Floor
+        option.MINIMUM_EXPOSURE.comment = Sets the darkest exposure level allowed when Auto Exposure is active.\n\n§e[Visual] §fHigher values prevent pitch-black darkness in deep unlit caverns.\n§a[Performance: None] §fAuto exposure lower clamp.\n§b[Tip] §7Raise to 0.30+ if you find deep caves too dark to explore.
 
-        option.TINT_R = Red tint
-        option.TINT_R.comment = Red tint value.
+        option.TINT_R = Red Color Tint
+        option.TINT_R.comment = Red color balance channel multiplier.\n\n§e[Visual] §fShift toward warm sunset, autumn, or desert tones.\n§a[Performance: None] §fColor channel scalar.
 
-        option.TINT_G = Green tint
-        option.TINT_G.comment = Green tint value.
+        option.TINT_G = Green Color Tint
+        option.TINT_G.comment = Green color balance channel multiplier.\n\n§e[Visual] §fShift toward lush forest, jungle, or toxic atmosphere tones.\n§a[Performance: None] §fColor channel scalar.
 
-        option.TINT_B = Blue tint
-        option.TINT_B.comment = Blue tint value.
+        option.TINT_B = Blue Color Tint
+        option.TINT_B.comment = Blue color balance channel multiplier.\n\n§e[Visual] §fShift toward cool alpine, winter, or ocean atmosphere tones.\n§a[Performance: None] §fColor channel scalar.
 
-screen.LIGHTING = Lighting
-screen.LIGHTING.comment = §6Lighting and shadow options including shadow mapping, entity shadows, ambient lighting, and SSAO.
-    option.SHADOW_MAPPING = Shadowmapping
-    option.SHADOW_MAPPING.comment = Enables shadow mapping. Disable to use fake shadows with lightmap.
+## Lighting Screen
+screen.LIGHTING = Lighting & Shadows
+screen.LIGHTING.comment = Sunlight and moonlight shadows, ambient occlusion, caustics, and raytracing.\n\n§e[Visual] §fConfigure real-time shadows, contact ambient shading, and global illumination.\n§c[Performance: Moderate to Heavy] §fShadow mapping is the primary GPU workload.
+    option.SHADOW_MAPPING = Dynamic Shadows
+    option.SHADOW_MAPPING.comment = Renders real-time dynamic shadows cast by terrain, structures, and entities from celestial light.\n\n§e[Visual] §fCasts moving sunlight and moonlight shadows that sweep across the landscape.\n§c[Performance: Heavy Impact] §fRenders an extra shadow depth pass from the sun/moon angle.\n§b[Tip] §7Disable on integrated GPUs or budget laptops for an enormous FPS boost!
 
-    option.SHADOW_COLOR = Shadowmap color
-    option.SHADOW_COLOR.comment = Enables shadow color from colored transparent objects.
+    option.SHADOW_FILTER = Soft Shadow Filter
+    option.SHADOW_FILTER.comment = Softens harsh, pixelated shadow edges using jittered Poisson-disk noise filtering.\n\n§e[Visual] §fCreates natural, smooth shadow penumbras instead of stair-stepped block edges.\n§a[Performance: Low Impact] §fFast shadowmap multi-tap filter.\n§b[Tip] §7Highly recommended whenever Dynamic Shadows are enabled.
 
-    option.SHADOW_FILTER = Shadowmap filter
-    option.SHADOW_FILTER.comment = Enables soft shadow filtering, if enabled shadows will appear softer by using noise. May impact performance.
+    option.SHADOW_COLOR = Colored Stained Glass Shadows
+    option.SHADOW_COLOR.comment = Allows sunlight and moonlight to transmit colored shadows through stained glass and water.\n\n§e[Visual] §fStained glass cathedrals and tinted windows cast breathtaking colored light on floors!\n§a[Performance: Low Impact] §fTranslucent color shadow pass sampling.\n§b[Tip] §7Essential for beautiful cathedral builds and underwater caustics.
 
-    option.ENTITY_SHADOWS = Entity shadows
-    option.ENTITY_SHADOWS.comment = Enables entity shadows.
+    option.shadowMapResolution = Shadow Resolution
+    option.shadowMapResolution.comment = The texture buffer resolution used to calculate dynamic shadows (512p to 4096p).\n\n§e[Visual] §fHigher values produce razor-sharp shadow edges without pixelation.\n§c[Performance: Moderate to Heavy] §f1024p is balanced; 2048p is sharp; 4096p requires a high-end GPU.\n§b[Tip] §71024p provides excellent quality with very smooth framerates on modern cards.
 
-    option.BLOCK_ENTITY_SHADOWS = Block entity shadows
-    option.BLOCK_ENTITY_SHADOWS.comment = Enables block entity shadows.
+    option.shadowDistance = Shadow Render Distance
+    option.shadowDistance.comment = The maximum distance in blocks from the player where dynamic shadows are cast.\n\n§e[Visual] §fHigher values render shadows on distant hills and faraway trees.\n§e[Performance: Moderate Impact] §fExpands the celestial frustum volume.\n§b[Tip] §7120 to 160 blocks looks great while maintaining high performance.
 
-    option.shadowMapResolution = Shadowmap resolution
-    option.shadowMapResolution.comment = Shadowmap resolution.
+    option.sunPathRotation = Sun Path Angle
+    option.sunPathRotation.comment = Tilts the orbital trajectory angle of the sun and moon across the sky dome.\n\n§e[Visual] §fChanges the angle of shadows and sunlight shafts across terrain and builds.\n§a[Performance: None] §fCelestial rotation matrix calculation.\n§b[Tip] §730.0 gives iconic, dramatic diagonal lighting across the Minecraft world.
 
-    option.shadowDistance = Shadowmap distance
-    option.shadowDistance.comment = Shadowmap distance.
+    option.ENTITY_SHADOWS = Entity Shadows
+    option.ENTITY_SHADOWS.comment = Renders real-time dynamic shadows for animals, monsters, players, and boats.\n\n§e[Visual] §fCharacters and mobs cast realistic shadows on the ground below them.\n§a[Performance: Low to Moderate] §fPasses entity geometry through shadow framebuffer.\n§b[Tip] §7Turn off in crowded mob farms if you experience CPU/GPU bottlenecks.
 
-    option.sunPathRotation = Light path angle
-    option.sunPathRotation.comment = Light path angle. This also affects sky angle.
+    option.BLOCK_ENTITY_SHADOWS = Block Entity Shadows
+    option.BLOCK_ENTITY_SHADOWS.comment = Renders dynamic shadows for chests, bells, banners, signs, and decorative block entities.\n\n§e[Visual] §fChests and decorative blocks cast accurate shadows on floors and walls.\n§a[Performance: Low Impact] §fPasses block entities to the shadow buffer.\n§b[Tip] §7Disable if your base contains hundreds of storage chests.
 
-    option.UNDERWATER_CAUSTICS = Underwater caustics
-    option.UNDERWATER_CAUSTICS.comment = Enables underwater caustics. Shadow color must be enabled!
+    option.SSAO = Screen Space Ambient Occlusion
+    option.SSAO.comment = Calculates soft contact shadows in corners, crevices, and where blocks meet the ground.\n\n§e[Visual] §fAdds grounded depth and realistic shading to corners and foliage that lightmaps miss.\n§a[Performance: Low Impact] §fScreen-space depth sampling with fast bilateral blur.\n§b[Tip] §7Highly recommended for grounded, natural-looking block shading.
+
+    option.UNDERWATER_CAUSTICS = Underwater Caustics
+    option.UNDERWATER_CAUSTICS.comment = Simulates animated light refraction webs shimmering across underwater surfaces.\n\n§e[Visual] §fDynamic sunlight webs dance on ocean floors, lake beds, and river banks.\n§a[Performance: Low Impact] §fFast procedural noise wave refraction.\n§b[Tip] §7Requires Colored Shadows enabled for full spectrum caustics!
         value.UNDERWATER_CAUSTICS.0 = OFF
-        value.UNDERWATER_CAUSTICS.1 = Underwater
-        value.UNDERWATER_CAUSTICS.2 = Full
+        value.UNDERWATER_CAUSTICS.1 = Underwater Only
+        value.UNDERWATER_CAUSTICS.2 = Full (Shallow & Shore)
 
-    option.SSAO = SSAO
-    option.SSAO.comment = Enables screenspace ambient occlusion.
+    option.AMBIENT_LIGHTING = Minimum Ambient Light
+    option.AMBIENT_LIGHTING.comment = Sets the minimum ambient illumination level in completely unlit areas.\n\n§e[Visual] §fHigher values brighten pitch-black caves and nighttime shadows for visibility.\n§a[Performance: None] §fConstant ambient floor scalar.\n§b[Tip] §7Set to 0.05 for realistic dark caves, or 0.25+ for friendly casual visibility.
 
-    option.AMBIENT_LIGHTING = Ambient lighting
-    option.AMBIENT_LIGHTING.comment = Overall ambient lighting value. Increase if you dislike the pitch black darkness, higher values may make lighting unrealistic. Set it to zero for a more realistic approach if you have SSGI enabled. Set it to 0.50 for nightvision.
+    option.WEATHER_DIRECT_LIGHT = Storm Direct Lighting
+    option.WEATHER_DIRECT_LIGHT.comment = Controls sunlight and moonlight shadow intensity during rain and thunder storms.\n\n§e[Visual] §fSet to 0.00 to eliminate harsh sharp shadows during heavy downpours for realism.\n§a[Performance: None] §fWeather light scalar.\n§b[Tip] §70.00 produces an authentic, moody overcast atmosphere during rainfall.
 
-    option.WEATHER_DIRECT_LIGHT = Weather direct lighting
-    option.WEATHER_DIRECT_LIGHT.comment = Direct lighting and shadow strength from the sun and moon during bad weather (rain and thunder). Set to 0.00 to eliminate sharp celestial shadows in rain.
+    ## Ray Tracing Screen
+    screen.RAY_TRACING = Ray Tracing & Reflections
+    screen.RAY_TRACING.comment = Screen-space reflections (SSR) and screen-space global illumination (SSGI).\n\n§e[Visual] §fBrings water, metals, and smooth materials to life with mirror reflections.\n§e[Performance: Moderate to Heavy] §fRaymarching screen-space depth buffers.
+        option.SSR = Screen Space Reflections (SSR)
+        option.SSR.comment = Calculates real-time raymarched reflections on smooth surfaces, water, and wet blocks.\n\n§e[Visual] §fReflects surrounding terrain, builds, and skies realistically onto glossy surfaces.\n§e[Performance: Moderate Impact] §fRaymarches screen depth buffer for intersection.\n§b[Tip] §7Essential for stunning water visuals and polished metallic blocks!
 
-    screen.RAY_TRACING = Ray tracing settings
-    screen.RAY_TRACING.comment = §6Ray tracing features such as SSGI, SSR, raytracer steps, and rough reflections.
-        option.SSGI = SSGI
-        option.SSGI.comment = Enables screen space global illumination for more realistic indirect lighting.
+        option.SSGI = Global Illumination (SSGI)
+        option.SSGI.comment = Experimental screen-space indirect light bouncing from bright surfaces onto dark surroundings.\n\n§e[Visual] §fColored light bounces off illuminated blocks into shadows (e.g. green grass bounce).\n§c[Performance: Heavy Impact] §fMulti-directional diffuse raymarching.\n§b[Tip] §7Experimental feature. Enable TAA for effective noise smoothing.
 
-        option.SSR = SSR
-        option.SSR.comment = Enables screen space reflections for reflective surfaces like water and metals.
+        option.RAYTRACER_STEPS = Raytracer Step Count
+        option.RAYTRACER_STEPS.comment = Number of primary raymarching search steps across the screen buffer.\n\n§e[Visual] §fHigher values eliminate reflection gaps and improve reflection range.\n§e[Performance: Moderate Impact] §fLinear step iteration count.\n§b[Tip] §716 steps is fast and clean; 24 steps is ideal for high-end GPUs.
 
-        option.RAYTRACER_STEPS = Raytracer steps
-        option.RAYTRACER_STEPS.comment = Number of steps for ray tracing. Higher values increase quality but reduce performance.
+        option.RAYTRACER_BISTEPS = Refinement Binary Steps
+        option.RAYTRACER_BISTEPS.comment = Number of binary search refinement steps executed upon ray hit confirmation.\n\n§e[Visual] §fPinpoints exact surface contact boundaries, eliminating reflection edge jitter.\n§a[Performance: Low Impact] §fBinary search refinement.\n§b[Tip] §72 refinement steps provides razor-sharp reflection contacts at very low cost.
 
-        option.RAYTRACER_BISTEPS = Raytracer refinement steps
-        option.RAYTRACER_BISTEPS.comment = Number of refinement steps for ray tracing. Improves detail in reflections and GI.
+        option.ROUGH_REFLECTIONS = Rough Surface Reflections
+        option.ROUGH_REFLECTIONS.comment = Simulates micro-surface roughness, diffusing and blurring reflections on non-mirror blocks.\n\n§e[Visual] §fBrushed metals, smooth stones, and damp ground show realistic blurry gloss.\n§a[Performance: Low to Moderate] §fJittered reflection ray dispersion.\n§b[Tip] §7Pairs with TAA to produce silky-smooth frosted reflections.
 
-        option.ROUGH_REFLECTIONS = Rough reflections
-        option.ROUGH_REFLECTIONS.comment = Enables rough reflections for non-mirror surfaces, simulating blurred reflections.
+        option.PREVIOUS_FRAME = Previous Frame Denoising
+        option.PREVIOUS_FRAME.comment = Reuses previous frame buffer color data for temporal accumulation and infinite light bounces.\n\n§e[Visual] §fStabilizes reflections and global illumination, removing temporal grain.\n§a[Performance: Low Impact] §fTemporal history buffer lookup.\n§b[Tip] §7Keep ON for cleaner, noise-free reflections.
 
-        option.PREVIOUS_FRAME = Previous frame buffer
-        option.PREVIOUS_FRAME.comment = Uses previous frame data for temporal effects and denoising in ray tracing.
-
-screen.ATMOSPHERICS = Atmospherics
-screen.ATMOSPHERICS.comment = §6Atmospheric effects including sun/moon, clouds, fog, border fog, and volumetric lighting.
-    option.SUN_MOON_ROUNDNESS = Sun/moon roundness
-    option.SUN_MOON_ROUNDNESS.comment = Adjust celestial body, star, rainbow/rainsquare, flare, and End flash roundness from square (0.0) to circle (1.0).
-        value.SUN_MOON_ROUNDNESS.0.00 = Square
+## Atmospherics Screen
+screen.ATMOSPHERICS = Atmospherics & Sky
+screen.ATMOSPHERICS.comment = Clouds, godrays, skybox, stars, Milky Way, auroras, rainbows, and meteors.\n\n§e[Visual] §fControls the heavens, celestial bodies, and dynamic atmospheric phenomena.\n§e[Performance: Low to Moderate] §fVaries with volumetric cloud and godray settings.
+    option.SUN_MOON_ROUNDNESS = Sun & Moon Roundness
+    option.SUN_MOON_ROUNDNESS.comment = Blends celestial bodies, stars, flares, and rainbows between square and spherical geometry.\n\n§e[Visual] §f0.00 preserves classic Minecraft squares; 0.50 gives rounded corners; 1.00 gives full circles.\n§a[Performance: None] §fAnalytical shape function.\n§b[Tip] §7Choose your aesthetic preference! 0.00 maintains pure vanilla charm.
+        value.SUN_MOON_ROUNDNESS.0.00 = Square (Vanilla)
         value.SUN_MOON_ROUNDNESS.0.50 = Rounded
         value.SUN_MOON_ROUNDNESS.1.00 = Circle
-    
-    option.CLOUD_TYPE = Cloud type
-    option.CLOUD_TYPE.comment = Changes cloud type.
-        value.CLOUD_TYPE.0 = Vanilla
-        value.CLOUD_TYPE.1 = Skybox
-        value.CLOUD_TYPE.2 = Volumetric
 
-    option.SUN_MOON_INTENSITY = Sun/moon intensity
-    option.SUN_MOON_INTENSITY.comment = The sun or moon's intensity. Also affects specular reflections.
+    option.SUN_MOON_SIZE = Celestial Body Size
+    option.SUN_MOON_SIZE.comment = Adjusts the apparent scale of the sun, moon, and End black hole in the sky.\n\n§e[Visual] §fLarger values make celestial bodies more prominent and dramatic on the horizon.\n§a[Performance: None] §fCelestial angular projection scalar.\n§b[Tip] §70.10 is perfectly proportioned with vanilla horizons.
 
-    option.SUN_MOON_SIZE = Sun/moon size
-    option.SUN_MOON_SIZE.comment = Adjust the size of the sun, moon, and black hole in the sky.
+    option.SUN_MOON_INTENSITY = Celestial Brightness
+    option.SUN_MOON_INTENSITY.comment = Controls the brightness and specular glare cast by the sun and moon.\n\n§e[Visual] §fIncreases sunlight radiance and the glint of specular highlights on water.\n§a[Performance: None] §fLuminance scalar.\n§b[Tip] §7Level 4 produces crisp, natural sun reflection glints.
 
-    option.GODRAYS = Godrays
-    option.GODRAYS.comment = Enables performant atmospheric godrays (crepuscular rays) streaming through terrain, clouds, and water.
+    option.SKYBOX_BRIGHTNESS = Skybox Brightness
+    option.SKYBOX_BRIGHTNESS.comment = Master brightness multiplier for the overarching sky dome gradient.\n\n§e[Visual] §fLightens or deepens daytime azure skies and nighttime cosmic backdrops.\n§a[Performance: None] §fSky color multiplier.\n§b[Tip] §71.00 matches natural vanilla sky balance.
 
-    screen.GODRAY_SETTINGS = Godray settings
-    screen.GODRAY_SETTINGS.comment = §6Configure godray sample quality, density, and water transmission.
+    option.VOLUMETRIC_LIGHTING = Volumetric Haze
+    option.VOLUMETRIC_LIGHTING.comment = Simulates physical light scattering through air moisture and atmospheric particles.\n\n§e[Visual] §fCreates soft atmospheric depth where distant mountains and valleys catch light.\n§e[Performance: Moderate Impact] §fRaymarched atmospheric fog volume.\n§b[Tip] §7Greatly enhances landscape depth and horizon scale.
 
-    option.GODRAYS_QUALITY = Godray quality
-    option.GODRAYS_QUALITY.comment = Raymarching sample count and step density. Fast: 6 steps (maximum FPS), Balanced: 8 steps (recommended), High: 12 steps, Ultra: 16 steps.
-        value.GODRAYS_QUALITY.0 = Fast (6 steps)
-        value.GODRAYS_QUALITY.1 = Balanced (8 steps)
-        value.GODRAYS_QUALITY.2 = High (12 steps)
-        value.GODRAYS_QUALITY.3 = Ultra (16 steps)
+    option.VOLUMETRIC_LIGHTING_STRENGTH = Volumetric Haze Density
+    option.VOLUMETRIC_LIGHTING_STRENGTH.comment = Controls the thickness and density of atmospheric light scattering.\n\n§e[Visual] §fHigher values create a more misty, humid, or ethereal atmosphere.\n§a[Performance: None] §fHaze density multiplier.\n§b[Tip] §70.50 provides a clean, clear atmospheric perspective.
 
-    option.GODRAYS_DENSITY = Godrays density
-    option.GODRAYS_DENSITY.comment = Adjusts the brightness and intensity of godrays, set it to zero to disable it.
+    option.BORDER_FOG = Horizon Border Fog
+    option.BORDER_FOG.comment = Blends distant terrain into the sky at the edge of your chunk render distance.\n\n§e[Visual] §fEliminates harsh chunk cutoffs with a smooth, natural horizon fade.\n§a[Performance: None] §fDistance-based fog calculation.\n§b[Tip] §7Keep ON for seamless, immersive world exploration.
 
-    option.GODRAYS_WATER_TRANSMISSION = Water transmission
-    option.GODRAYS_WATER_TRANSMISSION.comment = Allows godrays to penetrate and stream through translucent water and stained glass. Disabling skips secondary depth sampling for maximum performance.
+    option.GROUND_FOG_STRENGTH = Lowland Mist Strength
+    option.GROUND_FOG_STRENGTH.comment = Adjusts the density of low-altitude ground fog that settles in valleys and river basins.\n\n§e[Visual] §fSimulates cool morning mist and swampy valley moisture.\n§a[Performance: None] §fHeight-based fog scalar.\n§b[Tip] §7Looks wonderful in swamps, rivers, and deep river gorges.
 
-    option.GODRAYS_ADAPTIVE_STEPS = Adaptive step count
-    option.GODRAYS_ADAPTIVE_STEPS.comment = Dynamically optimizes raymarching steps when near the sun, doubling performance when facing the sun with zero visual difference.
+    option.MILKY_WAY = Milky Way Galaxy Band
+    option.MILKY_WAY.comment = Renders a stylized, procedural Minecraft-style galaxy band across the clear night sky.\n\n§e[Visual] §fFeatures glowing nebula clouds with thousands of individual twinkling stars.\n§a[Performance: Very Low] §fProcedural noise and analytical star clusters.\n§b[Tip] §7Turns clear nights into an awe-inspiring stargazing experience!
 
-    option.VOLUMETRIC_LIGHTING = Volumetric lighting
-    option.VOLUMETRIC_LIGHTING.comment = Enables volumetric lighting.
-
-    option.VOLUMETRIC_LIGHTING_STRENGTH = Volumetric lighting strength
-    option.VOLUMETRIC_LIGHTING_STRENGTH.comment = The strength of volumetric lighting, set it to zero to disable it.
-
-    option.BORDER_FOG = Border fog
-    option.BORDER_FOG.comment = Enables border fog to cover world edges.
-
-    option.GROUND_FOG_STRENGTH = Ground fog strength
-    option.GROUND_FOG_STRENGTH.comment = The strength of mist/ground fog.
-
-    screen.CLOUD_SETTINGS = Cloud settings
-    screen.CLOUD_SETTINGS.comment = §eCloud rendering options such as double layered clouds, dynamic clouds, and cloud quality/depth.
-        option.DOUBLE_LAYERED_CLOUDS = Double layered clouds
-        option.DOUBLE_LAYERED_CLOUDS.comment = Adds a high altitude second layer of clouds (cirrus clouds), may use up performance.
-
-        option.DYNAMIC_CLOUDS = Dynamic clouds
-        option.DYNAMIC_CLOUDS.comment = Makes clouds more dynamic and allows weather to affect it. (affects on both vanilla and story mode clouds).
-
-        option.FADE_SPEED = Fade speed
-        option.FADE_SPEED.comment = Cloud fade speed.
-
-        option.SECOND_CLOUD_HEIGHT = High altitude cloud height
-        option.SECOND_CLOUD_HEIGHT.comment = Altitude offset for the high altitude cloud layer (cirrus clouds).
-
-        option.DYNAMIC_WEATHER = Dynamic weather
-        option.DYNAMIC_WEATHER.comment = Generates a procedural weather system with random overcast intensity that dictates cloud coverage in the sky, ranging from totally clear days and nights to completely overcast skies. Rain can happen with partial overcast.
-
-        option.STORY_MODE_CLOUDS = Story Mode
-        option.STORY_MODE_CLOUDS.comment = Makes clouds softer with a vertical gradient fading from an opaque bottom to a transparent top, with increased thickness.
-
-        option.SOFT_CLOUD_EDGE = Soft edge
-        option.SOFT_CLOUD_EDGE.comment = Smooths and rounds cloud edges instead of rendering hard blocky edges.
-
-        option.VOLUMETRIC_CLOUD_STEPS = Volumetric steps
-        option.VOLUMETRIC_CLOUD_STEPS.comment = Story mode clouds steps. Increasing may improve quality and demand more performance.
-
-        option.VOLUMETRIC_CLOUD_DEPTH = Volumetric depth
-        option.VOLUMETRIC_CLOUD_DEPTH.comment = Determines the story mode clouds' thickness.
-
-        option.SKYBOX_CLOUD_STEPS = Skybox steps
-        option.SKYBOX_CLOUD_STEPS.comment = Story mode clouds steps. Increasing may improve quality and demand more performance.
-
-        option.SKYBOX_CLOUD_DEPTH = Skybox depth
-        option.SKYBOX_CLOUD_DEPTH.comment = Determines the story mode clouds' thickness.
-
-    option.SKYBOX_BRIGHTNESS = Skybox brightness
-    option.SKYBOX_BRIGHTNESS.comment = Sky box brightness.
-
-    option.MILKY_WAY = Milky Way
-    option.MILKY_WAY.comment = Enables a procedural Minecraft-style Milky Way in the night sky with square stars and nebula edges.
     option.MILKY_WAY_BRIGHTNESS = Milky Way Brightness
-    option.MILKY_WAY_BRIGHTNESS.comment = Adjusts the brightness of the procedural Milky Way.
+    option.MILKY_WAY_BRIGHTNESS.comment = Adjusts the luminous intensity of the Milky Way galaxy band.\n\n§e[Visual] §fHigher values make the cosmic dust and stars brighter and more prominent.\n§a[Performance: None] §fLuminance scalar.\n§b[Tip] §71.00 is balanced for natural night vision.
 
-    option.AURORA = Aurora Borealis
-    option.AURORA.comment = Enables volumetric Minecraft-style auroras with dancing, intersecting vertical curtains in cold, snowy, and icy biomes. Features a pixelized cloud-like look with colors transitioning from pink at the top to green in the middle and electric blue at the bottom.
+    option.AURORA = Aurora Borealis (Northern Lights)
+    option.AURORA.comment = Renders volumetric dancing northern lights curtains in cold, snowy, and icy biomes.\n\n§e[Visual] §fPixelized curtains flowing from pink tops to emerald centers and electric blue bottoms!\n§a[Performance: Low Impact] §fProcedural raymarching in cold biomes only.\n§b[Tip] §7Appears naturally when exploring snowy plains, taigas, and frozen oceans!
+
     option.AURORA_BRIGHTNESS = Aurora Brightness
-    option.AURORA_BRIGHTNESS.comment = Adjusts the brightness of the volumetric aurora curtains.
+    option.AURORA_BRIGHTNESS.comment = Controls the glow intensity of the aurora borealis curtains.\n\n§e[Visual] §fHigher values produce brighter, more luminous dancing lights in polar skies.\n§a[Performance: None] §fLuminance scalar.
 
-    option.RAINBOW = Rainbow
-    option.RAINBOW.comment = Enables a procedural double rainbow (or rainsquare) when raining and not totally overcast. Appears opposite the sun during the day or opposite the moon at night, featuring a vivid primary bow and a fainter secondary outer bow. Follows Sun/Moon Roundness.
+    option.RAINBOW = Double Rainbow
+    option.RAINBOW.comment = Renders an analytical double rainbow (or rainsquare) during rain with partial sunlight.\n\n§e[Visual] §fVivid primary bow with a fainter secondary outer bow opposite the sun or moon.\n§a[Performance: None] §fDirect analytical optical angle calculation.\n§b[Tip] §7Follows your Sun/Moon Roundness setting (circle rainbow or square rainsquare!).
+
     option.RAINBOW_BRIGHTNESS = Rainbow Brightness
-    option.RAINBOW_BRIGHTNESS.comment = Adjusts the brightness of the double rainbow.
+    option.RAINBOW_BRIGHTNESS.comment = Controls the color vividness and visibility of the double rainbow.\n\n§e[Visual] §fHigher values produce a more saturated, prominent rainbow in the clouds.\n§a[Performance: None] §fLuminance scalar.
 
-    option.METEORS = Meteor Showers
-    option.METEORS.comment = Enables dynamic procedural meteor showers in the night sky. Meteors feature variable strength waves, varying sizes and lifespans (1 to 3 seconds), crisp pixel heads, and luminous tails that gradually fade into the dark.
+    option.STAR_ROTATION = Star Rotation Style
+    option.STAR_ROTATION.comment = Determines the orientation angle of individual stars in the night sky and Milky Way.\n\n§e[Visual] §fAligned keeps square stars strictly axis-aligned; Random gives organic variety.\n§a[Performance: None] §fStar vertex rotation.\n§b[Tip] §7Random produces a glittering, organic diamond-like night sky!
+        value.STAR_ROTATION.0 = Aligned (Grid)
+        value.STAR_ROTATION.1 = Random (Organic)
 
+    ## Godray Screen
+    screen.GODRAY_SETTINGS = Godray Settings
+    screen.GODRAY_SETTINGS.comment = Crepuscular rays streaming from the sun and moon through clouds and terrain.\n\n§e[Visual] §fConfigure ray sample count, beam density, and water penetration.\n§e[Performance: Low to Moderate] §fHighly optimized with adaptive step scaling.
+        option.GODRAYS = Atmospheric Godrays
+        option.GODRAYS.comment = Master toggle for crepuscular light shafts streaming from the sun and moon.\n\n§e[Visual] §fCasts dramatic, cinematic shafts of light through trees, clouds, and valley gaps.\n§e[Performance: Moderate Impact] §fRaymarches celestial occlusion volume.\n§b[Tip] §7One of the signature visual highlights of Super Duper Vanilla!
+
+        option.GODRAYS_QUALITY = Godray Sample Quality
+        option.GODRAYS_QUALITY.comment = Number of raymarching steps taken through the shadow volume.\n\n§e[Visual] §fFast: 6 steps (smooth FPS); Balanced: 8 steps; High: 12 steps; Ultra: 16 steps.\n§e[Performance: Fast=Low, Ultra=High] §fLinear sample step count.\n§b[Tip] §7Balanced is recommended for crisp beams with silky-smooth performance.
+            value.GODRAYS_QUALITY.0 = Fast (6 Steps)
+            value.GODRAYS_QUALITY.1 = Balanced (8 Steps)
+            value.GODRAYS_QUALITY.2 = High (12 Steps)
+            value.GODRAYS_QUALITY.3 = Ultra (16 Steps)
+
+        option.GODRAYS_DENSITY = Godray Beam Density
+        option.GODRAYS_DENSITY.comment = Adjusts the brightness and visibility of the atmospheric light rays.\n\n§e[Visual] §fHigher values make light beams thicker, brighter, and more distinct.\n§a[Performance: None] §fBeam accumulation scalar.\n§b[Tip] §70.50 gives natural atmospheric subtlety; 1.00+ creates dramatic fantasy beams.
+
+        option.GODRAYS_WATER_TRANSMISSION = Water Transmission
+        option.GODRAYS_WATER_TRANSMISSION.comment = Allows godrays to penetrate and stream through translucent water and stained glass.\n\n§e[Visual] §fBeams illuminate ocean depths and cast colored shafts through cathedral glass.\n§a[Performance: Low Impact] §fSamples secondary translucent depth buffer.\n§b[Tip] §7Disable for maximum FPS if you spend a lot of time near oceans.
+
+        option.GODRAYS_ADAPTIVE_STEPS = Adaptive Step Optimization
+        option.GODRAYS_ADAPTIVE_STEPS.comment = Dynamically concentrates ray steps where light gradient is highest near the sun.\n\n§e[Visual] §fDoubles performance when facing the sun with zero perceptible visual difference!\n§a[Performance: FPS Boost] §fIntelligently skips redundant ray steps.\n§b[Tip] §7Highly recommended to keep ON at all times!
+
+    ## Meteor Screen
     screen.METEOR_SETTINGS = Meteor Shower Settings
-    screen.METEOR_SETTINGS.comment = §eCustomize meteor shower activity, night frequency, flight speed, tail length, thickness, fading sharpness, and color profiles.
-        option.METEOR_RARITY = Shower Rarity
-        option.METEOR_RARITY.comment = Determines how often meteor showers occur at night. Rare settings turn showers into special periodic events instead of happening every night.
-        value.METEOR_RARITY.0 = Every Night
-        value.METEOR_RARITY.1 = Frequent (2-3 Nights)
-        value.METEOR_RARITY.2 = Regular (4-5 Nights)
-        value.METEOR_RARITY.3 = Rare (7-8 Nights)
-        value.METEOR_RARITY.4 = Very Rare (12-15 Nights)
-        value.METEOR_RARITY.5 = Lunar (New Moon)
-        option.METEOR_SHOWER_STRENGTH = Shower Rate
-        option.METEOR_SHOWER_STRENGTH.comment = Adjusts the frequency and intensity of meteors during shower waves.
-        option.METEOR_BRIGHTNESS = Meteor Brightness
-        option.METEOR_BRIGHTNESS.comment = Adjusts the brightness of meteors and their glowing tails.
-        option.METEOR_SPEED = Flight Speed
-        option.METEOR_SPEED.comment = Adjusts how fast meteors streak across the celestial sphere.
-        option.METEOR_TAIL_LENGTH = Tail Length
-        option.METEOR_TAIL_LENGTH.comment = Adjusts the length of the luminous tail trailing behind each meteor.
-        option.METEOR_SIZE = Meteor Size
-        option.METEOR_SIZE.comment = Adjusts the overall thickness of meteor heads and tails.
-        option.METEOR_HEAD_SIZE = Head Size
-        option.METEOR_HEAD_SIZE.comment = Adjusts the size of the meteor head relative to its tail. Higher values make the glowing leading pixel head more prominent.
-        option.METEOR_TRAIL_FADE = Trail Fade
-        option.METEOR_TRAIL_FADE.comment = Adjusts the fading sharpness along the tail. Higher values yield a more concentrated, crisp streak.
-        option.METEOR_COLOR_PROFILE = Color Profile
-        option.METEOR_COLOR_PROFILE.comment = Changes the color palette of shooting stars in the night sky.
-        value.METEOR_COLOR_PROFILE.0 = Electric Blue
-        value.METEOR_COLOR_PROFILE.1 = Cosmic Violet
-        value.METEOR_COLOR_PROFILE.2 = Emerald Green
-        value.METEOR_COLOR_PROFILE.3 = Amber Gold
-        value.METEOR_COLOR_PROFILE.4 = Diamond White
-        value.METEOR_COLOR_PROFILE.5 = Prismatic
-        option.METEOR_WAVE_VARIATION = Activity Mode
-        option.METEOR_WAVE_VARIATION.comment = Activity timing style. Constant maintains a steady stream. Dynamic Waves produces periodic waxing and waning shower bursts.
-        value.METEOR_WAVE_VARIATION.0 = Constant
-        value.METEOR_WAVE_VARIATION.1 = Dynamic Waves
-        option.METEOR_SKY_COVERAGE = Sky Coverage
-        option.METEOR_SKY_COVERAGE.comment = Distribution area across the sky. Full Sky allows meteors to ignite across the entire sky (including South). Stream focuses on the Zenith-South corridor. Radiant keeps them near the origin.
-        value.METEOR_SKY_COVERAGE.0 = Full Sky
-        value.METEOR_SKY_COVERAGE.1 = Directional Stream
-        value.METEOR_SKY_COVERAGE.2 = Radiant Focused
-        option.METEOR_RADIANT_SPREAD = Radiant Size
-        option.METEOR_RADIANT_SPREAD.comment = Adjusts the angular size of the radiant area in the sky from which all meteors radially originate.
-        option.METEOR_RADIANT_DIRECTION = Radiant Direction
-        option.METEOR_RADIANT_DIRECTION.comment = Origin area in the sky where meteors radiate outward from like snow on a windshield.
-        value.METEOR_RADIANT_DIRECTION.0 = North-East
-        value.METEOR_RADIANT_DIRECTION.1 = North-West
-        value.METEOR_RADIANT_DIRECTION.2 = South-East
-        value.METEOR_RADIANT_DIRECTION.3 = South-West
-        value.METEOR_RADIANT_DIRECTION.4 = Zenith
-        value.METEOR_RADIANT_DIRECTION.5 = Celestial
+    screen.METEOR_SETTINGS.comment = Dynamic procedural shooting star showers streaking across the night sky.\n\n§e[Visual] §fCustomize shower occurrence rates, speed, tail lengths, and color palettes.\n§a[Performance: Very Low] §fAnalytical procedural streaks calculated in the sky pass.
+        option.METEORS = Meteor Showers
+        option.METEORS.comment = Master toggle for procedural meteor showers in the night sky.\n\n§e[Visual] §fShooting stars ignite and streak across the stars with glowing heads and fading tails.\n§a[Performance: Very Low] §fLightweight analytical procedural calculation.\n§b[Tip] §7Turns nighttime into an exciting celestial event!
 
-    option.STAR_ROTATION = Star Rotation
-    option.STAR_ROTATION.comment = Star rotation style. Aligned keeps all square stars axis-aligned. Random gives each star an individual random rotation angle. Enforced for both the Milky Way and the night sky.
-    value.STAR_ROTATION.0 = Aligned
-    value.STAR_ROTATION.1 = Random
+        option.METEOR_RARITY = Shower Occurrence Rarity
+        option.METEOR_RARITY.comment = Determines how frequently meteor showers occur throughout Minecraft nights.\n\n§e[Visual] §fFrom constant nightly activity to rare periodic astronomical events.\n§a[Performance: None] §fCycle threshold comparison.\n§b[Tip] §7"Regular (4-5 Nights)" makes showers feel like special, rewarding spectacles.
+            value.METEOR_RARITY.0 = Every Night
+            value.METEOR_RARITY.1 = Frequent (2-3 Nights)
+            value.METEOR_RARITY.2 = Regular (4-5 Nights)
+            value.METEOR_RARITY.3 = Rare (7-8 Nights)
+            value.METEOR_RARITY.4 = Very Rare (12-15 Nights)
+            value.METEOR_RARITY.5 = Lunar Cycle (New Moon)
 
-screen.WORLD = World
-screen.WORLD.comment = §6World animation and environment options including terrain, water, weather, wind, and world curvature.
-    option.TERRAIN_ANIMATION = Terrain animation
-    option.TERRAIN_ANIMATION.comment = Enables terrain waving animation.
+        option.METEOR_SHOWER_STRENGTH = Meteor Frequency Rate
+        option.METEOR_SHOWER_STRENGTH.comment = Controls how many meteors ignite per minute during an active shower wave.\n\n§e[Visual] §fHigher settings produce busy skies with multiple shooting stars at once.\n§a[Performance: None] §fTime-slice density multiplier.\n§b[Tip] §71.00 produces an authentic, natural meteor shower rate.
 
-    option.WATER_ANIMATION = Water animation
-    option.WATER_ANIMATION.comment = Enables water waving animation.
+        option.METEOR_BRIGHTNESS = Meteor Luminous Brightness
+        option.METEOR_BRIGHTNESS.comment = Controls the brightness of shooting star heads and glowing tail streaks.\n\n§e[Visual] §fHigher values make streaks intensely luminous and reflective in water.\n§a[Performance: None] §fLuminance scalar.
 
-    option.WEATHER_ANIMATION = Weather animation
-    option.WEATHER_ANIMATION.comment = Enables rain waving animation.
+        option.METEOR_SPEED = Meteor Flight Speed
+        option.METEOR_SPEED.comment = Adjusts how rapidly meteors streak across the celestial sphere.\n\n§e[Visual] §fHigher values produce lightning-fast streaks; lower values produce graceful glides.\n§a[Performance: None] §fStreak velocity scalar.
 
-    option.TIMELAPSE_MODE = Timelapse mode
-    option.TIMELAPSE_MODE.comment = Enable timelapse mode. This smoothens the transition of animations of the sky, the foliage waving etc according to current world time instead of frame time. Set to fragment for water normals and sky only and full for the water normals, sky, and waves. This feature does not work on vanilla clouds, skybox, and the sun and moon.
+        option.METEOR_TAIL_LENGTH = Luminous Tail Length
+        option.METEOR_TAIL_LENGTH.comment = Controls the physical length of the glowing ionized trail trailing behind each meteor.\n\n§e[Visual] §fHigher values create long, sweeping shooting star arcs across the sky.\n§a[Performance: None] §fTrail length scalar.
+
+        option.METEOR_SIZE = Meteor Trail Thickness
+        option.METEOR_SIZE.comment = Adjusts the thickness and pixel width of shooting star streaks.\n\n§e[Visual] §fHigher values make streaks wider and easier to spot from afar.\n§a[Performance: None] §fAngular radius scalar.
+
+        option.METEOR_HEAD_SIZE = Leading Head Prominence
+        option.METEOR_HEAD_SIZE.comment = Adjusts the size of the bright leading pixel head relative to its tail.\n\n§e[Visual] §fCreates an intense glowing fireball leading the ionization trail.\n§a[Performance: None] §fHead radius multiplier.
+
+        option.METEOR_TRAIL_FADE = Trail Fade Sharpness
+        option.METEOR_TRAIL_FADE.comment = Controls how crisply the meteor tail dissolves into the dark background.\n\n§e[Visual] §fHigher values yield concentrated, sharp trails; lower values produce soft gas fades.\n§a[Performance: None] §fExponential falloff exponent.
+
+        option.METEOR_COLOR_PROFILE = Meteor Color Palette
+        option.METEOR_COLOR_PROFILE.comment = Selects the elemental color scheme of falling shooting stars.\n\n§e[Visual] §fElectric Blue, Cosmic Violet, Emerald Green, Amber Gold, Diamond White, or Prismatic.\n§a[Performance: None] §fColor palette lookup.\n§b[Tip] §7"Prismatic" gives each falling meteor a unique random gemstone color!
+            value.METEOR_COLOR_PROFILE.0 = Electric Blue
+            value.METEOR_COLOR_PROFILE.1 = Cosmic Violet
+            value.METEOR_COLOR_PROFILE.2 = Emerald Green
+            value.METEOR_COLOR_PROFILE.3 = Amber Gold
+            value.METEOR_COLOR_PROFILE.4 = Diamond White
+            value.METEOR_COLOR_PROFILE.5 = Prismatic (Multicolor)
+
+        option.METEOR_WAVE_VARIATION = Shower Activity Rhythm
+        option.METEOR_WAVE_VARIATION.comment = Dictates how shower activity waxes and wanes over the course of the night.\n\n§e[Visual] §fConstant maintains a steady stream; Dynamic produces calm lulls followed by peak bursts!\n§a[Performance: None] §fModulation waveform.\n§b[Tip] §7"Dynamic Waves" mimics real astronomical Perseid/Leonid meteor peaks.
+            value.METEOR_WAVE_VARIATION.0 = Constant
+            value.METEOR_WAVE_VARIATION.1 = Dynamic Waves
+
+        option.METEOR_SKY_COVERAGE = Sky Distribution Area
+        option.METEOR_SKY_COVERAGE.comment = Dictates where in the sky dome meteors are allowed to ignite and streak.\n\n§e[Visual] §fFull Sky covers all horizons; Stream focuses south; Radiant clusters near origin.\n§a[Performance: None] §fAngular masking filter.\n§b[Tip] §7"Full Sky" gives the most immersive panoramic experience.
+            value.METEOR_SKY_COVERAGE.0 = Full Sky (Panoramic)
+            value.METEOR_SKY_COVERAGE.1 = Directional Stream
+            value.METEOR_SKY_COVERAGE.2 = Radiant Focused
+
+        option.METEOR_RADIANT_SPREAD = Radiant Origin Size
+        option.METEOR_RADIANT_SPREAD.comment = Adjusts the angular diameter of the radiant area from which meteors stream outward.\n\n§e[Visual] §fSmaller values make meteors radiate from a tighter point in space.\n§a[Performance: None] §fRadiant dispersion angle.
+
+        option.METEOR_RADIANT_DIRECTION = Radiant Origin Quadrant
+        option.METEOR_RADIANT_DIRECTION.comment = Selects the compass quadrant in the sky from which meteors appear to originate.\n\n§e[Visual] §fLike snow rushing past a windshield, streaks radiate outward from this direction.\n§a[Performance: None] §fCelestial vector anchor.
+            value.METEOR_RADIANT_DIRECTION.0 = North-East
+            value.METEOR_RADIANT_DIRECTION.1 = North-West
+            value.METEOR_RADIANT_DIRECTION.2 = South-East
+            value.METEOR_RADIANT_DIRECTION.3 = South-West
+            value.METEOR_RADIANT_DIRECTION.4 = Zenith (Overhead)
+            value.METEOR_RADIANT_DIRECTION.5 = Celestial (Following Moon)
+
+    ## Cloud Screen
+    screen.CLOUD_SETTINGS = Cloud Settings
+    screen.CLOUD_SETTINGS.comment = Volumetric 3D, skybox, and vanilla clouds with procedural weather dynamics.\n\n§e[Visual] §fConfigure cloud layers, altitude, thickness, softness, and weather responsiveness.\n§e[Performance: Low to Moderate] §fVolumetric mode requires raymarching steps.
+        option.CLOUD_TYPE = Cloud Rendering Mode
+        option.CLOUD_TYPE.comment = Selects the cloud rendering architecture.\n\n§e[Visual] §fVanilla: classic blocky clouds; Skybox: fast 2D plane; Volumetric: realistic 3D volume.\n§e[Performance: Vanilla=None, Volumetric=Moderate] §fRaymarched depth density.\n§b[Tip] §7Volumetric clouds look incredible and are highly optimized!
+            value.CLOUD_TYPE.0 = Vanilla
+            value.CLOUD_TYPE.1 = Skybox
+            value.CLOUD_TYPE.2 = Volumetric 3D
+
+        option.DYNAMIC_WEATHER = Procedural Dynamic Weather
+        option.DYNAMIC_WEATHER.comment = Simulates an organic, procedural multi-day weather and cloud coverage cycle.\n\n§e[Visual] §fSky coverage ranges from totally clear blue skies to overcast and moody storm fronts.\n§a[Performance: Very Low] §fProcedural noise weather clock.\n§b[Tip] §7Allows rain to happen during overcast skies instead of vanilla instant transitions.
+
+        option.DYNAMIC_CLOUDS = Dynamic Cloud Motion
+        option.DYNAMIC_CLOUDS.comment = Allows clouds to evolve, shift shape, and respond dynamically to wind speed.\n\n§e[Visual] §fClouds gently morph and drift naturally across the sky.\n§a[Performance: Very Low] §fNoise coordinate translation.\n§b[Tip] §7Works beautifully on both vanilla and volumetric cloud types.
+
+        option.DOUBLE_LAYERED_CLOUDS = High-Altitude Cirrus Clouds
+        option.DOUBLE_LAYERED_CLOUDS.comment = Renders a secondary, wispy cloud deck high in the stratosphere above normal clouds.\n\n§e[Visual] §fAdds great atmospheric depth with high-altitude cirrus clouds drifting overhead.\n§a[Performance: Low Impact] §fEvaluates secondary cloud layer.\n§b[Tip] §7Brings immense vertical scale and realism to the sky.
+
+        option.STORY_MODE_CLOUDS = Story Mode Cloud Styling
+        option.STORY_MODE_CLOUDS.comment = Softens clouds with a gentle vertical fade inspired by Minecraft: Story Mode.\n\n§e[Visual] §fFades smoothly from an opaque base to a translucent, airy top with extra thickness.\n§a[Performance: None] §fVertical gradient density filter.\n§b[Tip] §7Gives clouds a delightful, stylized storybook aesthetic!
+
+        option.SOFT_CLOUD_EDGE = Rounded Cloud Edges
+        option.SOFT_CLOUD_EDGE.comment = Smooths and rounds the outer block boundaries of clouds.\n\n§e[Visual] §fReplaces hard, sharp blocky cloud borders with soft, pillowy curves.\n§a[Performance: Very Low] §fDistance field smoothing.\n§b[Tip] §7Great if you want a softer, less rigid look while keeping voxel charm.
+
+        option.FADE_SPEED = Cloud Morphing Speed
+        option.FADE_SPEED.comment = Adjusts how rapidly clouds shift shape and morph as they drift.\n\n§e[Visual] §fHigher values produce faster evolving cloud formations.\n§a[Performance: None] §fTime scalar.\n§b[Tip] §7Default 0.20 provides calm, relaxing cloud movement.
+
+        option.SECOND_CLOUD_HEIGHT = Cirrus Layer Altitude
+        option.SECOND_CLOUD_HEIGHT.comment = Sets the height offset for the secondary high-altitude cirrus cloud deck.\n\n§e[Visual] §fPositions the upper cloud layer higher or lower in the sky.\n§a[Performance: None] §fHeight coordinate offset.
+
+        option.VOLUMETRIC_CLOUD_STEPS = Volumetric Cloud Steps
+        option.VOLUMETRIC_CLOUD_STEPS.comment = Number of raymarching sample steps for 3D volumetric clouds.\n\n§e[Visual] §fHigher values improve cloud density precision and eliminate step banding.\n§e[Performance: Moderate Impact] §fSample step count.\n§b[Tip] §716 steps is fast and clean; 32 steps is ultra smooth.
+
+        option.VOLUMETRIC_CLOUD_DEPTH = Volumetric Cloud Thickness
+        option.VOLUMETRIC_CLOUD_DEPTH.comment = Determines the physical vertical thickness of volumetric clouds.\n\n§e[Visual] §fHigher values make clouds thicker, heavier, and more voluminous.\n§a[Performance: None] §fLayer height bounds.
+
+        option.SKYBOX_CLOUD_STEPS = Skybox Cloud Steps
+        option.SKYBOX_CLOUD_STEPS.comment = Raymarching sample count for the Skybox cloud mode.\n\n§e[Visual] §fHigher values improve cloud definition when using the Skybox cloud type.\n§a[Performance: Low Impact] §fSample step count.
+
+        option.SKYBOX_CLOUD_DEPTH = Skybox Cloud Thickness
+        option.SKYBOX_CLOUD_DEPTH.comment = Vertical thickness bounds for the Skybox cloud mode.\n\n§e[Visual] §fAdjusts cloud layer vertical presence.\n§a[Performance: None] §fLayer bounds scalar.
+
+## World Screen
+screen.WORLD = World & Waving
+screen.WORLD.comment = Waving foliage, plant animations, flowing water, wind speed, and world curvature.\n\n§e[Visual] §fMakes the world feel alive with gentle breezes and animated vegetation.\n§a[Performance: Very Low] §fVertex shader animations with negligible overhead.
+    option.TERRAIN_ANIMATION = Waving Foliage & Plants
+    option.TERRAIN_ANIMATION.comment = Simulates wind gently blowing through grass, leaves, flowers, crops, and vines.\n\n§e[Visual] §fPlants, leaves, and hanging lanterns sway naturally in the breeze.\n§a[Performance: Very Low] §fFast vertex displacement shader.\n§b[Tip] §7Instantly brings life and organic movement to landscapes!
+
+    option.WATER_ANIMATION = Waving Water Surface
+    option.WATER_ANIMATION.comment = Animates undulating surface waves and ripples across oceans, lakes, and rivers.\n\n§e[Visual] §fWater surfaces rise and fall with realistic fluid waves.\n§a[Performance: Very Low] §fVertex wave height displacement.\n§b[Tip] §7Looks spectacular when catching sun and moon reflections.
+
+    option.WEATHER_ANIMATION = Waving Weather Particles
+    option.WEATHER_ANIMATION.comment = Applies wind physics and diagonal gusts to falling rain and snow particles.\n\n§e[Visual] §fPrecipitation slants and drifts dynamically with the prevailing wind.\n§a[Performance: Very Low] §fPrecipitation particle displacement.
+
+    option.TIMELAPSE_MODE = Timelapse Smooth Animation
+    option.TIMELAPSE_MODE.comment = Synchronizes animation speeds to in-game world time rather than real frame time.\n\n§e[Visual] §fFoliage and water speeds accelerate naturally during time-lapses or time commands!\n§a[Performance: None] §fUniform time source substitution.\n§b[Tip] §7Perfect for recording stunning day/night cycle time-lapses!
         value.TIMELAPSE_MODE.0 = OFF
-        value.TIMELAPSE_MODE.1 = Fragment
-        value.TIMELAPSE_MODE.2 = Full
+        value.TIMELAPSE_MODE.1 = Fragment Only (Water & Sky)
+        value.TIMELAPSE_MODE.2 = Full (Water, Sky & Foliage)
 
-    option.WIND_SPEED = Wind speed
-    option.WIND_SPEED.comment = Adjust wind speed. Affects plants, swinging objects, and weather. Increases the animation speed.
+    option.WIND_SPEED = Wind Velocity
+    option.WIND_SPEED.comment = Controls how fast plants, leaves, lanterns, and weather sway in the breeze.\n\n§e[Visual] §fHigher values produce faster, stormier foliage movement.\n§a[Performance: None] §fAnimation phase multiplier.\n§b[Tip] §71.00 gives a relaxing, gentle natural breeze.
 
-    option.CURRENT_SPEED = Current speed
-    option.CURRENT_SPEED.comment = Adjust liquid and under water flow speed. Affects underwater plants and liquids. Increases the animation speed.
+    option.CURRENT_SPEED = Liquid Flow Speed
+    option.CURRENT_SPEED.comment = Adjusts the animation and flow speed of water and underwater sea grass.\n\n§e[Visual] §fControls how swiftly ocean currents and rivers appear to move.\n§a[Performance: None] §fFluid phase multiplier.
 
-    option.WIND_FREQUENCY = Wind frequency
-    option.WIND_FREQUENCY.comment = Adjust wind frequency. Affects plants, swinging objects, and weather. Increases the animation change frequency.
+    option.WIND_FREQUENCY = Wind Gust Frequency
+    option.WIND_FREQUENCY.comment = Controls the frequency of wind gusts and wave direction changes.\n\n§e[Visual] §fHigher values cause quicker, more frequent fluttering of leaves.\n§a[Performance: None] §fSpatial noise frequency.
 
-    option.CURRENT_FREQUENCY = Current frequency
-    option.CURRENT_FREQUENCY.comment = Adjust liquid and under water flow frequency. Affects underwater plants and liquids. Increases the animation change frequency.
+    option.CURRENT_FREQUENCY = Liquid Wave Frequency
+    option.CURRENT_FREQUENCY.comment = Controls the spatial wave frequency of water ripples and currents.\n\n§e[Visual] §fHigher values create tighter, choppier surface ripples.\n§a[Performance: None] §fWave frequency scalar.
 
-    option.WORLD_CURVATURE = World curvature
-    option.WORLD_CURVATURE.comment = Enable world curvature.
+    option.WORLD_CURVATURE = Planet World Curvature
+    option.WORLD_CURVATURE.comment = Curving vertex shader that renders the Minecraft world as a small planet or sphere!\n\n§e[Visual] §fDistant terrain curves away beneath the horizon like Animal Crossing or Mario Galaxy.\n§a[Performance: Very Low] §fVertex quadratic displacement.\n§b[Tip] §7Fun, quirky, and creates uniquely whimsical landscape perspectives!
 
-    option.WORLD_CURVATURE_SIZE = World curvature size
-    option.WORLD_CURVATURE_SIZE.comment = World curvature size.
+    option.WORLD_CURVATURE_SIZE = Curvature Radius
+    option.WORLD_CURVATURE_SIZE.comment = Adjusts the radius of the curved planet world.\n\n§e[Visual] §fSmaller values curve more tightly; negative values invert into a bowl shape!\n§a[Performance: None] §fCurvature radius scalar.
 
-screen.PBR = PBR
-screen.PBR.comment = §6Physically based rendering options including PBR mode, specular highlights, environment materials, and parallax occlusion.
-    option.PBR_MODE = PBR mode
-    option.PBR_MODE.comment = Enables PBR. Integrated PBR depends on the vanilla albedo textures to map out the materials. Resource PBR uses your resource packs' PBR, if available. Resource PBR requires latest LabPBR version!
+## PBR & Materials Screen
+screen.PBR = Materials & PBR
+screen.PBR.comment = Physically Based Rendering, specular highlights, water, lava, sculk, and POM.\n\n§e[Visual] §fConfigure material reflections, surface relief, and custom fluid shaders.\n§a[Performance: Low to Moderate] §fPOM (Parallax) is the main performance factor.
+    option.PBR_MODE = PBR Material Mode
+    option.PBR_MODE.comment = Enables Physically Based Rendering, granting blocks realistic roughness and reflectivity.\n\n§e[Visual] §fIntegrated PBR generates materials from vanilla textures; LabPBR uses installed PBR resource packs.\n§a[Performance: Low Impact] §fEvaluates material properties during deferred shading.\n§b[Tip] §7Integrated PBR looks fantastic on pure vanilla textures with zero extra setup!
         value.PBR_MODE.0 = OFF
-        value.PBR_MODE.1 = Integrated PBR
-        value.PBR_MODE.2 = Lab PBR 1.3
+        value.PBR_MODE.1 = Integrated PBR (Auto Vanilla)
+        value.PBR_MODE.2 = LabPBR 1.3 (Resource Pack)
 
-    option.SPECULAR_HIGHLIGHTS = Specular highlights
-    option.SPECULAR_HIGHLIGHTS.comment = Enables specular highlight. Specular highlights are the approximate reflections of the sun.
+    option.SPECULAR_HIGHLIGHTS = Specular Sun Glint
+    option.SPECULAR_HIGHLIGHTS.comment = Renders sun and moon specular reflection glints on smooth and metallic surfaces.\n\n§e[Visual] §fPolished blocks, metals, and wet ground catch bright glints from the sun and moon.\n§a[Performance: Very Low] §fCook-Torrance or Blinn-Phong specular calculation.\n§b[Tip] §7Essential for bringing metallic and polished stone textures to life.
 
-    option.ENVIRONMENT_PBR = Enviro PBR materials
-    option.ENVIRONMENT_PBR.comment = Enables environment materials. Environment materials affects your surrounding according to your environment such as rain.
+    option.ENVIRONMENT_PBR = Environmental Wetness & Rain
+    option.ENVIRONMENT_PBR.comment = Simulates dynamic moisture, rain puddles, and dampness on exposed blocks during rain.\n\n§e[Visual] §fSurfaces glisten and show dampness when rained upon, drying up when clear.\n§a[Performance: Very Low] §fRain wetness material factor.\n§b[Tip] §7Adds incredible atmosphere when weather fronts roll through!
 
-    option.SUBSURFACE_SCATTERING = Subsurface scattering
-    option.SUBSURFACE_SCATTERING.comment = Enables subsurface scattering.
+    option.SUBSURFACE_SCATTERING = Subsurface Scattering (SSS)
+    option.SUBSURFACE_SCATTERING.comment = Simulates sunlight penetrating and softly illuminating the backsides of translucent leaves.\n\n§e[Visual] §fFoliage and leaves glow vibrantly when backlit by morning and evening sunbeams.\n§a[Performance: Very Low] §fTranslucency backlighting calculation.\n§b[Tip] §7Makes tree canopies and forests feel remarkably lush and radiant!
 
-    option.EMISSIVE_INTENSITY = Emissive intensity
-    option.EMISSIVE_INTENSITY.comment = Emissive maps intensity. Does not affect lightmaps and requires PBR on.
+    option.EMISSIVE_INTENSITY = Emissive Block Brightness
+    option.EMISSIVE_INTENSITY.comment = Multiplier for glowing blocks like redstone, glowstone, magma, and glowing ores.\n\n§e[Visual] §fControls how brightly glowing block textures appear in the dark.\n§a[Performance: None] §fEmissive color scalar.\n§b[Tip] §7Level 8 gives rich, luminous ore and crystal accents.
 
-    option.NORMAL_STRENGTH = Normal strength
-    option.NORMAL_STRENGTH.comment = Normal map strength. Effective only if PBR is on with the RP normals, and slope normals is off.
+    option.NORMAL_STRENGTH = Normal Map Depth Strength
+    option.NORMAL_STRENGTH.comment = Controls the strength of 3D surface bumps and crevices from normal maps.\n\n§e[Visual] §fHigher values create more pronounced depth on stone, bricks, and bark.\n§a[Performance: None] §fNormal vector tangent perturbation scalar.
 
-    option.SLOPE_NORMALS = Slope normals
-    option.SLOPE_NORMALS.comment = Enables slope normals. Disable this feature if you're using a high resolution pack with normal maps.
+    option.NORMAL_GENERATION = Auto-Generated Normal Maps
+    option.NORMAL_GENERATION.comment = Automatically generates 3D normal depth maps for standard vanilla textures.\n\n§e[Visual] §fGives vanilla cobblestone, wood planks, and brick surfaces 3D tactile relief!\n§a[Performance: Low Impact] §fReal-time Sobel gradient filter across albedo textures.\n§b[Tip] §7Enjoy realistic 3D block relief without installing heavy resource packs!
 
-    option.DIRECTIONAL_LIGHTMAPS = Directional lightmaps
-    option.DIRECTIONAL_LIGHTMAPS.comment = Enables directional lightmaps. Effective only if auto generated normals or normal maps from PBR is enabled.
+    option.NORMAL_GENERATION_RESOLUTION = Auto-Normal Resolution
+    option.NORMAL_GENERATION_RESOLUTION.comment = Internal texture sampling resolution for auto-generated normal maps.\n\n§e[Visual] §fHigher values produce finer, crisper micro-relief details.\n§a[Performance: Very Low] §fTexture coordinate sampling scale.\n§b[Tip] §7128 is crisp and perfectly balanced for vanilla textures.
 
-    option.DIRECTIONAL_LIGHTMAP_STRENGTH = Directional lightmaps strength
-    option.DIRECTIONAL_LIGHTMAP_STRENGTH.comment = Directional lightmap strength. Effective if directional lightmaps is enabled.
+    option.DIRECTIONAL_LIGHTMAPS = Directional Torchlight Relief
+    option.DIRECTIONAL_LIGHTMAPS.comment = Casts directional relief shadows from handheld and placed torches across normal maps.\n\n§e[Visual] §fTorchlight creates realistic cast shadows across brick mortar and rough stone!\n§a[Performance: Very Low] §fLightmap gradient normal dot product.\n§b[Tip] §7Looks stunning when exploring caves with a handheld torch.
 
-    screen.POM_SETTINGS = Parallax occlusion settings
-    screen.POM_SETTINGS.comment = §eParallax occlusion mapping and shadowing options for enhanced surface detail.
-        option.PARALLAX_OCCLUSION = Parallax occlusion
-        option.PARALLAX_OCCLUSION.comment = Enables parallax occlusion mapping for simulated surface depth and detail.
+    option.DIRECTIONAL_LIGHTMAP_STRENGTH = Directional Light Strength
+    option.DIRECTIONAL_LIGHTMAP_STRENGTH.comment = Intensity of the directional relief shading cast by torchlight.\n\n§e[Visual] §fHigher values produce deeper, more dramatic surface shadows from torches.\n§a[Performance: None] §fIntensity scalar.
 
-        option.PARALLAX_DEPTH = Parallax depth
-        option.PARALLAX_DEPTH.comment = Sets the maximum depth for parallax occlusion mapping. Higher values increase the effect.
+    option.SLOPE_NORMALS = Sloped Edge Normals
+    option.SLOPE_NORMALS.comment = Generates smooth beveled normal lighting across block edges and stairs.\n\n§e[Visual] §fSoftens harsh cube corners with subtle beveled edge reflections.\n§a[Performance: Very Low] §fGeometric normal calculation.\n§b[Tip] §7Disable if using a high-resolution 3D resource pack.
 
-        option.PARALLAX_STEPS = Parallax steps
-        option.PARALLAX_STEPS.comment = Number of steps for parallax occlusion mapping. More steps improve quality but reduce performance.
+    ## POM Screen
+    screen.POM_SETTINGS = Parallax Occlusion (POM)
+    screen.POM_SETTINGS.comment = True 3D depth and self-shadowing simulated on flat block textures.\n\n§e[Visual] §fTurns flat texture bricks, cobblestone, and tiles into true recessed 3D geometry!\n§c[Performance: Moderate to Heavy] §fRequires step raymarching through heightmaps.
+        option.PARALLAX_OCCLUSION = Parallax Occlusion Mapping
+        option.PARALLAX_OCCLUSION.comment = Raymarches into surface heightmaps to simulate real 3D geometry depth.\n\n§e[Visual] §fMortar sinks into bricks, gravel stones pop out, and wood planks have true grooves.\n§c[Performance: Heavy Impact] §fRaymarching per-pixel heightmaps.\n§b[Tip] §7Requires a LabPBR resource pack with heightmaps enabled.
 
-        option.PARALLAX_SHADOW = Parallax shadows
-        option.PARALLAX_SHADOW.comment = Enables self-shadowing for parallax occlusion mapped surfaces.
+        option.PARALLAX_DEPTH = Parallax Depth Scale
+        option.PARALLAX_DEPTH.comment = Maximum simulated depth distance into the block surface.\n\n§e[Visual] §fHigher values produce deeper recesses and bolder 3D relief.\n§a[Performance: None] §fHeightmap depth scalar.
 
-        option.PARALLAX_SHADOW_STEPS = Parallax shadow steps
-        option.PARALLAX_SHADOW_STEPS.comment = Number of steps for parallax shadowing. Higher values improve shadow detail.
+        option.PARALLAX_STEPS = Parallax Sample Steps
+        option.PARALLAX_STEPS.comment = Number of raymarching steps taken to find the surface depth intersection.\n\n§e[Visual] §fHigher values eliminate stair-step layer artifacts on steep angles.\n§c[Performance: Heavy Impact] §fLoop iteration count.\n§b[Tip] §7128 steps is the sweet spot for crisp 3D relief without FPS drop.
 
-    screen.IPBR_SETTINGS = iPBR settings
+        option.PARALLAX_SHADOW = Parallax Self-Shadowing
+        option.PARALLAX_SHADOW.comment = Allows raised 3D features to cast tiny realistic shadows onto recessed areas.\n\n§e[Visual] §fBricks cast self-shadows into the mortar grooves as the sun moves!\n§e[Performance: Moderate Impact] §fSecondary raymarch toward celestial light.\n§b[Tip] §7Adds incredible micro-detail realism to textured surfaces.
+
+        option.PARALLAX_SHADOW_STEPS = Parallax Shadow Steps
+        option.PARALLAX_SHADOW_STEPS.comment = Number of shadow ray steps taken toward the light source.\n\n§e[Visual] §fHigher values produce cleaner, more accurate micro self-shadows.\n§e[Performance: Moderate Impact] §fSecondary loop step count.
+
+    ## Water Screen
+    screen.WATER_SETTINGS = Water Material Settings
+    screen.WATER_SETTINGS.comment = Water clarity, noise distortion, wave normals, absorption, foam, and colors.\n\n§e[Visual] §fCustomize how oceans, lakes, and rivers look and flow.\n§a[Performance: Low Impact] §fOptimized procedural water shader.
+        option.WATER_NOISE = Water Surface Noise
+        option.WATER_NOISE.comment = Adds procedural animated noise variation to water transparency and brightness.\n\n§e[Visual] §fBreaks up repetitive water textures with natural organic patches.\n§a[Performance: Very Low] §fProcedural noise calculation.\n§b[Tip] §7Inspired by the beloved Super Duper Graphics Pack water style!
+
+        option.WATER_BRIGHTNESS = Water Clarity Brightness
+        option.WATER_BRIGHTNESS.comment = Controls overall water brightness and transparency luminance.\n\n§e[Visual] §fLower values create deep, rich sapphire oceans; higher values create crystal clear springs.\n§a[Performance: None] §fBrightness scalar.\n§b[Tip] §71.00 provides crystal-clear tropical visibility.
+
+        option.WATER_NORMAL = Water Wave Normals
+        option.WATER_NORMAL.comment = Enables 3D animated normal map wave crests across liquid surfaces.\n\n§e[Visual] §fProduces realistic surface ripples that glint in the sun and moon.\n§a[Performance: Low Impact] §fEvaluates normal map derivative.\n§b[Tip] §7Essential for realistic, shimmering lake and ocean surfaces.
+
+        option.WATER_BLUR_SIZE = Wave Smoothness Blur
+        option.WATER_BLUR_SIZE.comment = Adjusts the smoothness and blur radius of water surface waves.\n\n§e[Visual] §fSmaller values create sharp, crisp ripples; larger values create smooth ocean swells.\n§a[Performance: None] §fNormal map filtering kernel size.
+
+        option.WATER_DEPTH_SIZE = Wave Depth Relief
+        option.WATER_DEPTH_SIZE.comment = Controls the perceived 3D height and depth of water ripples.\n\n§e[Visual] §fSmaller values increase wave contrast and perceived height.\n§a[Performance: None] §fWave normal depth multiplier.
+
+        option.WATER_TILE_SIZE = Water Texture Scale
+        option.WATER_TILE_SIZE.comment = Controls the repeating grid scale of the water wave pattern.\n\n§e[Visual] §fSmaller values make waves finer; larger values make broad ocean swells.\n§a[Performance: None] §fUV coordinate multiplier.\n§b[Tip] §7Default 16 matches standard Minecraft block proportions.
+
+        option.WATER_STYLIZE_ABSORPTION = Depth Color Absorption
+        option.WATER_STYLIZE_ABSORPTION.comment = Simulates physical light absorption through water depth.\n\n§e[Visual] §fShallow water remains crystal clear while deep ocean trenches turn deep sapphire navy.\n§a[Performance: Very Low] §fExponential depth absorption math.\n§b[Tip] §7Creates breathtaking natural transitions from sandy shores to deep seas!
+
+        option.WATER_FOAM = Shore & Entity Foam
+        option.WATER_FOAM.comment = Renders animated sea foam where water laps against beaches, rocks, and swimming mobs.\n\n§e[Visual] §fFrothy white foam lines form along shores, boats, and submerged structures.\n§a[Performance: Very Low] §fDepth edge proximity intersection.\n§b[Tip] §7Adds vibrant coastal life to oceans and beaches!
+
+        option.WATER_FLAT = Flat Water Albedo
+        option.WATER_FLAT.comment = Replaces textured water color with a clean, flat stylized albedo tone.\n\n§e[Visual] §fCreates an ultra-clean, minimalist modern water appearance.\n§a[Performance: None] §fTexture bypass toggle.
+
+    ## Lava Screen
+    screen.LAVA_SETTINGS = Lava Material Settings
+    screen.LAVA_SETTINGS.comment = Lava brightness, animated surface noise, and tiling scale.\n\n§e[Visual] §fCustomizes the molten glow and crust patterns of lava pools.\n§a[Performance: Very Low] §fProcedural noise shading.
+        option.LAVA_BRIGHTNESS = Lava Luminance
+        option.LAVA_BRIGHTNESS.comment = Controls the overall glow brightness of molten lava.\n\n§e[Visual] §fAdjusts the vividness of glowing magma and lava flows.\n§a[Performance: None] §fColor multiplier.
+
+        option.LAVA_NOISE = Lava Surface Crust Noise
+        option.LAVA_NOISE.comment = Generates animated crust patterns and hot convection noise across lava pools.\n\n§e[Visual] §fCreates shifting fiery crusts similar to Minecraft Dungeons lava!\n§a[Performance: Very Low] §fProcedural noise evaluation.
+
+        option.LAVA_TILE_SIZE = Lava Pattern Scale
+        option.LAVA_TILE_SIZE.comment = Controls the repeating grid scale of the lava noise texture.\n\n§e[Visual] §fAdjusts the scale of molten crust patterns across lava lakes.\n§a[Performance: None] §fUV coordinate scalar.
+
+    ## Sculk Screen
+    screen.SCULK_SETTINGS = Sculk Material Settings
+    screen.SCULK_SETTINGS.comment = Sculk brightness, animated noise pulsation, and tiling scale in the Deep Dark.\n\n§e[Visual] §fCustomizes the eerie bioluminescent glow of the Deep Dark biome.\n§a[Performance: Very Low] §fProcedural noise shading.
+        option.SCULK_BRIGHTNESS = Sculk Glow Brightness
+        option.SCULK_BRIGHTNESS.comment = Controls the brightness of glowing sculk veins, shriekers, and catalysts.\n\n§e[Visual] §fAdjusts the eerie cyan glow in ancient cities and deep dark caves.\n§a[Performance: None] §fLuminance scalar.
+
+        option.SCULK_NOISE = Animated Sculk Pulsation
+        option.SCULK_NOISE.comment = Applies pulsing temporal noise to sculk bioluminescence.\n\n§e[Visual] §fSculk patches appear to breathe and pulse with ancient alien energy.\n§a[Performance: Very Low] §fTemporal noise modulation.
+
+        option.SCULK_TILE_SIZE = Sculk Pattern Scale
+        option.SCULK_TILE_SIZE.comment = Controls the repeating grid scale of the sculk pulsation noise.\n\n§e[Visual] §fAdjusts the cluster size of pulsing sculk energy pockets.\n§a[Performance: None] §fUV coordinate scalar.
+
+    ## Backward compatibility alias
+    screen.IPBR_SETTINGS = Integrated PBR Settings
     screen.IPBR_SETTINGS.comment = §eAdvanced material settings for water, lava, sculk, and normal generation.
-        screen.WATER_SETTINGS = Water material settings
-        screen.WATER_SETTINGS.comment = §bWater material properties such as noise, brightness, normal map, blur, depth, tiling, absorption, foam, and flat color.
-            option.WATER_NOISE = Water noise
-            option.WATER_NOISE.comment = Controls the amount of noise/distortion in water surfaces.
 
-            option.WATER_BRIGHTNESS = Water brightness
-            option.WATER_BRIGHTNESS.comment = Adjusts the brightness of water materials.
+## Dimensions Screen
+screen.DIMENSIONS = Dimensions & Worlds
+screen.DIMENSIONS.comment = Fine-tune lighting colors, skies, and atmospheric fog for each Minecraft dimension.\n\n§e[Structure] §fCommon global options sit on top, followed by individual dimension controls.\n§a[Performance: None] §fMenu navigation screen.\n§b[Tip] §7Easily expandable: new modded dimensions can be added to the dimension list!
 
-            option.WATER_NORMAL = Water normalmap
-            option.WATER_NORMAL.comment = Enables or adjusts the normal map for water, affecting surface detail.
+## Backward compatibility alias
+screen.CONFIGURATION = Dimensions & Worlds
+screen.CONFIGURATION.comment = Fine-tune lighting colors, skies, and atmospheric fog for each Minecraft dimension.\n\n§e[Structure] §fCommon global options sit on top, followed by individual dimension controls.\n§a[Performance: None] §fMenu navigation screen.
 
-            option.WATER_BLUR_SIZE = Water normalmap blur size
-            option.WATER_BLUR_SIZE.comment = Sets the blur radius for the water normal map, smoothing details.
+    ## Block Light Screen (Common to all dimensions)
+    screen.BLOCK_LIGHT_COLOR = Block Light (Common to all Dimensions)
+    screen.BLOCK_LIGHT_COLOR.comment = Customizes the warm light color cast by torches, lanterns, campfires, and lava.\n\n§e[Scope] §fApplies globally across the Overworld, Nether, and End dimensions!\n§a[Performance: None] §fColor math tweak with zero performance cost.\n§b[Tip] §7Adjust Red, Green, Blue, and Intensity sliders to set your ideal cave atmosphere.
+        option.BLOCKLIGHT_R = Torchlight Red
+        option.BLOCKLIGHT_R.comment = Red color channel for placed block light (torches, lanterns, campfires).\n\n§e[Visual] §fControls warmth and fire tones of torchlight.\n§a[Performance: None] §fColor channel scalar.
 
-            option.WATER_DEPTH_SIZE = Water normalmap depth size
-            option.WATER_DEPTH_SIZE.comment = Controls the depth effect strength in the water normal map.
+        option.BLOCKLIGHT_G = Torchlight Green
+        option.BLOCKLIGHT_G.comment = Green color channel for placed block light.\n\n§e[Visual] §fBlends with red to create cozy golden or yellow candlelight.\n§a[Performance: None] §fColor channel scalar.
 
-            option.WATER_TILE_SIZE = Water tile size
-            option.WATER_TILE_SIZE.comment = Sets the tiling scale for water textures.
+        option.BLOCKLIGHT_B = Torchlight Blue
+        option.BLOCKLIGHT_B.comment = Blue color channel for placed block light.\n\n§e[Visual] §fIncrease for cool white lantern light or soul flame vibes.\n§a[Performance: None] §fColor channel scalar.
 
-            option.WATER_STYLIZE_ABSORPTION = Water absorption
-            option.WATER_STYLIZE_ABSORPTION.comment = Adjusts how much light is absorbed by water, affecting color and clarity.
+        option.BLOCKLIGHT_I = Torchlight Intensity
+        option.BLOCKLIGHT_I.comment = Master brightness multiplier for all placed block light sources.\n\n§e[Visual] §fControls how brightly torches illuminate surrounding rooms and caverns.\n§a[Performance: None] §fIntensity scalar.\n§b[Tip] §7Default 1.00 is warm, cozy, and perfectly balanced.
 
-            option.WATER_FOAM = Water foam
-            option.WATER_FOAM.comment = Enables or adjusts foam effects on water surfaces.
+    ## Overworld Screen
+    screen.OVERWORLD_SETTINGS = Overworld Settings
+    screen.OVERWORLD_SETTINGS.comment = Lighting, sky tones, and atmospheric fog configuration for the Overworld.\n\n§e[Visual] §fControl day, night, and twilight sun and sky colors along with dynamic fog.\n§a[Performance: None] §fMenu navigation screen.
+        ## Day Screen
+        screen.DAY_SETTINGS = Daytime Colors
+        screen.DAY_SETTINGS.comment = Sunlight and sky dome color palette during full daytime.\n\n§e[Visual] §fFine-tune the warm golden sunlight and azure sky tones of noon.\n§a[Performance: None] §fColor parameter configuration.
+            option.LIGHT0_DR = Day Sunlight Red
+            option.LIGHT0_DR.comment = Red channel for direct daytime sunlight.\n\n§e[Visual] §fAdds warm afternoon gold tones to direct sunlight.\n§a[Performance: None] §fColor channel scalar.
 
-            option.WATER_FLAT = Flat water albedo
-            option.WATER_FLAT.comment = Uses a flat albedo color for water, ignoring texture details.
+            option.LIGHT0_DG = Day Sunlight Green
+            option.LIGHT0_DG.comment = Green channel for direct daytime sunlight.\n\n§e[Visual] §fBalances solar warmth and brightness.\n§a[Performance: None] §fColor channel scalar.
 
-        screen.LAVA_SETTINGS = Lava material settings
-        screen.LAVA_SETTINGS.comment = §bLava material properties such as brightness, noise, and tiling.
-            option.LAVA_BRIGHTNESS = Lava brightness
-            option.LAVA_BRIGHTNESS.comment = Adjusts the brightness of lava materials.
+            option.LIGHT0_DB = Day Sunlight Blue
+            option.LIGHT0_DB.comment = Blue channel for direct daytime sunlight.\n\n§e[Visual] §fHigher values produce cool, crisp midday white light.\n§a[Performance: None] §fColor channel scalar.
 
-            option.LAVA_NOISE = Lava noise
-            option.LAVA_NOISE.comment = Controls the amount of noise/distortion in lava surfaces.
+            option.LIGHT0_DI = Day Sunlight Intensity
+            option.LIGHT0_DI.comment = Master brightness multiplier for direct daytime sunlight.\n\n§e[Visual] §fControls the brilliance of sunlit surfaces during the day.\n§a[Performance: None] §fIntensity scalar.
 
-            option.LAVA_TILE_SIZE = Lava tile size
-            option.LAVA_TILE_SIZE.comment = Sets the tiling scale for lava textures.
+            option.SKY0_DR = Day Sky Red
+            option.SKY0_DR.comment = Red channel for daytime sky dome color.\n\n§e[Visual] §fAdds subtle warmth to the upper sky horizon.\n§a[Performance: None] §fColor channel scalar.
 
-        screen.SCULK_SETTINGS = Sculk material settings
-        screen.SCULK_SETTINGS.comment = §bSculk material properties such as brightness, noise, and tiling.
-            option.SCULK_BRIGHTNESS = Sculk brightness
-            option.SCULK_BRIGHTNESS.comment = Adjusts the brightness of sculk materials.
+            option.SKY0_DG = Day Sky Green
+            option.SKY0_DG.comment = Green channel for daytime sky dome color.\n\n§e[Visual] §fBlends with blue to produce natural turquoise atmospheric hues.\n§a[Performance: None] §fColor channel scalar.
 
-            option.SCULK_NOISE = Sculk noise
-            option.SCULK_NOISE.comment = Controls the amount of noise/distortion in sculk surfaces.
+            option.SKY0_DB = Day Sky Blue
+            option.SKY0_DB.comment = Blue channel for daytime sky dome color.\n\n§e[Visual] §fControls the deep azure saturation of the daytime sky.\n§a[Performance: None] §fColor channel scalar.
 
-            option.SCULK_TILE_SIZE = Sculk tile size
-            option.SCULK_TILE_SIZE.comment = Sets the tiling scale for sculk textures.
+            option.SKY0_DI = Day Sky Intensity
+            option.SKY0_DI.comment = Master brightness multiplier for daytime sky dome illumination.\n\n§e[Visual] §fLightens or deepens daytime sky radiance.\n§a[Performance: None] §fIntensity scalar.
 
-        option.NORMAL_GENERATION = Auto gen normals
-        option.NORMAL_GENERATION.comment = Enables automatic generation of normal maps for materials.
+        ## Night Screen
+        screen.NIGHT_SETTINGS = Nighttime Colors
+        screen.NIGHT_SETTINGS.comment = Moonlight and sky dome color palette during full nighttime.\n\n§e[Visual] §fFine-tune cool lunar blue tones and cosmic midnight skies.\n§a[Performance: None] §fColor parameter configuration.
+            option.LIGHT0_NR = Night Moonlight Red
+            option.LIGHT0_NR.comment = Red channel for direct nighttime moonlight.\n\n§e[Visual] §fAdds warmth or lavender tinting to moonlight.\n§a[Performance: None] §fColor channel scalar.
 
-        option.NORMAL_GENERATION_RESOLUTION = Auto gen normal resolution
-        option.NORMAL_GENERATION_RESOLUTION.comment = Sets the resolution for automatically generated normal maps.
+            option.LIGHT0_NG = Night Moonlight Green
+            option.LIGHT0_NG.comment = Green channel for direct nighttime moonlight.\n\n§e[Visual] §fBalances pale lunar tones.\n§a[Performance: None] §fColor channel scalar.
 
-screen.CONFIGURATION = Configuration
-screen.CONFIGURATION.comment = §6Dimension and environment configuration for overworld, nether, end, and fog settings.
-    screen.OVERWORLD_SETTINGS = Overworld settings
-    screen.OVERWORLD_SETTINGS.comment = §aOverworld lighting, sky, and fog color settings for day, night, and twilight.
-        screen.DAY_SETTINGS = Day settings
-        screen.DAY_SETTINGS.comment = §bDaytime light and sky color configuration.
-            option.LIGHT0_DR = Light red
-            option.LIGHT0_DR.comment = Red channel for day light color.
-            
-            option.LIGHT0_DG = Light green
-            option.LIGHT0_DG.comment = Green channel for day light color.
-            
-            option.LIGHT0_DB = Light blue
-            option.LIGHT0_DB.comment = Blue channel for day light color.
-            
-            option.LIGHT0_DI = Light intensity
-            option.LIGHT0_DI.comment = Intensity for day light color.
+            option.LIGHT0_NB = Night Moonlight Blue
+            option.LIGHT0_NB.comment = Blue channel for direct nighttime moonlight.\n\n§e[Visual] §fProduces iconic cool blue moonlight on terrain.\n§a[Performance: None] §fColor channel scalar.
 
-            option.SKY0_DR = Sky red
-            option.SKY0_DR.comment = Red channel for day sky color.
-            
-            option.SKY0_DG = Sky green
-            option.SKY0_DG.comment = Green channel for day sky color.
-            
-            option.SKY0_DB = Sky blue
-            option.SKY0_DB.comment = Blue channel for day sky color.
-            
-            option.SKY0_DI = Sky intensity
-            option.SKY0_DI.comment = Intensity for day sky color.
+            option.LIGHT0_NI = Night Moonlight Intensity
+            option.LIGHT0_NI.comment = Master brightness multiplier for direct nighttime moonlight.\n\n§e[Visual] §fControls how clearly moonlight illuminates the nighttime landscape.\n§a[Performance: None] §fIntensity scalar.
 
-        screen.NIGHT_SETTINGS = Night settings
-        screen.NIGHT_SETTINGS.comment = §1Nighttime light and sky color configuration.
-            option.LIGHT0_NR = Light red
-            option.LIGHT0_NR.comment = Red channel for night light color.
-            
-            option.LIGHT0_NG = Light green
-            option.LIGHT0_NG.comment = Green channel for night light color.
-            
-            option.LIGHT0_NB = Light blue
-            option.LIGHT0_NB.comment = Blue channel for night light color.
-            
-            option.LIGHT0_NI = Light intensity
-            option.LIGHT0_NI.comment = Intensity for night light color.
+            option.SKY0_NR = Night Sky Red
+            option.SKY0_NR.comment = Red channel for nighttime sky dome color.\n\n§e[Visual] §fControls warm cosmic dust tones in the night sky.\n§a[Performance: None] §fColor channel scalar.
 
-            option.SKY0_NR = Sky red
-            option.SKY0_NR.comment = Red channel for night sky color.
-            
-            option.SKY0_NG = Sky green
-            option.SKY0_NG.comment = Green channel for night sky color.
-            
-            option.SKY0_NB = Sky blue
-            option.SKY0_NB.comment = Blue channel for night sky color.
-            
-            option.SKY0_NI = Sky intensity
-            option.SKY0_NI.comment = Intensity for night sky color.
+            option.SKY0_NG = Night Sky Green
+            option.SKY0_NG.comment = Green channel for nighttime sky dome color.\n\n§e[Visual] §fAdds subtle aurora undertones to the night sky.\n§a[Performance: None] §fColor channel scalar.
 
-        screen.TWILIGHT_SETTINGS = Twilight settings
-        screen.TWILIGHT_SETTINGS.comment = §dTwilight light and sky color configuration.
-            option.LIGHT0_TR = Light red
-            option.LIGHT0_TR.comment = Red channel for twilight light color.
-            
-            option.LIGHT0_TG = Light green
-            option.LIGHT0_TG.comment = Green channel for twilight light color.
-            
-            option.LIGHT0_TB = Light blue
-            option.LIGHT0_TB.comment = Blue channel for twilight light color.
-            
-            option.LIGHT0_TI = Light intensity
-            option.LIGHT0_TI.comment = Intensity for twilight light color.
+            option.SKY0_NB = Night Sky Blue
+            option.SKY0_NB.comment = Blue channel for nighttime sky dome color.\n\n§e[Visual] §fControls deep midnight navy tones of the night sky.\n§a[Performance: None] §fColor channel scalar.
 
-            option.SKY0_TR = Sky red
-            option.SKY0_TR.comment = Red channel for twilight sky color.
-            
-            option.SKY0_TG = Sky green
-            option.SKY0_TG.comment = Green channel for twilight sky color.
-            
-            option.SKY0_TB = Sky blue
-            option.SKY0_TB.comment = Blue channel for twilight sky color.
-            
-            option.SKY0_TI = Sky intensity
-            option.SKY0_TI.comment = Intensity for twilight sky color.
+            option.SKY0_NI = Night Sky Intensity
+            option.SKY0_NI.comment = Master brightness multiplier for nighttime sky dome illumination.\n\n§e[Visual] §fControls how dark or luminous the midnight sky appears.\n§a[Performance: None] §fIntensity scalar.
 
-        screen.FOG_SETTINGS0 = Fog settings
-        screen.FOG_SETTINGS0.comment = §7Fog density and color settings for the overworld.
-            option.FOG0_VERTICAL_DENSITY_D = Vertical density day
-            option.FOG0_VERTICAL_DENSITY_D.comment = Vertical fog density for day. Higher values = thinner fog at high altitudes, thicker at low.
-            
-            option.FOG0_VERTICAL_DENSITY_N = Vertical density night
-            option.FOG0_VERTICAL_DENSITY_N.comment = Vertical fog density for night.
-            
-            option.FOG0_VERTICAL_DENSITY_T = Vertical density twilight
-            option.FOG0_VERTICAL_DENSITY_T.comment = Vertical fog density for twilight.
-            
-            option.FOG0_TOTAL_DENSITY = Total density
-            option.FOG0_TOTAL_DENSITY.comment = Total fog density for overworld. Higher values = thicker fog.
+        ## Twilight Screen
+        screen.TWILIGHT_SETTINGS = Twilight Colors (Sunrise & Sunset)
+        screen.TWILIGHT_SETTINGS.comment = Solar lighting and sky gradient colors during dawn and dusk.\n\n§e[Visual] §fFine-tune breathtaking crimson, orange, and violet twilight horizons.\n§a[Performance: None] §fColor parameter configuration.
+            option.LIGHT0_TR = Twilight Light Red
+            option.LIGHT0_TR.comment = Red channel for twilight sun/moon light.\n\n§e[Visual] §fProduces rich fiery crimson and amber sunset rays.\n§a[Performance: None] §fColor channel scalar.
 
-            option.DYNAMIC_FOG = Dynamic fog
-            option.DYNAMIC_FOG.comment = Enables dynamic fog with biome probabilities based on humidity that follows the dynamic weather system. Humid biomes like swamps, rivers, and jungles frequently get thick atmospheric mist, while arid biomes stay clear.
+            option.LIGHT0_TG = Twilight Light Green
+            option.LIGHT0_TG.comment = Green channel for twilight sun/moon light.\n\n§e[Visual] §fBlends with red to create warm golden hour lighting.\n§a[Performance: None] §fColor channel scalar.
 
-            option.PALE_GARDEN_FOG = Pale Garden Fog
-            option.PALE_GARDEN_FOG.comment = Intensity of the atmospheric light gray fog in the Pale Garden biome.
+            option.LIGHT0_TB = Twilight Light Blue
+            option.LIGHT0_TB.comment = Blue channel for twilight sun/moon light.\n\n§e[Visual] §fAdds purple and magenta twilight undertones.\n§a[Performance: None] §fColor channel scalar.
 
-    screen.NETHER_SETTINGS = Nether settings
-    screen.NETHER_SETTINGS.comment = §cNether fog and sky color configuration.
-        option.FOGn1_VERTICAL_DENSITY = Vertical density
-        option.FOGn1_VERTICAL_DENSITY.comment = Vertical fog density for the Nether. Higher values = thinner fog at high altitudes, thicker at low.
+            option.LIGHT0_TI = Twilight Light Intensity
+            option.LIGHT0_TI.comment = Master brightness multiplier for twilight sun and moon lighting.\n\n§e[Visual] §fControls the brilliance of golden hour sunbeams.\n§a[Performance: None] §fIntensity scalar.
 
-        option.FOGn1_TOTAL_DENSITY = Total density
-        option.FOGn1_TOTAL_DENSITY.comment = Total fog density for the Nether. Higher values = thicker fog.
+            option.SKY0_TR = Twilight Sky Red
+            option.SKY0_TR.comment = Red channel for twilight horizon sky color.\n\n§e[Visual] §fCreates spectacular red and orange sunrise/sunset gradients.\n§a[Performance: None] §fColor channel scalar.
 
-        option.WORLDn1_VANILLA_FOGCOLI = Sky intensity
-        option.WORLDn1_VANILLA_FOGCOLI.comment = Intensity for Nether vanilla fog color.
+            option.SKY0_TG = Twilight Sky Green
+            option.SKY0_TG.comment = Green channel for twilight horizon sky color.\n\n§e[Visual] §fBlends the horizon glow into the upper sky.\n§a[Performance: None] §fColor channel scalar.
 
-    screen.END_SETTINGS = End settings
-    screen.END_SETTINGS.comment = §5End dimension light, sky, and fog color configuration.
-        option.LIGHT1_CR = Light red
-        option.LIGHT1_CR.comment = Red channel for End light color.
+            option.SKY0_TB = Twilight Sky Blue
+            option.SKY0_TB.comment = Blue channel for twilight horizon sky color.\n\n§e[Visual] §fProduces deep purple and violet evening transitions.\n§a[Performance: None] §fColor channel scalar.
 
-        option.LIGHT1_CG = Light green
-        option.LIGHT1_CG.comment = Green channel for End light color.
+            option.SKY0_TI = Twilight Sky Intensity
+            option.SKY0_TI.comment = Master brightness multiplier for twilight sky dome illumination.\n\n§e[Visual] §fControls how vividly the horizon glows at sunset and sunrise.\n§a[Performance: None] §fIntensity scalar.
 
-        option.LIGHT1_CB = Light blue
-        option.LIGHT1_CB.comment = Blue channel for End light color.
+        ## Fog Screen
+        screen.FOG_SETTINGS0 = Overworld Fog Settings
+        screen.FOG_SETTINGS0.comment = Atmospheric fog density falloff, humidity dynamics, and Pale Garden fog.\n\n§e[Visual] §fControls atmospheric depth, morning mist, and swamp haze.\n§a[Performance: None] §fDirect analytical fog density math.
+            option.FOG0_VERTICAL_DENSITY_D = Daytime Vertical Fog Density
+            option.FOG0_VERTICAL_DENSITY_D.comment = Daytime altitude fog falloff rate.\n\n§e[Visual] §fHigher values produce thinner fog at mountain peaks and thicker mist in valleys.\n§a[Performance: None] §fFog height attenuation scalar.
 
-        option.LIGHT1_CI = Light intensity
-        option.LIGHT1_CI.comment = Intensity for End light color.
+            option.FOG0_VERTICAL_DENSITY_N = Nighttime Vertical Fog Density
+            option.FOG0_VERTICAL_DENSITY_N.comment = Nighttime altitude fog falloff rate.\n\n§e[Visual] §fControls vertical settling of cool nighttime ground mist.\n§a[Performance: None] §fFog height attenuation scalar.
 
-        option.SKY1_CR = Sky red
-        option.SKY1_CR.comment = Red channel for End sky color.
+            option.FOG0_VERTICAL_DENSITY_T = Twilight Vertical Fog Density
+            option.FOG0_VERTICAL_DENSITY_T.comment = Sunrise and sunset altitude fog falloff rate.\n\n§e[Visual] §fControls morning and evening mist layer depth.\n§a[Performance: None] §fFog height attenuation scalar.
 
-        option.SKY1_CG = Sky green
-        option.SKY1_CG.comment = Green channel for End sky color.
+            option.FOG0_TOTAL_DENSITY = Overworld Total Fog Density
+            option.FOG0_TOTAL_DENSITY.comment = Master fog thickness multiplier across the Overworld.\n\n§e[Visual] §fHigher values create thicker, soupier fog; lower values produce crystal clear horizons.\n§a[Performance: None] §fFog density scalar.\n§b[Tip] §7Default 0.005 keeps horizons crisp while preserving soft distant depth.
 
-        option.SKY1_CB = Sky blue
-        option.SKY1_CB.comment = Blue channel for End sky color.
+            option.DYNAMIC_FOG = Dynamic Humidity Fog
+            option.DYNAMIC_FOG.comment = Simulates organic weather-linked fog probabilities based on biome humidity.\n\n§e[Visual] §fSwamps, rivers, and rainforests frequently develop thick morning mist; deserts stay clear!\n§a[Performance: Very Low] §fBiome humidity evaluation.\n§b[Tip] §7Highly recommended for an ever-changing, lifelike natural atmosphere!
 
-        option.SKY1_CI = Sky intensity
-        option.SKY1_CI.comment = Intensity for End sky color.
+            option.PALE_GARDEN_FOG = Pale Garden Biome Fog
+            option.PALE_GARDEN_FOG.comment = Controls the intensity of the eerie pale gray atmospheric fog in the Pale Garden biome.\n\n§e[Visual] §fCreates an unsettling, silent gray gloom among the creaking pale oak trees.\n§a[Performance: None] §fBiome fog density scalar.\n§b[Tip] §71.00 provides the perfect spooky, mysterious atmosphere.
 
-        option.WORLD1_CUSTOM_SKYLIGHT = Sky light
-        option.WORLD1_CUSTOM_SKYLIGHT.comment = Sky light brightness for the End dimension.
+    ## Nether Screen
+    screen.NETHER_SETTINGS = Nether Settings
+    screen.NETHER_SETTINGS.comment = Atmospheric fog density and vanilla sky color intensity in the Nether dimension.\n\n§e[Visual] §fTune the fiery, oppressive haze of the Nether underworld.\n§a[Performance: None] §fMathematical fog parameters.
+        option.FOGn1_VERTICAL_DENSITY = Nether Vertical Fog Density
+        option.FOGn1_VERTICAL_DENSITY.comment = Altitude-dependent fog falloff throughout the Nether caverns.\n\n§e[Visual] §fHigher values produce thicker volcanic fog near lava oceans and clearer cavern ceilings.\n§a[Performance: None] §fHeight falloff scalar.
 
-        option.END_BH_LIGHT = Black Hole Light
-        option.END_BH_LIGHT.comment = Intensity of the permanent faint directional light cast from the Black Hole.
+        option.FOGn1_TOTAL_DENSITY = Nether Total Fog Density
+        option.FOGn1_TOTAL_DENSITY.comment = Master fog thickness throughout the Nether dimension.\n\n§e[Visual] §fHigher values produce a thick, fiery red haze; lower values increase visibility.\n§a[Performance: None] §fFog density scalar.\n§b[Tip] §7Lower to 0.010 if you want to spot nether fortresses from further away!
 
-        option.FOG1_VERTICAL_DENSITY = Vertical density
-        option.FOG1_VERTICAL_DENSITY.comment = Vertical fog density for the End. Higher values = thinner fog at high altitudes, thicker at low.
+        option.WORLDn1_VANILLA_FOGCOLI = Nether Vanilla Sky Intensity
+        option.WORLDn1_VANILLA_FOGCOLI.comment = Intensity multiplier for the vanilla biome-tinted Nether fog color.\n\n§e[Visual] §fControls the vividness of red, blue (warped forest), and ash (basalt) biome colors.\n§a[Performance: None] §fColor intensity scalar.
 
-        option.FOG1_TOTAL_DENSITY = Total density
-        option.FOG1_TOTAL_DENSITY.comment = Total fog density for the End. Higher values = thicker fog.
+    ## End Screen
+    screen.END_SETTINGS = End Dimension Settings
+    screen.END_SETTINGS.comment = Black hole lighting, alien purple skies, Ender Dragon boss fog, and void cosmos.\n\n§e[Visual] §fFine-tune the mysterious cosmic ambiance of The End dimension.\n§a[Performance: None] §fAnalytical lighting and fog parameters.
+        option.LIGHT1_CR = End Dimension Light Red
+        option.LIGHT1_CR.comment = Red channel for direct celestial lighting in the End.\n\n§e[Visual] §fBlends with blue to produce the iconic End alien lavender glow.\n§a[Performance: None] §fColor channel scalar.
 
-        option.END_BOSS_FOG = Dragon Boss Fog
-        option.END_BOSS_FOG.comment = Intensity of the atmospheric boss fog during the Ender Dragon fight.
+        option.LIGHT1_CG = End Dimension Light Green
+        option.LIGHT1_CG.comment = Green channel for direct celestial lighting in the End.\n\n§e[Visual] §fBalances the ethereal End light temperature.\n§a[Performance: None] §fColor channel scalar.
 
-        option.END_SKY_TEXTURE_BRIGHTNESS = End Sky Texture
-        option.END_SKY_TEXTURE_BRIGHTNESS.comment = Brightness of the background End sky texture. Lower values produce a darker cosmic backdrop.
+        option.LIGHT1_CB = End Dimension Light Blue
+        option.LIGHT1_CB.comment = Blue channel for direct celestial lighting in the End.\n\n§e[Visual] §fControls the cool purple and indigo tones of the End.\n§a[Performance: None] §fColor channel scalar.
 
-    screen.BLOCK_LIGHT_COLOR = Block light settings
-    screen.BLOCK_LIGHT_COLOR.comment = §eBlock light color and intensity configuration.
-        option.BLOCKLIGHT_R = Block light red
-        option.BLOCKLIGHT_R.comment = Red channel for block light color.
+        option.LIGHT1_CI = End Dimension Light Intensity
+        option.LIGHT1_CI.comment = Master brightness multiplier for directional lighting in the End.\n\n§e[Visual] §fControls how brightly End stone islands are illuminated.\n§a[Performance: None] §fIntensity scalar.
 
-        option.BLOCKLIGHT_G = Block light green
-        option.BLOCKLIGHT_G.comment = Green channel for block light color.
+        option.SKY1_CR = End Dimension Sky Red
+        option.SKY1_CR.comment = Red channel for the End void sky dome.\n\n§e[Visual] §fControls deep magenta and cosmic violet tones in the End sky.\n§a[Performance: None] §fColor channel scalar.
 
-        option.BLOCKLIGHT_B = Block light blue
-        option.BLOCKLIGHT_B.comment = Blue channel for block light color.
+        option.SKY1_CG = End Dimension Sky Green
+        option.SKY1_CG.comment = Green channel for the End void sky dome.\n\n§e[Visual] §fAdds subtle alien nebula tones to the End sky backdrop.\n§a[Performance: None] §fColor channel scalar.
 
-        option.BLOCKLIGHT_I = Block light intensity
-        option.BLOCKLIGHT_I.comment = Intensity for block light color.
+        option.SKY1_CB = End Dimension Sky Blue
+        option.SKY1_CB.comment = Blue channel for the End void sky dome.\n\n§e[Visual] §fControls the deep indigo space tones of the End void.\n§a[Performance: None] §fColor channel scalar.
+
+        option.SKY1_CI = End Dimension Sky Intensity
+        option.SKY1_CI.comment = Master brightness multiplier for the End sky dome.\n\n§e[Visual] §fLightens or deepens the cosmic backdrop of the End.\n§a[Performance: None] §fIntensity scalar.
+
+        option.WORLD1_CUSTOM_SKYLIGHT = End Ambient Skylight
+        option.WORLD1_CUSTOM_SKYLIGHT.comment = Ambient sky illumination throughout the End dimension.\n\n§e[Visual] §fPrevents the undersides of End islands from falling into pitch-black void.\n§a[Performance: None] §fAmbient scalar.\n§b[Tip] §7Default 0.65 provides great visibility for navigating floating void islands.
+
+        option.END_BH_LIGHT = Black Hole Directional Light
+        option.END_BH_LIGHT.comment = Intensity of the permanent directional light beam cast from the cosmic Black Hole.\n\n§e[Visual] §fCasts faint, eerie directional highlights from the black hole accretion disk.\n§a[Performance: None] §fLight intensity scalar.\n§b[Tip] §7Gives the End dimension a mysterious, singular cosmic light source!
+
+        option.FOG1_VERTICAL_DENSITY = End Vertical Fog Density
+        option.FOG1_VERTICAL_DENSITY.comment = Altitude-dependent fog falloff in the End void.\n\n§e[Visual] §fControls fog density settling beneath the floating islands.\n§a[Performance: None] §fHeight falloff scalar.
+
+        option.FOG1_TOTAL_DENSITY = End Total Fog Density
+        option.FOG1_TOTAL_DENSITY.comment = Master atmospheric fog density throughout the End dimension.\n\n§e[Visual] §fHigher values wrap distant End cities in mysterious purple void mist.\n§a[Performance: None] §fFog density scalar.\n§b[Tip] §70.005 keeps outer End islands visible while preserving cosmic depth.
+
+        option.END_BOSS_FOG = Ender Dragon Boss Fog
+        option.END_BOSS_FOG.comment = Dramatic atmospheric boss fog intensity during the Ender Dragon encounter.\n\n§e[Visual] §fFills the central island with dense, dramatic purple fog during the dragon fight!\n§a[Performance: None] §fBoss phase fog multiplier.\n§b[Tip] §7Transforms the climactic dragon battle into a cinematic epic!
+
+        option.END_SKY_TEXTURE_BRIGHTNESS = End Sky Texture Brightness
+        option.END_SKY_TEXTURE_BRIGHTNESS.comment = Brightness of the custom background cosmic sky texture in the End.\n\n§e[Visual] §fLower values produce a deep dark void; higher values reveal cosmic star dust.\n§a[Performance: None] §fTexture brightness multiplier.

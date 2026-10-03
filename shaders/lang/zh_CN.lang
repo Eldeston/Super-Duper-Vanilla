@@ -497,6 +497,8 @@ screen.PBR.comment = §6基于物理的渲染选项, 含PBR模式, 高光反射,
         option.NORMAL_GENERATION_RESOLUTION = 自动生成法线分辨率
         option.NORMAL_GENERATION_RESOLUTION.comment = 设置自动生成法线贴图的分辨率.
 
+screen.DIMENSIONS = 维度
+screen.DIMENSIONS.comment = §6维度和环境配置, 含主世界, 下界, 末地, 及雾设置.
 screen.CONFIGURATION = 配置
 screen.CONFIGURATION.comment = §6维度和环境配置, 含主世界, 下界, 末地, 及雾设置.
     screen.OVERWORLD_SETTINGS = 主世界设置

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Shader Performance Profiler & Static Analysis Tool for Super Duper Vanilla.
+Shader Performance Profiler & Static Analysis Tool for HyperDuper Vanilla (SDV Fork).
 
 Analyzes shader passes across all dimensions (Overworld, Nether, End) to quantify
 GPU cost drivers: texture bandwidth, heavy mathematical operations, branching,
@@ -203,7 +203,7 @@ def print_summary_report(profiles: List[Dict[str, Any]], top_n: int, show_all: b
     total_cost = sum(p["cost_index"] for p in profiles)
 
     print(f"\n{CLR_BOLD}╔══════════════════════════════════════════════════════════════════════════════╗{CLR_RESET}")
-    print(f"{CLR_BOLD}║           SUPER DUPER VANILLA — SHADER PERFORMANCE PROFILER                  ║{CLR_RESET}")
+    print(f"{CLR_BOLD}║           HYPERDUPER VANILLA — SHADER PERFORMANCE PROFILER                   ║{CLR_RESET}")
     print(f"{CLR_BOLD}╚══════════════════════════════════════════════════════════════════════════════╝{CLR_RESET}\n")
 
     print(f"Inspected {CLR_CYAN}{total_shaders}{CLR_RESET} shader stages across dimensions.")
@@ -262,7 +262,7 @@ def compare_profiles(file1: str, file2: str) -> None:
 def parse_args() -> argparse.Namespace:
     """Parse CLI options for shader profiler."""
     parser = argparse.ArgumentParser(
-        description="Profile Super Duper Vanilla shaders for performance cost, texture lookups, and math ops."
+        description="Profile HyperDuper Vanilla shaders for performance cost, texture lookups, and math ops."
     )
     parser.add_argument("--shaders-dir", default="shaders", help="Path to shaders directory")
     parser.add_argument("--top", type=int, default=15, help="Number of top costly shaders to display (default: 15)")

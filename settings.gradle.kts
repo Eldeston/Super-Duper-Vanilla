@@ -8,4 +8,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = "Super-Duper-Vanilla"
+rootProject.name = "HyperDuper-Vanilla"

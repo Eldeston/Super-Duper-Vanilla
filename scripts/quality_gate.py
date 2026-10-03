@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Continuous Validation Quality Gate for Super Duper Vanilla.
+Continuous Validation Quality Gate for HyperDuper Vanilla (SDV Fork).
 Executes a multi-stage validation pipeline:
   [Gate 1] GLSL Shader Compilation & Syntax (glslangValidator)
   [Gate 2] i18n Translation & Consistency Check
@@ -76,7 +76,7 @@ def _check_critical_files(workspace_root: str) -> List[str]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Quality Gate validation pipeline for Super Duper Vanilla.")
+    parser = argparse.ArgumentParser(description="Quality Gate validation pipeline for HyperDuper Vanilla.")
     parser.add_argument("--strict", action="store_true", help="Enforce strict quality gates (fail on warnings/orphans).")
     parser.add_argument("--staged", action="store_true", help="Validate only git-staged changes.")
     args = parser.parse_args()
@@ -88,7 +88,7 @@ def main() -> int:
     gates_results: List[Tuple[str, bool, float, str]] = []
 
     print(f"\n{CLR_CYAN}{CLR_BOLD}╔══════════════════════════════════════════════════════════════════╗{CLR_RESET}")
-    print(f"{CLR_CYAN}{CLR_BOLD}║      SUPER DUPER VANILLA — CONTINUOUS QUALITY GATE PIPELINE      ║{CLR_RESET}")
+    print(f"{CLR_CYAN}{CLR_BOLD}║       HYPERDUPER VANILLA — CONTINUOUS QUALITY GATE PIPELINE      ║{CLR_RESET}")
     print(f"{CLR_CYAN}{CLR_BOLD}╚══════════════════════════════════════════════════════════════════╝{CLR_RESET}\n")
 
     # Gate 1: GLSL Linting

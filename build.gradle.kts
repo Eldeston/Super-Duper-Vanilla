@@ -110,7 +110,7 @@ val deployClientMods = tasks.register("deployClientMods") {
 
 tasks.named<JavaExec>("runClient") {
     group = "loom"
-    description = "Runs Minecraft Client with Quilt, Iris, Sodium, Sodium Extra, Voxy, Litematica, Spark, GFX Debuggers, and local Super Duper Vanilla shaderpack."
+    description = "Runs Minecraft Client with Quilt, Iris, Sodium, Sodium Extra, Voxy, Litematica, Spark, GFX Debuggers, and local HyperDuper Vanilla shaderpack."
     dependsOn(deployClientMods)
     jvmArgs("-javaagent:${file("gradle/dev-runtime-agent.jar").absolutePath}")
     systemProperty("debugger", System.getProperty("debugger", "skip"))
