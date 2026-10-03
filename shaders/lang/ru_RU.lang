@@ -255,6 +255,7 @@ screen.CONFIGURATION = Настройки
             option.FOG0_VERTICAL_DENSITY_N = Сгущенность у земли ночью
             option.FOG0_VERTICAL_DENSITY_T = Сгущенность в сумерки
             option.FOG0_TOTAL_DENSITY = Общая плотность дымки
+            option.PALE_GARDEN_FOG = Туман Бледного сада
 
     screen.NETHER_SETTINGS = Незер
         option.FOGn1_VERTICAL_DENSITY = Сгущенность у земли

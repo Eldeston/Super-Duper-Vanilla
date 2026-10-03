@@ -448,7 +448,7 @@
             }
 
             // Get basic sky fog color
-            vec3 fogSkyCol = getSkyFogRender(nEyePlayerPos);
+            vec3 fogSkyCol = applyPaleGardenFogColor(getSkyFogRender(nEyePlayerPos), nEyePlayerPos);
 
             // Border fog
             #ifdef BORDER_FOG

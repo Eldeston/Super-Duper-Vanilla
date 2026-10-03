@@ -568,6 +568,9 @@ screen.CONFIGURATION.comment = §6Configuration des dimensions et environnements
             option.FOG0_TOTAL_DENSITY = Densité totale
             option.FOG0_TOTAL_DENSITY.comment = Densité totale du brouillard pour le Monde normal. Des valeurs plus élevées = brouillard plus épais.
 
+            option.PALE_GARDEN_FOG = Brouillard du Jardin pâle
+            option.PALE_GARDEN_FOG.comment = Intensité du brouillard atmosphérique gris clair dans le biome du Jardin pâle.
+
     screen.NETHER_SETTINGS = Paramètres du Nether
     screen.NETHER_SETTINGS.comment = §cConfiguration du brouillard et de la couleur du ciel du Nether.
         option.FOGn1_VERTICAL_DENSITY = Densité verticale

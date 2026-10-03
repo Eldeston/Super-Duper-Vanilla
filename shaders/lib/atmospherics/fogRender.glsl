@@ -1,3 +1,8 @@
+#ifndef IS_PALE_GARDEN_DECLARED
+    #define IS_PALE_GARDEN_DECLARED
+    uniform float isPaleGarden;
+#endif
+
 // Modified Complementary border fog calculation, thanks Emin!
 float getBorderFog(in float playerPosLength){
     return exp2(-exp2(playerPosLength / borderFar * 21.0 - 18.0));
@@ -15,6 +20,50 @@ float getAtmosphericFog(in float nPlayerPosY, in float worldPosY, in float playe
     float opticalDepth = totalDensity * playerPosLength * exp2(-minY * k) * heightIntegral;
     return 1.0 - exp2(-opticalDepth);
 }
+
+#if WORLD_ID == 0 && defined PALE_GARDEN_FOG
+vec3 getPaleGardenFogColor(in vec3 nEyePlayerPos){
+    #ifndef FORCE_DISABLE_DAY_CYCLE
+        float dCycle = dayCycle;
+    #else
+        float dCycle = 1.0;
+    #endif
+
+    // Pale light silvery gray base
+    vec3 paleDay = toLinear(vec3(0.76, 0.77, 0.79));
+    vec3 paleTwilight = toLinear(vec3(0.44, 0.44, 0.47));
+    vec3 paleNight = toLinear(vec3(0.12, 0.13, 0.16));
+    vec3 paleBase = lerp(paleNight, paleTwilight, paleDay, dCycle);
+
+    // Subtle blend with vanilla biome fog color for natural integration
+    float dayBrightness = 0.35 + 0.65 * saturate(dCycle * 0.5);
+    vec3 vanillaBiomeFog = toLinear(fogColor) * (1.15 * dayBrightness);
+    vec3 col = mix(paleBase, vanillaBiomeFog, 0.30);
+
+    #ifndef FORCE_DISABLE_WEATHER
+        col = mix(col, toLinear(fogColor), weatherFade * 0.4);
+    #endif
+
+    // Soft forward sun glow through the mist during the day
+    vec3 sunDir = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
+    float sunGlow = pow(saturate(dot(nEyePlayerPos, sunDir) * 0.5 + 0.5), 4.0);
+    col += toLinear(vec3(0.12, 0.10, 0.08)) * (sunGlow * saturate(dCycle - 1.0));
+
+    return col;
+}
+#endif
+
+#if WORLD_ID == 0 && defined PALE_GARDEN_FOG
+vec3 applyPaleGardenFogColor(in vec3 baseFogCol, in vec3 nEyePlayerPos){
+    if(isEyeInWater == 0 && PALE_GARDEN_FOG > 0.0 && isPaleGarden > 0.001 && effectFactor < 0.01){
+        vec3 paleFogCol = getPaleGardenFogColor(nEyePlayerPos);
+        return mix(baseFogCol, paleFogCol, isPaleGarden * min(1.0, PALE_GARDEN_FOG));
+    }
+    return baseFogCol;
+}
+#else
+#define applyPaleGardenFogColor(col, nPos) (col)
+#endif
 
 float getFogFactor(in float viewDist, in float nEyePlayerPosY, in float worldPosY){
     #ifdef FORCE_DISABLE_WEATHER
@@ -38,6 +87,18 @@ float getFogFactor(in float viewDist, in float nEyePlayerPosY, in float worldPos
             float heightFade = saturate(1.0 - max(0.0, worldPosY - 80.0) * 0.012);
             float bossFogAmount = bossDensity * mix(0.70, 1.0, heightFade);
             baseFog = max(baseFog, bossFogAmount);
+        }
+    #endif
+
+    #if WORLD_ID == 0 && defined PALE_GARDEN_FOG
+        if(isEyeInWater == 0 && PALE_GARDEN_FOG > 0.0 && isPaleGarden > 0.001 && effectFactor < 0.01){
+            float pgStart = 12.0 / max(PALE_GARDEN_FOG, 0.5);
+            float pgEnd = max(pgStart + 25.0, 70.0 / pow(PALE_GARDEN_FOG, 0.4));
+            float pgDistProgress = saturate((viewDist - pgStart) / (pgEnd - pgStart));
+            float pgDensity = 1.0 - exp2(-pow(pgDistProgress, 1.15) * (4.2 * PALE_GARDEN_FOG));
+            float heightFade = saturate(1.0 - max(0.0, worldPosY - 105.0) * 0.016);
+            float paleFogAmount = pgDensity * isPaleGarden * mix(0.70, 1.0, heightFade);
+            baseFog = max(baseFog, paleFogAmount);
         }
     #endif
 

@@ -302,6 +302,13 @@ vec3 applyDeferredSkyEffects(in vec3 sceneCol, in vec3 nEyePlayerPos, in vec3 sk
             sceneCol = mix(sceneCol, bossSkyFogCol, horizonBossFog);
         }
     #endif
+    #if WORLD_ID == 0 && defined PALE_GARDEN_FOG
+        if(isEyeInWater == 0 && PALE_GARDEN_FOG > 0.0 && isPaleGarden > 0.001 && effectFactor < 0.01){
+            vec3 paleFogCol = getPaleGardenFogColor(nEyePlayerPos);
+            float horizonPaleFog = exp2(-max(0.0, nEyePlayerPos.y) * 6.5) * 0.90 + 0.10;
+            sceneCol = mix(sceneCol, paleFogCol, isPaleGarden * horizonPaleFog * min(1.0, PALE_GARDEN_FOG));
+        }
+    #endif
     return sceneCol;
 }
 
@@ -404,7 +411,7 @@ vec3 applyDeferredSkyEffects(in vec3 sceneCol, in vec3 nEyePlayerPos, in vec3 sk
         float viewDist = viewDot * viewDotInvSqrt;
 
         // Get basic sky fog color
-        vec3 fogSkyCol = getSkyFogRender(nEyePlayerPos, skyPos, currSkyCol);
+        vec3 fogSkyCol = applyPaleGardenFogColor(getSkyFogRender(nEyePlayerPos, skyPos, currSkyCol), nEyePlayerPos);
         // Get fog factor
         float fogFactor = getFogFactor(viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
 
