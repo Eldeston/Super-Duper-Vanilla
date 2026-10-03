@@ -34,6 +34,9 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 // Enable milky way in your world (smooth fade in alongside stars during dusk, fade out during dawn)
 #define WORLD_MILKY_WAY toLinear(1.65 * smoothstep(1.1, 0.4, dayCycle))
 
+// Enable meteor showers in your world (smooth fade in alongside stars during dusk, fade out during dawn)
+#define WORLD_METEORS toLinear(2.0 * smoothstep(1.1, 0.4, dayCycle))
+
 // Enable aurora in your world (smooth fade in during night)
 #define WORLD_AURORA toLinear(1.2 * smoothstep(0.90, 0.25, dayCycle))
 
@@ -98,7 +101,14 @@ const vec3 lightTwilightColor = vec3(LIGHT0_TR, LIGHT0_TG, LIGHT0_TB) * (LIGHT0_
 const vec3 skyTwilightColor = vec3(SKY0_TR, SKY0_TG, SKY0_TB) * (SKY0_TI * 0.00392156863);
 
 #if !defined(PATCHED_SHADER) && !defined(VOXY_SHADING)
-uniform int moonPhase;
+#ifndef WORLD_DAY_DECLARED
+    #define WORLD_DAY_DECLARED
+    uniform int worldDay;
+#endif
+#ifndef MOON_PHASE_DECLARED
+    #define MOON_PHASE_DECLARED
+    uniform int moonPhase;
+#endif
 uniform float sunPower;
 uniform float moonPower;
 #endif

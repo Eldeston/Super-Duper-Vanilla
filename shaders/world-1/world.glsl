@@ -30,6 +30,7 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 
 // Enable stars in your world
 // #define WORLD_STARS 1.0
+// #define WORLD_METEORS 1.0
 
 // If the world utilizes vanilla fog color
 #define WORLD_VANILLA_FOG_COLOR

@@ -6,11 +6,9 @@
 	#endif
 #endif
 
-#ifdef WORLD_AETHER
-#endif
-
 #include "/lib/atmospherics/celestialRender.glsl"
 #include "/lib/atmospherics/milkyWay.glsl"
+#include "/lib/atmospherics/meteorShowers.glsl"
 #include "/lib/atmospherics/aurora.glsl"
 #include "/lib/atmospherics/rainbow.glsl"
 #include "/lib/atmospherics/cloudOcclusion.glsl"
@@ -24,7 +22,6 @@
     vec2 cloudParallaxDynamic(in vec2 start, in vec2 cameraPos){
         // Apply depth size
         vec2 end = start * depthSize;
-
         // Scales and moves the clouds based on world position
         start += cameraPos * 0.0625;
 
@@ -35,10 +32,8 @@
             if(cloudMap.y > 0.5) cloudData.y = i;
             start -= end;
         }
-
         return cloudData;
     }
-
     // Sky clouds render
     vec3 getSkyClouds(in vec3 nEyePlayerPos, in vec3 currSkyCol){
         #ifndef FORCE_DISABLE_WEATHER
@@ -93,13 +88,10 @@
                 // Scale clouds smoothly as overcast rises from clear to partly cloudy
                 float cloudPresence = smoothstep(0.0, 0.40, weatherFade);
                 baseClouds *= cloudPresence;
-
                 // Mix in expanded coverage from both channels
                 float expandedClouds = mix(baseClouds, max(cloudData.x, cloudData.y) * cloudPresence, weatherFade);
-
                 // Overcast scales the optical density of the first layer of clouds
                 float firstLayerDensity = mix(0.75, 2.0, smoothstep(0.10, 0.85, weatherFade));
-
                 // As overcast approaches 1.0, an overcast cloud deck fills the sky
                 float overcastDeck = saturate((weatherFade - 0.70) * 4.0);
                 float clouds = mix(expandedClouds, max(expandedClouds, float(skyBoxCloudSteps) * 0.70), overcastDeck);
@@ -152,7 +144,6 @@ vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){
         float moonSkyGrad = mix(1.0, mix(0.65, 1.0, smoothstep(0.0, 1.0, moonAlignment)), nightFactor * weatherSkyGrad);
         baseSky *= moonSkyGrad;
     #endif
-
     // Apply ambient lighting with sky col (not realistic I know)
     vec3 currSkyCol = baseSky + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 
@@ -186,7 +177,6 @@ vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){
     #if WORLD_ID == 1
         currSkyCol += toLinear(vec3(0.18, 0.10, 0.26)) * (endFlashIntensity * 0.4);
     #endif
-
     return currSkyCol;
 }
 
@@ -236,6 +226,21 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
             currSkyCol += milkyWay;
         #else
             if(weatherFade < 1.0) currSkyCol += (1.0 - weatherFade) * milkyWay;
+        #endif
+    #endif
+    #endif
+
+    #ifdef METEORS
+    #if defined WORLD_STARS && defined WORLD_METEORS
+        // Procedural meteor showers (variable strength, crisp tails fading out, blue-ish aesthetic)
+        float meteorHorizonFade = saturate(nEyePlayerPos.y * 6.0);
+        float meteorMoonFade = mix(1.0, 0.35, MOON_PHASE_FACTOR);
+        vec3 meteors = getProceduralMeteorShowers(nEyePlayerPos, skyPos, fragmentFrameTime) * (meteorHorizonFade * WORLD_METEORS * METEOR_BRIGHTNESS * meteorMoonFade);
+
+        #ifdef FORCE_DISABLE_WEATHER
+            currSkyCol += meteors;
+        #else
+            if(weatherFade < 1.0) currSkyCol += (1.0 - weatherFade) * meteors;
         #endif
     #endif
     #endif

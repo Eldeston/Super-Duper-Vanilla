@@ -38,6 +38,7 @@
         "pixelWidth",
         "pixelHeight",
         "frameMod",
+        "worldDay",
         "worldTime",
         "frameTimeCounter",
         "fragmentFrameTime",

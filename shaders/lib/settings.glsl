@@ -91,6 +91,20 @@ const float sunPathRotation = 30.0; // Light path angle. This also affects sky a
 #define AURORA_BRIGHTNESS 1.00 // Aurora brightness. [0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00 1.10 1.20 1.30 1.40 1.50 1.60 1.70 1.80 1.90 2.00]
 #define RAINBOW // Enables procedural double rainbow / rainsquare when raining and not totally overcast.
 #define RAINBOW_BRIGHTNESS 1.00 // Rainbow brightness. [0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00 1.10 1.20 1.30 1.40 1.50 1.60 1.70 1.80 1.90 2.00]
+#define METEORS // Enables dynamic procedural meteor showers in the night sky.
+#define METEOR_RARITY 2 // Meteor shower occurrence frequency. 0: Every Night, 1: Frequent (Every 2-3 Nights), 2: Regular (Every 4-5 Nights), 3: Rare (Every 7-8 Nights), 4: Very Rare (Every 12-15 Nights), 5: Lunar Cycle (New Moon). [0 1 2 3 4 5]
+#define METEOR_SHOWER_STRENGTH 1.00 // Meteor shower activity rate and frequency. [0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 2.50 3.00]
+#define METEOR_BRIGHTNESS 1.00 // Meteor brightness. [0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00]
+#define METEOR_SPEED 1.00 // Meteor flight speed multiplier. [0.50 0.75 1.00 1.25 1.50 1.75 2.00]
+#define METEOR_TAIL_LENGTH 1.00 // Meteor tail length multiplier. [0.50 0.75 1.00 1.25 1.50 1.75 2.00 2.50]
+#define METEOR_SIZE 1.00 // Meteor thickness (overall size multiplier). [0.50 0.75 1.00 1.25 1.50 1.75 2.00]
+#define METEOR_HEAD_SIZE 1.75 // Meteor head size multiplier relative to tail. [1.00 1.25 1.50 1.75 2.00 2.25 2.50 3.00]
+#define METEOR_TRAIL_FADE 1.00 // Meteor tail fade sharpness. Higher values produce a more concentrated, crisp tail. [0.50 0.75 1.00 1.25 1.50 1.75 2.00]
+#define METEOR_COLOR_PROFILE 0 // Meteor color palette. 0: Electric Blue, 1: Cosmic Violet, 2: Emerald Green, 3: Amber Gold, 4: Diamond White, 5: Prismatic. [0 1 2 3 4 5]
+#define METEOR_WAVE_VARIATION 1 // Meteor activity mode. 0: Constant rate, 1: Dynamic shower waves with peaks and lulls. [0 1]
+#define METEOR_SKY_COVERAGE 0 // Meteor sky distribution. 0: Full Sky (Streaks across whole sky including South), 1: Directional Stream (Zenith & South corridor), 2: Radiant Focused (Clustered near radiant area). [0 1 2]
+#define METEOR_RADIANT_SPREAD 0.08 // Radiant origin area size (angular radius in sky). [0.02 0.04 0.06 0.08 0.10 0.12 0.15 0.20]
+#define METEOR_RADIANT_DIRECTION 0 // Radiant origin location. 0: North-East, 1: North-West, 2: South-East, 3: South-West, 4: Zenith (Overhead), 5: Celestial. [0 1 2 3 4 5]
 #define STAR_ROTATION 0 // Star rotation mode. Aligned keeps all square stars axis-aligned. Random rotates each star at an individual random angle. [0 1]
 
 /// -------------------------------- /// Cloud settings /// -------------------------------- ///
