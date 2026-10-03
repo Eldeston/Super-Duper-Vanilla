@@ -210,6 +210,12 @@ screen.ATMOSPHERICS.comment = §6大气系统效果, 包括日月, 云, 雾, 边
     option.SUN_MOON_SIZE = 日月大小
     option.SUN_MOON_SIZE.comment = 调整天空中太阳、月亮和黑洞的大小。
 
+    option.GODRAYS = 丁达尔光线
+    option.GODRAYS.comment = 启用穿透地形、云层与水体的高性能丁达尔光线（云隙光/耶稣光）.
+
+    option.GODRAYS_DENSITY = 丁达尔光线强度
+    option.GODRAYS_DENSITY.comment = 调节丁达尔光线的明亮程度与强度, 设置为零以禁用.
+
     option.VOLUMETRIC_LIGHTING = 体积光
     option.VOLUMETRIC_LIGHTING.comment = 启用体积光.
 

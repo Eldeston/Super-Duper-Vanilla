@@ -210,6 +210,12 @@ screen.ATMOSPHERICS.comment = §6Effets atmosphériques incluant le soleil/lune,
     option.SUN_MOON_SIZE = Taille soleil/lune
     option.SUN_MOON_SIZE.comment = Ajuste la taille du soleil, de la lune et du trou noir dans le ciel.
 
+    option.GODRAYS = Rayons crépusculaires
+    option.GODRAYS.comment = Active les rayons de lumière atmosphériques (godrays) performants à travers le terrain, les nuages et l'eau.
+
+    option.GODRAYS_DENSITY = Densité des rayons
+    option.GODRAYS_DENSITY.comment = Ajuste la brillance et l'intensité des rayons crépusculaires, réglez sur zéro pour désactiver.
+
     option.VOLUMETRIC_LIGHTING = Éclairage volumétrique
     option.VOLUMETRIC_LIGHTING.comment = Active l'éclairage volumétrique.
 

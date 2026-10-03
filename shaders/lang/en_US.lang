@@ -210,6 +210,12 @@ screen.ATMOSPHERICS.comment = §6Atmospheric effects including sun/moon, clouds,
     option.SUN_MOON_SIZE = Sun/moon size
     option.SUN_MOON_SIZE.comment = Adjust the size of the sun, moon, and black hole in the sky.
 
+    option.GODRAYS = Godrays
+    option.GODRAYS.comment = Enables performant atmospheric godrays (crepuscular rays) streaming through terrain, clouds, and water.
+
+    option.GODRAYS_DENSITY = Godrays density
+    option.GODRAYS_DENSITY.comment = Adjusts the brightness and intensity of godrays, set it to zero to disable it.
+
     option.VOLUMETRIC_LIGHTING = Volumetric lighting
     option.VOLUMETRIC_LIGHTING.comment = Enables volumetric lighting.
 

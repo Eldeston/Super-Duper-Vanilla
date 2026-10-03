@@ -127,6 +127,9 @@
     uniform sampler2D colortex3;
 
     uniform sampler2D depthtex0;
+    #ifdef GODRAYS
+        uniform sampler2D depthtex1;
+    #endif
 
     #if ANTI_ALIASING >= 2
         uniform float frameFract;
@@ -141,10 +144,13 @@
         uniform float dayCycleAdjust;
     #endif
 
-    #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS
-        uniform sampler2D colortex0;
+    #if (CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS) || defined GODRAYS
+        #ifndef COLORTEX0_DECLARED
+            #define COLORTEX0_DECLARED
+            uniform sampler2D colortex0;
+        #endif
 
-        #if CLOUD_TYPE == 2
+        #if CLOUD_TYPE == 2 && !defined FORCE_DISABLE_CLOUDS
             uniform float volumetricCloudFar;
 
             #include "/lib/rayTracing/volumetricClouds.glsl"
@@ -214,6 +220,10 @@
     #include "/lib/rayTracing/rayTracer.glsl"
 
     #include "/lib/lighting/complexShadingDeferred.glsl"
+
+    #if defined WORLD_LIGHT && defined GODRAYS
+        #include "/lib/atmospherics/godrays.glsl"
+    #endif
 
     #if !defined FORCE_DISABLE_CLOUDS && CLOUD_TYPE == 2
         vec3 renderTranslucentClouds(in vec3 sceneCol, in vec3 nFeetPlayerPos, in float feetPlayerDist, in float ditherX, in bool isSky){
@@ -372,6 +382,31 @@
         #endif
     #endif
 
+    vec3 shadeTranslucentSurface(
+        in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos, in vec3 nEyePlayerPos,
+        in vec3 matRaw0, in ivec2 screenTexelCoord, in vec3 dither, in float viewDotInvSqrt,
+        in float viewDist, in float fogFactor, in float borderFog, in bool isLOD
+    ){
+        #if defined SSGI
+            const bool needsComplex = true;
+        #else
+            bool needsComplex = matRaw0.y >= 0.005;
+        #endif
+
+        if(needsComplex){
+            vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
+            vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
+            sceneCol = complexShadingDeferred(sceneCol, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, isLOD);
+        }
+
+        vec3 fogSkyCol = applyPaleGardenFogColor(getSkyFogRender(nEyePlayerPos), nEyePlayerPos);
+        #ifdef BORDER_FOG
+            fogFactor = (fogFactor - 1.0) * borderFog + 1.0;
+        #endif
+
+        return ((fogSkyCol - sceneCol) * fogFactor + sceneCol) * getFogEffectFactor(viewDist);
+    }
+
     void main(){
         // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
@@ -379,15 +414,11 @@
         bool isLOD;
         float depth;
         getTranslucentSceneDepth(screenTexelCoord, depth, isLOD);
-        // Get screen pos
         vec3 screenPos = vec3(texCoord, depth);
         
         vec3 viewPos = getTranslucentViewPos(isLOD, screenPos);
-        // Get eye player pos
         vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
-        // Get feet player pos
         vec3 feetPlayerPos = eyePlayerPos + gbufferModelViewInverse[3].xyz;
-        // Get scene color
         sceneColOut = texelFetch(colortex4, screenTexelCoord, 0).rgb;
 
         #if ANTI_ALIASING >= 2
@@ -396,62 +427,28 @@
             vec3 dither = getRng3(screenTexelCoord & 255);
         #endif
 
-        // Get view distance
         float viewDot = lengthSquared(viewPos);
         float viewDotInvSqrt = inversesqrt(viewDot);
         float viewDist = viewDot * viewDotInvSqrt;
-
-        // Get normalized eyePlayerPos
         vec3 nEyePlayerPos = eyePlayerPos * viewDotInvSqrt;
 
-        // Get fog factor
         float fogFactor = getFogFactor(viewDist, nEyePlayerPos.y, feetPlayerPos.y + cameraPosition.y);
 
-        // Border fog
         #ifdef BORDER_FOG
             #ifdef VOXY
-                float effectiveBorderFar = max(float(vxRenderDistance), borderFar);
-                float borderFog = exp2(-exp2(viewDist / effectiveBorderFar * 21.0 - 18.0));
+                float borderFog = exp2(-exp2(viewDist / max(float(vxRenderDistance), borderFar) * 21.0 - 18.0));
             #elif defined DISTANT_HORIZONS
-                float effectiveBorderFar = max(dhRenderDistance, borderFar);
-                float borderFog = exp2(-exp2(viewDist / effectiveBorderFar * 21.0 - 18.0));
+                float borderFog = exp2(-exp2(viewDist / max(dhRenderDistance, borderFar) * 21.0 - 18.0));
             #else
                 float borderFog = getBorderFog(viewDist);
             #endif
         #else
-            float borderFog = 0.0;
+            const float borderFog = 0.0;
         #endif
 
-        // Materials and programs that come after deferred mask
         vec3 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xyz;
-
-        // If the object renders after deferred apply separate lighting
         if(matRaw0.z > 0 && matRaw0.z < 1){
-            #if defined SSGI
-                const bool needsComplex = true;
-            #else
-                bool needsComplex = matRaw0.y >= 0.005;
-            #endif
-
-            if(needsComplex){
-                // Declare and get materials
-                vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
-                vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
-
-                // Apply deferred shading
-                sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, isLOD);
-            }
-
-            // Get basic sky fog color
-            vec3 fogSkyCol = applyPaleGardenFogColor(getSkyFogRender(nEyePlayerPos), nEyePlayerPos);
-
-            // Border fog
-            #ifdef BORDER_FOG
-                fogFactor = (fogFactor - 1.0) * borderFog + 1.0;
-            #endif
-
-            // Apply fog and darkness fog
-            sceneColOut = ((fogSkyCol - sceneColOut) * fogFactor + sceneColOut) * getFogEffectFactor(viewDist);
+            sceneColOut = shadeTranslucentSurface(sceneColOut, screenPos, viewPos, nEyePlayerPos, matRaw0, screenTexelCoord, dither, viewDotInvSqrt, viewDist, fogFactor, borderFog, isLOD);
         }
 
         #if VOXY_DEBUG == 1
@@ -475,6 +472,10 @@
 
         #if !defined FORCE_DISABLE_CLOUDS && CLOUD_TYPE == 2
             sceneColOut = renderTranslucentClouds(sceneColOut, nFeetPlayerPos, feetPlayerDist, dither.x, isSky);
+        #endif
+
+        #if defined WORLD_LIGHT && defined GODRAYS
+            sceneColOut += getGodRays(texCoord, nEyePlayerPos, dither.x, depth);
         #endif
 
         // Procedural Double Rainbow / Rainsquare (rendered at fixed distance, lower/in front of clouds)
