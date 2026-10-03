@@ -159,7 +159,7 @@ vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){
 
     #if defined WORLD_LIGHT && WORLD_SUN_MOON == 1
         #ifndef FORCE_DISABLE_WEATHER
-            float celestialFade = 1.0 - smoothstep(0.70, 0.95, weatherFade);
+            float celestialFade = 1.0 - weatherFade;
         #else
             const float celestialFade = 1.0;
         #endif
@@ -425,10 +425,10 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol)
     #ifdef WORLD_LIGHT
         #if WORLD_SUN_MOON == 1
             #ifndef FORCE_DISABLE_WEATHER
-                if(weatherFade < 0.95 && abs(skyPos.z) > 0.7){
+                if(weatherFade < 1.0 && abs(skyPos.z) > 0.7){
                     #ifdef FORCE_DISABLE_DAY_CYCLE
                         float sunMoonShape = getSunMoonShape(skyPos.xy / abs(skyPos.z)) * sunMoonIntensitySqrd;
-                        float celestialVis = 1.0 - smoothstep(0.70, 0.95, weatherFade);
+                        float celestialVis = 1.0 - weatherFade;
                         currSkyCol += sRGBLightCol * (sunMoonShape * celestialVis);
                     #else
                         if(skyPos.z > 0.0){
