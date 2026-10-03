@@ -50,7 +50,7 @@
             vec2 bloomUv = bloomPos * scale;
 
             // Apply padding
-            if(bloomUv.x < 0 || bloomUv.x > 1 || bloomUv.y < 0 || bloomUv.y > 1) return bloomCol;
+            if(clamp(bloomUv, 0.0, 1.0) != bloomUv) return bloomCol;
 
             // Get pixel size based on bloom tile scale
             float pixSize = scale * pixelWidth;

@@ -53,21 +53,22 @@
         if(cloudHeightFade <= 0) return currSkyCol;
         if(cloudHeightFade > 1) cloudHeightFade = 1.0;
 
-        vec2 planeUv = nEyePlayerPos.xz * (6.0 / nEyePlayerPos.y);
+        float invEyeY = 1.0 / nEyePlayerPos.y;
+        vec2 planeUv = nEyePlayerPos.xz * (6.0 * invEyeY);
         vec2 planePos = vec2(cameraPosition.x + fragmentFrameTime, cameraPosition.z);
         vec2 cloudData = cloudParallaxDynamic(planeUv, planePos);
 
         #ifdef DOUBLE_LAYERED_CLOUDS
             #ifndef FORCE_DISABLE_WEATHER
                 if(weatherFade < 0.65 && weatherFade > 0.001){
-                    vec2 cirrusUv = nEyePlayerPos.xz * ((6.0 + (SECOND_CLOUD_HEIGHT / 195.0) * 6.0) / nEyePlayerPos.y);
+                    vec2 cirrusUv = nEyePlayerPos.xz * ((6.0 + (SECOND_CLOUD_HEIGHT / 195.0) * 6.0) * invEyeY);
                     vec2 cirrusStart = vec2(cirrusUv.x * 0.32 + cirrusUv.y * 0.128, cirrusUv.y * 1.6);
                     vec2 cirrusCam = vec2(planePos.x * 0.32 + planePos.y * 0.128, planePos.y * 1.6);
                     float cirrusFactor = smoothstep(0.0, 0.20, weatherFade) * (1.0 - smoothstep(0.30, 0.65, weatherFade));
                     cloudData = max(cloudParallaxDynamic(cirrusStart, cirrusCam).yx * (0.20 * cirrusFactor), cloudData);
                 }
             #else
-                vec2 cirrusUv = nEyePlayerPos.xz * ((6.0 + (SECOND_CLOUD_HEIGHT / 195.0) * 6.0) / nEyePlayerPos.y);
+                vec2 cirrusUv = nEyePlayerPos.xz * ((6.0 + (SECOND_CLOUD_HEIGHT / 195.0) * 6.0) * invEyeY);
                 vec2 cirrusStart = vec2(cirrusUv.x * 0.32 + cirrusUv.y * 0.128, cirrusUv.y * 1.6);
                 vec2 cirrusCam = vec2(planePos.x * 0.32 + planePos.y * 0.128, planePos.y * 1.6);
                 cloudData = max(cloudParallaxDynamic(cirrusStart, cirrusCam).yx * 0.20, cloudData);
@@ -176,29 +177,41 @@ vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){
     currSkyCol += lightningFlash;
 
     #if WORLD_ID == 1
-        currSkyCol += toLinear(vec3(0.18, 0.10, 0.26)) * (endFlashIntensity * 0.4);
+        float flashAmbWeight = smoothstep(0.18, 0.50, endFlashIntensity);
+        currSkyCol += toLinear(vec3(0.18, 0.10, 0.26)) * (endFlashIntensity * flashAmbWeight * 0.4);
     #endif
     return currSkyCol;
 }
 
+#if defined WORLD_AETHER && defined WORLD_LIGHT
+vec3 getAetherRender(in vec3 nEyePlayerPos, in vec3 skyPos){
+    float horizonFade = exp2(-abs(nEyePlayerPos.y) * 8.0);
+    if(horizonFade <= 0.002) return vec3(0.0);
+
+    // Continuous smooth animation speed (eliminates 8 FPS quantization stutter)
+    float aetherTime = fragmentFrameTime * 0.03125;
+
+    // Smooth continuous floating-point UV coordinates wrapped by hardware
+    vec2 uvBase = skyPos.xy;
+    vec2 uv0 = 1.0 - uvBase - aetherTime;
+    vec2 uv1 = vec2(uv0.x, uvBase.y - aetherTime);
+    vec2 uv2 = vec2(uvBase.x - aetherTime, uv0.y);
+
+    // Hardware-accelerated bilinear filtering eliminates all nearest-neighbor texel jitter
+    vec3 aetherNoise = vec3(
+        textureLod(noisetex, uv0, 0).z,
+        textureLod(noisetex, uv1, 0).z,
+        textureLod(noisetex, uv2, 0).z
+    );
+
+    return horizonFade * cubed(aetherNoise * lightCol + sumOf(aetherNoise) * 0.66666666) * lightCol;
+}
+#endif
+
 // Sky half render
 vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
     #if defined WORLD_AETHER && defined WORLD_LIGHT
-        // Scaled by noise resolution
-        vec2 skyCoordScale = skyPos.xy * 256.0;
-
-        int aetherAnimationSpeed = int(fragmentFrameTime * 8.0);
-
-        // Looks complex, but all it does is move the noise texture in 3 different directions
-        ivec2 aetherTexelCoord0 = ivec2(255 - skyCoordScale - aetherAnimationSpeed) & 255;
-        ivec2 aetherTexelCoord1 = ivec2(aetherTexelCoord0.x, int(skyCoordScale.y - aetherAnimationSpeed) & 255);
-        ivec2 aetherTexelCoord2 = ivec2(int(skyCoordScale.x - aetherAnimationSpeed) & 255, aetherTexelCoord0.y);
-
-        vec3 aetherNoise = vec3(texelFetch(noisetex, aetherTexelCoord0, 0).z,
-            texelFetch(noisetex, aetherTexelCoord1, 0).z,
-            texelFetch(noisetex, aetherTexelCoord2, 0).z);
-
-        currSkyCol += exp2(-abs(nEyePlayerPos.y) * 8.0) * cubed(aetherNoise * lightCol + sumOf(aetherNoise) * 0.66666666) * lightCol;
+        currSkyCol += getAetherRender(nEyePlayerPos, skyPos);
     #endif
 
     #ifdef WORLD_STARS
@@ -290,19 +303,7 @@ vec3 getSkyFogRender(in vec3 nEyePlayerPos){
     vec3 currSkyCol = getSkyBasic(nEyePlayerPos.y, skyPos.z);
     
     #if defined WORLD_AETHER && defined WORLD_LIGHT
-        // Scaled by noise resolution
-        vec2 skyCoordScale = skyPos.xy * 256.0;
-
-        int aetherAnimationSpeed = int(fragmentFrameTime * 8.0);
-
-        // Looks complex, but all it does is move the noise texture in 3 different directions
-        ivec2 aetherTexelCoord0 = ivec2(255 - skyCoordScale - aetherAnimationSpeed) & 255;
-        ivec2 aetherTexelCoord1 = ivec2(aetherTexelCoord0.x, int(skyCoordScale.y - aetherAnimationSpeed) & 255);
-        ivec2 aetherTexelCoord2 = ivec2(int(skyCoordScale.x - aetherAnimationSpeed) & 255, aetherTexelCoord0.y);
-
-        vec3 aetherNoise = vec3(texelFetch(noisetex, aetherTexelCoord0, 0).z, texelFetch(noisetex, aetherTexelCoord1, 0).z, texelFetch(noisetex, aetherTexelCoord2, 0).z);
-
-        currSkyCol += exp2(-abs(nEyePlayerPos.y) * 8.0) * cubed(aetherNoise * lightCol + sumOf(aetherNoise) * 0.66666666) * lightCol;
+        currSkyCol += getAetherRender(nEyePlayerPos, skyPos);
     #endif
 
     // Do a simple void gradient calculation
@@ -317,19 +318,7 @@ vec3 getSkyFogRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
     if(isEyeInWater == 2) return fogColor;
 
     #if defined WORLD_AETHER && defined WORLD_LIGHT
-        // Scaled by noise resolution
-        vec2 skyCoordScale = skyPos.xy * 256.0;
-
-        int aetherAnimationSpeed = int(fragmentFrameTime * 8.0);
-
-        // Looks complex, but all it does is move the noise texture in 3 different directions
-        ivec2 aetherTexelCoord0 = ivec2(255 - skyCoordScale - aetherAnimationSpeed) & 255;
-        ivec2 aetherTexelCoord1 = ivec2(aetherTexelCoord0.x, int(skyCoordScale.y - aetherAnimationSpeed) & 255);
-        ivec2 aetherTexelCoord2 = ivec2(int(skyCoordScale.x - aetherAnimationSpeed) & 255, aetherTexelCoord0.y);
-
-        vec3 aetherNoise = vec3(texelFetch(noisetex, aetherTexelCoord0, 0).z, texelFetch(noisetex, aetherTexelCoord1, 0).z, texelFetch(noisetex, aetherTexelCoord2, 0).z);
-
-        currSkyCol += exp2(-abs(nEyePlayerPos.y) * 8.0) * cubed(aetherNoise * lightCol + sumOf(aetherNoise) * 0.66666666) * lightCol;
+        currSkyCol += getAetherRender(nEyePlayerPos, skyPos);
     #endif
 
     // Do a simple void gradient calculation
@@ -382,6 +371,10 @@ vec3 getSkyReflection(in vec3 reflectViewDir){
         // Fake VL reflection
         const float fakeVLBrightness = VOLUMETRIC_LIGHTING_STRENGTH * 0.5;
         float VLBrightness = fakeVLBrightness * shdFade;
+        #if WORLD_ID == 1
+            float flashReflWeight = smoothstep(0.18, 0.50, endFlashIntensity) * endFlashIntensity;
+            VLBrightness *= flashReflWeight;
+        #endif
 
         if(reflectPlayerDir.y > 0){
             float heightFade = squared(squared(squared(1.0 - squared(reflectPlayerDir.y))));
@@ -422,7 +415,8 @@ vec3 getSkyReflection(in vec3 reflectViewDir){
         float flashGlow = d8 * d8; float d32 = flashGlow * flashGlow; float d64 = d32 * d32;
         float flashCore = d64 * d64;
         float flashAura = flashDot * flashDot;
-        float flashBurst = (flashCore * 6.0 + flashGlow * 1.5 + flashAura * 0.3) * endFlashIntensity;
+        float flashWeight = smoothstep(0.18, 0.50, endFlashIntensity);
+        float flashBurst = (flashCore * 6.0 + flashGlow * 1.5 + flashAura * 0.3) * (endFlashIntensity * flashWeight);
         return toLinear(vec3(0.85, 0.75, 1.0)) * flashBurst;
     }
 #endif
@@ -478,7 +472,7 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol)
         #endif
 
         #if WORLD_ID == 1
-            if(endFlashIntensity > 0.001){
+            if(endFlashIntensity > 0.18){
                 currSkyCol += getEndFlash(nEyePlayerPos);
             }
         #endif

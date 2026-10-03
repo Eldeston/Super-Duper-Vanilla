@@ -134,22 +134,29 @@ vec3 getVolumetricAurora(in vec3 nEyePlayerPos, in float time){
         vec2(20.0, -75.0 - warmDistShift),
         vec2(-60.0, 75.0 - warmDistShift * 0.8)
     );
+    mat2 rotCurtains[5] = mat2[5](
+        rot2D(0.14), rot2D(-0.10), rot2D(0.22), rot2D(-0.18), rot2D(0.06)
+    );
     const float curtainWeights[5] = float[5](1.00, 0.88, 0.82, 0.85, 0.78);
 
     // Towering vertical height spans (165 to 210 blocks tall) for grand presence
     const float curtainBaseOffsets[5] = float[5](15.0, 5.0, 25.0, 0.0, 20.0);
     const float curtainRanges[5]      = float[5](210.0, 185.0, 175.0, 165.0, 195.0);
+    const float numRowsK[5]           = float[5](21.0, 18.0, 17.0, 16.0, 19.0);
+    const float invNumRowsK[5]        = float[5](1.0 / 21.0, 1.0 / 18.0, 1.0 / 17.0, 1.0 / 16.0, 1.0 / 19.0);
 
     // Global altitude bounds for the raymarching volume
     float yGlobalBase = yRef + 5.0;
     float yGlobalTop  = yRef + 230.0;
 
     // Ray distance range inside the aurora altitude layer
-    float tStart = max(0.0, (yGlobalBase - cameraPosition.y) / nEyePlayerPos.y);
-    float tEnd   = (yGlobalTop - cameraPosition.y) / nEyePlayerPos.y;
+    float rcpEyeY = 1.0 / nEyePlayerPos.y;
+    float tStart = max(0.0, (yGlobalBase - cameraPosition.y) * rcpEyeY);
+    float tEnd   = (yGlobalTop - cameraPosition.y) * rcpEyeY;
 
     // Beyond max visibility distance, return nothing
     const float maxDist = 2600.0;
+    const float invMaxDist = 1.0 / maxDist;
     if(tStart >= maxDist) return vec3(0.0);
     tEnd = min(tEnd, maxDist);
 
@@ -158,6 +165,7 @@ vec3 getVolumetricAurora(in vec3 nEyePlayerPos, in float time){
 
     // Billboard block size (meters per square pixel on the vertical curtain)
     const float BLOCK_SIZE = 10.0;
+    const float invBlockSize = 1.0 / BLOCK_SIZE;
 
     float tAnim = time * 0.35;
 
@@ -165,8 +173,8 @@ vec3 getVolumetricAurora(in vec3 nEyePlayerPos, in float time){
     float dither = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
 
     const int STEPS = 36;
-    float dt = tSpan / float(STEPS);
-    float stepNorm = (dt / BLOCK_SIZE) * 0.085;
+    float dt = tSpan * (1.0 / float(STEPS));
+    float stepNorm = (dt * invBlockSize) * 0.085;
     float captureWidth = max(BLOCK_SIZE * 0.90, dt * 0.65);
 
     vec3 totalAurora = vec3(0.0);
@@ -180,7 +188,7 @@ vec3 getVolumetricAurora(in vec3 nEyePlayerPos, in float time){
         float Y = cameraPosition.y + nEyePlayerPos.y * t;
 
         // Smooth distance attenuation
-        float distFade = saturate(1.0 - t / maxDist);
+        float distFade = saturate(1.0 - t * invMaxDist);
         if(distFade <= 0.0) continue;
         distFade *= distFade;
 
@@ -191,21 +199,20 @@ vec3 getVolumetricAurora(in vec3 nEyePlayerPos, in float time){
             float yRel = Y - yBaseK;
             if(yRel < 0.0 || yRel >= yRangeK) continue;
 
-            float numRowsK = floor(yRangeK / BLOCK_SIZE);
-            float row = floor(yRel / BLOCK_SIZE);
-            if(row < 0.0 || row >= numRowsK) continue;
-            float hRow = (row + 0.5) / numRowsK;
+            float row = floor(yRel * invBlockSize);
+            if(row < 0.0 || row >= numRowsK[k]) continue;
+            float hRow = (row + 0.5) * invNumRowsK[k];
 
             // Height envelope: crisp bottom onset, smooth top atmospheric fade
             float heightEnv = smoothstep(0.0, 0.06, hRow) * smoothstep(1.0, 0.70, hRow);
 
             vec2 relPos = playerRelXZ - curtainOffsets[k];
-            vec2 rotPos = rot2D(curtainAngles[k]) * relPos;
+            vec2 rotPos = rotCurtains[k] * relPos;
             float u = rotPos.x;
             float v = rotPos.y;
 
             // Horizontal billboard column index along the curtain
-            float col = floor(u / BLOCK_SIZE);
+            float col = floor(u * invBlockSize);
             float uCenter = (col + 0.5) * BLOCK_SIZE;
 
             // Billboard curtain spine position for this column

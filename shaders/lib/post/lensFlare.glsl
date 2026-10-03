@@ -20,9 +20,10 @@ float lensFlareSimple(in vec2 centerCoord, in vec2 lightDir, in float size, in f
 }
 
 float lensFlareRays(in vec2 centerCoord, in vec2 lightDir, in float rayBeam, in float size, in float dist){
+    float lens = lensFlareSimple(centerCoord, lightDir, size, dist);
+    if(lens <= 0.0) return 0.0;
     vec2 flareCoord = centerCoord + lightDir * dist;
     float rays = max(0.0, sin(atan(flareCoord.x * aspectRatio, flareCoord.y) * rayBeam));
-    float lens = lensFlareSimple(centerCoord, lightDir, size, dist);
     return rays * lens + lens;
 }
 

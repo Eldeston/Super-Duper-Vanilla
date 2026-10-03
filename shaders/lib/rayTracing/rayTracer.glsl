@@ -20,7 +20,7 @@ vec3 rayTraceScene(in vec3 screenPos, in vec3 viewPos, in vec3 rayDir, in float 
 		startPos += screenPosRayDir;
 
 		// If current pos is out of view frustum bounds (x/y/z), exit immediately
-		if(startPos.x < 0.0 || startPos.y < 0.0 || startPos.x > 1.0 || startPos.y > 1.0 || startPos.z > 1.0 || startPos.z < 0.0) return vec3(0.0);
+		if(clamp(startPos, 0.0, 1.0) != startPos) return vec3(0.0);
 
 		// Get current texture depth
 		float currDepth = textureLod(depthtex0, startPos.xy, 0).x;

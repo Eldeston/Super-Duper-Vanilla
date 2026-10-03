@@ -72,13 +72,13 @@ vec2 physics_waveDirection(vec2 position, int iterations){
 */
 
 vec3 physics_waveNormal(in vec2 position, in vec2 direction, in float factor){
-    float oceanHeightFactor = physics_oceanHeight / 13.0;
+    float oceanHeightFactor = physics_oceanHeight * (1.0 / 13.0);
     float totalFactor = oceanHeightFactor * factor;
 
-    vec3 waveNormal = normalize(vec3(direction.x * totalFactor, PHYSICS_NORMAL_STRENGTH, direction.y * totalFactor));
+    vec3 waveNormal = fastNormalize(vec3(direction.x * totalFactor, PHYSICS_NORMAL_STRENGTH, direction.y * totalFactor));
     
     vec2 eyePosition = position + physics_modelOffset.xz;
-    vec2 rippleFetch = (eyePosition + vec2(physics_rippleRange)) / (physics_rippleRange * 2.0);
+    vec2 rippleFetch = (eyePosition + vec2(physics_rippleRange)) * (0.5 / physics_rippleRange);
     vec2 rippleTexelSize = vec2(2.0 / textureSize(physics_ripples, 0).x, 0);
 
     float left = texture(physics_ripples, rippleFetch - rippleTexelSize.xy).r;
@@ -90,9 +90,9 @@ vec3 physics_waveNormal(in vec2 position, in vec2 direction, in float factor){
     float normalx = left - right;
     float normalz = top - bottom;
 
-    vec3 rippleNormal = normalize(vec3(normalx, 1.0, normalz));
+    vec3 rippleNormal = fastNormalize(vec3(normalx, 1.0, normalz));
 
-    return normalize(mix(waveNormal, rippleNormal, sqrt(totalEffect)));
+    return fastNormalize(mix(waveNormal, rippleNormal, sqrt(totalEffect)));
 }
 
 struct WavePixelData{
@@ -117,6 +117,8 @@ WavePixelData physics_wavePixel(in vec2 position, in float factor){
     float modifiedTime = physics_gameTime * PHYSICS_TIME_MULTIPLICATOR;
 
     vec2 dx = vec2(0);
+    float powWeightStep = pow(PHYSICS_WEIGHT, PHYSICS_W_DETAIL);
+    float powWeight = 1.0;
     
     for(int i = 0; i < physics_iterationsNormal; i++){
         vec2 direction = vec2(sin(iter), cos(iter));
@@ -126,12 +128,13 @@ WavePixelData physics_wavePixel(in vec2 position, in float factor){
     
         vec2 force = result * weight * direction;
         
-        dx += force / pow(weight, PHYSICS_W_DETAIL); 
+        dx += force / powWeight; 
         wavePos -= force * PHYSICS_DRAG_MULT;
         height += wave * weight;
         iter += PHYSICS_ITER_INC;
         waveSum += weight;
         weight *= PHYSICS_WEIGHT;
+        powWeight *= powWeightStep;
         frequency *= PHYSICS_FREQUENCY_MULT;
         speed *= PHYSICS_SPEED_MULT;
     }

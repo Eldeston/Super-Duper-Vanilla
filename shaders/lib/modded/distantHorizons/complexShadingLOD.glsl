@@ -25,7 +25,8 @@ vec3 complexShadingLOD(in dataPBR material){
 	totalIllumination *= skyLightSquared;
 
 	#if WORLD_ID == 1
-		totalIllumination += toLinear(vec3(0.20, 0.12, 0.28)) * (endFlashIntensity * skyLightSquared);
+		float smoothFlash = smoothstep(0.18, 0.50, endFlashIntensity) * endFlashIntensity;
+		totalIllumination += toLinear(vec3(0.20, 0.12, 0.28)) * (smoothFlash * skyLightSquared);
 		#ifdef END_BH_LIGHT
 			if(END_BH_LIGHT > 0.0){
 				const vec3 blackHoleDir = vec3(0.0, 0.6691306, -0.7431448);
@@ -44,7 +45,8 @@ vec3 complexShadingLOD(in dataPBR material){
 
 	#ifdef WORLD_LIGHT
 		#if WORLD_ID == 1
-			vec3 sRGBLightCol = (LIGHT_COLOR_DATA_BLOCK0 * 1.5 + vec3(0.3, 0.1, 0.4)) * endFlashIntensity;
+			float smoothFlashShd = smoothstep(0.18, 0.50, endFlashIntensity) * endFlashIntensity;
+			vec3 sRGBLightCol = (LIGHT_COLOR_DATA_BLOCK0 * 1.5 + vec3(0.3, 0.1, 0.4)) * smoothFlashShd;
 		#else
 			// Get sRGB light color
 			vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
@@ -106,7 +108,7 @@ vec3 complexShadingLOD(in dataPBR material){
 	vec3 totalLighting = material.albedo.rgb * totalIllumination;
 
 	#if defined WORLD_LIGHT && defined SPECULAR_HIGHLIGHTS
-		if(isShadow){
+		if(isShadow && material.smoothness > 0.001 && NLZ > 0.0){
 			// Get specular GGX
 			vec3 specCol = getSpecularBRDF(viewDir, material.normal, material.albedo.rgb, NLZ, NV, material.metallic, material.smoothness);
 			totalLighting += min(specCol * shdCol * sRGBLightCol, vec3(5.0));

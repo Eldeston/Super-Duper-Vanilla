@@ -37,8 +37,9 @@ vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPl
     float invCloudFarSqrd = 1.0 / squared(volumetricCloudFar);
 
     // Sets the bounding box vertically
-    float lowerBoundDist = (-depth - cameraPos.y) / nFeetPlayerPos.y;
-    float higherBoundDist = -cameraPos.y / nFeetPlayerPos.y;
+    float rcpDirY = 1.0 / nFeetPlayerPos.y;
+    float lowerBoundDist = (-depth - cameraPos.y) * rcpDirY;
+    float higherBoundDist = -cameraPos.y * rcpDirY;
 
     // Finds the nearest and furthest plane
     float nearestPlane = max(min(lowerBoundDist, higherBoundDist), 0.0);
@@ -61,10 +62,12 @@ vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPl
     float volumetricCloudStepsInverse = 1.0 / float(dynamicVolumetricCloudSteps);
 
     // Multiply by volumetricCloudStepsInverse to get the step size and scale with distance
-    vec3 endPos = nFeetPlayerPos * (distInsideCloud * volumetricCloudStepsInverse);
+    float stepDist = distInsideCloud * volumetricCloudStepsInverse;
+    vec3 endPos = nFeetPlayerPos * stepDist;
 
     // Camera position as its start position
     vec3 startPos = cameraPos + nFeetPlayerPos * nearestPlane + endPos * dither;
+    float rayDist = nearestPlane + stepDist * dither;
 
     // To store the cloud data for 2 cloud layers
     vec2 clouds = vec2(0);
@@ -90,8 +93,8 @@ vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPl
 
     // LESSS GOOOOO RAT RACING!!!11!!11!!11!!
     for(uint i = 0u; i < dynamicVolumetricCloudSteps; i++){
-        // Get cloud fog
-        float cloudFog = 1.0 - lengthSquared(startPos - cameraPos) * invCloudFarSqrd;
+        // Get cloud fog using scalar ray distance
+        float cloudFog = 1.0 - (rayDist * rayDist) * invCloudFarSqrd;
 
         // Get cloud texture (lean, stretched wisps for high altitude cirrus)
         vec2 uv = isCirrus ? vec2(startPos.x * 0.02 + startPos.z * 0.008, startPos.z * 0.10) : startPos.xz * 0.0625;
@@ -128,6 +131,7 @@ vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPl
         #endif
 
         // Continue tracing
+        rayDist += stepDist;
         startPos += endPos;
     }
 

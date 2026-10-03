@@ -4,7 +4,8 @@
 		uniform float endFlashIntensity;
 	#endif
 	void addEndDiffuseLighting(in vec3 normal, in float ambient, in float lmCoordY, in float skyLightSq, in float ss, inout vec3 illumination){
-		illumination += toLinear(vec3(0.20, 0.12, 0.28)) * (endFlashIntensity * skyLightSq);
+		float smoothFlash = smoothstep(0.18, 0.50, endFlashIntensity) * endFlashIntensity;
+		illumination += toLinear(vec3(0.20, 0.12, 0.28)) * (smoothFlash * skyLightSq);
 		#ifdef END_BH_LIGHT
 			if(END_BH_LIGHT <= 0.0) return;
 			const vec3 blackHoleDir = vec3(0.0, 0.6691306, -0.7431448);
@@ -22,12 +23,14 @@
 
 	#ifdef END_BH_LIGHT
 		void addEndBHSpecular(in vec3 normal, in vec3 viewDir, in float smoothness, in float metallic, in float ambient, in float lmCoordY, inout vec3 lighting){
-			if(END_BH_LIGHT <= 0.0) return;
+			if(END_BH_LIGHT <= 0.0 || smoothness <= 0.005) return;
 			const vec3 blackHoleDir = vec3(0.0, 0.6691306, -0.7431448);
 			float NL_BH = dot(normal, blackHoleDir);
 			if(NL_BH > 0.0){
 				vec3 bhH = fastNormalize(blackHoleDir + viewDir);
-				float bhSpec = pow(max(0.0, dot(normal, bhH)), mix(4.0, 64.0, smoothness)) * smoothness * (metallic * 0.5 + 0.5);
+				float NoH = dot(normal, bhH);
+				if(NoH <= 0.0) return;
+				float bhSpec = pow(NoH, mix(4.0, 64.0, smoothness)) * smoothness * (metallic * 0.5 + 0.5);
 				float skyOcclusion = saturate(lmCoordY / max(WORLD1_CUSTOM_SKYLIGHT, 0.1));
 				lighting += toLinear(LIGHT_COLOR_DATA_BLOCK0) * (bhSpec * skyOcclusion * ambient * (END_BH_LIGHT * 1.5));
 			}
@@ -76,7 +79,8 @@ vec3 complexShadingForward(in dataPBR material){
 
 	#ifdef WORLD_LIGHT
 		#if WORLD_ID == 1
-			vec3 sRGBLightCol = (LIGHT_COLOR_DATA_BLOCK0 * 1.5 + vec3(0.3, 0.1, 0.4)) * endFlashIntensity;
+			float smoothFlashShd = smoothstep(0.18, 0.50, endFlashIntensity) * endFlashIntensity;
+			vec3 sRGBLightCol = (LIGHT_COLOR_DATA_BLOCK0 * 1.5 + vec3(0.3, 0.1, 0.4)) * smoothFlashShd;
 		#else
 			// Get sRGB light color
 			vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
@@ -194,7 +198,7 @@ vec3 complexShadingForward(in dataPBR material){
 	vec3 totalLighting = material.albedo.rgb * totalIllumination;
 
 	#if defined WORLD_LIGHT && defined SPECULAR_HIGHLIGHTS
-		if(isShadow){
+		if(isShadow && material.smoothness > 0.001 && NLZ > 0.0){
 			// Get specular GGX
 			vec3 specCol = getSpecularBRDF(viewDir, material.normal, material.albedo.rgb, NLZ, NV, material.metallic, material.smoothness);
 			totalLighting += specCol * shdCol * sRGBLightCol;

@@ -651,6 +651,9 @@ screen.CONFIGURATION.comment = §6Dimension and environment configuration for ov
         option.END_BOSS_FOG = Dragon Boss Fog
         option.END_BOSS_FOG.comment = Intensity of the atmospheric boss fog during the Ender Dragon fight.
 
+        option.END_SKY_TEXTURE_BRIGHTNESS = End Sky Texture
+        option.END_SKY_TEXTURE_BRIGHTNESS.comment = Brightness of the background End sky texture. Lower values produce a darker cosmic backdrop.
+
     screen.BLOCK_LIGHT_COLOR = Block light settings
     screen.BLOCK_LIGHT_COLOR.comment = §eBlock light color and intensity configuration.
         option.BLOCKLIGHT_R = Block light red

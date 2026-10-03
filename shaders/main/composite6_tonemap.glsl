@@ -54,14 +54,10 @@
         #if defined LENS_FLARE && defined WORLD_LIGHT
             #if WORLD_ID == 1
                 const vec3 blackHoleDir = vec3(0.0, 0.6691306, -0.7431448);
-                if (endFlashIntensity > 0.001) {
-                    if(endFlashPosition.z < -0.01){
-                        sRGBLightCol = vec3(1.2, 1.0, 1.5) * endFlashIntensity;
-                        shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, normalize(endFlashPosition)), gbufferProjection[1].y * 0.72794047);
-                    } else {
-                        sRGBLightCol = vec3(0.0);
-                        shdLightDirScreenSpace = vec3(-10.0, -10.0, 0.0);
-                    }
+                float flashFlareWeight = smoothstep(0.18, 0.50, endFlashIntensity);
+                if (flashFlareWeight > 0.0 && endFlashPosition.z < -0.01) {
+                    sRGBLightCol = vec3(1.2, 1.0, 1.5) * (endFlashIntensity * flashFlareWeight);
+                    shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, normalize(endFlashPosition)), gbufferProjection[1].y * 0.72794047);
                 } else {
                     #ifdef END_BH_LIGHT
                         if(END_BH_LIGHT > 0.0){
@@ -180,7 +176,7 @@
 
     #if defined LENS_FLARE && defined WORLD_LIGHT && !defined FORCE_DISABLE_CLOUDS && CLOUD_TYPE != 0
         float getCloudFlareOcclusion(in vec2 lightScreenPos){
-            bool onScreen = lightScreenPos.x >= 0.0 && lightScreenPos.x <= 1.0 && lightScreenPos.y >= 0.0 && lightScreenPos.y <= 1.0;
+            bool onScreen = clamp(lightScreenPos, 0.0, 1.0) == lightScreenPos;
             if(!onScreen) return 1.0;
 
             vec2 sunOffset = vec2(0.012 / aspectRatio, 0.012);
@@ -206,19 +202,21 @@
         postColOut = texelFetch(colortex4, screenTexelCoord, 0).rgb;
 
         #ifdef BLOOM
-            // Uncompress the HDR colors and upscale
-            vec3 bloomCol = getBloomTile(vec2(0), 0.25);
-            bloomCol += getBloomTile(vec2(0, 0.2578125), 0.125);
-            bloomCol += getBloomTile(vec2(0.12890625, 0.2578125), 0.0625);
-            bloomCol += getBloomTile(vec2(0.1953125, 0.2578125), 0.03125);
-            bloomCol += getBloomTile(vec2(0.12890625, 0.328125), 0.015625);
+            if(BLOOM_STRENGTH > 0.0){
+                // Uncompress the HDR colors and upscale
+                vec3 bloomCol = getBloomTile(vec2(0), 0.25);
+                bloomCol += getBloomTile(vec2(0, 0.2578125), 0.125);
+                bloomCol += getBloomTile(vec2(0.12890625, 0.2578125), 0.0625);
+                bloomCol += getBloomTile(vec2(0.1953125, 0.2578125), 0.03125);
+                bloomCol += getBloomTile(vec2(0.12890625, 0.328125), 0.015625);
 
-            // Average the total samples (1 / 5 bloom tiles multiplied by 1 / 4 samples used for the box blur)
-            bloomCol *= 0.05;
+                // Average the total samples (1 / 5 bloom tiles multiplied by 1 / 4 samples used for the box blur)
+                bloomCol *= 0.05;
 
-            float bloomLuma = sumOf(bloomCol);
-            // Apply bloom by tonemapped luma and BLOOM_STRENGTH
-            postColOut += (bloomCol - postColOut) * ((BLOOM_STRENGTH * bloomLuma) / (3.0 + bloomLuma));
+                float bloomLuma = sumOf(bloomCol);
+                // Apply bloom by tonemapped luma and BLOOM_STRENGTH
+                postColOut += (bloomCol - postColOut) * ((BLOOM_STRENGTH * bloomLuma) / (3.0 + bloomLuma));
+            }
         #endif
 
         #if defined LENS_FLARE && defined WORLD_LIGHT

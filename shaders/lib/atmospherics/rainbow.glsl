@@ -103,14 +103,16 @@ vec3 evaluateRainbowBows(in float dist){
     // Primary Rainbow (soft, natural, Red outside, Violet inside)
     if(dist >= r1Min && dist <= r1Max){
         float t1 = (dist - r1Min) * (1.0 / (r1Max - r1Min));
-        float env1 = pow(sin(t1 * PI), 0.85);
+        float s1 = sin(t1 * PI);
+        float env1 = s1 * (1.15 - 0.15 * s1);
         vec3 primarySpectral = getNaturalRainbowSpectrum(1.0 - t1);
         return primarySpectral * (env1 * 0.30);
     }
     // Secondary Rainbow (fainter, around/outside primary, reversed order: Red inside, Violet outside)
     if(dist >= r2Min && dist <= r2Max){
         float t2 = (dist - r2Min) * (1.0 / (r2Max - r2Min));
-        float env2 = pow(sin(t2 * PI), 0.85);
+        float s2 = sin(t2 * PI);
+        float env2 = s2 * (1.15 - 0.15 * s2);
         vec3 secondarySpectral = getNaturalRainbowSpectrum(t2);
         return secondarySpectral * (env2 * 0.08);
     }

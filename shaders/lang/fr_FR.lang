@@ -651,6 +651,9 @@ screen.CONFIGURATION.comment = §6Configuration des dimensions et environnements
         option.END_BOSS_FOG = Brouillard de boss
         option.END_BOSS_FOG.comment = Intensité du brouillard d'ambiance lors du combat contre l'Ender Dragon.
 
+        option.END_SKY_TEXTURE_BRIGHTNESS = Texture du ciel de l'End
+        option.END_SKY_TEXTURE_BRIGHTNESS.comment = Luminosité de la texture de fond du ciel de l'End. Des valeurs plus basses créent un arrière-plan cosmique plus sombre.
+
     screen.BLOCK_LIGHT_COLOR = Paramètres de lumière des blocs
     screen.BLOCK_LIGHT_COLOR.comment = §eConfiguration de la couleur et de l'intensité de la lumière des blocs.
         option.BLOCKLIGHT_R = Rouge lumière des blocs

@@ -2,7 +2,22 @@
 
 const float volumetricStepsInverse = 1.0 / VOLUMETRIC_LIGHT_STEPS;
 
+#if WORLD_ID == 1
+	#ifndef END_FLASH_UNIFORM_DECLARED
+		#define END_FLASH_UNIFORM_DECLARED
+		uniform float endFlashIntensity;
+		uniform vec3 endFlashPosition;
+	#endif
+#endif
+
 vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in float fogFactor, in float borderFog, in float dither, in bool isSky){
+	#if WORLD_ID == 1
+		float flashVLWeight = smoothstep(0.18, 0.50, endFlashIntensity) * endFlashIntensity;
+		if(flashVLWeight <= 0.0) return vec3(0.0);
+	#else
+		const float flashVLWeight = 1.0;
+	#endif
+
 	float totalFogDensity = FOG_TOTAL_DENSITY;
 
 	#ifdef FORCE_DISABLE_WEATHER
@@ -36,6 +51,9 @@ vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in floa
 	#endif
 
 	#if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING
+		float vlFade = squared(heightFade) * volumetricFogDensity;
+		if(vlFade <= 0.00005) return vec3(0.0);
+
 		// Normalize then unormalize with feetPlayerDist and clamping it at minimum distance between far and current shadowDistance
 		vec3 endPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * nFeetPlayerPos);
 		endPos *= min(min(borderFar, shadowDistance), feetPlayerDist) * volumetricStepsInverse;
@@ -57,7 +75,7 @@ vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in floa
 			volumeData *= 1.0 - weatherFade * (1.0 - WEATHER_DIRECT_LIGHT);
 		#endif
 		
-		return volumeData * lightCol * (min(1.0, VOLUMETRIC_LIGHTING_STRENGTH + VOLUMETRIC_LIGHTING_STRENGTH * isEyeInWater) * squared(heightFade) * volumetricFogDensity * volumetricStepsInverse);
+		return volumeData * lightCol * (min(1.0, VOLUMETRIC_LIGHTING_STRENGTH + VOLUMETRIC_LIGHTING_STRENGTH * isEyeInWater) * vlFade * volumetricStepsInverse * flashVLWeight);
 	#else
 		#ifndef FORCE_DISABLE_WEATHER
 			float weatherVLFactor = 1.0 - weatherFade * (1.0 - WEATHER_DIRECT_LIGHT);
@@ -65,11 +83,11 @@ vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in floa
 			const float weatherVLFactor = 1.0;
 		#endif
 
-		if(isEyeInWater == 1) return lightCol * toLinear(fogColor) * (min(1.0, VOLUMETRIC_LIGHTING_STRENGTH * 2.0) * volumetricFogDensity) * weatherVLFactor;
+		if(isEyeInWater == 1) return lightCol * toLinear(fogColor) * (min(1.0, VOLUMETRIC_LIGHTING_STRENGTH * 2.0) * volumetricFogDensity) * (weatherVLFactor * flashVLWeight);
 		#ifdef WORLD_CUSTOM_SKYLIGHT
-			else return lightCol * (volumetricFogDensity * VOLUMETRIC_LIGHTING_STRENGTH) * weatherVLFactor;
+			else return lightCol * (volumetricFogDensity * VOLUMETRIC_LIGHTING_STRENGTH) * (weatherVLFactor * flashVLWeight);
 		#else
-			else return lightCol * (squared(eyeBrightFact) * volumetricFogDensity * VOLUMETRIC_LIGHTING_STRENGTH) * weatherVLFactor;
+			else return lightCol * (squared(eyeBrightFact) * volumetricFogDensity * VOLUMETRIC_LIGHTING_STRENGTH) * (weatherVLFactor * flashVLWeight);
 		#endif
 	#endif
 }

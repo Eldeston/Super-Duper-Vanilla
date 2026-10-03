@@ -33,6 +33,8 @@ allowing more compatibility for future worlds/dimensions and modded worlds/dimen
 
 #define END_BOSS_FOG 1.50 // Ender Dragon atmospheric boss fog intensity [0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 2.25 2.50 2.75 3.00]
 
+#define END_SKY_TEXTURE_BRIGHTNESS 0.25 // Background sky texture brightness [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00]
+
 // Enable stars in your world
 #define WORLD_STARS 16.0
 // #define WORLD_METEORS 2.0

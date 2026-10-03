@@ -101,28 +101,28 @@ vec3 getProceduralSquareStars(in vec3 v, in float time){
         
         if(isConstellation){
             // Bright constellation beacons (Sirius, Vega, Rigel, Betelgeuse class)
-            float rank = (h.z - 0.93) / 0.07;
+            float rank = (h.z - 0.93) * (1.0 / 0.07);
             size = 0.25 + rank * 0.06;
-            magnitude = (3.2 + pow(rank, 1.4) * 4.5) * mix(1.0, 0.80, moonIllum);
+            magnitude = (3.2 + (rank * sqrt(rank)) * 4.5) * mix(1.0, 0.80, moonIllum);
             
             // Astronomical stellar spectral colors for prominent constellation stars:
             // 0.00-0.35: Blue-white (O/B/A), 0.35-0.70: Pure white / pale gold (F/G), 0.70-1.00: Warm amber/orange (K/M)
             if(h.y < 0.35){
-                col = mix(vec3(0.78, 0.88, 1.0), vec3(0.90, 0.95, 1.0), h.y / 0.35);
+                col = mix(vec3(0.78, 0.88, 1.0), vec3(0.90, 0.95, 1.0), h.y * (1.0 / 0.35));
             } else if(h.y < 0.70){
-                col = mix(vec3(0.96, 0.98, 1.0), vec3(1.0, 0.93, 0.74), (h.y - 0.35) / 0.35);
+                col = mix(vec3(0.96, 0.98, 1.0), vec3(1.0, 0.93, 0.74), (h.y - 0.35) * (1.0 / 0.35));
             } else {
-                col = mix(vec3(1.0, 0.88, 0.65), vec3(1.0, 0.65, 0.42), (h.y - 0.70) / 0.30);
+                col = mix(vec3(1.0, 0.88, 0.65), vec3(1.0, 0.65, 0.42), (h.y - 0.70) * (1.0 / 0.30));
             }
         } else if(h.z > 0.70){
             // Medium prominent stars
-            float rank = (h.z - 0.70) / 0.23;
+            float rank = (h.z - 0.70) * (1.0 / 0.23);
             size = 0.15;
-            magnitude = (1.0 + pow(rank, 1.8) * 1.4) * mix(1.0, 0.45, moonIllum);
+            magnitude = (1.0 + (rank * rank) * 1.4) * mix(1.0, 0.45, moonIllum);
             col = mix(vec3(0.85, 0.92, 1.0), vec3(1.0, 0.92, 0.80), h.y);
         } else {
             // Faint background stars (heavily washed out under full moon)
-            float rank = h.z / 0.70;
+            float rank = h.z * (1.0 / 0.70);
             size = 0.085;
             magnitude = (0.35 + (rank * rank) * 0.65) * mix(1.0, 0.18, moonIllum);
             col = mix(vec3(0.82, 0.90, 1.0), vec3(0.98, 0.94, 0.85), h.y);

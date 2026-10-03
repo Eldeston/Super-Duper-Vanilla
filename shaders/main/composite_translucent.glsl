@@ -80,38 +80,32 @@
         #endif
     #endif
 
+    #if WORLD_ID == 1
+        #ifndef END_FLASH_UNIFORM_DECLARED
+            #define END_FLASH_UNIFORM_DECLARED
+            uniform float endFlashIntensity;
+            uniform vec3 endFlashPosition;
+        #endif
+    #endif
+
     noperspective in vec2 texCoord;
 
     uniform int isEyeInWater;
-
     uniform float borderFar;
-
     uniform float nightVision;
     uniform float effectFactor;
     uniform float lightningFlash;
     uniform float darknessLightFactor;
-
     uniform float fragmentFrameTime;
-
     uniform vec3 fogColor;
     uniform float fogStart;
     uniform float fogEnd;
-
     uniform vec3 cameraPosition;
-
-    uniform mat4 gbufferProjection;
-    uniform mat4 gbufferProjectionInverse;
-
-    uniform mat4 gbufferModelView;
-    uniform mat4 gbufferModelViewInverse;
-
+    uniform mat4 gbufferProjection, gbufferProjectionInverse;
+    uniform mat4 gbufferModelView, gbufferModelViewInverse;
     uniform mat4 shadowModelView;
-    // Main HDR buffer
-    uniform sampler2D colortex4;
-    uniform sampler2D colortex1;
-    // For SSAO and material masks
-    uniform sampler2D colortex2;
-    uniform sampler2D colortex3;
+    // Main HDR buffer, normals, SSAO and material masks
+    uniform sampler2D colortex4, colortex1, colortex2, colortex3;
 
     uniform sampler2D depthtex0;
     #if defined GODRAYS && GODRAYS_WATER_TRANSMISSION == 1
@@ -145,27 +139,19 @@
     #endif
 
     #ifdef DISTANT_HORIZONS
-        uniform float near;
-        uniform float dhNearPlane;
-
-        uniform mat4 dhProjection;
-        uniform mat4 dhProjectionInverse;
-
+        uniform float near, dhNearPlane;
+        uniform mat4 dhProjection, dhProjectionInverse;
         uniform sampler2D dhDepthTex0;
     #elif defined VOXY
-        uniform mat4 vxProj;
-        uniform mat4 vxProjInv;
+        uniform mat4 vxProj, vxProjInv;
         uniform int vxRenderDistance;
-
-        uniform sampler2D vxDepthTexOpaque;
-        uniform sampler2D vxDepthTexTrans;
+        uniform sampler2D vxDepthTexOpaque, vxDepthTexTrans;
     #endif
 
     #ifdef WORLD_CUSTOM_SKYLIGHT
         const float eyeBrightFact = WORLD_CUSTOM_SKYLIGHT;
     #else
         uniform float eyeSkylight;
-        
         float eyeBrightFact = eyeSkylight;
     #endif
 
@@ -406,8 +392,47 @@
         return ((fogSkyCol - sceneCol) * fogFactor + sceneCol) * getFogEffectFactor(viewDist);
     }
 
+    vec3 applyAtmospherics(
+        in vec3 sceneCol, in vec3 nEyePlayerPos, in vec3 feetPlayerPos, in vec3 dither,
+        in float viewDist, in float fogFactor, in float borderFog, in float depth, in vec3 matRaw0
+    ){
+        #if defined WORLD_LIGHT || !defined FORCE_DISABLE_CLOUDS && CLOUD_TYPE == 2
+            bool isSky = depth == 1.0;
+            float feetPlayerDist = length(feetPlayerPos);
+            vec3 nFeetPlayerPos = feetPlayerPos / max(0.0001, feetPlayerDist);
+        #endif
+
+        #ifdef WORLD_LIGHT
+            #if WORLD_ID == 1
+                if(endFlashIntensity > 0.18)
+            #endif
+            if(VOLUMETRIC_LIGHTING_STRENGTH != 0 && isEyeInWater != 2)
+                sceneCol += getVolumetricLight(nFeetPlayerPos, feetPlayerDist, fogFactor, borderFog, dither.x, isSky);
+        #endif
+
+        #if !defined FORCE_DISABLE_CLOUDS && CLOUD_TYPE == 2
+            sceneCol = renderTranslucentClouds(sceneCol, nFeetPlayerPos, feetPlayerDist, dither.x, isSky);
+        #endif
+
+        #if defined WORLD_LIGHT && defined GODRAYS
+            #if WORLD_ID == 1
+                if(endFlashIntensity > 0.18)
+            #endif
+            sceneCol += getGodRays(texCoord, nEyePlayerPos, dither.x, depth);
+        #endif
+
+        #ifdef RAINBOW
+            #if WORLD_ID == 0 && defined WORLD_LIGHT
+                #ifndef FORCE_DISABLE_WEATHER
+                    sceneCol += getTranslucentRainbow(nEyePlayerPos, viewDist, isSky, feetPlayerPos, matRaw0.z > 0.0 && matRaw0.z < 1.0);
+                #endif
+            #endif
+        #endif
+
+        return sceneCol;
+    }
+
     void main(){
-        // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
 
         bool isLOD;
@@ -457,34 +482,7 @@
         // Apply darkness pulsing effect
         sceneColOut *= 1.0 - darknessLightFactor;
 
-        #if defined WORLD_LIGHT || !defined FORCE_DISABLE_CLOUDS && CLOUD_TYPE == 2
-            bool isSky = depth == 1.0;
-            float feetPlayerDist = length(feetPlayerPos);
-            vec3 nFeetPlayerPos = feetPlayerPos / max(0.0001, feetPlayerDist);
-        #endif
-
-        #ifdef WORLD_LIGHT
-            // Apply volumetric light
-            if(VOLUMETRIC_LIGHTING_STRENGTH != 0 && isEyeInWater != 2)
-                sceneColOut += getVolumetricLight(nFeetPlayerPos, feetPlayerDist, fogFactor, borderFog, dither.x, isSky);
-        #endif
-
-        #if !defined FORCE_DISABLE_CLOUDS && CLOUD_TYPE == 2
-            sceneColOut = renderTranslucentClouds(sceneColOut, nFeetPlayerPos, feetPlayerDist, dither.x, isSky);
-        #endif
-
-        #if defined WORLD_LIGHT && defined GODRAYS
-            sceneColOut += getGodRays(texCoord, nEyePlayerPos, dither.x, depth);
-        #endif
-
-        // Procedural Double Rainbow / Rainsquare (rendered at fixed distance, lower/in front of clouds)
-        #ifdef RAINBOW
-            #if WORLD_ID == 0 && defined WORLD_LIGHT
-                #ifndef FORCE_DISABLE_WEATHER
-                    sceneColOut += getTranslucentRainbow(nEyePlayerPos, viewDist, isSky, feetPlayerPos, matRaw0.z > 0.0 && matRaw0.z < 1.0);
-                #endif
-            #endif
-        #endif
+        sceneColOut = applyAtmospherics(sceneColOut, nEyePlayerPos, feetPlayerPos, dither, viewDist, fogFactor, borderFog, depth, matRaw0);
 
         // Clamp scene color to prevent NaNs during post processing
         sceneColOut = max(sceneColOut, vec3(0));

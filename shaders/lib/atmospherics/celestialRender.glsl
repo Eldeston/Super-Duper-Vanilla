@@ -197,6 +197,19 @@ float getSunMoonShape(in vec2 skyPos){
         return mix(vec3(1.0), mix(vec3(texLum), sunTexCol, 0.20), texBorderFade);
     }
 
+    float getSquareAngle(in vec2 p){
+        float ax = abs(p.x), ay = abs(p.y);
+        float M = max(ax, ay);
+        if(M < 0.00001) return 0.0;
+        float s;
+        if(ay >= ax){
+            s = p.y > 0.0 ? (0.25 - p.x / (8.0 * M)) : (0.75 + p.x / (8.0 * M));
+        } else {
+            s = p.x > 0.0 ? (p.y / (8.0 * M)) : (0.50 - p.y / (8.0 * M));
+        }
+        return fract(s);
+    }
+
     vec3 getBlackHoleRender(
         inout vec3 skyPos,
         in vec3 lightCol,
@@ -208,72 +221,124 @@ float getSunMoonShape(in vec2 skyPos){
         if(skyPos.z <= 0.0) return vec3(0.0);
 
         const float bhHalfSize = WORLD_SUN_MOON_SIZE;
+        const float z0 = inversesqrt(bhHalfSize * bhHalfSize + 1.0);
+        const float blackHoleSize = z0 * 1024.0;
+
         vec2 projPos = skyPos.xy / skyPos.z;
         float dist = getSunMoonDist(projPos, bhHalfSize);
         // Square box profile matching Minecraft celestials (respects SUN_MOON_ROUNDNESS)
         float boxDist = mix(max(abs(projPos.x), abs(projPos.y)), dist, SUN_MOON_ROUNDNESS);
-        float edgeDist = max(0.0, boxDist - bhHalfSize);
+        float shapeZ = inversesqrt(boxDist * boxDist + 1.0);
+        float blackHole = blackHoleSize - shapeZ * 1024.0;
 
-        // Anti-aliased square event horizon core mask
-        float fw = max(fwidth(boxDist), 0.001);
-        float coreMask = saturate((bhHalfSize - boxDist) / fw);
-        if(coreMask >= 0.999){
+        // Inside event horizon core: return immediately
+        if(blackHole <= 0.0){
             isHoleCore = true;
             return vec3(0.0);
         }
 
-        // Extended gravitational warping reach (near-field vortex + far-field well)
-        // Uses smooth radial distance for gravitational lensing to avoid non-differentiable diagonal kinks and tearing in lensed stars
-        float radialDist = length(projPos);
-        float warpEdgeDist = max(0.0, radialDist - bhHalfSize);
-        float normD = warpEdgeDist / bhHalfSize;
-        float warpNear = 1.0 / (1.0 + 2.0 * normD + 2.5 * normD * normD);
-        float warpFar = exp2(-normD * 0.55) * saturate(1.0 - normD * 0.08);
-        float warpImpact = 0.58 * warpNear + 0.42 * warpFar;
+        // Anti-aliased core boundary
+        float fw = max(fwidth(boxDist), 0.001);
+        float coreCut = saturate((boxDist - bhHalfSize) / fw);
+        if(coreCut <= 0.0){
+            isHoleCore = true;
+            return vec3(0.0);
+        }
 
-        // Apply rotational swirl and lensing deflection across surrounding sky
-        float rotAngle = warpImpact * (TAU * 4.0);
-        float lensDeflect = warpImpact * 0.35;
-        vec2 warpedProj = rot2D(rotAngle) * projPos * (1.0 + lensDeflect);
-        skyPos.xy = warpedProj * skyPos.z;
+        float edgeDist = max(0.0, boxDist - bhHalfSize);
+        float normDist = edgeDist / bhHalfSize;
 
-        // Relativistic Doppler effect & beaming (tilted orbital plane)
+        // Angle coordinate conforming strictly to square geometry when SUN_MOON_ROUNDNESS == 0.0
+        float sqAngle = getSquareAngle(projPos);
+        float circAngle = fract(atan(projPos.y, projPos.x) / TAU);
+        float geomAngle = mix(sqAngle, circAngle, SUN_MOON_ROUNDNESS);
+
+        // Inward differential rotation (Keplerian-like swirl that winds tightly into the event horizon)
+        const float twistRate = 3.8;
+        float diffRot = twistRate / (0.28 + normDist * 0.88);
+        float spinTime = fragmentFrameTime * 0.0032;
+
+        // Dual high-impact grand-design spiral arms conforming to the square/round shape
+        float spiralPhase1 = geomAngle * 2.0 + diffRot - spinTime;
+        float spiralPhase2 = spiralPhase1 + 0.5;
+
+        float arm1 = cos(fract(spiralPhase1) * TAU);
+        float arm2 = cos(fract(spiralPhase2) * TAU);
+
+        // Crisp, high-contrast luminous filament profiles
+        float armCore1 = pow(max(0.0, arm1 * 0.5 + 0.5), 2.6);
+        float armCore2 = pow(max(0.0, arm2 * 0.5 + 0.5), 3.4) * 0.65;
+        float armStructure = armCore1 + armCore2;
+
+        // Inflowing plasma turbulence along the spiral arms
+        vec2 noiseCoord1 = vec2(spiralPhase1 * 0.50, normDist * 2.2 - fragmentFrameTime * 0.0028);
+        vec2 noiseCoord2 = vec2(spiralPhase1 * 1.05 + 0.25, normDist * 4.0 - fragmentFrameTime * 0.0045);
+        float streamNoise1 = textureLod(noisetex, noiseCoord1, 0).x;
+        float streamNoise2 = textureLod(noisetex, noiseCoord2, 0).y;
+        float plasmaStream = mix(streamNoise1, streamNoise2, 0.40);
+
+        // Prominent, high-impact composite spiral
+        float spiralLuminance = armStructure * (0.55 + 0.85 * plasmaStream) + 0.15 * plasmaStream;
+
+        // Accretion disk span (extends gracefully across normDist in [0, 1.85])
+        float diskSpan = saturate((1.85 - normDist) / 1.85);
+        float diskMask = diskSpan * diskSpan * (3.0 - 2.0 * diskSpan);
+
+        // Brilliant inner accretion ring (photon sphere glow) right at the core border
+        float innerRing = exp2(-normDist * 8.0) * 1.6;
+
+        float totalSpiral = (spiralLuminance * 2.4 + innerRing) * diskMask;
+
+        // Multi-layer smooth analytical aura (strictly zero noise to prevent any banding or noise artifacts)
+        float auraCore  = exp2(-normDist * 4.2) * 0.55;
+        float auraMid   = exp2(-normDist * 1.5) * 0.40;
+        float auraOuter = exp2(-normDist * 0.65) * 0.22;
+
+        // Smooth cubic window to ensure the outer border decays to EXACTLY 0.0 without edge banding
+        float auraWindow = saturate((3.2 - normDist) / 1.8);
+        float auraCutoff = auraWindow * auraWindow * (3.0 - 2.0 * auraWindow);
+
+        float cleanAura = (auraCore + auraMid + auraOuter) * auraCutoff;
+
+        // Relativistic Doppler effect & subtle color shift
         vec2 tiltedPos = rot2D(0.21) * projPos;
-        float r = max(radialDist, 0.0001);
+        float r = max(boxDist, 0.0001);
         float losVel = clamp(-tiltedPos.x / r * sqrt(clamp(bhHalfSize / r, 0.0, 1.0)), -1.0, 1.0);
-        float dopplerBeaming = 1.0 + losVel * 0.32;
+        float dopplerBeaming = 1.0 + losVel * 0.42;
         float dopplerT = losVel * 0.5 + 0.5;
-
-        // Subtle color shift: blueshifted left (electric violet-blue), redshifted right (plum-magenta)
         vec3 dopplerTint = mix(
-            vec3(1.22, 0.55, 0.78),
-            vec3(0.68, 0.82, 1.38),
+            vec3(1.30, 0.50, 0.88), // Plum-magenta (receding)
+            vec3(0.60, 0.85, 1.50), // Electric cyan-violet (approaching)
             dopplerT
         );
         vec3 dopplerEffect = dopplerTint * dopplerBeaming;
 
-        // Sample sun celestial texture tightly fitted over the accretion rim
+        // Custom sun texture integration (smoothly tinted without extinguishing the spiral)
         vec3 themedTexCol = sampleBlackHoleTex(projPos, bhHalfSize);
+        vec3 texWeight = mix(vec3(1.0), themedTexCol, 0.35);
 
-        // Sleek, thin accretion rim following the square geometry
-        float diskOuter = bhHalfSize * 1.25;
-        float diskMask = saturate((diskOuter - boxDist) / max(fwidth(boxDist), 0.0015)) * (1.0 - coreMask);
+        // Combine prominent accretion spiral with pristine, artifact-free outer aura
+        vec3 diskCol = lightCol * dopplerEffect * texWeight * totalSpiral;
+        vec3 auraCol = lightCol * mix(vec3(0.92, 0.82, 1.15), dopplerTint, 0.35) * (cleanAura * 0.35);
+        vec3 bhCol = (diskCol + auraCol) * (sunMoonIntensitySqrd * 0.40) * coreCut;
 
-        float angle = atan(projPos.y, projPos.x);
-        float swirlCoord = angle * (1.0 / TAU) + fragmentFrameTime * 0.0025;
-        float radialCoord = edgeDist / max(bhHalfSize * 0.35, 0.001);
-        float diskNoise = textureLod(noisetex, vec2(swirlCoord, radialCoord), 0).x;
-        float diskNoise2 = textureLod(noisetex, vec2(swirlCoord * 2.0 - fragmentFrameTime * 0.0018, radialCoord * 1.5), 0).y;
-        float streamLines = mix(diskNoise, diskNoise2, 0.5);
+        // Extended gravitational warping reach (near-field vortex + far-field well)
+        float normD = normDist;
+        float warpNear = 1.0 / (1.0 + 2.0 * normD + 2.5 * normD * normD);
+        float farWindow = saturate(1.0 - normD * 0.08);
+        float smoothFarWindow = farWindow * farWindow * (3.0 - 2.0 * farWindow);
+        float warpFar = exp2(-normD * 0.55) * smoothFarWindow;
+        float warpImpact = (0.58 * warpNear + 0.42 * warpFar) * smoothFarWindow;
 
-        // Sleek, compact outer glow following the square profile
-        float glow = exp2(-edgeDist * (7.5 / bhHalfSize)) * (1.0 - coreMask);
+        // Apply rotational swirl and lensing deflection across surrounding sky
+        if(warpImpact > 0.0){
+            float rotAngle = warpImpact * (TAU * 4.0);
+            float lensDeflect = warpImpact * 0.35;
+            vec2 warpedProj = rot2D(rotAngle) * projPos * (1.0 + lensDeflect);
+            skyPos.xy = warpedProj * skyPos.z;
+        }
 
-        // Composite disk pattern, texture, and Doppler shift
-        float diskPattern = mix(0.85, 1.15, streamLines) * themedTexCol.r;
-        float diskIntensity = diskMask * diskPattern * 1.4 + glow * 0.45;
-        vec3 bhCol = lightCol * dopplerEffect * (diskIntensity * (sunMoonIntensitySqrd * 0.42));
-        return bhCol * (1.0 - coreMask);
+        return bhCol;
     }
 #endif // WORLD_SUN_MOON == 2
 

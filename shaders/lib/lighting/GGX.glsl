@@ -81,10 +81,15 @@ float getNoHSquared(in float NoL, in float NoV, in float VoL, in vec3 V, in vec3
 // Modified fast specular BRDF
 // Thanks for LVutner#5199 for sharing his code!
 vec3 getSpecularBRDF(in vec3 V, in vec3 N, in vec3 albedo, in float NL, in float NV, in float metallic, in float smoothness){
+    // Early exit if light faces away, smoothness is negligible, or sun/moon is off
+    if(NL <= 0.0 || smoothness <= 0.001 || sunMoonIntensitySqrd <= 0.0001) return vec3(0.0);
+
+    vec3 lightDir = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
+
     // Halfway vector
-    vec3 H = fastNormalize(vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z) + V);
+    vec3 H = fastNormalize(lightDir + V);
     // Light dot halfway vector
-    float LH = dot(vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z), H);
+    float LH = dot(lightDir, H);
 
     // Roughness remapping
     float roughness = 1.0 - smoothness;
@@ -98,7 +103,7 @@ vec3 getSpecularBRDF(in vec3 V, in vec3 N, in vec3 albedo, in float NL, in float
     float specIntensity = sunMoonIntensitySqrd * specularMult;
 
     // Distribution
-    float NHSqr = getNoHSquared(NL, NV, dot(V, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)), V, N);
+    float NHSqr = getNoHSquared(NL, NV, dot(V, lightDir), V, N);
     float denominator = squared(NHSqr * (alphaSqrd - 1.0) + 1.0);
     float distribution = (specularMult * alphaSqrd * NL) / (denominator * visibility * PI);
 

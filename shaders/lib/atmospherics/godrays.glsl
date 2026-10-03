@@ -124,9 +124,21 @@ float getCelestialTotalStrength(in vec3 lightDir, in vec3 lightViewDir, in vec2 
     return GODRAYS_DENSITY * viewFade * (terrainVis * cloudVis * weatherVis);
 }
 
+#if WORLD_ID == 1
+    #ifndef END_FLASH_UNIFORM_DECLARED
+        #define END_FLASH_UNIFORM_DECLARED
+        uniform float endFlashIntensity;
+        uniform vec3 endFlashPosition;
+    #endif
+#endif
+
 // Calculates tinted ray color based on celestial strength, water submersion, and skylight
 vec3 computeGodrayColor(in float totalStrength, in float sceneDepth){
     vec3 col = lightCol * (shdFade * totalStrength);
+    #if WORLD_ID == 1
+        float flashRayWeight = smoothstep(0.18, 0.50, endFlashIntensity) * endFlashIntensity;
+        col *= flashRayWeight;
+    #endif
     if(isEyeInWater == 1){
         vec3 waterTint = mix(toLinear(fogColor), vec3(0.35, 0.75, 0.95), 0.5);
         col = mix(col, waterTint * length(col), 0.65) * 1.4;
@@ -219,6 +231,10 @@ vec3 getGodRays(
     in float dither,
     in float sceneDepth
 ){
+    #if WORLD_ID == 1
+        if(endFlashIntensity <= 0.18) return vec3(0.0);
+    #endif
+
     if(GODRAYS_DENSITY <= 0.0 || isEyeInWater == 2 || shdFade <= 0.001) return vec3(0.0);
 
     #ifndef FORCE_DISABLE_WEATHER

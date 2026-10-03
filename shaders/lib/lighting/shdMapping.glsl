@@ -30,7 +30,7 @@ uniform sampler2DShadow shadowtex0;
 
 vec3 getShdCol(in vec3 shdPos){
 	// Early exit if sample point is outside shadow frustum bounds
-	if(shdPos.z > 1.0 || shdPos.z < 0.0 || shdPos.x < 0.0 || shdPos.x > 1.0 || shdPos.y < 0.0 || shdPos.y > 1.0) return vec3(1.0);
+	if(clamp(shdPos, 0.0, 1.0) != shdPos) return vec3(1.0);
 
 	#ifdef SHADOW_COLOR
 		// Sample shadows
@@ -52,7 +52,7 @@ vec3 getShdCol(in vec3 shdPos){
 
 vec3 getShdCol(in vec3 shdPos, in float dither){
 	// Early exit if outside shadow frustum bounds before computing dither offsets
-	if(shdPos.z > 1.0 || shdPos.z < 0.0 || shdPos.x < 0.0 || shdPos.x > 1.0 || shdPos.y < 0.0 || shdPos.y > 1.0) return vec3(1.0);
+	if(clamp(shdPos, 0.0, 1.0) != shdPos) return vec3(1.0);
 
 	#if WORLD_ID == 1
 		if(heavyFog == 0) return getShdCol(shdPos);

@@ -50,7 +50,9 @@ vec3 getPaleGardenSkyColor(in vec3 nEyePlayerPos){
 
     // Soft forward sun glow through the mist during the day
     vec3 sunDir = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
-    float sunGlow = pow(saturate(dot(nEyePlayerPos, sunDir) * 0.5 + 0.5), 4.0);
+    float sg = saturate(dot(nEyePlayerPos, sunDir) * 0.5 + 0.5);
+    sg *= sg;
+    float sunGlow = sg * sg;
     col += toLinear(vec3(0.14, 0.12, 0.10)) * (sunGlow * saturate(dCycle - 1.0));
 
     return col;
@@ -94,7 +96,7 @@ float getEndBossFogAmount(in float viewDist, in float worldPosY){
     float bStart = max(0.0, fogStart * (0.8 / max(END_BOSS_FOG, 0.5)));
     float bEnd = max(bStart + 25.0, fogEnd * (1.1 / pow(END_BOSS_FOG, 0.35)));
     float bDistProgress = saturate((viewDist - bStart) / (bEnd - bStart));
-    float bossDensity = 1.0 - exp2(-pow(bDistProgress, 1.25) * (4.2 * END_BOSS_FOG));
+    float bossDensity = 1.0 - exp2(-(bDistProgress * sqrt(sqrt(bDistProgress))) * (4.2 * END_BOSS_FOG));
     float heightFade = saturate(1.0 - max(0.0, worldPosY - 80.0) * 0.012);
     return bossDensity * mix(0.70, 1.0, heightFade);
 }
@@ -107,7 +109,7 @@ float getPaleGardenFogAmount(in float viewDist, in float worldPosY){
     float pgStart = 12.0 / max(PALE_GARDEN_FOG, 0.5);
     float pgEnd = max(pgStart + 25.0, 70.0 / pow(PALE_GARDEN_FOG, 0.4));
     float pgDistProgress = saturate((viewDist - pgStart) / (pgEnd - pgStart));
-    float pgDensity = 1.0 - exp2(-pow(pgDistProgress, 1.15) * (4.2 * PALE_GARDEN_FOG));
+    float pgDensity = 1.0 - exp2(-(pgDistProgress * sqrt(sqrt(sqrt(pgDistProgress)))) * (4.2 * PALE_GARDEN_FOG));
     float heightFade = saturate(1.0 - max(0.0, worldPosY - 105.0) * 0.016);
     return pgDensity * isPaleGarden * mix(0.70, 1.0, heightFade);
 }

@@ -82,7 +82,15 @@
         if(renderStage == MC_RENDER_STAGE_MOON){ discard; return; }
         #endif
 
-        // Otherwise calculate skybox
-        sceneColOut = toLinear(albedo.rgb * albedo.a) * skyBoxIntensitySqrd;
+        #if WORLD_ID == 1
+            #ifndef END_SKY_TEXTURE_BRIGHTNESS
+                #define END_SKY_TEXTURE_BRIGHTNESS 0.25
+            #endif
+            if(END_SKY_TEXTURE_BRIGHTNESS <= 0.001){ discard; return; }
+            sceneColOut = toLinear(albedo.rgb * albedo.a) * (skyBoxIntensitySqrd * END_SKY_TEXTURE_BRIGHTNESS);
+        #else
+            // Otherwise calculate skybox
+            sceneColOut = toLinear(albedo.rgb * albedo.a) * skyBoxIntensitySqrd;
+        #endif
     }
 #endif
