@@ -87,20 +87,36 @@
         #ifndef FORCE_DISABLE_WEATHER
             uniform float rainStrength;
             uniform float weatherFade;
+            #if WORLD_ID == 0
+                #ifndef THUNDER_STRENGTH_DECLARED
+                    #define THUNDER_STRENGTH_DECLARED
+                    uniform float thunderStrength;
+                #endif
+            #endif
         #endif
 
         void main(){
             // Apply simple shading
             #ifndef FORCE_DISABLE_WEATHER
+                #if WORLD_ID == 0
+                    float effectiveWeatherFade = clamp(max(weatherFade, thunderStrength), 0.0, 1.0);
+                #else
+                    float effectiveWeatherFade = weatherFade;
+                #endif
                 #ifdef DYNAMIC_WEATHER
-                    if(weatherFade <= 0.001){ discard; return; }
+                    if(effectiveWeatherFade <= 0.001){ discard; return; }
                 #endif
                 vec3 weatherSky = vec3(dot(toLinear(fogColor), vec3(0.2126, 0.7152, 0.0722)));
-                vec3 cloudBaseSky = mix(toLinear(SKY_COLOR_DATA_BLOCK), weatherSky * 0.35, weatherFade);
-                vec3 cloudDirectLight = toLinear(LIGHT_COLOR_DATA_BLOCK0) * ((1.0 - weatherFade) * squared(cloudGradient));
+                vec3 cloudBaseSky = mix(toLinear(SKY_COLOR_DATA_BLOCK), weatherSky * 0.35, effectiveWeatherFade);
+                vec3 cloudDirectLight = toLinear(LIGHT_COLOR_DATA_BLOCK0) * ((1.0 - effectiveWeatherFade) * squared(cloudGradient));
                 sceneColOut = (toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash) + cloudBaseSky + cloudDirectLight;
             #else
                 sceneColOut = (toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash) + toLinear(SKY_COLOR_DATA_BLOCK) + toLinear(LIGHT_COLOR_DATA_BLOCK0) * squared(cloudGradient);
+            #endif
+
+            #if defined CLOUD_LIGHTNING_GLOW && !defined EPILEPSY_SAFETY
+                vec3 internalGlow = vec3(0.72, 0.85, 1.0) * (lightningFlash * (0.85 + cloudGradient * 1.35) * (1.25 * CLOUD_LIGHTNING_GLOW));
+                sceneColOut += internalGlow;
             #endif
         }
     #endif

@@ -25,6 +25,12 @@
 
     #ifndef FORCE_DISABLE_WEATHER
         uniform float rainStrength, weatherFade;
+        #if WORLD_ID == 0
+            #ifndef THUNDER_STRENGTH_DECLARED
+                #define THUNDER_STRENGTH_DECLARED
+                uniform float thunderStrength;
+            #endif
+        #endif
     #endif
 
     #ifndef FORCE_DISABLE_DAY_CYCLE
@@ -41,25 +47,30 @@
         texCoord = gl_MultiTexCoord0.xy;
 
         #if !defined FORCE_DISABLE_WEATHER && defined WORLD_LIGHT
+            #if WORLD_ID == 0
+                float effectiveWeatherFade = clamp(max(weatherFade, thunderStrength), 0.0, 1.0);
+            #else
+                float effectiveWeatherFade = weatherFade;
+            #endif
             vec3 defaultSkyCol = toLinear(SKY_COLOR_DATA_BLOCK);
             vec3 weatherSkyCol = vec3(dot(toLinear(fogColor), vec3(0.2126, 0.7152, 0.0722)));
-            skyCol = mix(defaultSkyCol, weatherSkyCol, weatherFade);
+            skyCol = mix(defaultSkyCol, weatherSkyCol, effectiveWeatherFade);
         #else
             skyCol = toLinear(SKY_COLOR_DATA_BLOCK);
         #endif
 
         #ifdef WORLD_LIGHT
-            #ifdef FORCE_DISABLE_DAY_CYCLE
-                sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
-                lightCol = toLinear(sRGBLightCol);
+            #ifndef FORCE_DISABLE_WEATHER
+                float cVis = 1.0 - effectiveWeatherFade;
             #else
-                sRGBSunCol = SUN_COLOR_BASE;
-                sunCol = toLinear(SUN_COL_DATA_BLOCK);
-                sRGBMoonCol = MOON_COLOR_BASE;
-                moonCol = toLinear(MOON_COL_DATA_BLOCK);
-
-                sRGBLightCol = LIGHT_COLOR_DATA_BLOCK1(SUN_COL_DATA_BLOCK, MOON_COL_DATA_BLOCK);
-                lightCol = toLinear(sRGBLightCol);
+                const float cVis = 1.0;
+            #endif
+            #ifdef FORCE_DISABLE_DAY_CYCLE
+                sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0 * cVis; lightCol = toLinear(sRGBLightCol);
+            #else
+                sRGBSunCol = SUN_COLOR_BASE * cVis; sunCol = toLinear(SUN_COL_DATA_BLOCK) * cVis;
+                sRGBMoonCol = MOON_COLOR_BASE * cVis; moonCol = toLinear(MOON_COL_DATA_BLOCK) * cVis;
+                sRGBLightCol = LIGHT_COLOR_DATA_BLOCK1(sRGBSunCol, sRGBMoonCol); lightCol = toLinear(sRGBLightCol);
             #endif
         #endif
 
@@ -118,6 +129,12 @@
 
     #ifndef FORCE_DISABLE_WEATHER
         uniform float rainStrength, weatherFade;
+        #if WORLD_ID == 0
+            #ifndef THUNDER_STRENGTH_DECLARED
+                #define THUNDER_STRENGTH_DECLARED
+                uniform float thunderStrength;
+            #endif
+        #endif
     #endif
 
     #ifndef FORCE_DISABLE_DAY_CYCLE
@@ -201,8 +218,13 @@
     #if !defined FORCE_DISABLE_CLOUDS && CLOUD_TYPE == 2
         vec3 renderTranslucentClouds(in vec3 sceneCol, in vec3 nFeetPlayerPos, in float feetPlayerDist, in float ditherX, in bool isSky){
             #ifndef FORCE_DISABLE_WEATHER
+                #if WORLD_ID == 0
+                    float cloudWeatherFade = clamp(max(weatherFade, thunderStrength), 0.0, 1.0);
+                #else
+                    float cloudWeatherFade = weatherFade;
+                #endif
                 #ifdef DYNAMIC_WEATHER
-                    if(weatherFade <= 0.001) return sceneCol;
+                    if(cloudWeatherFade <= 0.001) return sceneCol;
                 #endif
             #endif
             // Get the 1st layer of volumetric clouds position
@@ -212,11 +234,11 @@
 
             #ifdef DOUBLE_LAYERED_CLOUDS
                 #ifndef FORCE_DISABLE_WEATHER
-                    if(weatherFade < 0.65 && weatherFade > 0.001){
+                    if(cloudWeatherFade < 0.65 && cloudWeatherFade > 0.001){
                         // Get the 2nd layer of volumetric clouds position by reusing the 1st layer's position
                         vec3 cloudStartPos1 = vec3(cloudStartPos0.x + fragmentFrameTime * 0.25, cloudStartPos0.y - SECOND_CLOUD_HEIGHT, cloudStartPos0.z);
                         // Fade cirrus with cloud presence at low overcast, and hide completely when overcast
-                        float cirrusFactor = smoothstep(0.0, 0.20, weatherFade) * (1.0 - smoothstep(0.30, 0.65, weatherFade));
+                        float cirrusFactor = smoothstep(0.0, 0.20, cloudWeatherFade) * (1.0 - smoothstep(0.30, 0.65, cloudWeatherFade));
                         // Variate by swizzling the 2 cloud channels
                         cloudData = max(volumetricClouds(nFeetPlayerPos, cloudStartPos1, feetPlayerDist, ditherX, isSky, true).yx * cirrusFactor, cloudData);
                     }
@@ -241,24 +263,24 @@
             #ifndef FORCE_DISABLE_WEATHER
                 #ifdef DYNAMIC_WEATHER
                     #ifdef STORY_MODE_CLOUDS
-                        float cloudPresence = smoothstep(0.0, 0.25, weatherFade);
-                        float expandedCumulus = mix(baseCumulus, max(cloudData.x, cloudData.y), weatherFade) * cloudPresence;
+                        float cloudPresence = smoothstep(0.0, 0.25, cloudWeatherFade);
+                        float expandedCumulus = mix(baseCumulus, max(cloudData.x, cloudData.y), cloudWeatherFade) * cloudPresence;
                         float cloudFinal = expandedCumulus * 0.125;
                     #else
                         // Scale cumulus clouds smoothly as overcast rises from clear to partly cloudy
-                        float cloudPresence = smoothstep(0.0, 0.40, weatherFade);
+                        float cloudPresence = smoothstep(0.0, 0.40, cloudWeatherFade);
                         baseCumulus *= cloudPresence;
                         // Mix in expanded coverage from both channels
-                        float expandedCumulus = mix(baseCumulus, max(cloudData.x, cloudData.y) * cloudPresence, weatherFade);
+                        float expandedCumulus = mix(baseCumulus, max(cloudData.x, cloudData.y) * cloudPresence, cloudWeatherFade);
                         // Overcast scales the optical density of the first layer of clouds
-                        float firstLayerDensity = mix(0.75, 2.0, smoothstep(0.10, 0.85, weatherFade));
+                        float firstLayerDensity = mix(0.75, 2.0, smoothstep(0.10, 0.85, cloudWeatherFade));
                         // As overcast approaches 1.0, an overcast cloud deck fills the sky
-                        float overcastDeck = saturate((weatherFade - 0.70) * 3.5);
+                        float overcastDeck = saturate((cloudWeatherFade - 0.70) * 3.5);
                         expandedCumulus = mix(expandedCumulus, max(expandedCumulus, 8.0 * cloudPresence), overcastDeck);
                         float cloudFinal = expandedCumulus * 0.125 * firstLayerDensity;
                     #endif
                 #else
-                    float cloudFinal = mix(baseCumulus, max(cloudData.x, cloudData.y), weatherFade) * 0.125;
+                    float cloudFinal = mix(baseCumulus, max(cloudData.x, cloudData.y), cloudWeatherFade) * 0.125;
                 #endif
             #else
                 float cloudFinal = baseCumulus * 0.125;
@@ -271,11 +293,11 @@
             #endif
 
             #ifndef FORCE_DISABLE_WEATHER
-                cloudCelestialLight *= 1.0 - weatherFade;
+                cloudCelestialLight *= 1.0 - cloudWeatherFade;
                 #ifdef STORY_MODE_CLOUDS
-                    vec3 cloudSkyLight = mix(skyCol, skyCol * 0.85, weatherFade);
+                    vec3 cloudSkyLight = mix(skyCol, skyCol * 0.85, cloudWeatherFade);
                 #else
-                    vec3 cloudSkyLight = mix(skyCol, skyCol * 0.35, weatherFade);
+                    vec3 cloudSkyLight = mix(skyCol, skyCol * 0.35, cloudWeatherFade);
                 #endif
             #else
                 vec3 cloudSkyLight = skyCol;
@@ -284,13 +306,22 @@
             vec3 lightDir = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
             cloudCelestialLight *= getCloudCelestialOcclusion(lightDir, cameraPosition, fragmentFrameTime);
 
-            vec3 cloudAmbient = vec3(toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash);
+            #ifdef EPILEPSY_SAFETY
+                const float effectiveFlash = 0.0;
+            #else
+                float effectiveFlash = getLightningFlashIntensity();
+            #endif
+            vec3 cloudAmbient = vec3(toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + effectiveFlash);
             #ifdef STORY_MODE_CLOUDS
-                cloudAmbient += vec3(0.22 * weatherFade * dayCycleAdjust);
+                cloudAmbient += vec3(0.22 * cloudWeatherFade * dayCycleAdjust);
             #endif
 
             float cloudDensity = saturate(cloudFinal);
             vec3 cloudBaseCol = cloudAmbient + cloudCelestialLight + cloudSkyLight;
+
+            #if WORLD_ID == 0 && defined CLOUD_LIGHTNING_GLOW && !defined EPILEPSY_SAFETY
+                cloudBaseCol += getCloudInternalFlashGlow(nFeetPlayerPos, cloudDensity);
+            #endif
 
             #if WORLD_ID == 0 && defined PALE_GARDEN_FOG
                 float cloudFogAtten = isPaleGarden * min(1.0, PALE_GARDEN_FOG);
@@ -325,10 +356,7 @@
                 float vxDepth = 1.0;
                 if(vxOpaque > 0.0 && vxOpaque < 1.0) vxDepth = vxOpaque;
                 if(vxTrans > 0.0 && vxTrans < vxDepth) vxDepth = vxTrans;
-                if(vxDepth < 1.0){
-                    depth = vxDepth;
-                    isLOD = true;
-                }
+                if(vxDepth < 1.0){ depth = vxDepth; isLOD = true; }
             }
         #endif
     }
@@ -403,30 +431,18 @@
         #endif
 
         #ifdef WORLD_LIGHT
-            #if WORLD_ID == 1
-                if(endFlashIntensity > 0.18)
-            #endif
             if(VOLUMETRIC_LIGHTING_STRENGTH != 0 && isEyeInWater != 2)
                 sceneCol += getVolumetricLight(nFeetPlayerPos, feetPlayerDist, fogFactor, borderFog, dither.x, isSky);
+            #if defined GODRAYS
+                sceneCol += getGodRays(texCoord, nEyePlayerPos, dither.x, depth);
+            #endif
+            #if defined RAINBOW && WORLD_ID == 0 && !defined FORCE_DISABLE_WEATHER
+                sceneCol += getTranslucentRainbow(nEyePlayerPos, viewDist, isSky, feetPlayerPos, matRaw0.z > 0.0 && matRaw0.z < 1.0);
+            #endif
         #endif
 
         #if !defined FORCE_DISABLE_CLOUDS && CLOUD_TYPE == 2
             sceneCol = renderTranslucentClouds(sceneCol, nFeetPlayerPos, feetPlayerDist, dither.x, isSky);
-        #endif
-
-        #if defined WORLD_LIGHT && defined GODRAYS
-            #if WORLD_ID == 1
-                if(endFlashIntensity > 0.18)
-            #endif
-            sceneCol += getGodRays(texCoord, nEyePlayerPos, dither.x, depth);
-        #endif
-
-        #ifdef RAINBOW
-            #if WORLD_ID == 0 && defined WORLD_LIGHT
-                #ifndef FORCE_DISABLE_WEATHER
-                    sceneCol += getTranslucentRainbow(nEyePlayerPos, viewDist, isSky, feetPlayerPos, matRaw0.z > 0.0 && matRaw0.z < 1.0);
-                #endif
-            #endif
         #endif
 
         return sceneCol;
@@ -435,11 +451,9 @@
     void main(){
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
 
-        bool isLOD;
-        float depth;
+        bool isLOD; float depth;
         getTranslucentSceneDepth(screenTexelCoord, depth, isLOD);
         vec3 screenPos = vec3(texCoord, depth);
-        
         vec3 viewPos = getTranslucentViewPos(isLOD, screenPos);
         vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
         vec3 feetPlayerPos = eyePlayerPos + gbufferModelViewInverse[3].xyz;
@@ -451,8 +465,7 @@
             vec3 dither = getRng3(screenTexelCoord & 255);
         #endif
 
-        float viewDot = lengthSquared(viewPos);
-        float viewDotInvSqrt = inversesqrt(viewDot);
+        float viewDot = lengthSquared(viewPos), viewDotInvSqrt = inversesqrt(viewDot);
         float viewDist = viewDot * viewDotInvSqrt;
         vec3 nEyePlayerPos = eyePlayerPos * viewDotInvSqrt;
 
@@ -471,20 +484,14 @@
         #endif
 
         vec3 matRaw0 = texelFetch(colortex3, screenTexelCoord, 0).xyz;
-        if(matRaw0.z > 0 && matRaw0.z < 1){
+        if(matRaw0.z > 0 && matRaw0.z < 1)
             sceneColOut = shadeTranslucentSurface(sceneColOut, screenPos, viewPos, nEyePlayerPos, matRaw0, screenTexelCoord, dither, viewDotInvSqrt, viewDist, fogFactor, borderFog, isLOD);
-        }
 
         #if VOXY_DEBUG == 1
             if(isLOD && depth < 1.0) sceneColOut = mix(sceneColOut, vec3(1.0, 0.2, 0.2), 0.35);
         #endif
 
-        // Apply darkness pulsing effect
-        sceneColOut *= 1.0 - darknessLightFactor;
-
-        sceneColOut = applyAtmospherics(sceneColOut, nEyePlayerPos, feetPlayerPos, dither, viewDist, fogFactor, borderFog, depth, matRaw0);
-
-        // Clamp scene color to prevent NaNs during post processing
-        sceneColOut = max(sceneColOut, vec3(0));
+        // Apply darkness pulsing effect and clamp scene color
+        sceneColOut = max(applyAtmospherics(sceneColOut * (1.0 - darknessLightFactor), nEyePlayerPos, feetPlayerPos, dither, viewDist, fogFactor, borderFog, depth, matRaw0), vec3(0));
     }
 #endif

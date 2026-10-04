@@ -12,8 +12,12 @@ const float volumetricStepsInverse = 1.0 / VOLUMETRIC_LIGHT_STEPS;
 
 vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in float fogFactor, in float borderFog, in float dither, in bool isSky){
 	#if WORLD_ID == 1
-		float flashVLWeight = smoothstep(0.18, 0.50, endFlashIntensity) * endFlashIntensity;
-		if(flashVLWeight <= 0.0) return vec3(0.0);
+		#ifdef EPILEPSY_SAFETY
+			return vec3(0.0);
+		#else
+			float flashVLWeight = smoothstep(0.18, 0.50, endFlashIntensity) * endFlashIntensity;
+			if(flashVLWeight <= 0.0) return vec3(0.0);
+		#endif
 	#else
 		const float flashVLWeight = 1.0;
 	#endif
@@ -50,6 +54,20 @@ vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in floa
 		volumetricFogDensity = (volumetricFogDensity - 1.0) * borderFog + 1.0;
 	#endif
 
+	#ifndef FORCE_DISABLE_WEATHER
+		#if WORLD_ID == 0
+			#ifndef THUNDER_STRENGTH_DECLARED
+				#define THUNDER_STRENGTH_DECLARED
+				uniform float thunderStrength;
+			#endif
+			float weatherVLFactor = 1.0 - clamp(max(weatherFade, thunderStrength), 0.0, 1.0) * (1.0 - WEATHER_DIRECT_LIGHT);
+		#else
+			float weatherVLFactor = 1.0 - weatherFade * (1.0 - WEATHER_DIRECT_LIGHT);
+		#endif
+	#else
+		const float weatherVLFactor = 1.0;
+	#endif
+
 	#if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING
 		float vlFade = squared(heightFade) * volumetricFogDensity;
 		if(vlFade <= 0.00005) return vec3(0.0);
@@ -71,18 +89,10 @@ vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in floa
 			startPos += endPos;
 		}
 
-		#ifndef FORCE_DISABLE_WEATHER
-			volumeData *= 1.0 - weatherFade * (1.0 - WEATHER_DIRECT_LIGHT);
-		#endif
+		volumeData *= weatherVLFactor;
 		
 		return volumeData * lightCol * (min(1.0, VOLUMETRIC_LIGHTING_STRENGTH + VOLUMETRIC_LIGHTING_STRENGTH * isEyeInWater) * vlFade * volumetricStepsInverse * flashVLWeight);
 	#else
-		#ifndef FORCE_DISABLE_WEATHER
-			float weatherVLFactor = 1.0 - weatherFade * (1.0 - WEATHER_DIRECT_LIGHT);
-		#else
-			const float weatherVLFactor = 1.0;
-		#endif
-
 		if(isEyeInWater == 1) return lightCol * toLinear(fogColor) * (min(1.0, VOLUMETRIC_LIGHTING_STRENGTH * 2.0) * volumetricFogDensity) * (weatherVLFactor * flashVLWeight);
 		#ifdef WORLD_CUSTOM_SKYLIGHT
 			else return lightCol * (volumetricFogDensity * VOLUMETRIC_LIGHTING_STRENGTH) * (weatherVLFactor * flashVLWeight);

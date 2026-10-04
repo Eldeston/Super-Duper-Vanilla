@@ -73,9 +73,18 @@ vec2 volumetricClouds(in vec3 nFeetPlayerPos, in vec3 cameraPos, in float feetPl
     vec2 clouds = vec2(0);
 
     #ifndef FORCE_DISABLE_WEATHER
+        #if WORLD_ID == 0
+            #ifndef THUNDER_STRENGTH_DECLARED
+                #define THUNDER_STRENGTH_DECLARED
+                uniform float thunderStrength;
+            #endif
+            float stormWeatherFade = clamp(max(weatherFade, thunderStrength), 0.0, 1.0);
+        #else
+            float stormWeatherFade = weatherFade;
+        #endif
         #ifdef DYNAMIC_WEATHER
-            float overcastDensityMult = isCirrus ? 1.0 : mix(0.85, 1.35, weatherFade);
-            float cloudCutoff = isCirrus ? 0.5 : mix(0.5, 0.38, smoothstep(0.35, 0.90, weatherFade));
+            float overcastDensityMult = isCirrus ? 1.0 : mix(0.85, 1.35, stormWeatherFade);
+            float cloudCutoff = isCirrus ? 0.5 : mix(0.5, 0.38, smoothstep(0.35, 0.90, stormWeatherFade));
         #else
             float overcastDensityMult = 1.0;
             float cloudCutoff = 0.5;

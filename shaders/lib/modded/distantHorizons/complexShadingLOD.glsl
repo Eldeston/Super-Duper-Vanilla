@@ -8,7 +8,16 @@
 vec3 complexShadingLOD(in dataPBR material){
 	// Calculate sky diffusion first, begining with the sky itself
 	#ifndef FORCE_DISABLE_WEATHER
-		vec3 totalIllumination = mix(toLinear(SKY_COLOR_DATA_BLOCK), vec3(dot(toLinear(fogColor), vec3(0.2126, 0.7152, 0.0722))), weatherFade);
+		#if WORLD_ID == 0
+			#ifndef THUNDER_STRENGTH_DECLARED
+				#define THUNDER_STRENGTH_DECLARED
+				uniform float thunderStrength;
+			#endif
+			float lodWeatherFade = clamp(max(weatherFade, thunderStrength), 0.0, 1.0);
+		#else
+			float lodWeatherFade = weatherFade;
+		#endif
+		vec3 totalIllumination = mix(toLinear(SKY_COLOR_DATA_BLOCK), vec3(dot(toLinear(fogColor), vec3(0.2126, 0.7152, 0.0722))), lodWeatherFade);
 	#else
 		vec3 totalIllumination = toLinear(SKY_COLOR_DATA_BLOCK);
 	#endif
@@ -25,7 +34,11 @@ vec3 complexShadingLOD(in dataPBR material){
 	totalIllumination *= skyLightSquared;
 
 	#if WORLD_ID == 1
-		float smoothFlash = smoothstep(0.18, 0.50, endFlashIntensity) * endFlashIntensity;
+		#ifdef EPILEPSY_SAFETY
+			float smoothFlash = 0.0;
+		#else
+			float smoothFlash = smoothstep(0.18, 0.50, endFlashIntensity) * endFlashIntensity;
+		#endif
 		totalIllumination += toLinear(vec3(0.20, 0.12, 0.28)) * (smoothFlash * skyLightSquared);
 		#ifdef END_BH_LIGHT
 			if(END_BH_LIGHT > 0.0){
@@ -45,11 +58,19 @@ vec3 complexShadingLOD(in dataPBR material){
 
 	#ifdef WORLD_LIGHT
 		#if WORLD_ID == 1
-			float smoothFlashShd = smoothstep(0.18, 0.50, endFlashIntensity) * endFlashIntensity;
+			#ifdef EPILEPSY_SAFETY
+				float smoothFlashShd = 0.0;
+			#else
+				float smoothFlashShd = smoothstep(0.18, 0.50, endFlashIntensity) * endFlashIntensity;
+			#endif
 			vec3 sRGBLightCol = (LIGHT_COLOR_DATA_BLOCK0 * 1.5 + vec3(0.3, 0.1, 0.4)) * smoothFlashShd;
 		#else
 			// Get sRGB light color
-			vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
+			#ifndef FORCE_DISABLE_WEATHER
+				vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0 * (1.0 - lodWeatherFade);
+			#else
+				vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
+			#endif
 		#endif
 
 		float NLZ = dot(material.normal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z));
@@ -78,10 +99,10 @@ vec3 complexShadingLOD(in dataPBR material){
 
 		#ifndef FORCE_DISABLE_WEATHER
 			// Approximate rain diffusing light shadow
-			float rainDirectAmount = 1.0 - weatherFade * (1.0 - WEATHER_DIRECT_LIGHT);
+			float rainDirectAmount = 1.0 - lodWeatherFade * (1.0 - WEATHER_DIRECT_LIGHT);
 			shdCol *= rainDirectAmount;
 
-			float rainDiffuseAmount = weatherFade * WEATHER_DIRECT_LIGHT;
+			float rainDiffuseAmount = lodWeatherFade * WEATHER_DIRECT_LIGHT;
 			shdCol += rainDiffuseAmount * material.ambient * skyLightSquared * (1.0 - shdFade);
 		#endif
 

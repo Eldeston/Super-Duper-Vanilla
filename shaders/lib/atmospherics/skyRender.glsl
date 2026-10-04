@@ -12,6 +12,17 @@
 #include "/lib/atmospherics/aurora.glsl"
 #include "/lib/atmospherics/rainbow.glsl"
 #include "/lib/atmospherics/cloudOcclusion.glsl"
+#include "/lib/atmospherics/lightning.glsl"
+
+#if WORLD_ID == 0 && !defined FORCE_DISABLE_WEATHER
+    #ifndef THUNDER_STRENGTH_DECLARED
+        #define THUNDER_STRENGTH_DECLARED
+        uniform float thunderStrength;
+    #endif
+    #define getEffectiveWeatherFade() clamp(max(weatherFade, thunderStrength), 0.0, 1.0)
+#else
+    #define getEffectiveWeatherFade() weatherFade
+#endif
 
 #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
     // Depth size / cloud steps
@@ -36,8 +47,9 @@
     // Sky clouds render
     vec3 getSkyClouds(in vec3 nEyePlayerPos, in vec3 currSkyCol){
         #ifndef FORCE_DISABLE_WEATHER
+            float cloudWeatherFade = getEffectiveWeatherFade();
             #ifdef DYNAMIC_WEATHER
-                if(weatherFade <= 0.001) return currSkyCol;
+                if(cloudWeatherFade <= 0.001) return currSkyCol;
             #endif
         #endif
 
@@ -46,8 +58,8 @@
         #ifdef FORCE_DISABLE_WEATHER
             cloudHeightFade *= 6.0;
         #else
-            cloudHeightFade -= weatherFade * 0.2;
-            cloudHeightFade *= 6.0 - weatherFade * 5.0;
+            cloudHeightFade -= cloudWeatherFade * 0.2;
+            cloudHeightFade *= 6.0 - cloudWeatherFade * 5.0;
         #endif
 
         if(cloudHeightFade <= 0) return currSkyCol;
@@ -60,11 +72,11 @@
 
         #ifdef DOUBLE_LAYERED_CLOUDS
             #ifndef FORCE_DISABLE_WEATHER
-                if(weatherFade < 0.65 && weatherFade > 0.001){
+                if(cloudWeatherFade < 0.65 && cloudWeatherFade > 0.001){
                     vec2 cirrusUv = nEyePlayerPos.xz * ((6.0 + (SECOND_CLOUD_HEIGHT / 195.0) * 6.0) * invEyeY);
                     vec2 cirrusStart = vec2(cirrusUv.x * 0.32 + cirrusUv.y * 0.128, cirrusUv.y * 1.6);
                     vec2 cirrusCam = vec2(planePos.x * 0.32 + planePos.y * 0.128, planePos.y * 1.6);
-                    float cirrusFactor = smoothstep(0.0, 0.20, weatherFade) * (1.0 - smoothstep(0.30, 0.65, weatherFade));
+                    float cirrusFactor = smoothstep(0.0, 0.20, cloudWeatherFade) * (1.0 - smoothstep(0.30, 0.65, cloudWeatherFade));
                     cloudData = max(cloudParallaxDynamic(cirrusStart, cirrusCam).yx * (0.20 * cirrusFactor), cloudData);
                 }
             #else
@@ -86,18 +98,18 @@
         #ifndef FORCE_DISABLE_WEATHER
             #ifdef DYNAMIC_WEATHER
                 // Scale clouds smoothly as overcast rises from clear to partly cloudy
-                float cloudPresence = smoothstep(0.0, 0.40, weatherFade);
+                float cloudPresence = smoothstep(0.0, 0.40, cloudWeatherFade);
                 baseClouds *= cloudPresence;
                 // Mix in expanded coverage from both channels
-                float expandedClouds = mix(baseClouds, max(cloudData.x, cloudData.y) * cloudPresence, weatherFade);
+                float expandedClouds = mix(baseClouds, max(cloudData.x, cloudData.y) * cloudPresence, cloudWeatherFade);
                 // Overcast scales the optical density of the first layer of clouds
-                float firstLayerDensity = mix(0.75, 2.0, smoothstep(0.10, 0.85, weatherFade));
+                float firstLayerDensity = mix(0.75, 2.0, smoothstep(0.10, 0.85, cloudWeatherFade));
                 // As overcast approaches 1.0, an overcast cloud deck fills the sky
-                float overcastDeck = saturate((weatherFade - 0.70) * 4.0);
+                float overcastDeck = saturate((cloudWeatherFade - 0.70) * 4.0);
                 float clouds = mix(expandedClouds, max(expandedClouds, float(skyBoxCloudSteps) * 0.70), overcastDeck);
                 clouds *= firstLayerDensity;
             #else
-                float clouds = mix(baseClouds, max(cloudData.x, cloudData.y), weatherFade);
+                float clouds = mix(baseClouds, max(cloudData.x, cloudData.y), cloudWeatherFade);
             #endif
         #else
             float clouds = baseClouds;
@@ -107,14 +119,14 @@
 
         #ifndef FORCE_DISABLE_WEATHER
             #ifdef FORCE_DISABLE_DAY_CYCLE
-                vec3 cloudLight = lightCol * (1.0 - weatherFade);
+                vec3 cloudLight = lightCol * (1.0 - cloudWeatherFade);
             #else
-                vec3 cloudLight = mix(moonCol, sunCol, dayCycleAdjust) * (1.0 - weatherFade);
+                vec3 cloudLight = mix(moonCol, sunCol, dayCycleAdjust) * (1.0 - cloudWeatherFade);
             #endif
             #ifdef STORY_MODE_CLOUDS
-                vec3 cloudSkyLight = mix(skyCol, skyCol * 0.85, weatherFade);
+                vec3 cloudSkyLight = mix(skyCol, skyCol * 0.85, cloudWeatherFade);
             #else
-                vec3 cloudSkyLight = mix(skyCol, skyCol * 0.35, weatherFade);
+                vec3 cloudSkyLight = mix(skyCol, skyCol * 0.35, cloudWeatherFade);
             #endif
         #else
             #ifdef FORCE_DISABLE_DAY_CYCLE
@@ -126,6 +138,9 @@
         #endif
 
         float cloudAlpha = saturate(clouds * 1.6);
+        #if WORLD_ID == 0 && defined CLOUD_LIGHTNING_GLOW && !defined EPILEPSY_SAFETY
+            cloudLight += getCloudInternalFlashGlow(nEyePlayerPos, cloudAlpha);
+        #endif
         vec3 celestialExcess = max(vec3(0.0), currSkyCol - cloudSkyLight);
         vec3 occludedSky = min(currSkyCol, cloudSkyLight) + celestialExcess * exp2(-cloudAlpha * 8.0);
         return mix(occludedSky, cloudSkyLight + cloudLight, cloudAlpha);
@@ -141,7 +156,7 @@ vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){
         float moonAlignment = saturate(-skyPosZ * 0.5 + 0.5);
         float nightFactor = saturate(1.0 - dayCycle);
         #ifndef FORCE_DISABLE_WEATHER
-            float weatherSkyGrad = 1.0 - weatherFade;
+            float weatherSkyGrad = 1.0 - getEffectiveWeatherFade();
         #else
             const float weatherSkyGrad = 1.0;
         #endif
@@ -157,7 +172,7 @@ vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){
 
     #if defined WORLD_LIGHT && WORLD_SUN_MOON == 1
         #ifndef FORCE_DISABLE_WEATHER
-            float celestialFade = 1.0 - weatherFade;
+            float celestialFade = 1.0 - getEffectiveWeatherFade();
         #else
             const float celestialFade = 1.0;
         #endif
@@ -174,9 +189,11 @@ vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){
         #endif
     #endif
 
-    currSkyCol += lightningFlash;
+    #ifndef EPILEPSY_SAFETY
+        currSkyCol += getLightningFlashIntensity();
+    #endif
 
-    #if WORLD_ID == 1
+    #if WORLD_ID == 1 && !defined EPILEPSY_SAFETY
         float flashAmbWeight = smoothstep(0.18, 0.50, endFlashIntensity);
         currSkyCol += toLinear(vec3(0.18, 0.10, 0.26)) * (endFlashIntensity * flashAmbWeight * 0.4);
     #endif
@@ -214,6 +231,12 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
         currSkyCol += getAetherRender(nEyePlayerPos, skyPos);
     #endif
 
+    #ifndef FORCE_DISABLE_WEATHER
+        float skyClearFade = 1.0 - getEffectiveWeatherFade();
+    #else
+        const float skyClearFade = 1.0;
+    #endif
+
     #ifdef WORLD_STARS
         #ifndef MOON_PHASE_FACTOR
             #define MOON_PHASE_FACTOR 1.0
@@ -221,12 +244,7 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
         // Moonlight washes out faint stars and the Milky Way at night
         float starMoonFade = mix(1.0, 0.45, MOON_PHASE_FACTOR);
         vec3 stars = getProceduralSquareStars(skyPos, fragmentFrameTime) * (WORLD_STARS * starMoonFade);
-
-        #ifdef FORCE_DISABLE_WEATHER
-            currSkyCol += stars;
-        #else
-            if(weatherFade < 1.0) currSkyCol += (1.0 - weatherFade) * stars;
-        #endif
+        if(skyClearFade > 0.0) currSkyCol += skyClearFade * stars;
     #endif
 
     #ifdef MILKY_WAY
@@ -235,12 +253,7 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
         float mwHorizonFade = saturate(nEyePlayerPos.y * 6.0);
         float mwMoonFade = mix(1.0, 0.15, MOON_PHASE_FACTOR);
         vec3 milkyWay = getProceduralMilkyWay(skyPos, fragmentFrameTime) * (mwHorizonFade * WORLD_MILKY_WAY * MILKY_WAY_BRIGHTNESS * mwMoonFade);
-
-        #ifdef FORCE_DISABLE_WEATHER
-            currSkyCol += milkyWay;
-        #else
-            if(weatherFade < 1.0) currSkyCol += (1.0 - weatherFade) * milkyWay;
-        #endif
+        if(skyClearFade > 0.0) currSkyCol += skyClearFade * milkyWay;
     #endif
     #endif
 
@@ -250,34 +263,17 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
         float meteorHorizonFade = saturate(nEyePlayerPos.y * 6.0);
         float meteorMoonFade = mix(1.0, 0.35, MOON_PHASE_FACTOR);
         vec3 meteors = getProceduralMeteorShowers(nEyePlayerPos, skyPos, fragmentFrameTime) * (meteorHorizonFade * WORLD_METEORS * METEOR_BRIGHTNESS * meteorMoonFade);
-
-        #ifdef FORCE_DISABLE_WEATHER
-            currSkyCol += meteors;
-        #else
-            if(weatherFade < 1.0) currSkyCol += (1.0 - weatherFade) * meteors;
-        #endif
+        if(skyClearFade > 0.0) currSkyCol += skyClearFade * meteors;
     #endif
     #endif
 
     #ifdef AURORA
     #if defined WORLD_LIGHT && defined WORLD_AURORA
         float auroraCold = isColdBiome;
-        if(auroraCold > 0.001 && nEyePlayerPos.y > 0.035){
-            #ifdef FORCE_DISABLE_WEATHER
-                float auroraWeather = 1.0;
-            #else
-                float auroraWeather = 1.0 - weatherFade;
-            #endif
-            if(auroraWeather > 0.001){
-                float auroraMoonFade = mix(1.0, 0.70, MOON_PHASE_FACTOR);
-                vec3 aurora = getVolumetricAurora(nEyePlayerPos, fragmentFrameTime) * (WORLD_AURORA * AURORA_BRIGHTNESS * auroraCold * auroraWeather * auroraMoonFade);
-
-                #ifdef FORCE_DISABLE_WEATHER
-                    currSkyCol += aurora;
-                #else
-                    if(weatherFade < 1.0) currSkyCol += (1.0 - weatherFade) * aurora;
-                #endif
-            }
+        if(auroraCold > 0.001 && nEyePlayerPos.y > 0.035 && skyClearFade > 0.001){
+            float auroraMoonFade = mix(1.0, 0.70, MOON_PHASE_FACTOR);
+            vec3 aurora = getVolumetricAurora(nEyePlayerPos, fragmentFrameTime) * (WORLD_AURORA * AURORA_BRIGHTNESS * auroraCold * skyClearFade * auroraMoonFade);
+            currSkyCol += skyClearFade * aurora;
         }
     #endif
     #endif
@@ -372,7 +368,11 @@ vec3 getSkyReflection(in vec3 reflectViewDir){
         const float fakeVLBrightness = VOLUMETRIC_LIGHTING_STRENGTH * 0.5;
         float VLBrightness = fakeVLBrightness * shdFade;
         #if WORLD_ID == 1
-            float flashReflWeight = smoothstep(0.18, 0.50, endFlashIntensity) * endFlashIntensity;
+            #ifdef EPILEPSY_SAFETY
+                float flashReflWeight = 0.0;
+            #else
+                float flashReflWeight = smoothstep(0.18, 0.50, endFlashIntensity) * endFlashIntensity;
+            #endif
             VLBrightness *= flashReflWeight;
         #endif
 
@@ -380,14 +380,14 @@ vec3 getSkyReflection(in vec3 reflectViewDir){
             float heightFade = squared(squared(squared(1.0 - squared(reflectPlayerDir.y))));
 
             #ifndef FORCE_DISABLE_WEATHER
-                heightFade += (1.0 - heightFade) * weatherFade * 0.5;
+                heightFade += (1.0 - heightFade) * getEffectiveWeatherFade() * 0.5;
             #endif
 
             VLBrightness *= heightFade;
         }
         
         #ifndef FORCE_DISABLE_WEATHER
-            finalCol += mix(lightCol, skyCol, weatherFade) * VLBrightness;
+            finalCol += mix(lightCol, skyCol, getEffectiveWeatherFade()) * VLBrightness;
         #else
             finalCol += lightCol * VLBrightness;
         #endif
@@ -430,37 +430,30 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol)
     #ifdef WORLD_LIGHT
         #if WORLD_SUN_MOON == 1
             #ifndef FORCE_DISABLE_WEATHER
-                if(weatherFade < 1.0 && abs(skyPos.z) > 0.7){
-                    vec3 lightDir = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
-                    float cloudOcc = getCloudCelestialOcclusion(lightDir, cameraPosition, fragmentFrameTime);
-                    #ifdef FORCE_DISABLE_DAY_CYCLE
-                        float sunMoonShape = getSunMoonShape(skyPos.xy / abs(skyPos.z)) * sunMoonIntensitySqrd;
-                        float celestialVis = 1.0 - weatherFade;
-                        currSkyCol += sRGBLightCol * (sunMoonShape * (celestialVis * cloudOcc));
-                    #else
-                        if(skyPos.z > 0.0){
-                            currSkyCol += getSunRender(skyPos.xy / abs(skyPos.z), sRGBSunCol * (max(sunPower, 0.40) * cloudOcc), weatherFade);
-                        } else {
-                            currSkyCol += getMoonRender(skyPos.xy / abs(skyPos.z), sRGBMoonCol * (max(moonPower, 0.40) * cloudOcc), weatherFade);
-                        }
-                    #endif
-                }
+                float sunMoonFade = getEffectiveWeatherFade();
+                bool renderCelestial = sunMoonFade < 1.0 && abs(skyPos.z) > 0.7;
+                float celestialVis = 1.0 - sunMoonFade;
             #else
-                if(abs(skyPos.z) > 0.7){
-                    vec3 lightDir = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
-                    float cloudOcc = getCloudCelestialOcclusion(lightDir, cameraPosition, fragmentFrameTime);
-                    #ifdef FORCE_DISABLE_DAY_CYCLE
-                        float sunMoonShape = getSunMoonShape(skyPos.xy / abs(skyPos.z)) * sunMoonIntensitySqrd;
-                        currSkyCol += sRGBLightCol * (sunMoonShape * cloudOcc);
-                    #else
-                        if(skyPos.z > 0.0){
-                            currSkyCol += getSunRender(skyPos.xy / abs(skyPos.z), sRGBSunCol * (max(sunPower, 0.40) * cloudOcc), 0.0);
-                        } else {
-                            currSkyCol += getMoonRender(skyPos.xy / abs(skyPos.z), sRGBMoonCol * (max(moonPower, 0.40) * cloudOcc), 0.0);
-                        }
-                    #endif
-                }
+                bool renderCelestial = abs(skyPos.z) > 0.7;
+                const float celestialVis = 1.0;
             #endif
+            if(renderCelestial){
+                vec3 lightDir = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
+                float cloudOcc = getCloudCelestialOcclusion(lightDir, cameraPosition, fragmentFrameTime);
+                #ifdef FORCE_DISABLE_DAY_CYCLE
+                    float sunMoonShape = getSunMoonShape(skyPos.xy / abs(skyPos.z)) * sunMoonIntensitySqrd;
+                    currSkyCol += sRGBLightCol * (sunMoonShape * (celestialVis * cloudOcc));
+                #else
+                    float cFade = 1.0 - celestialVis;
+                    if(skyPos.z > 0.0){
+                        float effSun = max(sunPower, 0.40 * celestialVis) * celestialVis;
+                        currSkyCol += getSunRender(skyPos.xy / abs(skyPos.z), sRGBSunCol * (effSun * cloudOcc), cFade);
+                    } else {
+                        float effMoon = max(moonPower, 0.40 * celestialVis) * celestialVis;
+                        currSkyCol += getMoonRender(skyPos.xy / abs(skyPos.z), sRGBMoonCol * (effMoon * cloudOcc), cFade);
+                    }
+                #endif
+            }
         #elif WORLD_SUN_MOON == 2
             // If current world uses shader black hole
             if(skyPos.z > 0.0){
@@ -471,10 +464,16 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol)
             }
         #endif
 
-        #if WORLD_ID == 1
+        #if WORLD_ID == 1 && !defined EPILEPSY_SAFETY
             if(endFlashIntensity > 0.18){
                 currSkyCol += getEndFlash(nEyePlayerPos);
             }
+        #endif
+    #endif
+
+    #if WORLD_ID == 0 && defined WORLD_LIGHT && !defined EPILEPSY_SAFETY
+        #ifdef CLOUD_LIGHTNING
+            currSkyCol += getCloudLightningRender(nEyePlayerPos);
         #endif
     #endif
 

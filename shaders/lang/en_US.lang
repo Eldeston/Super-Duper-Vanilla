@@ -359,6 +359,39 @@ screen.ATMOSPHERICS.comment = Clouds, godrays, skybox, stars, Milky Way, auroras
             value.METEOR_RADIANT_DIRECTION.4 = Zenith (Overhead)
             value.METEOR_RADIANT_DIRECTION.5 = Celestial (Following Moon)
 
+    ## Lightning Screen
+    screen.LIGHTNING_SETTINGS = Lightning & Flashes
+    screen.LIGHTNING_SETTINGS.comment = Configure lightning flash dynamics, cloud-to-cloud discharges, internal cloud illumination, and photosensitivity safety.\n\n§e[Visual] §fRealistic short flashes, subtle multi-stroke strobe effects, intra-cloud crawler bolts, and glowing cloud scattering.\n§c[Health Warning] §fIncludes photosensitivity / epilepsy safety protection to completely disable all flashing lights.
+
+        option.EPILEPSY_SAFETY = Photosensitivity Safety
+        option.EPILEPSY_SAFETY.comment = §c[!] EPILEPSY & PHOTOSENSITIVITY WARNING§r\n§fThis shader features dynamic lightning flashes, cloud-to-cloud discharges, and strobing effects that may trigger seizures for individuals with photosensitive epilepsy.\n\n§a[ON] §fCompletely disables ALL flashing lights, lightning sky flashes, cloud-to-cloud flashes, internal cloud glows, and End dimension flashes across the entire shader pack.\n§c[OFF] §fDynamic lightning flashes and strobe effects are active.\n\n§eRecommended for anyone sensitive to sudden bright flashes.
+            value.EPILEPSY_SAFETY.true = §aSafe (No Flashing Lights)
+            value.EPILEPSY_SAFETY.false = §cStandard (Flashes Active)
+
+        option.LIGHTNING_FLASH = Lightning Flash Mode
+        option.LIGHTNING_FLASH.comment = §c[Warning: Flashing Lights] §fControls the duration and dynamics of lightning sky flashes.\n\n§eOff: §fDisables screen flashes while keeping bolts visible.\n§eRealistic Short: §fFast, punchy, realistic flashes that reach peak brightness instantly and decay rapidly in milliseconds (~150ms).\n§eSmooth Fade: §fSofter, more gradual illumination falloff.
+            value.LIGHTNING_FLASH.0 = Off
+            value.LIGHTNING_FLASH.1 = Realistic Short
+            value.LIGHTNING_FLASH.2 = Smooth Fade
+
+        option.LIGHTNING_STROBE = Lightning Strobe Effect
+        option.LIGHTNING_STROBE.comment = §c[Warning: Flashing Lights] §fEnables a slight, natural multi-stroke strobe effect that occurs on some lightning strikes (~38% of discharges).\n\n§e[Visual] §fSimulates rapid atmospheric re-strikes (dart leaders) with 1 to 2 subtle, fast restrikes (spaced ~65ms apart) for authentic lightning flutter.\n§a[Performance: None] §fAnalytical temporal waveform.\n§b[Tip] §7Happens occasionally, just like real thunderstorms!
+
+        option.CLOUD_LIGHTNING = Cloud-to-Cloud Lightning
+        option.CLOUD_LIGHTNING.comment = Enables horizontal and diagonal cloud-to-cloud crawler lightning discharges traversing the cloud deck during storms.\n\n§e[Style] §f100% faithful to vanilla Minecraft's iconic geometric segmented line aesthetic with sharp polygonal kinks, enriched with detailed branching.\n§b[Silent] §fPurely visual in the shader with zero audio noise/sound.\n§a[Performance: Very Low] §fAnalytical segmented ray test with fast bounding cull.
+
+        option.CLOUD_LIGHTNING_BRANCHES = Lightning Branching Details
+        option.CLOUD_LIGHTNING_BRANCHES.comment = Configures the geometric branch hierarchy and detail density for cloud-to-cloud lightning.\n\n§eClassic: §fMain trunk with primary fork branches.\n§eDetailed: §fTrunk with primary forks and secondary tendril branches.\n§eIntricate: §fExtensive spider-branching crawler lightning spreading across the cloud deck.
+            value.CLOUD_LIGHTNING_BRANCHES.1 = Classic
+            value.CLOUD_LIGHTNING_BRANCHES.2 = Detailed
+            value.CLOUD_LIGHTNING_BRANCHES.3 = Intricate Spider
+
+        option.CLOUD_LIGHTNING_GLOW = Cloud Internal Glow
+        option.CLOUD_LIGHTNING_GLOW.comment = Illuminates the clouds from within with dynamic volumetric scattering whenever lightning discharges occur.\n\n§e[Visual] §fDense cloud billows trap and scatter the electric light, lighting up the cloud mass from the inside out.\n§a[Performance: None] §fInternal cloud scattering modulation.
+
+        option.CLOUD_LIGHTNING_FREQUENCY = Lightning Frequency
+        option.CLOUD_LIGHTNING_FREQUENCY.comment = Multiplier for how often cloud-to-cloud lightning discharges occur during rain and thunderstorms.\n\n§e[Visual] §fHigher values produce more frequent crawler bolts and glowing intra-cloud flashes.
+
     ## Cloud Screen
     screen.CLOUD_SETTINGS = Cloud Settings
     screen.CLOUD_SETTINGS.comment = Volumetric 3D, skybox, and vanilla clouds with procedural weather dynamics.\n\n§e[Visual] §fConfigure cloud layers, altitude, thickness, softness, and weather responsiveness.\n§e[Performance: Low to Moderate] §fVolumetric mode requires raymarching steps.

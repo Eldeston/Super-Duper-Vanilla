@@ -35,6 +35,12 @@
     #ifndef FORCE_DISABLE_WEATHER
         uniform float rainStrength;
         uniform float weatherFade;
+        #if WORLD_ID == 0
+            #ifndef THUNDER_STRENGTH_DECLARED
+                #define THUNDER_STRENGTH_DECLARED
+                uniform float thunderStrength;
+            #endif
+        #endif
     #endif
 
     #ifndef FORCE_DISABLE_DAY_CYCLE
@@ -51,23 +57,33 @@
         texCoord = gl_MultiTexCoord0.xy;
 
         #if !defined FORCE_DISABLE_WEATHER && defined WORLD_LIGHT
+            #if WORLD_ID == 0
+                float effectiveWeatherFade = clamp(max(weatherFade, thunderStrength), 0.0, 1.0);
+            #else
+                float effectiveWeatherFade = weatherFade;
+            #endif
             vec3 defaultSkyCol = toLinear(SKY_COLOR_DATA_BLOCK);
             vec3 weatherSkyCol = vec3(dot(toLinear(fogColor), vec3(0.2126, 0.7152, 0.0722)));
-            skyCol = mix(defaultSkyCol, weatherSkyCol, weatherFade);
+            skyCol = mix(defaultSkyCol, weatherSkyCol, effectiveWeatherFade);
         #else
             skyCol = toLinear(SKY_COLOR_DATA_BLOCK);
         #endif
 
         #ifdef WORLD_LIGHT
+            #ifndef FORCE_DISABLE_WEATHER
+                float celestialVis = 1.0 - effectiveWeatherFade;
+            #else
+                const float celestialVis = 1.0;
+            #endif
             #ifdef FORCE_DISABLE_DAY_CYCLE
-                sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
+                sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0 * celestialVis;
                 lightCol = toLinear(sRGBLightCol);
             #else
-                sRGBSunCol = SUN_COLOR_BASE;
-                sunCol = toLinear(SUN_COL_DATA_BLOCK);
-                sRGBMoonCol = MOON_COLOR_BASE;
-                moonCol = toLinear(MOON_COL_DATA_BLOCK);
-                sRGBLightCol = LIGHT_COLOR_DATA_BLOCK1(SUN_COL_DATA_BLOCK, MOON_COL_DATA_BLOCK);
+                sRGBSunCol = SUN_COLOR_BASE * celestialVis;
+                sunCol = toLinear(SUN_COL_DATA_BLOCK) * celestialVis;
+                sRGBMoonCol = MOON_COLOR_BASE * celestialVis;
+                moonCol = toLinear(MOON_COL_DATA_BLOCK) * celestialVis;
+                sRGBLightCol = LIGHT_COLOR_DATA_BLOCK1(sRGBSunCol, sRGBMoonCol);
                 lightCol = toLinear(sRGBLightCol);
             #endif
         #endif
@@ -146,6 +162,12 @@
     #ifndef FORCE_DISABLE_WEATHER
         uniform float rainStrength;
         uniform float weatherFade;
+        #if WORLD_ID == 0
+            #ifndef THUNDER_STRENGTH_DECLARED
+                #define THUNDER_STRENGTH_DECLARED
+                uniform float thunderStrength;
+            #endif
+        #endif
     #endif
 
     #ifndef FORCE_DISABLE_DAY_CYCLE

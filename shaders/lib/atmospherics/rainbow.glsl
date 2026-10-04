@@ -179,8 +179,17 @@ vec3 getRainbowRender(in vec3 nEyePlayerPos, in vec3 skyPos, in float viewDist, 
     #ifdef FORCE_DISABLE_WEATHER
         return vec3(0.0);
     #else
+        #if WORLD_ID == 0
+            #ifndef THUNDER_STRENGTH_DECLARED
+                #define THUNDER_STRENGTH_DECLARED
+                uniform float thunderStrength;
+            #endif
+            float rainbowWeatherFade = clamp(max(weatherFade, thunderStrength), 0.0, 1.0);
+        #else
+            float rainbowWeatherFade = weatherFade;
+        #endif
         // Only active when raining, not totally overcast, and not underwater / looking through water
-        if(rainStrength <= 0.005 || weatherFade >= 0.95 || isEyeInWater != 0 || isWater) return vec3(0.0);
+        if(rainStrength <= 0.005 || rainbowWeatherFade >= 0.95 || isEyeInWater != 0 || isWater) return vec3(0.0);
 
         // Snow / cold biome check (snow does not form rainbows)
         float liquidRain = 1.0 - saturate(isColdBiome * 1.5);
@@ -201,7 +210,7 @@ vec3 getRainbowRender(in vec3 nEyePlayerPos, in vec3 skyPos, in float viewDist, 
 
         // Rainbow visibility: rain presence * not totally overcast * depth fade
         float rainFactor = smoothstep(0.01, 0.20, rainStrength);
-        float notOvercastFactor = 1.0 - smoothstep(0.70, 0.95, weatherFade);
+        float notOvercastFactor = 1.0 - smoothstep(0.70, 0.95, rainbowWeatherFade);
         float rainbowStrength = rainFactor * notOvercastFactor * liquidRain * blockOcclusion * cloudCeilFade;
         if(rainbowStrength <= 0.001) return vec3(0.0);
 

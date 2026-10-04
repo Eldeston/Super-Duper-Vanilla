@@ -1,3 +1,10 @@
+#if WORLD_ID == 0 && !defined FORCE_DISABLE_WEATHER
+    #ifndef THUNDER_STRENGTH_DECLARED
+        #define THUNDER_STRENGTH_DECLARED
+        uniform float thunderStrength;
+    #endif
+#endif
+
 // Source: https://www.guerrilla-games.com/read/decima-engine-advances-in-lighting-and-aa
 float getNoHSquared(in float NoL, in float NoV, in float VoL, in vec3 V, in vec3 N){
     // Light basis vectors in view space from shadowModelView
@@ -109,7 +116,12 @@ vec3 getSpecularBRDF(in vec3 V, in vec3 N, in vec3 albedo, in float NL, in float
 
     // Rain occlusion
     #ifndef FORCE_DISABLE_WEATHER
-        distribution *= 1.0 - weatherFade;
+        #if WORLD_ID == 0
+            float effectiveWeatherFade = clamp(max(weatherFade, thunderStrength), 0.0, 1.0);
+        #else
+            float effectiveWeatherFade = weatherFade;
+        #endif
+        distribution *= 1.0 - effectiveWeatherFade;
     #endif
 
     // Calculate and apply fresnel and return final specular

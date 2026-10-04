@@ -143,7 +143,11 @@ float getCelestialTotalStrength(in vec3 lightDir, in vec3 lightViewDir, in vec2 
 vec3 computeGodrayColor(in float totalStrength, in float sceneDepth){
     vec3 col = lightCol * (shdFade * totalStrength);
     #if WORLD_ID == 1
-        col *= smoothstep(0.18, 0.50, endFlashIntensity) * endFlashIntensity;
+        #ifdef EPILEPSY_SAFETY
+            col = vec3(0.0);
+        #else
+            col *= smoothstep(0.18, 0.50, endFlashIntensity) * endFlashIntensity;
+        #endif
     #endif
     if(isEyeInWater == 1){
         vec3 waterTint = mix(toLinear(fogColor), vec3(0.35, 0.75, 0.95), 0.5);
@@ -237,7 +241,11 @@ float marchGodraysWithClouds(
 // Fast pre-flight culling to eliminate godray calculations before vector setup
 bool shouldCullGodrays(in float lightViewDirZ, in float cosTheta, in float sceneDepth, in float weatherVis){
     #if WORLD_ID == 1
-        if(endFlashIntensity <= 0.18) return true;
+        #ifdef EPILEPSY_SAFETY
+            return true;
+        #else
+            if(endFlashIntensity <= 0.18) return true;
+        #endif
     #endif
     if(GODRAYS_DENSITY <= 0.0 || isEyeInWater == 2 || shdFade <= 0.001) return true;
     if(weatherVis <= 0.001 || lightViewDirZ >= -0.05 || cosTheta <= 0.05) return true;
@@ -294,7 +302,16 @@ vec3 getGodRays(
     in float sceneDepth
 ){
     #ifndef FORCE_DISABLE_WEATHER
-        float weatherVis = 1.0 - smoothstep(0.65, 0.95, weatherFade);
+        #if WORLD_ID == 0
+            #ifndef THUNDER_STRENGTH_DECLARED
+                #define THUNDER_STRENGTH_DECLARED
+                uniform float thunderStrength;
+            #endif
+            float godrayWeather = clamp(max(weatherFade, thunderStrength), 0.0, 1.0);
+        #else
+            float godrayWeather = weatherFade;
+        #endif
+        float weatherVis = 1.0 - smoothstep(0.65, 0.95, godrayWeather);
     #else
         const float weatherVis = 1.0;
     #endif

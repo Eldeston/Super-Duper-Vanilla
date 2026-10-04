@@ -13,8 +13,17 @@
 
 float getCloudCelestialOcclusion(in vec3 lightDir, in vec3 cameraPos, in float frameTime){
     #ifndef FORCE_DISABLE_WEATHER
+        #if WORLD_ID == 0
+            #ifndef THUNDER_STRENGTH_DECLARED
+                #define THUNDER_STRENGTH_DECLARED
+                uniform float thunderStrength;
+            #endif
+            float stormFade = clamp(max(weatherFade, thunderStrength), 0.0, 1.0);
+        #else
+            float stormFade = weatherFade;
+        #endif
         #ifdef DYNAMIC_WEATHER
-            if(weatherFade <= 0.001) return 1.0;
+            if(stormFade <= 0.001) return 1.0;
         #endif
     #endif
 
@@ -48,14 +57,14 @@ float getCloudCelestialOcclusion(in vec3 lightDir, in vec3 cameraPos, in float f
 
         #ifndef FORCE_DISABLE_WEATHER
             #ifdef DYNAMIC_WEATHER
-                cloudVal *= smoothstep(0.0, 0.40, weatherFade);
+                cloudVal *= smoothstep(0.0, 0.40, stormFade);
             #endif
         #endif
 
         float cloudCoverage = smoothstep(0.35, 0.65, cloudVal);
         #ifndef FORCE_DISABLE_WEATHER
             #ifdef DYNAMIC_WEATHER
-                cloudCoverage = max(cloudCoverage, smoothstep(0.50, 0.90, weatherFade));
+                cloudCoverage = max(cloudCoverage, smoothstep(0.50, 0.90, stormFade));
             #endif
         #endif
 

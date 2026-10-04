@@ -38,6 +38,12 @@
         #ifndef FORCE_DISABLE_WEATHER
             uniform float rainStrength;
             uniform float weatherFade;
+            #if WORLD_ID == 0
+                #ifndef THUNDER_STRENGTH_DECLARED
+                    #define THUNDER_STRENGTH_DECLARED
+                    uniform float thunderStrength;
+                #endif
+            #endif
         #endif
 
         #ifndef FORCE_DISABLE_DAY_CYCLE
@@ -54,7 +60,11 @@
         #if defined LENS_FLARE && defined WORLD_LIGHT
             #if WORLD_ID == 1
                 const vec3 blackHoleDir = vec3(0.0, 0.6691306, -0.7431448);
-                float flashFlareWeight = smoothstep(0.18, 0.50, endFlashIntensity);
+                #ifndef EPILEPSY_SAFETY
+                    float flashFlareWeight = smoothstep(0.18, 0.50, endFlashIntensity);
+                #else
+                    float flashFlareWeight = 0.0;
+                #endif
                 if (flashFlareWeight > 0.0 && endFlashPosition.z < -0.01) {
                     sRGBLightCol = vec3(1.2, 1.0, 1.5) * (endFlashIntensity * flashFlareWeight);
                     shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, normalize(endFlashPosition)), gbufferProjection[1].y * 0.72794047);
@@ -161,6 +171,12 @@
         #ifndef FORCE_DISABLE_WEATHER
             uniform float rainStrength;
             uniform float weatherFade;
+            #if WORLD_ID == 0
+                #ifndef THUNDER_STRENGTH_DECLARED
+                    #define THUNDER_STRENGTH_DECLARED
+                    uniform float thunderStrength;
+                #endif
+            #endif
         #endif
 
         #ifndef FORCE_DISABLE_DAY_CYCLE
@@ -234,7 +250,11 @@
                     #ifdef FORCE_DISABLE_WEATHER
                         float weatherFlare = 1.0;
                     #else
-                        float weatherFlare = 1.0 - weatherFade;
+                        #if WORLD_ID == 0
+                            float weatherFlare = 1.0 - clamp(max(weatherFade, thunderStrength), 0.0, 1.0);
+                        #else
+                            float weatherFlare = 1.0 - weatherFade;
+                        #endif
                     #endif
                     if(weatherFlare > 0.0){
                         #if defined FORCE_DISABLE_CLOUDS || CLOUD_TYPE == 0

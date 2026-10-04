@@ -116,6 +116,25 @@ const float sunPathRotation = 30.0; // Light path angle. This also affects sky a
 #define METEOR_RADIANT_DIRECTION 0 // Radiant origin location. 0: North-East, 1: North-West, 2: South-East, 3: South-West, 4: Zenith (Overhead), 5: Celestial. [0 1 2 3 4 5]
 #define STAR_ROTATION 0 // Star rotation mode. Aligned keeps all square stars axis-aligned. Random rotates each star at an individual random angle. [0 1]
 
+/// -------------------------------- /// Lightning and Flashes /// -------------------------------- ///
+
+// #define EPILEPSY_SAFETY // [WARNING: FLASHING LIGHTS] Enables photosensitivity and epilepsy safety mode. Completely disables all flashing lights, lightning flashes, cloud glows, End dimension flashes, and strobing effects across the entire shader pack.
+#define LIGHTNING_FLASH 1 // Lightning flash rendering mode. 0: Off, 1: Realistic Short (fast punchy decay), 2: Smooth Fade. [0 1 2]
+#define LIGHTNING_STROBE // Enables subtle atmospheric multi-stroke strobe effect that occurs on some lightning strikes.
+#define CLOUD_LIGHTNING // Enables cloud-to-cloud atmospheric visual lightning during storms. Faithful to vanilla geometric segmented style with branching details and zero noise/sound.
+#define CLOUD_LIGHTNING_BRANCHES 2 // Branching detail level for cloud-to-cloud lightning. 1: Classic, 2: Detailed, 3: Intricate Spider. [1 2 3]
+#define CLOUD_LIGHTNING_GLOW 1.00 // Intensity of internal flashing glows that light up clouds from within. [0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00]
+#define CLOUD_LIGHTNING_FREQUENCY 1.00 // Frequency multiplier of cloud-to-cloud lightning during storms. [0.25 0.50 0.75 1.00 1.25 1.50 2.00]
+
+#ifdef EPILEPSY_SAFETY
+    #undef LIGHTNING_FLASH
+    #define LIGHTNING_FLASH 0
+    #undef LIGHTNING_STROBE
+    #undef CLOUD_LIGHTNING
+    #undef CLOUD_LIGHTNING_GLOW
+    #define CLOUD_LIGHTNING_GLOW 0.00
+#endif
+
 /// -------------------------------- /// Cloud settings /// -------------------------------- ///
 
 #define CLOUD_TYPE 2 // Changes cloud type. [0 1 2]

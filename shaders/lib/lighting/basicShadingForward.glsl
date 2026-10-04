@@ -3,6 +3,11 @@
 		#define END_FLASH_UNIFORM_DECLARED
 		uniform float endFlashIntensity;
 	#endif
+#elif WORLD_ID == 0 && !defined FORCE_DISABLE_WEATHER
+	#ifndef THUNDER_STRENGTH_DECLARED
+		#define THUNDER_STRENGTH_DECLARED
+		uniform float thunderStrength;
+	#endif
 #endif
 
 vec3 basicShadingForward(in vec3 albedo){
@@ -10,7 +15,12 @@ vec3 basicShadingForward(in vec3 albedo){
 	float skyLightSquared = squared(lmCoord.y);
 
 	#ifndef FORCE_DISABLE_WEATHER
-		vec3 linearSkyCol = mix(toLinear(SKY_COLOR_DATA_BLOCK), vec3(dot(toLinear(fogColor), vec3(0.2126, 0.7152, 0.0722))), weatherFade);
+		#if WORLD_ID == 0
+			float forwardWeatherFade = clamp(max(weatherFade, thunderStrength), 0.0, 1.0);
+		#else
+			float forwardWeatherFade = weatherFade;
+		#endif
+		vec3 linearSkyCol = mix(toLinear(SKY_COLOR_DATA_BLOCK), vec3(dot(toLinear(fogColor), vec3(0.2126, 0.7152, 0.0722))), forwardWeatherFade);
 	#else
 		vec3 linearSkyCol = toLinear(SKY_COLOR_DATA_BLOCK);
 	#endif
@@ -20,7 +30,11 @@ vec3 basicShadingForward(in vec3 albedo){
 	vec3 totalDiffuse = (linearSkyCol + lightningFlash) * skyLightSquared;
 
 	#if WORLD_ID == 1
-		float smoothFlash = smoothstep(0.18, 0.50, endFlashIntensity) * endFlashIntensity;
+		#ifdef EPILEPSY_SAFETY
+			float smoothFlash = 0.0;
+		#else
+			float smoothFlash = smoothstep(0.18, 0.50, endFlashIntensity) * endFlashIntensity;
+		#endif
 		totalDiffuse += toLinear(vec3(0.20, 0.12, 0.28)) * (smoothFlash * skyLightSquared);
 		#ifdef END_BH_LIGHT
 			if(END_BH_LIGHT > 0.0) totalDiffuse += toLinear(LIGHT_COLOR_DATA_BLOCK0) * (END_BH_LIGHT * 1.5 * saturate(lmCoord.y / max(WORLD1_CUSTOM_SKYLIGHT, 0.1)) * 0.5);
@@ -65,20 +79,29 @@ vec3 basicShadingForward(in vec3 albedo){
 
 		#ifndef FORCE_DISABLE_WEATHER
 			// Approximate rain diffusing light shadow
-			float rainDirectAmount = 1.0 - weatherFade * (1.0 - WEATHER_DIRECT_LIGHT);
+			float rainDirectAmount = 1.0 - forwardWeatherFade * (1.0 - WEATHER_DIRECT_LIGHT);
 			shdCol *= rainDirectAmount;
 
-			float rainDiffuseAmount = weatherFade * WEATHER_DIRECT_LIGHT;
+			float rainDiffuseAmount = forwardWeatherFade * WEATHER_DIRECT_LIGHT;
 			shdCol += rainDiffuseAmount * skyLightSquared;
 		#endif
 
 		#if WORLD_ID == 1
-			float smoothFlashShd = smoothstep(0.18, 0.50, endFlashIntensity) * endFlashIntensity;
+			#ifdef EPILEPSY_SAFETY
+				float smoothFlashShd = 0.0;
+			#else
+				float smoothFlashShd = smoothstep(0.18, 0.50, endFlashIntensity) * endFlashIntensity;
+			#endif
 			vec3 sRGBLightCol = (LIGHT_COLOR_DATA_BLOCK0 * 1.5 + vec3(0.3, 0.1, 0.4)) * smoothFlashShd;
 			totalDiffuse += shdCol * toLinear(sRGBLightCol);
 		#else
 			// Calculate and add shadow diffuse
-			totalDiffuse += shdCol * toLinear(LIGHT_COLOR_DATA_BLOCK0);
+			#ifndef FORCE_DISABLE_WEATHER
+				vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0 * (1.0 - forwardWeatherFade);
+			#else
+				vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
+			#endif
+			totalDiffuse += shdCol * toLinear(sRGBLightCol);
 		#endif
 	#endif
 

@@ -1,14 +1,19 @@
-## Language format v1.1.0
+## Language format v1.2.0
 ## Tous les autres fichiers .lang doivent adopter la version la plus récente du format de ce fichier principal
 
 ## Profils
-profile.comment = Modifie le profil de performance pour améliorer les performances ou la qualité
+profile.comment = Modifie le profil de performance pour équilibrer la fidélité visuelle et la fréquence d'images.\n\n§e[Visuel] §fBascule et ajuste les effets sur toutes les passes de rendu.\n§a[Performance] §fDe Patate (le plus rapide) à Ultra (meilleure qualité).\n§b[Conseil] §7Moyenne est la référence recommandée pour la plupart des joueurs.
 
 profile.POTATO = Patate
+profile.POTATO.comment = Mode de performance maximale pour matériel d'entrée de gamme et puces graphiques intégrées.\n\n§e[Visuel] §fDésactive les ombres dynamiques, l'éclairage volumétrique, les rayons crépusculaires, le SSAO, les reflets et le bloom.\n§a[Performance : Charge très faible] §fFPS maximum sur PC portables et configurations modestes.\n§b[Conseil] §7Idéal pour consoles portables ou jeu compétitif à taux de rafraîchissement élevé.
 profile.LOW = Basse
+profile.LOW.comment = Améliorations visuelles légères avec un impact minimal sur la fréquence d'images.\n\n§e[Visuel] §fActive les rayons crépusculaires rapides, les ombres solaires basiques, un bloom subtil et des caustiques simples.\n§a[Performance : Faible impact] §fFonctionne fluidement sur cartes graphiques d'entrée de gamme.\n§b[Conseil] §7Excellent équilibre pour avoir des ombres sans sacrifier la fluidité.
 profile.MEDIUM = Moyenne (Par défaut)
+profile.MEDIUM.comment = L'expérience Super Duper Vanilla standard avec un éclairage atmosphérique riche.\n\n§e[Visuel] §fÉclairage volumétrique complet, ombres douces, SSAO, nuages volumétriques et TAA.\n§e[Performance : Impact modéré] §fOptimisé pour les ordinateurs de jeu grand public modernes.\n§b[Conseil] §7Offre le meilleur équilibre esthétique tel que conçu par les développeurs.
 profile.HIGH = Élevée
+profile.HIGH.comment = Fidélité accrue avec des détails de surface plus nets et des reflets raffinés.\n\n§e[Visuel] §fRésolution d'ombres supérieure, reflets rugueux, netteté affinée et plus d'échantillons de rayons crépusculaires.\n§c[Performance : Impact lourd] §fRecommandé pour les cartes graphiques de milieu à haut de gamme.\n§b[Conseil] §7Idéal pour les écrans 1080p et 1440p.
 profile.ULTRA = Ultra
+profile.ULTRA.comment = Préréglage graphique maximal sans compromis visuel.\n\n§e[Visuel] §fOmbres ultra-nettes 4096p, échantillonnage maximal du raymarching et caustiques aquatiques profondes.\n§4[Performance : Impact très lourd] §fConçu pour les cartes graphiques haut de gamme.\n§b[Conseil] §7Parfait pour les enregistrements cinématiques et les captures d'écran.
 
 screen.DEBUG = Super Duper Vanilla v1.3.8
 screen.DEBUG.comment = §bDéveloppé par §2Eldeston§f§r, présenté par §9FlameRender (C) §9Studios. §eCliquez ici pour ouvrir les paramètres de débogage du shader ! Contient les options de mode de couleur et de vitesse du bruit.
@@ -253,6 +258,39 @@ screen.ATMOSPHERICS.comment = §6Effets atmosphériques incluant le soleil/lune,
 
     option.GROUND_FOG_STRENGTH = Intensité du brouillard au sol
     option.GROUND_FOG_STRENGTH.comment = Intensité de la brume / du brouillard au ras du sol.
+
+    ## Lightning Screen
+    screen.LIGHTNING_SETTINGS = Éclairs & Flashs
+    screen.LIGHTNING_SETTINGS.comment = §eConfiguration des flashs d'éclairs, éclairs internuageux, lueurs internes des nuages et sécurité photosensibilité.\n\n§aComprend un mode de sécurité pour l'épilepsie désactivant toutes les lumières clignotantes.
+
+        option.EPILEPSY_SAFETY = Sécurité Photosensibilité
+        option.EPILEPSY_SAFETY.comment = §c[!] AVERTISSEMENT : LUMIÈRES CLIGNOTANTES§r\n§fCe shader comporte des éclairs dynamiques, des décharges internuageuses et des effets stroboscopiques pouvant déclencher des crises chez les personnes épileptiques photosensibles.\n\n§a[ACTIVÉ] §fDésactive COMPLÈTEMENT tous les flashs lumineux, éclairs de ciel, lueurs internes des nuages et flashs de l'End.\n§c[DÉSACTIVÉ] §fFlashs dynamiques et effets stroboscopiques actifs.
+            value.EPILEPSY_SAFETY.true = §aSécurisé (Aucun flash)
+            value.EPILEPSY_SAFETY.false = §cStandard (Flashs actifs)
+
+        option.LIGHTNING_FLASH = Mode de flash des éclairs
+        option.LIGHTNING_FLASH.comment = §c[Avertissement : Lumières clignotantes] §fContrôle la durée et la dynamique des flashs d'éclairs.\n\n§eDésactivé : §fAucun flash d'écran.\n§eCourt Réaliste : §fFlashs rapides et percutants avec pic instantané et décroissance rapide en millisecondes (~150ms).\n§eFondu doux : §fAtténuation plus progressive et adoucie.
+            value.LIGHTNING_FLASH.0 = Désactivé
+            value.LIGHTNING_FLASH.1 = Court Réaliste
+            value.LIGHTNING_FLASH.2 = Fondu doux
+
+        option.LIGHTNING_STROBE = Effet stroboscopique des éclairs
+        option.LIGHTNING_STROBE.comment = §c[Avertissement : Lumières clignotantes] §fActive un léger effet stroboscopique naturel sur certains éclairs (~38% des décharges), simulant les arcs de retour successifs (restrikes rapides espacés de ~65ms).
+
+        option.CLOUD_LIGHTNING = Éclairs de nuage à nuage
+        option.CLOUD_LIGHTNING.comment = Active des décharges d'éclairs horizontales et diagonales traversant les nuages pendant les orages.\n\n§e[Style] §f100% fidèle au style géométrique segmenté de Minecraft vanilla avec des angles marqués et de multiples ramifications.\n§b[Silencieux] §fPurely visual in shader, sans bruit ni son.
+
+        option.CLOUD_LIGHTNING_BRANCHES = Détails des ramifications
+        option.CLOUD_LIGHTNING_BRANCHES.comment = Définit la complexité des ramifications des éclairs internuageux.\n\n§eClassique : §fTronc principal avec branches primaires.\n§eDétaillé : §fTronc avec branches primaires et secondaires.\n§eToile d'araignée : §fRamifications complexes s'étendant à travers la nappe nuageuse.
+            value.CLOUD_LIGHTNING_BRANCHES.1 = Classique
+            value.CLOUD_LIGHTNING_BRANCHES.2 = Détaillé
+            value.CLOUD_LIGHTNING_BRANCHES.3 = Toile d'araignée
+
+        option.CLOUD_LIGHTNING_GLOW = Lueur interne des nuages
+        option.CLOUD_LIGHTNING_GLOW.comment = Illumine les nuages de l'intérieur par diffusion lumineuse lors des éclairs.\n\n§e[Visuel] §fLa masse des nuages s'illumine de l'intérieur, révélant leur volume et leurs contours.
+
+        option.CLOUD_LIGHTNING_FREQUENCY = Fréquence des éclairs
+        option.CLOUD_LIGHTNING_FREQUENCY.comment = Multiplicateur de fréquence d'apparition des éclairs internuageux pendant la pluie et les orages.
 
     screen.CLOUD_SETTINGS = Paramètres des nuages
     screen.CLOUD_SETTINGS.comment = §eOptions de rendu des nuages telles que les nuages à double couche, les nuages dynamiques et la qualité/épaisseur des nuages.
