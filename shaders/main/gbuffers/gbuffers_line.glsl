@@ -16,6 +16,13 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
+    #ifndef TARGET_OUTLINE_MODE
+        #define TARGET_OUTLINE_MODE 1
+    #endif
+    #ifndef TARGET_OUTLINE_THICKNESS
+        #define TARGET_OUTLINE_THICKNESS 2.0
+    #endif
+
     flat out vec4 vertexColor;
 
     uniform float pixelWidth;
@@ -43,6 +50,11 @@
     in vec4 vaColor;
 
     void main(){
+        #if TARGET_OUTLINE_MODE == 0
+            gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
+            return;
+        #endif
+
         // Get vertex color with alpha in linear color space
         vertexColor = vec4(toLinear(vaColor.rgb), vaColor.a);
 
@@ -98,9 +110,9 @@
             lineScreenDir = vec2(1.0, 0.0);
         }
 
-        vec2 lineOffset = vec2(-lineScreenDir.y * pixelWidth, lineScreenDir.x * pixelHeight);
+        vec2 lineOffset = vec2(-lineScreenDir.y * pixelWidth, lineScreenDir.x * pixelHeight) * TARGET_OUTLINE_THICKNESS;
 
-        if(lineOffset.x < 0.0) lineOffset = -lineOffset;
+        if(lineOffset.x < 0.0 || (lineOffset.x == 0.0 && lineOffset.y < 0.0)) lineOffset = -lineOffset;
         if(gl_VertexID % 2 != 0) lineOffset = -lineOffset;
 
         gl_Position = vec4((ndc1.xy + lineOffset) * clipStart.w, clipStart.z, clipStart.w);
@@ -114,13 +126,37 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
+    #ifndef TARGET_OUTLINE_MODE
+        #define TARGET_OUTLINE_MODE 1
+    #endif
+
     /* RENDERTARGETS: 4 */
     layout(location = 0) out vec4 sceneColOut; // colortex4
 
     flat in vec4 vertexColor;
 
     void main(){
+        #if TARGET_OUTLINE_MODE == 0
+            discard;
+            return;
+        #endif
+
         if(vertexColor.a <= 0.001){ discard; return; }
-        sceneColOut = vertexColor;
+
+        #if TARGET_OUTLINE_MODE == 1
+            // Inverted mode (Vanilla indicator style):
+            // Blend mode is ONE_MINUS_DST_COLOR ONE_MINUS_SRC_COLOR ONE ZERO.
+            // Outputting pure white computes Result = 1.0 * (1.0 - Dst) = 1.0 - Dst,
+            // inverting the underlying color/value for optimal visibility.
+            sceneColOut = vec4(1.0, 1.0, 1.0, 1.0);
+        #elif TARGET_OUTLINE_MODE == 2
+            // Solid Black mode
+            sceneColOut = vec4(0.0, 0.0, 0.0, 0.85);
+        #elif TARGET_OUTLINE_MODE == 3
+            // Solid White mode
+            sceneColOut = vec4(1.0, 1.0, 1.0, 0.85);
+        #else
+            sceneColOut = vertexColor;
+        #endif
     }
 #endif

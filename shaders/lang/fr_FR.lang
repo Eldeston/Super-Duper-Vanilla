@@ -43,6 +43,16 @@ screen.POST.comment = §6Effets de post-traitement tels que les contours, l'anti
     option.OUTLINE_PIXEL_SIZE = Épaisseur des contours
     option.OUTLINE_PIXEL_SIZE.comment = Épaisseur des contours en pixels. Ajustez pour modifier la largeur des contours.
 
+    option.TARGET_OUTLINE_MODE = Contour du Bloc Ciblé
+    option.TARGET_OUTLINE_MODE.comment = Style et mode de rendu du contour de sélection autour des blocs ciblés.\n\n§e[Visuel] §fInversé inverse la valeur de la scène sous la ligne (comme les indicateurs/réticule Vanilla), garantissant une visibilité parfaite sur tout arrière-plan. Noir et Blanc offrent des couleurs unies classiques.\n§a[Performance: Aucune] §fMode de rastérisation des lignes.\n§b[Astuce] §7Le mode Inversé est recommandé pour une lisibilité maximale dans les grottes sombres comme sous le soleil.
+        value.TARGET_OUTLINE_MODE.0 = Désactivé
+        value.TARGET_OUTLINE_MODE.1 = Inversé (Vanilla)
+        value.TARGET_OUTLINE_MODE.2 = Noir Uni
+        value.TARGET_OUTLINE_MODE.3 = Blanc Uni
+
+    option.TARGET_OUTLINE_THICKNESS = Épaisseur du Contour Ciblé
+    option.TARGET_OUTLINE_THICKNESS.comment = Ajuste l'épaisseur du contour du bloc ciblé en pixels d'écran.\n\n§e[Visuel] §fDes valeurs plus élevées épaississent le contour pour une meilleure lisibilité.\n§a[Performance: Aucune] §fExtrusion des sommets à l'écran.\n§b[Astuce] §72.0 ou 2.5 pixels offre une visibilité nette sans masquer le bloc.
+
     option.RETRO_FILTER = Filtre rétro
     option.RETRO_FILTER.comment = Active le filtre rétro. Fonctionne mieux à faible résolution de rendu.
 

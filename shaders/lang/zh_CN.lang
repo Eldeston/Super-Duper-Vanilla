@@ -43,6 +43,16 @@ screen.POST.comment = §6后期处理效果, 如描边, 抗锯齿, 复古滤镜�
     option.OUTLINE_PIXEL_SIZE = 描边像素尺寸
     option.OUTLINE_PIXEL_SIZE.comment = 描边的像素尺寸. 调整以改变描边的厚度.
 
+    option.TARGET_OUTLINE_MODE = 目标方块轮廓
+    option.TARGET_OUTLINE_MODE.comment = 目标方块选择边框的样式和渲染模式。\n\n§e[视觉] §f反色会反转线条下方的场景颜色（类似于原版准星/指示器），确保在任何背景下都清晰可见。黑色和白色提供经典的纯色边缘。\n§a[性能: 无] §f线条光栅化模式。\n§b[提示] §7推荐使用反色模式，在黑暗洞穴或明亮群系中均能获得最佳辨识度。
+        value.TARGET_OUTLINE_MODE.0 = 关
+        value.TARGET_OUTLINE_MODE.1 = 反色 (原版风格)
+        value.TARGET_OUTLINE_MODE.2 = 纯黑
+        value.TARGET_OUTLINE_MODE.3 = 纯白
+
+    option.TARGET_OUTLINE_THICKNESS = 目标方块轮廓宽度
+    option.TARGET_OUTLINE_THICKNESS.comment = 调整目标方块选择边框的屏幕像素宽度。\n\n§e[视觉] §f数值越大，边框越宽越清晰。\n§a[性能: 无] §f屏幕空间顶点挤出。\n§b[提示] §7推荐 2.0 到 2.5 像素，清晰明显且不遮挡方块细节。
+
     option.RETRO_FILTER = 复古滤镜
     option.RETRO_FILTER.comment = 启用复古滤镜. 在低渲染质量下效果最好.
 

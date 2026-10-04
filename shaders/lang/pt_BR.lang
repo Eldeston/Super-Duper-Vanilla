@@ -27,6 +27,12 @@ screen.POST = Post
 
     option.OUTLINE_BRIGHTNESS = Claridade do Contorno
     option.OUTLINE_PIXEL_SIZE = Espessura do Pixel do Contorno
+    option.TARGET_OUTLINE_MODE = Contorno do Bloco Alvo
+        value.TARGET_OUTLINE_MODE.0 = OFF
+        value.TARGET_OUTLINE_MODE.1 = Invertido (Vanilla)
+        value.TARGET_OUTLINE_MODE.2 = Preto Sólido
+        value.TARGET_OUTLINE_MODE.3 = Branco Sólido
+    option.TARGET_OUTLINE_THICKNESS = Espessura do Contorno Alvo
     option.RETRO_FILTER = Filtro Retro
 
     option.ANTI_ALIASING = Anti Aliasing

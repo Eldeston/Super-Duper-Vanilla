@@ -25,6 +25,12 @@
 
     option.OUTLINE_BRIGHTNESS = Яркость контуров
     option.OUTLINE_PIXEL_SIZE = Ширина контуров
+    option.TARGET_OUTLINE_MODE = Выделение целевого блока
+        value.TARGET_OUTLINE_MODE.0 = Выкл
+        value.TARGET_OUTLINE_MODE.1 = Инвертированный (Ванильный)
+        value.TARGET_OUTLINE_MODE.2 = Сплошной черный
+        value.TARGET_OUTLINE_MODE.3 = Сплошной белый
+    option.TARGET_OUTLINE_THICKNESS = Толщина рамки выделения
     option.RETRO_FILTER = Ретро-фильтр
 
     option.ANTI_ALIASING = Сглаживание

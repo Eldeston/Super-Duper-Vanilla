@@ -55,6 +55,16 @@ screen.POST.comment = Lens, camera, anti-aliasing, sharpening, and stylized outl
     option.OUTLINE_PIXEL_SIZE = Outline Thickness
     option.OUTLINE_PIXEL_SIZE.comment = Adjusts outline width in screen pixels.\n\n§e[Visual] §fHigher values produce thicker, bolder contours around blocks.\n§a[Performance: None] §fKernel radius scalar.\n§b[Tip] §71 to 2 pixels is recommended for clean, modern readability.
 
+    option.TARGET_OUTLINE_MODE = Targeted Block Outline
+    option.TARGET_OUTLINE_MODE.comment = Style and rendering mode of the selection outline around targeted blocks.\n\n§e[Visual] §fInverted inverts the scene value beneath the line (like Vanilla crosshairs/indicators), guaranteeing high visibility against any background. Black and White offer classic solid colors.\n§a[Performance: None] §fLine rasterization mode.\n§b[Tip] §7Inverted is recommended for optimal visibility in dark caves and bright biomes alike.
+        value.TARGET_OUTLINE_MODE.0 = OFF
+        value.TARGET_OUTLINE_MODE.1 = Inverted (Vanilla)
+        value.TARGET_OUTLINE_MODE.2 = Solid Black
+        value.TARGET_OUTLINE_MODE.3 = Solid White
+
+    option.TARGET_OUTLINE_THICKNESS = Targeted Outline Width
+    option.TARGET_OUTLINE_THICKNESS.comment = Adjusts the thickness of the targeted block selection outline in screen pixels.\n\n§e[Visual] §fHigher values expand the wireframe border width for improved readability.\n§a[Performance: None] §fScreen-space vertex extrusion.\n§b[Tip] §72.0 or 2.5 pixels provides crisp, bold visibility without obscuring the block.
+
     option.RETRO_FILTER = Retro Pixel Filter
     option.RETRO_FILTER.comment = Snaps screen pixel coordinates to simulate vintage 90s console gaming.\n\n§e[Visual] §fCreates an authentic low-resolution pixelated look.\n§a[Performance: None] §fUV coordinate quantization.\n§b[Tip] §7Works best when lowering your render resolution for true nostalgia.
 
