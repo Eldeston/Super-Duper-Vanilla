@@ -566,6 +566,9 @@ screen.PBR.comment = Physically Based Rendering, specular highlights, water, lav
         option.WATER_FLAT = Flat Water Albedo
         option.WATER_FLAT.comment = Replaces textured water color with a clean, flat stylized albedo tone.\n\n§e[Visual] §fCreates an ultra-clean, minimalist modern water appearance.\n§a[Performance: None] §fTexture bypass toggle.
 
+        option.WATER_DEPTH_WAVES = Depth Waves & Puddles
+        option.WATER_DEPTH_WAVES.comment = Dynamically scales wave amplitude with water depth, softening ripples in shallow ponds and completely flattening waves on solid blocks or modded puddles.\n\n§e[Visual] §fShallow ponds remain peaceful and clear, while puddles on solid ground form still, mirror-like surfaces without artificial waves or foam.\n§a[Performance: Very Low] §fDepth-buffer wave amplitude scalar.\n§b[Tip] §7Perfect compatibility for puddle mods (Puddles & Floods, etc.) and peaceful shallow water!
+
     ## Lava Screen
     screen.LAVA_SETTINGS = Lava Material Settings
     screen.LAVA_SETTINGS.comment = Lava brightness, animated surface noise, and tiling scale.\n\n§e[Visual] §fCustomizes the molten glow and crust patterns of lava pools.\n§a[Performance: Very Low] §fProcedural noise shading.

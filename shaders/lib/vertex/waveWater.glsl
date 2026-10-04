@@ -17,10 +17,19 @@
     #endif
 #endif
 
-// Wave animation movements for water with storm wind reaction and indoor occlusion
-vec3 getWaterWave(in vec3 vertexEyePlayerPos, in vec2 vertexWorldPosXZ, in float id, in float outside, in float currTime){
+// Wave animation movements for water with storm wind reaction, floor attenuation, and indoor occlusion
+vec3 getWaterWave(in vec3 vertexEyePlayerPos, in vec2 vertexWorldPosXZ, in float midBlockY, in float id, in float outside, in float currTime){
     // Current affected water blocks
     if(CURRENT_SPEED > 0.0 && id >= 11100.0 && id <= 11199.0){
+        #ifdef WATER_DEPTH_WAVES
+            // Attenuate or disable waves on surfaces resting near the bottom of a block (puddles, thin layers)
+            // midBlockY: top of full water source is ~ -0.375, puddle on block floor is ~ +0.4375, floor is +0.5
+            float floorFactor = clamp(1.0 - max(0.0, midBlockY) * 3.5, 0.0, 1.0);
+            if(floorFactor <= 0.001) return vertexEyePlayerPos;
+        #else
+            const float floorFactor = 1.0;
+        #endif
+
         // Wind exposure: indoor water (caves, houses, under roofs) has NO wind
         float windExposure = smoothstep(0.70, 0.98, outside);
 
@@ -48,20 +57,25 @@ vec3 getWaterWave(in vec3 vertexEyePlayerPos, in vec2 vertexWorldPosXZ, in float
             float combinedStormSwell = swell1 + swell2 + stormChop;
             float waveHeight = 0.05 + totalStorm * 0.16;
 
-            vertexEyePlayerPos.y += mix(baseSwell * 0.05, combinedStormSwell * waveHeight, min(1.0, totalStorm * 1.2));
+            vertexEyePlayerPos.y += mix(baseSwell * 0.05, combinedStormSwell * waveHeight, min(1.0, totalStorm * 1.2)) * floorFactor;
             // Horizontal wave drift along prevailing wind direction
-            vertexEyePlayerPos.xz += vec2(0.85, 0.53) * (combinedStormSwell * (0.035 * totalStorm));
+            vertexEyePlayerPos.xz += vec2(0.85, 0.53) * (combinedStormSwell * (0.035 * totalStorm * floorFactor));
         } else {
             // Calm weather or indoor water (indoor water has gentler, peaceful current)
             float calmFactor = mix(0.5, 1.0, windExposure);
-            vertexEyePlayerPos.y += baseSwell * (0.05 * calmFactor);
+            vertexEyePlayerPos.y += baseSwell * (0.05 * calmFactor * floorFactor);
         }
     }
 
     return vertexEyePlayerPos;
 }
 
-// 4-argument overload defaulting outside to 1.0 for backwards compatibility
+// 5-argument overload defaulting midBlockY to -0.375 (full water block top)
+vec3 getWaterWave(in vec3 vertexEyePlayerPos, in vec2 vertexWorldPosXZ, in float id, in float outside, in float currTime){
+    return getWaterWave(vertexEyePlayerPos, vertexWorldPosXZ, -0.375, id, outside, currTime);
+}
+
+// 4-argument overload defaulting outside to 1.0 and midBlockY to -0.375 for backwards compatibility
 vec3 getWaterWave(in vec3 vertexEyePlayerPos, in vec2 vertexWorldPosXZ, in float id, in float currTime){
-    return getWaterWave(vertexEyePlayerPos, vertexWorldPosXZ, id, 1.0, currTime);
+    return getWaterWave(vertexEyePlayerPos, vertexWorldPosXZ, -0.375, id, 1.0, currTime);
 }

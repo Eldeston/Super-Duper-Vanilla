@@ -203,6 +203,7 @@ const float sunPathRotation = 30.0; // Light path angle. This also affects sky a
 
 #define WATER_STYLIZE_ABSORPTION // Enables stylized water absorption. Changes water color based on depth.
 #define WATER_FOAM // Enables water foam. Appears on the sides of most solid objects, including entities.
+#define WATER_DEPTH_WAVES // Reduces wave amplitude in shallow ponds and disables waves/foam on puddles or water rendered on solid blocks.
 // #define WATER_FLAT // Enables flat water albedo.
 
 /// -------------------------------- /// Lava material settings /// -------------------------------- ///

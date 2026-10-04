@@ -38,9 +38,11 @@
             uniform float vertexFrameTime;
         #endif
 
-        #ifdef TERRAIN_ANIMATION
+        #if defined TERRAIN_ANIMATION || defined WATER_ANIMATION
             attribute vec3 at_midBlock;
+        #endif
 
+        #ifdef TERRAIN_ANIMATION
             #include "/lib/vertex/waveTerrain.glsl"
         #endif
 
@@ -77,7 +79,7 @@
             #endif
 
             #ifdef WATER_ANIMATION
-                vertexShdEyePlayerPos = getWaterWave(vertexShdEyePlayerPos, vertexShdWorldPosXZ, mc_Entity.x, lightMapCoord(gl_MultiTexCoord1.y), vertexFrameTime);
+                vertexShdEyePlayerPos = getWaterWave(vertexShdEyePlayerPos, vertexShdWorldPosXZ, at_midBlock.y * 0.015625, mc_Entity.x, lightMapCoord(gl_MultiTexCoord1.y), vertexFrameTime);
             #endif
 
             #ifdef WORLD_CURVATURE

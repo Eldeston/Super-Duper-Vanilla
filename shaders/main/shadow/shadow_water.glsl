@@ -32,6 +32,7 @@
 
         #ifdef WATER_ANIMATION
             uniform float vertexFrameTime;
+            attribute vec3 at_midBlock;
 
             #include "/lib/vertex/waveWater.glsl"
         #endif
@@ -60,7 +61,7 @@
             waterNoiseUv = vertexShdWorldPosXZ * waterTileSizeInv;
 
             #ifdef WATER_ANIMATION
-                vertexShdEyePlayerPos = getWaterWave(vertexShdEyePlayerPos, vertexShdWorldPosXZ, mc_Entity.x, lightMapCoord(gl_MultiTexCoord1.y), vertexFrameTime);
+                vertexShdEyePlayerPos = getWaterWave(vertexShdEyePlayerPos, vertexShdWorldPosXZ, at_midBlock.y * 0.015625, mc_Entity.x, lightMapCoord(gl_MultiTexCoord1.y), vertexFrameTime);
             #endif
 
             #ifdef WORLD_CURVATURE
