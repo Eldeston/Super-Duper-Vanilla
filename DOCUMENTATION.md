@@ -1,10 +1,10 @@
-# HyperDuper Vanilla — Architecture & Technical Documentation
+# HyperDuper Vanilla v1.0.0 — Architecture & Technical Documentation
 
-> **HyperDuper Vanilla** is an experimental, performance-tuned community fork of [**Super Duper Vanilla**](https://github.com/Eldeston/Super-Duper-Vanilla) (by [@Eldeston](https://github.com/Eldeston) / FlameRender Studios).
+> **HyperDuper Vanilla** is created and maintained by **[@porkyoot](https://github.com/porkyoot) (Étoile)**. It is an independent, performance-tuned fork of [**Super Duper Vanilla**](https://github.com/Eldeston/Super-Duper-Vanilla) (originally by [@Eldeston](https://github.com/Eldeston) / FlameRender Studios).
 > 
-> **Disclaimer & Maintenance Notice**: This project is provided strictly on an **"AS IS"** basis without guarantees or warranties of any kind. Maintenance may not be active or may be sporadic. Developers are warmly invited to fork, experiment, and adapt this code.
+> **Disclaimer & Maintenance Notice**: This project is provided strictly on an **"AS IS"** basis without guarantees or warranties of any kind. Developers and players are warmly invited to fork, experiment, and adapt this code.
 > 
-> **AI Vibecoding Disclosure**: This fork is developed with extensive use of AI pair-programming and vibecoding for rapid iteration, shader mathematics experimentation, and UI/UX design. All shader code is verified via our automated Quality Gate pipeline.
+> **AI Vibecoding Disclosure**: This project is built using AI pair-programming and vibecoding for rapid iteration, complex shader mathematics, and UI/UX design. All shader code is verified via our automated Quality Gate pipeline.
 
 ---
 

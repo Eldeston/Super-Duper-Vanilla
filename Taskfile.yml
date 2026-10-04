@@ -151,6 +151,54 @@ tasks:
       - echo "✓ CI pipeline completed successfully!"
 
   # ============================================================================
+  # Version Bumping & Release Tasks
+  # ============================================================================
+  bump:
+    desc: 'Bump shaderpack semver across language files and documentation'
+    summary: |
+      Increments version across en_US, fr_FR, zh_CN, pt_BR, README, and docs.
+      Usage:
+        task bump -- patch
+        task bump -- minor
+        task bump -- major
+        task bump -- 1.0.1
+        task bump -- patch --commit --tag
+    cmds:
+      - '{{.PYTHON}} scripts/bump_version.py {{.CLI_ARGS}}'
+
+  'bump:patch':
+    desc: 'Bump patch version (e.g. 1.0.0 -> 1.0.1)'
+    cmds:
+      - '{{.PYTHON}} scripts/bump_version.py patch {{.CLI_ARGS}}'
+
+  'bump:minor':
+    desc: 'Bump minor version (e.g. 1.0.0 -> 1.1.0)'
+    cmds:
+      - '{{.PYTHON}} scripts/bump_version.py minor {{.CLI_ARGS}}'
+
+  'bump:major':
+    desc: 'Bump major version (e.g. 1.0.0 -> 2.0.0)'
+    cmds:
+      - '{{.PYTHON}} scripts/bump_version.py major {{.CLI_ARGS}}'
+
+  release:
+    desc: 'Validate quality gates, package release ZIP, and tag git repository'
+    summary: |
+      Runs full quality gate, builds Hyper-Duper-Vanilla.v<version>.zip,
+      tags the git repository with v<version>, and prepares release assets.
+      Usage:
+        task release
+        task release -- --push
+        task release -- --push --gh-release
+    cmds:
+      - '{{.PYTHON}} scripts/release.py {{.CLI_ARGS}}'
+
+  'release:push':
+    desc: 'Validate, build, tag, and push release to git remote'
+    cmds:
+      - '{{.PYTHON}} scripts/release.py --push {{.CLI_ARGS}}'
+
+  # ============================================================================
   # Developer Tooling & Git Hooks
   # ============================================================================
   'hooks:install':

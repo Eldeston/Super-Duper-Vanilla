@@ -54,6 +54,18 @@ def get_version(workspace_root: str) -> str:
         except OSError:
             pass
 
+    # Check shaders/lang/en_US.lang
+    lang_path = os.path.join(workspace_root, "shaders", "lang", "en_US.lang")
+    if os.path.isfile(lang_path):
+        try:
+            with open(lang_path, "r", encoding="utf-8", errors="replace") as f:
+                content = f.read()
+                m = re.search(r"screen\.DEBUG\s*=\s*(?:HyperDuper|Super\s+Duper)\s+Vanilla\s+(v[0-9a-zA-Z\.\-]+)", content, re.IGNORECASE)
+                if m:
+                    return m.group(1)
+        except OSError:
+            pass
+
     # Fallback to check composite_translucent.glsl
     composite_path = os.path.join(workspace_root, "shaders", "main", "composite_translucent.glsl")
     if not os.path.isfile(composite_path):
@@ -68,7 +80,7 @@ def get_version(workspace_root: str) -> str:
         except OSError:
             pass
 
-    return "v1.3.8"
+    return "v1.0.0"
 
 
 def is_excluded(rel_path: str) -> bool:
@@ -99,7 +111,8 @@ def build_shaderpack(
     Returns (zip_filepath, sha256_hash, file_count).
     """
     version = get_version(workspace_root)
-    base_name = custom_name or f"HyperDuper-Vanilla-{version}.zip"
+    tag = version if version.startswith("v") else f"v{version}"
+    base_name = custom_name or f"Hyper-Duper-Vanilla.{tag}.zip"
     os.makedirs(output_dir, exist_ok=True)
     zip_path = os.path.join(output_dir, base_name)
 

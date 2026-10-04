@@ -1,5 +1,9 @@
 ## Contributors
-   Contributors are listed from first to last. Please keep the list format in order. You may link your name to your Github profile.
-* [@Eldeston](https://github.com/Eldeston)
+
+### HyperDuper Vanilla
+* [@porkyoot](https://github.com/porkyoot) (Étoile) — Fork creator, vibecoding development, shader & pipeline overhaul
+
+### Upstream (Super Duper Vanilla)
+* [@Eldeston](https://github.com/Eldeston) — Original creator (FlameRender Studios)
 * [@null511](https://github.com/null511)
 * [@steb-git](https://github.com/steb-git)

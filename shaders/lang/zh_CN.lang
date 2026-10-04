@@ -10,8 +10,8 @@ profile.MEDIUM = 中（默认）
 profile.HIGH = 高
 profile.ULTRA = 超高
 
-screen.DEBUG = Super Duper Vanilla v1.3.8
-screen.DEBUG.comment = §b开发: §2Eldeston§f§r, 呈现: §9FlameRender (C) §9Studios. §e单击我打开光影调试设置! 内含颜色模式和噪波速度选项.
+screen.DEBUG = HyperDuper Vanilla v1.0.0
+screen.DEBUG.comment = §dHyperDuper Vanilla v1.0.0 §7由 §6@porkyoot (Étoile)§7 制作\n(基于 §2Eldeston§7 与 §9FlameRender Studios§7 的 §bSuper Duper Vanilla§7 分支).\n\n§e[关于] §f采用 AI 协作编程进行高速光影算法探索.\n§e[状态] §f按原样提供，不提供任何担保.\n§a[性能: 无] §f单击以打开调试选项.
     option.COLOR_MODE = 颜色模式
     option.COLOR_MODE.comment = 更改反照率颜色的模式.
         value.COLOR_MODE.0 = 关

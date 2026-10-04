@@ -1,187 +1,178 @@
-# HyperDuper Vanilla 🌟
+# HyperDuper Vanilla 🌟 (v1.0.0)
 
 [![License: Custom](https://img.shields.io/badge/License-FlameRender%20Studios-blue.svg)](LICENSE)
-[![Status: Experimental Fork](https://img.shields.io/badge/Status-Experimental%20Fork-ff69b4.svg)](#disclaimer--maintenance)
-[![Vibecoded with AI](https://img.shields.io/badge/Crafted%20with-AI%20Vibecoding-7928ca.svg)](#ai-vibecoding-disclosure)
-[![Target: Iris & Minecraft](https://img.shields.io/badge/Minecraft-26.2%20%2F%20Iris%201.6%2B-green.svg)](#version-compatibility)
+[![Version: v1.0.0](https://img.shields.io/badge/Version-v1.0.0-success.svg)](https://github.com/porkyoot/HyperDuper-Vanilla/releases)
+[![Author: @porkyoot](https://img.shields.io/badge/Author-%40porkyoot%20(Étoile)-orange.svg)](https://github.com/porkyoot)
+[![Vibecoded with AI](https://img.shields.io/badge/Crafted%20with-AI%20Vibecoding-7928ca.svg)](#ai-vibecoding-journey)
+[![Target: Iris & Minecraft](https://img.shields.io/badge/Minecraft-1.18.2%20--%2026.x%20%2F%20Iris-green.svg)](#version-compatibility)
 
-> **HyperDuper Vanilla** is an experimental, performance-tuned community fork of [**Super Duper Vanilla**](https://github.com/Eldeston/Super-Duper-Vanilla) (originally created by [@Eldeston](https://github.com/Eldeston) and presented by **FlameRender Studios**).
+> **HyperDuper Vanilla** is created and maintained by **[@porkyoot](https://github.com/porkyoot) (Étoile)**.
 > 
-> It elevates the iconic aesthetic of the cancelled *Super Duper Graphics Pack* with modern atmospheric rendering, celestial wonders, intuitive UI/UX navigation with didactic Sodium-style tooltips, modular multi-dimension support, and high-performance optimizations.
+> It is an independent, extensive overhaul and fork of [**Super Duper Vanilla**](https://github.com/Eldeston/Super-Duper-Vanilla) (originally created by [@Eldeston](https://github.com/Eldeston) and presented by **FlameRender Studios**).
+> 
+> Starting from the foundation of Super Duper Vanilla, Étoile completely reimagined and evolved the pack into their own creation through intensive **AI vibecoding**—introducing dynamic multi-day weather engines, hyper-optimized crepuscular godrays, procedural meteor showers, a gravitational lensing black hole in The End, Voxy LOD integrations, and an intuitive Sodium-style didactic configuration system.
 
 ---
 
-## ⚠️ Disclaimer & Maintenance Notice
+## 🎬 Official Trailer & Showcase
 
-> [!IMPORTANT]
-> **Provided "AS IS"**: This project is provided strictly on an **"AS IS"** basis, without warranties, guarantees, or conditions of any kind, either express or implied, including but not limited to stability, mod compatibility, or fitness for a particular purpose.
->
-> **Maintenance May Not Be Active**: This is an exploratory, passion-driven fork. Development and maintenance may be sporadic, intermittent, or completely inactive. 
-> 
-> **You are free and encouraged to fork!** If you want to fix a bug, add a feature, or adapt this shaderpack into your own project, please feel free to fork this repository, borrow code, and make it your own.
+[![HyperDuper Vanilla Trailer](https://img.youtube.com/vi/2VPc-Q5AKDM/maxresdefault.jpg)](https://www.youtube.com/watch?v=2VPc-Q5AKDM "Watch the HyperDuper Vanilla Trailer")
+
+> 📺 **Watch the Trailer on YouTube**: [https://youtu.be/2VPc-Q5AKDM](https://youtu.be/2VPc-Q5AKDM)
 
 ---
 
-## 🤖 AI Vibecoding Disclosure
+## 🤖 The AI Vibecoding Journey
 
 > [!NOTE]
-> **Heavy Use of AI Vibecoding**: HyperDuper Vanilla is developed with heavy use of **AI pair-programming and vibecoding** (leveraging frontier agentic AI coding assistants like Google DeepMind Antigravity / Gemini / Claude).
->
-> What this means for you:
-> * **Rapid Iteration**: Complex shader algorithms, math pipelines, and extensive refactors were drafted, iterated, and benchmarked collaboratively with AI.
-> * **Experimental & Creative**: You'll find ambitious features like adaptive-step godrays, procedural meteor showers, dynamic overcast weather cycles, and full Voxy LOD integrations.
-> * **Automated Quality Assured**: All shader code, GLSL compilation, AST complexity, and i18n localization keys are continuously validated through an automated CI/CD Quality Gate pipeline (`glslangValidator`, inclusion linters, and profiling tools).
+> **Crafted with Frontier Agentic AI**: HyperDuper Vanilla was built by **Étoile (@porkyoot)** leveraging heavy AI pair-programming and vibecoding workflows (collaborating with frontier coding agents like Google DeepMind Antigravity, Gemini, and Claude).
+
+Through rapid AI-assisted iteration, complex shader algorithms, numerical approximations, and large-scale architectural refactors were designed, tested, and fine-tuned:
+* **High-Velocity Mathematics**: Translating optical physics into GLSL—such as affine-stepped cone-culled raymarching for crepuscular rays, $C^1$ Hermite shadow smoothing, and Schwarzschild-inspired accretion disk light deflection.
+* **Continuous Quality Assurance**: Every line of GLSL and python tooling passes an automated **Continuous Quality Gate** (`python3 scripts/quality_gate.py`) verifying compilation through `glslangValidator`, inclusion resolution, McCabe cyclomatic complexity, and canonical i18n key coverage.
+* **Freedom to Tinker**: This project is provided on an **"AS IS"** basis. You are warmly encouraged to fork this repository, explore the code, and make it your own!
 
 ---
 
-## ✨ Features & What's New in HyperDuper Vanilla
+## ✨ Extensive Feature Showcase
 
-### 1. Intuitive UI/UX & Didactic Sodium-Style Options
-* **Modular Dimensions Menu**: Replaced the obscure "Configuration" menu with an intuitive **Dimensions & Worlds** (`[DIMENSIONS]`) screen.
-  * **Common Settings on Top**: Global options affecting all worlds—such as **Block Light Color** (torches, lanterns, campfires, lava)—are pinned at the top.
-  * **Easily Expandable**: Dimensions (Overworld, Nether, End) are listed cleanly below, making it effortless for developers to add new modded dimensions (e.g. Aether, Undergarden, Twilight Forest).
-* **Flattened Materials & PBR Hierarchy**: Removed unnecessary middleman sub-menus; Water, Parallax (POM), Lava, and Sculk settings are now directly accessible with fewer clicks.
-* **Balanced 2-Column Grid**: Fixed legacy layout bugs and paired every setting toggle directly beside its strength slider.
-* **Sodium-Style Color-Coded Tooltips**: Every single setting features a didactic, beginner-friendly explanation:
-  * `§e[Visual]`: Explains exactly what changes on your screen.
-  * `[Performance]`: Color-coded performance indicator:
-    * `§a[Performance: None / Very Low / Low]` (Minimal to zero FPS impact)
-    * `§e[Performance: Moderate]` (Balanced GPU impact)
-    * `§c[Performance: Heavy / Very Heavy]` (Demanding; recommended for dedicated GPUs)
-  * `§b[Tip]`: Practical recommendations and synergies with other settings.
+HyperDuper Vanilla v1.0.0 brings an extensive suite of new features, visual enhancements, and architectural overhauls:
 
----
-
-### 2. Celestial & Atmospheric Wonders
-* **Crepuscular Atmospheric Godrays**:
-  * Real-time sunlight and moonlight light shafts streaming through clouds, trees, water, and terrain.
-  * **Adaptive Step Optimization**: Dynamically optimizes raymarching sample density near the sun, **doubling FPS when facing the sun** with zero visual loss.
-  * **Water Transmission**: Allows sunbeams to penetrate translucent ocean depths and stained glass windows.
+### 1. 🌌 Celestial & Atmospheric Wonders
+* **Hyper-Optimized Crepuscular Godrays**:
+  * Real-time sunlight and moonlight volumetric shafts streaming through terrain, trees, water, and clouds.
+  * **Dual-Path Distance-Adaptive Raymarching**: Dynamically adjusts sampling density near the sun, **doubling FPS when looking directly into the sun** with zero visual loss.
+  * **Water Transmission**: Sunbeams realistically penetrate translucent ocean surfaces and stained glass.
+  * **Underground Occlusion**: Strict height and light checks prevent atmospheric light leaks into caves and deep underground structures.
 * **Procedural Dynamic Meteor Showers**:
-  * Shooting stars streak across nighttime skies with glowing leading pixel heads, ionization tails, and fade trails.
-  * Customizable shower rarity (nightly, periodic, or lunar cycle), shower rates, flight speeds, tail lengths, and activity modes (constant vs dynamic waxing/waning waves).
-  * **6 Color Profiles**: Electric Blue, Cosmic Violet, Emerald Green, Amber Gold, Diamond White, and Prismatic (each meteor gets a unique randomized gemstone color).
-* **Procedural Minecraft-Style Milky Way**:
-  * Stylized galactic ribbon spanning the night sky with thousands of twinkling square stars and nebula dust clouds.
+  * Shooting stars streak across night skies with glowing leading pixel heads, ionization trails, and soft fade decays.
+  * **Customizable Activity**: Choose between constant background meteors or dynamic waxing/waning shower waves with configurable speed, rarity, and tail length.
+  * **6 Gemstone Color Profiles**: Electric Blue, Cosmic Violet, Emerald Green, Amber Gold, Diamond White, and Prismatic (each meteor receives a unique randomized gemstone hue).
 * **Volumetric Northern Lights (Aurora Borealis)**:
-  * Dancing volumetric curtains transitioning from pink tops to emerald centers and electric blue bottoms in cold and snowy biomes.
+  * Multi-layered dancing auroral curtains featuring altitude-based color gradients (pink tops, emerald centers, electric blue skirts) triggered in cold and snowy biomes.
+* **Procedural Minecraft-Style Milky Way & Stars**:
+  * Stylized galactic dust ribbon arching across the night sky, peppered with twinkling procedural stars.
+  * **Star Rotation Settings**: Switch between aligned square pixel grids or organic rotated star fields.
 * **Double Rainbows & Rainsquares**:
-  * Procedural primary and secondary rainbow arches opposite celestial light during rain, following the Sun/Moon Roundness geometry.
-* **Star Rotation Styles**:
-  * Switch between aligned square grid stars or organic random star rotation angles.
+  * Procedural primary and secondary rainbow arches appearing opposite celestial light sources during light rain.
+  * Full terrain shadow and block occlusion prevents rainbows from rendering indoors or through mountains.
+* **Story Mode Clouds & Cirrus Altitude Layer**:
+  * Vertical fade transitions inspired by Minecraft: Story Mode with customizable cloud heights and faint cirrus layers.
+* **Continuous Celestial Roundness**:
+  * Smooth continuous slider transitioning celestial bodies from authentic retro square pixels to circular discs, automatically propagated to reflections and flares.
 
 ---
 
-### 3. Dynamic Environment & Dimensional Lighting
-* **Procedural Weather & Overcast System**:
-  * Multi-day weather clock with gradual overcast intensity transitions, moving smoothly from crystal clear blue skies to moody overcast storm fronts.
+### 2. 🕳️ The End Dimension Overhaul
+* **Cosmic Gravitational Lensing Black Hole**:
+  * The End's central sky is dominated by a majestic black hole featuring spiral accretion disk texturing and gravitational light deformation.
+  * **Directional Global Illumination**: The accretion disk casts permanent directional lighting and shadows across the End islands.
+* **Cosmic End Flashes**:
+  * Dynamic sky flashes illuminate the void with synchronized directional shadows, atmospheric burst auras, and lens flares.
+* **Ender Dragon Boss Fog**:
+  * Atmospheric purple boss fog automatically descends upon and blankets the central island during the Ender Dragon fight.
+* **Volumetric Aether Curtains**:
+  * Shimmering atmospheric curtains adding depth and mystery to the void sky.
+
+---
+
+### 3. 🌧️ Dynamic Weather & Environmental Fog
+* **Procedural Multi-Day Weather & Overcast**:
+  * A continuous weather clock smoothly transitions the sky between crystal-clear days, moody overcast fronts, and stormy skies.
+  * **Sun Showers**: Tuned rain overcast allows the sun and rainbows to break through during light precipitation.
+  * **Above-Cloud Rain Cutoff**: Rain particles and weather fog smoothly fade out when flying above the cloud layer.
 * **Dynamic Biome Humidity Fog**:
-  * Links fog probability to dynamic weather moisture and biome humidity: swamps, rivers, and jungles develop thick atmospheric mist, while arid deserts stay clear.
+  * Ground mist dynamically thickens based on biome moisture—rivers, swamps, and rainforests develop dense morning fog, while arid deserts remain clear.
 * **Pale Garden Atmospheric Mist**:
-  * Atmospheric light-gray mist tailored for the Pale Garden biome.
-* **The End Black Hole Lighting & Dragon Boss Fog**:
-  * Permanent directional light cast from the cosmic Black Hole accretion disk.
-  * Atmospheric purple boss fog that envelops the central island during the Ender Dragon battle.
-* **Hermite-Smoothed Shadow Transitions**:
-  * Eliminates harsh shadow camera flips when celestial bodies cross the horizon using smooth $C^1$ Hermite fade curves.
+  * Custom light-gray eerie atmospheric mist tailored specifically for the Pale Garden biome and its canopy.
+* **Creaking Eye Bloom**:
+  * Creaking eyes cast vivid emissive glow and bloom through dark forests at night.
 
 ---
 
-### 4. Engine, Modding & Optimization Pipeline
-* **Voxy LOD Integration**:
-  * Full pipeline compatibility with the Voxy distant Level-of-Detail (LOD) terrain mod across Overworld, Nether, and End dimensions with custom UBO layouts, PBR material lookups, and atmospheric border blending.
-* **Render Pass Pruning & Guarding**:
-  * Conditional shader pass elimination (`program.<name>.enabled = false`) for inactive features (DOF, motion blur, bloom, SSAO).
-  * Frustum bounding-box early-exit culling and backfacing normal rejection to skip redundant raymarches.
-* **Built-In Profiling & Diagnostics Suite**:
-  * Integrated static shader performance profiler (`scripts/profile_shaders.py`) to quantify GPU costs, texture lookups, and math ops.
-  * Spark profiler, RenderDoc, and NVIDIA Nsight launch tasks for frame capture and memory analysis.
+### 4. ⚡ Storm & Procedural Lightning
+* **Multi-Tiered Lightning Engine**:
+  * Realistic cloud-to-ground lightning bolts paired with dynamic cloud-to-cloud intra-cloud flashes.
+* **Epilepsy & Sensory Safety**:
+  * Built-in flash dampeners to reduce sudden high-contrast brightness shifts for light-sensitive players.
+* **Customizable Bolt Colors**:
+  * Personalize storm bolts with customizable RGB tinting options.
 
 ---
 
-## 🛠️ Developer & Contributor Guide
-
-We want HyperDuper Vanilla to be as **welcoming, transparent, and easy to modify** as possible for other shader developers, modders, and curious tinkerers!
-
-### Repository Structure
-```
-HyperDuper-Vanilla/
-├── shaders/
-│   ├── shaders.properties     # Master menu layout, pass toggles, profiles, and uniforms
-│   ├── dimension.properties   # Dimension routing (* -> world0, nether -> world-1, end -> world1)
-│   ├── lang/                  # i18n translations (en_US.lang is the canonical master)
-│   ├── lib/                   # Shared shader libraries (atmospherics, lighting, PBR, etc.)
-│   ├── main/                  # Core G-buffer, deferred, composite, and final passes
-│   ├── world0/                # Overworld dimension overrides & color definitions
-│   ├── world-1/               # Nether dimension overrides
-│   └── world1/                # The End dimension overrides
-├── scripts/
-│   ├── quality_gate.py        # Automated CI/CD validation pipeline
-│   ├── lint.py                # glslangValidator GLSL shader compiler linter
-│   ├── profile_shaders.py     # Static performance and GPU cost analyzer
-│   └── build.py               # Release packaging script
-├── Taskfile.yml               # Task runner targets
-└── build.gradle.kts           # Loom / Quilt test environment configuration
-```
-
-### Adding a New Dimension
-Adding custom dimensions (e.g. Aether, Undergarden, Twilight Forest) is straightforward:
-1. **Assign the dimension** in `shaders/dimension.properties`:
-   ```properties
-   dimension.world2 = aether:the_aether
-   ```
-2. **Create the dimension folder** `shaders/world2/world.glsl` defining dimension properties (`WORLD_ID 2`, light colors, fog density).
-3. **Expose the menu** in `shaders/shaders.properties` under `screen.DIMENSIONS`:
-   ```properties
-   screen.DIMENSIONS = \
-       [BLOCK_LIGHT_COLOR] <empty> \
-       <empty> <empty> \
-       [OVERWORLD_SETTINGS] [NETHER_SETTINGS] \
-       [END_SETTINGS] [AETHER_SETTINGS]
-   ```
-4. **Add localized labels** in `shaders/lang/en_US.lang`.
-
-### Running Locally with Hot-Reload
-You can launch an isolated testing instance with Quilt, Sodium, Iris, and Voxy pre-configured:
-```bash
-./gradlew runClient
-```
-* **Instant Hot-Reload**: Press **`R`** in-game at any time to recompile and reload all shader modifications live without restarting Minecraft!
-* **F3 Overlay**: Displays real-time pass execution and framebuffer timings.
-
-### Running Quality & Performance Gates
-Before submitting a pull request, ensure your code passes our quality gate:
-```bash
-# Run the complete multi-stage quality gate:
-python3 scripts/quality_gate.py
-
-# Benchmark GPU performance metrics and texture lookups:
-python3 scripts/profile_shaders.py
-```
-
-### How to Contribute
-* Pull requests are warmly welcomed! Whether you are writing handcrafted GLSL, refining translations, or vibecoding new features with AI assistants, we would love to see your ideas.
-* Please keep code readable, document your changes, and make sure `python3 scripts/quality_gate.py` passes cleanly.
-* See [**CONTRIBUTION.md**](CONTRIBUTION.md) and [**DOCUMENTATION.md**](DOCUMENTATION.md) for detailed coding conventions and pipeline architecture.
+### 5. 🌊 Water Shading, Wave Physics & Materials
+* **Multiple Water Aesthetic Styles**:
+  * Toggle between **Classic**, **Modern**, and **Stylized SDGP** water rendering presets.
+* **Depth-Based Wave Physics**:
+  * Dynamic wave attenuation in shallow shorelines with natural foam reduction near land edges.
+* **Refined Water Opacity & Subsurface Scattering (SSS)**:
+  * Natural color absorption, water albedo tuning, and exclusion of underwater flora from false subsurface glow.
+* **Targeted Block Outline**:
+  * Polished selection box with vanilla inverted color blending and customizable outline thickness.
 
 ---
 
-## 🎮 Compatibility & Requirements
+### 6. 🏔️ Level-Of-Detail (LOD) & Engine Mod Compatibility
+* **Full Voxy LOD Integration**:
+  * Custom Uniform Buffer Object (UBO) alignments, PBR material lookups, view positioning, and border fog blending for distant Voxy terrain chunks.
+  * Dual depth support accommodating both OpenGL standard `[-1, 1]` NDC and `[0, 1]` zero-to-one depth pipelines.
+  * Translucent depth texture support for modded distant oceans and water bodies.
+* **Distant Horizons Compatibility**:
+  * Harmonized albedo colors and luma multipliers for smooth transition zones between local and distant terrain.
+
+---
+
+### 7. 🎛️ Modern UI/UX & Didactic Tooltip System
+* **Modular Dimensions Menu**:
+  * Replaced legacy menus with a unified **Dimensions & Worlds** (`[DIMENSIONS]`) screen.
+  * Pinned global settings (such as **Block Light Color** for torches, lanterns, campfires, lava) at the top.
+  * Clean per-world configuration blocks ready for modded dimension expansion.
+* **Flattened Materials & PBR Hierarchy**:
+  * Direct access to POM, Water, Lava, and Sculk settings without buried sub-menus.
+* **Sodium-Style Didactic Tooltips**:
+  * Every single option features clear didactic indicators:
+    * `§e[Visual]`: Explains exactly what changes on screen.
+    * `[Performance]`: Color-coded performance cost (`§a[Very Low / Low]`, `§e[Moderate]`, `§c[Heavy / Very Heavy]`).
+    * `§b[Tip]`: Practical advice, synergies, and recommended baselines.
+* **Comprehensive i18n Localization**:
+  * Full coverage across English (`en_US`), French (`fr_FR`), Simplified Chinese (`zh_CN`), Brazilian Portuguese (`pt_BR`), and Russian (`ru_RU`).
+
+---
+
+### 8. 🛠️ Developer Tooling & Quality Gate
+* **Automated CI/CD Quality Gate** (`python3 scripts/quality_gate.py`):
+  * Parallel GLSL compilation using `glslangValidator`.
+  * i18n dictionary validator checking key coverage and syntax integrity.
+  * McCabe cyclomatic complexity and file length gate.
+  * Strict include reference resolver.
+* **GPU Cost Profiler** (`scripts/profile_shaders.py`):
+  * Static AST analyzer measuring texture lookups, transcendental math, and branch weights.
+* **Live In-Game Hot-Reload** (`./gradlew runClient`):
+  * Instant shader compilation on **`R`** keypress in a standalone Quilt/Iris runtime testbed.
+
+---
+
+## 🎮 Installation & Requirements
 
 ### Shader Loaders
-* **Iris**: Recommended! Fully supported on Iris 1.6.10+ (Minecraft 1.18.2+ through 1.21+ / 26.x).
-* **OptiFine**: Legacy support only; not actively maintained.
+* **Iris**: Recommended! Fully supported on Iris 1.6.10+ (Minecraft 1.18.2 through 1.21+ / 26.x).
+* **OptiFine**: Legacy support; not actively tested.
 
-### Supported Operating Systems & Hardware
-* **Windows / Linux**: Fully supported on AMD, NVIDIA, and Intel (dedicated & modern integrated GPUs).
+### Supported Hardware & OS
+* **Windows / Linux**: Fully supported on AMD, NVIDIA, and Intel (both dedicated and modern integrated GPUs).
 * **Apple Silicon (macOS)**: Supported on M1/M2/M3/M4 via Iris.
+
+### Installation Steps
+1. Download `HyperDuper-Vanilla-v1.0.0.zip` from the [Releases](https://github.com/porkyoot/HyperDuper-Vanilla/releases) page.
+2. Place the `.zip` archive into your Minecraft `.minecraft/shaderpacks/` folder.
+3. In Minecraft (with Iris installed), navigate to **Options > Video Settings > Shader Packs...** and select **HyperDuper Vanilla**.
 
 ---
 
-## 📜 Credits & Attributions
+## 📜 Credits & License Attributions
 
-HyperDuper Vanilla is built upon the wonderful foundation of **Super Duper Vanilla**:
-* **Original Creator**: [@Eldeston](https://github.com/Eldeston) and **FlameRender Studios**.
+HyperDuper Vanilla is developed by **[@porkyoot](https://github.com/porkyoot) (Étoile)** and is built upon the wonderful foundation of **Super Duper Vanilla**:
+* **Original Creator of Super Duper Vanilla**: [@Eldeston](https://github.com/Eldeston) and **FlameRender Studios**.
 * **Original Project**: [Super Duper Vanilla on GitHub](https://github.com/Eldeston/Super-Duper-Vanilla) | [CurseForge](https://www.curseforge.com/minecraft/customization/super-duper-vanilla-shaders) | [Modrinth](https://modrinth.com/shader/super-duper-vanilla)
-* **Contributors**: [@null511](https://github.com/null511), [@steb-git](https://github.com/steb-git), and the SDV translator community.
-* **License**: Governed by the original FlameRender Studios License. See [LICENSE](LICENSE) for details.
+* **Upstream Contributors**: [@null511](https://github.com/null511), [@steb-git](https://github.com/steb-git), and original community translators.
+* **License**: Governed by the **FlameRender Studios License (v1.6)**. See [LICENSE](LICENSE) for the full license terms and copyright notices.

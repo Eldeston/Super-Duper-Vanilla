@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-File Length & Cyclomatic Complexity Quality Gate for Super Duper Vanilla.
+File Length & Cyclomatic Complexity Quality Gate for HyperDuper Vanilla.
 Enforces Single Responsibility Principle (SRP) and Keep It Simple, Stupid (KISS)
 across both GLSL shader code and Python development tooling.
 """

@@ -9,14 +9,14 @@ profile.POTATO.comment = Mode de performance maximale pour matériel d'entrée d
 profile.LOW = Basse
 profile.LOW.comment = Améliorations visuelles légères avec un impact minimal sur la fréquence d'images.\n\n§e[Visuel] §fActive les rayons crépusculaires rapides, les ombres solaires basiques, un bloom subtil et des caustiques simples.\n§a[Performance : Faible impact] §fFonctionne fluidement sur cartes graphiques d'entrée de gamme.\n§b[Conseil] §7Excellent équilibre pour avoir des ombres sans sacrifier la fluidité.
 profile.MEDIUM = Moyenne (Par défaut)
-profile.MEDIUM.comment = L'expérience Super Duper Vanilla standard avec un éclairage atmosphérique riche.\n\n§e[Visuel] §fÉclairage volumétrique complet, ombres douces, SSAO, nuages volumétriques et TAA.\n§e[Performance : Impact modéré] §fOptimisé pour les ordinateurs de jeu grand public modernes.\n§b[Conseil] §7Offre le meilleur équilibre esthétique tel que conçu par les développeurs.
+profile.MEDIUM.comment = L'expérience HyperDuper Vanilla standard avec un éclairage atmosphérique riche.\n\n§e[Visuel] §fÉclairage volumétrique complet, ombres douces, SSAO, nuages volumétriques et TAA.\n§e[Performance : Impact modéré] §fOptimisé pour les ordinateurs de jeu grand public modernes.\n§b[Conseil] §7Offre le meilleur équilibre esthétique tel que conçu par les développeurs.
 profile.HIGH = Élevée
 profile.HIGH.comment = Fidélité accrue avec des détails de surface plus nets et des reflets raffinés.\n\n§e[Visuel] §fRésolution d'ombres supérieure, reflets rugueux, netteté affinée et plus d'échantillons de rayons crépusculaires.\n§c[Performance : Impact lourd] §fRecommandé pour les cartes graphiques de milieu à haut de gamme.\n§b[Conseil] §7Idéal pour les écrans 1080p et 1440p.
 profile.ULTRA = Ultra
 profile.ULTRA.comment = Préréglage graphique maximal sans compromis visuel.\n\n§e[Visuel] §fOmbres ultra-nettes 4096p, échantillonnage maximal du raymarching et caustiques aquatiques profondes.\n§4[Performance : Impact très lourd] §fConçu pour les cartes graphiques haut de gamme.\n§b[Conseil] §7Parfait pour les enregistrements cinématiques et les captures d'écran.
 
-screen.DEBUG = Super Duper Vanilla v1.3.8
-screen.DEBUG.comment = §bDéveloppé par §2Eldeston§f§r, présenté par §9FlameRender (C) §9Studios. §eCliquez ici pour ouvrir les paramètres de débogage du shader ! Contient les options de mode de couleur et de vitesse du bruit.
+screen.DEBUG = HyperDuper Vanilla v1.0.0
+screen.DEBUG.comment = §dHyperDuper Vanilla v1.0.0 §7par §6@porkyoot (Étoile)§7\n(Fork de §bSuper Duper Vanilla§7 par §2Eldeston§7 & §9FlameRender Studios§7).\n\n§e[À propos] §fConçu avec du vibecoding IA pour une expérimentation rapide des shaders.\n§e[Statut] §fFourni TEL QUEL sans garantie.\n§a[Performance : Aucun] §fCliquez pour ouvrir les options de débogage.
     option.COLOR_MODE = Mode de couleur
     option.COLOR_MODE.comment = Modifie le mode de couleur de l'albédo.
         value.COLOR_MODE.0 = Désactivé

@@ -1,0 +1,118 @@
+name: Release & Tagging
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: 'Version bump level (if releasing from branch without existing tag)'
+        required: true
+        default: 'none'
+        type: choice
+        options:
+          - 'none'
+          - 'patch'
+          - 'minor'
+          - 'major'
+      custom_version:
+        description: 'Explicit custom version (optional, e.g. 1.0.1)'
+        required: false
+        default: ''
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build & Publish Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install glslangValidator
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y glslang-tools
+
+      - name: Install Task
+        uses: arduino/setup-task@v2
+        with:
+          version: 3.x
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git User
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Handle Version Bump (workflow_dispatch)
+        id: bump_step
+        if: github.event_name == 'workflow_dispatch' && (github.event.inputs.bump != 'none' || github.event.inputs.custom_version != '')
+        run: |
+          TARGET="${{ github.event.inputs.custom_version }}"
+          if [ -z "$TARGET" ]; then
+            TARGET="${{ github.event.inputs.bump }}"
+          fi
+          python3 scripts/bump_version.py "$TARGET" --commit --tag --push
+
+      - name: Resolve Release Tag & Version
+        id: resolve_ver
+        run: |
+          VER=$(python3 -c "import re; f=open('shaders/lang/en_US.lang'); m=re.search(r'screen\.DEBUG\s*=\s*HyperDuper Vanilla v?([0-9]+\.[0-9]+\.[0-9]+[a-zA-Z0-9\.\-]*)', f.read()); print(m.group(1) if m else '1.0.0')")
+          TAG="v${VER#v}"
+          echo "version=$VER" >> $GITHUB_OUTPUT
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "Resolved Version: $VER ($TAG)"
+
+      - name: Run Quality Gate Pipeline
+        run: task gate
+
+      - name: Package Shaderpack ZIP
+        run: task build
+
+      - name: Verify Release Artifact Exists
+        id: verify_artifact
+        run: |
+          ZIP_NAME="Hyper-Duper-Vanilla.${{ steps.resolve_ver.outputs.tag }}.zip"
+          if [ ! -f "dist/$ZIP_NAME" ]; then
+            echo "Expected dist/$ZIP_NAME not found. Available dist files:"
+            ls -la dist/
+            exit 1
+          fi
+          echo "Found release archive: dist/$ZIP_NAME"
+
+      - name: Create or Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.resolve_ver.outputs.tag }}
+          name: HyperDuper Vanilla ${{ steps.resolve_ver.outputs.tag }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            dist/Hyper-Duper-Vanilla.${{ steps.resolve_ver.outputs.tag }}.zip
+            dist/Hyper-Duper-Vanilla.${{ steps.resolve_ver.outputs.tag }}.zip.sha256
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Artifacts to Workflow Run
+        uses: actions/upload-artifact@v4
+        with:
+          name: Hyper-Duper-Vanilla-${{ steps.resolve_ver.outputs.tag }}
+          path: |
+            dist/*.zip
+            dist/*.sha256
+          if-no-files-found: error

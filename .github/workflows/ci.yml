@@ -2,9 +2,9 @@ name: CI & Quality Gate
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, hyper-iris]
   pull_request:
-    branches: [main, master]
+    branches: [main, master, hyper-iris]
 
 jobs:
   quality-gate-and-build:
@@ -37,6 +37,8 @@ jobs:
       - name: Upload Shaderpack Archive
         uses: actions/upload-artifact@v4
         with:
-          name: Super-Duper-Vanilla-Shaderpack
-          path: dist/*.zip
+          name: Hyper-Duper-Vanilla-Artifacts
+          path: |
+            dist/*.zip
+            dist/*.sha256
           if-no-files-found: error

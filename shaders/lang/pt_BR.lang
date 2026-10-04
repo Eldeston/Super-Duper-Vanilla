@@ -7,8 +7,8 @@
     profile.HIGH = Alto
     profile.ULTRA = Ultra
 
-screen.DEBUG = Super Duper Vanilla v1.3.7
-    screen.DEBUG.comment = Desenvolvido por §2Eldeston§f§r, apresentado por §9FlameRender (C) §9Studios. §eClique em mim para abrir as configurações de depuração!
+screen.DEBUG = HyperDuper Vanilla v1.0.0
+screen.DEBUG.comment = §dHyperDuper Vanilla v1.0.0 §7por §6@porkyoot (Étoile)§7\n(Fork de §bSuper Duper Vanilla§7 por §2Eldeston§7 & §9FlameRender Studios§7).\n\n§e[Sobre] §fDesenvolvido com vibecoding de IA para experimentação rápida de shaders.\n§e[Status] §fFornecido NO ESTADO EM QUE SE ENCONTRA, sem garantias.\n§a[Desempenho: Nenhum] §fClique para abrir as opções de depuração.
 
     option.COLOR_MODE = Modo de Cor
         value.COLOR_MODE.0 = OFF

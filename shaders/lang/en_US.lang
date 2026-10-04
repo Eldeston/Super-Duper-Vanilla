@@ -12,7 +12,7 @@ profile.LOW = Low
 profile.LOW.comment = Lightweight visual enhancements with minimal framerate overhead.\n\n§e[Visual] §fEnables fast godrays, basic sunlight shadows, subtle bloom, and simple caustics.\n§a[Performance: Low Impact] §fRuns smoothly on entry-level dedicated GPUs.\n§b[Tip] §7Great balance if you want shadows without sacrificing speed.
 
 profile.MEDIUM = Medium (Recommended)
-profile.MEDIUM.comment = The standard Super Duper Vanilla experience with rich atmospheric lighting.\n\n§e[Visual] §fFull volumetric lighting, soft shadows, SSAO, volumetric clouds, and TAA.\n§e[Performance: Moderate Impact] §fOptimized for modern mainstream gaming PCs.\n§b[Tip] §7Provides the best aesthetic balance as intended by the developers.
+profile.MEDIUM.comment = The standard HyperDuper Vanilla experience with rich atmospheric lighting.\n\n§e[Visual] §fFull volumetric lighting, soft shadows, SSAO, volumetric clouds, and TAA.\n§e[Performance: Moderate Impact] §fOptimized for modern mainstream gaming PCs.\n§b[Tip] §7Provides the best aesthetic balance as intended by the developers.
 
 profile.HIGH = High
 profile.HIGH.comment = Enhanced fidelity with deeper surface detail and refined reflections.\n\n§e[Visual] §fHigher shadow resolution, rough reflections, crisp sharpening, and high godray steps.\n§c[Performance: Heavy Impact] §fRecommended for mid-to-high-end dedicated graphics cards.\n§b[Tip] §7Pairs well with 1080p and 1440p displays.
@@ -21,8 +21,8 @@ profile.ULTRA = Ultra
 profile.ULTRA.comment = Maximum graphical preset with uncompromising visual excellence.\n\n§e[Visual] §f4096p ultra-crisp shadows, maximum godray raymarching steps, and deep water caustics.\n§4[Performance: Very Heavy Impact] §fDesigned for high-end GPUs.\n§b[Tip] §7Best for cinematic recording and screenshot photography.
 
 ## Debug Screen
-screen.DEBUG = HyperDuper Vanilla v1.4.0
-screen.DEBUG.comment = §dHyperDuper Vanilla §7(Fork of §bSuper Duper Vanilla§7 by §2Eldeston§7 & §9FlameRender Studios§7).\n\n§e[About] §fCrafted with AI vibecoding for high-velocity shader experimentation.\n§e[Status] §fProvided AS IS without warranty; maintenance may be inactive.\n§a[Performance: None] §fClick to open debug options.
+screen.DEBUG = HyperDuper Vanilla v1.0.0
+screen.DEBUG.comment = §dHyperDuper Vanilla v1.0.0 §7by §6@porkyoot (Étoile)§7\n(Fork of §bSuper Duper Vanilla§7 by §2Eldeston§7 & §9FlameRender Studios§7).\n\n§e[About] §fCrafted with AI vibecoding for high-velocity shader experimentation.\n§e[Status] §fProvided AS IS without warranty.\n§a[Performance: None] §fClick to open debug options.
     option.COLOR_MODE = Color Mode
     option.COLOR_MODE.comment = Overrides block albedo colors to inspect lighting, materials, and foliage isolation.\n\n§e[Visual] §fWhite/Black mode neutralizes textures; Foliage mode highlights plant life.\n§a[Performance: None] §fDebug visualization only.\n§b[Tip] §7Keep OFF for normal gameplay.
         value.COLOR_MODE.0 = OFF

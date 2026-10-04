@@ -119,7 +119,7 @@ tasks.named<JavaExec>("runClient") {
         // Link shaderpack
         val shaderpacksDir = file("run/client/shaderpacks")
         shaderpacksDir.mkdirs()
-        val target = file("run/client/shaderpacks/Super-Duper-Vanilla")
+        val target = file("run/client/shaderpacks/HyperDuper-Vanilla")
         if (!target.exists()) {
             runCatching {
                 Files.createSymbolicLink(target.toPath(), rootDir.toPath())
