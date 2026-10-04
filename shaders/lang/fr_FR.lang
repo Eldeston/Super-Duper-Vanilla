@@ -290,7 +290,7 @@ screen.ATMOSPHERICS.comment = §6Effets atmosphériques incluant le soleil/lune,
         option.CLOUD_LIGHTNING_GLOW.comment = Illumine les nuages de l'intérieur par diffusion lumineuse lors des éclairs.\n\n§e[Visuel] §fLa masse des nuages s'illumine de l'intérieur, révélant leur volume et leurs contours.
 
         option.CLOUD_LIGHTNING_FREQUENCY = Fréquence des éclairs
-        option.CLOUD_LIGHTNING_FREQUENCY.comment = Multiplicateur de fréquence d'apparition des éclairs internuageux pendant la pluie et les orages.
+        option.CLOUD_LIGHTNING_FREQUENCY.comment = Multiplicateur de fréquence d'apparition des éclairs internuageux pendant les orages.
 
         option.LIGHTNING_COLOR_R = Éclair Rouge
         option.LIGHTNING_COLOR_R.comment = Composante rouge de la couleur des éclairs, des décharges entre nuages, de la lueur interne des nuages, de l'éclairage céleste, des reflets et des rayons crépusculaires.\n\n§e[Visuel] §fLa valeur par défaut 240 offre un blanc violacé éblouissant combiné au bleu.\n§a[Performance : Aucune] §fScalaire de couleur.
@@ -317,6 +317,13 @@ screen.ATMOSPHERICS.comment = §6Effets atmosphériques incluant le soleil/lune,
 
         option.DYNAMIC_WEATHER = Météo dynamique
         option.DYNAMIC_WEATHER.comment = Génère un système météorologique procédural avec une intensité de couverture nuageuse aléatoire, créant des jours et nuits totalement dégagés jusqu'à un ciel complètement couvert. La pluie peut survenir sous un ciel partiellement couvert.
+
+        option.STATIC_OVERCAST = Niveau de couverture fixe
+        option.STATIC_OVERCAST.comment = Définit le niveau de couverture nuageuse permanente lorsque la météo dynamique est désactivée.\n\n§e[Visuel] §fFixe la couverture nuageuse et l'atmosphère à un niveau constant.\n§a[Performance : Aucune] §fValeur scalaire fixe.\n§b[Astuce] §7Une valeur de 0.40 à 0.60 permet de splendides averses ensoleillées avec arc-en-ciel lors des pluies vanilla !
+            value.STATIC_OVERCAST.-1.00 = Dynamique (Vanilla)
+            value.STATIC_OVERCAST.0.00 = 0% (Dégagé)
+            value.STATIC_OVERCAST.0.50 = 50%
+            value.STATIC_OVERCAST.1.00 = 100% (Couvert)
 
         option.STORY_MODE_CLOUDS = Mode Histoire
         option.STORY_MODE_CLOUDS.comment = Rend les nuages plus doux avec un dégradé vertical passant d'une base opaque à un sommet transparent, avec une épaisseur accrue.

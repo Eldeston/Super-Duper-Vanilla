@@ -390,7 +390,7 @@ screen.ATMOSPHERICS.comment = Clouds, godrays, skybox, stars, Milky Way, auroras
         option.CLOUD_LIGHTNING_GLOW.comment = Illuminates the clouds from within with dynamic volumetric scattering whenever lightning discharges occur.\n\n§e[Visual] §fDense cloud billows trap and scatter the electric light, lighting up the cloud mass from the inside out.\n§a[Performance: None] §fInternal cloud scattering modulation.
 
         option.CLOUD_LIGHTNING_FREQUENCY = Lightning Frequency
-        option.CLOUD_LIGHTNING_FREQUENCY.comment = Multiplier for how often cloud-to-cloud lightning discharges occur during rain and thunderstorms.\n\n§e[Visual] §fHigher values produce more frequent crawler bolts and glowing intra-cloud flashes.
+        option.CLOUD_LIGHTNING_FREQUENCY.comment = Multiplier for how often cloud-to-cloud lightning discharges occur during thunderstorms.\n\n§e[Visual] §fHigher values produce more frequent crawler bolts and glowing intra-cloud flashes.
 
         option.LIGHTNING_COLOR_R = Lightning Red
         option.LIGHTNING_COLOR_R.comment = Red color component for all lightning bolts, cloud-to-cloud flashes, internal cloud glows, celestial illumination, flares, and godrays.\n\n§e[Visual] §fDefault 240 provides a dazzling purple-ish white balance when combined with blue.\n§a[Performance: None] §fColor channel scalar.
@@ -412,6 +412,13 @@ screen.ATMOSPHERICS.comment = Clouds, godrays, skybox, stars, Milky Way, auroras
 
         option.DYNAMIC_WEATHER = Procedural Dynamic Weather
         option.DYNAMIC_WEATHER.comment = Simulates an organic, procedural multi-day weather and cloud coverage cycle.\n\n§e[Visual] §fSky coverage ranges from totally clear blue skies to overcast and moody storm fronts.\n§a[Performance: Very Low] §fProcedural noise weather clock.\n§b[Tip] §7Allows rain to happen during overcast skies instead of vanilla instant transitions.
+
+        option.STATIC_OVERCAST = Static Overcast Level
+        option.STATIC_OVERCAST.comment = Sets the permanent overcast parameter when Procedural Dynamic Weather is disabled.\n\n§e[Visual] §fLocks cloud cover and overcast atmosphere to a permanent level.\n§a[Performance: None] §fFixed overcast scalar.\n§b[Tip] §7Setting to 0.40–0.60 allows beautiful sunlit rain and procedural rainbows during vanilla rainfall!
+            value.STATIC_OVERCAST.-1.00 = Dynamic (Vanilla)
+            value.STATIC_OVERCAST.0.00 = 0% (Clear Sky)
+            value.STATIC_OVERCAST.0.50 = 50%
+            value.STATIC_OVERCAST.1.00 = 100% (Overcast)
 
         option.DYNAMIC_CLOUDS = Dynamic Cloud Motion
         option.DYNAMIC_CLOUDS.comment = Allows clouds to evolve, shift shape, and respond dynamically to wind speed.\n\n§e[Visual] §fClouds gently morph and drift naturally across the sky.\n§a[Performance: Very Low] §fNoise coordinate translation.\n§b[Tip] §7Works beautifully on both vanilla and volumetric cloud types.

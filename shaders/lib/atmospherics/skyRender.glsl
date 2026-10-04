@@ -347,17 +347,17 @@ vec3 getSkyReflection(in vec3 reflectViewDir){
 
     vec3 finalCol = getSkyHalf(reflectPlayerDir, skyPos, getSkyBasic(reflectPlayerDir.y, skyPos.z));
 
+    // Skybox clouds should render in reflections when volumetrics are on
+    #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
+        finalCol = getSkyClouds(reflectPlayerDir, finalCol);
+    #endif
+
     #ifdef RAINBOW
         #if WORLD_ID == 0 && defined WORLD_LIGHT
             #ifndef FORCE_DISABLE_WEATHER
                 finalCol += getRainbowRender(reflectPlayerDir, skyPos);
             #endif
         #endif
-    #endif
-
-    // Skybox clouds should render in reflections when volumetrics are on
-    #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
-        finalCol = getSkyClouds(reflectPlayerDir, finalCol);
     #endif
 
     // Do a simple void gradient calculation when underwater
@@ -446,10 +446,10 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol)
                 #else
                     float cFade = 1.0 - celestialVis;
                     if(skyPos.z > 0.0){
-                        float effSun = max(sunPower, 0.40 * celestialVis) * celestialVis;
+                        float effSun = max(sunPower / max(0.20, celestialVis), 0.60);
                         currSkyCol += getSunRender(skyPos.xy / abs(skyPos.z), sRGBSunCol * (effSun * cloudOcc), cFade);
                     } else {
-                        float effMoon = max(moonPower, 0.40 * celestialVis) * celestialVis;
+                        float effMoon = max(moonPower / max(0.20, celestialVis), 0.60);
                         currSkyCol += getMoonRender(skyPos.xy / abs(skyPos.z), sRGBMoonCol * (effMoon * cloudOcc), cFade);
                     }
                 #endif

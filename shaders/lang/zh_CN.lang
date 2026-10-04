@@ -343,6 +343,13 @@ screen.ATMOSPHERICS.comment = §6大气系统效果, 包括日月, 云, 雾, 边
         option.DYNAMIC_WEATHER = 动态天气
         option.DYNAMIC_WEATHER.comment = 启用程序化动态天气系统, 阴天覆盖度随时间自然起伏, 呈现完全无云的晴朗昼夜至漫天阴云的阴雨天气. 下雨时天空亦可呈现部分多云状态.
 
+        option.STATIC_OVERCAST = 静态阴天程度
+        option.STATIC_OVERCAST.comment = 当禁用程序化动态天气时, 将阴天覆盖度参数设定为固定值.\n\n§e[视觉] §f将云层覆盖度与阴天氛围锁定在常驻水平.\n§a[性能: 无影响] §f固定标量.\n§b[提示] §7设为 0.40–0.60 可在原版降雨时呈现明媚的晴雨天气与彩虹!
+            value.STATIC_OVERCAST.-1.00 = 动态 (原版)
+            value.STATIC_OVERCAST.0.00 = 0% (晴空)
+            value.STATIC_OVERCAST.0.50 = 50%
+            value.STATIC_OVERCAST.1.00 = 100% (阴云密布)
+
         option.STORY_MODE_CLOUDS = 故事模式
         option.STORY_MODE_CLOUDS.comment = 使云层更加柔和，采用从底部不透明到顶部透明的垂直渐变，并增加厚度。
 

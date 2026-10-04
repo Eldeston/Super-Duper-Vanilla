@@ -66,8 +66,8 @@
             #ifdef FORCE_DISABLE_DAY_CYCLE
                 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0 * cVis; lightCol = toLinear(sRGBLightCol);
             #else
-                sRGBSunCol = SUN_COLOR_BASE * cVis; sunCol = toLinear(SUN_COL_DATA_BLOCK) * cVis;
-                sRGBMoonCol = MOON_COLOR_BASE * cVis; moonCol = toLinear(MOON_COL_DATA_BLOCK) * cVis;
+                sRGBSunCol = SUN_COLOR_BASE * cVis; sunCol = toLinear(SUN_COL_DATA_BLOCK);
+                sRGBMoonCol = MOON_COLOR_BASE * cVis; moonCol = toLinear(MOON_COL_DATA_BLOCK);
                 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK1(sRGBSunCol, sRGBMoonCol); lightCol = toLinear(sRGBLightCol);
             #endif
         #endif
@@ -384,12 +384,12 @@
         #if WORLD_ID == 0 && defined WORLD_LIGHT
             #ifndef FORCE_DISABLE_WEATHER
                 vec3 getTranslucentRainbow(in vec3 nEyePlayerPos, in float viewDist, in bool isSky, in vec3 feetPlayerPos, in bool isWater){
-                    if(isEyeInWater != 0 || isWater) return vec3(0.0);
+                    if(isEyeInWater != 0) return vec3(0.0);
                     vec3 skyPos = mat3(shadowModelView) * nEyePlayerPos;
                     #ifndef FORCE_DISABLE_DAY_CYCLE
                         if(dayCycle < 1) skyPos.xz = -skyPos.xz;
                     #endif
-                    return getRainbowRender(nEyePlayerPos, skyPos, viewDist, isSky, feetPlayerPos, isWater);
+                    return getRainbowRender(nEyePlayerPos, skyPos, viewDist, isSky, feetPlayerPos, false);
                 }
             #endif
         #endif
@@ -431,6 +431,12 @@
             vec3 nFeetPlayerPos = feetPlayerPos / max(0.0001, feetPlayerDist);
         #endif
 
+        #if !defined FORCE_DISABLE_CLOUDS && CLOUD_TYPE == 2
+            vec3 preCloudCol = sceneCol;
+            sceneCol = renderTranslucentClouds(sceneCol, nFeetPlayerPos, feetPlayerDist, dither.x, isSky);
+            if(matRaw0.z >= 0.99) sceneCol = mix(sceneCol, preCloudCol, matRaw0.x);
+        #endif
+
         #ifdef WORLD_LIGHT
             if(VOLUMETRIC_LIGHTING_STRENGTH != 0 && isEyeInWater != 2) sceneCol += getVolumetricLight(nFeetPlayerPos, feetPlayerDist, fogFactor, borderFog, dither.x, isSky);
             #if defined GODRAYS
@@ -439,12 +445,6 @@
             #if defined RAINBOW && WORLD_ID == 0 && !defined FORCE_DISABLE_WEATHER
                 sceneCol += getTranslucentRainbow(nEyePlayerPos, viewDist, isSky, feetPlayerPos, matRaw0.z > 0.0 && matRaw0.z < 1.0);
             #endif
-        #endif
-
-        #if !defined FORCE_DISABLE_CLOUDS && CLOUD_TYPE == 2
-            vec3 preCloudCol = sceneCol;
-            sceneCol = renderTranslucentClouds(sceneCol, nFeetPlayerPos, feetPlayerDist, dither.x, isSky);
-            if(matRaw0.z >= 0.99) sceneCol = mix(sceneCol, preCloudCol, matRaw0.x);
         #endif
 
         return sceneCol;

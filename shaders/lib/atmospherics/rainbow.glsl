@@ -106,7 +106,7 @@ vec3 evaluateRainbowBows(in float dist){
         float s1 = sin(t1 * PI);
         float env1 = s1 * (1.15 - 0.15 * s1);
         vec3 primarySpectral = getNaturalRainbowSpectrum(1.0 - t1);
-        return primarySpectral * (env1 * 0.30);
+        return primarySpectral * (env1 * 0.50);
     }
     // Secondary Rainbow (fainter, around/outside primary, reversed order: Red inside, Violet outside)
     if(dist >= r2Min && dist <= r2Max){
@@ -114,11 +114,11 @@ vec3 evaluateRainbowBows(in float dist){
         float s2 = sin(t2 * PI);
         float env2 = s2 * (1.15 - 0.15 * s2);
         vec3 secondarySpectral = getNaturalRainbowSpectrum(t2);
-        return secondarySpectral * (env2 * 0.08);
+        return secondarySpectral * (env2 * 0.18);
     }
     // Subtle zero-order diffuse brightening inside the primary bow
     if(dist < r1Min && dist > 0.60){
-        float innerGlow = smoothstep(0.60, r1Min, dist) * 0.012;
+        float innerGlow = smoothstep(0.60, r1Min, dist) * 0.015;
         return vec3(1.0, 0.96, 0.90) * innerGlow;
     }
     return vec3(0.0);
@@ -133,28 +133,14 @@ vec3 getRainbowShadowCoord(in vec3 feetPos, in float bias){
 }
 
 float getRainbowShadowVisibility(in vec3 nEyePlayerPos, in vec3 feetPlayerPos, in float viewDist, in bool isSky){
-    float vis = 1.0;
-
-    // 1. Solid terrain / obstacle shadow test:
-    // If the background surface (mountain, hill, ground, building) is in shadow,
-    // the rainbow disappears in that shadow.
-    if(!isSky && viewDist < shadowDistance){
-        vec3 shdPosTerrain = getRainbowShadowCoord(feetPlayerPos, 0.003);
-        vec3 shdColTerrain = getShdCol(shdPosTerrain);
-        float terrainVis = dot(shdColTerrain, vec3(0.333333));
-        if(terrainVis <= 0.001) return 0.0;
-        vis = min(vis, terrainVis);
-    }
-
-    // 2. Rain column shadow test:
+    // Rain column shadow test:
     // Test if direct sunlight reaches the rain droplets reflecting light along the line of sight.
     float rainDist = isSky ? RAINBOW_MIN_DISTANCE : min(viewDist * 0.75, RAINBOW_MIN_DISTANCE);
     vec3 rainFeetPos = nEyePlayerPos * rainDist;
     vec3 shdPosRain = getRainbowShadowCoord(rainFeetPos, 0.0);
     vec3 shdColRain = getShdCol(shdPosRain);
-    float rainVis = dot(shdColRain, vec3(0.333333));
-    if(rainVis <= 0.001) return 0.0;
-    vis = min(vis, rainVis);
+    float vis = dot(shdColRain, vec3(0.333333));
+    if(vis <= 0.001) return 0.0;
 
     #ifndef FORCE_DISABLE_DAY_CYCLE
         vis *= shdFade;
@@ -188,8 +174,8 @@ vec3 getRainbowRender(in vec3 nEyePlayerPos, in vec3 skyPos, in float viewDist, 
         #else
             float rainbowWeatherFade = weatherFade;
         #endif
-        // Only active when raining, not totally overcast, and not underwater / looking through water
-        if(rainStrength <= 0.005 || rainbowWeatherFade >= 0.95 || isEyeInWater != 0 || isWater) return vec3(0.0);
+        // Only active when raining, not totally overcast, and not underwater
+        if(rainStrength <= 0.005 || rainbowWeatherFade >= 0.95 || isEyeInWater != 0) return vec3(0.0);
 
         // Snow / cold biome check (snow does not form rainbows)
         float liquidRain = 1.0 - saturate(isColdBiome * 1.5);
@@ -244,7 +230,9 @@ vec3 getRainbowRender(in vec3 nEyePlayerPos, in vec3 skyPos, in float viewDist, 
         #ifdef FORCE_DISABLE_DAY_CYCLE
             vec3 lightSourceCol = lightCol;
         #else
-            vec3 lightSourceCol = mix(moonCol * 0.35, sunCol, dayCycleAdjust);
+            float weatherLightFactor = max(0.25, 1.0 - rainbowWeatherFade);
+            vec3 brightSunCol = sunCol / weatherLightFactor;
+            vec3 lightSourceCol = mix(moonCol * 0.35, brightSunCol, dayCycleAdjust);
         #endif
 
         // Modulate with incoming celestial light, settings, and shadow visibility

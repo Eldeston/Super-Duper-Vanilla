@@ -99,7 +99,7 @@ const float sunPathRotation = 30.0; // Light path angle. This also affects sky a
 #define AURORA // Enables volumetric pixelized aurora curtains in cold and snowy biomes.
 #define AURORA_BRIGHTNESS 1.00 // Aurora brightness. [0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00 1.10 1.20 1.30 1.40 1.50 1.60 1.70 1.80 1.90 2.00]
 #define RAINBOW // Enables procedural double rainbow / rainsquare when raining and not totally overcast.
-#define RAINBOW_BRIGHTNESS 1.00 // Rainbow brightness. [0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00 1.10 1.20 1.30 1.40 1.50 1.60 1.70 1.80 1.90 2.00]
+#define RAINBOW_BRIGHTNESS 1.00 // Rainbow brightness. [0.00 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.80 0.90 1.00 1.10 1.20 1.30 1.40 1.50 1.60 1.70 1.80 1.90 2.00 2.25 2.50 2.75 3.00 3.50 4.00]
 #define METEORS // Enables dynamic procedural meteor showers in the night sky.
 #define METEOR_RARITY 2 // Meteor shower occurrence frequency. 0: Every Night, 1: Frequent (Every 2-3 Nights), 2: Regular (Every 4-5 Nights), 3: Rare (Every 7-8 Nights), 4: Very Rare (Every 12-15 Nights), 5: Lunar Cycle (New Moon). [0 1 2 3 4 5]
 #define METEOR_SHOWER_STRENGTH 1.00 // Meteor shower activity rate and frequency. [0.25 0.50 0.75 1.00 1.25 1.50 1.75 2.00 2.50 3.00]
@@ -145,6 +145,7 @@ const float sunPathRotation = 30.0; // Light path angle. This also affects sky a
 #define DOUBLE_LAYERED_CLOUDS // Adds another layer of clouds (works on both vanilla and shader clouds), may use up performance.
 #define DYNAMIC_CLOUDS // Makes clouds more dynamic and allows weather to affect it. (affects on both vanilla and story mode clouds).
 #define DYNAMIC_WEATHER // Enables procedural dynamic weather and overcast system.
+#define STATIC_OVERCAST -1.00 // Overcast level when dynamic weather is off. -1.00 is dynamic vanilla rain, 0.00 to 1.00 is permanent overcast level. [-1.00 0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00]
 #define STORY_MODE_CLOUDS // Makes clouds softer with vertical fade gradient and thicker volume, reminiscent of Minecraft: Story Mode.
 //#define SOFT_CLOUD_EDGE // Makes cloud edges smooth and rounded instead of hard and blocky.
 #define FADE_SPEED 0.20 // Cloud fade speed [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.05 1.10 1.15 1.20 1.25 1.30 1.35 1.40 1.45 1.50 1.55 1.60 1.65 1.70 1.75 1.80 1.85 1.90 1.95 2.00 2.05 2.10 2.15 2.20 2.25 2.30 2.35 2.40 2.45 2.50 2.55 2.60 2.65 2.70 2.75 2.80 2.85 2.90 2.95 3.00 3.05 3.10 3.15 3.20 3.25 3.30 3.35 3.40 3.45 3.50 3.55 3.60 3.65 3.70 3.75 3.80 3.85 3.90 3.95 4.00]

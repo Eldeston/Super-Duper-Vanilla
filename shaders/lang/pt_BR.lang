@@ -175,6 +175,11 @@ screen.ATMOSPHERICS = Atmosféricos
     option.CLOUD_DEPTH = Profundidade da Nuvem
     option.SECOND_CLOUD_HEIGHT = Altura da Segunda Camada de Nuvens
     option.DYNAMIC_WEATHER = Clima Dinâmico
+    option.STATIC_OVERCAST = Nível de Nebulosidade Fixo
+        value.STATIC_OVERCAST.-1.00 = Dinâmico (Vanilla)
+        value.STATIC_OVERCAST.0.00 = 0% (Céu Limpo)
+        value.STATIC_OVERCAST.0.50 = 50%
+        value.STATIC_OVERCAST.1.00 = 100% (Nublado)
     option.SKYBOX_BRIGHTNESS = Brilho da Skybox
 
 screen.WORLD = Mundo

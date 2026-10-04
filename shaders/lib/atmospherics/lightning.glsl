@@ -127,8 +127,11 @@ LightningStrikeState getCloudLightningState(){
         #else
             float effectiveThunder = thunderStrength;
         #endif
-        float stormFade = clamp(max(weatherFade, effectiveThunder), 0.0, 1.0);
-        float stormFactor = saturate(rainStrength * 2.2 + stormFade * 0.4);
+
+        // Lightning only occurs during thunderstorms, never during plain rain
+        if(effectiveThunder < 0.05 || thunderStrength < 0.05) return state;
+
+        float stormFactor = saturate(effectiveThunder * 1.25);
         if(stormFactor < 0.04) return state;
 
         // Dynamic storm violence: violent storms have faster strike intervals, mild storms are spaced out

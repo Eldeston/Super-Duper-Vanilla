@@ -84,9 +84,9 @@
                 lightCol = toLinear(sRGBLightCol);
             #else
                 sRGBSunCol = SUN_COLOR_BASE * celestialVis;
-                sunCol = toLinear(SUN_COL_DATA_BLOCK) * celestialVis;
+                sunCol = toLinear(SUN_COL_DATA_BLOCK);
                 sRGBMoonCol = MOON_COLOR_BASE * celestialVis;
-                moonCol = toLinear(MOON_COL_DATA_BLOCK) * celestialVis;
+                moonCol = toLinear(MOON_COL_DATA_BLOCK);
                 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK1(sRGBSunCol, sRGBMoonCol);
                 lightCol = toLinear(sRGBLightCol);
             #endif
