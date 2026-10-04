@@ -228,7 +228,7 @@
         // If water
         if(blockId == DH_BLOCK_WATER){
             #if WATER_STYLE == 1
-                material.albedo.rgb = vertexColor * vec3(0.22, 0.14, 0.65);
+                material.albedo.rgb = vertexColor * vec3(0.20, 0.14, 0.52);
                 float waterNoise = WATER_BRIGHTNESS;
             #else
                 float waterNoise = WATER_BRIGHTNESS;

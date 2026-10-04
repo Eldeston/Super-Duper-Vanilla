@@ -67,10 +67,10 @@ void applyVoxyWaterProperties(inout dataPBR material, in vec3 tinting, in vec3 s
         bool hasBiomeTint = (tinting.r != tinting.g || tinting.r != tinting.b) || (tinting.r < 0.95);
         vec3 biomeColor = hasBiomeTint ? tinting : vec3(0.247, 0.463, 0.894);
 
-        // Authentic vanilla water tone with balanced warmth and vibrant blue
-        vec3 waterColor = biomeColor * vec3(0.22, 0.14, 0.65);
+        // Authentic vanilla water tone with balanced warmth and natural saturation
+        vec3 waterColor = biomeColor * vec3(0.20, 0.14, 0.52);
         float waterTexLuma = dot(sampledColour, vec3(0.299, 0.587, 0.114));
-        material.albedo.rgb = waterColor * (waterTexLuma * 0.30 + 0.70);
+        material.albedo.rgb = waterColor * (waterTexLuma * 0.30 + 0.63);
         mask = 0.0;
     #else
         vec2 waterNoiseUv = vertexWorldPos.xz * waterTileSizeInv;
