@@ -2,12 +2,15 @@ name: Release & Tagging
 
 on:
   push:
+    branches:
+      - master
+      - main
     tags:
       - 'v*'
   workflow_dispatch:
     inputs:
       bump:
-        description: 'Version bump level (if releasing from branch without existing tag)'
+        description: 'Version bump level (if triggering manually)'
         required: true
         default: 'none'
         type: choice
@@ -27,7 +30,7 @@ permissions:
 
 jobs:
   release:
-    name: Build & Publish Release
+    name: Check Version & Publish Release
     runs-on: ubuntu-latest
 
     steps:
@@ -58,8 +61,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Handle Version Bump (workflow_dispatch)
-        id: bump_step
+      - name: Handle Version Bump (workflow_dispatch only)
+        id: manual_bump
         if: github.event_name == 'workflow_dispatch' && (github.event.inputs.bump != 'none' || github.event.inputs.custom_version != '')
         run: |
           TARGET="${{ github.event.inputs.custom_version }}"
@@ -68,25 +71,23 @@ jobs:
           fi
           python3 scripts/bump_version.py "$TARGET" --commit --tag --push
 
-      - name: Resolve Release Tag & Version
-        id: resolve_ver
+      - name: Detect Version Bump and Tags
+        id: check_bump
         run: |
-          VER=$(python3 -c "import re; f=open('shaders/lang/en_US.lang'); m=re.search(r'screen\.DEBUG\s*=\s*HyperDuper Vanilla v?([0-9]+\.[0-9]+\.[0-9]+[a-zA-Z0-9\.\-]*)', f.read()); print(m.group(1) if m else '1.0.0')")
-          TAG="v${VER#v}"
-          echo "version=$VER" >> $GITHUB_OUTPUT
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
-          echo "Resolved Version: $VER ($TAG)"
+          python3 scripts/check_version_bump.py --create-tag
 
       - name: Run Quality Gate Pipeline
         run: task gate
 
       - name: Package Shaderpack ZIP
+        if: steps.check_bump.outputs.should_release == 'true'
         run: task build
 
       - name: Verify Release Artifact Exists
+        if: steps.check_bump.outputs.should_release == 'true'
         id: verify_artifact
         run: |
-          ZIP_NAME="Hyper-Duper-Vanilla.${{ steps.resolve_ver.outputs.tag }}.zip"
+          ZIP_NAME="Hyper-Duper-Vanilla.${{ steps.check_bump.outputs.tag }}.zip"
           if [ ! -f "dist/$ZIP_NAME" ]; then
             echo "Expected dist/$ZIP_NAME not found. Available dist files:"
             ls -la dist/
@@ -95,23 +96,25 @@ jobs:
           echo "Found release archive: dist/$ZIP_NAME"
 
       - name: Create or Update GitHub Release
+        if: steps.check_bump.outputs.should_release == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.resolve_ver.outputs.tag }}
-          name: HyperDuper Vanilla ${{ steps.resolve_ver.outputs.tag }}
+          tag_name: ${{ steps.check_bump.outputs.tag }}
+          name: HyperDuper Vanilla ${{ steps.check_bump.outputs.tag }}
           draft: false
           prerelease: false
           generate_release_notes: true
           files: |
-            dist/Hyper-Duper-Vanilla.${{ steps.resolve_ver.outputs.tag }}.zip
-            dist/Hyper-Duper-Vanilla.${{ steps.resolve_ver.outputs.tag }}.zip.sha256
+            dist/Hyper-Duper-Vanilla.${{ steps.check_bump.outputs.tag }}.zip
+            dist/Hyper-Duper-Vanilla.${{ steps.check_bump.outputs.tag }}.zip.sha256
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Artifacts to Workflow Run
+        if: steps.check_bump.outputs.should_release == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: Hyper-Duper-Vanilla-${{ steps.resolve_ver.outputs.tag }}
+          name: Hyper-Duper-Vanilla-${{ steps.check_bump.outputs.tag }}
           path: |
             dist/*.zip
             dist/*.sha256
