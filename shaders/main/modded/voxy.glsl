@@ -41,7 +41,7 @@ vec3 vertexWorldPos;
     #include "/lib/PBR/enviroPBR.glsl"
 #endif
 
-#ifdef TRANSLUCENT
+#if defined WATER_NORMAL || defined WATER_NOISE || defined TRANSLUCENT
     #include "/lib/surface/water.glsl"
 #endif
 
@@ -58,6 +58,12 @@ const vec3 VOXY_FACE_NORMALS[6] = vec3[6](
 );
 
 void applyVoxyWaterProperties(inout dataPBR material, in vec3 tinting, in vec3 sampledColour, out float mask){
+    vec2 waterNoiseUv = vertexWorldPos.xz * waterTileSizeInv;
+    #if defined WATER_NORMAL
+        vec4 waterData = H2NWater(waterNoiseUv).xzyw;
+        material.normal = fastNormalize(waterData.yxz * material.normal.x + waterData.xyz * material.normal.y + waterData.xzy * material.normal.z);
+    #endif
+
     #if WATER_STYLE == 1
         material.smoothness = 0.55;
         material.metallic = 0.005;
@@ -68,24 +74,20 @@ void applyVoxyWaterProperties(inout dataPBR material, in vec3 tinting, in vec3 s
         vec3 biomeColor = hasBiomeTint ? tinting : vec3(0.247, 0.463, 0.894);
 
         // Deep, rich, vibrant vanilla water tone with strong blue and suppressed green
-        vec3 waterColor = biomeColor * vec3(0.10, 0.04, 0.55);
-        material.albedo.rgb = waterColor * (sampledColour * 0.35 + 0.75);
+        vec3 waterColor = biomeColor * vec3(0.09, 0.03, 0.52);
+        float waterTexLuma = dot(sampledColour, vec3(0.299, 0.587, 0.114));
+        material.albedo.rgb = waterColor * (waterTexLuma * 0.30 + 0.70);
     #else
         material.smoothness = 0.96;
         material.metallic = 0.04;
         material.albedo.a = 0.45;
 
         float waterNoise = WATER_BRIGHTNESS;
-        vec2 waterNoiseUv = vertexWorldPos.xz * waterTileSizeInv;
-        #if defined WATER_NORMAL
-            vec4 waterData = H2NWater(waterNoiseUv).xzyw;
-            material.normal = fastNormalize(waterData.yxz * material.normal.x + waterData.xyz * material.normal.y + waterData.xzy * material.normal.z);
-            #ifdef WATER_NOISE
-                waterNoise *= squared(0.128 + waterData.w * 0.5);
-            #endif
+        #if defined WATER_NORMAL && defined WATER_NOISE
+            waterNoise *= squared(0.128 + waterData.w * 0.5);
         #elif defined WATER_NOISE
-            float waterData = getCellNoise(waterNoiseUv);
-            waterNoise *= squared(0.128 + waterData * 0.5);
+            float cellData = getCellNoise(waterNoiseUv);
+            waterNoise *= squared(0.128 + cellData * 0.5);
         #endif
         material.albedo.rgb *= waterNoise;
     #endif

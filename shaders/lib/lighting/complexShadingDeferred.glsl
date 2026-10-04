@@ -17,16 +17,14 @@ vec3 getDeferredReflection(in vec3 screenPos, in vec3 viewPos, in vec3 reflectVi
 	#ifdef SSR
 		#ifdef LOD_ACTIVE
 			vec3 SSRCoord = (!realSky && NV > 0.0) ? rayTraceScene(screenPos, viewPos, reflectViewDir, ditherZ) : vec3(0.0);
-
-			if(!realSky && SSRCoord.z < 0.5){
 		#else
 			vec3 SSRCoord = (NV > 0.0) ? rayTraceScene(screenPos, viewPos, reflectViewDir, ditherZ) : vec3(0.0);
-
-			if(SSRCoord.z < 0.5){
 		#endif
-				vec3 fakeCoord = getFakeSSRCoord(viewPos, reflectViewDir);
-				if(fakeCoord.z > 0.5) SSRCoord = fakeCoord;
-			}
+
+		if(SSRCoord.z < 0.5){
+			vec3 fakeCoord = getFakeSSRCoord(viewPos, reflectViewDir);
+			if(fakeCoord.z > 0.5) SSRCoord = fakeCoord;
+		}
 
 		#ifdef PREVIOUS_FRAME
 			return SSRCoord.z < 0.5 ? getSkyReflection(reflectViewDir) : textureLod(colortex5, getPrevScreenCoord(SSRCoord.xy), 0).rgb;
@@ -68,13 +66,17 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
 	vec3 reflectCol = getDeferredReflection(screenPos, viewPos, reflectViewDir, dither.z, NV, realSky);
 	reflectCol = clamp(reflectCol, vec3(0.0), vec3(16.0));
 
+	float smoothCosTheta = NV > 0 ? exp2(-9.28 * NV) * smoothness : smoothness;
+
 	#if WATER_STYLE == 1
 		// For vanilla water, make reflections softer so the vibrant water body
 		// and modded water effects (wakes, splash particles, foam) pop and feel at home!
-		if(isWater) reflectCol *= 0.30;
+		if(isWater){
+			reflectCol *= 0.30;
+			smoothCosTheta = min(smoothCosTheta, smoothness * 0.65);
+		}
 	#endif
 
-	float smoothCosTheta = NV > 0 ? exp2(-9.28 * NV) * smoothness : smoothness;
 	float oneMinusCosTheta = smoothness - smoothCosTheta;
 
 	if(metallic <= 0.9) return sceneCol + reflectCol * (smoothCosTheta + metallic * oneMinusCosTheta);
