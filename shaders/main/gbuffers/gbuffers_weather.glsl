@@ -99,8 +99,9 @@
             discard; return;
         }
     #else
-        /* RENDERTARGETS: 4 */
+        /* RENDERTARGETS: 4,3 */
         layout(location = 0) out vec4 sceneColOut; // colortex4
+        layout(location = 1) out vec3 weatherMatOut; // colortex3
 
         flat in float lmCoordX;
 
@@ -149,9 +150,10 @@
             #endif
             vec3 totalDiffuse = skyLightDiffuse + toLinear(lmCoordX * blockLightColor) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 
-            totalDiffuse += lightningFlash;
+            totalDiffuse += toLinear(mix(vec3(1.0), LIGHTNING_COLOR, 0.20)) * lightningFlash;
 
             sceneColOut = vec4(albedo.rgb * totalDiffuse, albedo.a);
+            weatherMatOut = vec3(albedo.a, 0.0, 1.0);
         }
     #endif
 #endif

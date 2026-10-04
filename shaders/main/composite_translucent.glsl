@@ -32,12 +32,10 @@
             #endif
         #endif
     #endif
-
     #ifndef FORCE_DISABLE_DAY_CYCLE
         uniform float dayCycle;
         uniform float twilightPhase;
     #endif
-
     #if defined WORLD_VANILLA_FOG_COLOR || !defined FORCE_DISABLE_WEATHER
         uniform vec3 fogColor;
     #endif
@@ -77,8 +75,6 @@
         gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
     }
 #endif
-/// -------------------------------- /// Fragment Shader /// -------------------------------- ///
-
 #ifdef FRAGMENT
     /* RENDERTARGETS: 4 */
     layout(location = 0) out vec3 sceneColOut; // colortex4
@@ -311,7 +307,11 @@
             #else
                 float effectiveFlash = getLightningFlashIntensity();
             #endif
-            vec3 cloudAmbient = vec3(toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + effectiveFlash);
+            vec3 flashLightCol = mix(vec3(1.0), LIGHTNING_COLOR, 0.25);
+            vec3 cloudAmbient = toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + toLinear(flashLightCol) * effectiveFlash;
+            #if WORLD_ID == 0
+                if(effectiveFlash > 0.0) cloudCelestialLight = mix(cloudCelestialLight, toLinear(flashLightCol) * (effectiveFlash * 2.5), effectiveFlash);
+            #endif
             #ifdef STORY_MODE_CLOUDS
                 cloudAmbient += vec3(0.22 * cloudWeatherFade * dayCycleAdjust);
             #endif
@@ -431,8 +431,7 @@
         #endif
 
         #ifdef WORLD_LIGHT
-            if(VOLUMETRIC_LIGHTING_STRENGTH != 0 && isEyeInWater != 2)
-                sceneCol += getVolumetricLight(nFeetPlayerPos, feetPlayerDist, fogFactor, borderFog, dither.x, isSky);
+            if(VOLUMETRIC_LIGHTING_STRENGTH != 0 && isEyeInWater != 2) sceneCol += getVolumetricLight(nFeetPlayerPos, feetPlayerDist, fogFactor, borderFog, dither.x, isSky);
             #if defined GODRAYS
                 sceneCol += getGodRays(texCoord, nEyePlayerPos, dither.x, depth);
             #endif
@@ -442,7 +441,9 @@
         #endif
 
         #if !defined FORCE_DISABLE_CLOUDS && CLOUD_TYPE == 2
+            vec3 preCloudCol = sceneCol;
             sceneCol = renderTranslucentClouds(sceneCol, nFeetPlayerPos, feetPlayerDist, dither.x, isSky);
+            if(matRaw0.z >= 0.99) sceneCol = mix(sceneCol, preCloudCol, matRaw0.x);
         #endif
 
         return sceneCol;

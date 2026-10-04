@@ -137,11 +137,18 @@ float getCelestialTotalStrength(in vec3 lightDir, in vec3 lightViewDir, in vec2 
         uniform float endFlashIntensity;
         uniform vec3 endFlashPosition;
     #endif
+#elif WORLD_ID == 0
+    #include "/lib/atmospherics/lightning.glsl"
 #endif
 
 // Calculates tinted ray color based on celestial strength, water submersion, and skylight
-vec3 computeGodrayColor(in float totalStrength, in float sceneDepth){
+vec3 computeGodrayColor(in float totalStrength, in float sceneDepth, in bool isLightning, in float flashFactor){
     vec3 col = lightCol * (shdFade * totalStrength);
+    #if WORLD_ID == 0
+        if(isLightning){
+            col = toLinear(mix(vec3(1.0), LIGHTNING_COLOR, 0.25)) * (flashFactor * 2.5 * totalStrength);
+        }
+    #endif
     #if WORLD_ID == 1
         #ifdef EPILEPSY_SAFETY
             col = vec3(0.0);
@@ -239,7 +246,7 @@ float marchGodraysWithClouds(
 #endif
 
 // Fast pre-flight culling to eliminate godray calculations before vector setup
-bool shouldCullGodrays(in float lightViewDirZ, in float cosTheta, in float sceneDepth, in float weatherVis){
+bool shouldCullGodrays(in float lightViewDirZ, in float cosTheta, in float sceneDepth, in float weatherVis, in bool isLightning){
     #if WORLD_ID == 1
         #ifdef EPILEPSY_SAFETY
             return true;
@@ -247,7 +254,8 @@ bool shouldCullGodrays(in float lightViewDirZ, in float cosTheta, in float scene
             if(endFlashIntensity <= 0.18) return true;
         #endif
     #endif
-    if(GODRAYS_DENSITY <= 0.0 || isEyeInWater == 2 || shdFade <= 0.001) return true;
+    float effShdFade = isLightning ? 1.0 : shdFade;
+    if(GODRAYS_DENSITY <= 0.0 || isEyeInWater == 2 || effShdFade <= 0.001) return true;
     if(weatherVis <= 0.001 || lightViewDirZ >= -0.05 || cosTheta <= 0.05) return true;
     #ifndef WORLD_CUSTOM_SKYLIGHT
         if(sceneDepth < 1.0 && isEyeInWater == 0 && eyeBrightFact <= 0.02) return true;
@@ -294,12 +302,15 @@ float evaluateGodrayTransmission(in vec2 screenCoord, in vec2 stepVec, in float 
     return marchGodraysSimple(screenCoord, stepVec, dither, steps, normFactor);
 }
 
-// Main entry point for atmospheric godrays
-vec3 getGodRays(
-    in vec2 screenCoord,
+// Computes active godray celestial or lightning light vector, view vector, weather visibility, and flash factor
+void setupGodrayLightSource(
     in vec3 nEyePlayerPos,
-    in float dither,
-    in float sceneDepth
+    out vec3 lightDir,
+    out vec3 lightViewDir,
+    out float cosTheta,
+    out float weatherVis,
+    out bool isLightning,
+    out float flashFactor
 ){
     #ifndef FORCE_DISABLE_WEATHER
         #if WORLD_ID == 0
@@ -311,16 +322,48 @@ vec3 getGodRays(
         #else
             float godrayWeather = weatherFade;
         #endif
-        float weatherVis = 1.0 - smoothstep(0.65, 0.95, godrayWeather);
+        weatherVis = 1.0 - smoothstep(0.65, 0.95, godrayWeather);
     #else
-        const float weatherVis = 1.0;
+        weatherVis = 1.0;
     #endif
 
-    vec3 lightDir = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
-    vec3 lightViewDir = mat3(gbufferModelView) * lightDir;
-    float cosTheta = dot(nEyePlayerPos, lightDir);
+    lightDir = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
+    lightViewDir = mat3(gbufferModelView) * lightDir;
+    cosTheta = dot(nEyePlayerPos, lightDir);
+    isLightning = false;
+    flashFactor = 0.0;
 
-    if(shouldCullGodrays(lightViewDir.z, cosTheta, sceneDepth, weatherVis)) return vec3(0.0);
+    #if WORLD_ID == 0 && !defined EPILEPSY_SAFETY
+        float flash = getLightningFlashIntensity();
+        float flashWeight = smoothstep(0.04, 0.35, flash);
+        if(flashWeight > 0.0){
+            vec3 lDir = getLightningDischargeDir();
+            vec3 lViewDir = mat3(gbufferModelView) * lDir;
+            if(lViewDir.z < -0.01){
+                lightDir = lDir;
+                lightViewDir = lViewDir;
+                cosTheta = dot(nEyePlayerPos, lightDir);
+                weatherVis = max(weatherVis, flashWeight);
+                isLightning = true;
+                flashFactor = flash * flashWeight;
+            }
+        }
+    #endif
+}
+
+// Main entry point for atmospheric godrays
+vec3 getGodRays(
+    in vec2 screenCoord,
+    in vec3 nEyePlayerPos,
+    in float dither,
+    in float sceneDepth
+){
+    vec3 lightDir, lightViewDir;
+    float cosTheta, weatherVis, flashFactor;
+    bool isLightning;
+    setupGodrayLightSource(nEyePlayerPos, lightDir, lightViewDir, cosTheta, weatherVis, isLightning, flashFactor);
+
+    if(shouldCullGodrays(lightViewDir.z, cosTheta, sceneDepth, weatherVis, isLightning)) return vec3(0.0);
 
     float phase = getForwardScatteringPhase(cosTheta);
     vec2 lightScreenPos = getScreenCoord(gbufferProjection, lightViewDir);
@@ -329,10 +372,11 @@ vec3 getGodRays(
     if(totalStrength <= 0.001) return vec3(0.0);
 
     // Color and phase intensity pre-cull before ray vector math
+    float effFade = isLightning ? 1.0 : shdFade;
     float maxLight = max(lightCol.r, max(lightCol.g, lightCol.b));
-    if(maxLight * (shdFade * totalStrength * phase) <= 0.0003) return vec3(0.0);
+    if(maxLight * (effFade * totalStrength * phase) <= 0.0003 && !isLightning) return vec3(0.0);
 
-    vec3 rayColor = computeGodrayColor(totalStrength, sceneDepth);
+    vec3 rayColor = computeGodrayColor(totalStrength, sceneDepth, isLightning, flashFactor);
     vec2 deltaCoord = lightScreenPos - screenCoord;
     float distToLight = length(deltaCoord);
     if(distToLight < 0.0001) return vec3(0.0);

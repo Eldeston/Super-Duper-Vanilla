@@ -292,6 +292,15 @@ screen.ATMOSPHERICS.comment = §6Effets atmosphériques incluant le soleil/lune,
         option.CLOUD_LIGHTNING_FREQUENCY = Fréquence des éclairs
         option.CLOUD_LIGHTNING_FREQUENCY.comment = Multiplicateur de fréquence d'apparition des éclairs internuageux pendant la pluie et les orages.
 
+        option.LIGHTNING_COLOR_R = Éclair Rouge
+        option.LIGHTNING_COLOR_R.comment = Composante rouge de la couleur des éclairs, des décharges entre nuages, de la lueur interne des nuages, de l'éclairage céleste, des reflets et des rayons crépusculaires.\n\n§e[Visuel] §fLa valeur par défaut 240 offre un blanc violacé éblouissant combiné au bleu.\n§a[Performance : Aucune] §fScalaire de couleur.
+
+        option.LIGHTNING_COLOR_G = Éclair Vert
+        option.LIGHTNING_COLOR_G.comment = Composante verte de la couleur des éclairs, des décharges entre nuages, de la lueur interne des nuages, de l'éclairage céleste, des reflets et des rayons crépusculaires.\n\n§e[Visuel] §fLa valeur par défaut 225 maintient une brillance et clarté lumineuse maximale.\n§a[Performance : Aucune] §fScalaire de couleur.
+
+        option.LIGHTNING_COLOR_B = Éclair Bleu
+        option.LIGHTNING_COLOR_B.comment = Composante bleue de la couleur des éclairs, des décharges entre nuages, de la lueur interne des nuages, de l'éclairage céleste, des reflets et des rayons crépusculaires.\n\n§e[Visuel] §fLa valeur par défaut 255 procure une lueur violette et blanc violacé éclatante.\n§a[Performance : Aucune] §fScalaire de couleur.
+
     screen.CLOUD_SETTINGS = Paramètres des nuages
     screen.CLOUD_SETTINGS.comment = §eOptions de rendu des nuages telles que les nuages à double couche, les nuages dynamiques et la qualité/épaisseur des nuages.
         option.DOUBLE_LAYERED_CLOUDS = Nuages à double couche

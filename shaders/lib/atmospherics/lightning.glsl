@@ -70,7 +70,27 @@ void addLightningSegment(in vec2 p, in vec2 a, in vec2 b, inout float minDist){
         #define THUNDER_STRENGTH_DECLARED
         uniform float thunderStrength;
     #endif
+    #ifdef DYNAMIC_WEATHER
+        #ifndef DYNAMIC_THUNDER_DECLARED
+            #define DYNAMIC_THUNDER_DECLARED
+            uniform float dynamicThunderStrength;
+        #endif
+    #endif
+    #ifndef IS_LIGHTNING_BIOME_DECLARED
+        #define IS_LIGHTNING_BIOME_DECLARED
+        uniform float isLightningBiome;
+    #endif
 #endif
+
+// Determines if current biome climate supports lightning (faithful to vanilla Minecraft rules)
+// Vanilla rule: no lightning in biomes that are too hot or cold (snow and desert)
+bool canBiomeHaveLightning(){
+    #if WORLD_ID != 0 || defined FORCE_DISABLE_WEATHER
+        return false;
+    #else
+        return isLightningBiome > 0.05;
+    #endif
+}
 
 // Strike state information struct
 struct LightningStrikeState {
@@ -101,16 +121,23 @@ LightningStrikeState getCloudLightningState(){
     #if WORLD_ID != 0 || defined FORCE_DISABLE_WEATHER
         return state;
     #else
-        float stormFade = clamp(max(weatherFade, thunderStrength), 0.0, 1.0);
+        if(!canBiomeHaveLightning()) return state;
+        #ifdef DYNAMIC_WEATHER
+            float effectiveThunder = dynamicThunderStrength;
+        #else
+            float effectiveThunder = thunderStrength;
+        #endif
+        float stormFade = clamp(max(weatherFade, effectiveThunder), 0.0, 1.0);
         float stormFactor = saturate(rainStrength * 2.2 + stormFade * 0.4);
         if(stormFactor < 0.04) return state;
 
-        float period = 7.5 / max(float(CLOUD_LIGHTNING_FREQUENCY), 0.1);
+        // Dynamic storm violence: violent storms have faster strike intervals, mild storms are spaced out
+        float period = (7.5 / max(float(CLOUD_LIGHTNING_FREQUENCY), 0.1)) * mix(1.35, 0.70, effectiveThunder);
         float cycle = floor(fragmentFrameTime / period);
         float cycleHash = lightningHash11(cycle * 31.71 + 7.13);
 
-        // Weather activity gating: lighter rain produces fewer strikes; heavy storms produce more
-        if(cycleHash > stormFactor * 1.25) return state;
+        // Weather activity gating: lighter storms produce fewer strikes; violent storms produce frequent discharges
+        if(cycleHash > stormFactor * (1.5 - effectiveThunder * 0.4)) return state;
 
         float strikeStart = cycle * period + cycleHash * (period - 1.2);
         float dt = fragmentFrameTime - strikeStart;
@@ -170,9 +197,9 @@ vec3 getLightningDischargeDir(){
         #if WORLD_ID == 0
             // If a vanilla ground bolt is present, use its player-space direction
             if(lightningBoltPosition.w > 0.001){
-                vec3 groundBoltEye = lightningBoltPosition.xyz;
-                if(lengthSquared(groundBoltEye) > 0.001){
-                    return fastNormalize(mat3(gbufferModelViewInverse) * groundBoltEye);
+                vec3 groundBoltPos = lightningBoltPosition.xyz;
+                if(lengthSquared(groundBoltPos) > 0.001){
+                    return fastNormalize(groundBoltPos);
                 }
             }
 
@@ -195,6 +222,8 @@ float getLightningFlashIntensity(){
     #if LIGHTNING_FLASH == 0
         return 0.0;
     #endif
+
+    if(!canBiomeHaveLightning()) return 0.0;
 
     float flash = 0.0;
 
@@ -306,6 +335,8 @@ vec3 getCloudLightningRender(in vec3 nEyePlayerPos){
         return vec3(0.0);
     #endif
 
+    if(!canBiomeHaveLightning()) return vec3(0.0);
+
     LightningStrikeState state = getCloudLightningState();
     if(!state.isActive || !state.isVisibleBolt || state.flash <= 0.002) return vec3(0.0);
 
@@ -366,8 +397,9 @@ vec3 getCloudLightningRender(in vec3 nEyePlayerPos){
     // Natural atmospheric electric corona / glow around the crisp geometric segments
     float aura = exp(-dTrunk * 45.0) * 0.85 + exp(-dBranch * 70.0) * 0.50 + exp(-dTendril * 95.0) * 0.30;
 
-    // Emissive HDR lightning bolt
-    vec3 boltCol = (vec3(1.0) * (core * 6.0) + vec3(0.65, 0.82, 1.0) * (aura * 2.4)) * state.flash;
+    // Emissive HDR lightning bolt with slight purple electric corona aura
+    vec3 coreCol = mix(vec3(1.0), LIGHTNING_COLOR, 0.25);
+    vec3 boltCol = (coreCol * (core * 6.0) + LIGHTNING_COLOR * (aura * 2.4)) * state.flash;
     return boltCol;
 }
 
@@ -397,7 +429,7 @@ vec3 getCloudInternalFlashGlow(in vec3 dir, in float cloudDensity){
     // Internal cloud scattering: dense cloud volume traps and scatters light brightly from within
     float internalScatter = cloudDensity * (0.85 + cloudDensity * 1.35);
 
-    vec3 glowColor = vec3(0.72, 0.85, 1.0);
+    vec3 glowColor = LIGHTNING_COLOR;
     return glowColor * (flash * spatialGlow * internalScatter * (1.35 * CLOUD_LIGHTNING_GLOW));
 }
 

@@ -60,7 +60,7 @@
             waterNoiseUv = vertexShdWorldPosXZ * waterTileSizeInv;
 
             #ifdef WATER_ANIMATION
-                vertexShdEyePlayerPos = getWaterWave(vertexShdEyePlayerPos, vertexShdWorldPosXZ, mc_Entity.x, vertexFrameTime);
+                vertexShdEyePlayerPos = getWaterWave(vertexShdEyePlayerPos, vertexShdWorldPosXZ, mc_Entity.x, lightMapCoord(gl_MultiTexCoord1.y), vertexFrameTime);
             #endif
 
             #ifdef WORLD_CURVATURE

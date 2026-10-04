@@ -109,13 +109,13 @@
                 vec3 weatherSky = vec3(dot(toLinear(fogColor), vec3(0.2126, 0.7152, 0.0722)));
                 vec3 cloudBaseSky = mix(toLinear(SKY_COLOR_DATA_BLOCK), weatherSky * 0.35, effectiveWeatherFade);
                 vec3 cloudDirectLight = toLinear(LIGHT_COLOR_DATA_BLOCK0) * ((1.0 - effectiveWeatherFade) * squared(cloudGradient));
-                sceneColOut = (toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash) + cloudBaseSky + cloudDirectLight;
+                sceneColOut = (toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + toLinear(mix(vec3(1.0), LIGHTNING_COLOR, 0.20)) * lightningFlash) + cloudBaseSky + cloudDirectLight;
             #else
-                sceneColOut = (toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash) + toLinear(SKY_COLOR_DATA_BLOCK) + toLinear(LIGHT_COLOR_DATA_BLOCK0) * squared(cloudGradient);
+                sceneColOut = (toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + toLinear(mix(vec3(1.0), LIGHTNING_COLOR, 0.20)) * lightningFlash) + toLinear(SKY_COLOR_DATA_BLOCK) + toLinear(LIGHT_COLOR_DATA_BLOCK0) * squared(cloudGradient);
             #endif
 
             #if defined CLOUD_LIGHTNING_GLOW && !defined EPILEPSY_SAFETY
-                vec3 internalGlow = vec3(0.72, 0.85, 1.0) * (lightningFlash * (0.85 + cloudGradient * 1.35) * (1.25 * CLOUD_LIGHTNING_GLOW));
+                vec3 internalGlow = toLinear(LIGHTNING_COLOR) * (lightningFlash * (0.85 + cloudGradient * 1.35) * (1.25 * CLOUD_LIGHTNING_GLOW));
                 sceneColOut += internalGlow;
             #endif
         }

@@ -48,7 +48,11 @@
         uniform float twilightPhase;
     #endif
 
-    #if defined WORLD_VANILLA_FOG_COLOR || !defined FORCE_DISABLE_WEATHER
+        #if WORLD_ID == 0
+            uniform float lightningFlash;
+        #endif
+
+        #if defined WORLD_VANILLA_FOG_COLOR || !defined FORCE_DISABLE_WEATHER
         uniform vec3 fogColor;
     #endif
 
@@ -85,6 +89,17 @@
                 moonCol = toLinear(MOON_COL_DATA_BLOCK) * celestialVis;
                 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK1(sRGBSunCol, sRGBMoonCol);
                 lightCol = toLinear(sRGBLightCol);
+            #endif
+            #if WORLD_ID == 0 && !defined EPILEPSY_SAFETY
+                if(lightningFlash > 0.0){
+                    vec3 nearWhiteLight = mix(vec3(1.0), LIGHTNING_COLOR, 0.20) * (lightningFlash * 2.5);
+                    sRGBSunCol = mix(sRGBSunCol, nearWhiteLight, lightningFlash);
+                    sunCol = toLinear(sRGBSunCol);
+                    sRGBMoonCol = mix(sRGBMoonCol, nearWhiteLight, lightningFlash);
+                    moonCol = toLinear(sRGBMoonCol);
+                    sRGBLightCol = mix(sRGBLightCol, nearWhiteLight, lightningFlash);
+                    lightCol = toLinear(sRGBLightCol);
+                }
             #endif
         #endif
 

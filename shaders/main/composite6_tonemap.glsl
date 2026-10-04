@@ -19,6 +19,10 @@
     #if defined LENS_FLARE && defined WORLD_LIGHT
         flat out vec3 sRGBLightCol;
         flat out vec3 shdLightDirScreenSpace;
+        #if WORLD_ID == 0
+            flat out float lightningFlareFactor;
+            flat out float lightningBoltDepth;
+        #endif
     #endif
 
     noperspective out vec2 texCoord;
@@ -49,6 +53,16 @@
         #ifndef FORCE_DISABLE_DAY_CYCLE
             uniform float dayCycle;
             uniform float twilightPhase;
+        #endif
+
+        #if WORLD_ID == 0
+            #ifndef LIGHTNING_BOLT_POS_DECLARED
+                #define LIGHTNING_BOLT_POS_DECLARED
+                uniform vec4 lightningBoltPosition;
+            #endif
+            uniform float lightningFlash;
+            uniform float fragmentFrameTime;
+            #include "/lib/atmospherics/lightning.glsl"
         #endif
 
         #include "/lib/utility/projectionFunctions.glsl"
@@ -89,15 +103,52 @@
                     #endif
                 }
             #else
-                // Get sRGB light postColOut
-                sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
+                #if WORLD_ID == 0 && !defined EPILEPSY_SAFETY
+                    float lightningIntensity = 0.0;
+                    vec3 lightningViewPos = vec3(0.0);
+                    float boltClipDepth = 1.0;
 
-                // Get shadow light view direction in screen space
-                vec3 lightViewDir = mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
-                if(lightViewDir.z < -0.001){
-                    shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, lightViewDir), gbufferProjection[1].y * 0.72794047);
+                    if (lightningBoltPosition.w > 0.001 && lengthSquared(lightningBoltPosition.xyz) > 0.001) {
+                        lightningIntensity = max(lightningFlash, 0.40);
+                        lightningViewPos = mat3(gbufferModelView) * lightningBoltPosition.xyz;
+                        vec4 boltClip = gbufferProjection * vec4(lightningViewPos, 1.0);
+                        boltClipDepth = (boltClip.z / boltClip.w) * 0.5 + 0.5;
+                    } else {
+                        LightningStrikeState ccState = getCloudLightningState();
+                        if (ccState.isActive && ccState.flash > 0.01) {
+                            lightningIntensity = ccState.flash;
+                            lightningViewPos = mat3(gbufferModelView) * ccState.dir;
+                            boltClipDepth = 1.0;
+                        }
+                    }
+
+                    float flashFlareWeight = smoothstep(0.04, 0.35, lightningIntensity);
+                #else
+                    float flashFlareWeight = 0.0;
+                #endif
+
+                if (flashFlareWeight > 0.0 && lightningViewPos.z < -0.01) {
+                    sRGBLightCol = LIGHTNING_COLOR * (lightningIntensity * flashFlareWeight * 2.5);
+                    shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, normalize(lightningViewPos)), gbufferProjection[1].y * 0.72794047);
+                    #if WORLD_ID == 0
+                        lightningFlareFactor = flashFlareWeight;
+                        lightningBoltDepth = boltClipDepth;
+                    #endif
                 } else {
-                    shdLightDirScreenSpace = vec3(-10.0, -10.0, 0.0);
+                    #if WORLD_ID == 0
+                        lightningFlareFactor = 0.0;
+                        lightningBoltDepth = 1.0;
+                    #endif
+                    // Get sRGB light postColOut
+                    sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
+
+                    // Get shadow light view direction in screen space
+                    vec3 lightViewDir = mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z);
+                    if(lightViewDir.z < -0.001){
+                        shdLightDirScreenSpace = vec3(getScreenCoord(gbufferProjection, lightViewDir), gbufferProjection[1].y * 0.72794047);
+                    } else {
+                        shdLightDirScreenSpace = vec3(-10.0, -10.0, 0.0);
+                    }
                 }
             #endif
         #endif
@@ -120,6 +171,10 @@
     #if defined LENS_FLARE && defined WORLD_LIGHT
         flat in vec3 sRGBLightCol;
         flat in vec3 shdLightDirScreenSpace;
+        #if WORLD_ID == 0
+            flat in float lightningFlareFactor;
+            flat in float lightningBoltDepth;
+        #endif
     #endif
 
     noperspective in vec2 texCoord;
@@ -210,6 +265,53 @@
         }
     #endif
 
+    #if defined LENS_FLARE && defined WORLD_LIGHT
+        vec3 computeAppliedLensFlare(in vec2 coord){
+            if(shdLightDirScreenSpace.z <= 0.0) return vec3(0.0);
+
+            #ifdef DISTANT_HORIZONS
+                bool isSky = textureLod(dhDepthTex1, shdLightDirScreenSpace.xy, 0).x == 1 && textureLod(depthtex0, shdLightDirScreenSpace.xy, 0).x == 1;
+            #elif defined VOXY
+                float vxDepth = textureLod(vxDepthTexOpaque, shdLightDirScreenSpace.xy, 0).x;
+                bool isSky = (vxDepth >= 1.0 || vxDepth <= 0.0) && textureLod(depthtex0, shdLightDirScreenSpace.xy, 0).x == 1;
+            #else
+                bool isSky = textureLod(depthtex0, shdLightDirScreenSpace.xy, 0).x == 1;
+            #endif
+
+            #if WORLD_ID == 0
+                float sceneDepth = textureLod(depthtex0, shdLightDirScreenSpace.xy, 0).x;
+                bool canFlare = (lightningFlareFactor > 0.0) ? (sceneDepth >= lightningBoltDepth - 0.003) : isSky;
+            #else
+                bool canFlare = isSky;
+            #endif
+            if(!canFlare) return vec3(0.0);
+
+            #ifdef FORCE_DISABLE_WEATHER
+                float weatherFlare = 1.0;
+            #else
+                #if WORLD_ID == 0
+                    float weatherFlare = lightningFlareFactor > 0.0 ? lightningFlareFactor : (1.0 - clamp(max(weatherFade, thunderStrength), 0.0, 1.0));
+                #else
+                    float weatherFlare = 1.0 - weatherFade;
+                #endif
+            #endif
+            if(weatherFlare <= 0.0) return vec3(0.0);
+
+            #if defined FORCE_DISABLE_CLOUDS || CLOUD_TYPE == 0
+                float cloudFlare = 1.0;
+            #else
+                #if WORLD_ID == 0
+                    float cloudFlare = lightningFlareFactor > 0.0 ? 1.0 : getCloudFlareOcclusion(shdLightDirScreenSpace.xy);
+                #else
+                    float cloudFlare = getCloudFlareOcclusion(shdLightDirScreenSpace.xy);
+                #endif
+            #endif
+            if(cloudFlare <= 0.001) return vec3(0.0);
+
+            return getLensFlare(coord - 0.5, shdLightDirScreenSpace.xy - 0.5) * (cloudFlare * weatherFlare * (1.0 - blindness) * (1.0 - darknessFactor));
+        }
+    #endif
+
     void main(){
         // Screen texel coordinates
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
@@ -236,38 +338,7 @@
         #endif
 
         #if defined LENS_FLARE && defined WORLD_LIGHT
-            if(shdLightDirScreenSpace.z > 0.0){
-                #ifdef DISTANT_HORIZONS
-                    bool isSky = textureLod(dhDepthTex1, shdLightDirScreenSpace.xy, 0).x == 1 && textureLod(depthtex0, shdLightDirScreenSpace.xy, 0).x == 1;
-                #elif defined VOXY
-                    float vxDepth = textureLod(vxDepthTexOpaque, shdLightDirScreenSpace.xy, 0).x;
-                    bool isSky = (vxDepth >= 1.0 || vxDepth <= 0.0) && textureLod(depthtex0, shdLightDirScreenSpace.xy, 0).x == 1;
-                #else
-                    bool isSky = textureLod(depthtex0, shdLightDirScreenSpace.xy, 0).x == 1;
-                #endif
-
-                if(isSky){
-                    #ifdef FORCE_DISABLE_WEATHER
-                        float weatherFlare = 1.0;
-                    #else
-                        #if WORLD_ID == 0
-                            float weatherFlare = 1.0 - clamp(max(weatherFade, thunderStrength), 0.0, 1.0);
-                        #else
-                            float weatherFlare = 1.0 - weatherFade;
-                        #endif
-                    #endif
-                    if(weatherFlare > 0.0){
-                        #if defined FORCE_DISABLE_CLOUDS || CLOUD_TYPE == 0
-                            float cloudFlare = 1.0;
-                        #else
-                            float cloudFlare = getCloudFlareOcclusion(shdLightDirScreenSpace.xy);
-                        #endif
-                        if(cloudFlare > 0.001){
-                            postColOut += getLensFlare(texCoord - 0.5, shdLightDirScreenSpace.xy - 0.5) * (cloudFlare * weatherFlare * (1.0 - blindness) * (1.0 - darknessFactor));
-                        }
-                    }
-                }
-            }
+            postColOut += computeAppliedLensFlare(texCoord);
         #endif
 
         #ifdef AUTO_EXPOSURE

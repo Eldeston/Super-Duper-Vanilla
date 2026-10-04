@@ -392,6 +392,15 @@ screen.ATMOSPHERICS.comment = Clouds, godrays, skybox, stars, Milky Way, auroras
         option.CLOUD_LIGHTNING_FREQUENCY = Lightning Frequency
         option.CLOUD_LIGHTNING_FREQUENCY.comment = Multiplier for how often cloud-to-cloud lightning discharges occur during rain and thunderstorms.\n\n§e[Visual] §fHigher values produce more frequent crawler bolts and glowing intra-cloud flashes.
 
+        option.LIGHTNING_COLOR_R = Lightning Red
+        option.LIGHTNING_COLOR_R.comment = Red color component for all lightning bolts, cloud-to-cloud flashes, internal cloud glows, celestial illumination, flares, and godrays.\n\n§e[Visual] §fDefault 240 provides a dazzling purple-ish white balance when combined with blue.\n§a[Performance: None] §fColor channel scalar.
+
+        option.LIGHTNING_COLOR_G = Lightning Green
+        option.LIGHTNING_COLOR_G.comment = Green color component for all lightning bolts, cloud-to-cloud flashes, internal cloud glows, celestial illumination, flares, and godrays.\n\n§e[Visual] §fDefault 225 provides brilliant clarity, luminescence, and natural atmospheric radiance.\n§a[Performance: None] §fColor channel scalar.
+
+        option.LIGHTNING_COLOR_B = Lightning Blue
+        option.LIGHTNING_COLOR_B.comment = Blue color component for all lightning bolts, cloud-to-cloud flashes, internal cloud glows, celestial illumination, flares, and godrays.\n\n§e[Visual] §fDefault 255 provides rich electric violet and purple-ish white radiance.\n§a[Performance: None] §fColor channel scalar.
+
     ## Cloud Screen
     screen.CLOUD_SETTINGS = Cloud Settings
     screen.CLOUD_SETTINGS.comment = Volumetric 3D, skybox, and vanilla clouds with procedural weather dynamics.\n\n§e[Visual] §fConfigure cloud layers, altitude, thickness, softness, and weather responsiveness.\n§e[Performance: Low to Moderate] §fVolumetric mode requires raymarching steps.

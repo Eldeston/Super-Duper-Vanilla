@@ -110,7 +110,7 @@
         #endif
 
         #ifdef WATER_ANIMATION
-            vertexFeetPlayerPos = getWaterWave(vertexFeetPlayerPos, vertexWorldPos.xz, mc_Entity.x, vertexFrameTime);
+            vertexFeetPlayerPos = getWaterWave(vertexFeetPlayerPos, vertexWorldPos.xz, mc_Entity.x, lmCoord.y, vertexFrameTime);
         #endif
 
         #ifdef WORLD_CURVATURE
@@ -177,6 +177,18 @@
     #ifndef FORCE_DISABLE_WEATHER
         uniform float rainStrength;
         uniform float weatherFade;
+        #if WORLD_ID == 0
+            #ifndef THUNDER_STRENGTH_DECLARED
+                #define THUNDER_STRENGTH_DECLARED
+                uniform float thunderStrength;
+            #endif
+            #ifdef DYNAMIC_WEATHER
+                #ifndef DYNAMIC_THUNDER_DECLARED
+                    #define DYNAMIC_THUNDER_DECLARED
+                    uniform float dynamicThunderStrength;
+                #endif
+            #endif
+        #endif
     #endif
 
     #if defined SHADOW_FILTER && ANTI_ALIASING >= 2
@@ -258,15 +270,28 @@
             if(blockId == 11102){
                 float waterNoise = WATER_BRIGHTNESS;
 
+                #if WORLD_ID == 0 && !defined FORCE_DISABLE_WEATHER
+                    #ifdef DYNAMIC_WEATHER
+                        float stormFactor = dynamicThunderStrength;
+                    #else
+                        float stormFactor = thunderStrength;
+                    #endif
+                    float windExposure = smoothstep(0.70, 0.98, lmCoord.y);
+                    float waterStormWind = stormFactor * windExposure;
+                #else
+                    const float waterStormWind = 0.0;
+                #endif
+
                 #if defined WATER_NORMAL
-                    vec4 waterData = H2NWater(waterNoiseUv).xzyw;
+                    vec4 waterData = H2NWater(waterNoiseUv, waterStormWind).xzyw;
                     material.normal = fastNormalize(waterData.yxz * TBN[2].x + waterData.xyz * TBN[2].y + waterData.xzy * TBN[2].z);
 
                     #ifdef WATER_NOISE
                         waterNoise *= squared(0.128 + waterData.w * 0.5);
                     #endif
                 #elif defined WATER_NOISE
-                    float waterData = getCellNoise(waterNoiseUv);
+                    float currentSpeed = CURRENT_SPEED * 0.0625 * (1.0 + waterStormWind * 1.6);
+                    float waterData = getCellNoise(waterNoiseUv, fragmentFrameTime * currentSpeed);
 
                     waterNoise *= squared(0.128 + waterData * 0.5);
                 #endif

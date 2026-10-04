@@ -8,6 +8,13 @@ const float volumetricStepsInverse = 1.0 / VOLUMETRIC_LIGHT_STEPS;
 		uniform float endFlashIntensity;
 		uniform vec3 endFlashPosition;
 	#endif
+#elif WORLD_ID == 0
+	#ifndef FORCE_DISABLE_WEATHER
+		#ifndef THUNDER_STRENGTH_DECLARED
+			#define THUNDER_STRENGTH_DECLARED
+			uniform float thunderStrength;
+		#endif
+	#endif
 #endif
 
 vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in float fogFactor, in float borderFog, in float dither, in bool isSky){
@@ -56,11 +63,10 @@ vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in floa
 
 	#ifndef FORCE_DISABLE_WEATHER
 		#if WORLD_ID == 0
-			#ifndef THUNDER_STRENGTH_DECLARED
-				#define THUNDER_STRENGTH_DECLARED
-				uniform float thunderStrength;
-			#endif
 			float weatherVLFactor = 1.0 - clamp(max(weatherFade, thunderStrength), 0.0, 1.0) * (1.0 - WEATHER_DIRECT_LIGHT);
+			#ifndef EPILEPSY_SAFETY
+				weatherVLFactor = max(weatherVLFactor, lightningFlash);
+			#endif
 		#else
 			float weatherVLFactor = 1.0 - weatherFade * (1.0 - WEATHER_DIRECT_LIGHT);
 		#endif

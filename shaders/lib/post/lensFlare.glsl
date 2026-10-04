@@ -48,7 +48,11 @@ vec3 getLensFlare(in vec2 centerCoord, in vec2 lightDir){
     #ifdef FORCE_DISABLE_DAY_CYCLE
         float flarePhase = 1.0;
     #else
-        float flarePhase = dayCycle > 1.0 ? 1.0 : (MOON_PHASE_FACTOR * MOON_PHASE_FACTOR);
+        #if WORLD_ID == 0
+            float flarePhase = (lightningFlareFactor > 0.0 || dayCycle > 1.0) ? 1.0 : (MOON_PHASE_FACTOR * MOON_PHASE_FACTOR);
+        #else
+            float flarePhase = dayCycle > 1.0 ? 1.0 : (MOON_PHASE_FACTOR * MOON_PHASE_FACTOR);
+        #endif
     #endif
 
     #if WORLD_SUN_MOON == 2

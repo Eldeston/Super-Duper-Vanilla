@@ -27,7 +27,7 @@ vec3 basicShadingForward(in vec3 albedo){
 
 	// Calculate sky diffusion first, begining with the sky itself
 	// Occlude the appled sky and thunder flash calculation by sky light amount
-	vec3 totalDiffuse = (linearSkyCol + lightningFlash) * skyLightSquared;
+	vec3 totalDiffuse = (linearSkyCol + toLinear(mix(vec3(1.0), LIGHTNING_COLOR, 0.20)) * lightningFlash) * skyLightSquared;
 
 	#if WORLD_ID == 1
 		#ifdef EPILEPSY_SAFETY
@@ -100,6 +100,12 @@ vec3 basicShadingForward(in vec3 albedo){
 				vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0 * (1.0 - forwardWeatherFade);
 			#else
 				vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
+			#endif
+			#if WORLD_ID == 0 && !defined EPILEPSY_SAFETY
+				if(lightningFlash > 0.0){
+					vec3 flashLight = mix(vec3(1.0), LIGHTNING_COLOR, 0.20) * (lightningFlash * 2.5);
+					sRGBLightCol = mix(sRGBLightCol, flashLight, lightningFlash);
+				}
 			#endif
 			totalDiffuse += shdCol * toLinear(sRGBLightCol);
 		#endif

@@ -111,7 +111,7 @@ vec3 complexShadingForward(in dataPBR material){
 
 	// Calculate sky diffusion first, begining with the sky itself
 	// Occlude the appled sky and thunder flash calculation by sky light amount
-	vec3 totalIllumination = (linearSkyCol + lightningFlash) * skyLightSquared;
+	vec3 totalIllumination = (linearSkyCol + toLinear(mix(vec3(1.0), LIGHTNING_COLOR, 0.20)) * lightningFlash) * skyLightSquared;
 
 	#if WORLD_ID == 1
 		addEndDiffuseLighting(material.normal, material.ambient, lmCoord.y, skyLightSquared, material.ss, totalIllumination);
@@ -148,6 +148,12 @@ vec3 complexShadingForward(in dataPBR material){
 				vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0 * (1.0 - forwardWeatherFade);
 			#else
 				vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
+			#endif
+			#if WORLD_ID == 0 && !defined EPILEPSY_SAFETY
+				if(lightningFlash > 0.0){
+					vec3 flashLight = mix(vec3(1.0), LIGHTNING_COLOR, 0.20) * (lightningFlash * 2.5);
+					sRGBLightCol = mix(sRGBLightCol, flashLight, lightningFlash);
+				}
 			#endif
 		#endif
 

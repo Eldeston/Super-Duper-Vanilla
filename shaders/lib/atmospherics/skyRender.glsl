@@ -190,7 +190,7 @@ vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){
     #endif
 
     #ifndef EPILEPSY_SAFETY
-        currSkyCol += getLightningFlashIntensity();
+        currSkyCol += toLinear(mix(vec3(1.0), LIGHTNING_COLOR, 0.15)) * getLightningFlashIntensity();
     #endif
 
     #if WORLD_ID == 1 && !defined EPILEPSY_SAFETY

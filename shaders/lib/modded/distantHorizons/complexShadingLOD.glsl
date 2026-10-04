@@ -23,7 +23,7 @@ vec3 complexShadingLOD(in dataPBR material){
 	#endif
 
 	// Calculate thunder flash
-	totalIllumination += lightningFlash;
+	totalIllumination += toLinear(mix(vec3(1.0), LIGHTNING_COLOR, 0.20)) * lightningFlash;
 
 	// Get block light squared
 	float blockLightSquared = squared(lmCoord.x);
@@ -70,6 +70,12 @@ vec3 complexShadingLOD(in dataPBR material){
 				vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0 * (1.0 - lodWeatherFade);
 			#else
 				vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
+			#endif
+			#if WORLD_ID == 0 && !defined EPILEPSY_SAFETY
+				if(lightningFlash > 0.0){
+					vec3 flashLight = mix(vec3(1.0), LIGHTNING_COLOR, 0.20) * (lightningFlash * 2.5);
+					sRGBLightCol = mix(sRGBLightCol, flashLight, lightningFlash);
+				}
 			#endif
 		#endif
 
