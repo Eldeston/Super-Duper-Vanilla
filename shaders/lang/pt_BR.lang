@@ -219,6 +219,9 @@ screen.PBR = PBR
         option.PARALLAX_SHADOW_STEPS = Passos das Sombras de Paralaxe
 
     screen.WATER_SETTINGS = Configurações de Material da Água
+        option.WATER_STYLE = Estilo da Água
+        value.WATER_STYLE.0 = Realista
+        value.WATER_STYLE.1 = Vanilla
         option.WATER_NOISE = Ruído da Água
         option.WATER_BRIGHTNESS = Brilho da Água
         option.WATER_NORMAL = Normalmap da Água

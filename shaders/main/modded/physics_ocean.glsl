@@ -226,8 +226,13 @@
             material.albedo.rgb = vertexColor;
         #endif
 
-        material.smoothness = 0.96; material.emissive = 0.0;
-        material.metallic = 0.04; material.porosity = 0.0;
+        #if WATER_STYLE == 1
+            material.smoothness = 0.55; material.emissive = 0.0;
+            material.metallic = 0.005; material.porosity = 0.0;
+        #else
+            material.smoothness = 0.96; material.emissive = 0.0;
+            material.metallic = 0.04; material.porosity = 0.0;
+        #endif
         material.ss = 0.0; material.parallaxShd = 1.0;
         material.ambient = 1.0;
 
@@ -274,6 +279,6 @@
         // Write buffer datas
         normalDataOut = material.normal;
         albedoDataOut = material.albedo.rgb;
-        materialDataOut = vec3(material.metallic, material.smoothness, 0.5);
+        materialDataOut = vec3(material.metallic, material.smoothness, 0.35);
     }
 #endif

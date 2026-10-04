@@ -57,8 +57,43 @@ const vec3 VOXY_FACE_NORMALS[6] = vec3[6](
     vec3(1.0, 0.0, 0.0)   // EAST
 );
 
+void applyVoxyWaterProperties(inout dataPBR material, in vec3 tinting, in vec3 sampledColour, out float mask){
+    #if WATER_STYLE == 1
+        material.smoothness = 0.55;
+        material.metallic = 0.005;
+        material.albedo.a = 0.92;
+
+        // Strong vanilla water color with full biome support
+        bool hasBiomeTint = (tinting.r != tinting.g || tinting.r != tinting.b) || (tinting.r < 0.95);
+        vec3 biomeColor = hasBiomeTint ? tinting : vec3(0.247, 0.463, 0.894);
+
+        // Deep, rich, vibrant vanilla water tone with strong blue and suppressed green
+        vec3 waterColor = biomeColor * vec3(0.10, 0.04, 0.55);
+        material.albedo.rgb = waterColor * (sampledColour * 0.35 + 0.75);
+    #else
+        material.smoothness = 0.96;
+        material.metallic = 0.04;
+        material.albedo.a = 0.45;
+
+        float waterNoise = WATER_BRIGHTNESS;
+        vec2 waterNoiseUv = vertexWorldPos.xz * waterTileSizeInv;
+        #if defined WATER_NORMAL
+            vec4 waterData = H2NWater(waterNoiseUv).xzyw;
+            material.normal = fastNormalize(waterData.yxz * material.normal.x + waterData.xyz * material.normal.y + waterData.xzy * material.normal.z);
+            #ifdef WATER_NOISE
+                waterNoise *= squared(0.128 + waterData.w * 0.5);
+            #endif
+        #elif defined WATER_NOISE
+            float waterData = getCellNoise(waterNoiseUv);
+            waterNoise *= squared(0.128 + waterData * 0.5);
+        #endif
+        material.albedo.rgb *= waterNoise;
+    #endif
+    mask = 0.35;
+}
+
 // Applies block properties, emissives, and materials from Iris block.properties IDs
-void applyVoxyBlockProperties(inout dataPBR material, in uint blockId, in vec2 noiseUv, out float mask){
+void applyVoxyBlockProperties(inout dataPBR material, in uint blockId, in vec2 noiseUv, in vec3 tinting, in vec3 sampledColour, out float mask){
     mask = 0.0;
 
     // Emissive blocks (portals, fire, froglight, lanterns, torches, redstone, sculk, beacon)
@@ -92,29 +127,18 @@ void applyVoxyBlockProperties(inout dataPBR material, in uint blockId, in vec2 n
     }
 
     #ifdef TRANSLUCENT
-        // Water
-        if(blockId == 11102u){
-            material.smoothness = 0.96;
-            material.metallic = 0.04;
-            float waterNoise = WATER_BRIGHTNESS;
-            vec2 waterNoiseUv = vertexWorldPos.xz * waterTileSizeInv;
-            #if defined WATER_NORMAL
-                vec4 waterData = H2NWater(waterNoiseUv).xzyw;
-                material.normal = fastNormalize(waterData.yxz * material.normal.x + waterData.xyz * material.normal.y + waterData.xzy * material.normal.z);
-                #ifdef WATER_NOISE
-                    waterNoise *= squared(0.128 + waterData.w * 0.5);
-                #endif
-            #elif defined WATER_NOISE
-                float waterData = getCellNoise(waterNoiseUv);
-                waterNoise *= squared(0.128 + waterData * 0.5);
-            #endif
-            material.albedo.rgb *= waterNoise;
-            material.albedo.a = clamp(material.albedo.a, 0.6, 0.85);
-            mask = 0.5;
+        bool isWater = (blockId == 11102u || blockId == 0u);
+        if(isWater){
+            applyVoxyWaterProperties(material, tinting, sampledColour, mask);
         } else {
             material.smoothness = 0.90;
             material.metallic = 0.04;
+            material.albedo.a = clamp(material.albedo.a, 0.5, 0.9);
             mask = 0.25;
+        }
+    #else
+        if(blockId == 11102u){
+            applyVoxyWaterProperties(material, tinting, sampledColour, mask);
         }
     #endif
 }
@@ -151,9 +175,14 @@ void voxy_emitFragment(VoxyFragmentParameters parameters){
     #endif
 
     // Sampled color and biome tinting
-    vec4 albedo = parameters.sampledColour * parameters.tinting;
+    // Note: Voxy's tinting uniform encodes RGB biome tint in .rgb; its .a component is 0 in Voxy's quad format
+    vec4 albedo;
+    albedo.rgb = parameters.sampledColour.rgb * parameters.tinting.rgb;
     #ifndef TRANSLUCENT
         albedo.a = 1.0;
+    #else
+        // In translucent LOD pass, default to solid opacity if sampled alpha is 0 or uninitialized
+        albedo.a = (parameters.sampledColour.a > 0.05) ? parameters.sampledColour.a : 0.65;
     #endif
 
     // Block texture UV for lava and block animations
@@ -186,7 +215,7 @@ void voxy_emitFragment(VoxyFragmentParameters parameters){
     material.ambient = 1.0;
 
     float mask;
-    applyVoxyBlockProperties(material, parameters.customId, noiseUv, mask);
+    applyVoxyBlockProperties(material, parameters.customId, noiseUv, parameters.tinting.rgb, parameters.sampledColour.rgb, mask);
 
     material.albedo.rgb = toLinear(material.albedo.rgb);
 

@@ -539,6 +539,11 @@ screen.PBR.comment = Physically Based Rendering, specular highlights, water, lav
     ## Water Screen
     screen.WATER_SETTINGS = Water Material Settings
     screen.WATER_SETTINGS.comment = Water clarity, noise distortion, wave normals, absorption, foam, and colors.\n\n§e[Visual] §fCustomize how oceans, lakes, and rivers look and flow.\n§a[Performance: Low Impact] §fOptimized procedural water shader.
+        option.WATER_STYLE = Water Aesthetic Style
+        option.WATER_STYLE.comment = Selects the water visual presentation style.\n\n§e[Vanilla] §fRich, saturated water color with gentle reflections and higher opacity. Gives water real substance and lets modded effects like boat wakes, splash decals, and foam pop cleanly.\n§e[Realistic] §fCrystal-clear tropical water with mirror-like glassy reflections and high transparency.\n§a[Performance: None] §fVisual material style.\n§b[Tip] §7Vanilla is the new default designed for maximum mod compatibility (Wakes, Effective, etc.)!
+        value.WATER_STYLE.0 = Realistic
+        value.WATER_STYLE.1 = Vanilla
+
         option.WATER_NOISE = Water Surface Noise
         option.WATER_NOISE.comment = Adds procedural animated noise variation to water transparency and brightness.\n\n§e[Visual] §fBreaks up repetitive water textures with natural organic patches.\n§a[Performance: Very Low] §fProcedural noise calculation.\n§b[Tip] §7Inspired by the beloved Super Duper Graphics Pack water style!
 

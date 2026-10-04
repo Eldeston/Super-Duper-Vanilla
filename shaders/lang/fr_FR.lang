@@ -502,6 +502,11 @@ screen.PBR.comment = §6Options de rendu basé sur la physique (PBR) incluant le
     screen.IPBR_SETTINGS.comment = §eParamètres de matériaux avancés pour l'eau, la lave, le sculk et la génération de normales.
         screen.WATER_SETTINGS = Paramètres du matériau de l'eau
         screen.WATER_SETTINGS.comment = §bPropriétés du matériau de l'eau telles que le bruit, la luminosité, la carte de normales, le flou, la profondeur, le pavage, l'absorption, l'écume et la couleur unie.
+            option.WATER_STYLE = Style de l'eau
+            option.WATER_STYLE.comment = Choisit le style visuel de l'eau (Vanilla ou Réaliste).
+            value.WATER_STYLE.0 = Réaliste
+            value.WATER_STYLE.1 = Vanilla
+
             option.WATER_NOISE = Bruit de l'eau
             option.WATER_NOISE.comment = Contrôle la quantité de bruit et de distorsion sur les surfaces d'eau.
 

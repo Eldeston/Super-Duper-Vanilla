@@ -217,6 +217,9 @@ screen.PBR = Физически корректный рендеринг
         option.PARALLAX_SHADOW_STEPS = Уровни теней
 
     screen.WATER_SETTINGS = Свойства воды
+        option.WATER_STYLE = Стиль воды
+        value.WATER_STYLE.0 = Реалистичный
+        value.WATER_STYLE.1 = Ванильный
         option.WATER_NOISE = Шумовые волны
         option.WATER_BRIGHTNESS = Яркость воды
         option.WATER_NORMAL = Карта нормалей

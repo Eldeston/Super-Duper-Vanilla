@@ -409,7 +409,8 @@
         if(needsComplex){
             vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
             vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
-            sceneCol = complexShadingDeferred(sceneCol, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, isLOD);
+            bool isWater = abs(matRaw0.z - 0.35) < 0.05;
+            sceneCol = complexShadingDeferred(sceneCol, screenPos, viewPos, mat3(gbufferModelView) * normal, albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, isLOD, isWater);
         }
 
         vec3 fogSkyCol = applyPaleGardenFogColor(getSkyFogRender(nEyePlayerPos), nEyePlayerPos);

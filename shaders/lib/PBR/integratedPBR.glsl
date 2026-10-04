@@ -66,8 +66,13 @@ void getPBR(inout dataPBR material, in int id){
     #ifdef WATER
         // If water
         if(id == 11102){
-            material.smoothness = 0.96;
-            material.metallic = 0.02;
+            #if WATER_STYLE == 1
+                material.smoothness = 0.55;
+                material.metallic = 0.005;
+            #else
+                material.smoothness = 0.96;
+                material.metallic = 0.02;
+            #endif
 
             #ifdef WATER_FLAT
                 material.albedo.rgb = vec3(0.8);

@@ -452,6 +452,11 @@ screen.PBR.comment = §6基于物理的渲染选项, 含PBR模式, 高光反射,
     screen.IPBR_SETTINGS.comment = §e高级材质设置, 含水, 熔岩, 幽匿, 及法线生成.
         screen.WATER_SETTINGS = 水体材质设置
         screen.WATER_SETTINGS.comment = §b水体材质属性, 如噪波, 亮度, 法线贴图, 模糊, 深度, 波纹, 吸光, 泡沫, 及纯色.
+            option.WATER_STYLE = 水体风格
+            option.WATER_STYLE.comment = 选择水体呈现风格 (原版或写实).
+            value.WATER_STYLE.0 = 写实
+            value.WATER_STYLE.1 = 原版
+
             option.WATER_NOISE = 水面噪波
             option.WATER_NOISE.comment = 控制水体表面的噪波数量/变形程度.
 

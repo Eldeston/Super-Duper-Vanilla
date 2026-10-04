@@ -17,6 +17,7 @@
 
 #ifdef VERTEX
     flat out int blockId;
+    flat out float midBlockY;
 
     out vec2 lmCoord;
     out vec2 texCoord;
@@ -52,9 +53,10 @@
         #include "/lib/utility/taaJitter.glsl"
     #endif
 
+    attribute vec3 at_midBlock;
+
     #ifdef WATER_ANIMATION
         uniform float vertexFrameTime;
-        attribute vec3 at_midBlock;
 
         #include "/lib/vertex/waveWater.glsl"
     #endif
@@ -70,6 +72,7 @@
     void main(){
         // Get block id
         blockId = int(mc_Entity.x);
+        midBlockY = at_midBlock.y * 0.015625;
         // Get buffer texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
         // Get vertex color
@@ -147,6 +150,7 @@
     layout(location = 3) out vec3 materialDataOut; // colortex3
 
     flat in int blockId;
+    flat in float midBlockY;
 
     in vec2 lmCoord;
     in vec2 texCoord;
@@ -251,6 +255,87 @@
 
     #include "/lib/lighting/complexShadingForward.glsl"
 
+    void applyWaterSurface(inout dataPBR material, in float blockDepth, in float verticalDepth, in float waveAmp, in float edgeBrightness){
+        float waterNoise = WATER_BRIGHTNESS;
+
+        #if WORLD_ID == 0 && !defined FORCE_DISABLE_WEATHER
+            #ifdef DYNAMIC_WEATHER
+                float stormFactor = dynamicThunderStrength;
+            #else
+                float stormFactor = thunderStrength;
+            #endif
+            float windExposure = smoothstep(0.70, 0.98, lmCoord.y);
+            float waterStormWind = stormFactor * windExposure;
+        #else
+            const float waterStormWind = 0.0;
+        #endif
+
+        #if defined WATER_NORMAL
+            vec4 waterData = H2NWater(waterNoiseUv, waterStormWind).xzyw;
+            waterData.xz *= waveAmp;
+            material.normal = fastNormalize(waterData.yxz * TBN[2].x + waterData.xyz * TBN[2].y + waterData.xzy * TBN[2].z);
+
+            #ifdef WATER_NOISE
+                float causticNoise = squared(0.128 + waterData.w * 0.5);
+                float causticMask = (midBlockY > 0.0) ? 0.0 : 1.0;
+                waterNoise *= mix(1.0, causticNoise, causticMask);
+            #endif
+        #elif defined WATER_NOISE
+            float currentSpeed = CURRENT_SPEED * 0.0625 * (1.0 + waterStormWind * 1.6);
+            float waterData = getCellNoise(waterNoiseUv, fragmentFrameTime * currentSpeed);
+            float causticNoise = squared(0.128 + waterData * 0.5);
+            float causticMask = (midBlockY > 0.0) ? 0.0 : 1.0;
+
+            waterNoise *= mix(1.0, causticNoise, causticMask);
+        #endif
+
+        #if WATER_STYLE == 1
+            // Vanilla style: preserve the iconic animated water texture and authentic vanilla opacity
+            #ifdef WATER_STYLIZE_ABSORPTION
+                float depthBrightness = exp2(blockDepth * 0.20);
+                material.albedo.rgb *= mix(vec3(0.72, 0.82, 0.96), vec3(1.0), depthBrightness);
+                float targetAlpha = mix(0.62, 0.76, 1.0 - depthBrightness);
+            #else
+                const float targetAlpha = 0.68;
+            #endif
+
+            #ifdef WATER_DEPTH_WAVES
+                float shoreFade = smoothstep(0.0, 0.05, verticalDepth);
+                material.albedo.a = mix(0.38, targetAlpha, shoreFade);
+            #else
+                material.albedo.a = targetAlpha;
+            #endif
+        #else
+            // Realistic style: high transparency and clarity
+            #ifdef WATER_STYLIZE_ABSORPTION
+                if(isEyeInWater == 0){
+                    float depthBrightness = exp2(blockDepth * 0.25);
+                    material.albedo.rgb = material.albedo.rgb * (waterNoise * (1.0 - depthBrightness) + depthBrightness);
+
+                    #ifdef WATER_DEPTH_WAVES
+                        float absorptionFade = mix(1.0, 1.0 - depthBrightness, smoothstep(0.02, 0.15, verticalDepth));
+                    #else
+                        float absorptionFade = 1.0 - depthBrightness;
+                    #endif
+                    material.albedo.a = fastSqrt(material.albedo.a) * absorptionFade;
+                }
+                else material.albedo.rgb *= waterNoise;
+            #else
+                material.albedo.rgb *= waterNoise;
+            #endif
+        #endif
+
+        #ifdef WATER_FOAM
+            #ifdef WATER_DEPTH_WAVES
+                if(midBlockY <= 0.0 && verticalDepth > 0.001){
+                    material.albedo = min(vec4(1.0), material.albedo + edgeBrightness);
+                }
+            #else
+                material.albedo = min(vec4(1.0), material.albedo + edgeBrightness);
+            #endif
+        #endif
+    }
+
     void main(){
 	    // Declare materials
 	    dataPBR material;
@@ -262,24 +347,14 @@
 
         if(blockId == 11102 || blockId == 12100){
             // Fast depth linearization by DrDesten
-            // Not great, but plausible for most scenarios
             float rawSolidDepth = texelFetch(depthtex1, ivec2(gl_FragCoord.xy), 0).x;
-            float blockDepth;
-            if(rawSolidDepth >= 0.999999){
-                blockDepth = -100.0;
-            } else {
-                blockDepth = near / (1.0 - gl_FragCoord.z) - near / (1.0 - rawSolidDepth);
-            }
+            float blockDepth = (rawSolidDepth >= 0.999999) ? -100.0 : near / (1.0 - gl_FragCoord.z) - near / (1.0 - rawSolidDepth);
 
             // Water depth in blocks along the vertical axis (invariant to viewing angle)
             #ifdef WATER_DEPTH_WAVES
                 float cosTheta = clamp(abs(dot(fastNormalize(-vertexFeetPlayerPos), TBN[2])), 0.15, 1.0);
-                // Vertical water depth (meters/blocks); vertical faces (e.g. waterfalls) retain full flow
                 float verticalDepth = (rawSolidDepth >= 0.999999 || isEyeInWater != 0 || TBN[2].y < 0.5) ? 10.0 : max(0.0, -blockDepth) * cosTheta;
-
-                // Disable waves on solid blocks (puddles <= 0.08 blocks deep)
-                // Smoothly scale wave amplitude in shallow water and ponds (< 3.0 blocks deep)
-                float waveAmp = smoothstep(0.08, 3.0, verticalDepth);
+                float waveAmp = (midBlockY > 0.0) ? 0.0 : smoothstep(0.02, 1.8, verticalDepth);
             #else
                 const float waveAmp = 1.0;
                 float verticalDepth = max(0.0, -blockDepth);
@@ -290,62 +365,7 @@
 
             // Water
             if(blockId == 11102){
-                float waterNoise = WATER_BRIGHTNESS;
-
-                #if WORLD_ID == 0 && !defined FORCE_DISABLE_WEATHER
-                    #ifdef DYNAMIC_WEATHER
-                        float stormFactor = dynamicThunderStrength;
-                    #else
-                        float stormFactor = thunderStrength;
-                    #endif
-                    float windExposure = smoothstep(0.70, 0.98, lmCoord.y);
-                    float waterStormWind = stormFactor * windExposure;
-                #else
-                    const float waterStormWind = 0.0;
-                #endif
-
-                #if defined WATER_NORMAL
-                    vec4 waterData = H2NWater(waterNoiseUv, waterStormWind).xzyw;
-                    waterData.xz *= waveAmp;
-                    material.normal = fastNormalize(waterData.yxz * TBN[2].x + waterData.xyz * TBN[2].y + waterData.xzy * TBN[2].z);
-
-                    #ifdef WATER_NOISE
-                        float causticNoise = squared(0.128 + waterData.w * 0.5);
-                        waterNoise *= mix(1.0, causticNoise, waveAmp);
-                    #endif
-                #elif defined WATER_NOISE
-                    float currentSpeed = CURRENT_SPEED * 0.0625 * (1.0 + waterStormWind * 1.6);
-                    float waterData = getCellNoise(waterNoiseUv, fragmentFrameTime * currentSpeed);
-                    float causticNoise = squared(0.128 + waterData * 0.5);
-
-                    waterNoise *= mix(1.0, causticNoise, waveAmp);
-                #endif
-
-                #ifdef WATER_STYLIZE_ABSORPTION
-                    if(isEyeInWater == 0){
-                        float depthBrightness = exp2(blockDepth * 0.25);
-                        material.albedo.rgb = material.albedo.rgb * (waterNoise * (1.0 - depthBrightness) + depthBrightness);
-
-                        #ifdef WATER_DEPTH_WAVES
-                            // Preserve puddle opacity when sitting on a solid block rather than fading to near invisible
-                            float absorptionFade = mix(1.0, 1.0 - depthBrightness, smoothstep(0.02, 0.15, verticalDepth));
-                        #else
-                            float absorptionFade = 1.0 - depthBrightness;
-                        #endif
-                        material.albedo.a = fastSqrt(material.albedo.a) * absorptionFade;
-                    }
-                    else material.albedo.rgb *= waterNoise;
-                #else
-                    material.albedo.rgb *= waterNoise;
-                #endif
-
-                #ifdef WATER_FOAM
-                    #ifdef WATER_DEPTH_WAVES
-                        material.albedo = min(vec4(1), material.albedo + edgeBrightness * waveAmp);
-                    #else
-                        material.albedo = min(vec4(1), material.albedo + edgeBrightness);
-                    #endif
-                #endif
+                applyWaterSurface(material, blockDepth, verticalDepth, waveAmp, edgeBrightness);
             }
 
             // Nether portal
@@ -372,6 +392,6 @@
         // Write buffer datas
         normalDataOut = material.normal;
         albedoDataOut = material.albedo.rgb;
-        materialDataOut = vec3(material.metallic, material.smoothness, 0.5);
+        materialDataOut = vec3(material.metallic, material.smoothness, (blockId == 11102) ? 0.35 : 0.5);
     }
 #endif
