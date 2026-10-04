@@ -290,21 +290,34 @@
         #endif
 
         #if WATER_STYLE == 1
-            // Vanilla style: preserve the iconic animated water texture and authentic vanilla opacity
+            // Vanilla style: authentic rich water color, controlled transparency, and seamless LOD blend
             #ifdef WATER_STYLIZE_ABSORPTION
-                float depthBrightness = exp2(blockDepth * 0.20);
-                material.albedo.rgb *= mix(vec3(0.72, 0.82, 0.96), vec3(1.0), depthBrightness);
-                float targetAlpha = mix(0.62, 0.76, 1.0 - depthBrightness);
+                float depthBrightness = exp2(blockDepth * 0.25);
+                vec3 deepWaterTint = vec3(0.35, 0.26, 0.72);
+                material.albedo.rgb *= mix(deepWaterTint, vec3(0.92, 0.95, 1.0), depthBrightness * 0.70);
+                float baseAlpha = mix(0.74, 0.88, 1.0 - depthBrightness);
             #else
-                const float targetAlpha = 0.68;
+                const float baseAlpha = 0.80;
             #endif
 
             #ifdef WATER_DEPTH_WAVES
-                float shoreFade = smoothstep(0.0, 0.05, verticalDepth);
-                material.albedo.a = mix(0.38, targetAlpha, shoreFade);
+                float shoreFade = smoothstep(0.0, 0.08, verticalDepth);
+                float waterAlpha = mix(0.55, baseAlpha, shoreFade);
             #else
-                material.albedo.a = targetAlpha;
+                float waterAlpha = baseAlpha;
             #endif
+
+            // Distance and grazing-angle (Fresnel) blending towards LOD:
+            // As viewing angle flattens or distance increases towards LOD chunks, water becomes solid (0.92)
+            // smoothly matching Voxy LOD water and concealing bright underwater kelp/terrain at distance.
+            float cosTheta = clamp(abs(dot(fastNormalize(-vertexFeetPlayerPos), TBN[2])), 0.05, 1.0);
+            float viewDist = length(vertexFeetPlayerPos);
+            float distBlend = smoothstep(16.0, 80.0, viewDist);
+            float grazingBlend = smoothstep(0.40, 0.10, cosTheta);
+            float lodAlphaBlend = max(distBlend, grazingBlend);
+
+            material.albedo.a = mix(waterAlpha, 0.92, lodAlphaBlend);
+            material.albedo.rgb = mix(material.albedo.rgb, material.albedo.rgb * vec3(0.70, 0.60, 0.88), lodAlphaBlend);
         #else
             // Realistic style: high transparency and clarity
             #ifdef WATER_STYLIZE_ABSORPTION

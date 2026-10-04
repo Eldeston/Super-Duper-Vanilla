@@ -56,8 +56,8 @@ void getPBR(inout dataPBR material, in int id){
         // If lava and fire
         if(id == 11100 || id == 12101) material.emissive = 1.0;
 
-        // Foliage and corals
-        else if((id >= 10000 && id <= 10800) || (id >= 11600 && id <= 11799) || id == 10900 || id == 11101 || id == 12200) material.ss = 0.75;
+        // Foliage and corals (kelp/seagrass 12200 excluded to avoid glowing underwater)
+        else if((id >= 10000 && id <= 10800) || (id >= 11600 && id <= 11799) || id == 10900 || id == 11101) material.ss = 0.75;
     #else
         // For others, don't use vanilla AO
         material.ambient = 1.0;

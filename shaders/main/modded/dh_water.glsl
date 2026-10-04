@@ -257,15 +257,15 @@
                     float depthBrightness = exp2(waterDepth * 0.25);
                     material.albedo.rgb = material.albedo.rgb * (waterNoise * (1.0 - depthBrightness) + depthBrightness);
                     #if WATER_STYLE == 1
-                        float vanillaOpacity = mix(0.40, 0.65, 1.0 - depthBrightness * 0.65);
-                        material.albedo.a = max(fastSqrt(material.albedo.a) * 0.60, vanillaOpacity);
+                        float vanillaOpacity = mix(0.78, 0.92, 1.0 - depthBrightness * 0.70);
+                        material.albedo.a = max(material.albedo.a, vanillaOpacity);
                     #else
                         material.albedo.a = max(fastSqrt(material.albedo.a) * (1.0 - depthBrightness), 0.40);
                     #endif
                 }
                 else {
                     #if WATER_STYLE == 1
-                        material.albedo.a = max(material.albedo.a, 0.60);
+                        material.albedo.a = max(material.albedo.a, 0.90);
                     #else
                         material.albedo.a = max(material.albedo.a, 0.40);
                     #endif
@@ -273,7 +273,7 @@
                 }
             #else
                 #if WATER_STYLE == 1
-                    material.albedo.a = max(material.albedo.a, 0.60);
+                    material.albedo.a = max(material.albedo.a, 0.90);
                 #else
                     material.albedo.a = max(material.albedo.a, 0.40);
                 #endif
