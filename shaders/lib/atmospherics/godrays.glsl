@@ -60,8 +60,8 @@ float getCelestialTerrainVisibility(in vec2 lightPos){
 
     float d0 = sampleLightDepth(lightPos);
     if(d0 >= 0.99999) return 1.0;
-    // Fast-fail: if celestial center is blocked by nearby obstacles (< 100m), offsets cannot reach open sky
-    if(d0 < 0.99) return 0.0;
+    // Fast-fail: if celestial center is blocked by obstacles closer than ~50m, center is occluded
+    if(d0 < 0.9990) return 0.0;
 
     const vec2 sunOffset = vec2(0.012, 0.012);
     float v1 = step(0.99999, sampleLightDepth(lightPos + vec2(sunOffset.x, 0.0)));
@@ -161,7 +161,7 @@ vec3 computeGodrayColor(in float totalStrength, in float sceneDepth, in bool isL
         col = mix(col, waterTint * length(col), 0.65) * 1.4;
     }
     #ifndef WORLD_CUSTOM_SKYLIGHT
-        if(sceneDepth < 1.0 && isEyeInWater == 0) col *= smoothstep(0.02, 0.25, eyeBrightFact);
+        if(sceneDepth < 1.0 && isEyeInWater == 0) col *= smoothstep(0.08, 0.40, eyeBrightFact);
     #endif
     return col;
 }
@@ -246,7 +246,7 @@ float marchGodraysWithClouds(
 #endif
 
 // Fast pre-flight culling to eliminate godray calculations before vector setup
-bool shouldCullGodrays(in float lightViewDirZ, in float cosTheta, in float sceneDepth, in float weatherVis, in bool isLightning){
+bool shouldCullGodrays(in float lightViewDirZ, in float cosTheta, in float sceneDepth, in float weatherVis, in bool isLightning, in float feetPlayerDist){
     #if WORLD_ID == 1
         #ifdef EPILEPSY_SAFETY
             return true;
@@ -258,7 +258,9 @@ bool shouldCullGodrays(in float lightViewDirZ, in float cosTheta, in float scene
     if(GODRAYS_DENSITY <= 0.0 || isEyeInWater == 2 || effShdFade <= 0.001) return true;
     if(weatherVis <= 0.001 || lightViewDirZ >= -0.05 || cosTheta <= 0.05) return true;
     #ifndef WORLD_CUSTOM_SKYLIGHT
-        if(sceneDepth < 1.0 && isEyeInWater == 0 && eyeBrightFact <= 0.02) return true;
+        if(sceneDepth < 1.0 && isEyeInWater == 0 && (eyeBrightFact <= 0.08 || feetPlayerDist < 8.0)) return true;
+    #else
+        if(sceneDepth < 1.0 && isEyeInWater == 0 && feetPlayerDist < 8.0) return true;
     #endif
     return false;
 }
@@ -351,21 +353,59 @@ void setupGodrayLightSource(
     #endif
 }
 
+// Computes solid geometry distance fade, shadow map occlusion, and cave skylight fade
+float getGodraySolidOcclusion(
+    in float sceneDepth,
+    in float feetPlayerDist,
+    in vec3 feetPlayerPos
+){
+    float solidDistFade = (sceneDepth >= 0.99999) ? 1.0 : smoothstep(8.0, 48.0, feetPlayerDist);
+    #ifndef WORLD_CUSTOM_SKYLIGHT
+        float caveSkylightFade = (sceneDepth >= 0.99999) ? 1.0 : smoothstep(0.08, 0.45, eyeBrightFact);
+    #else
+        const float caveSkylightFade = 1.0;
+    #endif
+
+    #if defined SHADOW_MAPPING
+        float blockShadow = 1.0;
+        if(sceneDepth < 1.0){
+            vec3 shdPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * feetPlayerPos + shadowModelView[3].xyz);
+            shdPos.z += shadowProjection[3].z;
+            shdPos = vec3(shdPos.xy / (length(shdPos.xy) * 2.0 + 0.2), shdPos.z * 0.1) + 0.5;
+            if(clamp(shdPos, 0.0, 1.0) == shdPos){
+                vec3 shdCol = getShdCol(shdPos);
+                blockShadow = saturate(dot(shdCol, vec3(0.333333)));
+            }
+        }
+    #else
+        const float blockShadow = 1.0;
+    #endif
+
+    return solidDistFade * blockShadow * caveSkylightFade;
+}
+
 // Main entry point for atmospheric godrays
 vec3 getGodRays(
     in vec2 screenCoord,
     in vec3 nEyePlayerPos,
     in float dither,
-    in float sceneDepth
+    in float sceneDepth,
+    in float feetPlayerDist,
+    in vec3 feetPlayerPos
 ){
     vec3 lightDir, lightViewDir;
     float cosTheta, weatherVis, flashFactor;
     bool isLightning;
     setupGodrayLightSource(nEyePlayerPos, lightDir, lightViewDir, cosTheta, weatherVis, isLightning, flashFactor);
 
-    if(shouldCullGodrays(lightViewDir.z, cosTheta, sceneDepth, weatherVis, isLightning)) return vec3(0.0);
+    if(shouldCullGodrays(lightViewDir.z, cosTheta, sceneDepth, weatherVis, isLightning, feetPlayerDist)) return vec3(0.0);
+
+    float solidOcclusionFactor = getGodraySolidOcclusion(sceneDepth, feetPlayerDist, feetPlayerPos);
+    if(solidOcclusionFactor <= 0.001) return vec3(0.0);
 
     float phase = getForwardScatteringPhase(cosTheta);
+    float effPhase = (sceneDepth >= 0.99999) ? phase : min(phase, 1.0);
+
     vec2 lightScreenPos = getScreenCoord(gbufferProjection, lightViewDir);
     float terrainVis, cloudVis;
     float totalStrength = getCelestialTotalStrength(lightDir, lightViewDir, lightScreenPos, weatherVis, terrainVis, cloudVis);
@@ -374,7 +414,7 @@ vec3 getGodRays(
     // Color and phase intensity pre-cull before ray vector math
     float effFade = isLightning ? 1.0 : shdFade;
     float maxLight = max(lightCol.r, max(lightCol.g, lightCol.b));
-    if(maxLight * (effFade * totalStrength * phase) <= 0.0003 && !isLightning) return vec3(0.0);
+    if(maxLight * (effFade * totalStrength * effPhase) <= 0.0003 && !isLightning) return vec3(0.0);
 
     vec3 rayColor = computeGodrayColor(totalStrength, sceneDepth, isLightning, flashFactor);
     vec2 deltaCoord = lightScreenPos - screenCoord;
@@ -404,7 +444,16 @@ vec3 getGodRays(
     vec2 stepVec = deltaCoord * rayScale;
 
     float accumulatedLight = evaluateGodrayTransmission(screenCoord, stepVec, dither, activeSteps, activeNormFactor);
-    return rayColor * (accumulatedLight * phase);
+    return rayColor * (accumulatedLight * effPhase * solidOcclusionFactor);
+}
+
+vec3 getGodRays(
+    in vec2 screenCoord,
+    in vec3 nEyePlayerPos,
+    in float dither,
+    in float sceneDepth
+){
+    return getGodRays(screenCoord, nEyePlayerPos, dither, sceneDepth, sceneDepth >= 0.99999 ? 1000.0 : 0.0, vec3(0.0));
 }
 
 #endif // GODRAYS_GLSL

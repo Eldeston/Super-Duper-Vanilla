@@ -281,31 +281,6 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
     return currSkyCol;
 }
 
-vec3 getSkyFogRender(in vec3 nEyePlayerPos){
-    // If player is in water, return nothing if it's not the sky
-    if(isEyeInWater == 1) return vec3(0);
-    // If player is in lava, return fog color
-    if(isEyeInWater == 2) return fogColor;
-
-    // Get sky pos by shadow model view
-    vec3 skyPos = mat3(shadowModelView) * nEyePlayerPos;
-
-    #if defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
-        // Flip if the sun has gone below the horizon
-        if(dayCycle < 1) skyPos.xz = -skyPos.xz;
-    #endif
-
-    // Get basic sky simple color
-    vec3 currSkyCol = getSkyBasic(nEyePlayerPos.y, skyPos.z);
-    
-    #if defined WORLD_AETHER && defined WORLD_LIGHT
-        currSkyCol += getAetherRender(nEyePlayerPos, skyPos);
-    #endif
-
-    // Do a simple void gradient calculation
-    return currSkyCol * saturate(nEyePlayerPos.y * 2.0 + eyeBrightFact * 2.0);
-}
-
 // Fog color render
 vec3 getSkyFogRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
     // If player is in water, return nothing if it's not the sky
@@ -317,8 +292,26 @@ vec3 getSkyFogRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
         currSkyCol += getAetherRender(nEyePlayerPos, skyPos);
     #endif
 
-    // Do a simple void gradient calculation
-    return currSkyCol * saturate(nEyePlayerPos.y * 2.0 + eyeBrightFact * 2.0);
+    #ifndef WORLD_CUSTOM_SKYLIGHT
+        float skyExposure = smoothstep(0.08, 0.40, eyeBrightFact);
+    #else
+        const float skyExposure = 1.0;
+    #endif
+
+    // Void gradient calculation, modulated by skylight so caves and underground stay dark
+    float voidGrad = saturate(nEyePlayerPos.y * 2.0 + 1.0);
+    vec3 outdoorFog = currSkyCol * voidGrad;
+    vec3 caveFog = vec3(toLinear(AMBIENT_LIGHTING + nightVision * 0.5));
+
+    return mix(caveFog, outdoorFog, skyExposure);
+}
+
+vec3 getSkyFogRender(in vec3 nEyePlayerPos){
+    vec3 skyPos = mat3(shadowModelView) * nEyePlayerPos;
+    #if defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
+        if(dayCycle < 1) skyPos.xz = -skyPos.xz;
+    #endif
+    return getSkyFogRender(nEyePlayerPos, skyPos, getSkyBasic(nEyePlayerPos.y, skyPos.z));
 }
 
 // Sky reflection

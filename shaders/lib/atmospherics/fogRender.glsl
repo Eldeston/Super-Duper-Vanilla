@@ -53,7 +53,11 @@ vec3 getPaleGardenSkyColor(in vec3 nEyePlayerPos){
     float sg = saturate(dot(nEyePlayerPos, sunDir) * 0.5 + 0.5);
     sg *= sg;
     float sunGlow = sg * sg;
-    col += toLinear(vec3(0.14, 0.12, 0.10)) * (sunGlow * saturate(dCycle - 1.0));
+    #ifndef WORLD_CUSTOM_SKYLIGHT
+        col += toLinear(vec3(0.14, 0.12, 0.10)) * (sunGlow * saturate(dCycle - 1.0) * smoothstep(0.08, 0.40, eyeBrightFact));
+    #else
+        col += toLinear(vec3(0.14, 0.12, 0.10)) * (sunGlow * saturate(dCycle - 1.0));
+    #endif
 
     return col;
 }

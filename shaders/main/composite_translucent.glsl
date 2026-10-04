@@ -396,9 +396,8 @@
     #endif
 
     vec3 shadeTranslucentSurface(
-        in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos, in vec3 nEyePlayerPos,
-        in vec3 matRaw0, in ivec2 screenTexelCoord, in vec3 dither, in float viewDotInvSqrt,
-        in float viewDist, in float fogFactor, in float borderFog, in bool isLOD
+        in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos, in vec3 nEyePlayerPos, in vec3 matRaw0,
+        in ivec2 screenTexelCoord, in vec3 dither, in float viewDotInvSqrt, in float viewDist, in float fogFactor, in float borderFog, in bool isLOD
     ){
         #if defined SSGI
             const bool needsComplex = true;
@@ -414,6 +413,10 @@
         }
 
         vec3 fogSkyCol = applyPaleGardenFogColor(getSkyFogRender(nEyePlayerPos), nEyePlayerPos);
+        #ifndef WORLD_CUSTOM_SKYLIGHT
+            float worldPosY = viewPos.y + gbufferModelViewInverse[3].y + cameraPosition.y;
+            fogSkyCol = mix(vec3(toLinear(AMBIENT_LIGHTING + nightVision * 0.5)), fogSkyCol, saturate((worldPosY - 45.0) * 0.1));
+        #endif
         #ifdef BORDER_FOG
             fogFactor = (fogFactor - 1.0) * borderFog + 1.0;
         #endif
@@ -440,7 +443,7 @@
         #ifdef WORLD_LIGHT
             if(VOLUMETRIC_LIGHTING_STRENGTH != 0 && isEyeInWater != 2) sceneCol += getVolumetricLight(nFeetPlayerPos, feetPlayerDist, fogFactor, borderFog, dither.x, isSky);
             #if defined GODRAYS
-                sceneCol += getGodRays(texCoord, nEyePlayerPos, dither.x, depth);
+                sceneCol += getGodRays(texCoord, nEyePlayerPos, dither.x, depth, feetPlayerDist, feetPlayerPos);
             #endif
             #if defined RAINBOW && WORLD_ID == 0 && !defined FORCE_DISABLE_WEATHER
                 sceneCol += getTranslucentRainbow(nEyePlayerPos, viewDist, isSky, feetPlayerPos, matRaw0.z > 0.0 && matRaw0.z < 1.0);
@@ -452,7 +455,6 @@
 
     void main(){
         ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
-
         bool isLOD; float depth;
         getTranslucentSceneDepth(screenTexelCoord, depth, isLOD);
         vec3 screenPos = vec3(texCoord, depth);
@@ -460,17 +462,14 @@
         vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
         vec3 feetPlayerPos = eyePlayerPos + gbufferModelViewInverse[3].xyz;
         sceneColOut = texelFetch(colortex4, screenTexelCoord, 0).rgb;
-
         #if ANTI_ALIASING >= 2
             vec3 dither = fract(getRng3(screenTexelCoord & 255) + frameFract);
         #else
             vec3 dither = getRng3(screenTexelCoord & 255);
         #endif
-
         float viewDot = lengthSquared(viewPos), viewDotInvSqrt = inversesqrt(viewDot);
         float viewDist = viewDot * viewDotInvSqrt;
         vec3 nEyePlayerPos = eyePlayerPos * viewDotInvSqrt;
-
         float fogFactor = getFogFactor(viewDist, nEyePlayerPos.y, feetPlayerPos.y + cameraPosition.y);
 
         #ifdef BORDER_FOG

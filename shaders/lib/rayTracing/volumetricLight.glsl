@@ -43,15 +43,14 @@ vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in floa
 	if(isEyeInWater == 0 && nFeetPlayerPos.y > 0){
 		heightFade = squared(squared(1.0 - squared(nFeetPlayerPos.y)));
 		if(isSky) heightFade *= heightFade;
-
-		#ifndef WORLD_CUSTOM_SKYLIGHT
-			#ifndef FORCE_DISABLE_WEATHER
-				heightFade += (1.0 - heightFade) * max(1.0 - eyeBrightFact, weatherFade * 0.5);
-			#else
-				heightFade += (1.0 - heightFade) * (1.0 - eyeBrightFact);
-			#endif
-		#endif
 	}
+
+	#ifndef WORLD_CUSTOM_SKYLIGHT
+		float caveVLFade = (isEyeInWater == 0) ? smoothstep(0.08, 0.40, eyeBrightFact) : 1.0;
+		if(caveVLFade <= 0.001) return vec3(0.0);
+	#else
+		const float caveVLFade = 1.0;
+	#endif
 
 	float volumetricFogDensity = 1.0 - exp2(-feetPlayerDist * totalFogDensity);
 	volumetricFogDensity = (volumetricFogDensity - fogFactor) * VOLUMETRIC_LIGHTING_STRENGTH + fogFactor;
@@ -97,13 +96,13 @@ vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in floa
 
 		volumeData *= weatherVLFactor;
 		
-		return volumeData * lightCol * (min(1.0, VOLUMETRIC_LIGHTING_STRENGTH + VOLUMETRIC_LIGHTING_STRENGTH * isEyeInWater) * vlFade * volumetricStepsInverse * flashVLWeight);
+		return volumeData * lightCol * (min(1.0, VOLUMETRIC_LIGHTING_STRENGTH + VOLUMETRIC_LIGHTING_STRENGTH * isEyeInWater) * vlFade * volumetricStepsInverse * flashVLWeight * caveVLFade);
 	#else
 		if(isEyeInWater == 1) return lightCol * toLinear(fogColor) * (min(1.0, VOLUMETRIC_LIGHTING_STRENGTH * 2.0) * volumetricFogDensity) * (weatherVLFactor * flashVLWeight);
 		#ifdef WORLD_CUSTOM_SKYLIGHT
 			else return lightCol * (volumetricFogDensity * VOLUMETRIC_LIGHTING_STRENGTH) * (weatherVLFactor * flashVLWeight);
 		#else
-			else return lightCol * (squared(eyeBrightFact) * volumetricFogDensity * VOLUMETRIC_LIGHTING_STRENGTH) * (weatherVLFactor * flashVLWeight);
+			else return lightCol * (squared(eyeBrightFact) * volumetricFogDensity * VOLUMETRIC_LIGHTING_STRENGTH) * (weatherVLFactor * flashVLWeight * caveVLFade);
 		#endif
 	#endif
 }

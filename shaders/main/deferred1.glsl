@@ -449,8 +449,14 @@ vec3 applyDeferredSkyEffects(in vec3 sceneCol, in vec3 nEyePlayerPos, in vec3 sk
 
         // Get basic sky fog color
         vec3 fogSkyCol = applyPaleGardenFogColor(getSkyFogRender(nEyePlayerPos, skyPos, currSkyCol), nEyePlayerPos);
+        float worldPosY = eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y;
+        #ifndef WORLD_CUSTOM_SKYLIGHT
+            float undergroundFogFade = saturate((worldPosY - 45.0) * 0.1);
+            fogSkyCol = mix(vec3(toLinear(AMBIENT_LIGHTING + nightVision * 0.5)), fogSkyCol, undergroundFogFade);
+        #endif
+
         // Get fog factor
-        float fogFactor = getFogFactor(viewDist, nEyePlayerPos.y, eyePlayerPos.y + gbufferModelViewInverse[3].y + cameraPosition.y);
+        float fogFactor = getFogFactor(viewDist, nEyePlayerPos.y, worldPosY);
 
         // Border fog
         #ifdef BORDER_FOG

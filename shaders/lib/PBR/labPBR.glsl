@@ -206,6 +206,9 @@ void getPBR(inout dataPBR material, in int id){
 
         // Charged creeper
         else if(id == 10132) material.emissive = float(material.albedo.b > material.albedo.g);
+
+        // Creaking eyes
+        else if(id == 10134) material.emissive = float(material.albedo.r > sumOf(material.albedo.gb) * 0.8);
     #endif
 
     #if COLOR_MODE == 0
