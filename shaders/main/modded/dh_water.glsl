@@ -213,8 +213,8 @@
         #endif
 
         #if WATER_STYLE == 1
-            material.smoothness = 0.55; material.emissive = 0.0;
-            material.metallic = 0.005; material.porosity = 0.0;
+            material.smoothness = 0.0; material.emissive = 0.0;
+            material.metallic = 0.0; material.porosity = 0.0;
         #else
             material.smoothness = 0.96; material.emissive = 0.0;
             material.metallic = 0.04; material.porosity = 0.0;
@@ -228,7 +228,7 @@
         // If water
         if(blockId == DH_BLOCK_WATER){
             #if WATER_STYLE == 1
-                material.albedo.rgb = vertexColor * vec3(0.09, 0.03, 0.52);
+                material.albedo.rgb = vertexColor * vec3(0.22, 0.14, 0.65);
                 float waterNoise = WATER_BRIGHTNESS;
             #else
                 float waterNoise = WATER_BRIGHTNESS;

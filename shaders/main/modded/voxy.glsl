@@ -58,26 +58,27 @@ const vec3 VOXY_FACE_NORMALS[6] = vec3[6](
 );
 
 void applyVoxyWaterProperties(inout dataPBR material, in vec3 tinting, in vec3 sampledColour, out float mask){
-    vec2 waterNoiseUv = vertexWorldPos.xz * waterTileSizeInv;
-    #if defined WATER_NORMAL
-        vec4 waterData = H2NWater(waterNoiseUv).xzyw;
-        material.normal = fastNormalize(waterData.yxz * material.normal.x + waterData.xyz * material.normal.y + waterData.xzy * material.normal.z);
-    #endif
-
     #if WATER_STYLE == 1
-        material.smoothness = 0.55;
-        material.metallic = 0.005;
+        material.smoothness = 0.0;
+        material.metallic = 0.0;
         material.albedo.a = 0.92;
 
         // Strong vanilla water color with full biome support
         bool hasBiomeTint = (tinting.r != tinting.g || tinting.r != tinting.b) || (tinting.r < 0.95);
         vec3 biomeColor = hasBiomeTint ? tinting : vec3(0.247, 0.463, 0.894);
 
-        // Deep, rich, vibrant vanilla water tone with strong blue and suppressed green
-        vec3 waterColor = biomeColor * vec3(0.09, 0.03, 0.52);
+        // Authentic vanilla water tone with balanced warmth and vibrant blue
+        vec3 waterColor = biomeColor * vec3(0.22, 0.14, 0.65);
         float waterTexLuma = dot(sampledColour, vec3(0.299, 0.587, 0.114));
         material.albedo.rgb = waterColor * (waterTexLuma * 0.30 + 0.70);
+        mask = 0.0;
     #else
+        vec2 waterNoiseUv = vertexWorldPos.xz * waterTileSizeInv;
+        #if defined WATER_NORMAL
+            vec4 waterData = H2NWater(waterNoiseUv).xzyw;
+            material.normal = fastNormalize(waterData.yxz * material.normal.x + waterData.xyz * material.normal.y + waterData.xzy * material.normal.z);
+        #endif
+
         material.smoothness = 0.96;
         material.metallic = 0.04;
         material.albedo.a = 0.45;
@@ -90,8 +91,8 @@ void applyVoxyWaterProperties(inout dataPBR material, in vec3 tinting, in vec3 s
             waterNoise *= squared(0.128 + cellData * 0.5);
         #endif
         material.albedo.rgb *= waterNoise;
+        mask = 0.35;
     #endif
-    mask = 0.35;
 }
 
 // Applies block properties, emissives, and materials from Iris block.properties IDs

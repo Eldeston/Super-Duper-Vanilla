@@ -215,7 +215,11 @@ vec3 complexShadingForward(in dataPBR material){
 	vec3 totalLighting = material.albedo.rgb * totalIllumination;
 
 	#if defined WORLD_LIGHT && defined SPECULAR_HIGHLIGHTS
-		if(isShadow && material.smoothness > 0.001 && NLZ > 0.0){
+		#if WATER_STYLE == 1
+			if(isShadow && material.smoothness > 0.001 && material.metallic > 0.005 && NLZ > 0.0){
+		#else
+			if(isShadow && material.smoothness > 0.001 && NLZ > 0.0){
+		#endif
 			// Get specular GGX
 			vec3 specCol = getSpecularBRDF(viewDir, material.normal, material.albedo.rgb, NLZ, NV, material.metallic, material.smoothness);
 			totalLighting += specCol * shdCol * sRGBLightCol;

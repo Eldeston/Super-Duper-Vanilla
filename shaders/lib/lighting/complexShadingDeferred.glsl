@@ -69,11 +69,14 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
 	float smoothCosTheta = NV > 0 ? exp2(-9.28 * NV) * smoothness : smoothness;
 
 	#if WATER_STYLE == 1
-		// For vanilla water, make reflections softer so the vibrant water body
-		// and modded water effects (wakes, splash particles, foam) pop and feel at home!
+		// For vanilla water, keep reflections darker and uniform across all 360 azimuth angles,
+		// eliminating intensity shifts or blinding glare towards the sun
 		if(isWater){
-			reflectCol *= 0.30;
-			smoothCosTheta = min(smoothCosTheta, smoothness * 0.65);
+			float reflLuma = max(dot(reflectCol, vec3(0.2126, 0.7152, 0.0722)), 0.001);
+			float skyLuma = max(dot(skyCol, vec3(0.2126, 0.7152, 0.0722)), 0.01);
+			reflectCol *= min(1.0, skyLuma / reflLuma);
+			reflectCol *= 0.06;
+			smoothCosTheta = min(smoothCosTheta, smoothness * 0.28);
 		}
 	#endif
 
