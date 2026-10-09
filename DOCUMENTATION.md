@@ -6,13 +6,13 @@ This page serves as the main entry point for the project's documentation. Detail
 
 | Document | Description |
 |---|---|
-| .docs/ARCHITECTURE.md | Rendering pipeline, framebuffer architecture, and stage execution |
-| .docs/PROGRAMS.md | Shader program classifications, responsibilities, and execution order |
-| .docs/BUFFERS.md | Render targets, data flow, and buffer lifetimes |
-| .docs/FEATURES.md | Rendering features and implementation references |
-| .docs/SETTINGS.md | Settings, profiles, defaults, and configuration options |
-| .docs/OPTIMIZATION.md | Performance characteristics, profiling, and measurement guidance |
-| .docs/LEGACY.md | Archived historical documentation and project notes |
+| [ARCHITECTURE.md](.docs/ARCHITECTURE.md) | Rendering pipeline, framebuffer architecture, and stage execution |
+| [PROGRAMS.md](.docs/PROGRAMS.md) | Shader program classifications, responsibilities, and execution order |
+| [BUFFERS.md](.docs/BUFFERS.md) | Render targets, data flow, and buffer lifetimes |
+| [FEATURES.md](.docs/FEATURES.md) | Rendering features and implementation references |
+| [SETTINGS.md](.docs/SETTINGS.md) | Settings, profiles, defaults, and configuration options |
+| [OPTIMIZATION.md](.docs/OPTIMIZATION.md) | Performance characteristics, profiling, and measurement guidance |
+| [LEGACY.md](.docs/LEGACY.md) | Archived historical documentation and project notes |
 
 Current project information:
 
