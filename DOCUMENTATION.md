@@ -7,7 +7,7 @@
 | Legacy support | OptiFine support was dropped in v1.3.7 |
 | GLSL | 3.3 Compatibility; `gbuffers_line` uses 3.3 Core |
 
-Super Duper Vanilla (SDV) is a performance-first Minecraft shader pack. This document summarizes its features, controls, rendering architecture, buffer system, programs, and optimization approach.
+Super Duper Vanilla (SDV) is a high performance Minecraft shader pack. This document summarizes its features, controls, rendering architecture, buffer system, programs, and optimization approach.
 
 ## Features
 

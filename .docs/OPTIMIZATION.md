@@ -1,4 +1,4 @@
-# Optimization Guide
+# Optimization Guide (WIP)
 
 This guide describes how to measure and reason about SDV performance. It does not assign hardware-independent frame-time costs to individual features. For exact controls and profile definitions, see [SETTINGS.md](SETTINGS.md); for pass responsibilities, see [PROGRAMS.md](PROGRAMS.md).
 
