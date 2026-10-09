@@ -10,13 +10,21 @@ float getAtmosphericFog(in float nPlayerPosY, in float worldPosY, in float playe
 }
 
 float getFogFactor(in float viewDist, in float nEyePlayerPosY, in float worldPosY){
-    #ifdef FORCE_DISABLE_WEATHER
-        float verticalFogDensity = isEyeInWater == 0 ? FOG_VERTICAL_DENSITY : FOG_VERTICAL_DENSITY * 0.2;
-        float totalFogDensity = isEyeInWater == 0 ? FOG_TOTAL_DENSITY : FOG_TOTAL_DENSITY * TAU;
-    #else
-        float verticalFogDensity = isEyeInWater == 0 ? FOG_VERTICAL_DENSITY - FOG_VERTICAL_DENSITY * rainStrength * 0.8 : FOG_VERTICAL_DENSITY * 0.2;
-        float totalFogDensity = isEyeInWater == 0 ? FOG_TOTAL_DENSITY * (rainStrength * eyeBrightFact * PI + 1.0) : FOG_TOTAL_DENSITY * TAU;
+    float verticalFogDensity = FOG_VERTICAL_DENSITY;
+    float totalFogDensity = FOG_TOTAL_DENSITY;
+
+    float verticalFogMult = 0.2;
+    float totalFogMult = TAU;
+
+    #ifndef FORCE_DISABLE_WEATHER
+        if(isEyeInWater == 0){
+            verticalFogMult = 1.0 - rainStrength * 0.8;
+            totalFogMult = rainStrength * eyeBrightFact * PI + 1.0;
+        }
     #endif
+
+    verticalFogDensity *= verticalFogMult;
+    totalFogDensity *= totalFogMult;
 
     // Return fog, need to cap world position to prevent further fogging
     return min(1.0, getAtmosphericFog(nEyePlayerPosY, max(0.0, worldPosY), viewDist, totalFogDensity, verticalFogDensity) * (GROUND_FOG_STRENGTH + GROUND_FOG_STRENGTH * isEyeInWater));
