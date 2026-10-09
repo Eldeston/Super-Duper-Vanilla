@@ -2,7 +2,7 @@
 
 A reference for the settings available in Super Duper Vanilla (SDV), using the exact English names from `shaders/lang/en_US.lang` and the identifiers/defaults from the shader sources.
 
-`shaders/lib/settings.glsl` defines shared settings and source defaults. `shaders/shaders.properties` controls the menu, profile inheritance, sliders, and program conditions. Profiles can override the source defaults. Per-world values are defined in `shaders/world-X/world.glsl`.
+`shaders/lib/settings.glsl` defines shared settings and source defaults. `shaders/shaders.properties` controls the menu, profile inheritance, sliders, and program conditions. Profiles can override the source defaults. Per-world values are defined in `shaders/worldX/world.glsl`.
 
 ## Contents
 
