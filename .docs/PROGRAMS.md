@@ -1,6 +1,5 @@
 # Shader Programs
 
-**Version**: 1.3.9-beta.4  
 **Scope**: Complete reference for all shader programs, classification, and rendering details  
 **Related Docs**: [ARCHITECTURE.md](ARCHITECTURE.md) | [FEATURES.md](FEATURES.md)
 

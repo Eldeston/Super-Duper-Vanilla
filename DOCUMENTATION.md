@@ -1,13 +1,25 @@
-# Super Duper Vanilla Shader Documentation
+# Super Duper Vanilla Documentation
 
-| Metadata | Value |
+Super Duper Vanilla (SDV) is a Minecraft shader pack for Iris. This document provides an overview of the project, including its rendering features, settings system, rendering pipeline, buffer architecture, shader programs, and optimization approach.
+
+This page serves as the main entry point for the project's documentation. Detailed information is available in the references below.
+
+| Document | Description |
 |---|---|
-| Version | 1.3.9-beta.4 |
-| Current shader loader | Iris |
-| Legacy support | OptiFine support was dropped in v1.3.7 |
-| GLSL | 3.3 Compatibility; `gbuffers_line` uses 3.3 Core |
+| .docs/ARCHITECTURE.md | Rendering pipeline, framebuffer architecture, and stage execution |
+| .docs/PROGRAMS.md | Shader program classifications, responsibilities, and execution order |
+| .docs/BUFFERS.md | Render targets, data flow, and buffer lifetimes |
+| .docs/FEATURES.md | Rendering features and implementation references |
+| .docs/SETTINGS.md | Settings, profiles, defaults, and configuration options |
+| .docs/OPTIMIZATION.md | Performance characteristics, profiling, and measurement guidance |
+| .docs/LEGACY.md | Archived historical documentation and project notes |
 
-Super Duper Vanilla (SDV) is a high performance Minecraft shader pack. This document summarizes its features, controls, rendering architecture, buffer system, programs, and optimization approach.
+Current project information:
+
+- Version: 1.3.9-beta.4
+- Shader Loader: Iris
+- GLSL Version: 3.3 Compatibility (`gbuffers_line` uses GLSL 3.3 Core)
+- Legacy Support: OptiFine support was removed in v1.3.7
 
 ## Features
 
@@ -174,17 +186,3 @@ The `POTATO` through `ULTRA` shader profiles are practical starting points, not 
 - [IrisShaders/docs](https://github.com/IrisShaders/docs)
 - [OptiFine shader specification](https://github.com/sp614x/optifine/blob/master/OptiFineDoc/doc/shaders.txt#L447)
 - [`CONTRIBUTION.md`](CONTRIBUTION.md)
-
-## Detailed Documentation
-
-This file is the documentation front page. Topic-specific references are maintained in `.docs/`:
-
-| Topic | Reference |
-|---|---|
-| Pipeline overview and stages | [ARCHITECTURE.md](.docs/ARCHITECTURE.md) |
-| Programs and provider/loader availability | [PROGRAMS.md](.docs/PROGRAMS.md) |
-| Buffer lanes and lifetimes | [BUFFERS.md](.docs/BUFFERS.md) |
-| Feature implementations | [FEATURES.md](.docs/FEATURES.md) |
-| Settings catalog | [SETTINGS.md](.docs/SETTINGS.md) |
-| Profiling and optimization | [OPTIMIZATION.md](.docs/OPTIMIZATION.md) |
-| Historical project notes | [LEGACY.md](.docs/LEGACY.md) |

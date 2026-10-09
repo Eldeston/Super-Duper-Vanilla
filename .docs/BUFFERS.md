@@ -1,6 +1,5 @@
 # Buffer Main Bus
 
-**Version**: 1.3.9-beta.4  
 **Related documents**: [ARCHITECTURE.md](ARCHITECTURE.md) for stage context; [PROGRAMS.md](PROGRAMS.md) for program definitions and conditions.
 
 A lane represents a render target. A station represents a shader program reading from or writing to that lane. The bus below follows the current shader sources and `shaders.properties`; optional stations run only when their feature is enabled.

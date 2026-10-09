@@ -1,4 +1,4 @@
-# Super Duper Vanilla Feature Catalog
+# Feature Catalog
 
 This document summarizes the rendering features implemented by Super Duper Vanilla (SDV) and points to their source files. The shader source is authoritative for implementation details. UI labels, defaults, and value domains are documented in [SETTINGS.md](SETTINGS.md); stage order and program inputs/outputs are in [PROGRAMS.md](PROGRAMS.md).
 

@@ -1,6 +1,5 @@
 # Pipeline Architecture
 
-**Version**: 1.3.9-beta.4  
 **Scope**: Core architectural overview, framebuffer design, rendering flow  
 **Related Docs**: [PROGRAMS.md](PROGRAMS.md) | [BUFFERS.md](BUFFERS.md) | [FEATURES.md](FEATURES.md)
 
