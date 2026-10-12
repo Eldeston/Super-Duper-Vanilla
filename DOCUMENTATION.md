@@ -2,6 +2,9 @@
 
 Super Duper Vanilla (SDV) is a Minecraft shader pack for Iris. This document provides an overview of the project, including its rendering features, settings system, rendering pipeline, buffer architecture, shader programs, and optimization approach.
 
+> [!NOTE]
+> This documentation page is created with the help of AI so you might find some babbling nonsense, read at your own risk!
+
 This page serves as the main entry point for the project's documentation. Detailed information is available in the references below.
 
 | Document | Description |
@@ -12,14 +15,17 @@ This page serves as the main entry point for the project's documentation. Detail
 | [FEATURES.md](.docs/FEATURES.md) | Rendering features and implementation references |
 | [SETTINGS.md](.docs/SETTINGS.md) | Settings, profiles, defaults, and configuration options |
 | [OPTIMIZATION.md](.docs/OPTIMIZATION.md) | Performance characteristics, profiling, and measurement guidance |
-| [LEGACY.md](.docs/LEGACY.md) | Archived historical documentation and project notes |
+| [LEGACY.md](.docs/LEGACY.md) | Archived original documentation and project notes |
 
-Current project information:
+Documentation information:
 
-- Version: 1.3.9-beta.4
+- Documented Version: 1.3.9-beta.4
 - Shader Loader: Iris
 - GLSL Version: 3.3 Compatibility (`gbuffers_line` uses GLSL 3.3 Core)
-- Legacy Support: OptiFine support was removed in v1.3.7
+- Legacy Support: OptiFine support is discontinued in v1.3.7
+
+> [!NOTE]
+> While this documentation is meant to serve what's inside Super Duper Vanilla and how it works, the documentation may not be up to date.
 
 ## Features
 
@@ -162,13 +168,11 @@ The legacy documentation called the last program-table column “Usage.” The e
 
 Performance and resource minimization take priority over maximum quality. Current structural optimizations include reusing the six color targets and running volumetrics/bloom intermediates at half resolution.
 
-For reliable tuning:
+For reliable tuning and profiling:
 
 - Compare the same scene at the same render resolution and profile.
 - Change one setting at a time; measure rather than relying on generic FPS estimates.
-- Reduce `shadowMapResolution` when shadow-map cost or memory is the bottleneck.
-- Disable optional effects such as SSR, volumetrics, bloom, DOF, or motion blur when needed.
-- Keep SSGI off for performance builds; it is experimental and unoptimized.
+- Use the mod [GFX Debuggers](https://modrinth.com/mod/gfx-debuggers) alongside programs [NSight Graphics](https://developer.nvidia.com/nsight-graphics) or [RenderDoc](https://renderdoc.org/) for buffer debugging and finding execution times.
 
 The `POTATO` through `ULTRA` shader profiles are practical starting points, not guaranteed FPS targets. Actual cost depends on hardware, scene, resolution, and enabled effects.
 
