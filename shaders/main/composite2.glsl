@@ -17,10 +17,11 @@
 
 #ifdef VERTEX
     #ifdef WORLD_LIGHT
-        flat out vec3 sRGBLightCol;
         flat out vec3 lightCol;
 
         noperspective out vec2 texCoord;
+
+        uniform float shdFade;
 
         #ifndef FORCE_DISABLE_WEATHER
             uniform float rainStrength;
@@ -37,8 +38,8 @@
             // Get buffer texture coordinates
             texCoord = gl_MultiTexCoord0.xy;
 
-            sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
-            lightCol = toLinear(sRGBLightCol);
+            vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
+            lightCol = toLinear(sRGBLightCol) * shdFade;
         #endif
 
         gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
@@ -52,7 +53,6 @@
     layout(location = 0) out vec3 volColOut; // colortex0
 
     #ifdef WORLD_LIGHT
-        flat in vec3 sRGBLightCol;
         flat in vec3 lightCol;
 
         noperspective in vec2 texCoord;
@@ -60,7 +60,6 @@
         uniform int isEyeInWater;
 
         uniform float far;
-        uniform float shdFade;
         uniform float borderFar;
 
         uniform float darkEffectFactor;
@@ -162,21 +161,6 @@
             // Get feet player pos
             vec3 feetPlayerPos = eyePlayerPos + gbufferModelViewInverse[3].xyz;
 
-            // Get view distance
-            float viewDot = lengthSquared(viewPos);
-            float viewDotInvSqrt = inversesqrt(viewDot);
-            float viewDist = viewDot * viewDotInvSqrt;
-
-            // Get fog factor
-            float fogFactor = getFogFactor(viewDist, eyePlayerPos.y * viewDotInvSqrt, feetPlayerPos.y + cameraPosition.y);
-
-            // Border fog
-            #ifdef BORDER_FOG
-                float borderFog = getBorderFog(viewDist);
-            #else
-                float borderFog = 0.0;
-            #endif
-
             bool isSky = depth == 1;
 
             float feetPlayerDot = lengthSquared(feetPlayerPos);
@@ -184,6 +168,16 @@
             float feetPlayerDist = feetPlayerDot * feetPlayerDotInvSqrt;
 
             vec3 nFeetPlayerPos = feetPlayerPos * feetPlayerDotInvSqrt;
+
+            // Get fog factor
+            float fogFactor = getFogFactor(feetPlayerDist, nFeetPlayerPos.y, feetPlayerPos.y + cameraPosition.y);
+
+            // Border fog
+            #ifdef BORDER_FOG
+                float borderFog = getBorderFog(feetPlayerDist);
+            #else
+                float borderFog = 0.0;
+            #endif
 
             #if ANTI_ALIASING >= 2
                 vec3 dither = fract(getRng3(screenTexelCoord & 255) + frameFract);
