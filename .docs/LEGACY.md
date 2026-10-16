@@ -22,7 +22,7 @@ Current shader pipeline uses 6 framebuffers to minimize resources used and maxim
 | colortex0 | R11F_G11F_B10F | Clouds (RG) / Bloom (RGB)                                                         |
 | colortex1 | RGB16_SNORM    | Normals (RGB)                                                                     |
 | colortex2 | RGBA8          | Albedo (RGB), SSAO (A)                                                            |
-| colortex3 | RGB8           | Metal (R), Smooth (G), Glow / Translucents mask (B) / Main LDR (RGB) / FXAA (RGB) |
+| colortex3 | RGB8           | Metal (R), Smooth (G), Glow / Translucents mask (B) / Main LDR (RGB)              |
 | colortex4 | R11F_G11F_B10F | Main HDR (RGB) / Vanilla skybox (RGB)                                             |
 | colortex5 | RGBA16F        | TAA (RGB) / Previous frame (RGB), Auto exposure (A)                               |
 

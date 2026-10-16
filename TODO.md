@@ -22,6 +22,7 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 
 ## CURRENT
 * [ ] Implement bit packing for optimization
+* [ ] Fix hand bobbing not working
 
 * [ ] Refactor parallax occlusion mapping
 * [ ] Change cloud texture
@@ -31,7 +32,6 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 * [ ] Improve tonemapping (medium priority)
 * [ ] Improve Distant Horizons depth
 * [ ] Improve shader menu UI
-* [ ] Improve documentation (high priority)
 
 * [ ] Find a way to separate sky light and terrain light, or implement a void sky property with permanent terrain light
 * [ ] Improve albedo calculation, separating it from getPBR(), also improve parallax occlusion mapping
@@ -48,5 +48,6 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 * [x] Fix FXAA, it was broken the whole time (high priority)
 
 * [x] Implement portal depth for Nether and End
+* [x] Improve documentation (high priority)
 * [x] Improve subsurface scattering
 * [x] Improve shadow filtering

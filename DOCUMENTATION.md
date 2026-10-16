@@ -138,7 +138,7 @@ The shader uses six color targets. `colortex0` is configured at half width and h
 | `colortex0` | `R11F_G11F_B10F` | Half-resolution volumetrics, then bloom intermediates; cloud texture may also be bound to this sampler in selected programs |
 | `colortex1` | `RGB16_SNORM` | Surface normals read by deferred shading |
 | `colortex2` | `RGBA8` | Albedo in RGB; SSAO data in alpha after deferred processing |
-| `colortex3` | `RGB8` | Material data for deferred shading, later FXAA/final post-processed color |
+| `colortex3` | `RGB8` | Material data for deferred shading |
 | `colortex4` | `R11F_G11F_B10F` | Main HDR scene color through shading and post-processing |
 | `colortex5` | `RGBA16F` | Conditional temporal history and auto-exposure data |
 
