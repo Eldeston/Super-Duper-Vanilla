@@ -156,7 +156,6 @@
     uniform mat4 gbufferProjection;
     uniform mat4 gbufferProjectionInverse;
 
-    uniform mat4 gbufferModelView;
     uniform mat4 gbufferModelViewInverse;
 
     uniform mat4 shadowModelView;
@@ -306,7 +305,7 @@
             #endif
 
             // Apply deffered shading
-            sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, feetPlayerPos, mat3(gbufferModelView) * normal, albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, realSky);
+            sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, feetPlayerPos, normal * mat3(gbufferModelViewInverse), albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, realSky);
 
             // Get basic sky fog color
             vec3 fogSkyCol = getSkyFogRender(nEyePlayerPos);

@@ -69,9 +69,9 @@
         vec3 vertexTangent = fastNormalize(at_tangent.xyz);
 
         // Get vertex view position
-        vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz - gbufferModelViewInverse[3].xyz * mat3(gbufferModelViewInverse);
+        vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
         // Get vertex feet player position
-        vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos;
+        vertexFeetPlayerPos = mat3(gbufferModelViewInverse) * vertexViewPos - gbufferModelViewInverse[3].xyz;
 
         // Calculate TBN matrix
         TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal) * sign(at_tangent.w), vertexNormal));
@@ -88,7 +88,7 @@
 
         // Convert to clip position and output as final position
         // gl_Position = gl_ProjectionMatrix * vertexViewPos;
-        gl_Position.xyz = getMatScale(mat3(gl_ProjectionMatrix)) * vertexViewPos;
+        gl_Position.xyz = getMatScale(mat3(gl_ProjectionMatrix)) * (vertexFeetPlayerPos * mat3(gbufferModelViewInverse));
         gl_Position.z += gl_ProjectionMatrix[3].z;
 
         gl_Position.w = -vertexViewPos.z;

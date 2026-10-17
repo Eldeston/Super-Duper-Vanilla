@@ -35,10 +35,6 @@
 
     uniform mat4 gbufferModelViewInverse;
 
-    #ifdef WORLD_CURVATURE
-        uniform mat4 gbufferModelView;
-    #endif
-
     #ifdef WORLD_LIGHT
         uniform mat4 shadowModelView;
     #endif
@@ -88,7 +84,7 @@
             vertexFeetPlayerPos.y -= lengthSquared(vertexFeetPlayerPos.xz) * worldCurvatureInv;
 
             // Convert back to vertex view position
-            vertexViewPos = mat3(gbufferModelView) * vertexFeetPlayerPos + gbufferModelView[3].xyz;
+            vertexViewPos = (vertexFeetPlayerPos - gbufferModelViewInverse[3].xyz) * mat3(gbufferModelViewInverse);
         #endif
 
         // Convert to clip position and output as final position

@@ -34,10 +34,6 @@
     uniform vec3 cameraPosition;
 
     uniform mat4 gbufferModelViewInverse;
-
-    #if defined WATER_ANIMATION || defined WORLD_CURVATURE
-        uniform mat4 gbufferModelView;
-    #endif
     
     #if ANTI_ALIASING == 2
         uniform int frameMod;
@@ -103,7 +99,7 @@
         #endif
 
         // Convert back to vertex view position
-        vertexViewPos = mat3(gbufferModelView) * vertexFeetPlayerPos + gbufferModelView[3].xyz;
+        vertexViewPos = (vertexFeetPlayerPos - gbufferModelViewInverse[3].xyz) * mat3(gbufferModelViewInverse);
 
         // Convert to clip position and output as final position
         // gl_Position = gl_ProjectionMatrix * vertexViewPos;

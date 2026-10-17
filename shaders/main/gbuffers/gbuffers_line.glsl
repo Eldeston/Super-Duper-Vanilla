@@ -26,7 +26,6 @@
     uniform mat4 projectionMatrix;
 
     #ifdef WORLD_CURVATURE
-        uniform mat4 gbufferModelView;
         uniform mat4 gbufferModelViewInverse;
     #endif
 
@@ -57,8 +56,8 @@
             linePosStart.y -= lengthSquared(linePosStart.xz + gbufferModelViewInverse[3].xz) * worldCurvatureInv;
             linePosEnd.y -= lengthSquared(linePosEnd.xz + gbufferModelViewInverse[3].xz) * worldCurvatureInv;
 
-            linePosStart = mat3(gbufferModelView) * linePosStart;
-            linePosEnd = mat3(gbufferModelView) * linePosEnd;
+            linePosStart = linePosStart * mat3(gbufferModelViewInverse);
+            linePosEnd = linePosEnd * mat3(gbufferModelViewInverse);
         #endif
 
         vec2 vertexClipCoordStart = vec2(projectionMatrix[0].x, projectionMatrix[1].y) * linePosStart.xy;

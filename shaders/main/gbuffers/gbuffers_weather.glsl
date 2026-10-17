@@ -41,7 +41,6 @@
 
             uniform vec3 cameraPosition;
 
-            uniform mat4 gbufferModelView;
             uniform mat4 gbufferModelViewInverse;
 
             #include "/lib/vertex/weatherWave.glsl"
@@ -69,7 +68,7 @@
                 if(rainStrength >= 0.005) vertexEyePlayerPos.xz = getWeatherWave(vertexEyePlayerPos, vertexWorldPosXZ);
 
                 // Convert back to vertex view position
-                vertexViewPos = mat3(gbufferModelView) * vertexEyePlayerPos;
+                vertexViewPos = vertexEyePlayerPos * mat3(gbufferModelViewInverse);
             #endif
 
             // Convert to clip position and output as final position

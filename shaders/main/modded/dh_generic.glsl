@@ -22,10 +22,6 @@
 
     uniform mat4 gbufferModelViewInverse;
 
-    #ifdef WORLD_CURVATURE
-        uniform mat4 gbufferModelView;
-    #endif
-
     #if ANTI_ALIASING == 2
         uniform int frameMod;
 
@@ -52,7 +48,7 @@
             vertexFeetPlayerPos.y -= lengthSquared(vertexFeetPlayerPos.xz) * worldCurvatureInv;
 
             // Convert back to vertex view position
-            vertexViewPos = mat3(gbufferModelView) * vertexFeetPlayerPos + gbufferModelView[3].xyz;
+            vertexViewPos = (vertexFeetPlayerPos - gbufferModelViewInverse[3].xyz) * mat3(gbufferModelViewInverse);
         #endif
 
         // Convert to clip position and output as final position

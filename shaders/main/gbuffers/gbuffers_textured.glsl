@@ -21,7 +21,6 @@
     out vec2 texCoord;
 
     #ifdef WORLD_CURVATURE
-        uniform mat4 gbufferModelView;
         uniform mat4 gbufferModelViewInverse;
     #endif
 
@@ -54,7 +53,7 @@
             vertexEyePlayerPos.y -= lengthSquared(vertexFeetPlayerPosXZ) * worldCurvatureInv;
             
             // Convert back to vertex view position
-            vertexViewPos = mat3(gbufferModelView) * vertexEyePlayerPos;
+            vertexViewPos = vertexEyePlayerPos * mat3(gbufferModelViewInverse);
         #endif
 
         // Convert to clip position and output as final position

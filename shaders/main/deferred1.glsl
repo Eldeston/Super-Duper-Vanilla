@@ -146,7 +146,6 @@
     uniform mat4 gbufferProjection;
     uniform mat4 gbufferProjectionInverse;
 
-    uniform mat4 gbufferModelView;
     uniform mat4 gbufferModelViewInverse;
 
     uniform mat4 shadowModelView;
@@ -331,7 +330,7 @@
         vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
 
         // Apply deffered shading
-        sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, feetPlayerPos, mat3(gbufferModelView) * normal, albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, realSky);
+        sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, feetPlayerPos, normal * mat3(gbufferModelViewInverse), albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, realSky);
 
         #if OUTLINES != 0
             // Outline calculation, rejecting materials with no normal and sky
