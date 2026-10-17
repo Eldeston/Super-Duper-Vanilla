@@ -16,7 +16,12 @@ float getFogFactor(in float viewDist, in float nEyePlayerPosY, in float worldPos
     float verticalFogMult = 0.2;
     float totalFogMult = TAU;
 
-    #ifndef FORCE_DISABLE_WEATHER
+    #ifdef FORCE_DISABLE_WEATHER
+        if(isEyeInWater == 0){
+            verticalFogMult = 1.0;
+            totalFogMult = 1.0;
+        }
+    #else
         if(isEyeInWater == 0){
             verticalFogMult = 1.0 - rainStrength * 0.8;
             totalFogMult = rainStrength * eyeBrightFact * PI + 1.0;
