@@ -60,15 +60,9 @@ vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in floa
             startPos += endPos;
         }
         
-        return volumeData * lightCol * (min(1.0, VOLUMETRIC_LIGHTING_STRENGTH + VOLUMETRIC_LIGHTING_STRENGTH * isEyeInWater) * volumetricFogDensity * dynamicVolumetricLightStepsInv);
+        return volumeData * lightCol * volumetricFogDensity * dynamicVolumetricLightStepsInv;
     #else
-        if(isEyeInWater == 1) return lightCol * toLinear(fogColor) * (min(1.0, VOLUMETRIC_LIGHTING_STRENGTH * 2.0) * volumetricFogDensity);
-
-        #ifdef WORLD_CUSTOM_SKYLIGHT
-            else return lightCol * (volumetricFogDensity * VOLUMETRIC_LIGHTING_STRENGTH);
-        #else
-            else return lightCol * (squared(eyeBrightFact) * volumetricFogDensity * VOLUMETRIC_LIGHTING_STRENGTH);
-        #endif
+        return lightCol * volumetricFogDensity;
     #endif
 }
 
@@ -88,8 +82,6 @@ vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in floa
             #endif
         #endif
     }
-
-    float volumetricFogDensity = squared(heightFade);
 
     #if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING
         float rayLength = min(min(borderFar, shadowDistance), feetPlayerDist);
@@ -116,14 +108,8 @@ vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in floa
             startPos += endPos;
         }
         
-        return volumeData * lightCol * (min(1.0, VOLUMETRIC_LIGHTING_STRENGTH + VOLUMETRIC_LIGHTING_STRENGTH * isEyeInWater) * volumetricFogDensity * dynamicVolumetricLightStepsInv);
+        return volumeData * lightCol * (dynamicVolumetricLightStepsInv * squared(heightFade));
     #else
-        if(isEyeInWater == 1) return lightCol * toLinear(fogColor) * (min(1.0, VOLUMETRIC_LIGHTING_STRENGTH * 2.0) * volumetricFogDensity);
-
-        #ifdef WORLD_CUSTOM_SKYLIGHT
-            else return lightCol * (volumetricFogDensity * VOLUMETRIC_LIGHTING_STRENGTH);
-        #else
-            else return lightCol * (squared(eyeBrightFact) * volumetricFogDensity * VOLUMETRIC_LIGHTING_STRENGTH);
-        #endif
+        return lightCol * squared(heightFade);
     #endif
 }

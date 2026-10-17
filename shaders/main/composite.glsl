@@ -320,7 +320,7 @@
             #endif
 
             // Apply fog and darkness fog
-            sceneColOut = ((fogSkyCol - sceneColOut) * fogFactor + sceneColOut) * getFogEffectFactor(viewDist);
+            sceneColOut = ((fogSkyCol - sceneColOut) * fogFactor + sceneColOut) * exp2(-viewDist * darkEffectFactor);
         }
 
         // Apply darkness pulsing effect

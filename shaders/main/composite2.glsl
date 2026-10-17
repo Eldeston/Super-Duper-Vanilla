@@ -21,6 +21,8 @@
 
         noperspective out vec2 texCoord;
 
+        uniform int isEyeInWater;
+        
         uniform float shdFade;
 
         #ifndef FORCE_DISABLE_WEATHER
@@ -31,6 +33,18 @@
             uniform float dayCycle;
             uniform float twilightPhase;
         #endif
+
+        #if !defined VOLUMETRIC_LIGHTING || !defined SHADOW_MAPPING
+            uniform vec3 fogColor;
+        #endif
+
+        #ifdef WORLD_CUSTOM_SKYLIGHT
+            const float eyeBrightFact = WORLD_CUSTOM_SKYLIGHT;
+        #else
+            uniform float eyeSkylight;
+            
+            float eyeBrightFact = eyeSkylight;
+        #endif
     #endif
 
     void main(){
@@ -39,7 +53,13 @@
             texCoord = gl_MultiTexCoord0.xy;
 
             vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
-            lightCol = toLinear(sRGBLightCol) * shdFade;
+
+            #if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING
+                lightCol = toLinear(sRGBLightCol) * min(1.0, VOLUMETRIC_LIGHTING_STRENGTH + VOLUMETRIC_LIGHTING_STRENGTH * isEyeInWater) * shdFade;
+            #else
+                lightCol = toLinear(sRGBLightCol) * squared(eyeBrightFact) * VOLUMETRIC_LIGHTING_STRENGTH;
+                if(isEyeInWater == 1) lightCol = toLinear(sRGBLightCol) * toLinear(fogColor) * min(1.0, VOLUMETRIC_LIGHTING_STRENGTH * 2.0);
+            #endif
         #endif
 
         gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
@@ -58,14 +78,8 @@
         noperspective in vec2 texCoord;
 
         uniform int isEyeInWater;
-
-        uniform float far;
+        
         uniform float borderFar;
-
-        uniform float darkEffectFactor;
-        uniform float darknessLightFactor;
-
-        uniform vec3 fogColor;
 
         uniform vec3 cameraPosition;
 
@@ -124,8 +138,6 @@
     #endif
 
     void main(){
-        volColOut = vec3(0);
-
         #ifdef WORLD_LIGHT
             if(VOLUMETRIC_LIGHTING_STRENGTH == 0 || isEyeInWater == 2) return;
 
@@ -187,6 +199,8 @@
             
             // Apply volumetric light
             volColOut = getVolumetricLight(nFeetPlayerPos, feetPlayerDist, fogFactor, borderFog, dither.x, isSky);
+        #else
+            volColOut = vec3(0);
         #endif
     }
 #endif
