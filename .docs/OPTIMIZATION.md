@@ -1,6 +1,6 @@
 # Optimization Guide (WIP)
 
-This guide describes how to measure and reason about SDV performance. It does not assign hardware-independent frame-time costs to individual features. For exact controls and profile definitions, see [SETTINGS.md](SETTINGS.md); for pass responsibilities, see [PROGRAMS.md](PROGRAMS.md).
+This work-in-progress guide records performance considerations and possible ways to evaluate shader changes. It does not contain measured per-feature costs or validated FPS targets and is not a finished performance specification. [CONTRIBUTION.md](../CONTRIBUTION.md) requires testing the shader before submitting a pull request, optimizing code wherever possible, and adding comments when necessary. For exact controls and profile definitions, see [SETTINGS.md](SETTINGS.md); for pass responsibilities, see [PROGRAMS.md](PROGRAMS.md).
 
 ## Workload Characteristics
 
@@ -9,7 +9,7 @@ This guide describes how to measure and reason about SDV performance. It does no
 | Shadow map | `shadowMapResolution`, `shadowDistance`; shadow programs | Shadow-map pixel count grows with the square of resolution |
 | Geometry shading | Terrain, entity, block, water, and particle Gbuffers | Varies with visible geometry and material features |
 | Screen-space effects | SSAO, SSR, SSGI, TAA, motion blur, DOF | Most run over screen pixels; their work also depends on sample/step counts |
-| Volumetrics and bloom | `composite2`-`composite3`, `composite8`-`composite12` | `colortex0` is half width and half height, or one quarter of full-resolution pixel count |
+| Volumetrics and bloom | `composite1`-`composite3`, `composite8`-`composite12` | Volumetrics use half-resolution `colortex0` and conditional history in half-resolution `colortex6`; bloom later reuses `colortex0` |
 | Ray tracing | `RAYTRACER_STEPS`, `RAYTRACER_BISTEPS` | More steps perform more ray/depth tests |
 
 These are scaling relationships, not performance estimates. Actual results depend on GPU, driver, resolution, scene content, and selected settings.
@@ -21,6 +21,8 @@ These are scaling relationships, not performance estimates. Actual results depen
 3. Record frame time using the available game overlay or GPU profiling tool; use the same measurement method for every comparison.
 4. Change one setting or profile at a time, then repeat the same capture.
 5. Record the changed setting, scene, resolution, profile, and observed frame time with the result.
+
+For buffer debugging and execution-time profiling, use [GFX Debuggers](https://modrinth.com/mod/gfx-debuggers) alongside [NVIDIA Nsight Graphics](https://developer.nvidia.com/nsight-graphics) or [RenderDoc](https://renderdoc.org/). Treat each capture as specific to the tested hardware, driver, scene, resolution, and settings.
 
 Do not treat an FPS target or timing from another system as a measurement of your own setup. Frame time and FPS are related by the captured frame rate, but averages can hide stutter; compare consistent capture windows.
 
@@ -34,7 +36,7 @@ The `POTATO`, `LOW`, `MEDIUM`, `HIGH`, and `ULTRA` profiles are defined in `shad
 
 - If changing `shadowMapResolution` changes frame time, the shadow-map workload contributes to the measured scene. Increasing resolution increases shadow-map pixel count quadratically.
 - If changing `RAYTRACER_STEPS` or `RAYTRACER_BISTEPS` changes frame time, screen-space ray traversal/refinement contributes to that workload.
-- If view resolution changes frame time substantially, full-resolution Gbuffers or full-screen effects may be significant. The half-resolution volumetric/bloom target reduces the pixel count for those intermediates.
+- If view resolution changes frame time substantially, full-resolution Gbuffers or full-screen effects may be significant. The half-resolution `colortex0` and `colortex6` targets reduce the pixel count for volumetric and bloom intermediates.
 - If frame time varies between captures, check for changed scene content, shader compilation, background work, or different profiling conditions before attributing the change to a setting.
 
 ## Common Visual Symptoms

@@ -21,12 +21,12 @@
 
 | Metric | Value | Notes |
 |--------|-------|-------|
-| Color Targets | 6 | `colortex0` is half width and half height |
+| Color Targets | 7 | `colortex0` and `colortex6` are half width and half height |
 | Rendering Stages | 5 | Shadow → Gbuffers → Deferred → Composite → Final |
 | Composite Programs | 13 | `composite` and `composite1`–`composite12`; some are conditional/disabled |
 | GLSL Version | 3.3 Compatibility | 3.3 Core for gbuffers_line only |
 | Maximum Shadow Resolution | 8192 | Shader menu slider domain |
-| Half-Resolution Target | `colortex0` | Used for volumetrics and bloom processing |
+| Half-Resolution Targets | `colortex0`, `colortex6` | Volumetrics/bloom intermediates and volumetric history |
 
 ### Quick File Map
 
@@ -65,24 +65,23 @@ graph TD
 
 ### Architectural Principles
 
-1. **Performance First**: Resource minimization is top priority over maximum quality
-2. **Deferred-Hybrid Model**: G-Buffers store PBR data, then deferred stages compute complex lighting
+1. **Performance First**: Optimize where possible and minimize resource use; quality is secondary
+2. **Hybrid Forward/Deferred Rendering**: G-buffers store material data for deferred shading, while selected programs also shade geometry during the G-buffer stage
 3. **Ordered Composite Passes**: Passes execute in order with explicit target dependencies; not every pass reads only its predecessor's output
 4. **Feature Modularity**: Individual features toggle via preprocessor macros in `settings.glsl`
 5. **World-Aware Rendering**: Dimension-specific shader files override base shaders (world-X/ folders)
-6. **Data Multipurposing**: Buffers are reused across stages; `colortex0` is configured at half width and height for reduced-resolution work
+6. **Target Reuse**: Render targets are reused across stages; `colortex0` and `colortex6` are configured at half width and height for reduced-resolution work
 
 ### Composite Passes
 
-Composite programs run after deferred shading and use explicit buffer dependencies. The detailed pass responsibilities and enable conditions are maintained in [PROGRAMS.md](PROGRAMS.md). The main reduced-resolution path is volumetrics through `colortex0`, followed later by bloom reuse of that target.
+Composite programs run after deferred shading and use explicit buffer dependencies. The detailed pass responsibilities and enable conditions are maintained in [PROGRAMS.md](PROGRAMS.md). Volumetric lighting uses `colortex0` and conditionally stores history in `colortex6`; bloom later reuses `colortex0`.
 
 ---
 
 ## Framebuffer Architecture
 
-### 6-Buffer Configuration
-
-Super Duper Vanilla uses six color targets. Their formats, contents, and read/write lanes are documented in [BUFFERS.md](BUFFERS.md).
+### 7-Target Configuration
+Super Duper Vanilla uses seven color targets. `colortex0` and `colortex6` are allocated at half width and height; their formats, contents, and read/write lanes are documented in [BUFFERS.md](BUFFERS.md).
 
 ```mermaid
 graph LR
@@ -93,6 +92,7 @@ graph LR
         col3["colortex3<br/>RGB8"]
         col4["colortex4<br/>R11F_G11F_B10F"]
         col5["colortex5<br/>RGBA16F"]
+        col6["colortex6<br/>R11F_G11F_B10F<br/>half resolution"]
     end
     
     style col0 fill:#fff2cc
@@ -101,6 +101,7 @@ graph LR
     style col3 fill:#f5b7b1
     style col4 fill:#aed6f1
     style col5 fill:#c5e1a5
+    style col6 fill:#f5cba7
 ```
 
 `colortex0` is allocated at `0.5 × 0.5` in `shaders.properties`, so it contains one quarter as many pixels as a full-resolution target. Total VRAM depends on render resolution, target formats, depth targets, and shadow-map settings; a fixed 88 MB estimate is not retained here.
@@ -114,7 +115,8 @@ graph LR
 | **colortex2** | RGBA8 | Albedo and SSAO data | Full view dimensions |
 | **colortex3** | RGB8 | Material data and post-processed color | Full view dimensions; reused across stages |
 | **colortex4** | R11F_G11F_B10F | HDR scene color | Full view dimensions |
-| **colortex5** | RGBA16F | Temporal history and optional exposure data | Full view dimensions; history persists when used |
+| **colortex5** | RGBA16F | TAA history and optional exposure data | Full view dimensions; history persists when used |
+| **colortex6** | R11F_G11F_B10F | Volumetric-light history | Half width and height; conditionally read and written by `composite1` |
 
 ### Depth Textures (Alongside Color Buffers)
 
@@ -133,7 +135,7 @@ See [BUFFERS.md](BUFFERS.md) for the read/write lane map, target lifetimes, and 
 
 ### Stage 1: Shadow Programs
 
-**Purpose**: Render scene geometry from light source perspective to create shadow map
+**Purpose**: Render scene geometry from the light source's perspective to create the shadow map
 
 **Characteristics**:
 - Single ortho-projected render pass
@@ -146,11 +148,11 @@ See [PROGRAMS.md](PROGRAMS.md) for the shadow program list and responsibilities.
 
 ### Stage 2: Geometry Rendering (Gbuffers)
 
-**Purpose**: Render all Minecraft geometry while populating G-Buffers with PBR data
+**Purpose**: Render Minecraft geometry while populating G-buffers with material data
 
 **Characteristics**:
 - Multiple sub-passes in strict order (solid → mixed → translucent → special → sky)
-- Writes to all 6 color buffers + depth textures
+- Writes geometry, material, and scene-color targets plus depth; post-processing uses `colortex6` for volumetric history
 - Can do forward shading simultaneously with G-Buffer writes
 - Handles all entity types, particles, blocks, weather
 - Program ordering is defined by the shader pipeline; see [PROGRAMS.md](PROGRAMS.md).
@@ -171,18 +173,18 @@ See [PROGRAMS.md](PROGRAMS.md) for deferred program details.
 
 ### Stage 4: Composite Programs (Sequential Pipeline)
 
-**Purpose**: Apply post-processing effects in sequential passes (AA, motion blur, DOF, bloom, tone mapping, final AA)
+**Purpose**: Apply screen-space and post-processing effects, including anti-aliasing, motion blur, depth of field, bloom, and tone mapping
 
 **Characteristics**:
 - 13 named composite programs (`composite`/0 through `composite12`)
 - Programs execute in pipeline order, but not every pass consumes the immediately preceding target
-- `composite1` is currently disabled; optional effects are conditionally enabled
-- Reduced-resolution volumetrics are written by `composite2`, then combined by `composite3`
+- `composite1` ray-marches half-resolution volumetrics; `composite2` denoises them and `composite3` applies them to the HDR scene
+- Volumetric history uses half-resolution `colortex6` when volumetric lighting and shadow mapping are enabled
 - See [PROGRAMS.md](PROGRAMS.md) for per-pass roles; the final composition and tonemapping are in `composite12`
 
 **Data Flow**:
 ```
-Gbuffers / Deferred → Composite0 → Composite1 (disabled) → Composite2 → Composite3 → Composite4 → Composite5 → Composite6 → Composite7 → Composite8 → Composite9 → Composite10 → Composite11 → Composite12 → Final Program
+Gbuffers / Deferred → Composite0 → Composite1 (volumetric ray march) → Composite2 (denoise) → Composite3 (upsample and apply) → Composite4 → Composite5 → Composite6 → Composite7 → Composite8 → Composite9 → Composite10 → Composite11 → Composite12 → Final Program
 ```
 
 ### Stage 5: Final Program
@@ -203,9 +205,10 @@ Gbuffers / Deferred → Composite0 → Composite1 (disabled) → Composite2 → 
 
 Maintain consistency across all shader code:
 
-- **Priority**: Minimize resources and maximize performance (quality is secondary)
+- **Priority**: Optimize where possible and minimize resource use; quality is secondary
 - **Code Style**: Follow [CONTRIBUTION.md](../CONTRIBUTION.md) guidelines
-- **Documentation**: Comment and explain code when possible
+- **Documentation**: Add comments when necessary
+- **Testing**: Test shader changes before submitting a pull request
 - **GLSL Version**: GLSL 3.3 Compatibility (exception: `gbuffers_line` uses 3.3 Core)
 
 ---

@@ -13,7 +13,7 @@ flowchart TB
 
         subgraph L0["Lane: colortex0 · half resolution"]
             direction LR
-            C2W["Composite2<br/>W: volumetrics"] --> C3R["Composite3<br/>R: upsample input"] --> C8W["Composite8<br/>W: bloom tiles"] --> C910["Composite9-10<br/>R/W: bloom blur"] --> C11["Composite11<br/>R/W: bloom + lens flare"] --> C12R["Composite12<br/>R: bloom input"]
+            C1W["Composite1<br/>W: volumetric ray march"] --> C2RW["Composite2<br/>R/W: 9-tap denoise"] --> C3R["Composite3<br/>R: upsample input"] --> C8W["Composite8<br/>W: bloom tiles"] --> C910["Composite9-10<br/>R/W: bloom blur"] --> C11["Composite11<br/>R/W: bloom + lens flare"] --> C12R["Composite12<br/>R: bloom input"]
         end
 
         subgraph L1["Lane: colortex1 · normals"]
@@ -40,10 +40,15 @@ flowchart TB
             direction LR
             C4RW5["Composite4<br/>R/W: temporal history when enabled"] --> C12RW5["Composite12<br/>R/W: exposure history when enabled"]
         end
+
+        subgraph L6["Lane: colortex6 · volumetric history · half resolution"]
+            direction LR
+            C1RW6["Composite1<br/>R/W: temporal volumetric history when enabled"]
+        end
     end
 ```
 
-**Legend**: `R` = read, `W` = write, `R/W` = read and write. Composite1 is disabled and has no active data station. The arrows show data movement within a lane, not every shader execution dependency; for exact program conditions see [PROGRAMS.md](PROGRAMS.md).
+**Legend**: `R` = read, `W` = write, `R/W` = read and write. Composite1 writes volumetric lighting to `colortex0` and conditionally reads and writes temporal history in `colortex6`. The arrows show data movement within a lane, not every shader execution dependency; for exact program conditions see [PROGRAMS.md](PROGRAMS.md).
 
 ## Lane Specifications
 
@@ -54,13 +59,14 @@ flowchart TB
 | `colortex2` | `RGBA8` | Albedo in RGB; deferred SSAO data in alpha | Full view size |
 | `colortex3` | `RGB8` | Material data for deferred shading, then FXAA/final post color | Full view size |
 | `colortex4` | `R11F_G11F_B10F` | HDR scene through shading and post-processing | Full view size |
-| `colortex5` | `RGBA16F` | Conditional temporal history and auto-exposure state | Full view size |
+| `colortex5` | `RGBA16F` | Conditional TAA history and auto-exposure state | Full view size |
+| `colortex6` | `R11F_G11F_B10F` | Conditional volumetric-light history | `0.5 × 0.5` view size |
 
 The target formats are declared in `shaders/main/final.glsl`; the half-size allocation for `colortex0` is configured in `shaders/shaders.properties`. Total memory use also depends on view size, depth targets, shadow-map resolution, and implementation details, so this guide does not give a fixed VRAM total.
 
 ## Attachment Side Lanes
 
-These depth and shadow attachments feed the color-target stations but are not part of the six-color-target bus.
+These depth and shadow attachments feed the color-target stations but are not color-target lanes.
 
 | Attachment | Producer | Main consumers | Role |
 |---|---|---|---|
@@ -75,6 +81,7 @@ These depth and shadow attachments feed the color-target stations but are not pa
 
 - Read/write behavior and feature conditions are defined by the shader program and `shaders.properties`; consult [PROGRAMS.md](PROGRAMS.md) for that canonical pass map.
 - `colortex0` is a reused intermediate: volumetrics use it before bloom reuses it later in the frame.
+- `colortex6` stores half-resolution volumetric history when temporal accumulation in `composite1` is active.
 - `colortex3` changes role after deferred shading has consumed its material data; later passes use it for post-processed color.
 - `colortex5` is only a temporal lane when relevant features are enabled; do not assume every frame writes history.
 - When `CLOUD_TYPE != 0`, `shaders.properties` also binds the cloud texture to `colortex0` for selected programs. This is a program-specific texture binding, not a separate cloud-glow phase in the bus.

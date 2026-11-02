@@ -5,7 +5,6 @@ Super Duper Vanilla (SDV) is a Minecraft shader pack for Iris. This document pro
 > [!NOTE]
 > This documentation page is created with the help of AI so you might find some babbling nonsense, read at your own risk!
 
-This page serves as the main entry point for the project's documentation. Detailed information is available in the references below.
 
 | Document | Description |
 |---|---|
@@ -22,10 +21,10 @@ Documentation information:
 - Documented Version: 1.3.9-beta.4
 - Shader Loader: Iris
 - GLSL Version: 3.3 Compatibility (`gbuffers_line` uses GLSL 3.3 Core)
-- Legacy Support: OptiFine support is discontinued in v1.3.7
+- OptiFine maintenance: Ended with SDV 1.3.7
 
 > [!NOTE]
-> While this documentation is meant to serve what's inside Super Duper Vanilla and how it works, the documentation may not be up to date.
+> This documentation may not reflect every recent change to the shader pack.
 
 ## Features
 
@@ -114,13 +113,13 @@ The frame follows five broad stages:
 4. **Composite programs** execute in order with explicit read/write dependencies; not every pass reads only the previous pass's output.
 5. **Final** applies final presentation filters and writes the image to the screen.
 
-SDV uses a hybrid forward/deferred design: geometry-specific shading remains in Gbuffers where useful, while screen-space work and post-processing consume shared render targets. There are 13 composite slots: `composite` (slot 0) through `composite12`. `composite1` is currently disabled.
+SDV uses a hybrid forward/deferred design: geometry-specific shading remains in Gbuffers where useful, while screen-space work and post-processing consume shared render targets. Thirteen composite programs run from `composite` (slot 0) through `composite12`. `composite1` ray-marches volumetric lighting, `composite2` denoises the half-resolution result, and `composite3` applies it to the HDR scene.
 
 | Composite program(s) | Main responsibility |
 |---|---|
 | `composite` (0) | Deferred and transparent complex shading |
-| `composite1` | Disabled no-op |
-| `composite2`-`composite3` | Half-resolution volumetrics, then upsample/combine |
+| `composite1` | Half-resolution volumetric ray marching and conditional history in `colortex6` |
+| `composite2`-`composite3` | Volumetric denoising, then upsample and apply to the HDR scene |
 | `composite4` | TAA and temporal history |
 | `composite5` | FXAA when selected |
 | `composite6`-`composite7` | Motion blur and depth of field |
@@ -131,7 +130,7 @@ Dimension-specific shader overrides and lighting macros are organized under `sha
 
 ## Buffers
 
-The shader uses six color targets. `colortex0` is configured at half width and half height, so it has one quarter the pixel count of a full-resolution target. It is reused for volumetrics and bloom.
+The shader uses seven color targets. `colortex0` and `colortex6` are configured at half width and half height; `colortex0` is reused for volumetrics and bloom, while `colortex6` stores conditional volumetric history.
 
 | Target | Format | Main payload and lifetime |
 |---|---|---|
@@ -140,7 +139,8 @@ The shader uses six color targets. `colortex0` is configured at half width and h
 | `colortex2` | `RGBA8` | Albedo in RGB; SSAO data in alpha after deferred processing |
 | `colortex3` | `RGB8` | Material data for deferred shading |
 | `colortex4` | `R11F_G11F_B10F` | Main HDR scene color through shading and post-processing |
-| `colortex5` | `RGBA16F` | Conditional temporal history and auto-exposure data |
+| `colortex5` | `RGBA16F` | Conditional TAA history and auto-exposure data |
+| `colortex6` | `R11F_G11F_B10F` | Conditional half-resolution volumetric history |
 
 The buffer lifecycle is deliberately multipurposed: `colortex3` changes from material data to post-processed color, while `colortex0` changes from half-resolution volumetrics to bloom intermediates. Depth/shadow attachments include `depthtex0`, `depthtex1`, `shadowtex0`, optional `shadowtex1`, and `shadowcolor0` when colored shadows are enabled.
 
@@ -162,24 +162,27 @@ The legacy documentation called the last program-table column “Usage.” The e
 | Mod ocean | `physics_ocean` | Physics-mod ocean geometry | Physics Mod |
 | Deferred and composites | `deferred`, `deferred1`, `composite` through `composite12` | Deferred screen-space work and post-processing | Iris; OptiFine entries are historical |
 
-`gbuffers_skybasic` is classified as disabled in the legacy program table. `composite1` is explicitly disabled by current configuration. The detailed loader specifications are available from [IrisShaders/docs](https://github.com/IrisShaders/docs) and the [OptiFine shader specification](https://github.com/sp614x/optifine/blob/master/OptiFineDoc/doc/shaders.txt#L447).
+`gbuffers_skybasic` is classified as disabled in the legacy program table. `composite1` is now active; its temporal history is conditional on the lighting configuration. Loader details are available from [IrisShaders/docs](https://github.com/IrisShaders/docs) and the [OptiFine shader specification](https://github.com/sp614x/optifine/blob/master/OptiFineDoc/doc/shaders.txt#L447).
 
 ## Optimizations
 
-Performance and resource minimization take priority over maximum quality. Current structural optimizations include reusing the six color targets and running volumetrics/bloom intermediates at half resolution.
+Performance and resource minimization take priority over maximum quality, consistent with [CONTRIBUTION.md](CONTRIBUTION.md). The [optimization guide](.docs/OPTIMIZATION.md) remains a work in progress; the current source uses seven color targets, with volumetric and bloom intermediates at half resolution.
 
 For reliable tuning and profiling:
 
 - Compare the same scene at the same render resolution and profile.
 - Change one setting at a time; measure rather than relying on generic FPS estimates.
-- Use the mod [GFX Debuggers](https://modrinth.com/mod/gfx-debuggers) alongside programs [NSight Graphics](https://developer.nvidia.com/nsight-graphics) or [RenderDoc](https://renderdoc.org/) for buffer debugging and finding execution times.
+- For buffer debugging and execution-time profiling, use [GFX Debuggers](https://modrinth.com/mod/gfx-debuggers) with [NVIDIA Nsight Graphics](https://developer.nvidia.com/nsight-graphics) or [RenderDoc](https://renderdoc.org/).
 
 The `POTATO` through `ULTRA` shader profiles are practical starting points, not guaranteed FPS targets. Actual cost depends on hardware, scene, resolution, and enabled effects.
 
 ## Project and Compatibility Notes
 
-- **Code priorities**: minimize resources and favor performance; keep main program code simple and follow [`CONTRIBUTION.md`](CONTRIBUTION.md).
+- **Code priorities**: optimize where possible, minimize resource use, test shader changes before submitting, and add comments when necessary; see [`CONTRIBUTION.md`](CONTRIBUTION.md).
 - **World macros**: `WORLD_ID`, `WORLD_LIGHT`, `WORLD_SUN_MOON`, and `WORLD_SUN_MOON_SIZE` define per-dimension lighting behavior. Their values are implementation-oriented and are not presented as general user settings.
+- **Current support**: Iris 1.6.10 or later on Minecraft 1.18.2 or later is listed as supported on Windows and Linux with Intel, AMD, or NVIDIA GPUs, and on Apple M1.
+- **Platform caveats**: Older AMD graphics drivers may show visual issues. Pojav Launcher use is unofficial and results vary by device.
+- **Mod compatibility**: Submit requests as repository issues with a link to the mod page; code contributions should follow [`CONTRIBUTION.md`](CONTRIBUTION.md).
 - **Known mod issues**: archived notes list visual bugs with Astrocraft and Nuit, both low priority.
 - **Historical backlog**: earlier pending/current items covered shadow-model and sky fixes, translucent detection, world lighting, iPBR/POM, DOF, block IDs, day/night transitions, uniform/code cleanup, bit packing, clouds/fog/water/tonemapping, Distant Horizons depth, menu UI, Voxy, voxel clouds, lighting separation, and albedo. Treat these as historical notes, not verified current tasks.
 - **Completed items in the historical notes**: OptiFine support was abandoned; alpha testing, Distant Horizons generic rendering, dragon beam, FXAA, portal depth, subsurface scattering, and shadow filtering had been marked done.

@@ -13,13 +13,14 @@
 4. [Deferred Programs](#deferred-programs)
 5. [Composite Programs](#composite-programs)
 6. [Final Program](#final-program)
-7. [Program File Organization](#program-file-organization)
+7. [Compatibility and Support](#compatibility-and-support)
+8. [Program File Organization](#program-file-organization)
 
 ---
 
 ## Program Classification
 
-Super Duper Vanilla categorizes shader programs into complexity tiers based on computational cost:
+Super Duper Vanilla groups shader programs by the amount and type of shading work they perform:
 
 ### Classification Tiers
 
@@ -47,10 +48,23 @@ This column identifies which loader or mod integration exposes a program; it doe
 | `deferred`, `composite` programs | Iris; OptiFine (legacy entry) |
 
 For loader behavior and specifications, see [IrisShaders/docs](https://github.com/IrisShaders/docs) or the [OptiFine shader specification](https://github.com/sp614x/optifine/blob/master/OptiFineDoc/doc/shaders.txt#L447).
+For loader-specific behavior and specifications, see [IrisShaders/docs](https://github.com/IrisShaders/docs) or the [OptiFine shader specification](https://github.com/sp614x/optifine/blob/master/OptiFineDoc/doc/shaders.txt#L447).
 
 ### Dimension-Specific Program Variants
 
 Dimension macros are configured per world. See [SETTINGS.md](SETTINGS.md) for their definitions; this document owns program behavior and ordering.
+
+## Compatibility and Support
+
+Maintained builds target Iris 1.6.10 or later on Minecraft 1.18.2 or later. The README lists support on Windows and Linux with Intel, AMD, or NVIDIA GPUs, and on Apple M1. Minecraft 1.17.1 and earlier are listed as unsupported.
+
+| Historical loader entry | Minecraft version | Windows / Linux (Intel, AMD, NVIDIA) | Apple M1 |
+|---|---|---|---|
+| OptiFine | 1.17.1 and later | Partial support | Partial support |
+| OptiFine | 1.14.2 and later | Partial support | Not supported |
+| OptiFine | 1.13.2 and earlier | Not supported | Not supported |
+
+OptiFine maintenance ended with SDV 1.3.7; these entries are historical and are not a current support commitment. Older AMD graphics drivers may show visual issues. Pojav Launcher use is possible but unofficial, and results vary by device. For mod-compatibility requests, open a repository issue with a link to the mod; code contributions should follow [CONTRIBUTION.md](../CONTRIBUTION.md).
 
 ---
 
@@ -58,13 +72,13 @@ Dimension macros are configured per world. See [SETTINGS.md](SETTINGS.md) for th
 
 ### Purpose
 
-Render scene geometry from light source viewpoint to generate shadow depth map (`shadowtex0`). Used by all subsequent stages for shadow computation.
+Render scene geometry from the light source's perspective to generate the shadow depth map (`shadowtex0`), which subsequent stages use for shadow calculations.
 
 ### Shadow Program Specifications
 
 | Program | Input | Blend | Tier | Notes |
 |---------|-------|-------|------|-------|
-| `shadow` | Opaque blocks | Solid | Complex | **DEFAULT** - primary shadow pass |
+| `shadow` | Opaque blocks | Solid | Complex | Primary shadow pass (default) |
 | `shadow_solid` | Solid blocks | Solid | Complex | Solid geometry shadow variant |
 | `shadow_cutout` | Alpha-tested materials | Solid | Complex | Cutout/masked leaves, glass |
 | `shadow_block` | Block entity models | Solid | Basic | Block-specific shadow rendering |
@@ -81,8 +95,9 @@ Render scene geometry from light source viewpoint to generate shadow depth map (
 
 **Shadow Distance**:
 - Affects how far shadows render
-- Greater distance = lower resolution per unit
-- Trades shadow quality for distance coverage
+- Controls how far shadows render.
+- Increasing the distance reduces resolution per world-space unit.
+- The setting balances shadow quality against distance coverage.
 
 **Shadow Color** (Optional):
 - Stores color information for transparent shadow casters.
@@ -97,6 +112,7 @@ Render scene geometry from light source viewpoint to generate shadow depth map (
 Render Minecraft geometry while populating G-buffer and scene targets. Some programs also perform forward shading. The configured sequence is summarized below.
 
 ### Gbuffer Program Tiers & Classification
+### G-buffer Program Classification
 
 #### Complex Shading Programs (Full PBR)
 
@@ -142,6 +158,7 @@ Programs with specialized or minimal material shading:
 | `physics_ocean` | Physics Mod ocean | Transparent | Mod-provided ocean geometry |
 
 ### Gbuffer Program Groups
+### G-buffer Program Groups
 
 The configured program sequence is grouped by geometry and blending behavior:
 
@@ -211,16 +228,16 @@ The `deferred` program writes SSAO data when enabled. `deferred1` performs defer
 
 Ordered post-processing programs. A program may read a buffer written several passes earlier; consult the source outputs and configured enable conditions rather than assuming each pass consumes the previous pass's output.
 
-Programs execute in order. `composite1` is currently a no-op and disabled; other effects are enabled conditionally in `shaders.properties`.
+Programs execute in order, with enable conditions defined in `shaders.properties`. `composite1` ray-marches volumetric lighting into half-resolution `colortex0`; when volumetric lighting, shadow mapping, and the world-light path are active, it also reprojects temporal history through `colortex6`. `composite2` applies a 9-tap denoising filter and is disabled when volumetric lighting or shadow mapping is unavailable. `composite3` upsamples the result, applies fog, and adds it to the HDR scene.
 
 ### Composite Program Data Flow
 
 | Stage | Main targets read | Main target written | Role |
 |---|---|---|---|
 | **Composite0** (`composite`) | Scene and material targets, depth | `colortex4` | Deferred and transparent complex shading |
-| **Composite1** | None | `colortex0` | Disabled no-op |
-| **Composite2** | Depth | Half-resolution `colortex0` | Volumetric lighting |
-| **Composite3** | `colortex0`, `colortex4` | `colortex4` | Upsample and add volumetrics |
+| **Composite1** | Depth, optional `colortex6` history | Half-resolution `colortex0`, optional `colortex6` history | Volumetric ray marching and temporal accumulation |
+| **Composite2** | `colortex0` | `colortex0` | 9-tap volumetric denoising when volumetrics and shadow mapping are enabled |
+| **Composite3** | `colortex0`, `colortex4`, depth | `colortex4` | Upsample volumetrics and apply them with fog |
 | **Composite4** | `colortex4`, temporal data when enabled | `colortex4`, optionally `colortex5` | TAA and temporal history |
 | **Composite5** | `colortex3` | `colortex3` | FXAA for modes 1 and 3; copy otherwise |
 | **Composite6** | `colortex4`, depth | `colortex4` | Motion blur |
@@ -234,8 +251,9 @@ Programs execute in order. `composite1` is currently a no-op and disabled; other
 
 **Sequential Dependency Chain**:
 ```
-Composite2 writes half-resolution volumetrics to colortex0
-Composite3 adds the upsampled result to colortex4
+Composite1 ray-marches volumetrics into half-resolution colortex0 and optionally accumulates history in colortex6
+Composite2 applies a 9-tap denoising filter to colortex0
+Composite3 upsamples the volumetric result, applies fog, and adds it to colortex4
 Composite4 performs TAA when enabled and updates temporal history
 Composite8-11 process bloom through colortex0
 Composite12 combines bloom with colortex4 and writes display-oriented output to colortex3
@@ -246,7 +264,7 @@ Passes execute in order, but adjacent programs can read and write different targ
 **Key Stages Explained**:
 
 - **Composite0**: Main deferred lighting pass, applies shadows to HDR scene
-- **Composite2-3**: Render volumetrics at half resolution, then upsample into scene color
+- **Composite1-3**: Ray-march volumetrics at half resolution, optionally accumulate temporal history, denoise, then upsample and apply to scene color
 - **Composite4**: TAA and previous-frame data handling
 - **Composite5**: FXAA, when selected by the anti-aliasing setting
 - **Composite8-11**: Bloom downsample, blur, and upsampling; composite11 also handles lens flare
@@ -264,10 +282,9 @@ Final full-screen filtering and output to screen.
 
 | Aspect | Value |
 |--------|-------|
-| Input Buffer | Final color is produced in colortex3 by Composite12 |
+| Input Buffer | Final color is produced in `colortex3` by `composite12` |
 | Output | Screen framebuffer |
 | Processing | Retro filter, chromatic aberration, optional sharpening |
-
 ---
 
 ## Program File Organization
@@ -290,7 +307,7 @@ shaders/
 
 ### Dimension-Specific Overrides
 
-Each world folder (`world-1/`, `world0/`, `world1/`, `world2-4/`) contains copies of all programs with dimension-specific customizations:
+Each `world-X/` folder contains program wrappers with dimension-specific customizations:
 - Different lighting properties
 - Dimension-specific configuration; see [SETTINGS.md](SETTINGS.md) for macro definitions
 - Optimized shadow parameters

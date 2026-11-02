@@ -35,7 +35,7 @@ These features are selected or parameterized by the PBR and material settings li
 |---|---|---|
 | Sky rendering | Computes sky and atmospheric color contributions | [`skyRender.glsl`](../shaders/lib/atmospherics/skyRender.glsl) |
 | Fog | Ground/atmospheric fog and border fog | [`fogRender.glsl`](../shaders/lib/atmospherics/fogRender.glsl) |
-| Volumetric lighting | Renders at half resolution to `colortex0`, then is upsampled into the HDR scene | [`volumetricLight.glsl`](../shaders/lib/rayTracing/volumetricLight.glsl), `composite2.glsl`, `composite3.glsl` |
+| Volumetric lighting | Ray-marches at half resolution into `colortex0`, optionally accumulates temporal history in `colortex6`, denoises, then applies the result to the HDR scene | [`volumetricLight.glsl`](../shaders/lib/rayTracing/volumetricLight.glsl), `composite1.glsl`, `composite2.glsl`, `composite3.glsl` |
 | Voxel clouds | Screen-space voxel-cloud rendering for the selected cloud mode | [`voxelClouds.glsl`](../shaders/lib/rayTracing/voxelClouds.glsl), deferred shading |
 | Volumetric clouds | Ray-marched volumetric cloud contribution where enabled | [`volumetricClouds.glsl`](../shaders/lib/rayTracing/volumetricClouds.glsl) |
 | Terrain, water, and weather animation | Vertex displacement and animated weather behavior | [`waveTerrain.glsl`](../shaders/lib/vertex/waveTerrain.glsl), [`waveWater.glsl`](../shaders/lib/vertex/waveWater.glsl), [`weatherWave.glsl`](../shaders/lib/vertex/weatherWave.glsl) |
@@ -48,6 +48,7 @@ The listed composite numbers are the current SDV program assignments. Conditiona
 | Feature | Program | Implementation |
 |---|---|---|
 | Temporal anti-aliasing | `composite4` | [`taa.glsl`](../shaders/lib/antialiasing/taa.glsl) |
+| Volumetric lighting | `composite1`-`composite3` | Ray march, temporal accumulation, 9-tap denoising, and full-resolution application |
 | FXAA | `composite5` | [`fxaa.glsl`](../shaders/lib/antialiasing/fxaa.glsl) |
 | Motion blur | `composite6` | [`motionBlur.glsl`](../shaders/lib/post/motionBlur.glsl) |
 | Depth of field | `composite7` | Depth-aware mip-level sampling in the composite shader |
@@ -57,7 +58,7 @@ The listed composite numbers are the current SDV program assignments. Conditiona
 | Outlines | `deferred1` | [`outline.glsl`](../shaders/lib/post/outline.glsl) |
 | Retro filter, chromatic aberration, sharpening | `final` | Final program in `shaders/main/final.glsl` |
 
-`composite1` is currently a disabled no-op. For the full pass map and buffer I/O, see [PROGRAMS.md](PROGRAMS.md); for target reuse, see [BUFFERS.md](BUFFERS.md).
+The volumetric pass chain is conditionally enabled according to the active world and lighting settings. For the full pass map and buffer I/O, see [PROGRAMS.md](PROGRAMS.md) and [BUFFERS.md](BUFFERS.md).
 
 ## Integrations
 
