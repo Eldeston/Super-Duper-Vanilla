@@ -22,7 +22,6 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 
 ## CURRENT
 * [ ] Implement bit packing for optimization
-* [ ] Fix hand bobbing not working
 
 * [ ] Refactor parallax occlusion mapping
 * [ ] Change cloud texture
@@ -39,6 +38,7 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 ## DONE
 * [x] Replace skybox clouds completely with voxelized clouds
 * [x] Abandon Optifine support (high priority)
+* [x] Fix hand bobbing not working
 * [x] Implement Voxy support
 
 * [x] Optimize alpha testing (high priority)

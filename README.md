@@ -7,7 +7,12 @@
 ![Modrinth Downloads](https://img.shields.io/modrinth/dt/LMIZZNxZ?style=for-the-badge&logo=modrinth&logoColor=%23FFFFFF&label=Modrinth%20Downloads&color=%2300FF00)
 
 ## Description
-A shader pack created to convey the style of the cancelled __Super Duper Graphics Pack__ and other popular Minecraft titles. Developed by [@Eldeston](https://github.com/Eldeston), and presented by __FlameRender Studios__.
+Super Duper Vanilla is a Minecraft shader pack created to convey the cancelled __Super Duper Graphics Pack__ and other popular Minecraft titles. Developed by [@Eldeston](https://github.com/Eldeston) and presented by __FlameRender Studios__.
+
+## Shader Overview
+SDV brings a PBR-focused take on Minecraft, pairing dynamic lighting with atmospheric effects and a deep set of visual options. Features include SSAO/SSR and experimental SSGI, voxel clouds and volumetric lighting, anti-aliasing, motion blur, depth of field, bloom, and tone mapping. See [Mod Compatibility](#mod-compatibility) for integrations.
+
+For the rendering pipeline, settings, buffers, program map, and implementation references, see [DOCUMENTATION.md](DOCUMENTATION.md).
 
 ## Sponsored by BisectHosting
 [![Sponsor](https://github.com/Eldeston/Super-Duper-Vanilla/blob/master/shaders/textures/sponsor0.png?raw=true)](https://bisecthosting.com/FLAMERENDERSTUDIOS)
@@ -33,36 +38,40 @@ Choose **Ember Host** to host your Minecraft server and take advantage of their 
 ![2022-07-04_20 42 13](https://cdn.modrinth.com/data/LMIZZNxZ/images/8e152465e03a3861acf4a7be6eca82a86cf26f1a.png)
 ![2022-07-04_20 49 54](https://cdn.modrinth.com/data/LMIZZNxZ/images/0126040f5bcc1828e2de2b059799ab7ffb3d08ec.png)
 
-## License 
-This shader uses the **FlameRender (C) Studios License**. See [**LICENSE**](LICENSE) for more info.
+## License
+This shader pack is distributed under the **FlameRender (C) Studios License**. See [LICENSE](LICENSE) for details.
 
 ## Contribution
 If you plan to contribute to this project, see [**CONTRIBUTION**](CONTRIBUTION.md) for more info.
 
-## GPU Compatibility
-Super Duper Vanilla has been generally working on most specifications. However for some older AMD graphics drivers, there are visual bugs that can occur and other shaders have also experienced this issue. There are also some platforms that this shader can run on such as Pojav Launcher, however support is not official, any results may vary across devices.
+## Compatibility and Support
+Current builds target Iris. The table summarizes the published Minecraft version and platform compatibility; OptiFine entries are retained from the older README table and are historical only.
+
+| Loader | Minecraft version | Windows/Linux (Intel, AMD, NVIDIA) | Apple M1 |
+|---|---|---|---|
+| Iris 1.6.10+ | 1.18.2 and later | Supported | Supported |
+| Iris | 1.17.1 and earlier | Not supported | Not supported |
+| OptiFine (historical) | 1.17.1 and later | Partial support | Partial support |
+| OptiFine (historical) | 1.14.2 and later | Partial support | Not supported |
+| OptiFine (historical) | 1.13.2 and earlier | Not supported | Not supported |
+
+OptiFine maintenance ended with SDV 1.3.7. Older AMD graphics drivers may show visual issues. Pojav Launcher use is unofficial, and results vary by device. For detailed compatibility notes, see [DOCUMENTATION.md](DOCUMENTATION.md).
 
 ## Mod Compatibility
-If you want to request mod compatibility with this shader, create an issue post in this repository with the mod that you want to enable compatibility via linking the mod's page. If you're planning to add mod compatibility by coding it yourself, see [**CONTRIBUTION**](CONTRIBUTION.md).
 
-## Version Compatibility
-Version compatibility varies across the 2 known shader loaders Iris and Optifine. Iris versions 1.6.10+ from Minecraft versions 1.18.2+ are compatible with this shader. For Optifine, it varies across GPU vendors. Please always choose the latest Iris or Optifine of your respective Minecraft version.
+SDV includes shader paths for several popular mods. Here is what those integrations cover:
 
-Optifine support will no longer be maintained starting from version 1.3.7 of this shader, please use Iris/Oculus whenever possible.
+| Mod | Integration in SDV |
+|---|---|
+| Distant Horizons | Dedicated programs for distant terrain, generic geometry, and water. |
+| Voxy | Voxy depth inputs in rendering paths that support them. |
+| Physics Mod | Ocean geometry and shadow rendering. |
+| Astrocraft, Nuit | Low-priority visual issues. Will likely remain unimplemented. |
 
-| Iris     | Windows, Linux (Intel, AMD, NVidia) | Apple (M1)      |
-| -------- | ----------------------------------- | --------------- |
-| 1.18.2+  | Supported                           | Supported       |
-| 1.17.1-  | Not supported                       | Not supported   |
-
-| Optifine | Windows, Linux (Intel, AMD, NVidia) | Apple (M1)      |
-| -------- | ----------------------------------- | --------------- |
-| 1.17.1+  | Partial support                     | Partial support |
-| 1.14.2+  | Partial support                     | Not supported   |
-| 1.13.2-  | Not supported                       | Not supported   |
+Missing a mod you use? Open an issue and link its project page. If you are adding support yourself, test the relevant paths and follow [CONTRIBUTION.md](CONTRIBUTION.md).
 
 ## Releases
-See all available releases [here](https://github.com/Eldeston/Super-Duper-Vanilla/releases). More recent builds are found in their corresponding branches, to download simply switch to the latest version branch, go to code (green button) and download as zip.
+Browse every release on the [GitHub releases page](https://github.com/Eldeston/Super-Duper-Vanilla/releases). Development builds live on their corresponding branches; switch to the branch you want, select **Code**, and choose **Download ZIP**.
 
 Latest build and pre-release versions are expected to be unstable, please report any issues or bugs anytime. Feedback is much appreciated.
 
@@ -73,15 +82,12 @@ Super Duper Vanilla just happens to be on Modrinth! Stable and latest releases w
 Super Duper Vanilla is also on CurseForge! Stable and latest releases will always be available there. Check it out [here](https://www.curseforge.com/minecraft/customization/super-duper-vanilla-shaders) and support me by using any one of the download links there!
 
 ## Super Duper Vanilla Installer
-Alternatively, you can use this installer developed by [@steb-git](https://github.com/steb-git) allowing you to install either the release versions of SDV or the development versions. While the installer's task is relatively simple, it's still a WIP. [Use this link to go to the installer repository](https://github.com/steb-git/super-duper-vanilla-installer).
+Prefer an installer? The [Super Duper Vanilla Installer](https://github.com/steb-git/super-duper-vanilla-installer), developed by [@steb-git](https://github.com/steb-git), can install release or development builds. It is still a work in progress.
 
 ## Social Links
-Come join my Discord server to talk about other developments made by our studio-community!
+Come join the FlameRender Studios community on Discord to chat about SDV and other projects:
 * [Flamerender Studios Discord](https://discord.gg/UE85W5ynCg)
 
-Or follow me on Twitter or subscribe to my Youtube channel to get updated with my recent developments and contents
-* [@Eldeston's Twitter](https://twitter.com/eldeston)
-* [@Eldeston's Channel](https://www.youtube.com/channel/UCQCkkFh25ydxZwCqpBhJJlg?view_as=subscriber)
+Follow [@Eldeston on X](https://twitter.com/eldeston) or subscribe to the [YouTube channel](https://www.youtube.com/channel/UCQCkkFh25ydxZwCqpBhJJlg?view_as=subscriber) for development updates and new videos.
 
-You can become a supporter by doing any of the above, or donate through paypal
-* [@Paypal donation](https://www.paypal.com/donate?hosted_button_id=4XLQ4WE296JKW)
+You can support the project through [PayPal](https://www.paypal.com/donate?hosted_button_id=4XLQ4WE296JKW), too.
