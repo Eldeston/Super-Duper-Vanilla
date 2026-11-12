@@ -160,12 +160,12 @@
 
     uniform mat4 shadowModelView;
 
-    // Main HDR buffer
-    uniform sampler2D colortex4;
     uniform sampler2D colortex1;
     // For SSAO and material masks
     uniform sampler2D colortex2;
     uniform sampler2D colortex3;
+    // Main HDR buffer
+    uniform sampler2D colortex4;
 
     uniform sampler2D depthtex0;
 
