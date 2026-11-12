@@ -7,12 +7,13 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
     #ifdef SSGI
         // Get SSGI screen coordinates
         vec3 SSGIcoord = rayTraceScene(screenPos, viewPos, generateCosineVector(normal, noiseUnitVector), dither.z);
+        bool isSkyRadiance = SSGIcoord.z == 1;
 
         // If sky don't do SSGI
         #ifdef PREVIOUS_FRAME
-            if(SSGIcoord.z > 0.5) sceneCol += albedo * texelFetch(colortex5, ivec2(getPrevScreenCoord(SSGIcoord.xy * vec2(pixelWidth, pixelHeight)) * vec2(viewWidth, viewHeight)), 0).rgb;
+            if(!isSkyRadiance) sceneCol += albedo * texelFetch(colortex5, ivec2(getPrevScreenCoord(SSGIcoord.xy * vec2(pixelWidth, pixelHeight)) * vec2(viewWidth, viewHeight)), 0).rgb;
         #else
-            if(SSGIcoord.z > 0.5) sceneCol += albedo * texelFetch(colortex4, ivec2(SSGIcoord.xy), 0).rgb;
+            if(!isSkyRadiance) sceneCol += albedo * texelFetch(colortex4, ivec2(SSGIcoord.xy), 0).rgb;
         #endif
     #endif
 
