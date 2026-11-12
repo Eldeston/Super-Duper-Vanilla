@@ -59,7 +59,7 @@
             vec2 vertexShdWorldPosXZ = vertexShdFeetPlayerPosXZ + cameraPosition.xz;
 
             // Get water noise uv position
-            waterNoiseUv = vertexShdWorldPosXZ * waterTileSizeInv;
+            waterNoiseUv = vertexShdWorldPosXZ * waterTileSizeInv * 0.5;
 
             #ifdef WATER_ANIMATION
                 vertexShdEyePlayerPos = getWaterWave(vertexShdEyePlayerPos, vertexShdWorldPosXZ, mc_Entity.x, vertexFrameTime);
