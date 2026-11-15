@@ -1,12 +1,20 @@
-vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos, in vec3 feetPlayerPos, in vec3 normal, in vec3 albedo, in vec3 dither, in float viewDotInvSqrt, in float metallic, in float smoothness, in bool realSky){
+vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos, in vec3 feetPlayerPos, in vec3 normal, in vec3 albedo, in ivec2 screenTexelCoord, in float viewDotInvSqrt, in float metallic, in float smoothness, in bool realSky){
+    #if ANTI_ALIASING >= 2
+        vec2 ditherBN = fract(getRng2(screenTexelCoord & 255) + frameFract);
+        float ditherIGN = IGN(screenTexelCoord, frameCounter);
+    #else
+        vec2 ditherBN = getRng2(screenTexelCoord & 255);
+        float ditherIGN = IGN(screenTexelCoord, 0);
+    #endif
+
     #if defined ROUGH_REFLECTIONS || defined SSGI
-        vec3 noiseUnitVector = generateUnitVector(dither.xy);
+        vec3 noiseUnitVector = generateUnitVector(ditherBN);
     #endif
 
     // Calculate SSGI
     #ifdef SSGI
         // Get SSGI screen coordinates
-        vec3 SSGIcoord = rayTraceScene(screenPos, viewPos, generateCosineVector(normal, noiseUnitVector), dither.z);
+        vec3 SSGIcoord = rayTraceScene(screenPos, viewPos, generateCosineVector(normal, noiseUnitVector), ditherIGN);
         bool isSkyRadiance = SSGIcoord.z == 1;
 
         // If sky don't do SSGI
@@ -36,7 +44,7 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
     // Calculate SSR and sky reflections
     #ifdef SSR
         // Get SSR screen coordinates
-        vec3 SSRCoord = rayTraceScene(screenPos, viewPos, reflectViewDir, dither.z);
+        vec3 SSRCoord = rayTraceScene(screenPos, viewPos, reflectViewDir, ditherIGN);
         // Check if sky reflection has been hit
         bool isSkyReflection = SSRCoord.z == 1;
 

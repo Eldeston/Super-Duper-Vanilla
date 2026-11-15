@@ -59,7 +59,7 @@
         uniform sampler2D depthtex0;
 
         #if ANTI_ALIASING >= 2
-            uniform int frameCounter;
+            uniform float frameFract;
         #endif
 
         #include "/lib/utility/projectionFunctions.glsl"
@@ -88,7 +88,7 @@
             if(normal.x + normal.y + normal.z == 0) return;
 
             // Do SSAO
-            albedoDataOut.w = getSSAO(vec3(texCoord, depth), mat3(gbufferModelView) * normal);
+            albedoDataOut.w = getSSAO(vec3(texCoord, depth), mat3(gbufferModelView) * normal, screenTexelCoord);
         #else
             albedoDataOut = texelFetch(colortex2, screenTexelCoord, 0).rgb;
         #endif

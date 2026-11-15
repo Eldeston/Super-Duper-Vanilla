@@ -1,9 +1,8 @@
-float getSSAO(in vec3 screenPos, in vec3 viewNormal){
+float getSSAO(in vec3 screenPos, in vec3 viewNormal, in ivec2 screenTexelCoord){
     #if ANTI_ALIASING >= 2
-        ivec2 noiseCoord = ivec2(gl_FragCoord.xy) + ivec2(frameCounter * 73, frameCounter * 151);
-        vec3 dither = getRng3(noiseCoord & 255);
+        vec3 dither = fract(getRng3(screenTexelCoord & 255) + frameFract);
     #else
-        vec3 dither = getRng3(ivec2(gl_FragCoord.xy) & 255);
+        vec3 dither = getRng3(screenTexelCoord & 255);
     #endif
 
     float occlusion = 0.25;

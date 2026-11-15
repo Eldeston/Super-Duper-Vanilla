@@ -168,6 +168,7 @@
 
     #if ANTI_ALIASING >= 2
         uniform int frameCounter;
+        uniform float frameFract;
     #endif
 
     #ifndef FORCE_DISABLE_WEATHER
@@ -238,6 +239,7 @@
     #endif
 
     #include "/lib/utility/noiseSample.glsl"
+    #include "/lib/utility/noiseFunctions.glsl"
 
     #include "/lib/atmospherics/skyRender.glsl"
     #include "/lib/atmospherics/fogRender.glsl"
@@ -297,15 +299,8 @@
             vec3 albedo = texelFetch(colortex2, screenTexelCoord, 0).rgb;
             vec3 normal = texelFetch(colortex1, screenTexelCoord, 0).xyz;
 
-            #if ANTI_ALIASING >= 2
-                ivec2 noiseCoord = ivec2(gl_FragCoord.xy) + ivec2(frameCounter * 73, frameCounter * 151);
-                vec3 dither = getRng3(noiseCoord & 255);
-            #else
-                vec3 dither = getRng3(screenTexelCoord & 255);
-            #endif
-
             // Apply deffered shading
-            sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, feetPlayerPos, normal * mat3(gbufferModelViewInverse), albedo, dither, viewDotInvSqrt, matRaw0.x, matRaw0.y, realSky);
+            sceneColOut = complexShadingDeferred(sceneColOut, screenPos, viewPos, feetPlayerPos, normal * mat3(gbufferModelViewInverse), albedo, screenTexelCoord, viewDotInvSqrt, matRaw0.x, matRaw0.y, realSky);
 
             // Get basic sky fog color
             vec3 fogSkyCol = getSkyFogRender(nEyePlayerPos);
