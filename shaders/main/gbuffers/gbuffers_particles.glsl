@@ -151,7 +151,7 @@
 
         #ifdef SHADOW_MAPPING
             #ifdef SHADOW_FILTER
-                #include "/lib/utility/noiseFunctions.glsl"
+                #include "/lib/utility/noiseSample.glsl"
             #endif
 
             #include "/lib/lighting/shdDistort.glsl"

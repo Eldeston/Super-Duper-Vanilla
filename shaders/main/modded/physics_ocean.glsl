@@ -193,7 +193,7 @@
 
     #include "/lib/PBR/dataStructs.glsl"
 
-    #include "/lib/utility/noiseFunctions.glsl"
+    #include "/lib/utility/noiseSample.glsl"
 
     #if defined WATER_NORMAL || defined WATER_NOISE
         uniform float fragmentFrameTime;

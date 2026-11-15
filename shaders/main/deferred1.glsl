@@ -249,7 +249,7 @@
         #include "/lib/post/outline.glsl"
     #endif
 
-    #include "/lib/utility/noiseFunctions.glsl"
+    #include "/lib/utility/noiseSample.glsl"
 
     #include "/lib/atmospherics/skyRender.glsl"
     #include "/lib/atmospherics/fogRender.glsl"

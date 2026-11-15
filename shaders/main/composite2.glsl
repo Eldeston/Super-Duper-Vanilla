@@ -11,55 +11,19 @@
 ================================ /// Super Duper Vanilla v1.3.9 /// ================================
 */
 
-/// Buffer features: Volumetric lighting
+/// Buffer features: Does nothing, for now
 
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    #ifdef WORLD_LIGHT
-        flat out vec3 lightCol;
-
+    #if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING && defined WORLD_LIGHT
         noperspective out vec2 texCoord;
-
-        uniform int isEyeInWater;
-        
-        uniform float shdFade;
-
-        #ifndef FORCE_DISABLE_WEATHER
-            uniform float rainStrength;
-        #endif
-
-        #ifndef FORCE_DISABLE_DAY_CYCLE
-            uniform float dayCycle;
-            uniform float twilightPhase;
-        #endif
-
-        #if !defined VOLUMETRIC_LIGHTING || !defined SHADOW_MAPPING
-            uniform vec3 fogColor;
-        #endif
-
-        #ifdef WORLD_CUSTOM_SKYLIGHT
-            const float eyeBrightFact = WORLD_CUSTOM_SKYLIGHT;
-        #else
-            uniform float eyeSkylight;
-            
-            float eyeBrightFact = eyeSkylight;
-        #endif
     #endif
 
     void main(){
-        #ifdef WORLD_LIGHT
+        #if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING && defined WORLD_LIGHT
             // Get buffer texture coordinates
             texCoord = gl_MultiTexCoord0.xy;
-
-            vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
-
-            #if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING
-                lightCol = toLinear(sRGBLightCol) * min(1.0, VOLUMETRIC_LIGHTING_STRENGTH + VOLUMETRIC_LIGHTING_STRENGTH * isEyeInWater) * shdFade;
-            #else
-                lightCol = toLinear(sRGBLightCol) * squared(eyeBrightFact) * VOLUMETRIC_LIGHTING_STRENGTH;
-                if(isEyeInWater == 1) lightCol = toLinear(sRGBLightCol) * toLinear(fogColor) * min(1.0, VOLUMETRIC_LIGHTING_STRENGTH * 2.0);
-            #endif
         #endif
 
         gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);
@@ -72,133 +36,70 @@
     /* RENDERTARGETS: 0 */
     layout(location = 0) out vec3 volColOut; // colortex0
 
-    #ifdef WORLD_LIGHT
-        flat in vec3 lightCol;
-
+    #if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING && defined WORLD_LIGHT
+        /* RENDERTARGETS: 0,6 */
+        layout(location = 1) out vec3 tempColOut; // colortex6
+        
         noperspective in vec2 texCoord;
 
-        uniform int isEyeInWater;
-        
-        uniform float borderFar;
+        uniform int halfViewWidth;
+        uniform int halfViewHeight;
 
+        // uniform float frameTime;
+
+        uniform vec3 camPosDelta;
         uniform vec3 cameraPosition;
 
         uniform mat4 gbufferProjectionInverse;
         uniform mat4 gbufferModelViewInverse;
 
+        uniform mat4 gbufferPreviousModelView;
+        uniform mat4 gbufferPreviousProjection;
+
+        uniform sampler2D colortex0;
+        uniform sampler2D colortex6;
         uniform sampler2D depthtex0;
 
-        #if ANTI_ALIASING >= 2
-            uniform float frameFract;
-        #endif
-
-        #ifndef FORCE_DISABLE_WEATHER
-            uniform float rainStrength;
-        #endif
-
-        #ifndef FORCE_DISABLE_DAY_CYCLE
-            uniform float dayCycle;
-            uniform float dayCycleAdjust;
-        #endif
-
-        #ifdef DISTANT_HORIZONS
-            uniform mat4 dhProjectionInverse;
-
-            uniform sampler2D dhDepthTex0;
-        #endif
-
-        #ifdef VOXY
-            uniform mat4 vxProjInv;
-
-            uniform sampler2D vxDepthTexOpaque;
-        #endif
-
-        #ifdef WORLD_CUSTOM_SKYLIGHT
-            const float eyeBrightFact = WORLD_CUSTOM_SKYLIGHT;
-        #else
-            uniform float eyeSkylight;
-            
-            float eyeBrightFact = eyeSkylight;
-        #endif
-
-        #if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING
-            uniform mat4 shadowProjection;
-            uniform mat4 shadowModelView;
-        #endif
-    
-        #include "/lib/lighting/shdDistort.glsl"
-        #include "/lib/lighting/shdSampleTexel.glsl"
-
-        #include "/lib/utility/noiseFunctions.glsl"
         #include "/lib/utility/projectionFunctions.glsl"
-        
-        #include "/lib/rayTracing/volumetricLight.glsl"
-        
-        #include "/lib/atmospherics/fogRender.glsl"
+        #include "/lib/utility/prevProjectionFunctions.glsl"
+
+        // https://sugulee.wordpress.com/2021/06/21/temporal-anti-aliasingtaa-tutorial/
+        vec3 volumetricAccumulation(in ivec2 screenTexelCoord){
+            // Current color
+            vec3 currColor = texelFetch(colortex0, screenTexelCoord, 0).rgb;
+
+            // Previous coord
+            vec2 prevTexCoord = getPrevScreenCoord(texCoord, getDepth(depthtex0, screenTexelCoord, 0));
+            if(prevTexCoord.x < 0 || prevTexCoord.y < 0 || prevTexCoord.x > 1 || prevTexCoord.y > 1) return currColor;
+
+            // Previous color
+            vec3 prevColor = texelFetch(colortex6, ivec2(prevTexCoord.x * halfViewWidth, prevTexCoord.y * halfViewHeight), 0).rgb;
+
+            // Apply clamping on the history color.
+            vec3 nearCol0 = texelFetch(colortex0, ivec2(screenTexelCoord.x - 1, screenTexelCoord.y), 0).rgb;
+            vec3 nearCol1 = texelFetch(colortex0, ivec2(screenTexelCoord.x, screenTexelCoord.y - 1), 0).rgb;
+            vec3 nearCol2 = texelFetch(colortex0, ivec2(screenTexelCoord.x + 1, screenTexelCoord.y), 0).rgb;
+            vec3 nearCol3 = texelFetch(colortex0, ivec2(screenTexelCoord.x, screenTexelCoord.y + 1), 0).rgb;
+            
+            vec3 boxMin = min(currColor, min(nearCol0, min(nearCol1, min(nearCol2, nearCol3)))); // - 1.0 / 255.0;
+            vec3 boxMax = max(currColor, max(nearCol0, max(nearCol1, max(nearCol2, nearCol3)))); // + 1.0 / 255.0;
+
+            // Required to add the "sum color" of the remaining VL
+            prevColor = clamp(prevColor, boxMin, boxMax);
+
+            // float frameTimeExposure = frameTime;
+            // frameTimeExposure /= (1.0 + frameTimeExposure);
+
+            // Return temporal color
+            return currColor * 0.1 + prevColor * 0.9;
+            // return mix(prevColor, currColor, frameTimeExposure);
+        }
     #endif
 
     void main(){
-        #ifdef WORLD_LIGHT
-            if(VOLUMETRIC_LIGHTING_STRENGTH == 0 || isEyeInWater == 2) return;
-
-            bool realSky = false;
-            // Screen texel coordinates
-            ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy * 2.0);
-            // Get screen space depth
-            float depth = getDepth(depthtex0, screenTexelCoord, 0);
-
-            // Distant Horizons and Voxy apparently uses a different depth texture
-            #if defined DISTANT_HORIZONS
-                realSky = depth == 1;
-                if(realSky) depth = texelFetch(dhDepthTex0, screenTexelCoord, 0).x;
-            #elif defined VOXY
-                realSky = depth == 1;
-                if(realSky) depth = texelFetch(vxDepthTexOpaque, screenTexelCoord, 0).x;
-            #endif
-
-            // Get screen pos
-            vec3 screenPos = vec3(texCoord, depth);
-
-            // Distant Horizons and Voxy apparently uses a different projection matrix
-            #if defined DISTANT_HORIZONS
-                vec3 viewPos = getViewPos(realSky ? dhProjectionInverse : gbufferProjectionInverse, screenPos);
-            #elif defined VOXY
-                vec3 viewPos = getViewPos(realSky ? vxProjInv : gbufferProjectionInverse, screenPos);
-            #else
-                vec3 viewPos = getViewPos(gbufferProjectionInverse, screenPos);
-            #endif
-
-            // Get eye player pos
-            vec3 eyePlayerPos = mat3(gbufferModelViewInverse) * viewPos;
-            // Get feet player pos
-            vec3 feetPlayerPos = eyePlayerPos + gbufferModelViewInverse[3].xyz;
-
-            bool isSky = depth == 1;
-
-            float feetPlayerDot = lengthSquared(feetPlayerPos);
-            float feetPlayerDotInvSqrt = inversesqrt(feetPlayerDot);
-            float feetPlayerDist = feetPlayerDot * feetPlayerDotInvSqrt;
-
-            vec3 nFeetPlayerPos = feetPlayerPos * feetPlayerDotInvSqrt;
-
-            // Get fog factor
-            float fogFactor = getFogFactor(feetPlayerDist, nFeetPlayerPos.y, feetPlayerPos.y + cameraPosition.y);
-
-            // Border fog
-            #ifdef BORDER_FOG
-                float borderFog = getBorderFog(feetPlayerDist);
-            #else
-                float borderFog = 0.0;
-            #endif
-
-            #if ANTI_ALIASING >= 2
-                vec3 dither = fract(getRng3(screenTexelCoord & 255) + frameFract);
-            #else
-                vec3 dither = getRng3(screenTexelCoord & 255);
-            #endif
-            
-            // Apply volumetric light
-            volColOut = getVolumetricLight(nFeetPlayerPos, feetPlayerDist, fogFactor, borderFog, dither.x, isSky);
+        #if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING && defined WORLD_LIGHT
+            volColOut = volumetricAccumulation(ivec2(gl_FragCoord.xy));
+            tempColOut = volColOut;
         #else
             volColOut = vec3(0);
         #endif

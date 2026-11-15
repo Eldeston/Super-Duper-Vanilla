@@ -63,7 +63,7 @@
         #endif
 
         #include "/lib/utility/projectionFunctions.glsl"
-        #include "/lib/utility/noiseFunctions.glsl"
+        #include "/lib/utility/noiseSample.glsl"
 
         #include "/lib/lighting/SSAO.glsl"
     #endif

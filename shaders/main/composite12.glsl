@@ -73,7 +73,7 @@
         uniform sampler2D colortex0;
     #endif
 
-    #include "/lib/utility/noiseFunctions.glsl"
+    #include "/lib/utility/noiseSample.glsl"
 
     #include "/lib/post/tonemap.glsl"
 

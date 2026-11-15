@@ -122,7 +122,7 @@
                 uniform int isEyeInWater;
             #endif
 
-            #include "/lib/utility/noiseFunctions.glsl"
+            #include "/lib/utility/noiseSample.glsl"
             #include "/lib/surface/water.glsl"
         #endif
 

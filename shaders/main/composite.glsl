@@ -142,8 +142,6 @@
 
     uniform float borderFar;
 
-    uniform float far;
-
     uniform float darkEffectFactor;
     uniform float darknessLightFactor;
 
@@ -153,7 +151,6 @@
 
     uniform vec3 cameraPosition;
 
-    uniform mat4 gbufferProjection;
     uniform mat4 gbufferProjectionInverse;
 
     uniform mat4 gbufferModelViewInverse;
@@ -211,6 +208,8 @@
         uniform float pixelWidth;
         uniform float pixelHeight;
 
+        uniform mat4 gbufferProjection;
+
         #include "/lib/utility/depthTex.glsl"
         #include "/lib/rayTracing/rayTracer.glsl"
 
@@ -238,7 +237,7 @@
         #endif
     #endif
 
-    #include "/lib/utility/noiseFunctions.glsl"
+    #include "/lib/utility/noiseSample.glsl"
 
     #include "/lib/atmospherics/skyRender.glsl"
     #include "/lib/atmospherics/fogRender.glsl"
@@ -322,9 +321,6 @@
             sceneColOut = ((fogSkyCol - sceneColOut) * fogFactor + sceneColOut) * exp2(-viewDist * darkEffectFactor);
         }
 
-        // Apply darkness pulsing effect
-        sceneColOut *= 1.0 - darknessLightFactor;
-
         #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
             bool isSky = depth == 1;
 
@@ -340,5 +336,8 @@
             // Get voxelized clouds
             sceneColOut = getVoxelClouds(sceneColOut, cloudStartPos, nFeetPlayerPos, sphereFar);
         #endif
+
+        // Apply darkness pulsing effect
+        sceneColOut *= 1.0 - darknessLightFactor;
     }
 #endif

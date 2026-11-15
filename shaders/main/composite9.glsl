@@ -22,13 +22,13 @@
 
         noperspective out vec2 texCoord;
 
-        uniform float bloomPixelWidth;
+        uniform float halfPixelWidth;
     #endif
 
     void main(){
         #ifdef BLOOM
-            offSet0 = bloomPixelWidth * 3.2307692308;
-            offSet1 = bloomPixelWidth * 1.3846153846;
+            offSet0 = halfPixelWidth * 3.2307692308;
+            offSet1 = halfPixelWidth * 1.3846153846;
 
             // Get buffer texture coordinates
             texCoord = gl_MultiTexCoord0.xy;
@@ -51,10 +51,7 @@
         noperspective in vec2 texCoord;
 
         // Needs to be enabled by force to be able to use LOD fully even with textureLod
-        const bool colortex0MipmapEnabled = false;
-
-        // uniform float bloomPixelWidth;
-        // uniform float bloomPixelHeight;
+        const bool colortex0MipmapEnabled = true;
 
         // No need to use mipmapping in this 2nd bloom pass, so we'll utilize texelFetch for some sweet, sweet performance
         uniform sampler2D colortex0;
@@ -93,7 +90,7 @@
             bloomColOut = sample0 * 0.0702702703 + sample1 * 0.3162162162 + center * 0.2270270270;
 
             // Find the initial offset for Kawase blur
-            // vec2 pixelOffSet = vec2(bloomPixelWidth, bloomPixelHeight) * 0.5;
+            // vec2 pixelOffSet = vec2(halfPixelWidth, halfPixelHeight) * 0.5;
 
             // // Calculate offsets
             // vec2 topRight = texCoord + pixelOffSet;

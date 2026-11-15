@@ -221,7 +221,7 @@
         #include "/lib/PBR/labPBR.glsl"
     #endif
 
-    #include "/lib/utility/noiseFunctions.glsl"
+    #include "/lib/utility/noiseSample.glsl"
 
     #if defined LAVA_NOISE || defined SCULK_NOISE
         uniform float fragmentFrameTime;

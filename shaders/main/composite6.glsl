@@ -57,7 +57,7 @@
         #include "/lib/utility/projectionFunctions.glsl"
         #include "/lib/utility/prevProjectionFunctions.glsl"
 
-        #include "/lib/utility/noiseFunctions.glsl"
+        #include "/lib/utility/noiseSample.glsl"
 
         #include "/lib/post/motionBlur.glsl"
     #endif

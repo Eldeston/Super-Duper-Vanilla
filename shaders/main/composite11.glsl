@@ -101,8 +101,8 @@
     #endif
 
     #ifdef BLOOM
-        uniform float bloomPixelWidth;
-        uniform float bloomPixelHeight;
+        uniform float halfPixelWidth;
+        uniform float halfPixelHeight;
 
         uniform sampler2D colortex0;
 
@@ -111,7 +111,7 @@
         //     vec2 baseCoord = texCoord * invScale + coords;
 
         //     // Pixel size
-        //     vec2 pixelSize = vec2(bloomPixelWidth, bloomPixelHeight);
+        //     vec2 pixelSize = vec2(halfPixelWidth, halfPixelHeight);
 
         //     vec2 topRightCorner = baseCoord + pixelSize;
         //     vec2 bottomLeftCorner = baseCoord - pixelSize;
@@ -127,7 +127,7 @@
             vec2 baseCoord = texCoord * invScale + coords;
 
             // Bloom pixel size
-            vec2 pixelOffSet = vec2(bloomPixelWidth, bloomPixelHeight);
+            vec2 pixelOffSet = vec2(halfPixelWidth, halfPixelHeight);
 
             // Axial neighbors
             vec3 bloomCol0 = textureLod(colortex0, vec2(baseCoord.x + pixelOffSet.x, baseCoord.y), 0).rgb;

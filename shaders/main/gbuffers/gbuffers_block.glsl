@@ -197,7 +197,7 @@
         #include "/lib/PBR/labPBR.glsl"
     #endif
 
-    #include "/lib/utility/noiseFunctions.glsl"
+    #include "/lib/utility/noiseSample.glsl"
 
     #include "/lib/lighting/complexShadingForward.glsl"
 

@@ -52,6 +52,9 @@
     uniform sampler2D colortex4;
 
     #if ANTI_ALIASING >= 2
+        uniform float viewWidth;
+        uniform float viewHeight;
+
         uniform vec3 camPosDelta;
 
         uniform mat4 gbufferModelViewInverse;

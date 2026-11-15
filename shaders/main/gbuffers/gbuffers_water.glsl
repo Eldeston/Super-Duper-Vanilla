@@ -218,7 +218,7 @@
         #include "/lib/PBR/labPBR.glsl"
     #endif
 
-    #include "/lib/utility/noiseFunctions.glsl"
+    #include "/lib/utility/noiseSample.glsl"
 
     #if defined WATER_NORMAL || defined WATER_NOISE
         uniform float fragmentFrameTime;
