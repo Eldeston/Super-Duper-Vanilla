@@ -91,10 +91,6 @@
         uniform sampler2D colortex0;
         uniform sampler2D depthtex0;
 
-        #if ANTI_ALIASING >= 2
-            uniform float frameFract;
-        #endif
-
         #ifndef FORCE_DISABLE_WEATHER
             uniform float rainStrength;
         #endif

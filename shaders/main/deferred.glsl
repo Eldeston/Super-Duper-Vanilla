@@ -59,7 +59,7 @@
         uniform sampler2D depthtex0;
 
         #if ANTI_ALIASING >= 2
-            uniform float frameFract;
+            uniform int frameCounter;
         #endif
 
         #include "/lib/utility/projectionFunctions.glsl"

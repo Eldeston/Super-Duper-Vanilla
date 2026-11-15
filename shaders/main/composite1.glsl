@@ -43,7 +43,6 @@
         uniform int frameCounter;
         
         uniform float borderFar;
-        uniform float frameFract;
 
         uniform mat4 gbufferProjectionInverse;
         uniform mat4 gbufferModelViewInverse;

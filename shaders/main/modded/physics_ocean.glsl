@@ -149,10 +149,6 @@
         uniform float rainStrength;
     #endif
 
-    #if defined SHADOW_FILTER && ANTI_ALIASING >= 2
-        uniform float frameFract;
-    #endif
-
     #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
         uniform float near;
 
