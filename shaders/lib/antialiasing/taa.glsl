@@ -8,7 +8,7 @@ vec3 textureTAA(in ivec2 screenTexelCoord){
     if(prevTexCoord.x < 0 || prevTexCoord.y < 0 || prevTexCoord.x > 1 || prevTexCoord.y > 1) return currColor;
 
     // Previous color
-    vec3 prevColor = texelFetch(colortex5, ivec2(prevTexCoord.x * viewWidth, prevTexCoord.y * viewHeight), 0).rgb;
+    vec3 prevColor = textureLod(colortex5, prevTexCoord, 0).rgb;
 
     // Apply clamping on the history color.
     vec3 nearCol0 = texelFetch(colortex4, ivec2(screenTexelCoord.x - 1, screenTexelCoord.y), 0).rgb;
