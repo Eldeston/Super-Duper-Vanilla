@@ -157,11 +157,11 @@
 
     #include "/lib/PBR/dataStructs.glsl"
 
-    #include "/lib/utility/noiseSample.glsl"
 
     #ifdef LAVA_NOISE
         uniform float fragmentFrameTime;
 
+        #include "/lib/utility/noiseSample.glsl"
         #include "/lib/surface/lava.glsl"
     #endif
 

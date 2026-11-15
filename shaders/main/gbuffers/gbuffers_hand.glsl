@@ -139,7 +139,7 @@
     #endif
 
     #if defined SHADOW_FILTER && ANTI_ALIASING >= 2
-        uniform float frameFract;
+        uniform int frameCounter;
     #endif
 
     #ifndef FORCE_DISABLE_DAY_CYCLE
@@ -168,7 +168,7 @@
             uniform mat4 shadowProjection;
 
             #ifdef SHADOW_FILTER
-                #include "/lib/utility/noiseSample.glsl"
+                #include "/lib/utility/noiseFunctions.glsl"
             #endif
 
             #include "/lib/lighting/shdDistort.glsl"

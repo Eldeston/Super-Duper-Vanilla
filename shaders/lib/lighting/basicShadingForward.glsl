@@ -19,10 +19,11 @@ vec3 basicShadingForward(in vec3 albedo, in vec2 lmCoord){
 
             // Sample shadows
             #ifdef SHADOW_FILTER
+                // Dithering with interleaved gradient noise
                 #if ANTI_ALIASING >= 2
-                    float dither = fract(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x + frameFract);
+                    float dither = IGN(gl_FragCoord.xy, frameCounter);
                 #else
-                    float dither = texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x;
+                    float dither = IGN(gl_FragCoord.xy);
                 #endif
 
                 dither *= TAU;

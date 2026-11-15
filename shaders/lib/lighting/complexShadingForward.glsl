@@ -58,10 +58,11 @@
 
         // Sample shadows, reduce whenever possible
         #ifdef SHADOW_FILTER
+            // Dithering with interleaved gradient noise
             #if ANTI_ALIASING >= 2
-                float dither = fract(texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x + frameFract);
+                float dither = IGN(gl_FragCoord.xy, frameCounter);
             #else
-                float dither = texelFetch(noisetex, ivec2(gl_FragCoord.xy) & 255, 0).x;
+                float dither = IGN(gl_FragCoord.xy);
             #endif
 
             // Multiply by TAU to get a full rotation
