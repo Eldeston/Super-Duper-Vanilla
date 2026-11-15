@@ -57,7 +57,7 @@
         #include "/lib/utility/projectionFunctions.glsl"
         #include "/lib/utility/prevProjectionFunctions.glsl"
 
-        #include "/lib/utility/noiseSample.glsl"
+        #include "/lib/utility/noiseFunctions.glsl"
 
         #include "/lib/post/motionBlur.glsl"
     #endif
@@ -77,7 +77,7 @@
             if(depth <= 0.56) return;
 
             // Apply motion blur
-            sceneColOut = motionBlur(sceneColOut, depth, texelFetch(noisetex, screenTexelCoord & 255, 0).x);
+            sceneColOut = motionBlur(sceneColOut, depth);
         #endif
     }
 #endif
