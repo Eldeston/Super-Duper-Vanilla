@@ -71,7 +71,7 @@
             vec2 vertexShdWorldPosXZ = vertexShdFeetPlayerPosXZ + cameraPosition.xz;
 
             // Get water noise uv position
-            waterNoiseUv = vertexShdWorldPosXZ * waterTileSizeInv * 0.5;
+            waterNoiseUv = vertexShdWorldPosXZ * waterTileSizeInv;
 
             #ifdef TERRAIN_ANIMATION
                 // Apply terrain wave animation
@@ -136,7 +136,7 @@
                 uniform int isEyeInWater;
             #endif
 
-            #include "/lib/utility/noiseFunctions.glsl"
+            #include "/lib/utility/noiseSample.glsl"
             #include "/lib/surface/water.glsl"
         #endif
 
