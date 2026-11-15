@@ -73,7 +73,7 @@
         uniform sampler2D colortex0;
     #endif
 
-    #include "/lib/utility/noiseSample.glsl"
+    #include "/lib/utility/noiseFunctions.glsl"
 
     #include "/lib/post/tonemap.glsl"
 
@@ -119,6 +119,6 @@
         postColOut = saturation(postColOut, SATURATION);
 
         // Apply dithering to break postColOut banding
-        postColOut += (texelFetch(noisetex, screenTexelCoord & 255, 0).x - 0.5) * 0.00392156863;
+        postColOut += (IGN(gl_FragCoord.xy) - 0.5) * 0.00392156863;
     }
 #endif
