@@ -11,14 +11,13 @@
 ================================ /// Super Duper Vanilla v1.3.9 /// ================================
 */
 
-/// Buffer features: Bloom blur upsampling
+/// Buffer features: Combining bloom blur and lens flare
 
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
     #if defined LENS_FLARE && defined WORLD_LIGHT
         flat out vec3 sRGBLightCol;
-
         flat out vec4 shdLightDirScreenSpace;
     #endif
 
@@ -92,7 +91,6 @@
 
     #if defined LENS_FLARE && defined WORLD_LIGHT
         flat in vec3 sRGBLightCol;
-
         flat in vec4 shdLightDirScreenSpace;
     #endif
 

@@ -93,7 +93,8 @@
                 vec3 shadowTint = shdCol / (0.0001 + maxOf(shdCol));
 
                 // Calculate the shadow color with an extinction coefficient based on the albedo
-                return exp2((shdCol - 1.0) * albedoCoEff) * shadowTint;
+                // Fix nan issues (?) when a subsurface item is behind a transparent object
+                return max(vec3(0), exp2((shdCol - 1.0) * albedoCoEff)) * shadowTint;
             }
 
             // Apply diffuse shadowing for non-subsurface scattering materials

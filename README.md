@@ -1,8 +1,6 @@
 ![Thumbnail](https://github.com/Eldeston/Super-Duper-Vanilla/blob/master/shaders/textures/thumbCF.png?raw=true)
 ![Title Logo](https://github.com/Eldeston/Super-Duper-Vanilla/blob/master/shaders/textures/title.png?raw=true)
 [![Discord](https://img.shields.io/discord/604061216779796492?style=for-the-badge&logo=discord&logoColor=white&label=FlameRender%C2%A9%20Studios&labelColor=7289DA)](https://discord.gg/UE85W5ynCg)
-[![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/eldeston?style=for-the-badge&logo=x&label=%40eldeston&color=1DA1F2)](https://x.com/eldeston)
-[![YouTube Channel Subscribers](https://img.shields.io/youtube/channel/subscribers/UCQCkkFh25ydxZwCqpBhJJlg?color=FF0000&logoWidth=16&label=Eldeston&logo=YouTube&style=for-the-badge)](https://www.youtube.com/channel/UCQCkkFh25ydxZwCqpBhJJlg)
 ![CurseForge Downloads](https://img.shields.io/curseforge/dt/534748?style=for-the-badge&logo=curseforge&logoColor=%23FFFFFF&label=CurseForge%20Downloads&color=%23FF9101)
 ![Modrinth Downloads](https://img.shields.io/modrinth/dt/LMIZZNxZ?style=for-the-badge&logo=modrinth&logoColor=%23FFFFFF&label=Modrinth%20Downloads&color=%2300FF00)
 
@@ -55,7 +53,7 @@ Current builds target Iris. The table summarizes the published Minecraft version
 | OptiFine (historical) | 1.14.2 and later | Partial support | Not supported |
 | OptiFine (historical) | 1.13.2 and earlier | Not supported | Not supported |
 
-OptiFine maintenance ended with SDV 1.3.7. Older AMD graphics drivers may show visual issues. Pojav Launcher use is unofficial, and results vary by device. For detailed compatibility notes, see [DOCUMENTATION.md](DOCUMENTATION.md).
+OptiFine maintenance ended with SDV 1.3.7 and officialy incompatible by 1.4.0. Older AMD graphics drivers may show visual issues. Pojav Launcher use is unofficial, and results vary by device. For detailed compatibility notes, see [DOCUMENTATION.md](DOCUMENTATION.md).
 
 ## Mod Compatibility
 
