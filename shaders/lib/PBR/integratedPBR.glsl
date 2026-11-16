@@ -197,10 +197,16 @@ void getPBR(inout dataPBR material, in int id){
             else if(id == 12515) material.smoothness = maxOf(material.albedo.rgb) * 0.75;
 
             // Ice blocks
-            else if(id == 12516) material.smoothness = maxOf(material.albedo.rgb) * 0.96;
+            else if(id == 12516){
+                material.smoothness = maxOf(material.albedo.rgb) * 0.96;
+                material.ss = material.smoothness;
+            }
 
             // Snow blocks
-            else if(id == 12517) material.smoothness = sumOf(material.albedo.rgb) * 0.33333333 * 0.45;
+            else if(id == 12517){
+                material.smoothness = sumOf(material.albedo.rgb) * 0.33333333 * 0.45;
+                material.ss = material.smoothness;
+            }
 
             // Soil blocks
             else if(id == 12518) material.smoothness = sumOf(material.albedo.rgb) * 0.33333333 * 0.45;
@@ -338,8 +344,14 @@ void getPBR(inout dataPBR material, in int id){
         #endif
 
         #if defined WATER || defined BLOCK
-            // Glass, ice, and jelly
-            if(id == 12500 || id == 12520) material.smoothness = fastSqrt(maxOf(material.albedo.rgb)) * 0.96;
+            // Glass, and jelly blocks
+            if(id == 12500) material.smoothness = fastSqrt(maxOf(material.albedo.rgb)) * 0.96;
+
+            // Transparent ice blocks
+            else if(id == 12520){
+                material.smoothness = maxOf(material.albedo.rgb) * 0.96;
+                material.ss = material.smoothness;
+            }
         #endif
 
         #ifdef BLOCK
