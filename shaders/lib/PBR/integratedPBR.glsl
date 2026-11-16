@@ -202,6 +202,12 @@ void getPBR(inout dataPBR material, in int id){
             // Snow blocks
             else if(id == 12517) material.smoothness = sumOf(material.albedo.rgb) * 0.33333333 * 0.45;
 
+            // Soil blocks
+            else if(id == 12518) material.smoothness = sumOf(material.albedo.rgb) * 0.33333333 * 0.45;
+
+            // Concrete & terracotta blocks
+            else if(id == 12519) material.smoothness = fastSqrt(sumOf(material.albedo.rgb) * 0.33333333) * 0.15 + 0.3;
+
             /// -------------------------------- /// Ores /// -------------------------------- ///
 
             // Crystals
@@ -333,7 +339,7 @@ void getPBR(inout dataPBR material, in int id){
 
         #if defined WATER || defined BLOCK
             // Glass, ice, and jelly
-            if(id == 12500 || id == 12518) material.smoothness = fastSqrt(maxOf(material.albedo.rgb)) * 0.96;
+            if(id == 12500 || id == 12520) material.smoothness = fastSqrt(maxOf(material.albedo.rgb)) * 0.96;
         #endif
 
         #ifdef BLOCK
