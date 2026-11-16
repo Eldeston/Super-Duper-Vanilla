@@ -38,11 +38,7 @@
 
     #if (defined PREVIOUS_FRAME && (defined SSR || defined SSGI)) || ANTI_ALIASING >= 2
         /* RENDERTARGETS: 4,5 */
-        #ifdef AUTO_EXPOSURE
-            layout(location = 1) out vec4 temporalDataOut; // colortex5
-        #else
-            layout(location = 1) out vec3 temporalDataOut; // colortex5
-        #endif
+        layout(location = 1) out vec3 temporalDataOut; // colortex5
         
         noperspective in vec2 texCoord;
 
@@ -79,11 +75,7 @@
         #endif
 
         #if (defined PREVIOUS_FRAME && (defined SSR || defined SSGI)) || ANTI_ALIASING >= 2
-            #ifdef AUTO_EXPOSURE
-                temporalDataOut = vec4(sceneColOut, texelFetch(colortex5, ivec2(0), 0).a);
-            #else
-                temporalDataOut = sceneColOut;
-            #endif
+            temporalDataOut = sceneColOut;
         #endif
     }
 #endif

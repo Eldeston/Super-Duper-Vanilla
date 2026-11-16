@@ -42,8 +42,9 @@
     const int colortex2Format = RGBA8;
     const int colortex3Format = RGB8;
     const int colortex4Format = R11F_G11F_B10F;
-    const int colortex5Format = RGBA16F;
+    const int colortex5Format = R11F_G11F_B10F;
     const int colortex6Format = RGB8;
+    const int colortex7Format = R16F;
     */
 
     // NOTE: Do not disable main HDR and LDR scenes' clear
@@ -62,6 +63,7 @@
     // Needed for temporal filtering
     const bool colortex5Clear = false;
     const bool colortex6Clear = false;
+    const bool colortex7Clear = false;
 
     noperspective in vec2 texCoord;
 
