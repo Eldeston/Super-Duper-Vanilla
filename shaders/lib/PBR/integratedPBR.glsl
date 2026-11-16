@@ -90,10 +90,10 @@ void getPBR(inout dataPBR material, in int id){
             if(id == 10001) material.emissive = sumOf(material.albedo.rg) > material.albedo.g * 2.0 ? smoothstep(0.3, 0.9, maxOf(material.albedo.rgb)) : material.emissive;
 
             // Fungus
-            else if(id == 10002 || id == 10601) material.emissive = float(sumOf(material.albedo.rg) > 1);
+            else if(id == 10002 || id == 10601 || id == 12102) material.emissive = float(sumOf(material.albedo.rg) > 1);
 
             // Torch flower
-            else if(id == 10602) material.emissive = squared(material.albedo.r * 0.5);
+            else if(id == 10602 || id == 12103) material.emissive = squared(material.albedo.r * 0.5) * float(material.albedo.r > 0.6);
 
             /// -------------------------------- /// Emissive blocks /// -------------------------------- ///
 
