@@ -278,8 +278,12 @@
                     material.albedo.rgb *= waterNoise;
                 #endif
 
+                // This is to make the water texture more prominent and part of the foam
+                material.albedo += cubed(sumOf(material.albedo.rgb)) * 0.125;
+
                 #ifdef WATER_FOAM
-                    material.albedo = min(vec4(1), material.albedo + edgeBrightness);
+                    // Probably needs more work
+                    material.albedo = min(vec4(1), material.albedo + min(0.66666667, edgeBrightness));
                 #endif
             }
 

@@ -250,7 +250,7 @@
             #endif
 
             #ifdef WATER_FOAM
-                material.albedo = min(vec4(1), material.albedo + exp2((waterDepth + 0.0625) * 8.0));
+                material.albedo = min(vec4(1), material.albedo + min(0.66666667, exp2((waterDepth + 0.0625) * 8.0)));
             #endif
         }
 
