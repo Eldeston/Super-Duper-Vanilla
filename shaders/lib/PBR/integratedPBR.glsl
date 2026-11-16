@@ -148,17 +148,59 @@ void getPBR(inout dataPBR material, in int id){
 
             /// -------------------------------- /// Smooth blocks /// -------------------------------- ///
 
-            // Packed ice and blue ice
-            else if(id == 12501) material.smoothness = 0.96;
-
             // Crystal blocks
-            else if(id == 12502){
+            else if(id == 12501){
                 material.smoothness = fastSqrt(min(0.8, albedoSum));
                 material.metallic = 0.17;
             }
 
-            // Polished blocks
-            else if(id == 12503) material.smoothness = maxOf(material.albedo.rgb) * 0.9;
+            // Stone blocks
+            else if(id == 12502) material.smoothness = maxOf(material.albedo.rgb) * 0.6;
+
+            // Deepslate
+            else if(id == 12503) material.smoothness = maxOf(material.albedo.rgb) * 0.75;
+
+            // Granite
+            else if(id == 12504) material.smoothness = maxOf(material.albedo.rgb) * 0.75;
+
+            // Diorite
+            else if(id == 12505) material.smoothness = maxOf(material.albedo.rgb) * 0.45;
+
+            // Andesite
+            else if(id == 12506) material.smoothness = maxOf(material.albedo.rgb) * 0.75;
+
+            // Tuff
+            else if(id == 12507) material.smoothness = maxOf(material.albedo.rgb) * 0.75;
+
+            // Blackstone
+            else if(id == 12508) material.smoothness = maxOf(material.albedo.rgb) * 0.75;
+
+            // Basalt
+            else if(id == 12509) material.smoothness = maxOf(material.albedo.rgb) * 0.75;
+
+            // Quartz
+            else if(id == 12510) material.smoothness = maxOf(material.albedo.rgb) * 0.75;
+
+            // Purpur
+            else if(id == 12511) material.smoothness = maxOf(material.albedo.rgb) * 0.9;
+
+            // Calcite
+            else if(id == 12512) material.smoothness = maxOf(material.albedo.rgb) * 0.45;
+
+            // Prismarine
+            else if(id == 12513) material.smoothness = maxOf(material.albedo.rgb) * 0.9;
+
+            // Sulfur
+            else if(id == 12514) material.smoothness = maxOf(material.albedo.rgb) * 0.75;
+
+            // Cinnabar
+            else if(id == 12515) material.smoothness = maxOf(material.albedo.rgb) * 0.75;
+
+            // Ice blocks
+            else if(id == 12516) material.smoothness = maxOf(material.albedo.rgb) * 0.96;
+
+            // Snow blocks
+            else if(id == 12517) material.smoothness = sumOf(material.albedo.rgb) * 0.33333333 * 0.45;
 
             /// -------------------------------- /// Ores /// -------------------------------- ///
 
@@ -291,7 +333,7 @@ void getPBR(inout dataPBR material, in int id){
 
         #if defined WATER || defined BLOCK
             // Glass, ice, and jelly
-            if(id == 12500) material.smoothness = 0.96;
+            if(id == 12500 || id == 12518) material.smoothness = fastSqrt(maxOf(material.albedo.rgb)) * 0.96;
         #endif
 
         #ifdef BLOCK
