@@ -17,7 +17,7 @@ vec4 complexShadingLOD(in dataPBR material, in vec2 lmCoord, in vec3 feetPlayerP
     totalIllumination += toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 
     // Calculate block light
-    totalIllumination += toLinear((float(material.emissive == 0) * 0.25 + 1.0) * blockLightSquared * blockLightColor);
+    totalIllumination += toLinear((1.0 + float(material.emissive == 0.0)) * (blockLightSquared * lmCoord.x) * blockLightColor);
 
     // Get view direction
     vec3 viewDir = -fastNormalize(feetPlayerPos);

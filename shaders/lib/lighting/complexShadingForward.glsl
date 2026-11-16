@@ -139,10 +139,10 @@ vec4 complexShadingForward(in dataPBR material, in vec2 lmCoord, in vec3 feetPla
         float dirLightMap = min(1.0, max(0.0, dot(dirLightMapPos, material.normal)) * blockLightSquared * DIRECTIONAL_LIGHTMAP_STRENGTH + lmCoord.x);
 
         // Calculate block light
-        totalIllumination += toLinear((float(material.emissive == 0) * 0.25 + 1.0) * squared(dirLightMap) * blockLightColor);
+        totalIllumination += toLinear((1.0 + float(material.emissive == 0.0)) * cubed(dirLightMap) * blockLightColor);
     #else
         // Calculate block light
-        totalIllumination += toLinear((float(material.emissive == 0) * 0.25 + 1.0) * blockLightSquared * blockLightColor);
+        totalIllumination += toLinear((1.0 + float(material.emissive == 0.0)) * (blockLightSquared * lmCoord.x) * blockLightColor);
     #endif
 
     // Apply baked ambient occlussion
