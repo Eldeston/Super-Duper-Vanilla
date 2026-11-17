@@ -83,11 +83,13 @@ void getPBR(inout dataPBR material, in int id){
     #endif
 
     #if PBR_MODE == 1
-        #ifdef TERRAIN
+        #if defined TERRAIN || defined BLOCK
             float albedoSum = sumOf(material.albedo.rgb);
+            float albedoMax = maxOf(material.albedo.rgb);
+            float albedoMin = minOf(material.albedo.rgb);
 
             // Glow berries
-            if(id == 10001) material.emissive = sumOf(material.albedo.rg) > material.albedo.g * 2.0 ? smoothstep(0.3, 0.9, maxOf(material.albedo.rgb)) : material.emissive;
+            if(id == 10001) material.emissive = sumOf(material.albedo.rg) > material.albedo.g * 2.0 ? smoothstep(0.3, 0.9, albedoMax) : material.emissive;
 
             // Fungus
             else if(id == 10002 || id == 10601 || id == 12102) material.emissive = float(sumOf(material.albedo.rg) > 1);
@@ -155,64 +157,64 @@ void getPBR(inout dataPBR material, in int id){
             }
 
             // Stone blocks
-            else if(id == 12502) material.smoothness = maxOf(material.albedo.rgb) * 0.6;
+            else if(id == 12502) material.smoothness = albedoMin * 0.6;
 
             // Deepslate
-            else if(id == 12503) material.smoothness = maxOf(material.albedo.rgb) * 0.75;
+            else if(id == 12503) material.smoothness = albedoMax * 0.75;
 
             // Granite
-            else if(id == 12504) material.smoothness = maxOf(material.albedo.rgb) * 0.75;
+            else if(id == 12504) material.smoothness = albedoMax * 0.6;
 
             // Diorite
-            else if(id == 12505) material.smoothness = maxOf(material.albedo.rgb) * 0.45;
+            else if(id == 12505) material.smoothness = albedoMin * 0.45;
 
             // Andesite
-            else if(id == 12506) material.smoothness = maxOf(material.albedo.rgb) * 0.75;
+            else if(id == 12506) material.smoothness = albedoMin * 0.6;
 
             // Tuff
-            else if(id == 12507) material.smoothness = maxOf(material.albedo.rgb) * 0.75;
+            else if(id == 12507) material.smoothness = albedoMax * 0.6;
 
             // Blackstone
-            else if(id == 12508) material.smoothness = maxOf(material.albedo.rgb) * 0.75;
+            else if(id == 12508) material.smoothness = albedoMax * 0.75;
 
             // Basalt
-            else if(id == 12509) material.smoothness = maxOf(material.albedo.rgb) * 0.75;
+            else if(id == 12509) material.smoothness = albedoMax * 0.6;
 
             // Quartz
-            else if(id == 12510) material.smoothness = maxOf(material.albedo.rgb) * 0.75;
+            else if(id == 12510) material.smoothness = albedoMin * 0.75;
 
             // Purpur
-            else if(id == 12511) material.smoothness = maxOf(material.albedo.rgb) * 0.9;
+            else if(id == 12511) material.smoothness = albedoMax * 0.9;
 
             // Calcite
-            else if(id == 12512) material.smoothness = maxOf(material.albedo.rgb) * 0.45;
+            else if(id == 12512) material.smoothness = albedoMin * 0.45;
 
             // Prismarine
-            else if(id == 12513) material.smoothness = maxOf(material.albedo.rgb) * 0.9;
+            else if(id == 12513) material.smoothness = albedoMax * 0.9;
 
             // Sulfur
-            else if(id == 12514) material.smoothness = maxOf(material.albedo.rgb) * 0.75;
+            else if(id == 12514) material.smoothness = albedoMax * 0.6;
 
             // Cinnabar
-            else if(id == 12515) material.smoothness = maxOf(material.albedo.rgb) * 0.75;
+            else if(id == 12515) material.smoothness = albedoMax * 0.6;
 
             // Ice blocks
             else if(id == 12516){
-                material.smoothness = maxOf(material.albedo.rgb) * 0.96;
+                material.smoothness = albedoMax * 0.96;
                 material.ss = material.smoothness;
             }
 
             // Snow blocks
             else if(id == 12517){
-                material.smoothness = sumOf(material.albedo.rgb) * 0.33333333 * 0.45;
+                material.smoothness = albedoSum * 0.33333333 * 0.45;
                 material.ss = material.smoothness;
             }
 
             // Soil blocks
-            else if(id == 12518) material.smoothness = fastSqrt(sumOf(material.albedo.rgb) * 0.33333333) * 0.45;
+            else if(id == 12518) material.smoothness = fastSqrt(albedoMax) * 0.3;
 
             // Concrete & terracotta blocks
-            else if(id == 12519) material.smoothness = fastSqrt(sumOf(material.albedo.rgb) * 0.33333333) * 0.15 + 0.3;
+            else if(id == 12519) material.smoothness = fastSqrt(albedoSum * 0.33333333) * 0.15 + 0.3;
 
             /// -------------------------------- /// Ores /// -------------------------------- ///
 
@@ -262,7 +264,7 @@ void getPBR(inout dataPBR material, in int id){
 
             /// -------------------------------- /// Pyro emissives /// -------------------------------- ///
 
-            else if(id == 12800) material.emissive = smoothen(max(0.0, maxOf(material.albedo.rgb) - 0.75) * 4.0);
+            else if(id == 12800) material.emissive = smoothen(max(0.0, albedoMax - 0.75) * 4.0);
             else if(id == 10801 || id == 12801) material.emissive = squared(squared(saturate(albedoSum * 0.83333333 - 1)));
 
             /// -------------------------------- /// Redstone emissives /// -------------------------------- ///
@@ -298,8 +300,8 @@ void getPBR(inout dataPBR material, in int id){
             else if(id == 13000) material.emissive = material.albedo.r > material.albedo.b ? 1.0 : 0.0;
 
             // Stems
-            else if(id == 13001) material.emissive = material.albedo.r < 0.1 ? maxOf(material.albedo.rgb) * 0.72 : material.emissive;
-            else if(id == 13002) material.emissive = material.albedo.b < 0.16 && material.albedo.r > 0.4 ? maxOf(material.albedo.rgb) * 0.72 : material.emissive;
+            else if(id == 13001) material.emissive = material.albedo.r < 0.1 ? albedoMax * 0.72 : material.emissive;
+            else if(id == 13002) material.emissive = material.albedo.b < 0.16 && material.albedo.r > 0.4 ? albedoMax * 0.72 : material.emissive;
 
             // Chorus
             else if(id == 13003) material.emissive = float(sumOf(material.albedo.rg) > 1.1);
@@ -328,7 +330,7 @@ void getPBR(inout dataPBR material, in int id){
             // Crying obsidian
             else if(id == 13102){
                 material.smoothness = fastSqrt(min(0.8, albedoSum));
-                material.emissive = cubed(maxOf(material.albedo.rgb));
+                material.emissive = cubed(albedoMax);
                 material.metallic = 0.17;
             }
 
