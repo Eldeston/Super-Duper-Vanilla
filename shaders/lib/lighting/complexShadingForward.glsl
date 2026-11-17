@@ -216,6 +216,7 @@ vec4 complexShadingForward(in dataPBR material, in vec2 lmCoord, in vec3 feetPla
     float smoothCosTheta = NV > 0 ? exp2(-9.28 * NV) * material.smoothness : material.smoothness;
     float oneMinusCosTheta = material.smoothness - smoothCosTheta;
 
+    // Hubba dubbah (reduce diffuse according to relfectance calculation)
     if(material.metallic <= 0.9) totalIllumination *= 1.0 - (smoothCosTheta + material.metallic * oneMinusCosTheta);
     else totalIllumination *= 1.0 - material.smoothness;
 
@@ -229,7 +230,7 @@ vec4 complexShadingForward(in dataPBR material, in vec2 lmCoord, in vec3 feetPla
             // Get specular GGX
             vec3 specCol = getSpecularBRDF(viewDir, material.normal, material.albedo.rgb, NLZ, NV, material.metallic, material.smoothness) * shdCol;
             totalLighting.rgb += sunMoonIntensitySqrd * specCol * sRGBLightCol;
-            if(material.albedo.a != 1) totalLighting.a = min(maxOf(specCol) + totalLighting.a, 1.0);
+            if(material.albedo.a < 1) totalLighting.a = min(maxOf(specCol) + totalLighting.a, 1.0);
         }
     #endif
 

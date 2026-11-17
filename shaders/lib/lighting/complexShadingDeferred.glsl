@@ -25,8 +25,8 @@ vec3 complexShadingDeferred(in vec3 sceneCol, in vec3 screenPos, in vec3 viewPos
         #endif
     #endif
 
-    // If smoothness is 0, return immediately
-    if(smoothness < 0.005) return sceneCol;
+    // If smoothness less than a certain threshold, exit immediately
+    if(smoothness < 0.1) return sceneCol;
 
     #ifdef ROUGH_REFLECTIONS
         // Rough the normals with noise
