@@ -14,16 +14,16 @@ vec3 textureFXAA(in ivec2 screenTexelCoord){
     ivec2 bottomLeftCorner = screenTexelCoord - 1;
 
     // Aliased texture
-    vec3 colorCenter = texelFetch(colortex3, screenTexelCoord, 0).rgb;
+    vec3 colorCenter = texelFetch(colortex4, screenTexelCoord, 0).rgb;
 
     // Luma at the current fragment
     float lumaCenter = sumOf(colorCenter);
 
     // Luma at the four direct neighbours of the current fragment.
-    float lumaTop = sumOf(texelFetch(colortex3, ivec2(screenTexelCoord.x, topRightCorner.y), 0).rgb);
-    float lumaBottom = sumOf(texelFetch(colortex3, ivec2(screenTexelCoord.x, bottomLeftCorner.y), 0).rgb);
-    float lumaLeft = sumOf(texelFetch(colortex3, ivec2(bottomLeftCorner.x, screenTexelCoord.y), 0).rgb);
-    float lumaRight = sumOf(texelFetch(colortex3, ivec2(topRightCorner.x, screenTexelCoord.y), 0).rgb);
+    float lumaTop = sumOf(texelFetch(colortex4, ivec2(screenTexelCoord.x, topRightCorner.y), 0).rgb);
+    float lumaBottom = sumOf(texelFetch(colortex4, ivec2(screenTexelCoord.x, bottomLeftCorner.y), 0).rgb);
+    float lumaLeft = sumOf(texelFetch(colortex4, ivec2(bottomLeftCorner.x, screenTexelCoord.y), 0).rgb);
+    float lumaRight = sumOf(texelFetch(colortex4, ivec2(topRightCorner.x, screenTexelCoord.y), 0).rgb);
 
     // Find the maximum and minimum luma around the current fragment.
     float lumaMin = min(lumaCenter, min(min(lumaBottom, lumaTop), min(lumaLeft, lumaRight)));
@@ -36,10 +36,10 @@ vec3 textureFXAA(in ivec2 screenTexelCoord){
     if(lumaRange < max(edgeThresholdMin, lumaMax * EDGE_THRESHOLD_MAX)) return colorCenter;
 
     // Query the 4 remaining corners lumas.
-    float lumaTopRight = sumOf(texelFetch(colortex3, topRightCorner, 0).rgb);
-    float lumaBottomLeft = sumOf(texelFetch(colortex3, bottomLeftCorner, 0).rgb);
-    float lumaTopLeft = sumOf(texelFetch(colortex3, ivec2(bottomLeftCorner.x, topRightCorner.y), 0).rgb);
-    float lumaBottomRight = sumOf(texelFetch(colortex3, ivec2(topRightCorner.x, bottomLeftCorner.y), 0).rgb);
+    float lumaTopRight = sumOf(texelFetch(colortex4, topRightCorner, 0).rgb);
+    float lumaBottomLeft = sumOf(texelFetch(colortex4, bottomLeftCorner, 0).rgb);
+    float lumaTopLeft = sumOf(texelFetch(colortex4, ivec2(bottomLeftCorner.x, topRightCorner.y), 0).rgb);
+    float lumaBottomRight = sumOf(texelFetch(colortex4, ivec2(topRightCorner.x, bottomLeftCorner.y), 0).rgb);
 
     // Combine the four edges lumas (using intermediary variables for future computations with the same values).
     float lumaBottomTop = lumaBottom + lumaTop;
@@ -100,8 +100,8 @@ vec3 textureFXAA(in ivec2 screenTexelCoord){
     vec2 uv2 = currentUv + offset;
 
     // Read the lumas at both current extremities of the exploration segment, and compute the delta wrt to the local average luma.
-    float lumaEnd1 = sumOf(textureLod(colortex3, uv1, 0).rgb) - lumaLocalAverage;
-    float lumaEnd2 = sumOf(textureLod(colortex3, uv2, 0).rgb) - lumaLocalAverage;
+    float lumaEnd1 = sumOf(textureLod(colortex4, uv1, 0).rgb) - lumaLocalAverage;
+    float lumaEnd2 = sumOf(textureLod(colortex4, uv2, 0).rgb) - lumaLocalAverage;
 
     // If the luma deltas at the current extremities are larger than the local gradient, we have reached the side of the edge.
     bool reached1 = abs(lumaEnd1) >= gradientScaled;
@@ -116,10 +116,10 @@ vec3 textureFXAA(in ivec2 screenTexelCoord){
     if(!reachedBoth){
         for(uint i = 2u; i < ITERATIONS; i++){
             // If needed, read luma in 1st direction, compute delta.
-            if(!reached1) lumaEnd1 = sumOf(textureLod(colortex3, uv1, 0).rgb) - lumaLocalAverage;
+            if(!reached1) lumaEnd1 = sumOf(textureLod(colortex4, uv1, 0).rgb) - lumaLocalAverage;
 
             // If needed, read luma in opposite direction, compute delta.
-            if(!reached2) lumaEnd2 = sumOf(textureLod(colortex3, uv2, 0).rgb) - lumaLocalAverage;
+            if(!reached2) lumaEnd2 = sumOf(textureLod(colortex4, uv2, 0).rgb) - lumaLocalAverage;
 
             // If the luma deltas at the current extremities is larger than the local gradient, we have reached the side of the edge.
             reached1 = abs(lumaEnd1) >= gradientScaled;
@@ -177,5 +177,5 @@ vec3 textureFXAA(in ivec2 screenTexelCoord){
     else finalUv.x += finalOffset;
 
     // Read the color at the new UV coordinates, and use it.
-    return textureLod(colortex3, finalUv, 0).rgb;
+    return textureLod(colortex4, finalUv, 0).rgb;
 }

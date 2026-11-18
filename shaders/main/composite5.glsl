@@ -33,10 +33,13 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    /* RENDERTARGETS: 3 */
-    layout(location = 0) out vec3 postColOut; // colortex3
+    /* RENDERTARGETS: 4 */
+    layout(location = 0) out vec3 sceneColOut; // colortex4
 
-    uniform sampler2D colortex3;
+    // Needs to be enabled by force to be able to use LOD fully even with textureLod
+    const bool colortex4MipmapEnabled = true;
+
+    uniform sampler2D colortex4;
 
     #if ANTI_ALIASING == 1 || ANTI_ALIASING == 3
         noperspective in vec2 texCoord;
@@ -49,9 +52,9 @@
 
     void main(){
         #if ANTI_ALIASING == 1 || ANTI_ALIASING == 3
-            postColOut = textureFXAA(ivec2(gl_FragCoord.xy));
+            sceneColOut = textureFXAA(ivec2(gl_FragCoord.xy));
         #else
-            postColOut = texelFetch(colortex3, ivec2(gl_FragCoord.xy), 0).rgb;
+            sceneColOut = texelFetch(colortex4, ivec2(gl_FragCoord.xy), 0).rgb;
         #endif
     }
 #endif
