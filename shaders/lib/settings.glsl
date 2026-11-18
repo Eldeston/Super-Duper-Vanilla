@@ -110,7 +110,7 @@
 
 /// -------------------------------- /// PBR /// -------------------------------- ///
 
-#define PBR_MODE 1 // Enables PBR. Integrated PBR depends on the vanilla albedo textures to map out the materials. Resource PBR uses your resource packs' PBR, if available. Resource PBR requires latest LabPBR version! [0 1 2]
+#define PBR_MODE 1 // Enables PBR. Integrated PBR depends on the vanilla albedo textures to map out the materials. LabPBR uses your resource packs' PBR, if available. LabPBR requires latest LabPBR version! [0 1 2 3]
 #define SPECULAR_HIGHLIGHTS // Enables specular highlight. Specular highlights are the approximate reflections of the sun.
 #define ENVIRONMENT_PBR // Enables enviroment materials. Environment materials affects your surrounding according to your environment such as rain.
 #define SUBSURFACE_SCATTERING // Enables subsurface scattering. 

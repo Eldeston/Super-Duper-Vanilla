@@ -192,7 +192,7 @@
 
     #include "/lib/PBR/dataStructs.glsl"
 
-    #if PBR_MODE <= 1
+    #if PBR_MODE <= 2
         #include "/lib/PBR/integratedPBR.glsl"
     #else
         #include "/lib/PBR/labPBR.glsl"
