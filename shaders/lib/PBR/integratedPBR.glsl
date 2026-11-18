@@ -56,8 +56,8 @@ void getPBR(inout dataPBR material, in int id){
     #ifdef WATER
         // If water
         if(id == 11102){
-            material.smoothness = 0.96;
             material.metallic = 0.02;
+            material.smoothness = 0.96;
 
             #ifdef WATER_FLAT
                 material.albedo.rgb = vec3(0.8);
@@ -66,8 +66,8 @@ void getPBR(inout dataPBR material, in int id){
 
         // Nether portal
         else if(id == 12100){
-            material.smoothness = 0.96;
             material.emissive = sumOf(material.albedo.rgb) * 0.33333333;
+            material.smoothness = 0.96;
         }
     #endif
 
@@ -82,7 +82,7 @@ void getPBR(inout dataPBR material, in int id){
         else if(id == 10132) material.emissive = float(material.albedo.b > material.albedo.g);
     #endif
 
-    #if PBR_MODE == 1
+    #if PBR_MODE <= 2
         #if defined TERRAIN || defined BLOCK
             float albedoSum = sumOf(material.albedo.rgb);
             float albedoMax = maxOf(material.albedo.rgb);
@@ -102,12 +102,14 @@ void getPBR(inout dataPBR material, in int id){
             // Frog lights
             else if(id == 12300){
                 material.emissive = cubed(max(0.0, albedoSum * 1.33333332 - 3.0));
+
                 material.smoothness = 0.9;
             }
 
             // Reflective light emitting blocks and redstone lamps
             else if(id == 12301){
                 material.emissive = saturate(albedoSum * 1.33333332 - 2.0);
+
                 material.smoothness = 0.9;
             }
 
@@ -119,28 +121,29 @@ void getPBR(inout dataPBR material, in int id){
             // Redstone block
             else if(id == 12303){
                 material.emissive = material.albedo.r * 0.25;
-                material.smoothness = 0.9 * fastSqrt(material.albedo.r);
+
                 material.metallic = 1.0;
+                material.smoothness = 0.9 * fastSqrt(material.albedo.r);
             }
 
             /// -------------------------------- /// Metallic blocks /// -------------------------------- ///
 
             // Dark metals
             else if(id == 12400){
-                material.smoothness = albedoSum * 0.1999 + 0.4;
                 material.metallic = 1.0;
+                material.smoothness = albedoSum * 0.1999 + 0.4;
             }
 
             // Metal blocks
             else if(id == 12401){
-                material.smoothness = albedoSum * 0.3 + 0.06;
                 material.metallic = 1.0;
+                material.smoothness = albedoSum * 0.3 + 0.06;
             }
 
             // Copper blocks
             else if(id == 12402 || id == 12403){
-                material.smoothness = maxOf(material.albedo.rg) * 0.96;
                 material.metallic = 1.0;
+                material.smoothness = maxOf(material.albedo.rg) * 0.96;
 
                 if(id == 12403){
                     // material.emissive = min(1.0, squared(max(0.0, squared(material.albedo.r * material.albedo.g) * (squared(material.albedo.b) * 0.5 + 0.5) - 0.1) * 2.0));
@@ -152,69 +155,80 @@ void getPBR(inout dataPBR material, in int id){
 
             // Crystal blocks
             else if(id == 12501){
-                material.smoothness = fastSqrt(min(0.8, albedoSum));
                 material.metallic = 0.17;
+                material.smoothness = fastSqrt(min(0.8, albedoSum));
             }
 
-            // Stone blocks
-            else if(id == 12502) material.smoothness = albedoMin * 0.6;
+            #if PBR_MODE == 2 && defined ROUGH_REFLECTIONS
+                // Stone blocks
+                else if(id == 12502) material.smoothness = albedoMin * 0.6;
 
-            // Deepslate
-            else if(id == 12503) material.smoothness = albedoMax * 0.75;
+                // Deepslate
+                else if(id == 12503) material.smoothness = albedoMax * 0.75;
 
-            // Granite
-            else if(id == 12504) material.smoothness = albedoMax * 0.6;
+                // Granite
+                else if(id == 12504) material.smoothness = albedoMax * 0.6;
 
-            // Diorite
-            else if(id == 12505) material.smoothness = albedoMin * 0.45;
+                // Diorite
+                else if(id == 12505) material.smoothness = albedoMin * 0.45;
 
-            // Andesite
-            else if(id == 12506) material.smoothness = albedoMin * 0.6;
+                // Andesite
+                else if(id == 12506) material.smoothness = albedoMin * 0.6;
 
-            // Tuff
-            else if(id == 12507) material.smoothness = albedoMax * 0.6;
+                // Tuff
+                else if(id == 12507) material.smoothness = albedoMax * 0.6;
 
-            // Blackstone
-            else if(id == 12508) material.smoothness = albedoMax * 0.75;
+                // Blackstone
+                else if(id == 12508) material.smoothness = albedoMax * 0.75;
 
-            // Basalt
-            else if(id == 12509) material.smoothness = albedoMax * 0.6;
+                // Basalt
+                else if(id == 12509) material.smoothness = albedoMax * 0.6;
 
-            // Quartz
-            else if(id == 12510) material.smoothness = albedoMin * 0.75;
+                // Quartz
+                else if(id == 12510) material.smoothness = albedoMin * 0.75;
 
-            // Purpur
-            else if(id == 12511) material.smoothness = albedoMax * 0.9;
+                // Purpur
+                else if(id == 12511) material.smoothness = albedoMax * 0.9;
 
-            // Calcite
-            else if(id == 12512) material.smoothness = albedoMin * 0.45;
+                // Calcite
+                else if(id == 12512) material.smoothness = albedoMin * 0.45;
 
-            // Prismarine
-            else if(id == 12513) material.smoothness = albedoMax * 0.9;
+                // Prismarine
+                else if(id == 12513) material.smoothness = albedoMax * 0.9;
 
-            // Sulfur
-            else if(id == 12514) material.smoothness = albedoMax * 0.6;
+                // Sulfur
+                else if(id == 12514) material.smoothness = albedoMax * 0.6;
 
-            // Cinnabar
-            else if(id == 12515) material.smoothness = albedoMax * 0.6;
+                // Cinnabar
+                else if(id == 12515) material.smoothness = albedoMax * 0.6;
+            #endif
+
 
             // Ice blocks
             else if(id == 12516){
-                material.smoothness = albedoMax * 0.96;
-                material.ss = material.smoothness;
+                float materialIce = albedoMax * 0.96;
+                material.ss = materialIce;
+
+                material.smoothness = materialIce;
             }
 
             // Snow blocks
             else if(id == 12517){
-                material.smoothness = albedoSum * 0.33333333 * 0.45;
-                material.ss = material.smoothness;
+                float materialIce = albedoSum * 0.33333333 * 0.45;
+                material.ss = materialIce;
+
+                #if PBR_MODE == 2 && defined ROUGH_REFLECTIONS
+                    material.smoothness = materialIce;
+                #endif
             }
 
-            // Soil blocks
-            else if(id == 12518) material.smoothness = fastSqrt(albedoMax) * 0.3;
+            #if PBR_MODE == 2 && defined ROUGH_REFLECTIONS
+                // Soil blocks
+                else if(id == 12518) material.smoothness = fastSqrt(albedoMax) * 0.3;
 
-            // Concrete & terracotta blocks
-            else if(id == 12519) material.smoothness = fastSqrt(albedoSum * 0.33333333) * 0.15 + 0.3;
+                // Concrete & terracotta blocks
+                else if(id == 12519) material.smoothness = fastSqrt(albedoSum * 0.33333333) * 0.15 + 0.3;
+            #endif
 
             /// -------------------------------- /// Ores /// -------------------------------- ///
 
@@ -222,8 +236,8 @@ void getPBR(inout dataPBR material, in int id){
             else if(id == 12600){
                 if(material.albedo.r > material.albedo.g || material.albedo.r != material.albedo.b || material.albedo.g > material.albedo.b){
                     if(albedoSum > 0.75){
-                        material.smoothness = min(0.96, albedoSum * 0.5);
                         material.metallic = 0.17;
+                        material.smoothness = min(0.96, albedoSum * 0.5);
                     }
                 }
             }
@@ -231,8 +245,8 @@ void getPBR(inout dataPBR material, in int id){
             // Netherack crystals
             else if(id == 12601){
                 if(material.albedo.r < material.albedo.g * 1.6 && material.albedo.r < material.albedo.b * 1.6){
-                    material.smoothness = min(0.93, albedoSum * 0.5);
                     material.metallic = 0.17;
+                    material.smoothness = min(0.93, albedoSum * 0.5);
                 }
             }
 
@@ -240,8 +254,8 @@ void getPBR(inout dataPBR material, in int id){
             else if(id == 12700){
                 if(material.albedo.r > material.albedo.g || material.albedo.r != material.albedo.b || material.albedo.g > material.albedo.b){
                     if(albedoSum > 0.75){
-                        material.smoothness = maxOf(material.albedo.rg) * 0.96;
                         material.metallic = 1.0;
+                        material.smoothness = maxOf(material.albedo.rg) * 0.96;
                     }
                 }
             }
@@ -249,16 +263,16 @@ void getPBR(inout dataPBR material, in int id){
             // Netherack metals
             else if(id == 12701){
                 if(maxOf(material.albedo.rg) > 0.6){
-                    material.smoothness = maxOf(material.albedo.rg) * 0.96;
                     material.metallic = 1.0;
+                    material.smoothness = maxOf(material.albedo.rg) * 0.96;
                 }
             }
 
             // Gilded
             else if(id == 12702){
                 if(maxOf(material.albedo.rg) > material.albedo.b * 2.0){
-                    material.smoothness = maxOf(material.albedo.rg) * 0.96;
                     material.metallic = 1.0;
+                    material.smoothness = maxOf(material.albedo.rg) * 0.96;
                 }
             }
 
@@ -274,23 +288,25 @@ void getPBR(inout dataPBR material, in int id){
                 // Redstone stuff
                 if(material.albedo.r > material.albedo.b * 2.4){
                     material.emissive = float(material.albedo.r > 0.5) * 0.5;
-                    material.smoothness = 0.9;
+
                     material.metallic = 1.0;
+                    material.smoothness = 0.9;
                 }
             }
 
             // Redstone wire
             else if(id == 12901){
-                material.smoothness = vertexColor.r * 0.45;
                 material.emissive = squared(vertexColor.r) * 0.25;
+
                 material.metallic = 1.0;
+                material.smoothness = vertexColor.r * 0.45;
             }
 
             // Rails
             else if(id == 12902){
                 if(material.albedo.r < material.albedo.g * 1.6 && material.albedo.r < material.albedo.b * 1.6){
-                    material.smoothness = albedoSum * 0.32;
                     material.metallic = 1.0;
+                    material.smoothness = albedoSum * 0.32;
                 }
             }
 
@@ -310,12 +326,14 @@ void getPBR(inout dataPBR material, in int id){
             // Common sculk
             else if(id == 13005){
                 material.emissive = cubed(material.albedo.b);
+
                 material.smoothness = 0.45;
             }
 
             // Uncommon sculk
             else if(id == 13006){
                 material.emissive = cubed(material.albedo.b);
+
                 material.smoothness = 0.45;
             }
 
@@ -329,19 +347,21 @@ void getPBR(inout dataPBR material, in int id){
 
             // Crying obsidian
             else if(id == 13102){
-                material.smoothness = fastSqrt(min(0.8, albedoSum));
                 material.emissive = cubed(albedoMax);
+
                 material.metallic = 0.17;
+                material.smoothness = fastSqrt(min(0.8, albedoSum));
             }
 
             // Amethyst
             else if(id == 13103 || id == 13104){
                 float amethystAverage = albedoSum * 0.33333333;
-                material.smoothness = amethystAverage * 0.6 + 0.3;
                 float amethystLumaSquared = squared(amethystAverage);
                 float amethystLumaSquaredSquared = squared(amethystLumaSquared);
                 material.emissive = amethystLumaSquaredSquared * (id == 13103 ? amethystLumaSquared * amethystLumaSquaredSquared : amethystAverage);
+                
                 material.metallic = 0.17;
+                material.smoothness = amethystAverage * 0.6 + 0.3;
             }
         #endif
 
@@ -351,8 +371,10 @@ void getPBR(inout dataPBR material, in int id){
 
             // Transparent ice blocks
             else if(id == 12520){
-                material.smoothness = maxOf(material.albedo.rgb) * 0.96;
-                material.ss = material.smoothness;
+                float materialIce = maxOf(material.albedo.rgb) * 0.96;
+                material.ss = materialIce;
+
+                material.smoothness = materialIce;
             }
         #endif
 
@@ -360,6 +382,7 @@ void getPBR(inout dataPBR material, in int id){
             // Raid den crystal (Modded)
             if(id == 12304){
                 material.emissive = cubed(maxOf(material.albedo.rgb)) * 0.25;
+
                 material.smoothness = 0.9;
             }
         #endif
