@@ -11,7 +11,7 @@
 ================================ /// Super Duper Vanilla v1.3.9 /// ================================
 */
 
-/// Buffer features: Bloom blur 2nd pass
+/// Buffer features: Bloom blur 1st gaussian pass
 
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
@@ -52,6 +52,9 @@
 
         // Needs to be enabled by force to be able to use LOD fully even with textureLod
         const bool colortex0MipmapEnabled = true;
+
+        // uniform float halfPixelWidth;
+        // uniform float halfPixelHeight;
 
         // No need to use mipmapping in this 2nd bloom pass, so we'll utilize texelFetch for some sweet, sweet performance
         uniform sampler2D colortex0;

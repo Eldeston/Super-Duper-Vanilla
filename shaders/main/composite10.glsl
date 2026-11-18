@@ -11,7 +11,7 @@
 ================================ /// Super Duper Vanilla v1.3.9 /// ================================
 */
 
-/// Buffer features: Bloom blur 2nd pass
+/// Buffer features: Bloom blur 2nd gaussian pass
 
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
@@ -49,6 +49,9 @@
         flat in float offSet1;
 
         noperspective in vec2 texCoord;
+
+        // Needs to be enabled by force to be able to use LOD fully even with textureLod
+        const bool colortex0MipmapEnabled = true;
 
         // uniform float halfPixelWidth;
         // uniform float halfPixelHeight;

@@ -11,7 +11,7 @@
 ================================ /// Super Duper Vanilla v1.3.9 /// ================================
 */
 
-/// Buffer features: Bloom blur 1st pass
+/// Buffer features: Bloom blur tiling pass pass
 
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 

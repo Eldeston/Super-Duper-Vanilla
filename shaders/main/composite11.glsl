@@ -11,7 +11,7 @@
 ================================ /// Super Duper Vanilla v1.3.9 /// ================================
 */
 
-/// Buffer features: Combining bloom blur and lens flare
+/// Buffer features: Combining bloom mips and lens flare
 
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
