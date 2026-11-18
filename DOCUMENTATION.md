@@ -8,13 +8,13 @@ Super Duper Vanilla (SDV) is a Minecraft shader pack for Iris. This document pro
 
 | Document | Description |
 |---|---|
-| [ARCHITECTURE.md](.docs/ARCHITECTURE.md) | Rendering pipeline, framebuffer architecture, and stage execution |
-| [PROGRAMS.md](.docs/PROGRAMS.md) | Shader program classifications, responsibilities, and execution order |
-| [BUFFERS.md](.docs/BUFFERS.md) | Render targets, data flow, and buffer lifetimes |
-| [FEATURES.md](.docs/FEATURES.md) | Rendering features and implementation references |
-| [SETTINGS.md](.docs/SETTINGS.md) | Settings, profiles, defaults, and configuration options |
-| [OPTIMIZATION.md](.docs/OPTIMIZATION.md) | Performance characteristics, profiling, and measurement guidance |
-| [LEGACY.md](.docs/LEGACY.md) | Archived original documentation and project notes |
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Rendering pipeline, framebuffer architecture, and stage execution |
+| [PROGRAMS.md](docs/PROGRAMS.md) | Shader program classifications, responsibilities, and execution order |
+| [BUFFERS.md](docs/BUFFERS.md) | Render targets, data flow, and buffer lifetimes |
+| [FEATURES.md](docs/FEATURES.md) | Rendering features and implementation references |
+| [SETTINGS.md](docs/SETTINGS.md) | Settings, profiles, defaults, and configuration options |
+| [OPTIMIZATION.md](docs/OPTIMIZATION.md) | Performance characteristics, profiling, and measurement guidance |
+| [LEGACY.md](docs/LEGACY.md) | Archived original documentation and project notes |
 
 Documentation information:
 
@@ -166,7 +166,7 @@ The legacy documentation called the last program-table column “Usage.” The e
 
 ## Optimizations
 
-Performance and resource minimization take priority over maximum quality, consistent with [CONTRIBUTION.md](CONTRIBUTION.md). The [optimization guide](.docs/OPTIMIZATION.md) remains a work in progress; the current source uses seven color targets, with volumetric and bloom intermediates at half resolution.
+Performance and resource minimization take priority over maximum quality, consistent with [CONTRIBUTION.md](CONTRIBUTION.md). The [optimization guide](docs/OPTIMIZATION.md) remains a work in progress; the current source uses seven color targets, with volumetric and bloom intermediates at half resolution.
 
 For reliable tuning and profiling:
 
