@@ -33,13 +33,13 @@ The profile names displayed by the menu are **Potato**, **Low**, **Medium (Defau
 
 | UI label | ID | Added or changed assignments |
 |---|---|---|
-| Potato | `POTATO` | Sets `CLOUD_TYPE:0`, `ANTI_ALIASING:1`; disables volumetrics, shadows, shadow color/filter, SSAO, rough reflections, previous-frame data, SSR, bloom, and sharpening |
-| Low | `LOW` | From Potato: `CLOUD_TYPE:1`, enables shadows/SSR/bloom, `RAYTRACER_STEPS:8`, `RAYTRACER_BISTEPS:2`, `shadowMapResolution:512`, `UNDERWATER_CAUSTICS:0` |
+| Potato | `POTATO` | Sets `CLOUD_TYPE:0`, `ANTI_ALIASING:1`, `PBR_MODE:0`; disables volumetrics, shadows, shadow color/filter, SSAO, rough reflections, previous-frame data, SSR, bloom, and sharpening |
+| Low | `LOW` | From Potato: `CLOUD_TYPE:1`, `PBR_MODE:1`, enables shadows/SSR/bloom, `RAYTRACER_STEPS:8`, `RAYTRACER_BISTEPS:2`, `shadowMapResolution:512`, `UNDERWATER_CAUSTICS:0` |
 | Medium (Default) | `MEDIUM` | From Low: enables volumetrics, shadow color/filter, rough reflections, SSAO, previous-frame data; sets AA to TAA, ray steps `16`, refinement `4`, shadow resolution `1024`, caustics `1` |
-| High | `HIGH` | From Medium: ray steps `32`, shadow resolution `2048` |
+| High | `HIGH` | From Medium: ray steps `32`, shadow resolution `2048`, `PBR_MODE:2` |
 | Ultra | `ULTRA` | From High: ray steps `64`, sharpening enabled, shadow resolution `4096`, caustics `2` |
 
-These are profile assignments, not a second set of base defaults. The complete definitions remain in `shaders/shaders.properties`.
+These are profile assignments, not a second set of base defaults. The complete definitions remain in `shaders/shaders.properties`. No profile selects LabPBR (`PBR_MODE:3`); it must be chosen manually.
 
 ## Debug
 
@@ -55,9 +55,11 @@ These are profile assignments, not a second set of base defaults. The complete d
 | Outlines | `OUTLINES` | `2` | `0` Off, `1` Standard, `2` Dungeons |
 | Outline brightness | `OUTLINE_BRIGHTNESS` | `1.00` | `-1.00` to `1.00`, step `0.05`; negative is black, positive highlights |
 | Outline pixel size | `OUTLINE_PIXEL_SIZE` | `1` | `1, 2, 4, 8, 16, 32, 64` |
-| Retro filter | `RETRO_FILTER` | Off | Enables retro presentation filter |
+| Retro filter | `RETRO_FILTER` | Off | Enables retro presentation filter; works best at low render quality |
 | Anti aliasing | `ANTI_ALIASING` | `2` | `0` OFF, `1` FXAA, `2` TAA, `3` Lite TAA + FXAA |
-| Sharpen filter | `SHARPEN_FILTER` | Off | Enables image sharpening; the source describes this for use with AA |
+| Sharpen filter | `SHARPEN_FILTER` | Off | Enables image sharpening; only applies when anti-aliasing is not off |
+
+Anti-aliasing mode `3` runs TAA without projection jitter, followed by FXAA. TAA does not work with custom-resolution screenshots.
 
 ## Camera
 
@@ -84,10 +86,10 @@ These are profile assignments, not a second set of base defaults. The complete d
 | Saturation | `SATURATION` | `1.00` | `0.00` to `2.00`, step `0.05` |
 | White point | `WHITE_POINT` | `2.0` | `0.0` to `4.0`, step `0.1` |
 | Shoulder strength | `SHOULDER_STRENGTH` | `0.00` | `0.00` to `1.00`, step `0.05` |
-| Auto exposure | `AUTO_EXPOSURE` | Off | Enables real-time auto exposure |
+| Auto exposure | `AUTO_EXPOSURE` | Off | Enables real-time auto exposure; does not work with custom-resolution screenshots |
 | Auto exposure speed | `AUTO_EXPOSURE_SPEED` | `1.00` | `0.00` to `2.00`, step `0.05`; higher values adapt faster |
 | Exposure | `EXPOSURE` | `1.00` | `0.00` to `2.00`, step `0.05` |
-| Min exposure | `MINIMUM_EXPOSURE` | `0.10` | `0.10` to `0.90`, step `0.10` |
+| Min exposure | `MINIMUM_EXPOSURE` | `0.10` | `0.10` to `0.90`, step `0.10`; lower values brighten dark scenes more under auto exposure |
 | Red tint | `TINT_R` | `255` | `3` to `255`, step `3` |
 | Green tint | `TINT_G` | `255` | `3` to `255`, step `3` |
 | Blue tint | `TINT_B` | `255` | `3` to `255`, step `3` |
@@ -98,12 +100,12 @@ These are profile assignments, not a second set of base defaults. The complete d
 |---|---|---:|---|
 | Shadowmapping | `SHADOW_MAPPING` | On | Dynamic shadow mapping; disabled mode uses lightmap-based fake shadows |
 | Shadowmap color | `SHADOW_COLOR` | On | Colored data from transparent shadow casters |
-| Shadowmap filter | `SHADOW_FILTER` | On | Noise-based soft shadow filtering |
+| Shadowmap filter | `SHADOW_FILTER` | On | Noise-based soft shadow filtering; may impact performance |
 | Entity shadows | `ENTITY_SHADOWS` | On | Enables entity shadows |
 | Block entity shadows | `BLOCK_ENTITY_SHADOWS` | On | Enables block-entity shadows |
 | Underwater caustics | `UNDERWATER_CAUSTICS` | `1` | `0` OFF, `1` Underwater, `2` Full; requires shadow color |
 | SSAO | `SSAO` | On | Screen-space ambient occlusion |
-| Ambient lighting | `AMBIENT_LIGHTING` | `0.05` | `0.00` to `0.50`, step `0.01` |
+| Ambient lighting | `AMBIENT_LIGHTING` | `0.05` | `0.00` to `0.50`, step `0.01`; `0.50` acts like night vision |
 
 ### Shadow Map and Light Path
 
@@ -119,19 +121,19 @@ These are shader-menu values backed by `shaders/lib/lighting/shdSampleVar.glsl`.
 
 | UI label | Setting | Default | Values / meaning |
 |---|---|---:|---|
-| SSGI | `SSGI` | Off | Experimental screen-space global illumination |
+| SSGI | `SSGI` | Off | Experimental screen-space global illumination; works best with TAA |
 | SSR | `SSR` | On | Screen-space reflections |
 | Raytracer steps | `RAYTRACER_STEPS` | `16` | `2, 4, 8, 16, 32, 64, 128` |
 | Raytracer refinement steps | `RAYTRACER_BISTEPS` | `4` | `0, 2, 4, 6, 8` |
-| Rough reflections | `ROUGH_REFLECTIONS` | On | Roughness-dependent reflections |
-| Previous frame buffer | `PREVIOUS_FRAME` | On | Previous-frame color for temporal reflection/GI accumulation |
+| Rough reflections | `ROUGH_REFLECTIONS` | On | Roughness-dependent reflections; some AA may hide artifacts |
+| Previous frame buffer | `PREVIOUS_FRAME` | On | Previous-frame color for temporal reflection/GI accumulation; impacts performance |
 
 ## Atmospherics
 
 | UI label | Setting | Default | Values / meaning |
 |---|---|---:|---|
 | Sun/moon type | `SUN_MOON_TYPE` | `0` | `0` Squircle, `1` Round, `2` Vanilla |
-| Sun/moon intensity | `SUN_MOON_INTENSITY` | `4` | `0` through `8` |
+| Sun/moon intensity | `SUN_MOON_INTENSITY` | `4` | `0` through `8`; also affects specular reflections |
 | Volumetric lighting | `VOLUMETRIC_LIGHTING` | On | Enables volumetric lighting |
 | Volumetric lighting strength | `VOLUMETRIC_LIGHTING_STRENGTH` | `0.50` | `0.00` to `1.00`, step `0.05`; zero disables its contribution |
 | Border fog | `BORDER_FOG` | On | Covers visible world edges with fog |
@@ -143,11 +145,11 @@ These are shader-menu values backed by `shaders/lib/lighting/shdSampleVar.glsl`.
 | UI label | Setting | Default | Values / meaning |
 |---|---|---:|---|
 | Cloud type | `CLOUD_TYPE` | `1` | `0` Vanilla, `1` Voxel |
-| Double layered clouds | `DOUBLE_LAYERED_CLOUDS` | On | Adds a second cloud layer |
-| Dynamic clouds | `DYNAMIC_CLOUDS` | On | Weather-responsive cloud behavior |
+| Double layered clouds | `DOUBLE_LAYERED_CLOUDS` | On | Adds a second voxel cloud layer; may use up performance |
+| Dynamic clouds | `DYNAMIC_CLOUDS` | On | Weather-responsive, fading voxel clouds |
 | Fade speed | `FADE_SPEED` | `0.10` | `0.00` to `4.00`, step `0.05` |
 | 2nd cloud height | `SECOND_CLOUD_HEIGHT` | `128.0` | `0.0` to `256.0`, step `4.0` |
-| Cloud thickness | `CLOUD_THICKNESS` | `8.0` | `4.0, 6.0, 8.0, 10.0, 12.0` |
+| Cloud thickness | `CLOUD_THICKNESS` | `8.0` | `4.0, 6.0, 8.0, 10.0, 12.0`; thickness of voxel clouds in blocks |
 
 ## World
 
@@ -170,17 +172,22 @@ Timelapse mode `1` applies fragment-level time behavior for water normals and sk
 
 | UI label | Setting | Default | Values / meaning |
 |---|---|---:|---|
-| PBR mode | `PBR_MODE` | `1` | `0` OFF, `1` Integrated PBR, `2` Lab PBR 1.3 |
+| PBR mode | `PBR_MODE` | `1` | `0` OFF, `1` Basic PBR, `2` Integrated PBR, `3` Lab PBR 1.3 |
 | Specular highlights | `SPECULAR_HIGHLIGHTS` | On | Approximate sun reflections |
-| Enviro PBR materials | `ENVIRONMENT_PBR` | On | Environment-dependent material response |
+| Enviro PBR materials | `ENVIRONMENT_PBR` | On | Environment-dependent material response (rain wetness) |
 | Subsurface scattering | `SUBSURFACE_SCATTERING` | On | Scattering on thin/organic materials |
 | Emissive intensity | `EMISSIVE_INTENSITY` | `8` | `2, 4, 8, 16, 32`; requires PBR; does not affect lightmaps |
-| Normal strength | `NORMAL_STRENGTH` | `1.00` | `0.00` to `1.00`, step `0.05`; applies to resource-pack normals when applicable |
-| Slope normals | `SLOPE_NORMALS` | Off | Slope-derived normals |
+| Normal strength | `NORMAL_STRENGTH` | `1.00` | `0.00` to `1.00`, step `0.05`; applies to LabPBR normal maps and auto-generated normals |
+| Slope normals | `SLOPE_NORMALS` | Off | Sharper slope normals for parallax occlusion surfaces; disable with high-resolution packs that have normal maps |
 | Directional lightmaps | `DIRECTIONAL_LIGHTMAPS` | Off | Requires generated or PBR normals |
 | Directional lightmaps strength | `DIRECTIONAL_LIGHTMAP_STRENGTH` | `1.00` | `0.00` to `1.00`, step `0.05` |
-| Auto gen normals | `NORMAL_GENERATION` | Off | Generates normals; disabled with LabPBR |
-| Auto gen normal resolution | `NORMAL_GENERATION_RESOLUTION` | `128` | `16, 32, 64, 128, 256, 512, 1024` |
+
+Integrated PBR infers materials from vanilla albedo textures; mode `2` also gives rough-reflection smoothness to stone, soil, and similar blocks when rough reflections are on. LabPBR (mode `3`) requires a resource pack with LabPBR 1.3 materials.
+
+### Parallax Occlusion
+
+| UI label | Setting | Default | Values / meaning |
+|---|---|---:|---|
 | Parallax occlusion | `PARALLAX_OCCLUSION` | Off | Requires LabPBR and a LabPBR resource pack |
 | Parallax depth | `PARALLAX_DEPTH` | `0.25` | `0.00` to `0.50`, step `0.05` |
 | Parallax steps | `PARALLAX_STEPS` | `128` | `16, 32, 64, 128, 256, 512` |
@@ -189,18 +196,25 @@ Timelapse mode `1` applies fragment-level time behavior for water normals and sk
 
 ### iPBR Material Subpages
 
+The iPBR page also holds the generated-normal settings:
+
+| UI label | Setting | Default | Values / meaning |
+|---|---|---:|---|
+| Auto gen normals | `NORMAL_GENERATION` | Off | Generates normals from albedo; disabled with LabPBR; works mostly on vanilla-style packs |
+| Auto gen normal resolution | `NORMAL_GENERATION_RESOLUTION` | `128` | `16, 32, 64, 128, 256, 512, 1024`; minor performance effect |
+
 #### Water Material Settings
 
 | UI label | Setting | Default | Values / meaning |
 |---|---|---:|---|
-| Water noise | `WATER_NOISE` | On | Water surface noise/distortion |
-| Water brightness | `WATER_BRIGHTNESS` | `1.00` | `0.00` to `1.00`, step `0.05` |
+| Water noise | `WATER_NOISE` | On | Varies water brightness with noise |
+| Water brightness | `WATER_BRIGHTNESS` | `1.00` | `0.00` to `1.00`, step `0.05`; lower is deeper color |
 | Water normalmap | `WATER_NORMAL` | On | Water surface normals |
-| Water normalmap blur size | `WATER_BLUR_SIZE` | `8.0` | `1, 2, 4, 8, 16, 32, 64` |
-| Water normalmap depth size | `WATER_DEPTH_SIZE` | `0.5` | `0.125, 0.25, 0.5, 1.0, 2.0` |
+| Water normalmap blur size | `WATER_BLUR_SIZE` | `8.0` | `1, 2, 4, 8, 16, 32, 64`; smaller is more defined waves |
+| Water normalmap depth size | `WATER_DEPTH_SIZE` | `0.5` | `0.125, 0.25, 0.5, 1.0, 2.0`; smaller is deeper |
 | Water tile size | `WATER_TILE_SIZE` | `16` | `4, 8, 16, 24, 32` |
 | Water absorption | `WATER_STYLIZE_ABSORPTION` | On | Depth-based stylized absorption |
-| Water foam | `WATER_FOAM` | On | Foam at solid surfaces |
+| Water foam | `WATER_FOAM` | On | Foam at solid surfaces, including entities |
 | Flat water albedo | `WATER_FLAT` | Off | Flat water albedo |
 
 #### Lava Material Settings
@@ -225,36 +239,25 @@ The Configuration screen contains separate Overworld, Nether, End, and Block lig
 
 ### Overworld Pages
 
-| Page | Exact UI label | Setting ID |
+Light and sky pages each use four settings per time of day: red, green, blue (`3` to `255`, step `3`), and intensity (`0.00` to `2.00`, step `0.05`). Defaults come from `world0/world.glsl`.
+
+| Page | Setting IDs | Default RGB / intensity |
 |---|---|---|
-| Day settings | Light red | `LIGHT0_DR` |
-| Day settings | Light green | `LIGHT0_DG` |
-| Day settings | Light blue | `LIGHT0_DB` |
-| Day settings | Light intensity | `LIGHT0_DI` |
-| Day settings | Sky red | `SKY0_DR` |
-| Day settings | Sky green | `SKY0_DG` |
-| Day settings | Sky blue | `SKY0_DB` |
-| Day settings | Sky intensity | `SKY0_DI` |
-| Night settings | Light red | `LIGHT0_NR` |
-| Night settings | Light green | `LIGHT0_NG` |
-| Night settings | Light blue | `LIGHT0_NB` |
-| Night settings | Light intensity | `LIGHT0_NI` |
-| Night settings | Sky red | `SKY0_NR` |
-| Night settings | Sky green | `SKY0_NG` |
-| Night settings | Sky blue | `SKY0_NB` |
-| Night settings | Sky intensity | `SKY0_NI` |
-| Twilight settings | Light red | `LIGHT0_TR` |
-| Twilight settings | Light green | `LIGHT0_TG` |
-| Twilight settings | Light blue | `LIGHT0_TB` |
-| Twilight settings | Light intensity | `LIGHT0_TI` |
-| Twilight settings | Sky red | `SKY0_TR` |
-| Twilight settings | Sky green | `SKY0_TG` |
-| Twilight settings | Sky blue | `SKY0_TB` |
-| Twilight settings | Sky intensity | `SKY0_TI` |
-| Fog settings | Vertical density day | `FOG0_VERTICAL_DENSITY_D` |
-| Fog settings | Vertical density night | `FOG0_VERTICAL_DENSITY_N` |
-| Fog settings | Vertical density twilight | `FOG0_VERTICAL_DENSITY_T` |
-| Fog settings | Total density | `FOG0_TOTAL_DENSITY` |
+| Day settings, light | `LIGHT0_DR`, `LIGHT0_DG`, `LIGHT0_DB`, `LIGHT0_DI` | `255, 210, 165` / `1.30` |
+| Day settings, sky | `SKY0_DR`, `SKY0_DG`, `SKY0_DB`, `SKY0_DI` | `45, 105, 165` / `1.30` |
+| Night settings, light | `LIGHT0_NR`, `LIGHT0_NG`, `LIGHT0_NB`, `LIGHT0_NI` | `45, 105, 150` / `1.00` |
+| Night settings, sky | `SKY0_NR`, `SKY0_NG`, `SKY0_NB`, `SKY0_NI` | `0, 30, 120` / `1.00` |
+| Twilight settings, light | `LIGHT0_TR`, `LIGHT0_TG`, `LIGHT0_TB`, `LIGHT0_TI` | `255, 180, 75` / `1.30` |
+| Twilight settings, sky | `SKY0_TR`, `SKY0_TG`, `SKY0_TB`, `SKY0_TI` | `60, 30, 120` / `1.00` |
+
+Menu labels on these pages are "Light red", "Light green", "Light blue", "Light intensity", "Sky red", "Sky green", "Sky blue", and "Sky intensity".
+
+| Page | Exact UI label | Setting ID | Default |
+|---|---|---|---:|
+| Fog settings | Vertical density day | `FOG0_VERTICAL_DENSITY_D` | `0.080` |
+| Fog settings | Vertical density night | `FOG0_VERTICAL_DENSITY_N` | `0.020` |
+| Fog settings | Vertical density twilight | `FOG0_VERTICAL_DENSITY_T` | `0.040` |
+| Fog settings | Total density | `FOG0_TOTAL_DENSITY` | `0.005` |
 
 ### Nether Page
 
@@ -263,6 +266,8 @@ The Configuration screen contains separate Overworld, Nether, End, and Block lig
 | Vertical density | `FOGn1_VERTICAL_DENSITY` |
 | Total density | `FOGn1_TOTAL_DENSITY` |
 | Sky intensity | `WORLDn1_VANILLA_FOGCOLI` |
+
+Defaults: vertical density `0.010`, total density `0.020`, sky intensity `1.00`.
 
 ### End Page
 
@@ -279,6 +284,8 @@ The Configuration screen contains separate Overworld, Nether, End, and Block lig
 | Vertical density | `FOG1_VERTICAL_DENSITY` |
 | Total density | `FOG1_TOTAL_DENSITY` |
 
+Defaults: light `210, 165, 255` at intensity `1.00`, sky `15, 3, 60` at intensity `1.00`, vertical density `0.025`, total density `0.005`.
+
 ### Block Light Page
 
 | Exact UI label | Setting ID | Default | Values |
@@ -288,7 +295,7 @@ The Configuration screen contains separate Overworld, Nether, End, and Block lig
 | Block light blue | `BLOCKLIGHT_B` | `210` | `3` to `255`, step `3` |
 | Block light intensity | `BLOCKLIGHT_I` | `1.00` | `0.00` to `2.00`, step `0.05` |
 
-RGB channels in light/sky pages use `3` to `255`, step `3`; their intensity settings use `0.00` to `2.00`, step `0.05`. World fog densities use the `0.005` to `0.500` domain declared in world files. The `blockLightColor` vector is derived from block-light RGB and intensity; it is not another menu option.
+World fog densities use the `0.005` to `0.500` domain declared in the world files. The `blockLightColor` vector is derived from block-light RGB and intensity; it is not another menu option.
 
 ## Developers
 
@@ -320,9 +327,14 @@ Built-in world source defaults include:
 
 | World | Selected defaults |
 |---|---|
-| Overworld (`world0`) | `WORLD_ID=0`, `WORLD_LIGHT`, `WORLD_SUN_MOON=1`, size `0.125`; day/night/twilight lighting and sky colors plus fog densities are declared in this file |
-| Nether (`world-1`) | `WORLD_ID=-1`, no `WORLD_LIGHT`, `WORLD_SUN_MOON=0`; clouds/weather/day cycle forced off; custom skylight `1.00`; vertical fog `0.010`, total fog `0.020` |
-| End (`world1`) | `WORLD_ID=1`, `WORLD_LIGHT`, `WORLD_SUN_MOON=2`, size `0.25`; clouds/weather/day cycle forced off; custom skylight `1.00`; Aether and sky-ground enabled; stars `16.0`; vertical fog `0.025`, total fog `0.005` |
+| Overworld (`world0`) | `WORLD_ID=0`, `WORLD_LIGHT`, `WORLD_SUN_MOON=1`, size `0.125`, sky ground enabled, stars `toLinear(4.0 - dayCycle * 2.0)`; day/night/twilight lighting and sky colors plus fog densities are declared in this file. Also the default for dimensions not listed in `dimension.properties` |
+| Nether (`world-1`) | `WORLD_ID=-1`, no `WORLD_LIGHT`, `WORLD_SUN_MOON=0`; clouds/weather/day cycle forced off; custom skylight `1.00`; vanilla fog color enabled, with the sky taken from the square-rooted fog color scaled by `WORLDn1_VANILLA_FOGCOLI` (`1.00`); vertical fog `0.010`, total fog `0.020`. The `SKYn1_C*` color values are declared but not used by the sky |
+| End (`world1`) | `WORLD_ID=1`, `WORLD_LIGHT`, `WORLD_SUN_MOON=2`, size `0.25`; clouds/weather/day cycle forced off; custom skylight `1.00`; Aether and sky-ground enabled; stars `16.0`; light color `210, 165, 255` at `1.00`; sky color `15, 3, 60` at `1.00`; vertical fog `0.025`, total fog `0.005` |
+| Dimensional Doors pockets (`world-2`) | `WORLD_ID=-2`, no `WORLD_LIGHT`, `WORLD_SUN_MOON=0`; clouds/weather/day cycle forced off; custom skylight `0.00`; pitch-black sky (`SKYn2_C*` all `0`); vertical fog `0.010`, total fog `0.020` |
+| Dimensional Doors Limbo (`world-3`) | `WORLD_ID=-3`, no `WORLD_LIGHT`, `WORLD_SUN_MOON=0`; clouds/weather/day cycle forced off; custom skylight `1.00`; vanilla fog color enabled, with the sky taken from the fog color scaled by `WORLDn3_VANILLA_FOGCOLI` (`1.00`); vertical fog `0.010`, total fog `0.020` |
+| Dimensional Doors personal pockets (`world-4`) | `WORLD_ID=-4`, no `WORLD_LIGHT`, `WORLD_SUN_MOON=0`; clouds/weather/day cycle forced off; custom skylight `0.00`; vanilla fog color enabled (`WORLDn4_VANILLA_FOGCOLI` `1.0`); pitch-black sky; no fog (vertical and total density `0.000`) |
+
+The Dimensional Doors world files are credited to Kawwabi. None of their values are menu options.
 
 ### Shadow Sampling Constants
 
@@ -338,6 +350,12 @@ Built-in world source defaults include:
 | `entityShadowDistanceMul` | `0.5` | Internal constant; entity shadows use half the shadow distance |
 | `shadowMapPixelSize` | Derived | Reciprocal of `shadowMapResolution` |
 | `shadowDistanceInv` | Derived | Reciprocal of `shadowDistance` |
+
+### Other Internal Constants
+
+| Constant | Value | Meaning |
+|---|---:|---|
+| `ALPHA_THRESHOLD` | `0.1` | Manual alpha-test cutoff used by the programs (alpha testing is disabled in `shaders.properties`) |
 
 ### Physics Mod Constants
 
@@ -360,14 +378,14 @@ Built-in world source defaults include:
 
 ### Derived Values
 
-The following are computed from settings rather than independently adjustable controls: `blockLightColor`, `cloudDepthInverse`, `cloudCenterDepth`, `cloudHeight`, `sunMoonIntensitySqrd`, `skyBoxIntensitySqrd`, `worldCurvatureInv`, and `waterTileSizeInv`.
+The following are computed from settings rather than independently adjustable controls: `blockLightColor`, `cloudDepthInverse`, `cloudCenterDepth`, `cloudHeight` (fixed at `195` plus half the cloud thickness), `sunMoonIntensitySqrd`, `skyBoxIntensitySqrd`, `worldCurvatureInv`, and `waterTileSizeInv`.
 
 ### Source Map
 
 | File | Settings responsibility |
 |---|---|
 | `shaders/lib/settings.glsl` | Shared feature toggles, numeric defaults, and Physics Mod constants |
-| `shaders/shaders.properties` | Menu registration, profiles, slider lists, render-target size, program enable rules |
+| `shaders/shaders.properties` | Menu registration, profiles, slider lists, render-target size, program enable rules, custom uniforms |
 | `shaders/lang/en_US.lang` | Exact English names, descriptions, and enum labels shown to users |
 | `shaders/lib/lighting/shdSampleVar.glsl` | Shadow-map settings and derived shadow values |
 | `shaders/world-X/world.glsl` | Hidden world flags and per-world lighting/fog defaults |

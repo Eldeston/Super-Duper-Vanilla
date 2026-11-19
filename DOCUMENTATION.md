@@ -1,10 +1,9 @@
 # Super Duper Vanilla Documentation
 
-Super Duper Vanilla (SDV) is a Minecraft shader pack for Iris. This document provides an overview of the project, including its rendering features, settings system, rendering pipeline, buffer architecture, shader programs, and optimization approach.
+Super Duper Vanilla (SDV) is a Minecraft shader pack for Iris. This document is the entry point: it summarizes the project's features, settings system, rendering pipeline, buffers, programs, and ID tables, and links to the detailed documents below.
 
 > [!NOTE]
 > This documentation page is created with the help of AI so you might find some babbling nonsense, read at your own risk!
-
 
 | Document | Description |
 |---|---|
@@ -18,44 +17,49 @@ Super Duper Vanilla (SDV) is a Minecraft shader pack for Iris. This document pro
 
 Documentation information:
 
-- Documented Version: 1.3.9-beta.4
-- Shader Loader: Iris
-- GLSL Version: 3.3 Compatibility (`gbuffers_line` uses GLSL 3.3 Core)
-- OptiFine maintenance: Ended with SDV 1.3.7
+- Documented version: 1.3.9 (unreleased, release candidate)
+- Shader loader: Iris 1.6.10 or later, Minecraft 1.18.2 or later
+- GLSL version: 3.3 Compatibility (`gbuffers_line` uses GLSL 3.3 Core)
+- OptiFine maintenance: ended with SDV 1.3.7
 
 > [!NOTE]
-> This documentation may not reflect every recent change to the shader pack.
+> The shader source is authoritative. If this documentation and the source disagree, trust the source and report the mismatch.
 
 ## Features
 
 ### Materials and Surface Detail
 
-- **Physically Based Rendering (PBR)** with a metallic workflow and GGX microfacet specular shading.
-- PBR modes for integrated materials and resource-pack materials; resource PBR expects LabPBR-compatible data.
-- Normal maps, optional generated/slope normals, parallax occlusion mapping, emissive materials, and subsurface scattering.
-- Environment-dependent material response, including water, lava, and sculk styling.
+- **Physically Based Rendering (PBR)** with a metallic workflow and GGX-style specular shading.
+- Four PBR modes: Off, Basic PBR, Integrated PBR (materials inferred from vanilla albedo), and LabPBR 1.3 (resource-pack materials). See [PBR modes](#pbr-modes).
+- Normal maps, optional generated and slope normals, parallax occlusion mapping (LabPBR only), emissive materials, and subsurface scattering.
+- Environment-dependent material response (rain wetness), plus stylized water, lava, and sculk materials with their own settings pages.
 
 ### Lighting
 
-- Dynamic shadow mapping, configurable shadow filtering and colored shadows.
-- Optional entity and block-entity shadows.
-- Screen-space ambient occlusion (SSAO), screen-space reflections (SSR), and experimental screen-space global illumination (SSGI; disabled by default).
-- Directional lightmaps, ambient-light control, and underwater caustics.
+- Dynamic shadow mapping with configurable filtering, colored shadows, and optional entity and block-entity shadows.
+- Screen-space ambient occlusion (SSAO), screen-space reflections (SSR), and experimental screen-space global illumination (SSGI, disabled by default).
+- Directional lightmaps, ambient light control, and underwater caustics.
 
 ### Atmosphere and World Effects
 
-- Sky and sun/moon appearance, fog, border fog, ground fog, and volumetric lighting.
-- Multiple cloud modes, optional double cloud layers, and weather-responsive cloud behavior.
-- Terrain, water, and weather animation with wind/current controls, timelapse mode, and optional world curvature.
+- Sky, sun and moon (squircle, round, or vanilla), fog, border fog, ground fog, and volumetric lighting.
+- Two cloud types: vanilla clouds and voxel (DDA-traced) clouds, with an optional second layer and weather-responsive behavior.
+- Terrain, water, and weather animation with wind and current controls, timelapse mode, and optional world curvature.
 
 ### Post-Processing and Presentation
 
-- Anti-aliasing: FXAA, TAA, both, or disabled.
+- Anti-aliasing: Off, FXAA, TAA, or Lite TAA + FXAA.
 - Motion blur and depth of field.
-- Bloom, lens flare, auto exposure, tone mapping, color tint/saturation/contrast, and vignette.
-- Outlines, optional retro filtering, chromatic aberration, and optional sharpening.
+- Bloom, lens flare, auto exposure, tone mapping, color tint, saturation and contrast, and vignette.
+- Outlines (Standard or Dungeons style), optional retro filter, chromatic aberration, and optional sharpening.
 
-Distant Horizons, Voxy, and Physics Mod integrations are present in the shader sources. See the program matrix below for which integration supplies each program family.
+### Mod and Modded-Dimension Integrations
+
+- **Distant Horizons**: `dh_terrain`, `dh_generic`, and `dh_water` programs. Distant Horizons shadows and clouds are disabled in `shaders.properties`.
+- **Voxy**: `voxy.json` plus `voxy_opaque` and `voxy_translucent` fragment programs.
+- **Physics Mod**: `physics_ocean` and `physics_ocean_shadow` programs, controlled by `PHYSICS_OCEAN_SUPPORT`.
+- **Dimensional Doors**: dedicated dimension slots (`world-2`, `world-3`, `world-4`) and block IDs for its fabric and portal blocks.
+- Block IDs also cover some Farmer's Delight, Create, Undergarden, Twilight Forest, and Cobblemon Raid Dens blocks.
 
 ## Settings
 
@@ -64,38 +68,36 @@ Settings have several source layers:
 | Source | Defines |
 |---|---|
 | [`shaders/lib/settings.glsl`](shaders/lib/settings.glsl) | Shared feature toggles, numeric defaults, and their value domains |
-| [`shaders/shaders.properties`](shaders/shaders.properties) | Visible menu pages, profiles, sliders, program conditions, and target sizing |
-| [`shaders/lang/en_US.lang`](shaders/lang/en_US.lang) | Exact English menu labels and enum display names |
+| [`shaders/shaders.properties`](shaders/shaders.properties) | Menu pages, profiles, sliders, program enable conditions, buffer sizes, and custom uniforms |
+| [`shaders/lang/en_US.lang`](shaders/lang/en_US.lang) | Exact English menu labels, descriptions, and enum names |
 | [`shaders/lib/lighting/shdSampleVar.glsl`](shaders/lib/lighting/shdSampleVar.glsl) | Shadow-map controls and internal sampling constants |
-| `shaders/world-X/world.glsl` | Per-dimension world flags and lighting/fog defaults |
+| `shaders/world-X/world.glsl` | Per-dimension world flags and lighting and fog defaults |
 
 ### Profiles
 
-The main settings screen provides Potato, Low, Medium (Default), High, and Ultra. IDs are `POTATO`, `LOW`, `MEDIUM`, `HIGH`, and `ULTRA`; each inherits from the previous profile. Potato disables shadow rendering; Low through Ultra select shadow-map resolutions of 512, 1024, 2048, and 4096. Profiles also set feature toggles, AA mode, ray-tracing step counts, cloud type, and underwater caustics.
+The main settings screen provides Potato, Low, Medium (Default), High, and Ultra. Each profile inherits from the previous one.
+
+| Profile | Notable assignments |
+|---|---|
+| Potato | Vanilla clouds, FXAA, PBR mode 0, no shadows, SSAO, SSR, bloom, volumetrics, or sharpening |
+| Low | Voxel clouds, PBR mode 1, shadows at 512, SSR and bloom on, 8 ray steps, caustics off |
+| Medium (Default) | TAA, shadows at 1024, shadow color and filter, SSAO, rough reflections, previous-frame data, volumetrics, 16 ray steps, underwater caustics |
+| High | Shadows at 2048, 32 ray steps, PBR mode 2 |
+| Ultra | Shadows at 4096, 64 ray steps, sharpening, full caustics |
+
+The full definitions live in `shaders/shaders.properties`; [SETTINGS.md](.docs/SETTINGS.md) lists them in detail.
+
+### PBR modes
+
+`PBR_MODE` accepts `0` to `3`. The English labels in `en_US.lang` are: `0` OFF, `1` Basic PBR, `2` Integrated PBR, `3` Lab PBR 1.3. Integrated material tables are compiled for modes `0` to `2`; extra rough-reflection materials for stone, soil, and similar blocks apply only in mode `2` with `ROUGH_REFLECTIONS`. LabPBR is mode `3` and requires a LabPBR 1.3 resource pack.
 
 ### Menu Navigation
 
-The UI proceeds through Debug, Post, Lighting, Atmospherics, World, PBR, and Configuration. Post contains Camera settings and Tonemap settings; Lighting contains Ray tracing settings; Atmospherics contains Cloud settings; PBR contains POM and iPBR material subpages; Configuration contains Overworld, Nether, End, and Block light pages. The exact displayed English names are in `shaders/lang/en_US.lang`.
-
-### Settings Highlights
-
-| Group | Examples |
-|---|---|
-| Post and camera | Outlines, Anti aliasing (`0` Off, `1` FXAA, `2` TAA, `3` Lite TAA + FXAA), DOF, bloom, lens flare, motion blur |
-| Tonemap | Contrast, saturation, white point, shoulder strength, exposure, minimum exposure, RGB tint |
-| Lighting | Shadowmapping, Shadowmap color/filter, entity and block entity shadows, underwater caustics, SSAO, ambient lighting |
-| Ray tracing | SSGI, SSR, Raytracer steps/refinement, rough reflections, previous frame buffer |
-| Atmospherics and world | Sun/moon type/intensity, volumetrics, fog, clouds, animations, timelapse, wind/current, curvature |
-| PBR and materials | PBR mode (`0` Off, `1` Integrated PBR, `2` Lab PBR 1.3), normals, POM, water/lava/sculk settings |
-| Configuration | Per-dimension light, sky, fog, and block-light colors |
-
-`shadowMapResolution` defaults to 1024 and is available from 512 to 8192 in steps of 512; `shadowDistance` defaults to 128 blocks; `sunPathRotation` defaults to 30 degrees. Profile shadow resolutions go up to 4096.
+The main screen lists Debug and the profile selector, then Post, Lighting, Atmospherics, World, PBR, and Configuration. Post contains Camera and Tonemap pages. Lighting contains Ray tracing. Atmospherics contains Cloud settings. PBR contains Parallax occlusion and iPBR pages (Water, Lava, and Sculk materials, plus normal generation). Configuration contains Overworld (Day, Night, Twilight, Fog), Nether, End, and Block light pages.
 
 ### Developer-Hidden World Settings
 
-Many `world.glsl` values are intentionally not menu options. These include `WORLD_ID`, `WORLD_LIGHT`, `WORLD_SUN_MOON`, `WORLD_SUN_MOON_SIZE`, `FORCE_DISABLE_CLOUDS`, `FORCE_DISABLE_WEATHER`, `FORCE_DISABLE_DAY_CYCLE`, `WORLD_SKY_GROUND`, `WORLD_AETHER`, `WORLD_CUSTOM_SKYLIGHT`, `WORLD_STARS`, and `WORLD_VANILLA_FOG_COLOR`. `WORLDn1_VANILLA_FOGCOLI` appears as Nether Sky intensity when defined; the optional `WORLD0_VANILLA_FOGCOLI` and `WORLD1_VANILLA_FOGCOLI` remain source-side values.
-
-Menu options use the shader settings UI. Editing source macros or world values requires reloading shaders so programs recompile.
+Many `world.glsl` values are intentionally not menu options: `WORLD_ID`, `WORLD_LIGHT`, `WORLD_SUN_MOON`, `WORLD_SUN_MOON_SIZE`, `FORCE_DISABLE_CLOUDS`, `FORCE_DISABLE_WEATHER`, `FORCE_DISABLE_DAY_CYCLE`, `WORLD_SKY_GROUND`, `WORLD_AETHER`, `WORLD_CUSTOM_SKYLIGHT`, `WORLD_STARS`, and `WORLD_VANILLA_FOG_COLOR`. `WORLDn1_VANILLA_FOGCOLI` appears as the Nether's Sky intensity when defined. Editing source macros requires a shader reload so programs recompile.
 
 ## Architecture
 
@@ -107,89 +109,110 @@ The frame follows five broad stages:
 +-------------------+    +---------+    +----------+    +--------------------+    +-------+
 ```
 
-1. **Shadow programs** render scene depth from the light view and optionally colored shadow data.
-2. **Gbuffers** render geometry, forward shading, and material data for later lighting.
-3. **Deferred programs** process screen-space data, including SSAO and deferred shading.
-4. **Composite programs** execute in order with explicit read/write dependencies; not every pass reads only the previous pass's output.
-5. **Final** applies final presentation filters and writes the image to the screen.
+1. **Shadow programs** render depth (and optionally color) from the light's view.
+2. **Gbuffers** render geometry. Some programs shade forward, others write material data for deferred shading.
+3. **Deferred programs**: `deferred` computes SSAO into the alpha of `colortex2`; `deferred1` performs opaque complex shading, reflections, outlines, sky, and fog.
+4. **Composite programs** run in order with explicit read and write dependencies.
+5. **Final** applies the retro filter, chromatic aberration, and sharpening, and writes the screen image.
 
-SDV uses a hybrid forward/deferred design: geometry-specific shading remains in Gbuffers where useful, while screen-space work and post-processing consume shared render targets. Thirteen composite programs run from `composite` (slot 0) through `composite12`. `composite1` ray-marches volumetric lighting, `composite2` denoises the half-resolution result, and `composite3` applies it to the HDR scene.
+SDV is hybrid forward and deferred. There are fifteen composite programs, `composite` (slot 0) through `composite14`.
 
-| Composite program(s) | Main responsibility |
+| Composite program | Main responsibility |
 |---|---|
-| `composite` (0) | Deferred and transparent complex shading |
-| `composite1` | Half-resolution volumetric ray marching and conditional history in `colortex6` |
-| `composite2`-`composite3` | Volumetric denoising, then upsample and apply to the HDR scene |
-| `composite4` | TAA and temporal history |
-| `composite5` | FXAA when selected |
-| `composite6`-`composite7` | Motion blur and depth of field |
-| `composite8`-`composite11` | Bloom downsample/blur/upsampling and lens flare |
-| `composite12` | Bloom application, exposure, tonemapping, vignette, grading, dithering |
+| `composite` (0) | Complex shading, reflections, and fog for forward-shaded geometry; voxel clouds for the whole frame |
+| `composite1` | Half-resolution volumetric light ray march into `colortex0` |
+| `composite2` | Volumetric temporal accumulation (history in `colortex6`) |
+| `composite3` | Upsample volumetrics and add them to the HDR scene |
+| `composite4` | TAA, and writes previous-frame color to `colortex5` |
+| `composite5` | FXAA (modes 1 and 3) |
+| `composite6` | Motion blur |
+| `composite7` | Depth of field |
+| `composite8` | Bloom tile downsample |
+| `composite9`-`composite10` | Bloom blur (horizontal, then vertical) |
+| `composite11` | Bloom upsampling and lens flare |
+| `composite12` | Apply bloom to the HDR scene |
+| `composite13` | Auto exposure (1x1 `colortex7`) |
+| `composite14` | Exposure, tint, tonemapping, gamma, contrast, saturation, vignette, dithering |
 
-Dimension-specific shader overrides and lighting macros are organized under `shaders/world-X/`.
+Dimension-specific wrappers and settings live under `shaders/world-X/`. Enable conditions for each composite are in `shaders/shaders.properties`.
 
 ## Buffers
 
-The shader uses seven color targets. `colortex0` and `colortex6` are configured at half width and half height; `colortex0` is reused for volumetrics and bloom, while `colortex6` stores conditional volumetric history.
+SDV uses eight color targets. `colortex0` and `colortex6` are half width and half height. Formats are declared in `shaders/main/final.glsl`.
 
 | Target | Format | Main payload and lifetime |
 |---|---|---|
-| `colortex0` | `R11F_G11F_B10F` | Half-resolution volumetrics, then bloom intermediates; cloud texture may also be bound to this sampler in selected programs |
-| `colortex1` | `RGB16_SNORM` | Surface normals read by deferred shading |
-| `colortex2` | `RGBA8` | Albedo in RGB; SSAO data in alpha after deferred processing |
-| `colortex3` | `RGB8` | Material data for deferred shading |
-| `colortex4` | `R11F_G11F_B10F` | Main HDR scene color through shading and post-processing |
-| `colortex5` | `RGBA16F` | Conditional TAA history and auto-exposure data |
-| `colortex6` | `R11F_G11F_B10F` | Conditional half-resolution volumetric history |
+| `colortex0` | `R11F_G11F_B10F` | Half-resolution volumetrics, then bloom intermediates. The cloud-map texture is also bound here for selected programs |
+| `colortex1` | `RGB16_SNORM` | Surface normals |
+| `colortex2` | `RGBA8` | Albedo in RGB; SSAO in alpha after `deferred` |
+| `colortex3` | `RGB8` | Metallic (R), smoothness (G), and shading mask (B) for deferred shading; later reused as final display color |
+| `colortex4` | `R11F_G11F_B10F` | Main HDR scene color |
+| `colortex5` | `R11F_G11F_B10F` | Previous-frame color for TAA, SSR, and SSGI |
+| `colortex6` | `RGB8` | Half-resolution volumetric history |
+| `colortex7` | `R16F` | Auto exposure state |
 
-The buffer lifecycle is deliberately multipurposed: `colortex3` changes from material data to post-processed color, while `colortex0` changes from half-resolution volumetrics to bloom intermediates. Depth/shadow attachments include `depthtex0`, `depthtex1`, `shadowtex0`, optional `shadowtex1`, and `shadowcolor0` when colored shadows are enabled.
+`shadowcolor0` is `RGB8`. Depth and shadow attachments are `depthtex0`, `depthtex1`, `shadowtex0`, `shadowtex1` (with colored shadows), and `shadowcolor0`.
+
+The blue channel of `colortex3` is a shading mask: `0` for geometry shaded in `deferred1`, and `0.5` for geometry that `composite` shades afterwards. Clear behavior: `colortex1` and `colortex4` clear to `(0, 0, 0, 1)`; `colortex0`, `colortex2`, `colortex5`, `colortex6`, `colortex7`, and `shadowcolor0` are not cleared.
 
 ## Programs
 
-Program classifications describe shading complexity: **Complex** programs perform more complete PBR/lighting work; **Basic** programs use reduced shading; **Simple** programs handle lightweight rendering; **Disabled** programs are discarded or disabled by configuration.
+Classifications describe shading complexity: **Complex** (full PBR and lighting), **Basic** (reduced shading), **Simple** (lightweight), and **Disabled** (`discard` or off-screen position).
 
-The legacy documentation called the last program-table column “Usage.” The entries actually identify the loader or mod integration that provides a program, so this summary uses **Provider / Loader Availability**. OptiFine entries are historical: current SDV support is Iris-only.
+| Stage / family | Programs | Provider |
+|---|---|---|
+| Shadow | `shadow`, `shadow_solid`, `shadow_cutout`, `shadow_block`, `shadow_entities`, `shadow_water`, `shadow_lightning` (always disabled) | Iris |
+| Mod shadow | `physics_ocean_shadow` | Physics Mod |
+| Solid gbuffers | `gbuffers_terrain`, `gbuffers_basic`, `gbuffers_line`, `gbuffers_damagedblock`, `gbuffers_armor_glint`, `gbuffers_beaconbeam`, `gbuffers_skytextured`, `gbuffers_skybasic` (disabled) | Iris |
+| Mixed geometry | `gbuffers_entities`, `gbuffers_block`, `gbuffers_hand`, `gbuffers_particles` | Iris |
+| Translucent / special | `gbuffers_water`, `gbuffers_textured`, `gbuffers_clouds`, `gbuffers_spidereyes`, `gbuffers_weather`, `gbuffers_lightning` | Iris |
+| Distant Horizons | `dh_terrain`, `dh_generic`, `dh_water` | Distant Horizons |
+| Voxy | `voxy.json`, `voxy_opaque`, `voxy_translucent` | Voxy |
+| Physics ocean | `physics_ocean` | Physics Mod |
+| Deferred and composite | `deferred`, `deferred1`, `composite` through `composite14` | Iris |
+| Final | `final` | Iris |
 
-| Stage / family | Example programs | Purpose | Provider / loader availability |
-|---|---|---|---|
-| Shadow: base | `shadow`, `shadow_solid`, `shadow_cutout` | Main, solid, and alpha-tested shadow rendering | Iris; OptiFine (legacy entry) |
-| Shadow: extensions | `shadow_block`, `shadow_entities`, `shadow_water`, `shadow_lightning` | Block/entity/water/lightning shadow paths | Iris |
-| Mod shadow | `physics_ocean_shadow` | Physics-ocean shadow rendering | Physics Mod |
-| Solid Gbuffers | `gbuffers_terrain`, `gbuffers_basic`, `gbuffers_line`, `gbuffers_skybasic`, `gbuffers_skytextured`, `gbuffers_damagedblock`, `gbuffers_armor_glint`, `gbuffers_beaconbeam` | Terrain, basic geometry, sky, damage overlay, and special materials | Iris; OptiFine is a legacy entry |
-| Distant Horizons | `dh_terrain`, `dh_generic`, `dh_water` | Distant terrain, generic geometry, and water | Distant Horizons integration |
-| Mixed geometry | `gbuffers_entities`, `gbuffers_block`, `gbuffers_hand`, `gbuffers_particles` | Entities, block entities, hand, and particles | Iris; entities/block/hand have legacy OptiFine entries; particles are Iris |
-| Translucent/special Gbuffers | `gbuffers_clouds`, `gbuffers_textured`, `gbuffers_spidereyes`, `gbuffers_water`, `gbuffers_weather`, `gbuffers_lightning` | Clouds, mapped textures, water, weather, glow, and lightning | Iris; several have legacy OptiFine entries |
-| Mod ocean | `physics_ocean` | Physics-mod ocean geometry | Physics Mod |
-| Deferred and composites | `deferred`, `deferred1`, `composite` through `composite12` | Deferred screen-space work and post-processing | Iris; OptiFine entries are historical |
+`gbuffers_clouds` only renders when `CLOUD_TYPE` is `0` (vanilla clouds); voxel clouds are drawn in `composite`. Loader details: [IrisShaders/docs](https://github.com/IrisShaders/docs).
 
-`gbuffers_skybasic` is classified as disabled in the legacy program table. `composite1` is now active; its temporal history is conditional on the lighting configuration. Loader details are available from [IrisShaders/docs](https://github.com/IrisShaders/docs) and the [OptiFine shader specification](https://github.com/sp614x/optifine/blob/master/OptiFineDoc/doc/shaders.txt#L447).
+## Block, Entity, and Dimension IDs
+
+IDs are assigned in `shaders/block.properties`, `shaders/entity.properties`, and `shaders/dimension.properties`. Block IDs must stay unique and are capped at 32767.
+
+| Block ID range | Meaning |
+|---|---|
+| `10000`-`10999` | Wind-animated land blocks: simple (`100xx`), grounded short/tall (`106xx`/`107xx`), hanging (`108xx`), wall (`109xx`) |
+| `11000`-`11999` | Current-animated water blocks (`11100` lava, `11101` lily pad, `11102` water, `11103` Dimensional Doors fluid), corals and rice (`116xx`/`117xx`) |
+| `12000`-`12199` | Special and default-on PBR blocks: portals, signs, fire, subsurface plants |
+| `12300`-`12520` | Simple PBR: emissive blocks, metals, glass, stone families, ice, snow, soil, concrete |
+| `12600`-`13104` | Per-pixel PBR: ores, pyro and redstone emissives, bioluminescent blocks, sculk, crystals |
+| `13200`-`13202` | Dimensional Doors fabric and portal blocks |
+
+Notable entity IDs: `10129` lightning bolt, `10130` whole-entity emission, `10131` end crystal, `10132` charged creeper, `10133` boats.
+
+Dimension slots: `world0` is the default for all dimensions (`*`), `world-1` covers the Nether and Undergarden, `world-2` to `world-4` cover Dimensional Doors pockets and Limbo, and `world1` covers the End.
 
 ## Optimizations
 
-Performance and resource minimization take priority over maximum quality, consistent with [CONTRIBUTION.md](CONTRIBUTION.md). The [optimization guide](.docs/OPTIMIZATION.md) remains a work in progress; the current source uses seven color targets, with volumetric and bloom intermediates at half resolution.
-
-For reliable tuning and profiling:
+Performance and resource minimization take priority over maximum quality, consistent with [CONTRIBUTION.md](CONTRIBUTION.md). Volumetric and bloom intermediates run at half resolution, and many programs disable themselves through `shaders.properties` when their feature is off. See [OPTIMIZATION.md](.docs/OPTIMIZATION.md) for measurement guidance.
 
 - Compare the same scene at the same render resolution and profile.
-- Change one setting at a time; measure rather than relying on generic FPS estimates.
-- For buffer debugging and execution-time profiling, use [GFX Debuggers](https://modrinth.com/mod/gfx-debuggers) with [NVIDIA Nsight Graphics](https://developer.nvidia.com/nsight-graphics) or [RenderDoc](https://renderdoc.org/).
+- Change one setting at a time and measure.
+- For buffer debugging and profiling, use [GFX Debuggers](https://modrinth.com/mod/gfx-debuggers) with [NVIDIA Nsight Graphics](https://developer.nvidia.com/nsight-graphics) or [RenderDoc](https://renderdoc.org/).
 
-The `POTATO` through `ULTRA` shader profiles are practical starting points, not guaranteed FPS targets. Actual cost depends on hardware, scene, resolution, and enabled effects.
+Profiles are practical starting points, not guaranteed FPS targets.
 
 ## Project and Compatibility Notes
 
-- **Code priorities**: optimize where possible, minimize resource use, test shader changes before submitting, and add comments when necessary; see [`CONTRIBUTION.md`](CONTRIBUTION.md).
-- **World macros**: `WORLD_ID`, `WORLD_LIGHT`, `WORLD_SUN_MOON`, and `WORLD_SUN_MOON_SIZE` define per-dimension lighting behavior. Their values are implementation-oriented and are not presented as general user settings.
-- **Current support**: Iris 1.6.10 or later on Minecraft 1.18.2 or later is listed as supported on Windows and Linux with Intel, AMD, or NVIDIA GPUs, and on Apple M1.
-- **Platform caveats**: Older AMD graphics drivers may show visual issues. Pojav Launcher use is unofficial and results vary by device.
-- **Mod compatibility**: Submit requests as repository issues with a link to the mod page; code contributions should follow [`CONTRIBUTION.md`](CONTRIBUTION.md).
-- **Known mod issues**: archived notes list visual bugs with Astrocraft and Nuit, both low priority.
-- **Historical backlog**: earlier pending/current items covered shadow-model and sky fixes, translucent detection, world lighting, iPBR/POM, DOF, block IDs, day/night transitions, uniform/code cleanup, bit packing, clouds/fog/water/tonemapping, Distant Horizons depth, menu UI, Voxy, voxel clouds, lighting separation, and albedo. Treat these as historical notes, not verified current tasks.
-- **Completed items in the historical notes**: OptiFine support was abandoned; alpha testing, Distant Horizons generic rendering, dragon beam, FXAA, portal depth, subsurface scattering, and shadow filtering had been marked done.
+- **Code priorities**: optimize where possible, minimize resource use, test before submitting, and comment when necessary; see [CONTRIBUTION.md](CONTRIBUTION.md).
+- **Current support**: Iris 1.6.10 or later on Minecraft 1.18.2 or later, on Windows and Linux (Intel, AMD, NVIDIA) and Apple M1.
+- **Platform caveats**: older AMD drivers may show visual issues; Pojav Launcher is unofficial.
+- **Mod compatibility**: open a repository issue with a link to the mod page; code contributions should follow [CONTRIBUTION.md](CONTRIBUTION.md).
+- **Known mod issues**: Astrocraft and Nuit have low-priority visual issues.
+- **Translations**: the main language file is `en_US.lang` (format v1.1.4). Other `.lang` files must update to match; see [CONTRIBUTION.md](CONTRIBUTION.md) and [TRANSLATORS.md](TRANSLATORS.md).
+- **Open work**: see [TODO.md](TODO.md).
 
 ## References
 
 - [GLSL 3.30 Specification](https://registry.khronos.org/OpenGL/specs/gl/GLSLangSpec.3.30.pdf)
 - [IrisShaders/docs](https://github.com/IrisShaders/docs)
-- [OptiFine shader specification](https://github.com/sp614x/optifine/blob/master/OptiFineDoc/doc/shaders.txt#L447)
-- [`CONTRIBUTION.md`](CONTRIBUTION.md)
+- [CONTRIBUTION.md](CONTRIBUTION.md)
