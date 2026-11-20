@@ -20,6 +20,10 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 * [ ] Refactor uniform usage and remove unecessary ones (medium priority)
 * [ ] Format the goodness knows how much nesting I used in my code because BROTHA EWWHH (maximum priority)
 
+* [ ] Plan a more customizable iPBR system, such as enabling specific material types across a block group (medium priority)
+* [ ] Write iPBR documentation once the system is redesigned (low priority, blocked by the item above)
+* [ ] Evaluate a cheaper shadow distortion shape, smoothMax uses tanh per fragment and per volumetric step (low priority, affects shadow quality)
+
 ## CURRENT
 * [ ] Implement bit packing for optimization
 
