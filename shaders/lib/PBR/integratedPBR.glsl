@@ -232,9 +232,6 @@ void getPBR(inout dataPBR material, in int id){
             // Static flora
             else if(id == 12520) material.ss = fastSqrt(albedoSum) * 0.33333333;
 
-            // Weak static subsurface materials (live coral blocks, pumpkins, melons)
-            else if(id == 12521) material.ss = fastSqrt(albedoSum) * 0.33333333 * 0.5;
-
             /// -------------------------------- /// Ores /// -------------------------------- ///
 
             // Crystals
