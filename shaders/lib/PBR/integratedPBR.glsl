@@ -206,19 +206,18 @@ void getPBR(inout dataPBR material, in int id){
 
             // Ice blocks
             else if(id == 12516){
-                float materialIce = albedoSum * 0.33333333 * 0.96;
-                material.ss = materialIce;
+                material.ss = albedoMax;
 
-                material.smoothness = materialIce;
+                material.smoothness = albedoSum * 0.33333333 * 0.96;
             }
 
             // Snow blocks
             else if(id == 12517){
-                float materialIce = albedoSum * 0.33333333 * 0.45;
-                material.ss = materialIce;
+                float materialSnow = albedoSum * 0.33333333 * 0.45;
+                material.ss = materialSnow;
 
                 #if PBR_MODE == 2 && defined ROUGH_REFLECTIONS
-                    material.smoothness = materialIce;
+                    material.smoothness = materialSnow;
                 #endif
             }
 
