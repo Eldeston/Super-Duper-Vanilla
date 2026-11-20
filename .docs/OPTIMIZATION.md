@@ -1,157 +1,144 @@
 # Optimization Guide
 
-This guide is for developers who contribute to or study the Super Duper Vanilla (SDV) codebase. It explains how SDV is configured and written to stay cheap, how to recognize what an effect costs, and how to measure a change. [CONTRIBUTION.md](../CONTRIBUTION.md) requires testing the shader before submitting a pull request, optimizing code wherever possible, and adding comments when necessary.
+This guide is for developers who contribute to or study the SDV codebase. It explains how to measure performance, which pipeline-level controls affect cost, which optimization techniques the source already uses, and how to recognize what makes an effect expensive. [CONTRIBUTION.md](../CONTRIBUTION.md) requires testing the shader before submitting a pull request, optimizing code wherever possible, and adding comments when necessary.
 
-Excerpts below are taken from the 1.3.9 source; larger code is referenced by file. This guide contains no measured timings. Cost descriptions are qualitative (what an effect scales with) until captures are recorded in [Measured Results](#measured-results).
+This guide contains no measured per-feature timings. Costs are described by what they scale with (resolution, loop iterations, texture fetches), because actual frame time depends on the GPU, driver, scene, resolution, and settings. For exact settings and profile definitions, see [SETTINGS.md](SETTINGS.md); for pass responsibilities, see [PROGRAMS.md](PROGRAMS.md); for buffer details, see [BUFFERS.md](BUFFERS.md).
 
 ## Contents
 
-1. [Profiling and Measurement](#profiling-and-measurement)
+1. [Profiling](#profiling)
 2. [Pipeline-Level Optimization](#pipeline-level-optimization)
-3. [Direct Optimization Techniques](#direct-optimization-techniques)
-4. [Advanced Optimization Techniques](#advanced-optimization-techniques)
-5. [Cost Map](#cost-map)
-6. [Review Checklist](#review-checklist)
-7. [Open Optimization Work](#open-optimization-work)
-8. [Measured Results](#measured-results)
+3. [Optimization Techniques](#optimization-techniques)
+4. [Cost Map](#cost-map)
+5. [Contributor Checklist](#contributor-checklist)
+6. [Recording Results](#recording-results)
 
 ---
 
-## Profiling and Measurement
+## Profiling
 
-For buffer debugging and execution-time profiling, use [GFX Debuggers](https://modrinth.com/mod/gfx-debuggers) with either [NVIDIA Nsight Graphics](https://developer.nvidia.com/nsight-graphics) or [RenderDoc](https://renderdoc.org/). Setup is covered by each tool's own documentation. Treat every capture as specific to the tested hardware, driver, scene, resolution, and settings.
+For buffer debugging and execution-time profiling, use [GFX Debuggers](https://modrinth.com/mod/gfx-debuggers) alongside [NVIDIA Nsight Graphics](https://developer.nvidia.com/nsight-graphics) or [RenderDoc](https://renderdoc.org/). Treat each capture as specific to the tested hardware, driver, scene, resolution, and settings.
 
-### Measurement Procedure
+Measurement procedure:
 
 1. Select a repeatable scene and keep view position, render resolution, render distance, weather, and time of day fixed.
 2. Allow shader compilation and scene loading to finish before recording a baseline.
-3. Record frame time with the same method for every comparison. Compare frame time, not FPS, and use consistent capture windows because averages can hide stutter.
+3. Use the same measurement method for every comparison.
 4. Change one setting or one piece of code at a time, then repeat the same capture.
-5. Record the changed setting, scene, resolution, profile, and observed frame time with the result.
+5. Record the changed setting, scene, resolution, profile, hardware, and observed result together.
 
-### Isolating a Workload
+Frame time and FPS are related by the captured frame rate, but averages can hide stutter; compare consistent capture windows. Do not treat an FPS target or timing from another system as a measurement of your own setup.
 
-- Use the settings and profiles in [SETTINGS.md](SETTINGS.md) to toggle features independently: `SHADOW_MAPPING`, `VOLUMETRIC_LIGHTING`, `SSAO`, `SSR`, `SSGI`, `BLOOM`, `DOF`, `MOTION_BLUR`, and so on.
-- Use the pass map in [PROGRAMS.md](PROGRAMS.md) and the buffer lanes in [BUFFERS.md](BUFFERS.md) to match a captured pass to its source program.
-- If frame time changes between captures, check for changed scene content, shader compilation, background work, or different capture conditions before attributing the change to a setting.
-
-### Interpreting Results
-
-- If changing `shadowMapResolution` changes frame time, the shadow-map workload contributes to the scene. Pixel count grows with the square of the resolution.
-- If changing `RAYTRACER_STEPS` or `RAYTRACER_BISTEPS` changes frame time, screen-space ray traversal contributes.
-- If changing the render resolution changes frame time substantially, full-resolution gbuffers or full-screen passes are significant. The half-resolution `colortex0` and `colortex6` reduce the pixel count of volumetrics and bloom.
+When reading a capture, check four things for each pass: its resolution (see the [resolution table](#pass-resolution)), how many texture fetches it performs per pixel, how many loop iterations it runs, and which buffers it reads and writes.
 
 ---
 
 ## Pipeline-Level Optimization
 
-Many of SDV's savings come from configuration rather than shader math: which buffers exist, how big they are, which programs run, and what the loader does for free.
+Many costs are decided before any shader code runs: buffer formats and sizes, which programs are enabled, and which fixed-function work (blending, alpha testing, culling) the pipeline performs. These are configured through Iris settings in `shaders.properties` and constants in `final.glsl`.
 
-### Render Targets
+### Buffers
 
-SDV declares its buffer formats in the commented settings block of `shaders/main/final.glsl`:
+Formats are declared in the comment block of [`final.glsl`](../shaders/main/final.glsl), which Iris reads, and sizes are set in [`shaders.properties`](../shaders/shaders.properties):
 
-```glsl
-const int shadowcolor0Format = RGB8;
-
-const int colortex0Format = R11F_G11F_B10F;
-const int colortex1Format = RGB16_SNORM;
-const int colortex2Format = RGBA8;
-const int colortex3Format = RGB8;
-const int colortex4Format = R11F_G11F_B10F;
-const int colortex5Format = R11F_G11F_B10F;
-const int colortex6Format = RGB8;
-const int colortex7Format = R16F;
 ```
-
-Sizes come from `shaders/shaders.properties`:
-
-```properties
 size.buffer.colortex0 = 0.5 0.5
 size.buffer.colortex6 = 0.5 0.5
 size.buffer.colortex7 = 1 1
 ```
 
-| Target | Format | Nominal bits per texel | Size | Bits per screen pixel |
-|---|---|---:|---|---:|
-| `colortex0` | `R11F_G11F_B10F` | 32 | Half | 8 |
-| `colortex1` | `RGB16_SNORM` | 48 | Full | 48 |
-| `colortex2` | `RGBA8` | 32 | Full | 32 |
-| `colortex3` | `RGB8` | 24 | Full | 24 |
-| `colortex4` | `R11F_G11F_B10F` | 32 | Full (plus mip chain) | 32 |
-| `colortex5` | `R11F_G11F_B10F` | 32 | Full | 32 |
-| `colortex6` | `RGB8` | 24 | Half | 6 |
-| `colortex7` | `R16F` | 16 | Single texel | ~0 |
+| Target | Format | Nominal bytes per pixel | Size |
+|---|---|---:|---|
+| `colortex0` | `R11F_G11F_B10F` | 4 | Half × half |
+| `colortex1` | `RGB16_SNORM` | 6 | Full |
+| `colortex2` | `RGBA8` | 4 | Full |
+| `colortex3` | `RGB8` | 3 | Full |
+| `colortex4` | `R11F_G11F_B10F` | 4 | Full |
+| `colortex5` | `R11F_G11F_B10F` | 4 | Full |
+| `colortex6` | `RGB8` | 3 | Half × half |
+| `colortex7` | `R16F` | 2 | 1 × 1 |
 
-The nominal total is 182 bits (about 22.75 bytes) per screen pixel, before depth textures, mip chains, and driver behavior. Drivers may pad three-channel formats, and Iris can keep an alternate texture per target for passes that read and write the same lane, so confirm actual VRAM use in your profiler rather than relying on this table.
+Guidelines drawn from these choices:
 
-What the format choices buy:
+- **Use the smallest sufficient format.** The HDR scene and previous-frame buffers use `R11F_G11F_B10F` (32 bits per pixel) instead of a 64-bit `RGBA16F`. Material and mask data fit in `RGB8`.
+- **Use reduced-resolution targets for expensive, low-frequency work.** Volumetrics, volumetric history, and bloom run at a quarter of the pixels.
+- **Reuse buffers.** Iris is limited to 16 render targets, so lanes are intentionally multipurposed. `colortex0` carries volumetrics and then bloom; `colortex3` carries material data and then final color. Before reusing a lane, confirm that no later pass still needs the old contents.
+- **Do not clear what you overwrite.** Clearing costs bandwidth, so buffers that are always fully rewritten or hold history are not cleared:
 
-- **`R11F_G11F_B10F` for HDR color** keeps full HDR range in 32 bits per texel, half the size of an `RGBA16F` target.
-- **Half-resolution `colortex0` and `colortex6`** cut volumetrics and bloom to a quarter of the pixel count.
-- **`colortex7` is a single texel** because auto exposure needs one value (see `composite13.glsl`).
-- **Reuse instead of new targets.** Iris is limited to 16 render targets, so lanes are multipurposed across the frame: `colortex0` holds volumetrics, then bloom; `colortex3` holds material data, then final color. See [BUFFERS.md](BUFFERS.md).
-- **Clear flags.** Targets that are fully overwritten or that carry history are not cleared, which saves clear bandwidth. The block in `final.glsl` disables clears for `shadowcolor0`, `colortex0`, `colortex2`, `colortex5`, `colortex6`, and `colortex7`, and keeps clears on `colortex1` and `colortex4` because disabling them produces artifacts.
-- **Mipmaps only where read.** `colortex4MipmapEnabled` is declared only in `composite7.glsl` (depth of field) and `composite8.glsl` (bloom); `composite13.glsl` also samples a low mip for exposure. Do not enable mipmaps on a target no pass samples at a lower level.
+```glsl
+// Disable to save performance
+const bool shadowcolor0Clear = false;
+const bool colortex0Clear = false;
+const bool colortex2Clear = false;
+```
 
-### Shadow Settings
+`colortex5`, `colortex6`, and `colortex7` are also not cleared because they hold history. `colortex1` and `colortex4` keep their clears to prevent artifacts; do not disable the clears of the main HDR scene and normals.
 
-| Setting | Default | Effect on cost |
-|---|---|---|
-| `shadowMapResolution` | `1024` | Texel count grows with the square of the resolution; `shadowcolor0` alone is nominally 3 MiB at 1024, 12 MiB at 2048, and 48 MiB at 4096 |
-| `shadowDistance` | `128.0` | Larger distances render more geometry into the shadow map and stretch its resolution |
-| `shadowDistanceRenderMul` | `1.0` | Hardcoded to `1.0` for maximum optimization |
-| `entityShadowDistanceMul` | `0.5` | Entity shadows render at half the shadow distance (Iris) |
-| `shadowHardwareFiltering` | `true` | Free slightly better filtering from the shadow sampler |
-| `ENTITY_SHADOWS`, `BLOCK_ENTITY_SHADOWS` | On | Turn `shadowEntities` and `shadowBlockEntities` off in `shaders.properties` when disabled |
-| `SHADOW_COLOR`, `SHADOW_FILTER` | On | Colored shadows need `shadowtex1` and `shadowcolor0`; filtering adds samples per pixel |
+- **Enable mipmaps only where a pass samples them.** A buffer must be declared mipmapped by force before `textureLod` can use its mip levels (`colortex4MipmapEnabled` in `composite7` and `composite8`). Mip generation has a cost, so do not declare it for buffers that do not need it.
 
-The shadow distortion in [`shdDistort.glsl`](../shaders/lib/lighting/shdDistort.glsl) gives nearby geometry more shadow-map resolution so a given resolution goes further. All shadow programs are moved off screen and discarded when `WORLD_LIGHT` or `SHADOW_MAPPING` is not defined, so shadow rendering costs nothing in dimensions without a sun or when shadows are off. The volumetric pass limits its ray length with `min(shadowDistance, ...)`.
+**Nominal VRAM.** Per full-resolution pixel the color targets total about 22.75 bytes: `6 + 4 + 3 + 4 + 4` for the five full-size targets, plus `(4 + 3) × 0.25` for the two half-size targets. At 1920 × 1080 that is roughly 45 MiB. This excludes depth textures, the mip chain on `colortex4`, driver padding of three-channel formats, and shadow maps, so treat it as a lower bound. Resolution scales every full-size target; render scale changes therefore have a large effect.
 
-Two sampling paths exist on purpose: [`shdSample.glsl`](../shaders/lib/lighting/shdSample.glsl) uses a hardware shadow sampler for per-pixel lighting, and [`shdSampleTexel.glsl`](../shaders/lib/lighting/shdSampleTexel.glsl) does a manual depth compare with `texelFetch` for the volumetric ray march, where many samples are taken per pixel.
+### Quality Settings That Change Workload
 
-### Program Settings in `shaders.properties`
+| Setting | Effect on workload |
+|---|---|
+| `shadowMapResolution` (`512`–`8192`) | Shadow-map pixel count scales with the square of the resolution, affecting fill rate and VRAM for each shadow attachment (`shadowtex0`, plus `shadowtex1` and `shadowcolor0` with colored shadows) |
+| `shadowDistance` (`32`–`1024`) | Sets how much geometry is drawn into the shadow pass and the texel density; larger distances spread the same resolution further |
+| `SHADOW_COLOR` | Adds writes to `shadowcolor0`, an extra `shadowtex1` attachment, and extra fetches when sampling translucent shadows |
+| `UNDERWATER_CAUSTICS` | Adds noise evaluation in the water shadow fragment shaders; requires `SHADOW_COLOR` |
+| `SHADOW_FILTER` | Adds shadow samples per shaded fragment (see [shadow sampling](#cost-map)) |
+| `ENTITY_SHADOWS`, `BLOCK_ENTITY_SHADOWS` | Control whether entities and block entities are drawn into the shadow map; entity shadows use half the shadow distance (`entityShadowDistanceMul = 0.5`) |
+| `RAYTRACER_STEPS`, `RAYTRACER_BISTEPS` | Upper bound on the iterations of SSR and SSGI ray marching and refinement |
+| `PREVIOUS_FRAME` | Keeps `composite4` running for SSR and SSGI history |
+| `ANTI_ALIASING` | Selects which of `composite4` and `composite5` run, and whether projection jitter is applied |
+| `VOLUMETRIC_LIGHTING`, `SHADOW_MAPPING` | Decide whether the volumetric ray march samples the shadow map and whether `composite2` runs |
+| `CLOUD_TYPE`, `DOUBLE_LAYERED_CLOUDS` | Voxel clouds are traced at full resolution, once per layer |
+| `PARALLAX_STEPS`, `PARALLAX_SHADOW_STEPS` | Upper bound on parallax occlusion loop iterations (LabPBR only) |
+| `NORMAL_GENERATION` | Adds extra albedo fetches per fragment |
+| `BLOOM`, `DOF`, `MOTION_BLUR` | Enable `composite8`–`composite12`, `composite7`, and `composite6` respectively |
 
-**Culling and depth**
+### Pack Properties
 
-| Property | Value | Purpose |
-|---|---|---|
-| `shadow.culling` | `true` | Culls geometry that cannot affect the shadow map |
-| `frustum.culling` | `true` | Culls geometry outside the view frustum |
-| `occlusion.culling` | `true` | Iris occlusion culling |
-| `rain.depth` | `false` | Rain does not write depth |
+These settings in `shaders.properties` remove fixed-function and CPU-side work:
 
-**Skipping vanilla draws**
+| Property | Effect |
+|---|---|
+| `shadow.culling`, `frustum.culling`, `occlusion.culling` | Cull geometry that cannot contribute (occlusion culling is Iris only) |
+| `blend.*` | Blending is turned off for most programs so the output is written directly; only additive and translucent programs blend |
+| `blend.<program>.colortex1`/`2`/`3` | Blending is disabled per buffer on translucent programs, so normals, albedo, and material data are written directly instead of being blended |
+| `alphaTest.*` | Alpha testing is disabled for all programs; programs test `ALPHA_THRESHOLD` manually and `discard` |
+| `rain.depth = false` | Rain does not write depth |
+| `sky`, `stars` = `false`, `sun`, `moon` | Vanilla sky geometry is not rendered unless the vanilla sun and moon are selected |
+| `dhClouds = off`, `dhShadow.enabled = false` | Distant Horizons clouds and shadows are not rendered |
+| `shadowBlockEntities`, `shadowEntities` | Set to `false` when the corresponding setting is off |
 
-`sky`, `stars`, and (unless `SUN_MOON_TYPE` is `2`) `sun` and `moon` are set to `false` because SDV renders them in screen space. `dhClouds = off` and `dhShadow.enabled = false` skip Distant Horizons clouds and shadows.
+The per-buffer blending lines look like this:
 
-**Blending and alpha testing**
-
-Blending is turned off for most programs (`blend.gbuffers_terrain = off`, `blend.shadow = off`, and so on), and additive blending is set only where needed (`ONE ONE ZERO ZERO` for glint, textured sky, spider eyes, and lightning). Translucent gbuffers programs turn blending off on the non-color attachments, since normals, albedo, and material data should replace rather than blend:
-
-```properties
+```
 blend.gbuffers_water.colortex1 = off
 blend.gbuffers_water.colortex2 = off
 blend.gbuffers_water.colortex3 = off
 ```
 
-Alpha testing is disabled for every program (`alphaTest.gbuffers_terrain = off`, and so on) and done manually in the shader against `ALPHA_THRESHOLD`, so the pack controls exactly when a pixel is discarded.
+### Enabling and Disabling Programs
 
-**Disabling programs**
+Composite programs that a feature does not need are disabled outright in `shaders.properties`. The conditions repeat for every dimension folder:
 
-Composite and deferred programs are disabled when their feature is off. The condition is repeated for each dimension folder:
-
-```properties
+```
 #if !defined VOLUMETRIC_LIGHTING || !defined SHADOW_MAPPING
     program.world-4/composite2.enabled = false
-    program.world-3/composite2.enabled = false
     ...
+    program.world1/composite2.enabled = false
 #endif
+
+program.world0/composite6.enabled = MOTION_BLUR
 ```
 
-The conditions for each pass are tabulated in [PROGRAMS.md](PROGRAMS.md#composite-programs).
+The full list of conditions is in [PROGRAMS.md](PROGRAMS.md#composite-programs). A disabled composite costs nothing, including its buffer reads and writes. Prefer this over an early `return` inside the shader whenever a whole pass can be skipped.
 
-There are no `enabled` settings for gbuffers programs. Disabling a gbuffers program makes Iris fall back to its vanilla program, which writes to the wrong buffers and breaks the pipeline. Instead, SDV neutralizes a gbuffers or shadow program in its own source by moving the geometry off screen in the vertex shader and discarding in the fragment shader:
+**Gbuffers programs cannot be disabled this way.** There is no `program.*.enabled` entry for any gbuffers program. Disabling one makes Iris fall back to the vanilla program, which does not write the pack's buffers and corrupts whatever the later passes expect in them. Deferred programs are likewise always enabled.
+
+Instead, programs that must exist but do not need to do work are disabled in code, so they produce no fragments. The vertex shader moves the geometry off screen and the fragment shader discards:
 
 ```glsl
 void main(){
@@ -165,91 +152,95 @@ void main(){
 }
 ```
 
-(`gbuffers_skybasic.glsl` and `shadow_lightning.glsl` are completely disabled this way. `gbuffers_clouds`, `gbuffers_weather`, and the shadow programs apply the same pattern conditionally through their feature macros.)
+Programs that do this: `shadow_lightning` and `gbuffers_skybasic` (always), the shadow programs when `SHADOW_MAPPING` or `WORLD_LIGHT` is off, `gbuffers_clouds` unless `CLOUD_TYPE` is `0`, and `gbuffers_weather` when `FORCE_DISABLE_WEATHER` is set.
 
-**Custom uniforms computed once per frame**
-
-Values that are the same for every pixel are computed in `shaders.properties` instead of in the shaders:
-
-```properties
-uniform.float.shdFade = min(absCelestialSinX * pi * 2, 1)
-uniform.float.dayCycle = 1 + celestialSinX
-```
-
-The full list is in [ARCHITECTURE.md](ARCHITECTURE.md#custom-uniforms).
+**Compile only what a dimension needs.** Each dimension folder defines its own flags in `world.glsl`. `FORCE_DISABLE_CLOUDS`, `FORCE_DISABLE_WEATHER`, `FORCE_DISABLE_DAY_CYCLE`, and an undefined `WORLD_LIGHT` compile whole code paths (shadows, clouds, weather, day-cycle uniforms, volumetrics) out of that dimension's programs. Composite vertex shaders also declare varyings and uniforms only when the feature that reads them is enabled.
 
 ---
 
-## Direct Optimization Techniques
+## Optimization Techniques
 
-These are small, local changes. Each is cheap to apply and none replaces profiling.
+### Everyday ALU Savings
 
-### Fetch Instead of Sample
+These are micro-optimizations; apply them by habit, but do not expect large gains from any one of them. The shared helpers live in [`common.glsl`](../shaders/lib/utility/common.glsl).
 
-When reading a texture one-to-one with the screen, `texelFetch` skips coordinate normalization and filtering. Most composite passes read the scene this way:
+- **Multiply instead of `pow` for small integer powers.** Use the `squared` and `cubed` helpers rather than `pow(x, 2.0)`.
+- **Use `inversesqrt` for normalization and `lengthSquared` for comparisons.**
 
 ```glsl
-ivec2 screenTexelCoord = ivec2(gl_FragCoord.xy);
+float squared(in float x){ return x * x; }
+
+vec3 fastNormalize(in vec3 x){ return x * inversesqrt(lengthSquared(x)); }
+```
+
+- **Replace `pow` with a polynomial when the range is known.** The sRGB conversions use a polynomial fit instead of `pow(x, 2.2)`; the original `pow` versions remain in a comment for reference.
+
+```glsl
+vec3 toLinear(in vec3 x){ return ((2.10545 + x) * (0.0231872 + x)) * x * 0.315206; }
+```
+
+- **Multiply by a reciprocal instead of dividing**, and precompute constants at compile time. Constants derived from macros are `const`, so the compiler folds them:
+
+```glsl
+const vec3 exposureTint = vec3(TINT_R, TINT_G, TINT_B) * (EXPOSURE * 0.00392156863);
+```
+
+`settings.glsl` ends with a block of precalculated constants (for example `cloudDepthInverse = 1.0 / CLOUD_THICKNESS`) for the same reason.
+
+- **Use cheap approximations in a known range.** `fastSqrt(x)` is `x * (2.0 - x)` for values in `0`–`1`, and `smoothen` is the cubic smoothstep without the clamp.
+- **Wrap power-of-two lookups with a bit mask.** The 256 × 256 noise texture is indexed with `& 255` instead of `fract` or `mod`.
+
+### Sampling Techniques
+
+- **Use `texelFetch` when no filtering, wrapping, or mip selection is needed.** It skips the sampler and coordinate math. Most composite passes read their inputs this way, for example the scene color read at the top of every composite:
+
+```glsl
 sceneColOut = texelFetch(colortex4, screenTexelCoord, 0).rgb;
 ```
 
-Reading a half-resolution buffer from a full-resolution pass is a nearest-neighbor fetch with a scaled coordinate (`composite3.glsl`):
+- **Use `textureLod(..., 0)` instead of `texture` when mips are not needed**, which avoids the implicit derivative calculation for level-of-detail. Alpha-tested programs sample `gtexture` this way.
+- **Hoist derivatives.** `integratedPBR.glsl` and `labPBR.glsl` compute `dFdx(texCoord)` and `dFdy(texCoord)` once and pass them to every `textureGrad` call.
+- **Let the hardware filter for you.** The 9 × 9 Gaussian blur uses linear sampling to cover nine taps with five fetches:
 
 ```glsl
-sceneColOut += texelFetch(colortex0, ivec2(gl_FragCoord.xy * 0.5), 0).rgb * lightCol * volumetricFogDensity;
+// Optimized 9x9 gaussian blur with only 5 texture fetches
+// Technique from https://www.rastergrid.com/blog/2010/09/efficient-gaussian-blur-with-linear-sampling/
+vec3 sample0 = textureLod(colortex0, vec2(texCoord.x - offSet0, texCoord.y), 0).rgb +
+    textureLod(colortex0, vec2(texCoord.x + offSet0, texCoord.y), 0).rgb;
+vec3 sample1 = textureLod(colortex0, vec2(texCoord.x - offSet1, texCoord.y), 0).rgb +
+    textureLod(colortex0, vec2(texCoord.x + offSet1, texCoord.y), 0).rgb;
+vec3 center = textureLod(colortex0, texCoord, 0).rgb;
+
+bloomColOut = sample0 * 0.0702702703 + sample1 * 0.3162162162 + center * 0.2270270270;
 ```
 
-Noise lookups wrap with a bit mask instead of `mod` or `fract`: `getRng2(screenTexelCoord & 255)`.
-
-### Cheaper Math
-
-`shaders/lib/utility/common.glsl` holds the helpers SDV uses everywhere:
+- **Use mip levels as a free blur.** Bloom tiles and depth of field read `colortex4` at a mip level chosen from the required blur size instead of summing many full-resolution taps.
+- **Reuse samples you already have.** The binary refinement of the ray tracer reuses the depth and intersection from the last march step, saving a fetch:
 
 ```glsl
-// Squared functions x ^ 2
-float squared(in float x){ return x * x; }
+// Reuse stored sampled depth and intersection to use 1 less depth sample
+for(uint i = 1u; i <= rayTraceBiSteps; i++){
+    // Refine ray direction
+    screenRayDir *= 0.5;
+    screenRayPos += intersection ? -screenRayDir : screenRayDir;
 
-// Cubed functions x^3
-float cubed(in float x){ return x * x * x; }
-
-// Faster normalize using inversesqrt()
-vec3 fastNormalize(in vec3 x){ return x * inversesqrt(lengthSquared(x)); }
-
-// Fast approximate sqrt for 0-1 range
-float fastSqrt(in float x){ return x * (2.0 - x); }
+    // Return early if we're on the last iteration
+    if(i == rayTraceBiSteps) return screenRayPos.xy;
 ```
 
-General rules the codebase follows:
-
-- Write `x * x` instead of `pow(x, 2.0)`, and `x * x * x` instead of `pow(x, 3.0)`.
-- Compare `lengthSquared` values instead of lengths where possible, and use `inversesqrt` instead of `1.0 / sqrt()`.
-- Multiply by a precomputed reciprocal instead of dividing: `0.00392156863` instead of `/ 255.0`, and constants such as `shadowMapPixelSize` and `shadowDistanceInv`.
-- Replace `pow` with a polynomial where an approximation is acceptable. The sRGB conversions avoid `pow(x, 2.2)`:
+- **Get several random values from one texture fetch pattern.** One noise texture provides decorrelated values by mirroring the coordinates:
 
 ```glsl
-// SRGB to linear
-float toLinear(in float x){ return ((2.10545 + x) * (0.0231872 + x)) * x * 0.315206; }
-// Linear to SRGB
-float toSRGB(in float x){ return (inversesqrt(x) - 0.126893) * x * 1.14374; }
+vec2 getRng2(in ivec2 iuv){
+    return vec2(texelFetch(noisetex, iuv, 0).x, texelFetch(noisetex, ivec2(255 - iuv.x, iuv.y), 0).x);
+}
 ```
 
-### Compile-Time Work
+### Loops and Early Exits
 
-- **Precalculated constants.** The block at the end of `shaders/lib/settings.glsl` turns settings into constants once, such as `worldCurvatureInv`, `waterTileSizeInv`, and `sunMoonIntensitySqrd`.
-- **Preprocessor over runtime branches.** Features are gated with `#ifdef`, `#if defined`, and `#if SETTING == value` so disabled code is not compiled, and its uniforms and samplers are not even declared. Every composite program follows this pattern.
-- **Constant loop bounds.** Loop counts come from macros as constants, such as `const uint rayTraceSteps = uint(RAYTRACER_STEPS);`, so the compiler can unroll or schedule them.
-
-### Loops
-
-Compute everything that does not change per iteration before the loop and step incrementally inside it. The volumetric light march (`shaders/lib/rayTracing/volumetricLight.glsl`) builds the step vector and start position once, converted to shadow space, so the loop only samples and adds:
+- **Calculate as much as possible outside the loop.** The volumetric ray march computes its step vector and start position once, so the loop body is a single shadow sample and an add:
 
 ```glsl
-vec3 endPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * (mat3(shadowModelView) * nFeetPlayerPos);
-endPos *= rayLength * dynamicVolumetricLightStepsInv;
-
-vec3 startPos = vec3(shadowProjection[0].x, shadowProjection[1].y, shadowProjection[2].z) * shadowModelView[3].xyz + endPos * dither;
-startPos.z += shadowProjection[3].z;
-
 for(uint i = 0u; i < dynamicVolumetricLightSteps; i++){
     // No need to do anymore fancy matrix multiplications during the loop
     volumeData += getShdCol(getShdDistort(startPos));
@@ -258,168 +249,219 @@ for(uint i = 0u; i < dynamicVolumetricLightSteps; i++){
 }
 ```
 
-The same code also shows two more techniques:
+SSAO builds its four sample offsets from one noise read with swizzles instead of iterating a fractional offset:
 
-- **Use only the matrix terms you need.** The shadow projection is orthographic, so only its diagonal and the `z` translation are used instead of a full `mat4` multiply. Vertex shaders do the same with `getMatScale(mat3(gl_ProjectionMatrix))`.
-- **Dynamic step counts.** The number of steps shrinks for short rays: `clamp(uint(rayLength * VOLUMETRIC_LIGHT_STEPS), 1u, VOLUMETRIC_LIGHT_STEPS)`.
+```glsl
+// Instead of iterating by adding stepSize and using fract every time, we swizzle + one fract instead for pleasant and optimized results
+vec3 baseDither = dither.xyz * 0.5 - 0.25;
+vec3 ditherSwizzle[4] = vec3[4](
+    baseDither.xyz,
+    baseDither.zxy,
+    baseDither.yzx,
+    fract(dither.zyx + GOLDEN_RATIO) * 0.5 - 0.25
+);
+```
 
-### Dither Instead of More Samples
+- **Use fixed, small loop counts and unsigned counters.** Loops use `uint` counters with a bound that is a constant or a small derived value, and loops that cannot be bounded by a constant carry a hard cap (the voxel cloud trace stops at 100 iterations).
+- **Exit early for pixels that cannot contribute.** Examples in the source:
 
-Where a loop would need many samples for smooth results, SDV takes few samples with a per-pixel dither offset (interleaved gradient noise, `IGN()` in `noiseFunctions.glsl`, or blue noise from `noisetex`) and lets TAA average the noise over frames. Volumetrics, SSR, SSAO, shadow filtering, and motion blur all do this. Dither noise that is not accumulated shows up as visible grain, so these effects are tuned together with the anti-aliasing mode.
+```glsl
+// Return immediately if player hand
+if(depth <= 0.56) return;
+```
 
-### Early Exits
+SSAO skips the sky, the hand, and pixels with no normal. The ray tracer returns before marching if the reflection ray points toward the surface, leaves the screen, or reaches the sky. Shadow mapping returns immediately for fragments that face away from the light and are not subsurface:
 
-Return as soon as a pixel cannot contribute. Examples from the source:
+```glsl
+if(!isShadow && !isSubSurface) return vec3(0);
+```
 
-- `if(depth <= 0.56) return;` skips the player hand in motion blur and depth of field.
-- `deferred.glsl` returns for sky, hand, and pixels with no normal before running SSAO.
-- `complexShadingDeferred` returns when `smoothness < 0.1`, before any reflection work.
-- `rayTraceScene` returns when the ray points back toward the surface, leaves the screen, or hits the hand.
-- `getShdMapping` returns zero when the surface faces away from the light and has no subsurface scattering.
-- `fxaa.glsl` returns the center color when the local contrast is below the edge threshold, so only edge pixels pay for the search.
+- **Spend fewer samples where temporal filtering covers the noise.** Shadow filtering uses one sample when TAA is on and two when it is off:
 
----
-
-## Advanced Optimization Techniques
-
-These techniques depend on how the GPU executes shaders: memory access, scheduling, and where work happens in the pipeline.
+```glsl
+#if ANTI_ALIASING >= 2
+    return getShdCol(shdPos, dither, shadowMapPixelSize, 1u) * (shdFactor * NLZ);
+#else
+    return getShdCol(shdPos, dither, shadowMapPixelSize, 2u) * (shdFactor * NLZ);
+#endif
+```
 
 ### Memory Bandwidth and Caching
 
-On most scenes, fetching and writing buffers costs as much as the math. SDV reduces traffic in several ways:
+Texture fetches and buffer traffic are often the limiting factor, especially on integrated and mobile GPUs. Confirm with a profiler before optimizing.
 
-- **Fewer and smaller writes.** Programs write only the targets they need. Simple programs write only `colortex4`; basic programs write `colortex4` and `colortex3`; only complex programs write all four of the scene, normal, albedo, and material targets. See the output sets in [BUFFERS.md](BUFFERS.md).
-- **Reduced resolution.** Volumetrics (`composite1` to `composite3`) and bloom run at half resolution, and the history buffer is half resolution.
-- **One buffer for many tiles.** Bloom packs five tiles of decreasing size into one half-resolution target. `composite8.glsl` fills the tiles from mip levels 1 to 5 of `colortex4`, and the blur passes return early for texels that are not inside any tile instead of blurring empty space.
-- **Mips instead of more samples.** Depth of field and bloom read lower mip levels of `colortex4`, which are smaller and cache-friendly. The depth-of-field cost depends on the sample count (16), not on how large the blur is, because `currDofLOD` follows the circle of confusion.
-- **Fewer fetches with linear sampling.** The bloom blur gets a 9-tap Gaussian from five fetches by placing taps between texels so the hardware filter does part of the averaging (technique from [rastergrid](https://www.rastergrid.com/blog/2010/09/efficient-gaussian-blur-with-linear-sampling/)). The offsets are computed in the vertex shader (`offSet0 = halfPixelWidth * 3.2307692308;` in `composite9.glsl`).
-- **Coherent access.** Neighbor reads (TAA, SSAO blur, FXAA) fetch adjacent texels, which are likely already in cache from the neighboring pixel's fetch.
-- **No clear when not needed.** See [Render Targets](#render-targets).
-
-### Branchless Selection and Predictable Control Flow
-
-Pixels in a GPU wave run in lockstep, so a branch that different pixels take differently makes the wave execute both sides. SDV prefers arithmetic selection in hot paths:
+- **Touch fewer pixels.** Half-resolution buffers, one-texel buffers, and early exits all reduce the number of pixels read and written. Upsampling from a half-resolution buffer is a single nearest fetch:
 
 ```glsl
-// complexShadingForward.glsl: block light boost is 1.5 only for non-emissive materials
+sceneColOut += texelFetch(colortex0, ivec2(gl_FragCoord.xy * 0.5), 0).rgb * lightCol * volumetricFogDensity;
+```
+
+- **Keep per-pixel data compact.** Normals, albedo and SSAO, and material and mask share small formats; the TODO list tracks bit packing as a further reduction.
+- **Pack several results into one buffer.** Bloom stores five blur tiles of different sizes in one half-resolution buffer, so the blur passes touch one buffer instead of five. The blur passes also skip tiles that fall in empty space:
+
+```glsl
+// Skip empty spaces
+if(
+    isBloomTile(vec3(0), texCoord, 2, 1) &&
+    isBloomTile(bloomColOut, vec2(texCoord.x, texCoord.y - 0.5078125), 4, 2) &&
+    ...
+```
+
+- **Keep lookup textures small and local.** The noise and cloud map are effectively 256 × 256 (indexed with `& 255`), and neighbor reads (TAA, FXAA, outlines, SSAO blur) touch adjacent texels, which keeps them in cache.
+- **Pick the right shadow sampler.** Forward-shaded programs use a hardware-compared `sampler2DShadow` (`shadowHardwareFiltering = true`, so bilinear comparison is free). The volumetric pass fetches raw shadow depth with `texelFetch` and compares manually (`shdSampleTexel.glsl`), because it needs point samples.
+- **Do not sample a buffer you are writing in the same pass.** The pipeline relies on Iris ping-ponging buffers between passes; keep read and write roles clear.
+
+### Branchless Code and Divergence
+
+Neighboring pixels run together, so a branch only costs extra when they disagree. Branch on values that are uniform across a primitive (flat varyings, uniforms, compile-time macros) and use arithmetic selects for per-pixel data.
+
+- **Compile-time `#if` for settings; arithmetic for per-pixel data.** For example, the block light multiplier uses a comparison cast to float instead of a branch:
+
+```glsl
 (1.0 + float(material.emissive == 0.0) * 0.5)
 ```
 
-The voxel cloud traversal (`shaders/lib/rayTracing/voxelClouds.glsl`) chooses which axis to step on without branching:
+- **Replace comparisons that select an axis or a side with `step`, `equal`, `min`, `max`, and `mix`.** The voxel cloud DDA picks the stepping axis without a branch:
 
 ```glsl
+// Calculate the step's axis first, also fixes backface rendering
 uvec2 stepAxis = uvec2(equal(nextDist, vec2(closestDist)));
+// Find the closest voxel distance
 closestDist = minOf(nextDist);
 
+// Continue voxel tracing!
 voxelPos += stepAxis * stepDir;
 nextDist += stepAxis * stepSizes;
 ```
 
-The screen-space ray tracer clips the ray to the screen once before marching so the loop needs no per-step bounds math for the clip:
+- **Material tables branch on `flat` block IDs.** In `integratedPBR.glsl` the long `if`/`else if` chain on `id` branches on a value that is constant across a primitive, so it is coherent. Keep it that way: do not branch on per-pixel texture data to choose between whole code paths when you can compute both cheaply and select.
+
+### Moving Work to the Vertex Stage
+
+Anything that does not vary per pixel should be computed per vertex or per primitive and passed as a `flat` varying. Fullscreen passes have only a few vertices, so work done in their vertex shaders is effectively free:
 
 ```glsl
-screenRayDir *= minOf((step(vec2(0), screenRayDir.xy) - screenPos.xy) / screenRayDir.xy);
+flat out vec3 skyCol;
+
+noperspective out vec2 texCoord;
+...
+skyCol = toLinear(SKY_COLOR_DATA_BLOCK);
 ```
 
-Branches on values that are the same for every pixel of a draw, such as `isEyeInWater` or a `#if` macro, are cheap and not a divergence problem. Branches on per-pixel data, such as material properties, are only a problem when neighboring pixels disagree.
+Examples in the source:
+- Composite vertex shaders compute light, sky, sun, moon, and cloud colors and the cloud start position once per frame (`composite.glsl`, `deferred1.glsl`).
+- The Gaussian blur offsets and the depth-of-field scale are computed in the vertex shader (`composite9.glsl`, `composite10.glsl`, `composite7.glsl`):
 
-### Moving Work Earlier in the Pipeline
+```glsl
+offSet0 = halfPixelWidth * 3.2307692308;
+offSet1 = halfPixelWidth * 1.3846153846;
+```
 
-The cheapest pixel work is work not done per pixel:
-
-- **Vertex shader instead of fragment shader.** Composite vertex shaders compute light, sky, and cloud colors and pass them as `flat` varyings, so they are evaluated per vertex (a screen quad has four) instead of per pixel (see `skyCol`, `lightCol`, and `cloudCol` in `composite.glsl` and `deferred1.glsl`). Terrain and entity programs pass the TBN matrix as `flat` because block faces are planar. `gbuffers_basic` and `gbuffers_particles` compute the shadow-space position per vertex and interpolate it. TAA jitter, curvature, and lightmap conversion also happen in the vertex stage.
-- **CPU side instead of GPU side.** Per-frame values are computed in `shaders.properties` (see [Program Settings](#program-settings-in-shadersproperties)).
-- **Interpolation modifiers.** `noperspective` on screen-space texture coordinates and `flat` on constant values avoid unneeded perspective correction and interpolation.
-- **One big triangle.** `composite13.glsl` draws a 1×1 pass with a single oversized triangle generated from `gl_VertexID`, which avoids the diagonal seam of a two-triangle quad:
+- The lens flare position and visibility are computed in the vertex shader (`composite11.glsl`).
+- Programs with basic shading compute the shadow-space position per vertex (`vertexShdPos` in `gbuffers_basic` and `gbuffers_particles`), and terrain animation displaces vertices instead of per-pixel coordinates.
+- `composite13` covers its single-texel target with one oversized triangle generated from `gl_VertexID`, so it needs no vertex buffer:
 
 ```glsl
 gl_Position = vec4(vec2((gl_VertexID << 1) & 2, gl_VertexID & 2) * 2.0 - 1.0, 0, 1);
 ```
 
-### Algorithms That Fit the GPU
+Use `noperspective` on fullscreen texture coordinates to skip perspective correction, and `flat` where interpolation is unnecessary.
 
-SSR and voxel clouds are the pack's most heavily tuned effects, and both are built around how the hardware works:
+Moving work to the vertex stage has limits: high-polygon meshes (terrain, entities) run the vertex shader many more times than a screen quad, so keep animation and transforms cheap.
 
-- **Voxel clouds** use a DDA (digital differential analyzer) traversal. The ray is first intersected analytically with the cloud slab, so rays that miss it exit immediately. Inside the slab, the traversal visits each voxel exactly once and steps on the nearest voxel boundary, so cost follows the ray's length in voxels, not a fixed sample count or cloud density. Each voxel needs one `texelFetch` that returns both cloud channels, the 256-wide cloud map wraps with `& 255`, and the loop is capped at 100 iterations. Ray length is also clamped to the terrain distance. See `voxelClouds.glsl`.
-- **SSR** clips the ray to the screen first, then marches a number of steps proportional to the ray's on-screen length, capped by `RAYTRACER_STEPS`. Binary refinement starts from the last depth sample and intersection result, saving one depth fetch, and the whole routine is skipped for surfaces that are not smooth enough to reflect. See `rayTracer.glsl`.
+### Doing Less Work Per Effect
 
-### VRAM
+- **Fake it where it is cheap.** With shadow mapping off, programs fall back to lightmap-based fake shadows; volumetrics fall back to a height-faded value; Distant Horizons and Voxy terrain use a lighting path with no shadow map (`complexShadingLOD.glsl`).
+- **Prevent overdraw.** LOD programs discard fragments that real geometry already covers:
 
-VRAM is mostly a function of render resolution, target formats, shadow-map resolution, and mip chains. The per-pixel table in [Render Targets](#render-targets) and the shadow-map figures in [Shadow Settings](#shadow-settings) give the scaling. Distant Horizons and Voxy add their own depth textures and geometry memory outside the pack's control.
+```glsl
+// Prevents overdraw
+if(far > vertexViewDist){ discard; return; }
+```
 
-### Precision and Packing
-
-Format choices trade precision for bandwidth: `RGB8` for volumetric history, `R11F_G11F_B10F` for HDR color, and `RGB16_SNORM` for normals. Bit packing of buffer data is planned work (see [Open Optimization Work](#open-optimization-work)).
+- **Accumulate over time instead of sampling more.** Volumetrics, SSR and SSGI previous-frame color, and shadow filtering all lean on dithering with temporal accumulation, so each frame can use few samples.
+- **Cap and scale iterations.** Volumetric steps and the SSR march scale with distance and ray length rather than always running the maximum.
+- **Work around driver issues once.** `getDepth` includes a fix for a known AMD depth problem instead of scattering the check through every program.
 
 ---
 
 ## Cost Map
 
-This table describes what each effect scales with, based on the 1.3.9 source. It does not give timings. Fetch counts are per pixel for the pass and exclude the cost of any early exit.
+This section helps you recognize what makes an effect expensive from its implementation and where it sits in the pipeline. It describes what each effect scales with; it does not give timings.
 
-| Effect | Program(s) | Resolution | What it scales with | Controlled by |
-|---|---|---|---|---|
-| Shadow maps | `shadow*` programs | Shadow map | Scene geometry within the shadow distance, and map resolution squared | `shadowMapResolution`, `shadowDistance`, entity toggles |
-| Forward lighting | Complex gbuffers | Full | Shadow samples per pixel (1 with TAA, 2 without; 4 for subsurface materials), material complexity | `SHADOW_FILTER`, `SHADOW_COLOR`, `ANTI_ALIASING`, `SUBSURFACE_SCATTERING` |
-| Parallax occlusion | Terrain, block, entity, hand | Full | Up to `PARALLAX_STEPS` height fetches, plus up to `PARALLAX_SHADOW_STEPS` for self-shadows | `PARALLAX_*` |
-| SSAO | `deferred`, `deferred1` | Full | 4 depth fetches plus a 4-fetch blur | `SSAO` |
-| SSR | `deferred1`, `composite` | Full | Up to `RAYTRACER_STEPS` depth fetches plus `RAYTRACER_BISTEPS` refinements, only where smoothness is at least `0.1` | `SSR`, `RAYTRACER_*` |
-| SSGI | `deferred1`, `composite` | Full | Same ray tracer, run for every non-sky pixel | `SSGI`, `RAYTRACER_*` |
-| Reflection history | `deferred1`, `composite` | Full | One extra fetch and a reprojection per reflection | `PREVIOUS_FRAME` |
-| Volumetric lighting | `composite1` to `composite3` | Half | Up to 8 shadow samples per half-resolution pixel (fewer for short rays), plus a 7-fetch temporal pass and a 1-fetch upsample | `VOLUMETRIC_LIGHTING`, strength |
-| Voxel clouds | `composite` | Full | DDA iterations (up to 100 per layer) bounded by the ray's length through the cloud slab, doubled by the second layer | `CLOUD_TYPE`, `DOUBLE_LAYERED_CLOUDS`, `CLOUD_THICKNESS` |
-| Fog and sky | `deferred1`, `composite` | Full | ALU only | Fog settings |
-| TAA | `composite4` | Full | Current, four neighbors, one history, and a depth fetch, plus a reprojection | `ANTI_ALIASING` |
-| FXAA | `composite5` | Full | Cheap except on edges, where the search loop runs up to 12 iterations | `ANTI_ALIASING` |
-| Motion blur | `composite6` | Full | 5 color fetches | `MOTION_BLUR` |
-| Depth of field | `composite7` | Full | 16 fetches at a mip level that follows the blur size | `DOF` |
-| Bloom | `composite8` to `composite12` | Half | Tile downsample, two blurs of 5 fetches, 8 fetches per tile in the upsample (5 tiles), and an apply | `BLOOM` |
-| Lens flare | `composite11` | Half | ALU, skipped when the flare is not visible | `LENS_FLARE` |
-| Auto exposure | `composite13`, `composite14` | One texel | One mip fetch | `AUTO_EXPOSURE` |
-| Tonemapping and grading | `composite14` | Full | ALU and 1 to 2 fetches | Tonemap settings |
-| Outlines | `deferred1` | Full | 4 depth fetches | `OUTLINES` |
-| Water | `gbuffers_water`, `dh_water`, `voxy_translucent` | Full | Normal map from 3 noise evaluations (2 fetches each), a depth fetch for absorption and foam | `WATER_*` |
-| Caustics | Shadow programs | Shadow map | Cell noise per water shadow fragment | `UNDERWATER_CAUSTICS`, `SHADOW_COLOR` |
-| LOD terrain | `dh_*`, `voxy_*` | Full | Simplified lighting with no shadow-map sampling | Distant Horizons and Voxy settings |
+### Pass Resolution
 
-### Reading the Pipeline
+| Resolution | Passes |
+|---|---|
+| Shadow map (`shadowMapResolution`²) | All shadow programs |
+| Full | Gbuffers, `deferred`, `deferred1`, `composite`, `composite3`–`composite7`, `composite12`, `composite14`, `final` |
+| Half × half | `composite1`, `composite2`, `composite8`–`composite11` (they write the half-resolution `colortex0` and `colortex6`) |
+| One texel | `composite13` |
 
-- **Resolution.** Full-resolution passes scale with the pixel count; half-resolution passes cost a quarter as much; the shadow map scales independently of the screen.
-- **Per-pixel conditionals.** SSR, SSGI, POM, and clouds do their work only on the pixels that need it, so their cost depends on the scene as well as the settings.
-- **Bandwidth.** Passes with many neighbor reads (TAA, SSAO blur, bloom upsample, FXAA) are limited by fetches more than math. Passes like fog and tonemapping are ALU-bound.
-- **Hidden multipliers.** Several effects need a companion: SSR with `PREVIOUS_FRAME` also pays the `composite4` history write, shadow filtering and dithered effects rely on TAA to look right, and volumetrics need the shadow map.
+### Cost by Effect
+
+| Effect | Where | What it scales with |
+|---|---|---|
+| Gbuffers geometry | Gbuffers | Visible geometry, overdraw, and the work of the forward shading in each fragment; forward lighting runs for every shaded fragment, including ones later covered |
+| Shadow sampling | Forward-shaded Gbuffers | One sample with TAA and two without per fragment, four for subsurface materials; skipped for fragments facing away from the light |
+| Parallax occlusion | Terrain, entities, hand, blocks (LabPBR) | Up to `PARALLAX_STEPS` height fetches per fragment, plus `PARALLAX_SHADOW_STEPS` for self-shadows |
+| Generated normals | Terrain, water, blocks | Three extra albedo fetches per fragment |
+| Water surface | `gbuffers_water` | Water normals use three cell-noise evaluations of two fetches each, plus a `depthtex1` fetch for absorption and foam |
+| SSAO | `deferred` | Four depth fetches per pixel, plus a four-fetch blur in `deferred1`; skipped for sky, hand, and pixels without normals |
+| SSR and SSGI | `deferred1`, `composite` | SSR runs per pixel with smoothness of at least `0.1` (SSGI runs before that check, for every shaded pixel); the march runs `uint(rayLength)` iterations, where `rayLength` is the on-screen length of the ray (clipped to the screen) times `RAYTRACER_STEPS`, so short rays take fewer steps; refinement adds `RAYTRACER_BISTEPS`; one fetch of previous-frame color on a hit |
+| Voxel clouds | `composite` (and sky reflections) | Number of voxels the ray crosses inside the cloud slab, capped at 100 iterations per layer; the slab is intersected analytically so rays that miss it exit immediately; each layer is a full pass of this work |
+| Volumetric lighting | `composite1`–`composite3` | Up to eight shadow-map steps per half-resolution pixel (the equivalent of about two steps per full-resolution pixel), fewer for short rays; plus the temporal accumulation and one upsample fetch |
+| TAA | `composite4` | One depth fetch, one history fetch, and five scene fetches per pixel |
+| FXAA | `composite5` | Early out for low-contrast pixels; otherwise an edge search of up to 12 iterations |
+| Motion blur | `composite6` | Four extra scene fetches per pixel; skipped for the hand |
+| Depth of field | `composite7` | Sixteen taps at a mip level chosen from the blur radius, so the tap count stays constant |
+| Bloom | `composite8`–`composite12` | Five tile fetches to build, five fetches per axis to blur, and eight fetches per tile (forty) to upsample, all at half resolution; empty tile areas are skipped |
+| Lens flare | `composite11` | Arithmetic only, evaluated when the light source is visible |
+| Auto exposure | `composite13`, `composite14` | One texel written, one mip fetch; one texel read per pixel in tonemapping |
+| Tonemapping and grading | `composite14` | Arithmetic per pixel |
+| Final filters | `final` | Chromatic aberration adds two extra fetches; sharpening adds four |
+| Outlines | `deferred1` | Four depth fetches per pixel |
+| Terrain, water, and weather animation | Vertex shaders | A few trigonometric functions per vertex |
+| LOD terrain | Distant Horizons and Voxy programs | Overdraw rejection and a lighting path with no shadow map |
+
+SSR and the voxel cloud trace are designed to be cheap by construction: both march with constant steps in a space where the GPU's strengths apply (screen-space depth fetches for SSR, a DDA over a small 256 × 256 cloud map for clouds), exit early at the first opportunity, and do no per-step lighting. The maintainer reports they run smoothly on mobile hardware; this has not been measured here.
+
+### Reading the Cost of a Change
+
+When you change a pass, ask these in order:
+
+1. Does it run at full, half, or one-texel resolution?
+2. Does it run for every pixel, or only for a subset (materials, depth, mask, ray length)?
+3. How many fetches and loop iterations does it add per pixel, and are they bounded by a setting?
+4. Does it read or write an additional buffer, or require a new mip chain?
+5. Can part of it move to a vertex stage, a `const`, or an earlier pass?
 
 ---
 
-## Review Checklist
+## Contributor Checklist
 
 When changing shader code, compare the implementation before and after under the same scene and settings. Check that:
 
-- texture samples or loop iterations were not added unintentionally;
-- values that do not change per pixel or per iteration are computed outside the pixel or loop, in the vertex shader, or in `shaders.properties`;
-- a feature remains behind its existing setting and `#if` condition, and its uniforms and samplers are only declared when it is enabled;
-- producer and consumer buffer ordering remains valid (see [BUFFERS.md](BUFFERS.md));
-- reduced-resolution passes use the half-resolution uniforms and coordinates;
-- early exits are kept, and new per-pixel branches do not depend on data that varies between neighboring pixels;
-- visual correctness is checked in each relevant dimension and integration.
+- texture fetches or loop iterations were not added unintentionally, and any added loop has a bound;
+- a feature remains behind its existing setting and program condition, and whole passes are disabled in `shaders.properties` when the feature is off;
+- gbuffers programs still write every buffer the later passes expect (they cannot be disabled);
+- producer and consumer buffer ordering remains valid (see [BUFFERS.md](BUFFERS.md)), and a reused lane is not read after being overwritten;
+- reduced-resolution passes use the configured target dimensions;
+- work that does not vary per pixel has been moved to the vertex stage or a `const`;
+- visual correctness is checked in relevant dimensions and integrations (Distant Horizons, Voxy, and Physics Mod paths);
+- code follows [CONTRIBUTION.md](../CONTRIBUTION.md) formatting rules, and comments explain any non-obvious optimization.
 
 ---
 
-## Open Optimization Work
+## Recording Results
 
-Planned work recorded in [TODO.md](../TODO.md):
+Publish results only with enough context to reproduce them. For each measurement, record:
 
-- Implement bit packing for buffer data.
-- Optimize depth of field calculations with noise.
-- Optimize block IDs in `block.properties` and day-and-night transition calculations.
-- Refactor uniform usage and remove unnecessary ones.
-
----
-
-## Measured Results
-
-No measurements are recorded yet. Add captures here using the procedure above.
-
-| Date | Hardware and driver | Resolution | Profile | Scene | Change | Frame time before | Frame time after |
-|---|---|---|---|---|---|---|---|
-| | | | | | | | |
+| Field | Example content |
+|---|---|
+| GPU and driver | Model and driver version |
+| Resolution and render scale | Output resolution and `MC_RENDER_QUALITY` |
+| Profile and changed settings | Profile name plus the single setting changed |
+| Scene | Location, time of day, weather, dimension |
+| Tool and method | GFX Debuggers with Nsight Graphics or RenderDoc, and which counter or timing was read |
+| Result | Per-pass or per-frame time, with the baseline it was compared against |

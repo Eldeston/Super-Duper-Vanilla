@@ -204,9 +204,8 @@
     void main(){
         // Declare materials
         dataPBR material;
-        material.albedo = textureGrad(gtexture, texCoord, dFdx(texCoord), dFdy(texCoord));
-        material.albedo.rgb *= vertexColor;
         material.normal = vertexNormal;
+        material.albedo = textureGrad(gtexture, texCoord, dFdx(texCoord), dFdy(texCoord));
 
         #if COLOR_MODE == 0
             material.albedo.rgb *= vertexColor;
