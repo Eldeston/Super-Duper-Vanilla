@@ -26,15 +26,6 @@
         uniform int renderStage;
     #endif
 
-    #if ANTI_ALIASING == 2
-        uniform int frameMod;
-
-        uniform float pixelWidth;
-        uniform float pixelHeight;
-
-        #include "/lib/utility/taaJitter.glsl"
-    #endif
-
     void main(){
         // Get vertex alpha and emissive
         vertexAlpha = gl_Color.a * gl_Color.a;

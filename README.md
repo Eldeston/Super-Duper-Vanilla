@@ -61,15 +61,17 @@ SDV has built-in support for these mods, so they look right with the shader on:
 
 | Mod | What you get |
 |---|---|
-| Distant Horizons | Distant terrain and water are lit and fogged to match nearby terrain. Distant terrain uses simpler lighting (no shadow maps) to keep performance high. |
-| Voxy | Same as Distant Horizons: distant terrain and water blend in with the pack's look. |
+| Distant Horizons | Distant terrain and water are lit and fogged to match nearby terrain. |
+| Voxy | Distant terrain and water blend in with the pack's look. |
 | Physics Mod | Realistic ocean waves with foam, lit and shadowed by the pack. |
 | Dimensional Doors | Each kind of dimension (pockets, Limbo, personal pockets) gets its own look, with matching fabric blocks and portals. |
-| Farmer's Delight, Create, Cobblemon Raid Dens, Twilight Forest, Undergarden | Selected blocks get proper materials or effects, such as swaying crops, metallic blocks, glowing crystals and portals. The Undergarden dimension uses the Nether look. |
+| Farmer's Delight, Create, Cobblemon Raid Dens, Twilight Forest, Undergarden | Integrated PBR support for blocks from these mods, such as swaying crops, metallic blocks, glowing crystals, and portals. The Undergarden dimension uses the Nether look. |
 
-Known issues: Astrocraft and Nuit have minor visual problems. These are low priority.
+**Incompatible mods:** these mods have visual issues with SDV. Fixes are low priority and support will likely remain unimplemented.
+* Astrocraft
+* Nuit
 
-Missing a mod you use? Open an issue and link its project page. Developers who want to add support themselves can see [CONTRIBUTION.md](CONTRIBUTION.md).
+Missing a mod you use? Open an issue and link its project page. If you are adding support yourself, see [CONTRIBUTION.md](CONTRIBUTION.md).
 
 ## Releases
 Browse every release on the [GitHub releases page](https://github.com/Eldeston/Super-Duper-Vanilla/releases). Development builds live on their corresponding branches; switch to the branch you want, select **Code**, and choose **Download ZIP**.

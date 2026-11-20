@@ -24,15 +24,6 @@
         uniform mat4 gbufferModelViewInverse;
     #endif
 
-    #if ANTI_ALIASING == 2
-        uniform int frameMod;
-
-        uniform float pixelWidth;
-        uniform float pixelHeight;
-
-        #include "/lib/utility/taaJitter.glsl"
-    #endif
-
     void main(){
         // Get buffer texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
