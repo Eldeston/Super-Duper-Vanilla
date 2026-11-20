@@ -2,11 +2,11 @@
    Important standards that must be followed when contributing to this project. These guidelines must remain consistent wherever possible. Please also read [DOCUMENTATION.md](DOCUMENTATION.md) for information about the current pipeline.
 
 * Do not submit your pull request without testing the shader.
-* Optimize your code wherever possible, leave comments when necessary.
+* Optimize your code wherever possible, leave comments when necessary. See [OPTIMIZATION.md](.docs/OPTIMIZATION.md) for guidance.
 * If you're making a pull request for mod compatibility, make sure it follows the above guidelines.
 
 ## Translation
-   For translation, it should be based from the latest commit to ensure compatibility and avoid conflicts, and that another person fluent of the language you're translating to should verify the final product. Please also update to the latest .lang version format as the main language file [en_US](/lang/en_US.lang).
+   For translation, it should be based from the latest commit to ensure compatibility and avoid conflicts, and that another person fluent of the language you're translating to should verify the final product. Please also update to the latest .lang version format as the main language file [en_US](shaders/lang/en_US.lang).
 
    If you're updating an existing translation, the same rules will apply unless someone is already working on it. If that were the case, please communicate with the user working on the translation before making a pull request.
    
@@ -39,7 +39,7 @@ vec3 neverGonna(vec3 GiveYouUp){
 struct thisIsCorrect{
    vec3 thisIsAlsoCorrect;
    float thisIsAlsoCorrectAsWell;
-}
+};
 
 thisIsCorrect thisIsAlsoCorrect(vec3 THIS_IS_INCORRECT){
    const float thisIsVeryCorrect = 1.0;
@@ -63,7 +63,7 @@ Is this a bird?
 ```
 
 ## Miscellaneous
-   You may add your name in [**CONTRIBUTORS**](CONTRIBUTORS.md) under the contributers list with your PR. If you're a translator, add your name in [**TRANSLATORS**](TRANSLATORS.md) under the translators list.
+   You may add your name in [**CONTRIBUTORS**](CONTRIBUTORS.md) under the contributors list with your PR. If you're a translator, add your name in [**TRANSLATORS**](TRANSLATORS.md) under the translators list.
 
 ## TO DO (for Eldeston)
    * Update the descriptions of this file.

@@ -14,13 +14,13 @@ For the rendering pipeline, settings, buffers, program map, and implementation r
 
 ## Sponsored by BisectHosting
 [![Sponsor](https://github.com/Eldeston/Super-Duper-Vanilla/blob/master/shaders/textures/sponsor0.png?raw=true)](https://bisecthosting.com/FLAMERENDERSTUDIOS)
-This shader is sponsored by **BisectHosting**. Open the image above or use the code [**FLAMERENDERSTUDIOS**](https://bisecthosting.com/FLAMERENDERSTUDIOS) to claim your discount to get ***25%*** off on your first month!
+This shader is sponsored by **BisectHosting**. Open the image above or use the code [**FLAMERENDERSTUDIOS**](https://bisecthosting.com/FLAMERENDERSTUDIOS) to claim your discount to get ***25%*** off on your first month!
 
 Choose **BisectHosting** to host a wide range of games including some of my personal favorites: **Minecraft, Terraria, and Project Zomboid**! ***65%*** of your first purchase will support the development of Super Duper Vanilla!
 
 ## Sponsored by Ember Host
 [![Sponsor](https://github.com/Eldeston/Super-Duper-Vanilla/blob/master/shaders/textures/sponsor1.png?raw=true)](https://billing.ember.host/aff.php?aff=23)
-This shader is sponsored by **Ember Host**. Open the image above or use the code [**SUPERFLAME**](https://billing.ember.host/aff.php?aff=23) to claim your discount to get ***10%*** off on your first purchase!
+This shader is sponsored by **Ember Host**. Open the image above or use the code [**SUPERFLAME**](https://billing.ember.host/aff.php?aff=23) to claim your discount to get ***10%*** off on your first purchase!
 
 Choose **Ember Host** to host your Minecraft server and take advantage of their **powerful AMD processors** and go beyond with excellent prices! ***70%*** of your first purchase will support the development of Super Duper Vanilla!
 
@@ -53,20 +53,23 @@ Current builds target Iris. The table summarizes the published Minecraft version
 | OptiFine (historical) | 1.14.2 and later | Partial support | Not supported |
 | OptiFine (historical) | 1.13.2 and earlier | Not supported | Not supported |
 
-OptiFine maintenance ended with SDV 1.3.7 and officialy incompatible by 1.4.0. Older AMD graphics drivers may show visual issues. Pojav Launcher use is unofficial, and results vary by device. For detailed compatibility notes, see [DOCUMENTATION.md](DOCUMENTATION.md).
+OptiFine maintenance ended with SDV 1.3.7 and officially incompatible by 1.4.0. Older AMD graphics drivers may show visual issues. Pojav Launcher use is unofficial, and results vary by device. For detailed compatibility notes, see [DOCUMENTATION.md](DOCUMENTATION.md).
 
 ## Mod Compatibility
 
-SDV includes shader paths for several popular mods. Here is what those integrations cover:
+SDV has built-in support for these mods, so they look right with the shader on:
 
-| Mod | Integration in SDV |
+| Mod | What you get |
 |---|---|
-| Distant Horizons | Dedicated programs for distant terrain, generic geometry, and water. |
-| Voxy | Voxy depth inputs in rendering paths that support them. |
-| Physics Mod | Ocean geometry and shadow rendering. |
-| Astrocraft, Nuit | Low-priority visual issues. Will likely remain unimplemented. |
+| Distant Horizons | Distant terrain and water are lit and fogged to match nearby terrain. Distant terrain uses simpler lighting (no shadow maps) to keep performance high. |
+| Voxy | Same as Distant Horizons: distant terrain and water blend in with the pack's look. |
+| Physics Mod | Realistic ocean waves with foam, lit and shadowed by the pack. |
+| Dimensional Doors | Each kind of dimension (pockets, Limbo, personal pockets) gets its own look, with matching fabric blocks and portals. |
+| Farmer's Delight, Create, Cobblemon Raid Dens, Twilight Forest, Undergarden | Selected blocks get proper materials or effects, such as swaying crops, metallic blocks, glowing crystals and portals. The Undergarden dimension uses the Nether look. |
 
-Missing a mod you use? Open an issue and link its project page. If you are adding support yourself, test the relevant paths and follow [CONTRIBUTION.md](CONTRIBUTION.md).
+Known issues: Astrocraft and Nuit have minor visual problems. These are low priority.
+
+Missing a mod you use? Open an issue and link its project page. Developers who want to add support themselves can see [CONTRIBUTION.md](CONTRIBUTION.md).
 
 ## Releases
 Browse every release on the [GitHub releases page](https://github.com/Eldeston/Super-Duper-Vanilla/releases). Development builds live on their corresponding branches; switch to the branch you want, select **Code**, and choose **Download ZIP**.
