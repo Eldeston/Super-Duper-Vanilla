@@ -206,7 +206,7 @@ void getPBR(inout dataPBR material, in int id){
 
             // Ice blocks
             else if(id == 12516){
-                float materialIce = albedoMax * 0.96;
+                float materialIce = albedoSum * 0.33333333 * 0.96;
                 material.ss = materialIce;
 
                 material.smoothness = materialIce;
@@ -229,6 +229,9 @@ void getPBR(inout dataPBR material, in int id){
                 // Concrete & terracotta blocks
                 else if(id == 12519) material.smoothness = fastSqrt(albedoSum * 0.33333333) * 0.15 + 0.3;
             #endif
+
+            // Static flora
+            else if(id == 12520) material.ss = fastSqrt(albedoSum) * 0.33333333;
 
             /// -------------------------------- /// Ores /// -------------------------------- ///
 
@@ -358,7 +361,7 @@ void getPBR(inout dataPBR material, in int id){
                 float amethystAverage = albedoSum * 0.33333333;
                 float amethystLumaSquared = squared(amethystAverage);
                 float amethystLumaSquaredSquared = squared(amethystLumaSquared);
-                material.emissive = amethystLumaSquaredSquared * (id == 13103 ? amethystLumaSquared * amethystLumaSquaredSquared : amethystAverage);
+                material.emissive = amethystLumaSquaredSquared * (id == 13103 ? amethystLumaSquared * amethystLumaSquaredSquared : amethystLumaSquaredSquared * 0.25);
                 
                 material.metallic = 0.17;
                 material.smoothness = amethystAverage * 0.6 + 0.3;
@@ -369,8 +372,16 @@ void getPBR(inout dataPBR material, in int id){
             // Glass, and jelly blocks
             if(id == 12500) material.smoothness = fastSqrt(maxOf(material.albedo.rgb)) * 0.96;
 
+            // Translucent jelly blocks
+            else if(id == 12550){
+                float materialJelly = sumOf(material.albedo.rgb) * 0.33333333 * 0.96;
+                material.ss = squared(materialJelly);
+
+                material.smoothness = fastSqrt(materialJelly);
+            }
+
             // Transparent ice blocks
-            else if(id == 12520){
+            else if(id == 12551){
                 float materialIce = maxOf(material.albedo.rgb) * 0.96;
                 material.ss = materialIce;
 
