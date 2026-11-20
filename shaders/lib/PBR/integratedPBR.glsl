@@ -47,7 +47,7 @@ void getPBR(inout dataPBR material, in int id){
         if(id == 11100 || id == 12101) material.emissive = 1.0;
 
         // Foliage and corals
-        else if((id >= 10000 && id <= 10800) || (id >= 11600 && id <= 11799) || id == 10900 || id == 11101 || id == 12200) material.ss = 1.0;
+        else if((id >= 10000 && id <= 10800) || (id >= 11200 && id <= 11799) || id == 10900 || id == 11101 || id == 12200) material.ss = 1.0;
     #else
         // For others, don't use vanilla AO
         material.ambient = 1.0;
@@ -232,6 +232,9 @@ void getPBR(inout dataPBR material, in int id){
             // Static flora
             else if(id == 12520) material.ss = fastSqrt(albedoSum) * 0.33333333;
 
+            // Weak static subsurface materials (live coral blocks, pumpkins, melons)
+            else if(id == 12521) material.ss = fastSqrt(albedoSum) * 0.33333333 * 0.5;
+
             /// -------------------------------- /// Ores /// -------------------------------- ///
 
             // Crystals
@@ -321,9 +324,15 @@ void getPBR(inout dataPBR material, in int id){
             else if(id == 13001) material.emissive = material.albedo.r < 0.1 ? albedoMax * 0.72 : material.emissive;
             else if(id == 13002) material.emissive = material.albedo.b < 0.16 && material.albedo.r > 0.4 ? albedoMax * 0.72 : material.emissive;
 
-            // Chorus
-            else if(id == 13003) material.emissive = float(sumOf(material.albedo.rg) > 1.1);
-            else if(id == 13004) material.emissive = exp(sumOf(material.albedo.gb) * 8.0 - 16.0);
+            // Chorus (plant and flowers), subsurface-like bamboo with per-type emission
+            else if(id == 13003 || id == 13004 || id == 13007){
+                material.ss = fastSqrt(albedoSum) * 0.33333333;
+
+                // Mature flower
+                if(id == 13003) material.emissive = float(sumOf(material.albedo.rg) > 1.1);
+                // Growing flower
+                else if(id == 13004) material.emissive = exp(sumOf(material.albedo.gb) * 8.0 - 16.0);
+            }
 
             // Common sculk
             else if(id == 13005){
