@@ -2,6 +2,65 @@
 vec2 dcdx = dFdx(texCoord);
 vec2 dcdy = dFdy(texCoord);
 
+#if PBR_MODE <= 2 && (defined TERRAIN || defined BLOCK)
+    // Ore overlays (complex materials)
+    // These are applied on top of the host block's material, so smoothness can only increase
+
+    // Crystal ores (diamond, emerald, lapis)
+    void oreCrystals(inout dataPBR material, in float albedoSum){
+        if(material.albedo.r > material.albedo.g || material.albedo.r != material.albedo.b || material.albedo.g > material.albedo.b){
+            if(albedoSum > 0.75){
+                material.metallic = 0.17;
+                material.smoothness = max(material.smoothness, min(0.96, albedoSum * 0.5));
+            }
+        }
+    }
+
+    // Netherrack crystal ores (nether quartz)
+    void oreCrystalsNether(inout dataPBR material, in float albedoSum){
+        if(material.albedo.r < material.albedo.g * 1.6 && material.albedo.r < material.albedo.b * 1.6){
+            material.metallic = 0.17;
+            material.smoothness = max(material.smoothness, min(0.93, albedoSum * 0.5));
+        }
+    }
+
+    // Metal ores (gold, iron, copper)
+    void oreMetals(inout dataPBR material, in float albedoSum){
+        if(material.albedo.r > material.albedo.g || material.albedo.r != material.albedo.b || material.albedo.g > material.albedo.b){
+            if(albedoSum > 0.75){
+                material.metallic = 1.0;
+                material.smoothness = max(material.smoothness, maxOf(material.albedo.rg) * 0.96);
+            }
+        }
+    }
+
+    // Netherrack metal ores (nether gold)
+    void oreMetalsNether(inout dataPBR material){
+        if(maxOf(material.albedo.rg) > 0.6){
+            material.metallic = 1.0;
+            material.smoothness = max(material.smoothness, maxOf(material.albedo.rg) * 0.96);
+        }
+    }
+
+    // Gilded blackstone
+    void oreGilded(inout dataPBR material){
+        if(maxOf(material.albedo.rg) > material.albedo.b * 2.0){
+            material.metallic = 1.0;
+            material.smoothness = max(material.smoothness, maxOf(material.albedo.rg) * 0.96);
+        }
+    }
+
+    // Redstone (ores and components)
+    void oreRedstone(inout dataPBR material){
+        if(material.albedo.r > material.albedo.b * 2.4){
+            material.emissive = float(material.albedo.r > 0.5) * 0.5;
+
+            material.metallic = 1.0;
+            material.smoothness = max(material.smoothness, 0.9);
+        }
+    }
+#endif
+
 // The Integrated PBR calculation
 void getPBR(inout dataPBR material, in int id){
     // Assign albedo
@@ -159,13 +218,36 @@ void getPBR(inout dataPBR material, in int id){
                 material.smoothness = fastSqrt(min(0.8, albedoSum));
             }
 
+            /// -------------------------------- /// Stone families and their ores /// -------------------------------- ///
+            // Each family has its base block (simple) first, then its ore variants (complex) overlaid on top
+
+            // Stone and its ores
+            else if(id == 12502 || id == 12600 || id == 12700 || id == 12750){
+                // Base
+                #if PBR_MODE == 2 && defined ROUGH_REFLECTIONS
+                    material.smoothness = albedoMin * 0.6;
+                #endif
+
+                // Ore overlays
+                if(id == 12600) oreCrystals(material, albedoSum);
+                else if(id == 12700) oreMetals(material, albedoSum);
+                else if(id == 12750) oreRedstone(material);
+            }
+
+            // Deepslate and its ores
+            else if(id == 12503 || id == 12602 || id == 12703 || id == 12751){
+                // Base
+                #if PBR_MODE == 2 && defined ROUGH_REFLECTIONS
+                    material.smoothness = albedoMax * 0.75;
+                #endif
+
+                // Ore overlays
+                if(id == 12602) oreCrystals(material, albedoSum);
+                else if(id == 12703) oreMetals(material, albedoSum);
+                else if(id == 12751) oreRedstone(material);
+            }
+
             #if PBR_MODE == 2 && defined ROUGH_REFLECTIONS
-                // Stone blocks
-                else if(id == 12502) material.smoothness = albedoMin * 0.6;
-
-                // Deepslate
-                else if(id == 12503) material.smoothness = albedoMax * 0.75;
-
                 // Granite
                 else if(id == 12504) material.smoothness = albedoMax * 0.6;
 
@@ -177,10 +259,20 @@ void getPBR(inout dataPBR material, in int id){
 
                 // Tuff
                 else if(id == 12507) material.smoothness = albedoMax * 0.6;
+            #endif
 
-                // Blackstone
-                else if(id == 12508) material.smoothness = albedoMax * 0.75;
+            // Blackstone and its ores
+            else if(id == 12508 || id == 12702){
+                // Base
+                #if PBR_MODE == 2 && defined ROUGH_REFLECTIONS
+                    material.smoothness = albedoMax * 0.75;
+                #endif
 
+                // Ore overlays
+                if(id == 12702) oreGilded(material);
+            }
+
+            #if PBR_MODE == 2 && defined ROUGH_REFLECTIONS
                 // Basalt
                 else if(id == 12509) material.smoothness = albedoMax * 0.6;
 
@@ -221,62 +313,25 @@ void getPBR(inout dataPBR material, in int id){
                 #endif
             }
 
-            #if PBR_MODE == 2 && defined ROUGH_REFLECTIONS
-                // Soil blocks
-                else if(id == 12518) material.smoothness = fastSqrt(albedoMax) * 0.3;
+            // Soil blocks and netherrack ores
+            else if(id == 12518 || id == 12601 || id == 12701){
+                // Base
+                #if PBR_MODE == 2 && defined ROUGH_REFLECTIONS
+                    material.smoothness = fastSqrt(albedoMax) * 0.3;
+                #endif
 
+                // Ore overlays
+                if(id == 12601) oreCrystalsNether(material, albedoSum);
+                else if(id == 12701) oreMetalsNether(material);
+            }
+
+            #if PBR_MODE == 2 && defined ROUGH_REFLECTIONS
                 // Concrete & terracotta blocks
                 else if(id == 12519) material.smoothness = fastSqrt(albedoSum * 0.33333333) * 0.15 + 0.3;
             #endif
 
             // Static flora
             else if(id == 12520) material.ss = fastSqrt(albedoSum) * 0.33333333;
-
-            /// -------------------------------- /// Ores /// -------------------------------- ///
-
-            // Crystals
-            else if(id == 12600){
-                if(material.albedo.r > material.albedo.g || material.albedo.r != material.albedo.b || material.albedo.g > material.albedo.b){
-                    if(albedoSum > 0.75){
-                        material.metallic = 0.17;
-                        material.smoothness = min(0.96, albedoSum * 0.5);
-                    }
-                }
-            }
-
-            // Netherack crystals
-            else if(id == 12601){
-                if(material.albedo.r < material.albedo.g * 1.6 && material.albedo.r < material.albedo.b * 1.6){
-                    material.metallic = 0.17;
-                    material.smoothness = min(0.93, albedoSum * 0.5);
-                }
-            }
-
-            // Metals
-            else if(id == 12700){
-                if(material.albedo.r > material.albedo.g || material.albedo.r != material.albedo.b || material.albedo.g > material.albedo.b){
-                    if(albedoSum > 0.75){
-                        material.metallic = 1.0;
-                        material.smoothness = maxOf(material.albedo.rg) * 0.96;
-                    }
-                }
-            }
-
-            // Netherack metals
-            else if(id == 12701){
-                if(maxOf(material.albedo.rg) > 0.6){
-                    material.metallic = 1.0;
-                    material.smoothness = maxOf(material.albedo.rg) * 0.96;
-                }
-            }
-
-            // Gilded
-            else if(id == 12702){
-                if(maxOf(material.albedo.rg) > material.albedo.b * 2.0){
-                    material.metallic = 1.0;
-                    material.smoothness = maxOf(material.albedo.rg) * 0.96;
-                }
-            }
 
             /// -------------------------------- /// Pyro emissives /// -------------------------------- ///
 
@@ -286,15 +341,7 @@ void getPBR(inout dataPBR material, in int id){
             /// -------------------------------- /// Redstone emissives /// -------------------------------- ///
 
             // Redstone components
-            else if(id == 12900){
-                // Redstone stuff
-                if(material.albedo.r > material.albedo.b * 2.4){
-                    material.emissive = float(material.albedo.r > 0.5) * 0.5;
-
-                    material.metallic = 1.0;
-                    material.smoothness = 0.9;
-                }
-            }
+            else if(id == 12900) oreRedstone(material);
 
             // Redstone wire
             else if(id == 12901){
