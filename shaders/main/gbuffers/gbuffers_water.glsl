@@ -246,9 +246,9 @@
         if(blockId == 11102 || blockId == 12100){
             // Fast depth linearization by DrDesten
             // Not great, but plausible for most scenarios
-            float blockDepth = near / (1.0 - gl_FragCoord.z) - near / (1.0 - getDepth(depthtex1, ivec2(gl_FragCoord.xy), 0));
-            // Get the depth outline for the end portal
-            float edgeBrightness = exp2((blockDepth + 0.0625) * 8.0);
+            float blockDepth = near / (1.0 - gl_FragCoord.z) - near / (1.0 - getDepth(depthtex1, ivec2(gl_FragCoord.xy), 0)) + 0.0625;
+            // Get the depth outline for the nether portal and water foam
+            float edgeBrightness = exp2(blockDepth * 8.0);
 
             // Water
             if(blockId == 11102){
@@ -269,7 +269,7 @@
 
                 #ifdef WATER_STYLIZE_ABSORPTION
                     if(isEyeInWater == 0){
-                        float depthBrightness = exp2(blockDepth * 0.25);
+                        float depthBrightness = min(exp2(blockDepth * 0.25), 1.0);
                         material.albedo.rgb = material.albedo.rgb * (waterNoise * (1.0 - depthBrightness) + depthBrightness);
                         material.albedo.a = fastSqrt(material.albedo.a) * (1.0 - depthBrightness);
                     }

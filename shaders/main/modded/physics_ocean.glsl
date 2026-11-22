@@ -239,12 +239,12 @@
         #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
             // Water color and foam. Fast depth linearization by DrDesten
             // Not great, but plausible for most scenarios
-            float waterDepth = near / (1.0 - gl_FragCoord.z) - near / (1.0 - getDepth(depthtex1, ivec2(gl_FragCoord.xy), 0));
+            float waterDepth = near / (1.0 - gl_FragCoord.z) - near / (1.0 - getDepth(depthtex1, ivec2(gl_FragCoord.xy), 0)) + 0.0625;
         #endif
 
         #ifdef WATER_STYLIZE_ABSORPTION
             if(isEyeInWater == 0){
-                float depthBrightness = exp2(waterDepth * 0.25);
+                float depthBrightness = min(exp2(waterDepth * 0.25), 1.0);
                 material.albedo.rgb = material.albedo.rgb * (waterNoise * (1.0 - depthBrightness) + depthBrightness);
                 material.albedo.a = fastSqrt(material.albedo.a) * (1.0 - depthBrightness);
             }
@@ -258,7 +258,7 @@
 
         #ifdef WATER_FOAM
             // Probably needs more work
-            material.albedo = min(vec4(1), material.albedo + min(0.66666667, exp2((waterDepth + 0.0625) * 8.0)));
+            material.albedo = min(vec4(1), material.albedo + min(0.66666667, exp2(waterDepth * 8.0)));
         #endif
 
         material.albedo.rgb = toLinear(material.albedo.rgb);
