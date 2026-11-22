@@ -235,7 +235,7 @@
 
             #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
                 // Water color and foam. Fast depth linearization by DrDesten
-                float waterDepth = dhNearPlane / (1.0 - gl_FragCoord.z) - dhNearPlane / (1.0 - texelFetch(dhDepthTex1, ivec2(gl_FragCoord.xy), 0).x) + 0.0625;
+                float waterDepth = dhNearPlane / (1.0 - gl_FragCoord.z) - dhNearPlane / (1.0 - texelFetch(dhDepthTex1, ivec2(gl_FragCoord.xy), 0).x) + 0.125;
             #endif
 
             #ifdef WATER_STYLIZE_ABSORPTION
@@ -250,7 +250,7 @@
             #endif
 
             #ifdef WATER_FOAM
-                material.albedo = min(vec4(1), material.albedo + min(0.66666667, exp2(waterDepth * 8.0)));
+                material.albedo = min(vec4(1), material.albedo + min(0.66666667, exp2(waterDepth * 8.0) * 0.66666667));
             #endif
         }
 
