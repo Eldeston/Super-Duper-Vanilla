@@ -185,6 +185,17 @@ void getPBR(inout dataPBR material, in int id){
                 material.smoothness = 0.9 * fastSqrt(material.albedo.r);
             }
 
+            // Amethyst
+            else if(id == 12305 || id == 12306){
+                float amethystAverage = albedoSum * 0.33333333;
+                float amethystLumaSquared = squared(amethystAverage);
+                float amethystLumaSquaredSquared = squared(amethystLumaSquared);
+                material.emissive = amethystLumaSquaredSquared * (id == 12305 ? amethystLumaSquared * amethystLumaSquaredSquared : amethystLumaSquaredSquared * 0.25);
+                
+                material.metallic = 0.17;
+                material.smoothness = amethystAverage * 0.6 + 0.3;
+            }
+
             /// -------------------------------- /// Metallic blocks /// -------------------------------- ///
 
             // Dark metals
@@ -212,17 +223,21 @@ void getPBR(inout dataPBR material, in int id){
 
             /// -------------------------------- /// Smooth blocks /// -------------------------------- ///
 
-            // Crystal blocks
-            else if(id == 12501){
+            // Crystal blocks, obsidian and its variants
+            else if(id == 12501 || id == 13300){
+                // Base
                 material.metallic = 0.17;
                 material.smoothness = fastSqrt(min(0.8, albedoSum));
+
+                // Obsidian overlays
+                if(id == 13300) material.emissive = cubed(albedoMax);
             }
 
             /// -------------------------------- /// Stone families and their ores /// -------------------------------- ///
             // Each family has its base block (simple) first, then its ore variants (complex) overlaid on top
 
             // Stone and its ores
-            else if(id == 12502 || id == 12600 || id == 12700 || id == 12750){
+            else if(id == 12502 || id == 12600 || id == 12700 || id == 12800){
                 // Base
                 #if PBR_MODE == 2 && defined ROUGH_REFLECTIONS
                     material.smoothness = albedoMin * 0.6;
@@ -231,11 +246,11 @@ void getPBR(inout dataPBR material, in int id){
                 // Ore overlays
                 if(id == 12600) oreCrystals(material, albedoSum);
                 else if(id == 12700) oreMetals(material, albedoSum);
-                else if(id == 12750) oreRedstone(material);
+                else if(id == 12800) oreRedstone(material);
             }
 
             // Deepslate and its ores
-            else if(id == 12503 || id == 12602 || id == 12703 || id == 12751){
+            else if(id == 12503 || id == 12602 || id == 12703 || id == 12801){
                 // Base
                 #if PBR_MODE == 2 && defined ROUGH_REFLECTIONS
                     material.smoothness = albedoMax * 0.75;
@@ -244,7 +259,7 @@ void getPBR(inout dataPBR material, in int id){
                 // Ore overlays
                 if(id == 12602) oreCrystals(material, albedoSum);
                 else if(id == 12703) oreMetals(material, albedoSum);
-                else if(id == 12751) oreRedstone(material);
+                else if(id == 12801) oreRedstone(material);
             }
 
             #if PBR_MODE == 2 && defined ROUGH_REFLECTIONS
@@ -335,16 +350,16 @@ void getPBR(inout dataPBR material, in int id){
 
             /// -------------------------------- /// Pyro emissives /// -------------------------------- ///
 
-            else if(id == 12800) material.emissive = smoothen(max(0.0, albedoMax - 0.75) * 4.0);
-            else if(id == 10801 || id == 12801) material.emissive = squared(squared(saturate(albedoSum * 0.83333333 - 1)));
+            else if(id == 12900) material.emissive = smoothen(max(0.0, albedoMax - 0.75) * 4.0);
+            else if(id == 10801 || id == 12901) material.emissive = squared(squared(saturate(albedoSum * 0.83333333 - 1)));
 
             /// -------------------------------- /// Redstone emissives /// -------------------------------- ///
 
-            // Redstone components
-            else if(id == 12900) oreRedstone(material);
+            // Redstone components (Re-use oreRedstone)
+            else if(id == 13000) oreRedstone(material);
 
             // Redstone wire
-            else if(id == 12901){
+            else if(id == 13001){
                 material.emissive = squared(vertexColor.r) * 0.25;
 
                 material.metallic = 1.0;
@@ -352,7 +367,7 @@ void getPBR(inout dataPBR material, in int id){
             }
 
             // Rails
-            else if(id == 12902){
+            else if(id == 13002){
                 if(material.albedo.r < material.albedo.g * 1.6 && material.albedo.r < material.albedo.b * 1.6){
                     material.metallic = 1.0;
                     material.smoothness = albedoSum * 0.32;
@@ -362,31 +377,31 @@ void getPBR(inout dataPBR material, in int id){
             /// -------------------------------- /// Bioluminescent /// -------------------------------- ///
 
             // Glow lichen
-            else if(id == 13000) material.emissive = material.albedo.r > material.albedo.b ? 1.0 : 0.0;
+            else if(id == 13100) material.emissive = material.albedo.r > material.albedo.b ? 1.0 : 0.0;
 
             // Stems
-            else if(id == 13001) material.emissive = material.albedo.r < 0.1 ? albedoMax * 0.72 : material.emissive;
-            else if(id == 13002) material.emissive = material.albedo.b < 0.16 && material.albedo.r > 0.4 ? albedoMax * 0.72 : material.emissive;
+            else if(id == 13101) material.emissive = material.albedo.r < 0.1 ? albedoMax * 0.72 : material.emissive;
+            else if(id == 13102) material.emissive = material.albedo.b < 0.16 && material.albedo.r > 0.4 ? albedoMax * 0.72 : material.emissive;
 
             // Chorus (plant and flowers), subsurface-like bamboo with per-type emission
-            else if(id == 13003 || id == 13004 || id == 13007){
+            else if(id == 13103 || id == 13104 || id == 13107){
                 material.ss = fastSqrt(albedoSum) * 0.33333333;
 
                 // Mature flower
-                if(id == 13003) material.emissive = float(sumOf(material.albedo.rg) > 1.1);
+                if(id == 13103) material.emissive = float(sumOf(material.albedo.rg) > 1.1);
                 // Growing flower
-                else if(id == 13004) material.emissive = exp(sumOf(material.albedo.gb) * 8.0 - 16.0);
+                else if(id == 13104) material.emissive = exp(sumOf(material.albedo.gb) * 8.0 - 16.0);
             }
 
             // Common sculk
-            else if(id == 13005){
+            else if(id == 13105){
                 material.emissive = cubed(material.albedo.b);
 
                 material.smoothness = 0.45;
             }
 
             // Uncommon sculk
-            else if(id == 13006){
+            else if(id == 13106){
                 material.emissive = cubed(material.albedo.b);
 
                 material.smoothness = 0.45;
@@ -395,29 +410,11 @@ void getPBR(inout dataPBR material, in int id){
             /// -------------------------------- /// Crystal /// -------------------------------- ///
 
             // Beacon
-            else if(id == 13100) material.emissive = exp(albedoSum * 2.66666664 - 8.0);
+            else if(id == 13200) material.emissive = exp(albedoSum * 2.66666664 - 8.0);
 
             // End portal frame
-            else if(id == 13101) material.emissive = sumOf(material.albedo.gb) > material.albedo.r * 2.0 ? squared(saturate((material.albedo.g - material.albedo.b) * 4.0)) : 0.0;
+            else if(id == 13201) material.emissive = sumOf(material.albedo.gb) > material.albedo.r * 2.0 ? squared(saturate((material.albedo.g - material.albedo.b) * 4.0)) : 0.0;
 
-            // Crying obsidian
-            else if(id == 13102){
-                material.emissive = cubed(albedoMax);
-
-                material.metallic = 0.17;
-                material.smoothness = fastSqrt(min(0.8, albedoSum));
-            }
-
-            // Amethyst
-            else if(id == 13103 || id == 13104){
-                float amethystAverage = albedoSum * 0.33333333;
-                float amethystLumaSquared = squared(amethystAverage);
-                float amethystLumaSquaredSquared = squared(amethystLumaSquared);
-                material.emissive = amethystLumaSquaredSquared * (id == 13103 ? amethystLumaSquared * amethystLumaSquaredSquared : amethystLumaSquaredSquared * 0.25);
-                
-                material.metallic = 0.17;
-                material.smoothness = amethystAverage * 0.6 + 0.3;
-            }
         #endif
 
         #if defined WATER || defined BLOCK
