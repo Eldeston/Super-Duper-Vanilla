@@ -208,7 +208,7 @@
 
     void main(){
         // End portal
-        if(blockEntityId == 12000 || blockEntityId == 13201){
+        if(blockEntityId == 12000 || blockEntityId == 14001){
             // Get portal depth
             float blockDepth = near / (1.0 - gl_FragCoord.z) - near / (1.0 - getDepth(depthtex0, ivec2(gl_FragCoord.xy), 0));
 
@@ -232,7 +232,7 @@
             // Get noise color to variate the end portal color
             vec3 noiseCol = sin(getRng3(ivec2(startPos * 16.0) & 255) * TAU + fragmentFrameTime * 2.0) * 0.25 + 0.75;
             // Dimensional Doors portal, credits to Kawwabi
-            vec3 finalCol = (noiseCol * endStarField + edgeBrightness) * (blockEntityId == 13201 ? vec3(0.25, 0.5, 1) : EMISSIVE_INTENSITY * vertexColor.rgb);
+            vec3 finalCol = (noiseCol * endStarField + edgeBrightness) * (blockEntityId == 13401 ? vec3(0.25, 0.5, 1) : EMISSIVE_INTENSITY * vertexColor.rgb);
 
             sceneColOut = vec4(toLinear(finalCol), 1);
 
