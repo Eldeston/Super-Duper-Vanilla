@@ -279,7 +279,7 @@
                 #endif
 
                 // This is to make the water texture more prominent and part of the foam
-                material.albedo += cubed(sumOf(material.albedo.rgb)) * 0.125;
+                material.albedo += cubed(sumOf(material.albedo.rgb)) * 0.1;
 
                 #ifdef WATER_FOAM
                     // Probably needs more work
