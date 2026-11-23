@@ -132,13 +132,40 @@ void getPBR(inout dataPBR material, in int id){
 
     #if defined ENTITIES || defined ENTITIES_TRANSLUCENT
         // Basic whole entity emission
-        if(id == 10130) material.emissive = cubed(sumOf(material.albedo.rgb) * 0.33333333);
+        if(id == 20100) material.emissive = cubed(sumOf(material.albedo.rgb) * 0.33333333);
+
+        // Iron golem
+        else if(id == 20101){
+            // Metallic parts only
+            if(material.albedo.b * 2.0 > material.albedo.g){
+                material.metallic = 1.0;
+                material.smoothness = sumOf(material.albedo.rgb) * 0.3 + 0.06;
+            }
+
+            if(material.albedo.r > material.albedo.g * 2.0 && material.albedo.r > material.albedo.b * 2.0) material.emissive = squared(material.albedo.r);
+        }
+
+        // Snow golem
+        else if(id == 20102){
+            float materialSnow = sumOf(material.albedo.rgb) * 0.33333333 * 0.45;
+            material.ss = materialSnow;
+
+            #if PBR_MODE == 2 && defined ROUGH_REFLECTIONS
+                material.smoothness = materialSnow;
+            #endif
+        }
 
         // End crystal
-        else if(id == 10131) material.emissive = float(material.albedo.r > sumOf(material.albedo.gb) * 0.5);
+        else if(id == 20200) material.emissive = float(material.albedo.r > sumOf(material.albedo.gb) * 0.5);
 
         // Charged creeper
-        else if(id == 10132) material.emissive = float(material.albedo.b > material.albedo.g);
+        else if(id == 20201) material.emissive = float(material.albedo.b > material.albedo.g);
+
+        // Copper golem, same copper as the copper blocks with emissive yellow eyes
+        else if(id == 20202){
+            material.metallic = 1.0;
+            material.smoothness = maxOf(material.albedo.rg) * 0.96;
+        }
     #endif
 
     #if PBR_MODE <= 2
@@ -218,6 +245,7 @@ void getPBR(inout dataPBR material, in int id){
                 if(id == 12403){
                     // material.emissive = min(1.0, squared(max(0.0, squared(material.albedo.r * material.albedo.g) * (squared(material.albedo.b) * 0.5 + 0.5) - 0.1) * 2.0));
                     material.emissive = max(0.0, hermiteMix(0.45, 1.0, material.albedo.r * material.albedo.g));
+                    if(material.albedo.r > material.albedo.g * 2.0 && material.albedo.r > material.albedo.b * 2.0) material.emissive = squared(material.albedo.r);
                 }
             }
 

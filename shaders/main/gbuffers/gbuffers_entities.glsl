@@ -28,7 +28,7 @@
 
     out vec3 vertexFeetPlayerPos;
 
-    #ifdef PARALLAX_OCCLUSION
+    #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
         flat out vec2 vTexCoordScale;
         flat out vec2 vTexCoordPos;
 
@@ -39,7 +39,7 @@
 
     attribute vec4 at_tangent;
 
-    #ifdef PARALLAX_OCCLUSION
+    #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION || defined TERRAIN_ANIMATION
         attribute vec2 mc_midTexCoord;
     #endif
 
@@ -70,6 +70,15 @@
 
         // Calculate TBN matrix
         TBN = mat3(gbufferModelViewInverse) * (gl_NormalMatrix * mat3(vertexTangent, cross(vertexTangent, vertexNormal) * sign(at_tangent.w), vertexNormal));
+
+        #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
+            vec2 midTexCoord = (gl_TextureMatrix[0] * vec4(mc_midTexCoord, 0, 0)).xy;
+            vec2 texMinMidTexCoord = texCoord - midTexCoord;
+
+            vTexCoordScale = abs(texMinMidTexCoord) * 2.0;
+            vTexCoordPos = min(texCoord, midTexCoord - texMinMidTexCoord);
+            vTexCoord = sign(texMinMidTexCoord) * 0.5 + 0.5;
+        #endif
 
         #ifdef PARALLAX_OCCLUSION
             vec2 midCoord = (gl_TextureMatrix[0] * vec4(mc_midTexCoord, 0, 0)).xy;
@@ -119,7 +128,7 @@
 
     in vec3 vertexFeetPlayerPos;
 
-    #ifdef PARALLAX_OCCLUSION
+    #if defined NORMAL_GENERATION || defined PARALLAX_OCCLUSION
         flat in vec2 vTexCoordScale;
         flat in vec2 vTexCoordPos;
 
