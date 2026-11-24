@@ -26,6 +26,7 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 
 ## CURRENT
 * [ ] Implement bit packing for optimization
+* [ ] Rebalance block light range for gameplay
 
 * [ ] Refactor parallax occlusion mapping
 * [ ] Change cloud texture
