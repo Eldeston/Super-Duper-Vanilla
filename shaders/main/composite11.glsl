@@ -16,16 +16,16 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    #if defined LENS_FLARE && defined WORLD_LIGHT
+    #if defined LENS_FLARE && WORLD_LIGHT == 1
         flat out vec3 sRGBLightCol;
         flat out vec4 shdLightDirScreenSpace;
     #endif
 
-    #if defined LENS_FLARE && defined WORLD_LIGHT || defined BLOOM
+    #if defined LENS_FLARE && WORLD_LIGHT == 1 || defined BLOOM
         noperspective out vec2 texCoord;
     #endif
 
-    #if defined LENS_FLARE && defined WORLD_LIGHT
+    #if defined LENS_FLARE && WORLD_LIGHT == 1
         uniform mat4 gbufferProjection;
         uniform mat4 gbufferModelView;
         uniform mat4 shadowModelView;
@@ -35,7 +35,7 @@
 
         uniform sampler2D depthtex0;
 
-        #ifndef FORCE_DISABLE_WEATHER
+        #if WORLD_WEATHER == 1
             uniform float rainStrength;
         #endif
 
@@ -47,7 +47,7 @@
             uniform sampler2D vxDepthTexOpaque;
         #endif
 
-        #ifndef FORCE_DISABLE_DAY_CYCLE
+        #if WORLD_DAYCYCLE == 1
             uniform float dayCycle;
             uniform float twilightPhase;
         #endif
@@ -56,13 +56,15 @@
         #include "/lib/utility/projectionFunctions.glsl"
     #endif
 
+    #include "/lib/dimension/lightAdapter.glsl"
+
     void main(){
         #ifdef BLOOM
             // Get buffer texture coordinates
             texCoord = gl_MultiTexCoord0.xy;
         #endif
 
-        #if defined LENS_FLARE && defined WORLD_LIGHT
+        #if defined LENS_FLARE && WORLD_LIGHT == 1
             // Get shadow light view direction in screen space
             shdLightDirScreenSpace.xy = getScreenCoord(gbufferProjection, mat3(gbufferModelView) * vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z));
             shdLightDirScreenSpace.zw = vec2(gbufferProjection[1].y * 0.72794047, getDepthTex(shdLightDirScreenSpace.xy) == 1);
@@ -70,12 +72,12 @@
             // Calculate lensflare visibility
             shdLightDirScreenSpace.w *= (1.0 - blindness) * (1.0 - darknessFactor) * LENS_FLARE_STRENGTH;
 
-            #ifndef FORCE_DISABLE_WEATHER
+            #if WORLD_WEATHER == 1
                 shdLightDirScreenSpace.w *= 1.0 - rainStrength;
             #endif
 
             // Get sRGB light halfPostColOut
-            sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
+            sRGBLightCol = worldLightColor();
             sRGBLightCol *= shdLightDirScreenSpace.w;
         #endif
 
@@ -89,12 +91,12 @@
     /* RENDERTARGETS: 0 */
     layout(location = 0) out vec3 halfPostColOut; // colortex0
 
-    #if defined LENS_FLARE && defined WORLD_LIGHT
+    #if defined LENS_FLARE && WORLD_LIGHT == 1
         flat in vec3 sRGBLightCol;
         flat in vec4 shdLightDirScreenSpace;
     #endif
 
-    #if defined LENS_FLARE && defined WORLD_LIGHT || defined BLOOM
+    #if defined LENS_FLARE && WORLD_LIGHT == 1 || defined BLOOM
         noperspective in vec2 texCoord;
     #endif
 
@@ -146,7 +148,7 @@
         }
     #endif
 
-    #if defined LENS_FLARE && defined WORLD_LIGHT
+    #if defined LENS_FLARE && WORLD_LIGHT == 1
         uniform float aspectRatio;
 
         #include "/lib/post/lensFlare.glsl"
@@ -170,7 +172,7 @@
             halfPostColOut = bloomCol;
         #endif
 
-        #if defined LENS_FLARE && defined WORLD_LIGHT
+        #if defined LENS_FLARE && WORLD_LIGHT == 1
             if(shdLightDirScreenSpace.w != 0) halfPostColOut += getLensFlare(texCoord - 0.5, shdLightDirScreenSpace.xy - 0.5);
         #endif
     }

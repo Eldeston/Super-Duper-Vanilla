@@ -59,10 +59,10 @@
         vertexColor = gl_Color.rgb;
 
         // Lightmap fix for mods
-        #ifdef WORLD_CUSTOM_SKYLIGHT
-            vertexLightMap = vec2(lightMapCoord(gl_MultiTexCoord1.x), WORLD_CUSTOM_SKYLIGHT);
-        #else
+        #if WORLD_SKYLIGHT == 1
             vertexLightMap = lightMapCoord(gl_MultiTexCoord1.xy);
+        #else
+            vertexLightMap = vec2(lightMapCoord(gl_MultiTexCoord1.x), WORLD_SKYLIGHT_I);
         #endif
 
         // Get vertex normal
@@ -145,7 +145,7 @@
 
     uniform sampler2D gtexture;
 
-    #ifndef FORCE_DISABLE_WEATHER
+    #if WORLD_WEATHER == 1
         uniform float rainStrength;
     #endif
 
@@ -155,24 +155,24 @@
         uniform sampler2D depthtex1;
     #endif
 
-    #ifndef FORCE_DISABLE_DAY_CYCLE
+    #if WORLD_DAYCYCLE == 1
         uniform float dayCycle;
         uniform float twilightPhase;
     #endif
 
-    #ifdef WORLD_VANILLA_FOG_COLOR
+    #if WORLD_VANILLAFOG == 1
         uniform vec3 fogColor;
     #endif
 
-    #ifdef WORLD_CUSTOM_SKYLIGHT
-        const float eyeBrightFact = WORLD_CUSTOM_SKYLIGHT;
-    #else
+    #if WORLD_SKYLIGHT == 1
         uniform float eyeSkylight;
         
         float eyeBrightFact = eyeSkylight;
+    #else
+        const float eyeBrightFact = WORLD_SKYLIGHT_I;
     #endif
 
-    #ifdef WORLD_LIGHT
+    #if WORLD_LIGHT == 1
         uniform float shdFade;
 
         uniform mat4 shadowModelView;
@@ -196,6 +196,9 @@
 
         #include "/lib/surface/water.glsl"
     #endif
+
+    #include "/lib/dimension/skyAdapter.glsl"
+    #include "/lib/dimension/lightAdapter.glsl"
 
     #include "/lib/lighting/complexShadingForward.glsl"
 

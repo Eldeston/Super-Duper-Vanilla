@@ -1,28 +1,25 @@
-#ifdef WORLD_AETHER
-#endif
-
 // Round sun and moon
 float getSunMoonShape(in float skyPosZ){
-    return min(1.0, exp2((WORLD_SUN_MOON_SIZE - sqrt(1.0 - skyPosZ * skyPosZ)) * 256.0));
+    return min(1.0, exp2((WORLD_CELESTIAL_SIZE - sqrt(1.0 - skyPosZ * skyPosZ)) * 256.0));
 }
 
 // Default sun and moon
 float getSunMoonShape(in vec2 skyPos){
-    return min(1.0, exp2((WORLD_SUN_MOON_SIZE - pow(abs(skyPos.x * skyPos.x * skyPos.x) + abs(skyPos.y * skyPos.y * skyPos.y), 0.33333333)) * 256.0));
+    return min(1.0, exp2((WORLD_CELESTIAL_SIZE - pow(abs(skyPos.x * skyPos.x * skyPos.x) + abs(skyPos.y * skyPos.y * skyPos.y), 0.33333333)) * 256.0));
 }
 
 vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){
     // Apply ambient lighting with sky col (not realistic I know)
     vec3 currSkyCol = skyCol;
 
-    #ifdef WORLD_SKY_GROUND
+    #if WORLD_SKYGROUND == 1
         // currSkyCol.rg *= smoothen(saturate(1.0 + nEyePlayerPosY * 4.0));
         // if(nEyePlayerPosY < 0) currSkyCol *= smoothen(max(1.0 + nEyePlayerPosY / max(skyCol, 0.25), vec3(0.25)));
         if(nEyePlayerPosY < 0 && isEyeInWater == 0) currSkyCol *= exp2(-(nEyePlayerPosY * nEyePlayerPosY * 8.0) / max(skyCol * skyCol, vec3(0.125)));
     #endif
 
-    #if defined WORLD_LIGHT && WORLD_SUN_MOON == 1
-        #ifdef FORCE_DISABLE_DAY_CYCLE
+    #if WORLD_LIGHT == 1 && WORLD_CELESTIAL == 1
+        #if WORLD_DAYCYCLE == 0
             if(skyPosZ > 0) currSkyCol += lightCol * pow(skyPosZ * skyPosZ, abs(nEyePlayerPosY) + 1.0);
         #else
             float lightDiffuse = pow(skyPosZ * skyPosZ, abs(nEyePlayerPosY) + 1.0);
@@ -36,12 +33,12 @@ vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){
 
 // Sky half render
 vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
-    #if (defined WORLD_AETHER && defined WORLD_LIGHT) || defined WORLD_STARS
+    #if (WORLD_AETHER == 1 && WORLD_LIGHT == 1) || defined WORLD_STARS
         // Scaled by noise resolution
         vec2 skyCoordScale = skyPos.xy * 256.0;
     #endif
 
-    #if defined WORLD_AETHER && defined WORLD_LIGHT
+    #if WORLD_AETHER == 1 && WORLD_LIGHT == 1
         int aetherAnimationSpeed = int(fragmentFrameTime * 8.0);
 
         // Looks complex, but all it does is move the noise texture in 3 different directions
@@ -61,10 +58,10 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
         vec2 starData = texelFetch(noisetex, ivec2(skyCoordScale / (abs(skyPos.z) + sqrt(1.0 - skyPos.z * skyPos.z))) & 255, 0).xy;
         float stars = exp(starData.x * starData.y * 64.0 - 64.0);
 
-        #ifdef FORCE_DISABLE_WEATHER
-            currSkyCol += stars * WORLD_STARS;
+        #if WORLD_WEATHER == 1
+            currSkyCol += (1.0 - rainStrength) * stars * worldStarIntensity();
         #else
-            currSkyCol += (1.0 - rainStrength) * stars * WORLD_STARS;
+            currSkyCol += stars * worldStarIntensity();
         #endif
     #endif
 
@@ -80,7 +77,7 @@ vec3 getSkyFogRender(in vec3 nEyePlayerPos){
     // Get sky pos by shadow model view
     vec3 skyPos = mat3(shadowModelView) * nEyePlayerPos;
 
-    #if defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
+    #if WORLD_LIGHT == 1 && WORLD_DAYCYCLE == 1
         // Flip if the sun has gone below the horizon
         if(dayCycle < 1) skyPos.xz = -skyPos.xz;
     #endif
@@ -88,7 +85,7 @@ vec3 getSkyFogRender(in vec3 nEyePlayerPos){
     // Get basic sky simple color
     vec3 currSkyCol = getSkyBasic(nEyePlayerPos.y, skyPos.z);
     
-    #if defined WORLD_AETHER && defined WORLD_LIGHT
+    #if WORLD_AETHER == 1 && WORLD_LIGHT == 1
         // Scaled by noise resolution
         vec2 skyCoordScale = skyPos.xy * 256.0;
 
@@ -117,7 +114,7 @@ vec3 getSkyFogRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
     // If player is in lava, return fog color
     if(isEyeInWater == 2) return fogColor;
 
-    #if defined WORLD_AETHER && defined WORLD_LIGHT
+    #if WORLD_AETHER == 1 && WORLD_LIGHT == 1
         // Scaled by noise resolution
         vec2 skyCoordScale = skyPos.xy * 256.0;
 
@@ -147,14 +144,14 @@ vec3 getSkyReflection(in vec3 feetPlayerPos, in vec3 reflectPlayerDir){
     // Rotate normalized player position to shadow space
     vec3 skyPos = mat3(shadowModelView) * reflectPlayerDir;
 
-    #if defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
+    #if WORLD_LIGHT == 1 && WORLD_DAYCYCLE == 1
         // Flip if the sun has gone below the horizon
         if(dayCycle < 1) skyPos.xz = -skyPos.xz;
     #endif
 
     vec3 finalCol = getSkyHalf(reflectPlayerDir, skyPos, getSkyBasic(reflectPlayerDir.y, skyPos.z));
 
-    #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
+    #if CLOUD_TYPE != 0 && WORLD_CLOUDS == 1 && WORLD_LIGHT == 1
         // Get voxelized clouds
         if(eyeBrightFact > 0.00390625) finalCol = getVoxelClouds(finalCol, cloudStartPos + feetPlayerPos, reflectPlayerDir, cloudDistantFar);
     #endif
@@ -162,7 +159,7 @@ vec3 getSkyReflection(in vec3 feetPlayerPos, in vec3 reflectPlayerDir){
     // Do a simple void gradient calculation when underwater
     if(isEyeInWater == 1) return finalCol * max(0.0, reflectPlayerDir.y + eyeBrightFact - 1.0);
 
-    #ifdef WORLD_LIGHT
+    #if WORLD_LIGHT == 1
         // Fake VL reflection
         const float fakeVLBrightness = VOLUMETRIC_LIGHTING_STRENGTH * 0.5;
         float VLBrightness = fakeVLBrightness * shdFade;
@@ -170,7 +167,7 @@ vec3 getSkyReflection(in vec3 feetPlayerPos, in vec3 reflectPlayerDir){
         if(reflectPlayerDir.y > 0){
             float heightFade = squared(squared(squared(1.0 - squared(reflectPlayerDir.y))));
 
-            #ifndef FORCE_DISABLE_WEATHER
+            #if WORLD_WEATHER == 1
                 heightFade += (1.0 - heightFade) * rainStrength * 0.5;
             #endif
 
@@ -188,8 +185,8 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol)
     // If player is in lava, return fog color
     if(isEyeInWater == 2) return fogColor;
 
-    #ifdef WORLD_LIGHT
-        #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE != 2
+    #if WORLD_LIGHT == 1
+        #if WORLD_CELESTIAL == 1 && SUN_MOON_TYPE != 2
             // If current world uses shader sun and moon but not vanilla sun and moon
             #if SUN_MOON_TYPE == 1
                 float sunMoonShape = getSunMoonShape(skyPos.z) * sunMoonIntensitySqrd;
@@ -197,15 +194,21 @@ vec3 getFullSkyRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol)
                 float sunMoonShape = getSunMoonShape(skyPos.xy) * sunMoonIntensitySqrd;
             #endif
 
-            #ifndef FORCE_DISABLE_WEATHER
-                #ifdef FORCE_DISABLE_DAY_CYCLE
+            #if WORLD_WEATHER == 1
+                #if WORLD_DAYCYCLE == 0
                     currSkyCol += sRGBLightCol * (sunMoonShape - rainStrength * sunMoonShape);
                 #else
                     currSkyCol += (skyPos.z > 0 ? sRGBSunCol : sRGBMoonCol) * (sunMoonShape - rainStrength * sunMoonShape);
                 #endif
+            #else
+                #if WORLD_DAYCYCLE == 0
+                    currSkyCol += sRGBLightCol * sunMoonShape;
+                #else
+                    currSkyCol += (skyPos.z > 0 ? sRGBSunCol : sRGBMoonCol) * sunMoonShape;
+                #endif
             #endif
-        #elif WORLD_SUN_MOON == 2
-            float blackHole = sqrt(1.0 - skyPos.z * skyPos.z) - WORLD_SUN_MOON_SIZE;
+        #elif WORLD_CELESTIAL == 2
+            float blackHole = sqrt(1.0 - skyPos.z * skyPos.z) - WORLD_CELESTIAL_SIZE;
 
             // If black hole return nothing
             if(blackHole <= 0) return vec3(0);

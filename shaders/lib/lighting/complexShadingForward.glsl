@@ -1,4 +1,4 @@
-#if defined WORLD_LIGHT && defined SHADOW_MAPPING
+#if WORLD_LIGHT == 1 && defined SHADOW_MAPPING
     vec3 getShdMapping(in vec3 albedo, in vec3 normal, in vec2 lmCoord, in float NLZ, in float parallaxShd, in float ss, in float ambient, in bool isShadow, in bool isSubSurface){
         if(!isShadow && !isSubSurface) return vec3(0);
 
@@ -129,7 +129,7 @@ vec4 complexShadingForward(in dataPBR material, in vec2 lmCoord, in vec3 feetPla
 
     // Calculate sky diffusion first, begining with the sky itself
     // Occlude the appled sky and thunder flash calculation by sky light amount
-    vec3 totalIllumination = (toLinear(SKY_COLOR_DATA_BLOCK) + lightningFlash) * skyLightSquared;
+    vec3 totalIllumination = (toLinear(worldSkyColor()) + lightningFlash) * skyLightSquared;
 
     // Calculate ambient lightning
     totalIllumination += toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
@@ -151,9 +151,9 @@ vec4 complexShadingForward(in dataPBR material, in vec2 lmCoord, in vec3 feetPla
     // Get view direction
     vec3 viewDir = -fastNormalize(feetPlayerPos);
 
-    #ifdef WORLD_LIGHT
+    #if WORLD_LIGHT == 1
         // Get sRGB light color
-        vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
+        vec3 sRGBLightCol = worldLightColor();
 
         // also equivalent to:
         // vec3(0, 0, 1) * mat3(shadowModelView) = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)
@@ -197,7 +197,7 @@ vec4 complexShadingForward(in dataPBR material, in vec2 lmCoord, in vec3 feetPla
             shdCol += transmittance * shadowTint;
         }
 
-        #ifndef FORCE_DISABLE_WEATHER
+        #if WORLD_WEATHER == 1
             // Approximate rain diffusing light shadow
             float rainDiffuseAmount = rainStrength * 0.5;
             shdCol *= 1.0 - rainDiffuseAmount;
@@ -225,7 +225,7 @@ vec4 complexShadingForward(in dataPBR material, in vec2 lmCoord, in vec3 feetPla
 
     vec4 totalLighting = vec4(material.albedo.rgb * totalIllumination, material.albedo.a);
 
-    #if defined WORLD_LIGHT && defined SPECULAR_HIGHLIGHTS
+    #if WORLD_LIGHT == 1 && defined SPECULAR_HIGHLIGHTS
         if(isShadow){
             // Get specular GGX
             vec3 specCol = getSpecularBRDF(viewDir, material.normal, material.albedo.rgb, NLZ, NV, material.metallic, material.smoothness) * shdCol;

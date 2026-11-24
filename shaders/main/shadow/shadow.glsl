@@ -16,7 +16,7 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    #if defined WORLD_LIGHT && defined SHADOW_MAPPING
+    #if WORLD_LIGHT == 1 && defined SHADOW_MAPPING
         flat out int blockId;
 
         flat out vec3 vertexColor;
@@ -116,7 +116,7 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    #if defined WORLD_LIGHT && defined SHADOW_MAPPING
+    #if WORLD_LIGHT == 1 && defined SHADOW_MAPPING
         /* RENDERTARGETS: 0 */
         layout(location = 0) out vec3 shadowColOut; // shadowcolor0
 

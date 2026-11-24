@@ -10,21 +10,21 @@ float getAtmosphericFog(in float nPlayerPosY, in float worldPosY, in float playe
 }
 
 float getFogFactor(in float viewDist, in float nEyePlayerPosY, in float worldPosY){
-    float verticalFogDensity = FOG_VERTICAL_DENSITY;
-    float totalFogDensity = FOG_TOTAL_DENSITY;
+    float verticalFogDensity = worldFogVerticalDensity();
+    float totalFogDensity = worldFogTotalDensity();
 
     float verticalFogMult = 0.2;
     float totalFogMult = TAU;
 
-    #ifdef FORCE_DISABLE_WEATHER
-        if(isEyeInWater == 0){
-            verticalFogMult = 1.0;
-            totalFogMult = 1.0;
-        }
-    #else
+    #if WORLD_WEATHER == 1
         if(isEyeInWater == 0){
             verticalFogMult = 1.0 - rainStrength * 0.8;
             totalFogMult = rainStrength * eyeBrightFact * PI + 1.0;
+        }
+    #else
+        if(isEyeInWater == 0){
+            verticalFogMult = 1.0;
+            totalFogMult = 1.0;
         }
     #endif
 

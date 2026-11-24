@@ -16,12 +16,12 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    #if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING && defined WORLD_LIGHT
+    #if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING && WORLD_LIGHT == 1
         noperspective out vec2 texCoord;
     #endif
 
     void main(){
-        #if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING && defined WORLD_LIGHT
+        #if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING && WORLD_LIGHT == 1
             // Get buffer texture coordinates
             texCoord = gl_MultiTexCoord0.xy;
         #endif
@@ -36,7 +36,7 @@
     /* RENDERTARGETS: 0 */
     layout(location = 0) out vec3 volColOut; // colortex0
 
-    #if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING && defined WORLD_LIGHT
+    #if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING && WORLD_LIGHT == 1
         /* RENDERTARGETS: 0,6 */
         layout(location = 1) out vec3 tempColOut; // colortex6
         
@@ -97,7 +97,7 @@
     #endif
 
     void main(){
-        #if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING && defined WORLD_LIGHT
+        #if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING && WORLD_LIGHT == 1
             volColOut = volumetricAccumulation(ivec2(gl_FragCoord.xy));
             tempColOut = volColOut;
         #else

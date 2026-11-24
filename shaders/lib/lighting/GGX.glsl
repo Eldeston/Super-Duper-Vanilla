@@ -4,7 +4,7 @@ float getSquarePhong(in vec3 N, in vec3 V, in float NV){
     float RX = dot(reflectDir, vec3(shadowModelView[0].x, shadowModelView[1].x, shadowModelView[2].x));
     float RY = dot(reflectDir, vec3(shadowModelView[0].y, shadowModelView[1].y, shadowModelView[2].y));
 
-    vec2 d = max(abs(vec2(RX, RY)) - WORLD_SUN_MOON_SIZE, 0.0);
+    vec2 d = max(abs(vec2(RX, RY)) - WORLD_CELESTIAL_SIZE, 0.0);
     return max(1.0 - squared(length(d) + maxOf(d)), 0.0);
 }
 
@@ -14,7 +14,7 @@ float getSquirclePhong(in vec3 N, in vec3 V, in float NV){
     float RX = dot(reflectDir, vec3(shadowModelView[0].x, shadowModelView[1].x, shadowModelView[2].x));
     float RY = dot(reflectDir, vec3(shadowModelView[0].y, shadowModelView[1].y, shadowModelView[2].y));
 
-    return max(1.0 - squared(max(0.0, pow(abs(RX * RX * RX) + abs(RY * RY * RY), 0.33333333) - WORLD_SUN_MOON_SIZE)), 0.0);
+    return max(1.0 - squared(max(0.0, pow(abs(RX * RX * RX) + abs(RY * RY * RY), 0.33333333) - WORLD_CELESTIAL_SIZE)), 0.0);
 }
 
 // Kinda stupid but it works
@@ -23,21 +23,21 @@ float getBlackHolePhong(in vec3 N, in vec3 V, in float NV){
 
     float RZ = dot(reflectDir, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z));
 
-    return max(1.0 - squared(sqrt(1.0 - RZ * RZ) - WORLD_SUN_MOON_SIZE), 0.0);
+    return max(1.0 - squared(sqrt(1.0 - RZ * RZ) - WORLD_CELESTIAL_SIZE), 0.0);
 }
 
 // Source: https://www.guerrilla-games.com/read/decima-engine-advances-in-lighting-and-aa
 float getNoHSquared(in float NoL, in float NoV, in float VoL){
-    // radiusTan == WORLD_SUN_MOON_SIZE
+    // radiusTan == WORLD_CELESTIAL_SIZE
     // radiusCos can be precalculated if radiusTan is a directional light
-    const float radiusCos = inversesqrt(1.0 + WORLD_SUN_MOON_SIZE * WORLD_SUN_MOON_SIZE);
+    const float radiusCos = inversesqrt(1.0 + WORLD_CELESTIAL_SIZE * WORLD_CELESTIAL_SIZE);
 
     // Early out if R falls within the disc
     float NoLNoV = 2.0 * NoL * NoV;
     float RoL = NoLNoV - VoL;
     if(RoL >= radiusCos) return 1.0;
 
-    const float radiusCosScale = radiusCos * WORLD_SUN_MOON_SIZE;
+    const float radiusCosScale = radiusCos * WORLD_CELESTIAL_SIZE;
 
     float NoVSqrd = NoV * NoV;
 
@@ -98,7 +98,7 @@ vec3 getSpecularBRDF(in vec3 V, in vec3 N, in vec3 albedo, in float NL, in float
     float visibility = LH + (1.0 / roughness);
 
     // Determines the shape of the NH to match the sun and moon shape
-    #if WORLD_SUN_MOON == 2
+    #if WORLD_CELESTIAL == 2
         float NHSqr = getNoHSquared(NL, NV, dot(V, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)));
     #else
         #if SUN_MOON_TYPE == 0
@@ -113,7 +113,7 @@ vec3 getSpecularBRDF(in vec3 V, in vec3 N, in vec3 albedo, in float NL, in float
     float distribution = (smoothness * alphaSqrd * NL) / (denominator * visibility * PI);
 
     // Rain occlusion
-    #ifndef FORCE_DISABLE_WEATHER
+    #if WORLD_WEATHER == 1
         distribution *= 1.0 - rainStrength;
     #endif
 

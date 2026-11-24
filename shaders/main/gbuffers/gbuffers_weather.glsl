@@ -16,7 +16,7 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    #ifdef FORCE_DISABLE_WEATHER
+    #if WORLD_WEATHER == 0
         void main(){
             gl_Position = vec4(-10);
         }
@@ -88,7 +88,7 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    #ifdef FORCE_DISABLE_WEATHER
+    #if WORLD_WEATHER == 0
         void main(){
             discard; return;
         }
@@ -105,13 +105,15 @@
 
         uniform sampler2D gtexture;
 
-        #ifndef FORCE_DISABLE_DAY_CYCLE
+        #if WORLD_DAYCYCLE == 1
             uniform float dayCycle;
         #endif
 
-        #ifdef WORLD_VANILLA_FOG_COLOR
+        #if WORLD_VANILLAFOG == 1
             uniform vec3 fogColor;
         #endif
+
+        #include "/lib/dimension/skyAdapter.glsl"
         
         void main(){
             // Get albedo color
@@ -123,7 +125,7 @@
             // Convert to linear space
             albedo.rgb = toLinear(albedo.rgb);
 
-            vec3 totalDiffuse = toLinear(SKY_COLOR_DATA_BLOCK) + toLinear(vertexLightMapX * blockLightColor) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
+            vec3 totalDiffuse = worldSkyColor() + toLinear(vertexLightMapX * blockLightColor) + toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 
             totalDiffuse += lightningFlash;
 

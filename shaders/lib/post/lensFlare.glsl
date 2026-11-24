@@ -1,8 +1,8 @@
 float lensShape(in vec2 lensCoord){
-    #if WORLD_SUN_MOON == 2
-        return abs(length(lensCoord) - cubed(WORLD_SUN_MOON_SIZE) * 4.0);
+    #if WORLD_CELESTIAL == 2
+        return abs(length(lensCoord) - cubed(WORLD_CELESTIAL_SIZE) * 4.0);
     #else
-        return length(lensCoord) - cubed(WORLD_SUN_MOON_SIZE) * 4.0;
+        return length(lensCoord) - cubed(WORLD_CELESTIAL_SIZE) * 4.0;
     #endif
 }
 
@@ -33,7 +33,7 @@ vec3 getLensFlare(in vec2 centerCoord, in vec2 lightDir){
     
     vec3 chromaLens = chromaLens(centerCoord, lightDir, 0.05, 0.05, -0.5);
 
-    #if WORLD_SUN_MOON == 2
+    #if WORLD_CELESTIAL == 2
         return (lens1 + (lens0 + lens2) * 0.125 + chromaLens) * sRGBLightCol;
     #elif SUN_MOON_TYPE == 2
         float rays = lensFlareRays(centerCoord, lightDir, 8.0, 0.05, -1.0);

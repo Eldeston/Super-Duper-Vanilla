@@ -16,7 +16,7 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    #if defined FORCE_DISABLE_CLOUDS || CLOUD_TYPE != 0
+    #if WORLD_CLOUDS == 0 || CLOUD_TYPE != 0
         void main(){
             gl_Position = vec4(-10);
         }
@@ -62,7 +62,7 @@
 /// -------------------------------- /// Fragment Shader /// -------------------------------- ///
 
 #ifdef FRAGMENT
-    #if defined FORCE_DISABLE_CLOUDS || CLOUD_TYPE != 0
+    #if WORLD_CLOUDS == 0 || CLOUD_TYPE != 0
         void main(){
             discard; return;
         }
@@ -75,12 +75,12 @@
         uniform float nightVision;
         uniform float lightningFlash;
 
-        #ifndef FORCE_DISABLE_DAY_CYCLE
+        #if WORLD_DAYCYCLE == 1
             uniform float dayCycle;
             uniform float twilightPhase;
         #endif
 
-        #ifdef WORLD_VANILLA_FOG_COLOR
+        #if WORLD_VANILLAFOG == 1
             uniform vec3 fogColor;
         #endif
 

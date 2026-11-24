@@ -20,18 +20,18 @@
 
     noperspective out vec2 texCoord;
 
-    #ifdef WORLD_LIGHT
+    #if WORLD_LIGHT == 1
         flat out vec3 sRGBLightCol;
         flat out vec3 lightCol;
 
-        #ifndef FORCE_DISABLE_DAY_CYCLE
+        #if WORLD_DAYCYCLE == 1
             flat out vec3 sRGBSunCol;
             flat out vec3 sunCol;
             flat out vec3 sRGBMoonCol;
             flat out vec3 moonCol;
         #endif
 
-        #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS
+        #if CLOUD_TYPE != 0 && WORLD_CLOUDS == 1
             flat out vec3 cloudCol;
             flat out vec3 cloudStartPos;
         #endif
@@ -40,53 +40,53 @@
     uniform float nightVision;
     uniform float lightningFlash;
 
-    #ifndef FORCE_DISABLE_WEATHER
+    #if WORLD_WEATHER == 1
         uniform float rainStrength;
     #endif
 
-    #ifndef FORCE_DISABLE_DAY_CYCLE
+    #if WORLD_DAYCYCLE == 1
         uniform float dayCycle;
         uniform float twilightPhase;
     #endif
 
-    #ifdef WORLD_VANILLA_FOG_COLOR
+    #if WORLD_VANILLAFOG == 1
         uniform vec3 fogColor;
     #endif
 
-    #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS && defined WORLD_LIGHT
+    #if CLOUD_TYPE != 0 && WORLD_CLOUDS == 1 && WORLD_LIGHT == 1
         uniform float fragmentFrameTime;
         
         uniform vec3 cameraPosition;
         
-        #ifndef FORCE_DISABLE_DAY_CYCLE
+        #if WORLD_DAYCYCLE == 1
             uniform float dayCycleAdjust;
         #endif
     #endif
+
+    #include "/lib/dimension/skyAdapter.glsl"
+    #include "/lib/dimension/lightAdapter.glsl"
 
     void main(){
         // Get buffer texture coordinates
         texCoord = gl_MultiTexCoord0.xy;
 
-        skyCol = (toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash) + toLinear(SKY_COLOR_DATA_BLOCK);
+        skyCol = toLinear(worldSkyColor());
 
-        #ifdef WORLD_LIGHT
-            #ifdef FORCE_DISABLE_DAY_CYCLE
-                sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
-                lightCol = toLinear(sRGBLightCol);
-            #else
-                sRGBSunCol = SUN_COL_DATA_BLOCK;
+        #if WORLD_LIGHT == 1
+            sRGBLightCol = worldLightColor();
+            lightCol = toLinear(sRGBLightCol);
+
+            #if WORLD_DAYCYCLE == 1
+                sRGBSunCol = worldLightDay();
                 sunCol = toLinear(sRGBSunCol);
-                sRGBMoonCol = MOON_COL_DATA_BLOCK;
+                sRGBMoonCol = worldLightNight();
                 moonCol = toLinear(sRGBMoonCol);
-
-                sRGBLightCol = LIGHT_COLOR_DATA_BLOCK1(sRGBSunCol, sRGBMoonCol);
-                lightCol = toLinear(sRGBLightCol);
             #endif
 
-            #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS
+            #if CLOUD_TYPE != 0 && WORLD_CLOUDS == 1
                 cloudCol = (toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash) + skyCol;
 
-                #ifdef FORCE_DISABLE_DAY_CYCLE
+                #if WORLD_DAYCYCLE == 0
                     cloudCol += lightCol;
                 #else
                     cloudCol += mix(moonCol, sunCol, dayCycleAdjust);
@@ -110,18 +110,18 @@
 
     flat in vec3 skyCol;
 
-    #ifdef WORLD_LIGHT
+    #if WORLD_LIGHT == 1
         flat in vec3 sRGBLightCol;
         flat in vec3 lightCol;
 
-        #ifndef FORCE_DISABLE_DAY_CYCLE
+        #if WORLD_DAYCYCLE == 1
             flat in vec3 sRGBSunCol;
             flat in vec3 sunCol;
             flat in vec3 sRGBMoonCol;
             flat in vec3 moonCol;
         #endif
 
-        #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS
+        #if CLOUD_TYPE != 0 && WORLD_CLOUDS == 1
             flat in vec3 cloudCol;
             flat in vec3 cloudStartPos;
         #endif
@@ -165,11 +165,11 @@
         uniform float frameFract;
     #endif
 
-    #ifndef FORCE_DISABLE_WEATHER
+    #if WORLD_WEATHER == 1
         uniform float rainStrength;
     #endif
 
-    #ifndef FORCE_DISABLE_DAY_CYCLE
+    #if WORLD_DAYCYCLE == 1
         uniform float dayCycle;
         uniform float dayCycleAdjust;
     #endif
@@ -186,12 +186,12 @@
         uniform sampler2D vxDepthTexOpaque;
     #endif
 
-    #ifdef WORLD_CUSTOM_SKYLIGHT
-        const float eyeBrightFact = WORLD_CUSTOM_SKYLIGHT;
-    #else
+    #if WORLD_SKYLIGHT == 1
         uniform float eyeSkylight;
         
         float eyeBrightFact = eyeSkylight;
+    #else
+        const float eyeBrightFact = WORLD_SKYLIGHT_I;
     #endif
 
     #include "/lib/utility/projectionFunctions.glsl"
@@ -218,10 +218,10 @@
         #endif
     #endif
 
-    #ifdef WORLD_LIGHT
+    #if WORLD_LIGHT == 1
         uniform float shdFade;
 
-        #if CLOUD_TYPE != 0 && !defined FORCE_DISABLE_CLOUDS
+        #if CLOUD_TYPE != 0 && WORLD_CLOUDS == 1
             uniform float cloudDistantFar;
 
             uniform sampler2D colortex0;
@@ -249,6 +249,9 @@
 
         #include "/lib/post/outline.glsl"
     #endif
+
+    #include "/lib/dimension/fogAdapter.glsl"
+    #include "/lib/dimension/starAdapter.glsl"
 
     #include "/lib/utility/noiseSample.glsl"
     #include "/lib/utility/noiseFunctions.glsl"
@@ -304,7 +307,7 @@
         // Get sky pos by shadow model view
         vec3 skyPos = mat3(shadowModelView) * nEyePlayerPos;
 
-        #if defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
+        #if WORLD_LIGHT == 1 && WORLD_DAYCYCLE == 1
             // Flip if the sun has gone below the horizon
             if(dayCycle < 1) skyPos.xz = -skyPos.xz;
         #endif

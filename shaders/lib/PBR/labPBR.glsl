@@ -39,7 +39,7 @@ vec2 dcdy = dFdy(texCoord);
         return startUv;
     }
 
-    #if defined PARALLAX_SHADOW && defined WORLD_LIGHT
+    #if defined PARALLAX_SHADOW && WORLD_LIGHT == 1
         vec2 getParallaxOffset(in vec3 dirT){ return dirT.xy * (PARALLAX_DEPTH / dirT.z); }
 
         float parallaxShadow(in vec3 currPos, in vec2 lightDir) {
@@ -221,7 +221,7 @@ void getPBR(inout dataPBR material, in int id){
             if(textureGrad(normals, texUv, dcdx, dcdy).a > currPos.z) normalMap = vec3(getSlopeNormals(-viewDir, texUv, currPos.z), 0);
         #endif
 
-        #if defined PARALLAX_SHADOW && defined WORLD_LIGHT
+        #if defined PARALLAX_SHADOW && WORLD_LIGHT == 1
             if(dot(TBN[2], vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)) > 0.005 || material.ss > 0)
                 material.parallaxShd = parallaxShadow(currPos, getParallaxOffset(vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z) * TBN));
         #endif

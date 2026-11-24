@@ -63,7 +63,7 @@
 
     uniform int renderStage;
 
-    #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
+    #if WORLD_CELESTIAL == 1 && SUN_MOON_TYPE == 2 && WORLD_LIGHT == 1 && WORLD_DAYCYCLE == 1
         uniform float twilightPhase;
     #endif
 
@@ -76,7 +76,7 @@
         // Alpha test, discard and return immediately
         if(albedo.a < ALPHA_THRESHOLD){ discard; return; }
 
-        #if WORLD_SUN_MOON == 1 && SUN_MOON_TYPE == 2 && defined WORLD_LIGHT && !defined FORCE_DISABLE_DAY_CYCLE
+        #if WORLD_CELESTIAL == 1 && SUN_MOON_TYPE == 2 && WORLD_LIGHT == 1 && WORLD_DAYCYCLE == 1
             // Detect sun
             if(renderStage == MC_RENDER_STAGE_SUN){
                 // Convert to linear space

@@ -8,8 +8,8 @@ vec3 getVolumetricLight(in vec3 nFeetPlayerPos, in float feetPlayerDist, in bool
         heightFade = squared(squared(1.0 - squared(nFeetPlayerPos.y)));
         if(isSky) heightFade *= heightFade;
 
-        #ifndef WORLD_CUSTOM_SKYLIGHT
-            #ifndef FORCE_DISABLE_WEATHER
+        #if WORLD_SKYLIGHT == 1
+            #if WORLD_WEATHER == 1
                 heightFade += (1.0 - heightFade) * max(1.0 - eyeBrightFact, rainStrength * 0.5);
             #else
                 heightFade += (1.0 - heightFade) * (1.0 - eyeBrightFact);

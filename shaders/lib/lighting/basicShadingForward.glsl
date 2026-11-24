@@ -4,7 +4,7 @@ vec3 basicShadingForward(in vec3 albedo, in vec2 lmCoord){
 
     // Calculate sky diffusion first, begining with the sky itself
     // Occlude the appled sky and thunder flash calculation by sky light amount
-    vec3 totalDiffuse = (toLinear(SKY_COLOR_DATA_BLOCK) + lightningFlash) * skyLightSquared;
+    vec3 totalDiffuse = (toLinear(worldSkyColor()) + lightningFlash) * skyLightSquared;
 
     // Calculate block light
     totalDiffuse += toLinear(squared(lmCoord.x) * blockLightColor * 1.25);
@@ -12,7 +12,7 @@ vec3 basicShadingForward(in vec3 albedo, in vec2 lmCoord){
     // Calculate ambient lightning
     totalDiffuse += toLinear(nightVision * 0.5 + AMBIENT_LIGHTING);
 
-    #ifdef WORLD_LIGHT
+    #if WORLD_LIGHT == 1
         #ifdef SHADOW_MAPPING
             // Apply shadow distortion and transform to shadow screen space
             vec3 shdPos = getShdDistort(vertexShdPos);
@@ -39,7 +39,7 @@ vec3 basicShadingForward(in vec3 albedo, in vec2 lmCoord){
             float shdCol = saturate(hermiteMix(0.9, 1.0, lmCoord.y)) * shdFade;
         #endif
 
-        #ifndef FORCE_DISABLE_WEATHER
+        #if WORLD_WEATHER == 1
             // Approximate rain diffusing light shadow
             float rainDiffuseAmount = rainStrength * 0.5;
 
@@ -48,7 +48,7 @@ vec3 basicShadingForward(in vec3 albedo, in vec2 lmCoord){
         #endif
 
         // Calculate and add shadow diffuse
-        totalDiffuse += shdCol * toLinear(LIGHT_COLOR_DATA_BLOCK0);
+        totalDiffuse += shdCol * toLinear(worldLightColor());
     #endif
 
     // Return final result

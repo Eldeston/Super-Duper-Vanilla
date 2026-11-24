@@ -1,6 +1,6 @@
 vec4 complexShadingLOD(in dataPBR material, in vec2 lmCoord, in vec3 feetPlayerPos){
     // Calculate sky diffusion first, begining with the sky itself
-    vec3 totalIllumination = toLinear(SKY_COLOR_DATA_BLOCK);
+    vec3 totalIllumination = toLinear(worldSkyColor());
 
     // Calculate thunder flash
     totalIllumination += lightningFlash;
@@ -22,9 +22,9 @@ vec4 complexShadingLOD(in dataPBR material, in vec2 lmCoord, in vec3 feetPlayerP
     // Get view direction
     vec3 viewDir = -fastNormalize(feetPlayerPos);
 
-    #ifdef WORLD_LIGHT
+    #if WORLD_LIGHT == 1
         // Get sRGB light color
-        vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
+        vec3 sRGBLightCol = worldLightColor();
 
         float NLZ = dot(material.normal, vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z));
         // also equivalent to:
@@ -56,7 +56,7 @@ vec4 complexShadingLOD(in dataPBR material, in vec2 lmCoord, in vec3 feetPlayerP
             shdCol += transmittance * shadowTint;
         }
 
-        #ifndef FORCE_DISABLE_WEATHER
+        #if WORLD_WEATHER == 1
             // Approximate rain diffusing light shadow
             float rainDiffuseAmount = rainStrength * 0.5;
             shdCol *= 1.0 - rainDiffuseAmount;
@@ -84,7 +84,7 @@ vec4 complexShadingLOD(in dataPBR material, in vec2 lmCoord, in vec3 feetPlayerP
 
     vec4 totalLighting = vec4(material.albedo.rgb * totalIllumination, material.albedo.a);
 
-    #if defined WORLD_LIGHT && defined SPECULAR_HIGHLIGHTS
+    #if WORLD_LIGHT == 1 && defined SPECULAR_HIGHLIGHTS
         if(isShadow){
             // Get specular GGX
             vec3 specCol = getSpecularBRDF(viewDir, material.normal, material.albedo.rgb, NLZ, NV, material.metallic, material.smoothness) * shdCol;

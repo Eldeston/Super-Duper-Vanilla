@@ -35,7 +35,7 @@
 
     uniform mat4 gbufferModelViewInverse;
 
-    #ifdef WORLD_LIGHT
+    #if WORLD_LIGHT == 1
         uniform mat4 shadowModelView;
     #endif
 
@@ -55,10 +55,10 @@
         vertexColor = gl_Color.rgb;
 
         // Distant horizons lightmap calculation
-        #ifdef WORLD_CUSTOM_SKYLIGHT
-            vertexLightMap = vec2(min((gl_MultiTexCoord1.x - 0.03125) * 1.06666667, 1.0), WORLD_CUSTOM_SKYLIGHT);
-        #else
+        #if WORLD_SKYLIGHT == 1
             vertexLightMap = min((gl_MultiTexCoord1.xy - 0.03125) * 1.06666667, vec2(1));
+        #else
+            vertexLightMap = vec2(min((gl_MultiTexCoord1.x - 0.03125) * 1.06666667, 1.0), WORLD_SKYLIGHT_I);
         #endif
 
         // Get vertex normal
@@ -134,7 +134,7 @@
     uniform sampler2D depthtex0;
     uniform sampler2D dhDepthTex1;
 
-    #ifndef FORCE_DISABLE_WEATHER
+    #if WORLD_WEATHER == 1
         uniform float rainStrength;
     #endif
 
@@ -142,24 +142,24 @@
         uniform float dhNearPlane;
     #endif
 
-    #ifndef FORCE_DISABLE_DAY_CYCLE
+    #if WORLD_DAYCYCLE == 1
         uniform float dayCycle;
         uniform float twilightPhase;
     #endif
 
-    #ifdef WORLD_VANILLA_FOG_COLOR
+    #if WORLD_VANILLAFOG == 1
         uniform vec3 fogColor;
     #endif
 
-    #ifdef WORLD_CUSTOM_SKYLIGHT
-        const float eyeBrightFact = WORLD_CUSTOM_SKYLIGHT;
-    #else
+    #if WORLD_SKYLIGHT == 1
         uniform float eyeSkylight;
         
         float eyeBrightFact = eyeSkylight;
+    #else
+        const float eyeBrightFact = WORLD_SKYLIGHT_I;
     #endif
 
-    #ifdef WORLD_LIGHT
+    #if WORLD_LIGHT == 1
         uniform float shdFade;
 
         uniform mat4 shadowModelView;
@@ -177,11 +177,14 @@
         #include "/lib/surface/water.glsl"
     #endif
 
-    #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
+    #if defined ENVIRONMENT_PBR && WORLD_WEATHER == 1
         uniform float isPrecipitationRain;
 
         #include "/lib/PBR/enviroPBR.glsl"
     #endif
+
+    #include "/lib/dimension/skyAdapter.glsl"
+    #include "/lib/dimension/lightAdapter.glsl"
 
     #include "/lib/modded/distantHorizons+voxy/complexShadingLOD.glsl"
 
@@ -257,7 +260,7 @@
         // Convert to linear space
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
-        #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
+        #if defined ENVIRONMENT_PBR && WORLD_WEATHER == 1
             if(blockId != DH_BLOCK_WATER) enviroPBR(material, vertexLightMap, vertexNormal, vertexWorldPos);
         #endif
 

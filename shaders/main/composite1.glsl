@@ -16,12 +16,12 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    #ifdef WORLD_LIGHT
+    #if WORLD_LIGHT == 1
         noperspective out vec2 texCoord;
     #endif
 
     void main(){
-        #ifdef WORLD_LIGHT
+        #if WORLD_LIGHT == 1
             // Get buffer texture coordinates
             texCoord = gl_MultiTexCoord0.xy;
         #endif
@@ -36,7 +36,7 @@
     /* RENDERTARGETS: 0 */
     layout(location = 0) out vec3 volColOut; // colortex0
 
-    #ifdef WORLD_LIGHT
+    #if WORLD_LIGHT == 1
         noperspective in vec2 texCoord;
 
         uniform int isEyeInWater;
@@ -49,8 +49,7 @@
 
         uniform sampler2D depthtex0;
 
-
-        #ifndef FORCE_DISABLE_WEATHER
+        #if WORLD_WEATHER == 1
             uniform float rainStrength;
         #endif
 
@@ -66,12 +65,12 @@
             uniform sampler2D vxDepthTexOpaque;
         #endif
 
-        #ifdef WORLD_CUSTOM_SKYLIGHT
-            const float eyeBrightFact = WORLD_CUSTOM_SKYLIGHT;
-        #else
+        #if WORLD_SKYLIGHT == 1
             uniform float eyeSkylight;
             
             float eyeBrightFact = eyeSkylight;
+        #else
+            const float eyeBrightFact = WORLD_SKYLIGHT_I;
         #endif
 
         #include "/lib/utility/projectionFunctions.glsl"
@@ -90,7 +89,7 @@
     #endif
 
     void main(){
-        #ifdef WORLD_LIGHT
+        #if WORLD_LIGHT == 1
             if(VOLUMETRIC_LIGHTING_STRENGTH == 0 || isEyeInWater == 2) return;
 
             bool realSky = false;

@@ -16,7 +16,7 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
-    #ifdef WORLD_LIGHT
+    #if WORLD_LIGHT == 1
         flat out vec3 lightCol;
 
         noperspective out vec2 texCoord;
@@ -25,7 +25,7 @@
         
         uniform float shdFade;
 
-        #ifndef FORCE_DISABLE_WEATHER
+        #if WORLD_WEATHER == 1
             uniform float rainStrength;
         #endif
 
@@ -33,26 +33,28 @@
             uniform vec3 fogColor;
         #endif
 
-        #ifndef FORCE_DISABLE_DAY_CYCLE
+        #if WORLD_DAYCYCLE == 1
             uniform float dayCycle;
             uniform float twilightPhase;
         #endif
 
-        #ifdef WORLD_CUSTOM_SKYLIGHT
-            const float eyeBrightFact = WORLD_CUSTOM_SKYLIGHT;
-        #else
+        #if WORLD_SKYLIGHT == 1
             uniform float eyeSkylight;
             
             float eyeBrightFact = eyeSkylight;
+        #else
+            const float eyeBrightFact = WORLD_SKYLIGHT_I;
         #endif
+
+        #include "/lib/dimension/lightAdapter.glsl"
     #endif
 
     void main(){
-        #ifdef WORLD_LIGHT
+        #if WORLD_LIGHT == 1
             // Get buffer texture coordinates
             texCoord = gl_MultiTexCoord0.xy;
 
-            vec3 sRGBLightCol = LIGHT_COLOR_DATA_BLOCK0;
+            vec3 sRGBLightCol = worldLightColor();
 
             #if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING
                 lightCol = toLinear(sRGBLightCol) * min(1.0, VOLUMETRIC_LIGHTING_STRENGTH + VOLUMETRIC_LIGHTING_STRENGTH * isEyeInWater) * shdFade;
@@ -74,7 +76,7 @@
 
     uniform sampler2D colortex4;
 
-    #ifdef WORLD_LIGHT
+    #if WORLD_LIGHT == 1
         flat in vec3 lightCol;
 
         noperspective in vec2 texCoord;
@@ -91,11 +93,11 @@
         uniform sampler2D colortex0;
         uniform sampler2D depthtex0;
 
-        #ifndef FORCE_DISABLE_WEATHER
+        #if WORLD_WEATHER == 1
             uniform float rainStrength;
         #endif
 
-        #ifndef FORCE_DISABLE_DAY_CYCLE
+        #if WORLD_DAYCYCLE == 1
             uniform float dayCycle;
             uniform float dayCycleAdjust;
         #endif
@@ -112,16 +114,17 @@
             uniform sampler2D vxDepthTexOpaque;
         #endif
 
-        #ifdef WORLD_CUSTOM_SKYLIGHT
-            const float eyeBrightFact = WORLD_CUSTOM_SKYLIGHT;
-        #else
+        #if WORLD_SKYLIGHT == 1
             uniform float eyeSkylight;
             
             float eyeBrightFact = eyeSkylight;
+        #else
+            const float eyeBrightFact = WORLD_SKYLIGHT_I;
         #endif
 
         #include "/lib/utility/projectionFunctions.glsl"
         
+        #include "/lib/dimension/fogAdapter.glsl"
         #include "/lib/atmospherics/fogRender.glsl"
     #endif
 
@@ -132,7 +135,7 @@
         // Get scene color
         sceneColOut = texelFetch(colortex4, screenTexelCoord, 0).rgb;
 
-        #ifdef WORLD_LIGHT
+        #if WORLD_LIGHT == 1
             if(VOLUMETRIC_LIGHTING_STRENGTH == 0 || isEyeInWater == 2) return;
 
             bool realSky = false;
@@ -183,12 +186,12 @@
                 float borderFog = 0.0;
             #endif
 
-            float totalFogDensity = FOG_TOTAL_DENSITY;
+            float totalFogDensity = worldFogTotalDensity();
 
-            #ifdef FORCE_DISABLE_WEATHER
-                if(isEyeInWater != 0) totalFogDensity *= TAU;
-            #else
+            #if WORLD_WEATHER == 1
                 totalFogDensity *= isEyeInWater == 0 ? (rainStrength * PI + 1.0) : TAU;
+            #else
+                if(isEyeInWater != 0) totalFogDensity *= TAU;
             #endif
 
             float volumetricFogDensity = 1.0 - exp2(-feetPlayerDist * totalFogDensity);

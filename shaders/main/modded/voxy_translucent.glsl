@@ -22,13 +22,13 @@
     layout(location = 2) out vec3 albedoDataOut; // colortex2
     layout(location = 3) out vec3 materialDataOut; // colortex3
 
-    #ifdef WORLD_CUSTOM_SKYLIGHT
-        const float eyeBrightFact = WORLD_CUSTOM_SKYLIGHT;
-    #else
+    #if WORLD_SKYLIGHT == 1
         float eyeBrightFact = eyeSkylight;
+    #else
+        const float eyeBrightFact = WORLD_SKYLIGHT_I;
     #endif
 
-    #ifdef WORLD_LIGHT
+    #if WORLD_LIGHT == 1
         #include "/lib/lighting/GGX.glsl"
     #endif
 
@@ -38,11 +38,14 @@
         #include "/lib/surface/water.glsl"
     #endif
 
-    #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
+    #if defined ENVIRONMENT_PBR && WORLD_WEATHER == 1
         #include "/lib/PBR/enviroPBR.glsl"
     #endif
 
     #include "/lib/utility/projectionFunctions.glsl"
+
+    #include "/lib/dimension/skyAdapter.glsl"
+    #include "/lib/dimension/lightAdapter.glsl"
 
     #include "/lib/modded/distantHorizons+voxy/complexShadingLOD.glsl"
 
@@ -129,15 +132,15 @@
         // Convert to linear space
         material.albedo.rgb = toLinear(material.albedo.rgb);
 
-        #if defined ENVIRONMENT_PBR && !defined FORCE_DISABLE_WEATHER
+        #if defined ENVIRONMENT_PBR && WORLD_WEATHER == 1
             if(parameters.customId == 11102) enviroPBR(material, parameters.lightMap, voxyNormal, worldPos);
         #endif
 
         // Voxy lightmap calculation
-        #ifdef WORLD_CUSTOM_SKYLIGHT
-            vec2 voxyLightMap = vec2(min((parameters.lightMap.x - 0.03125) * 1.06666667, 1.0), WORLD_CUSTOM_SKYLIGHT);
-        #else
+        #if WORLD_SKYLIGHT == 1
             vec2 voxyLightMap = min((parameters.lightMap.xy - 0.03125) * 1.06666667, vec2(1));
+        #else
+            vec2 voxyLightMap = vec2(min((parameters.lightMap.x - 0.03125) * 1.06666667, 1.0), WORLD_SKYLIGHT_I);
         #endif
 
         // Apply simple shading

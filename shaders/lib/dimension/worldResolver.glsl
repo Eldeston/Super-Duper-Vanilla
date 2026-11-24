@@ -9,56 +9,28 @@
 #define WORLD_CONCAT(prefix, suffix) _WORLD_CONCAT(prefix, suffix)
 #define W_SYM(suffix) WORLD_CONCAT(WORLD_PREFIX, suffix)
 
-/* ----- World Flags ----- */
+/* ----- World Flags (0 or 1) ----- */
 
-// #ifdef W_SYM(_SKYBOX)
-//     #define WORLD_SKYBOX
-// #endif
+#define WORLD_SKYBOX W_SYM(_SKYBOX)
+#define WORLD_CLOUDS W_SYM(_CLOUDS)
+#define WORLD_WEATHER W_SYM(_WEATHER)
+#define WORLD_DAYCYCLE W_SYM(_DAYCYCLE)
+#define WORLD_SKYLIGHT W_SYM(_SKYLIGHT)
 
-// #ifdef W_SYM(_CLOUDS)
-//     #define WORLD_CLOUDS
-// #endif
+/* ----- Shader Flags (0 or 1) ----- */
 
-// #ifdef W_SYM(_WEATHER)
-//     #define WORLD_WEATHER
-// #endif
-
-// #ifdef W_SYM(_DAYCYCLE)
-//     #define WORLD_DAYCYCLE
-// #endif
-
-// #ifdef W_SYM(_SKYLIGHT)
-//     #define WORLD_SKYLIGHT
-// #endif
-
-/* ----- Shader Flags ----- */
-
-// #ifdef W_SYM(_LIGHT)
-//     #define WORLD_LIGHT
-// #endif
-
-// #ifdef W_SYM(_STARS)
-//     #define WORLD_STARS
-// #endif
-
-// #ifdef W_SYM(_AETHER)
-//     #define WORLD_AETHER
-// #endif
-
-// #ifdef W_SYM(_SKYGROUND)
-//     #define WORLD_SKYGROUND
-// #endif
-
-// #ifdef W_SYM(_VANILLAFOG)
-//     #define WORLD_VANILLAFOG
-// #endif
+#define WORLD_LIGHT W_SYM(_LIGHT)
+#define WORLD_STARS W_SYM(_STARS)
+#define WORLD_AETHER W_SYM(_AETHER)
+#define WORLD_SKYGROUND W_SYM(_SKYGROUND)
+#define WORLD_VANILLAFOG W_SYM(_VANILLAFOG)
 
 /* ----- Basic Config ----- */
 
+#define WORLD_SKYLIGHT_I W_SYM(_SKYLIGHT_I)
 #define WORLD_CELESTIAL W_SYM(_CELESTIAL)
 #define WORLD_CELESTIAL_SIZE W_SYM(_CELESTIAL_SIZE)
 #define WORLD_VANILLAFOG_MODE W_SYM(_VANILLAFOG_MODE)
-#define WORLD_SKYLIGHT_OVERRIDE W_SYM(_SKYLIGHT_OVERRIDE)
 
 /* ----- Star Config ----- */
 

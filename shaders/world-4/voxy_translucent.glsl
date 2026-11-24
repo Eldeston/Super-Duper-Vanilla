@@ -6,5 +6,5 @@
 #include "/lib/utility/common.glsl"
 
 #include "world.glsl"
-#include "/lib/worldResolver.glsl"
+#include "/lib/dimension/worldResolver.glsl"
 #include "/main/modded/voxy_translucent.glsl"

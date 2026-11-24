@@ -29,7 +29,7 @@
 
     uniform sampler2D colortex4;
 
-    #if defined LENS_FLARE && defined WORLD_LIGHT || defined BLOOM
+    #if defined LENS_FLARE && WORLD_LIGHT == 1 || defined BLOOM
         uniform sampler2D colortex0;
     #endif
 
@@ -40,7 +40,7 @@
         // Get scene color
         sceneColOut = texelFetch(colortex4, screenTexelCoord, 0).rgb;
 
-        #if defined LENS_FLARE && defined WORLD_LIGHT || defined BLOOM
+        #if defined LENS_FLARE && WORLD_LIGHT == 1 || defined BLOOM
             // Uncompress the HDR colors and upscale
             vec3 bloomCol = texelFetch(colortex0, ivec2(gl_FragCoord.xy * 0.5), 0).rgb;
             float bloomLuma = sumOf(bloomCol);
