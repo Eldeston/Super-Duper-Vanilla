@@ -8,4 +8,5 @@
 #include "/lib/utility/common.glsl"
 
 #include "world.glsl"
+#include "/lib/worldResolver.glsl"
 #include "/main/composite4.glsl"

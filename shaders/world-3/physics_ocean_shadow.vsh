@@ -9,4 +9,5 @@
 #include "/lib/utility/common.glsl"
 
 #include "world.glsl"
+#include "/lib/worldResolver.glsl"
 #include "/main/modded/physics_ocean_shadow.glsl"

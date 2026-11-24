@@ -9,4 +9,5 @@
 #include "/lib/utility/common.glsl"
 
 #include "world.glsl"
+#include "/lib/worldResolver.glsl"
 #include "/main/gbuffers/gbuffers_skybasic.glsl"

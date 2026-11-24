@@ -9,4 +9,5 @@
 #include "/lib/utility/common.glsl"
 
 #include "world.glsl"
+#include "/lib/worldResolver.glsl"
 #include "/main/shadow/shadow_solid.glsl"
