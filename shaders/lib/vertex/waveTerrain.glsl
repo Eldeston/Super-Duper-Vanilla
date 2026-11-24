@@ -48,7 +48,7 @@ vec3 getTerrainWave(in vec3 vertexEyePlayerPos, in vec2 vertexWorldPosXZ, in vec
             vec2 alongWall = wallOnX ? vec2(0, 1) : vec2(1, 0);
             vec2 awayWall = wallOnX ? vec2(1, 0) : vec2(0, 1);
 
-            vertexEyePlayerPos.xz += alongWall * windStrength * 0.05;
+            vertexEyePlayerPos.xz += alongWall * windStrength * 0.1;
             vertexEyePlayerPos.xz += awayWall * sign(away) * (windStrength * 0.1 + 0.05);
             return vertexEyePlayerPos;
         }
