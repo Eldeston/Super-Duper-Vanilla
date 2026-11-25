@@ -236,7 +236,9 @@
         float physicsFoam = fastSqrt(wave.foam);
         material.albedo = min(vec4(1), material.albedo + physicsFoam);
 
-        waterNoise *= (getCellNoise(waterNoiseUv) + physicsFoam) * 0.5;
+        #ifdef WATER_NOISE
+            waterNoise *= (getCellNoise(waterNoiseUv) + physicsFoam) * 0.5;
+        #endif
 
         #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
             // Water color and foam. Fast depth linearization by DrDesten
