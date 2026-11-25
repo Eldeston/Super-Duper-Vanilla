@@ -262,7 +262,7 @@ vec2 lightMapCoord(in vec2 lightMap){
     return vec2(lightMapCoord(lightMap.x), lightMapCoord(lightMap.y));
 }
 
-// Blend strength: lower = closer to the average of x and x^4, higher = closer to x^4
+// Light map blend strength
 #define LM_BLEND 0.1
 
 float lightmapCurve(in float x) {

@@ -18,7 +18,19 @@
 #ifdef VERTEX
     flat out vec4 vertexColor;
 
+    #if WORLD_CELESTIAL == 1 && SUN_MOON_TYPE == 2 && WORLD_LIGHT == 1 && WORLD_DAYCYCLE == 1
+        flat out vec3 sRGBSunCol;
+        flat out vec3 sRGBMoonCol;
+    #endif
+
     out vec2 texCoord;
+
+    #if WORLD_CELESTIAL == 1 && SUN_MOON_TYPE == 2 && WORLD_LIGHT == 1 && WORLD_DAYCYCLE == 1
+        uniform float dayCycle;
+        uniform float twilightPhase;
+
+        #include "/lib/dimension/lightAdapter.glsl"
+    #endif
 
     #if ANTI_ALIASING == 2
         uniform int frameMod;
@@ -34,6 +46,11 @@
         vertexColor = gl_Color;
         // Get buffer texture coordinates
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
+
+        #if WORLD_CELESTIAL == 1 && SUN_MOON_TYPE == 2 && WORLD_LIGHT == 1 && WORLD_DAYCYCLE == 1
+            sRGBSunCol = worldLightDay();
+            sRGBMoonCol = worldLightNight();
+        #endif
 
         // Get vertex view position
         vec3 vertexViewPos = mat3(gl_ModelViewMatrix) * gl_Vertex.xyz + gl_ModelViewMatrix[3].xyz;
@@ -59,15 +76,14 @@
 
     flat in vec4 vertexColor;
 
+    #if WORLD_CELESTIAL == 1 && SUN_MOON_TYPE == 2 && WORLD_LIGHT == 1 && WORLD_DAYCYCLE == 1
+        flat in vec3 sRGBSunCol;
+        flat in vec3 sRGBMoonCol;
+    #endif
+
     in vec2 texCoord;
 
     uniform int renderStage;
-
-    #if WORLD_CELESTIAL == 1 && SUN_MOON_TYPE == 2 && WORLD_LIGHT == 1 && WORLD_DAYCYCLE == 1
-        uniform float twilightPhase;
-
-        #include "/lib/dimension/lightAdapter.glsl"
-    #endif
 
     uniform sampler2D gtexture;
     
@@ -82,14 +98,14 @@
             // Detect sun
             if(renderStage == MC_RENDER_STAGE_SUN){
                 // Convert to linear space
-                sceneColOut = toLinear(albedo.rgb * albedo.a) * worldLightDay() * sunMoonIntensitySqrd;
+                sceneColOut = toLinear(albedo.rgb * albedo.a) * sRGBSunCol * sunMoonIntensitySqrd;
                 return;
             }
 
             // Detect moon
             if(renderStage == MC_RENDER_STAGE_MOON){
                 // Convert to linear space
-                sceneColOut = toLinear(albedo.rgb * albedo.a) * worldLightNight() * sunMoonIntensitySqrd;
+                sceneColOut = toLinear(albedo.rgb * albedo.a) * sRGBMoonCol * sunMoonIntensitySqrd;
                 return;
             }
         #else
