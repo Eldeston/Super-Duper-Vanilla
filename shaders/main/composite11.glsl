@@ -79,8 +79,7 @@
             #endif
 
             // Get sRGB light halfPostColOut
-            sRGBLightCol = worldLightColor();
-            sRGBLightCol *= shdLightDirScreenSpace.w;
+            sRGBLightCol = toSRGB(max(worldLightColor(), 1e-6)) * shdLightDirScreenSpace.w;
         #endif
 
         gl_Position = vec4(gl_Vertex.xy * 2.0 - 1.0, 0, 1);

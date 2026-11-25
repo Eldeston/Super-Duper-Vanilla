@@ -71,18 +71,19 @@
         // Get buffer texture coordinates
         texCoord = gl_MultiTexCoord0.xy;
 
-        sRGBSkyCol = worldSkyColor();
-        skyCol = toLinear(sRGBSkyCol);
+        // Adapters return linear colors, sRGB copies are only for sRGB space sky rendering
+        skyCol = worldSkyColor();
+        sRGBSkyCol = toSRGB(max(skyCol, 1e-6));
 
         #if WORLD_LIGHT == 1
-            sRGBLightCol = worldLightColor();
-            lightCol = toLinear(sRGBLightCol);
+            lightCol = worldLightColor();
+            sRGBLightCol = toSRGB(max(lightCol, 1e-6));
 
             #if WORLD_DAYCYCLE == 1
-                sRGBSunCol = worldLightDay();
-                sunCol = toLinear(sRGBSunCol);
-                sRGBMoonCol = worldLightNight();
-                moonCol = toLinear(sRGBMoonCol);
+                sunCol = worldLightDay();
+                sRGBSunCol = toSRGB(max(sunCol, 1e-6));
+                moonCol = worldLightNight();
+                sRGBMoonCol = toSRGB(max(moonCol, 1e-6));
             #endif
 
             #if CLOUD_TYPE != 0 && WORLD_CLOUDS == 1

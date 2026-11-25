@@ -54,13 +54,13 @@
             // Get buffer texture coordinates
             texCoord = gl_MultiTexCoord0.xy;
 
-            vec3 sRGBLightCol = worldLightColor();
+            vec3 dimLightCol = worldLightColor();
 
             #if defined VOLUMETRIC_LIGHTING && defined SHADOW_MAPPING
-                lightCol = toLinear(sRGBLightCol) * min(1.0, VOLUMETRIC_LIGHTING_STRENGTH + VOLUMETRIC_LIGHTING_STRENGTH * isEyeInWater) * shdFade;
+                lightCol = dimLightCol * min(1.0, VOLUMETRIC_LIGHTING_STRENGTH + VOLUMETRIC_LIGHTING_STRENGTH * isEyeInWater) * shdFade;
             #else
-                lightCol = toLinear(sRGBLightCol) * squared(eyeBrightFact) * VOLUMETRIC_LIGHTING_STRENGTH;
-                if(isEyeInWater == 1) lightCol = toLinear(sRGBLightCol) * toLinear(fogColor) * min(1.0, VOLUMETRIC_LIGHTING_STRENGTH * 2.0);
+                lightCol = dimLightCol * squared(eyeBrightFact) * VOLUMETRIC_LIGHTING_STRENGTH;
+                if(isEyeInWater == 1) lightCol = dimLightCol * toLinear(fogColor) * min(1.0, VOLUMETRIC_LIGHTING_STRENGTH * 2.0);
             #endif
         #endif
 

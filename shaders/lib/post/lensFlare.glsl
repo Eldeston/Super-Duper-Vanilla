@@ -36,10 +36,10 @@ vec3 getLensFlare(in vec2 centerCoord, in vec2 lightDir){
     #if WORLD_CELESTIAL == 2
         return (lens1 + (lens0 + lens2) * 0.125 + chromaLens) * sRGBLightCol;
     #elif SUN_MOON_TYPE == 2
-        float rays = lensFlareRays(centerCoord, lightDir, 8.0, 0.05, -1.0);
+        float rays = lensFlareRays(centerCoord, lightDir, 8.0, 0.03125, -1.0);
         return (lens1 + (lens0 + lens2) * 0.125 + rays + chromaLens) * sRGBLightCol;
     #else
-        float rays = lensFlareRays(centerCoord, lightDir, 8.0, 0.1, -1.0);
+        float rays = lensFlareRays(centerCoord, lightDir, 8.0, 0.125, -1.0);
         return (lens1 + (lens0 + lens2) * 0.125 + rays + chromaLens) * sRGBLightCol;
     #endif
 }

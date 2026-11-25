@@ -127,7 +127,7 @@ vec4 complexShadingForward(in dataPBR material, in vec2 lmCoord, in vec3 feetPla
 
     // Calculate sky diffusion first, begining with the sky itself
     // Occlude the appled sky and thunder flash calculation by sky light amount
-    vec3 totalIllumination = (toLinear(worldSkyColor()) + lightningFlash) * skyLightSquared;
+    vec3 totalIllumination = (worldSkyColor() + lightningFlash) * skyLightSquared;
 
     // Calculate ambient lightning
     totalIllumination += toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
@@ -150,8 +150,8 @@ vec4 complexShadingForward(in dataPBR material, in vec2 lmCoord, in vec3 feetPla
     vec3 viewDir = -fastNormalize(feetPlayerPos);
 
     #if WORLD_LIGHT == 1
-        // Get sRGB light color
-        vec3 sRGBLightCol = worldLightColor();
+        // Get light color
+        vec3 lightCol = worldLightColor();
 
         // also equivalent to:
         // vec3(0, 0, 1) * mat3(shadowModelView) = vec3(shadowModelView[0].z, shadowModelView[1].z, shadowModelView[2].z)
@@ -204,7 +204,7 @@ vec4 complexShadingForward(in dataPBR material, in vec2 lmCoord, in vec3 feetPla
         #endif
 
         // Calculate and add shadow diffuse
-        totalIllumination += toLinear(sRGBLightCol) * shdCol;
+        totalIllumination += lightCol * shdCol;
     #endif
 
     // Modified version of BSL's reflection PBR calculation
@@ -227,7 +227,7 @@ vec4 complexShadingForward(in dataPBR material, in vec2 lmCoord, in vec3 feetPla
         if(isShadow){
             // Get specular GGX
             vec3 specCol = getSpecularBRDF(viewDir, material.normal, material.albedo.rgb, NLZ, NV, material.metallic, material.smoothness) * shdCol;
-            totalLighting.rgb += sunMoonIntensitySqrd * specCol * sRGBLightCol;
+            totalLighting.rgb += sunMoonIntensitySqrd * specCol * lightCol;
             if(material.albedo.a < 1) totalLighting.a = max(maxOf(specCol), totalLighting.a);
         }
     #endif

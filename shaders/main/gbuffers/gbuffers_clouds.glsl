@@ -84,9 +84,16 @@
             uniform vec3 fogColor;
         #endif
 
+        #include "/lib/dimension/skyAdapter.glsl"
+        #include "/lib/dimension/lightAdapter.glsl"
+
         void main(){
             // Apply simple shading
-            sceneColOut = (toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash) + toLinear(SKY_COLOR_DATA_BLOCK) + toLinear(LIGHT_COLOR_DATA_BLOCK0) * squared(cloudGradient);
+            sceneColOut = (toLinear(nightVision * 0.5 + AMBIENT_LIGHTING) + lightningFlash) + worldSkyColor();
+
+            #if WORLD_LIGHT == 1
+                sceneColOut += worldLightColor() * squared(cloudGradient);
+            #endif
         }
     #endif
 #endif
