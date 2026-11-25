@@ -25,7 +25,6 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 ## CURRENT
 * [ ] Implement bit packing for optimization
 * [ ] Implement square style sun/moon
-* [ ] Consider early linear color conversion to improve day cycle transition
 
 * [ ] Refactor parallax occlusion mapping
 * [ ] Change cloud texture
@@ -45,6 +44,7 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 ## DONE
 * [x] Rebalance block light range for gameplay
 * [x] Fix missing vanilla fog mode implementations
+* [x] Consider early linear color conversion to improve day cycle transition
 * [x] Make aether available in no light environments by using fog instead (through vanilla or custom)
 
 * [x] Replace skybox clouds completely with voxelized clouds
