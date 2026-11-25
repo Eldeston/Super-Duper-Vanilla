@@ -230,7 +230,7 @@
             endStarField += getEndStarField(endPos.xy * 2.0 - startPos, starSpeed) * 0.33333333;
 
             // Get the depth outline for the end portal
-            float edgeBrightness = exp2((blockDepth + 0.0625) * 8.0);
+            float edgeBrightness = min(exp2((blockDepth + 0.0625) * 8.0), EMISSIVE_INTENSITY);
 
             // Get noise color to variate the end portal color
             vec3 noiseCol = sin(getRng3(ivec2(startPos * 16.0) & 255) * TAU + fragmentFrameTime * 2.0) * 0.25 + 0.75;
