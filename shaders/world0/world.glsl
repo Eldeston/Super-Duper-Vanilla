@@ -24,6 +24,7 @@
 #define WORLD0_SKYLIGHT_I 1.00 // Custom skylight amount [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00]
 #define WORLD0_CELESTIAL 1 // Celestial body type (0: None, 1: Sun/Moon, 2: Black Hole) [0 1 2]
 #define WORLD0_CELESTIAL_SIZE 0.10 // Celestial body size [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50]
+#define WORLD0_VANILLAFOG_STRENGTH 1.00 // Vanilla fog strength [0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.00]
 #define WORLD0_VANILLAFOG_MODE 0 // Vanilla fog blend mode [0 1 2]
 
 /* -------- Complex config -------- */

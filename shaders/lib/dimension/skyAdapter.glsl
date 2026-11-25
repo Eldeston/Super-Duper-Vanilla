@@ -37,9 +37,9 @@ vec3 worldSkyColor(){
 
     #if WORLD_VANILLAFOG == 1
         #if WORLD_VANILLAFOG_MODE == 1
-            return mix(baseSky, worldVanillaFogSky(), 0.5);
+            return mix(baseSky, worldVanillaFogSky(), WORLD_VANILLAFOG_STRENGTH);
         #elif WORLD_VANILLAFOG_MODE == 2
-            return baseSky * worldVanillaFogSky();
+            return baseSky * mix(vec3(1.0), worldVanillaFogSky(), WORLD_VANILLAFOG_STRENGTH);
         #else
             return worldVanillaFogSky();
         #endif

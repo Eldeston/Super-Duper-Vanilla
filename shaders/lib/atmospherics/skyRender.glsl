@@ -33,12 +33,12 @@ vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){
 
 // Sky half render
 vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
-    #if (WORLD_AETHER == 1 && WORLD_LIGHT == 1) || WORLD_STARS == 1
+    #if WORLD_AETHER == 1 || WORLD_STARS == 1
         // Scaled by noise resolution
         vec2 skyCoordScale = skyPos.xy * 256.0;
     #endif
 
-    #if WORLD_AETHER == 1 && WORLD_LIGHT == 1
+    #if WORLD_AETHER == 1
         int aetherAnimationSpeed = int(fragmentFrameTime * 8.0);
 
         // Looks complex, but all it does is move the noise texture in 3 different directions
@@ -50,7 +50,11 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
             texelFetch(noisetex, aetherTexelCoord1, 0).z,
             texelFetch(noisetex, aetherTexelCoord2, 0).z);
 
-        currSkyCol += exp2(-abs(nEyePlayerPos.y) * 8.0) * cubed(aetherNoise * lightCol + sumOf(aetherNoise) * 0.66666666) * lightCol;
+        #if WORLD_LIGHT == 1
+            currSkyCol += exp2(-abs(nEyePlayerPos.y) * 8.0) * cubed(aetherNoise * lightCol + sumOf(aetherNoise) * 0.66666666) * lightCol;
+        #else
+            currSkyCol += exp2(-abs(nEyePlayerPos.y) * 8.0) * cubed(aetherNoise * sRGBSkyCol + sumOf(aetherNoise) * 0.66666666) * sRGBSkyCol;
+        #endif
     #endif
 
     #if WORLD_STARS == 1
@@ -85,7 +89,7 @@ vec3 getSkyFogRender(in vec3 nEyePlayerPos){
     // Get basic sky simple color
     vec3 currSkyCol = getSkyBasic(nEyePlayerPos.y, skyPos.z);
     
-    #if WORLD_AETHER == 1 && WORLD_LIGHT == 1
+    #if WORLD_AETHER == 1
         // Scaled by noise resolution
         vec2 skyCoordScale = skyPos.xy * 256.0;
 
@@ -100,7 +104,11 @@ vec3 getSkyFogRender(in vec3 nEyePlayerPos){
             texelFetch(noisetex, aetherTexelCoord1, 0).z,
             texelFetch(noisetex, aetherTexelCoord2, 0).z);
 
-        currSkyCol += exp2(-abs(nEyePlayerPos.y) * 8.0) * cubed(aetherNoise * lightCol + sumOf(aetherNoise) * 0.66666666) * lightCol;
+        #if WORLD_LIGHT == 1
+            currSkyCol += exp2(-abs(nEyePlayerPos.y) * 8.0) * cubed(aetherNoise * lightCol + sumOf(aetherNoise) * 0.66666666) * lightCol;
+        #else
+            currSkyCol += exp2(-abs(nEyePlayerPos.y) * 8.0) * cubed(aetherNoise * sRGBSkyCol + sumOf(aetherNoise) * 0.66666666) * sRGBSkyCol;
+        #endif
     #endif
 
     // Do a simple void gradient calculation
@@ -114,7 +122,7 @@ vec3 getSkyFogRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
     // If player is in lava, return fog color
     if(isEyeInWater == 2) return fogColor;
 
-    #if WORLD_AETHER == 1 && WORLD_LIGHT == 1
+    #if WORLD_AETHER == 1
         // Scaled by noise resolution
         vec2 skyCoordScale = skyPos.xy * 256.0;
 
@@ -128,8 +136,12 @@ vec3 getSkyFogRender(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
         vec3 aetherNoise = vec3(texelFetch(noisetex, aetherTexelCoord0, 0).z,
             texelFetch(noisetex, aetherTexelCoord1, 0).z,
             texelFetch(noisetex, aetherTexelCoord2, 0).z);
-
-        currSkyCol += exp2(-abs(nEyePlayerPos.y) * 8.0) * cubed(aetherNoise * lightCol + sumOf(aetherNoise) * 0.66666666) * lightCol;
+        
+        #if WORLD_LIGHT == 1
+            currSkyCol += exp2(-abs(nEyePlayerPos.y) * 8.0) * cubed(aetherNoise * lightCol + sumOf(aetherNoise) * 0.66666666) * lightCol;
+        #else
+            currSkyCol += exp2(-abs(nEyePlayerPos.y) * 8.0) * cubed(aetherNoise * sRGBSkyCol + sumOf(aetherNoise) * 0.66666666) * sRGBSkyCol;
+        #endif
     #endif
 
     // Do a simple void gradient calculation
