@@ -1,4 +1,4 @@
-## Language format v1.1.4
+## Language format v1.1.5
 ## All other .lang files must update to the latest language format version on this main .lang file
 
 ## Profiles
@@ -373,143 +373,1263 @@ screen.PBR.comment = §6Physically based rendering options including PBR mode, s
         option.NORMAL_GENERATION_RESOLUTION.comment = Sets the resolution for automatically generated normal maps.
 
 screen.CONFIGURATION = Configuration
-screen.CONFIGURATION.comment = §6Dimension and environment configuration for overworld, nether, end, and fog settings.
-    screen.OVERWORLD_SETTINGS = Overworld settings
-    screen.OVERWORLD_SETTINGS.comment = §aOverworld lighting, sky, and fog color settings for day, night, and twilight.
-        screen.DAY_SETTINGS = Day settings
-        screen.DAY_SETTINGS.comment = §bDaytime light and sky color configuration.
-            option.LIGHT0_DR = Light red
-            option.LIGHT0_DR.comment = Red channel for day light color.
-            
-            option.LIGHT0_DG = Light green
-            option.LIGHT0_DG.comment = Green channel for day light color.
-            
-            option.LIGHT0_DB = Light blue
-            option.LIGHT0_DB.comment = Blue channel for day light color.
-            
-            option.LIGHT0_DI = Light intensity
-            option.LIGHT0_DI.comment = Intensity for day light color.
+screen.CONFIGURATION.comment = §6Per-dimension features, sky, light, and fog configuration, plus block light color.
+    screen.DIMVANILLA = Vanilla dimensions
+    screen.DIMVANILLA.comment = §aSettings for the Overworld, the Nether, and the End.
+        screen.DIM0 = Overworld settings
+        screen.DIM0.comment = §aFeatures, sky, light, and fog configuration for the Overworld.
+            screen.DIM0_FLAGS = Features
+            screen.DIM0_FLAGS.comment = §6Turn dimension and shader features On or Off for the Overworld. Other options may have no effect when their feature is Off.
+                option.WORLD0_SKYBOX = Skybox
+                option.WORLD0_SKYBOX.comment = Custom skybox rendering for the Overworld.
+                value.WORLD0_SKYBOX.0 = Off
+                value.WORLD0_SKYBOX.1 = On
 
-            option.SKY0_DR = Sky red
-            option.SKY0_DR.comment = Red channel for day sky color.
-            
-            option.SKY0_DG = Sky green
-            option.SKY0_DG.comment = Green channel for day sky color.
-            
-            option.SKY0_DB = Sky blue
-            option.SKY0_DB.comment = Blue channel for day sky color.
-            
-            option.SKY0_DI = Sky intensity
-            option.SKY0_DI.comment = Intensity for day sky color.
+                option.WORLD0_CLOUDS = Clouds
+                option.WORLD0_CLOUDS.comment = Clouds in the Overworld.
+                value.WORLD0_CLOUDS.0 = Off
+                value.WORLD0_CLOUDS.1 = On
 
-        screen.NIGHT_SETTINGS = Night settings
-        screen.NIGHT_SETTINGS.comment = §1Nighttime light and sky color configuration.
-            option.LIGHT0_NR = Light red
-            option.LIGHT0_NR.comment = Red channel for night light color.
-            
-            option.LIGHT0_NG = Light green
-            option.LIGHT0_NG.comment = Green channel for night light color.
-            
-            option.LIGHT0_NB = Light blue
-            option.LIGHT0_NB.comment = Blue channel for night light color.
-            
-            option.LIGHT0_NI = Light intensity
-            option.LIGHT0_NI.comment = Intensity for night light color.
+                option.WORLD0_WEATHER = Weather
+                option.WORLD0_WEATHER.comment = Rain and weather effects in the Overworld.
+                value.WORLD0_WEATHER.0 = Off
+                value.WORLD0_WEATHER.1 = On
 
-            option.SKY0_NR = Sky red
-            option.SKY0_NR.comment = Red channel for night sky color.
-            
-            option.SKY0_NG = Sky green
-            option.SKY0_NG.comment = Green channel for night sky color.
-            
-            option.SKY0_NB = Sky blue
-            option.SKY0_NB.comment = Blue channel for night sky color.
-            
-            option.SKY0_NI = Sky intensity
-            option.SKY0_NI.comment = Intensity for night sky color.
+                option.WORLD0_DAYCYCLE = Day cycle
+                option.WORLD0_DAYCYCLE.comment = Day, night and twilight colors in the Overworld. When Off, the Constant settings are used.
+                value.WORLD0_DAYCYCLE.0 = Off
+                value.WORLD0_DAYCYCLE.1 = On
 
-        screen.TWILIGHT_SETTINGS = Twilight settings
-        screen.TWILIGHT_SETTINGS.comment = §dTwilight light and sky color configuration.
-            option.LIGHT0_TR = Light red
-            option.LIGHT0_TR.comment = Red channel for twilight light color.
-            
-            option.LIGHT0_TG = Light green
-            option.LIGHT0_TG.comment = Green channel for twilight light color.
-            
-            option.LIGHT0_TB = Light blue
-            option.LIGHT0_TB.comment = Blue channel for twilight light color.
-            
-            option.LIGHT0_TI = Light intensity
-            option.LIGHT0_TI.comment = Intensity for twilight light color.
+                option.WORLD0_SKYLIGHT = Real skylight
+                option.WORLD0_SKYLIGHT.comment = On: use the real sky light level of the world in the Overworld. Off: use the fixed Skylight amount instead.
+                value.WORLD0_SKYLIGHT.0 = Off
+                value.WORLD0_SKYLIGHT.1 = On
 
-            option.SKY0_TR = Sky red
-            option.SKY0_TR.comment = Red channel for twilight sky color.
-            
-            option.SKY0_TG = Sky green
-            option.SKY0_TG.comment = Green channel for twilight sky color.
-            
-            option.SKY0_TB = Sky blue
-            option.SKY0_TB.comment = Blue channel for twilight sky color.
-            
-            option.SKY0_TI = Sky intensity
-            option.SKY0_TI.comment = Intensity for twilight sky color.
+                option.WORLD0_LIGHT = Directional light
+                option.WORLD0_LIGHT.comment = Directional light (sun/moon light and shadows) in the Overworld.
+                value.WORLD0_LIGHT.0 = Off
+                value.WORLD0_LIGHT.1 = On
 
-        screen.FOG_SETTINGS0 = Fog settings
-        screen.FOG_SETTINGS0.comment = §7Fog density and color settings for the overworld.
-            option.FOG0_VERTICAL_DENSITY_D = Vertical density day
-            option.FOG0_VERTICAL_DENSITY_D.comment = Vertical fog density for day. Higher values = thinner fog at high altitudes, thicker at low.
-            
-            option.FOG0_VERTICAL_DENSITY_N = Vertical density night
-            option.FOG0_VERTICAL_DENSITY_N.comment = Vertical fog density for night.
-            
-            option.FOG0_VERTICAL_DENSITY_T = Vertical density twilight
-            option.FOG0_VERTICAL_DENSITY_T.comment = Vertical fog density for twilight.
-            
-            option.FOG0_TOTAL_DENSITY = Total density
-            option.FOG0_TOTAL_DENSITY.comment = Total fog density for overworld. Higher values = thicker fog.
+                option.WORLD0_STARS = Stars
+                option.WORLD0_STARS.comment = Shader star field in the Overworld (not the vanilla stars).
+                value.WORLD0_STARS.0 = Off
+                value.WORLD0_STARS.1 = On
 
-    screen.NETHER_SETTINGS = Nether settings
-    screen.NETHER_SETTINGS.comment = §cNether fog and sky color configuration.
-        option.FOGn1_VERTICAL_DENSITY = Vertical density
-        option.FOGn1_VERTICAL_DENSITY.comment = Vertical fog density for the Nether. Higher values = thinner fog at high altitudes, thicker at low.
+                option.WORLD0_AETHER = Aether
+                option.WORLD0_AETHER.comment = Aether glow effect in the sky of the Overworld.
+                value.WORLD0_AETHER.0 = Off
+                value.WORLD0_AETHER.1 = On
 
-        option.FOGn1_TOTAL_DENSITY = Total density
-        option.FOGn1_TOTAL_DENSITY.comment = Total fog density for the Nether. Higher values = thicker fog.
+                option.WORLD0_SKYGROUND = Sky ground
+                option.WORLD0_SKYGROUND.comment = Darkens the sky below the horizon in the Overworld.
+                value.WORLD0_SKYGROUND.0 = Off
+                value.WORLD0_SKYGROUND.1 = On
 
-        option.WORLDn1_VANILLA_FOGCOLI = Sky intensity
-        option.WORLDn1_VANILLA_FOGCOLI.comment = Intensity for Nether vanilla fog color.
+                option.WORLD0_VANILLAFOG = Vanilla fog color
+                option.WORLD0_VANILLAFOG.comment = Uses the fog color given by the game in the Overworld as the sky color. See Vanilla fog mode.
+                value.WORLD0_VANILLAFOG.0 = Off
+                value.WORLD0_VANILLAFOG.1 = On
 
-    screen.END_SETTINGS = End settings
-    screen.END_SETTINGS.comment = §5End dimension light, sky, and fog color configuration.
-        option.LIGHT1_CR = Light red
-        option.LIGHT1_CR.comment = Red channel for End light color.
+            screen.DIM0_BASIC = Basic
+            screen.DIM0_BASIC.comment = §eSkylight, celestial body, and vanilla fog options for the Overworld.
+                option.WORLD0_SKYLIGHT_I = Skylight amount
+                option.WORLD0_SKYLIGHT_I.comment = Fixed skylight level used when Real skylight is Off. 0 is fully dark and 1 is fully lit.
 
-        option.LIGHT1_CG = Light green
-        option.LIGHT1_CG.comment = Green channel for End light color.
+                option.WORLD0_CELESTIAL = Celestial body
+                option.WORLD0_CELESTIAL.comment = What is drawn as the sun/moon equivalent in the Overworld. §cWarning:§r if the dimension has no sun/moon or other celestial body, the vanilla sun/moon option may be unavailable.
+                value.WORLD0_CELESTIAL.0 = None
+                value.WORLD0_CELESTIAL.1 = Sun and moon
+                value.WORLD0_CELESTIAL.2 = Black hole
 
-        option.LIGHT1_CB = Light blue
-        option.LIGHT1_CB.comment = Blue channel for End light color.
+                option.WORLD0_CELESTIAL_SIZE = Celestial size
+                option.WORLD0_CELESTIAL_SIZE.comment = Size of the celestial body.
 
-        option.LIGHT1_CI = Light intensity
-        option.LIGHT1_CI.comment = Intensity for End light color.
+                option.WORLD0_VANILLAFOG_MODE = Vanilla fog mode
+                option.WORLD0_VANILLAFOG_MODE.comment = How the vanilla fog color combines with the sky color. Only used when Vanilla fog color is On.
+                value.WORLD0_VANILLAFOG_MODE.0 = Replace
+                value.WORLD0_VANILLAFOG_MODE.1 = Blend
+                value.WORLD0_VANILLAFOG_MODE.2 = Multiply
 
-        option.SKY1_CR = Sky red
-        option.SKY1_CR.comment = Red channel for End sky color.
+            screen.DIM0_DAY = Day
+            screen.DIM0_DAY.comment = §eDaytime colors, fog, and stars. Used when Day cycle is On.
 
-        option.SKY1_CG = Sky green
-        option.SKY1_CG.comment = Green channel for End sky color.
+            screen.DIM0_NIGHT = Night
+            screen.DIM0_NIGHT.comment = §1Nighttime colors, fog, and stars. Used when Day cycle is On.
 
-        option.SKY1_CB = Sky blue
-        option.SKY1_CB.comment = Blue channel for End sky color.
+            screen.DIM0_TWILIGHT = Twilight
+            screen.DIM0_TWILIGHT.comment = §dSunrise and sunset colors, fog, and stars. Used when Day cycle is On.
 
-        option.SKY1_CI = Sky intensity
-        option.SKY1_CI.comment = Intensity for End sky color.
+            screen.DIM0_CONSTANT = Constant
+            screen.DIM0_CONSTANT.comment = §fColors and fog used at all times when Day cycle is Off. Stars use the Constant intensity.
 
-        option.FOG1_VERTICAL_DENSITY = Vertical density
-        option.FOG1_VERTICAL_DENSITY.comment = Vertical fog density for the End. Higher values = thinner fog at high altitudes, thicker at low.
+                option.WORLD0_LIGHT_DR = Light red
+                option.WORLD0_LIGHT_DR.comment = Red channel of the day light color in the Overworld.
+                option.WORLD0_LIGHT_DG = Light green
+                option.WORLD0_LIGHT_DG.comment = Green channel of the day light color in the Overworld.
+                option.WORLD0_LIGHT_DB = Light blue
+                option.WORLD0_LIGHT_DB.comment = Blue channel of the day light color in the Overworld.
+                option.WORLD0_LIGHT_DI = Light intensity
+                option.WORLD0_LIGHT_DI.comment = Intensity of the day light color in the Overworld.
+                option.WORLD0_SKY_DR = Sky red
+                option.WORLD0_SKY_DR.comment = Red channel of the day sky color in the Overworld.
+                option.WORLD0_SKY_DG = Sky green
+                option.WORLD0_SKY_DG.comment = Green channel of the day sky color in the Overworld.
+                option.WORLD0_SKY_DB = Sky blue
+                option.WORLD0_SKY_DB.comment = Blue channel of the day sky color in the Overworld.
+                option.WORLD0_SKY_DI = Sky intensity
+                option.WORLD0_SKY_DI.comment = Intensity of the day sky color in the Overworld.
+                option.WORLD0_FOG_TOTAL_DI = Total fog density
+                option.WORLD0_FOG_TOTAL_DI.comment = Overall fog density at day in the Overworld. Higher values give thicker fog.
+                option.WORLD0_FOG_VERTICAL_DI = Vertical fog density
+                option.WORLD0_FOG_VERTICAL_DI.comment = Vertical fog density at day in the Overworld. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
 
-        option.FOG1_TOTAL_DENSITY = Total density
-        option.FOG1_TOTAL_DENSITY.comment = Total fog density for the End. Higher values = thicker fog.
+                option.WORLD0_LIGHT_NR = Light red
+                option.WORLD0_LIGHT_NR.comment = Red channel of the night light color in the Overworld.
+                option.WORLD0_LIGHT_NG = Light green
+                option.WORLD0_LIGHT_NG.comment = Green channel of the night light color in the Overworld.
+                option.WORLD0_LIGHT_NB = Light blue
+                option.WORLD0_LIGHT_NB.comment = Blue channel of the night light color in the Overworld.
+                option.WORLD0_LIGHT_NI = Light intensity
+                option.WORLD0_LIGHT_NI.comment = Intensity of the night light color in the Overworld.
+                option.WORLD0_SKY_NR = Sky red
+                option.WORLD0_SKY_NR.comment = Red channel of the night sky color in the Overworld.
+                option.WORLD0_SKY_NG = Sky green
+                option.WORLD0_SKY_NG.comment = Green channel of the night sky color in the Overworld.
+                option.WORLD0_SKY_NB = Sky blue
+                option.WORLD0_SKY_NB.comment = Blue channel of the night sky color in the Overworld.
+                option.WORLD0_SKY_NI = Sky intensity
+                option.WORLD0_SKY_NI.comment = Intensity of the night sky color in the Overworld.
+                option.WORLD0_FOG_TOTAL_NI = Total fog density
+                option.WORLD0_FOG_TOTAL_NI.comment = Overall fog density at night in the Overworld. Higher values give thicker fog.
+                option.WORLD0_FOG_VERTICAL_NI = Vertical fog density
+                option.WORLD0_FOG_VERTICAL_NI.comment = Vertical fog density at night in the Overworld. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+                option.WORLD0_LIGHT_TR = Light red
+                option.WORLD0_LIGHT_TR.comment = Red channel of the twilight light color in the Overworld.
+                option.WORLD0_LIGHT_TG = Light green
+                option.WORLD0_LIGHT_TG.comment = Green channel of the twilight light color in the Overworld.
+                option.WORLD0_LIGHT_TB = Light blue
+                option.WORLD0_LIGHT_TB.comment = Blue channel of the twilight light color in the Overworld.
+                option.WORLD0_LIGHT_TI = Light intensity
+                option.WORLD0_LIGHT_TI.comment = Intensity of the twilight light color in the Overworld.
+                option.WORLD0_SKY_TR = Sky red
+                option.WORLD0_SKY_TR.comment = Red channel of the twilight sky color in the Overworld.
+                option.WORLD0_SKY_TG = Sky green
+                option.WORLD0_SKY_TG.comment = Green channel of the twilight sky color in the Overworld.
+                option.WORLD0_SKY_TB = Sky blue
+                option.WORLD0_SKY_TB.comment = Blue channel of the twilight sky color in the Overworld.
+                option.WORLD0_SKY_TI = Sky intensity
+                option.WORLD0_SKY_TI.comment = Intensity of the twilight sky color in the Overworld.
+                option.WORLD0_FOG_TOTAL_TI = Total fog density
+                option.WORLD0_FOG_TOTAL_TI.comment = Overall fog density at twilight in the Overworld. Higher values give thicker fog.
+                option.WORLD0_FOG_VERTICAL_TI = Vertical fog density
+                option.WORLD0_FOG_VERTICAL_TI.comment = Vertical fog density at twilight in the Overworld. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+                option.WORLD0_LIGHT_CR = Light red
+                option.WORLD0_LIGHT_CR.comment = Red channel of the constant light color in the Overworld.
+                option.WORLD0_LIGHT_CG = Light green
+                option.WORLD0_LIGHT_CG.comment = Green channel of the constant light color in the Overworld.
+                option.WORLD0_LIGHT_CB = Light blue
+                option.WORLD0_LIGHT_CB.comment = Blue channel of the constant light color in the Overworld.
+                option.WORLD0_LIGHT_CI = Light intensity
+                option.WORLD0_LIGHT_CI.comment = Intensity of the constant light color in the Overworld.
+                option.WORLD0_SKY_CR = Sky red
+                option.WORLD0_SKY_CR.comment = Red channel of the constant sky color in the Overworld.
+                option.WORLD0_SKY_CG = Sky green
+                option.WORLD0_SKY_CG.comment = Green channel of the constant sky color in the Overworld.
+                option.WORLD0_SKY_CB = Sky blue
+                option.WORLD0_SKY_CB.comment = Blue channel of the constant sky color in the Overworld.
+                option.WORLD0_SKY_CI = Sky intensity
+                option.WORLD0_SKY_CI.comment = Intensity of the constant sky color in the Overworld.
+                option.WORLD0_FOG_TOTAL_CI = Total fog density
+                option.WORLD0_FOG_TOTAL_CI.comment = Overall fog density at constant in the Overworld. Higher values give thicker fog.
+                option.WORLD0_FOG_VERTICAL_CI = Vertical fog density
+                option.WORLD0_FOG_VERTICAL_CI.comment = Vertical fog density at constant in the Overworld. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+                option.WORLD0_STAR_CI = Star intensity
+                option.WORLD0_STAR_CI.comment = Star brightness at all times in the Overworld when Day cycle is Off.
+                option.WORLD0_STAR_DI = Star intensity
+                option.WORLD0_STAR_DI.comment = Star brightness at day in the Overworld.
+                option.WORLD0_STAR_NI = Star intensity
+                option.WORLD0_STAR_NI.comment = Star brightness at night in the Overworld.
+                option.WORLD0_STAR_TI = Star intensity
+                option.WORLD0_STAR_TI.comment = Star brightness at twilight in the Overworld.
+
+        screen.DIMn1 = Nether settings
+        screen.DIMn1.comment = §cFeatures, sky, light, and fog configuration for the Nether.
+            screen.DIMn1_FLAGS = Features
+            screen.DIMn1_FLAGS.comment = §6Turn dimension and shader features On or Off for the Nether. Other options may have no effect when their feature is Off.
+                option.WORLDn1_SKYBOX = Skybox
+                option.WORLDn1_SKYBOX.comment = Custom skybox rendering for the Nether.
+                value.WORLDn1_SKYBOX.0 = Off
+                value.WORLDn1_SKYBOX.1 = On
+
+                option.WORLDn1_CLOUDS = Clouds
+                option.WORLDn1_CLOUDS.comment = Clouds in the Nether.
+                value.WORLDn1_CLOUDS.0 = Off
+                value.WORLDn1_CLOUDS.1 = On
+
+                option.WORLDn1_WEATHER = Weather
+                option.WORLDn1_WEATHER.comment = Rain and weather effects in the Nether.
+                value.WORLDn1_WEATHER.0 = Off
+                value.WORLDn1_WEATHER.1 = On
+
+                option.WORLDn1_DAYCYCLE = Day cycle
+                option.WORLDn1_DAYCYCLE.comment = Day, night and twilight colors in the Nether. When Off, the Constant settings are used.
+                value.WORLDn1_DAYCYCLE.0 = Off
+                value.WORLDn1_DAYCYCLE.1 = On
+
+                option.WORLDn1_SKYLIGHT = Real skylight
+                option.WORLDn1_SKYLIGHT.comment = On: use the real sky light level of the world in the Nether. Off: use the fixed Skylight amount instead.
+                value.WORLDn1_SKYLIGHT.0 = Off
+                value.WORLDn1_SKYLIGHT.1 = On
+
+                option.WORLDn1_LIGHT = Directional light
+                option.WORLDn1_LIGHT.comment = Directional light (sun/moon light and shadows) in the Nether.
+                value.WORLDn1_LIGHT.0 = Off
+                value.WORLDn1_LIGHT.1 = On
+
+                option.WORLDn1_STARS = Stars
+                option.WORLDn1_STARS.comment = Shader star field in the Nether (not the vanilla stars).
+                value.WORLDn1_STARS.0 = Off
+                value.WORLDn1_STARS.1 = On
+
+                option.WORLDn1_AETHER = Aether
+                option.WORLDn1_AETHER.comment = Aether glow effect in the sky of the Nether.
+                value.WORLDn1_AETHER.0 = Off
+                value.WORLDn1_AETHER.1 = On
+
+                option.WORLDn1_SKYGROUND = Sky ground
+                option.WORLDn1_SKYGROUND.comment = Darkens the sky below the horizon in the Nether.
+                value.WORLDn1_SKYGROUND.0 = Off
+                value.WORLDn1_SKYGROUND.1 = On
+
+                option.WORLDn1_VANILLAFOG = Vanilla fog color
+                option.WORLDn1_VANILLAFOG.comment = Uses the fog color given by the game in the Nether as the sky color. See Vanilla fog mode.
+                value.WORLDn1_VANILLAFOG.0 = Off
+                value.WORLDn1_VANILLAFOG.1 = On
+
+            screen.DIMn1_BASIC = Basic
+            screen.DIMn1_BASIC.comment = §eSkylight, celestial body, and vanilla fog options for the Nether.
+                option.WORLDn1_SKYLIGHT_I = Skylight amount
+                option.WORLDn1_SKYLIGHT_I.comment = Fixed skylight level used when Real skylight is Off. 0 is fully dark and 1 is fully lit.
+
+                option.WORLDn1_CELESTIAL = Celestial body
+                option.WORLDn1_CELESTIAL.comment = What is drawn as the sun/moon equivalent in the Nether. §cWarning:§r if the dimension has no sun/moon or other celestial body, the vanilla sun/moon option may be unavailable.
+                value.WORLDn1_CELESTIAL.0 = None
+                value.WORLDn1_CELESTIAL.1 = Sun and moon
+                value.WORLDn1_CELESTIAL.2 = Black hole
+
+                option.WORLDn1_CELESTIAL_SIZE = Celestial size
+                option.WORLDn1_CELESTIAL_SIZE.comment = Size of the celestial body.
+
+                option.WORLDn1_VANILLAFOG_MODE = Vanilla fog mode
+                option.WORLDn1_VANILLAFOG_MODE.comment = How the vanilla fog color combines with the sky color. Only used when Vanilla fog color is On.
+                value.WORLDn1_VANILLAFOG_MODE.0 = Replace
+                value.WORLDn1_VANILLAFOG_MODE.1 = Blend
+                value.WORLDn1_VANILLAFOG_MODE.2 = Multiply
+
+            screen.DIMn1_DAY = Day
+            screen.DIMn1_DAY.comment = §eDaytime colors, fog, and stars. Used when Day cycle is On.
+
+            screen.DIMn1_NIGHT = Night
+            screen.DIMn1_NIGHT.comment = §1Nighttime colors, fog, and stars. Used when Day cycle is On.
+
+            screen.DIMn1_TWILIGHT = Twilight
+            screen.DIMn1_TWILIGHT.comment = §dSunrise and sunset colors, fog, and stars. Used when Day cycle is On.
+
+            screen.DIMn1_CONSTANT = Constant
+            screen.DIMn1_CONSTANT.comment = §fColors and fog used at all times when Day cycle is Off. Stars use the Constant intensity.
+
+                option.WORLDn1_LIGHT_DR = Light red
+                option.WORLDn1_LIGHT_DR.comment = Red channel of the day light color in the Nether.
+                option.WORLDn1_LIGHT_DG = Light green
+                option.WORLDn1_LIGHT_DG.comment = Green channel of the day light color in the Nether.
+                option.WORLDn1_LIGHT_DB = Light blue
+                option.WORLDn1_LIGHT_DB.comment = Blue channel of the day light color in the Nether.
+                option.WORLDn1_LIGHT_DI = Light intensity
+                option.WORLDn1_LIGHT_DI.comment = Intensity of the day light color in the Nether.
+                option.WORLDn1_SKY_DR = Sky red
+                option.WORLDn1_SKY_DR.comment = Red channel of the day sky color in the Nether.
+                option.WORLDn1_SKY_DG = Sky green
+                option.WORLDn1_SKY_DG.comment = Green channel of the day sky color in the Nether.
+                option.WORLDn1_SKY_DB = Sky blue
+                option.WORLDn1_SKY_DB.comment = Blue channel of the day sky color in the Nether.
+                option.WORLDn1_SKY_DI = Sky intensity
+                option.WORLDn1_SKY_DI.comment = Intensity of the day sky color in the Nether.
+                option.WORLDn1_FOG_TOTAL_DI = Total fog density
+                option.WORLDn1_FOG_TOTAL_DI.comment = Overall fog density at day in the Nether. Higher values give thicker fog.
+                option.WORLDn1_FOG_VERTICAL_DI = Vertical fog density
+                option.WORLDn1_FOG_VERTICAL_DI.comment = Vertical fog density at day in the Nether. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+                option.WORLDn1_LIGHT_NR = Light red
+                option.WORLDn1_LIGHT_NR.comment = Red channel of the night light color in the Nether.
+                option.WORLDn1_LIGHT_NG = Light green
+                option.WORLDn1_LIGHT_NG.comment = Green channel of the night light color in the Nether.
+                option.WORLDn1_LIGHT_NB = Light blue
+                option.WORLDn1_LIGHT_NB.comment = Blue channel of the night light color in the Nether.
+                option.WORLDn1_LIGHT_NI = Light intensity
+                option.WORLDn1_LIGHT_NI.comment = Intensity of the night light color in the Nether.
+                option.WORLDn1_SKY_NR = Sky red
+                option.WORLDn1_SKY_NR.comment = Red channel of the night sky color in the Nether.
+                option.WORLDn1_SKY_NG = Sky green
+                option.WORLDn1_SKY_NG.comment = Green channel of the night sky color in the Nether.
+                option.WORLDn1_SKY_NB = Sky blue
+                option.WORLDn1_SKY_NB.comment = Blue channel of the night sky color in the Nether.
+                option.WORLDn1_SKY_NI = Sky intensity
+                option.WORLDn1_SKY_NI.comment = Intensity of the night sky color in the Nether.
+                option.WORLDn1_FOG_TOTAL_NI = Total fog density
+                option.WORLDn1_FOG_TOTAL_NI.comment = Overall fog density at night in the Nether. Higher values give thicker fog.
+                option.WORLDn1_FOG_VERTICAL_NI = Vertical fog density
+                option.WORLDn1_FOG_VERTICAL_NI.comment = Vertical fog density at night in the Nether. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+                option.WORLDn1_LIGHT_TR = Light red
+                option.WORLDn1_LIGHT_TR.comment = Red channel of the twilight light color in the Nether.
+                option.WORLDn1_LIGHT_TG = Light green
+                option.WORLDn1_LIGHT_TG.comment = Green channel of the twilight light color in the Nether.
+                option.WORLDn1_LIGHT_TB = Light blue
+                option.WORLDn1_LIGHT_TB.comment = Blue channel of the twilight light color in the Nether.
+                option.WORLDn1_LIGHT_TI = Light intensity
+                option.WORLDn1_LIGHT_TI.comment = Intensity of the twilight light color in the Nether.
+                option.WORLDn1_SKY_TR = Sky red
+                option.WORLDn1_SKY_TR.comment = Red channel of the twilight sky color in the Nether.
+                option.WORLDn1_SKY_TG = Sky green
+                option.WORLDn1_SKY_TG.comment = Green channel of the twilight sky color in the Nether.
+                option.WORLDn1_SKY_TB = Sky blue
+                option.WORLDn1_SKY_TB.comment = Blue channel of the twilight sky color in the Nether.
+                option.WORLDn1_SKY_TI = Sky intensity
+                option.WORLDn1_SKY_TI.comment = Intensity of the twilight sky color in the Nether.
+                option.WORLDn1_FOG_TOTAL_TI = Total fog density
+                option.WORLDn1_FOG_TOTAL_TI.comment = Overall fog density at twilight in the Nether. Higher values give thicker fog.
+                option.WORLDn1_FOG_VERTICAL_TI = Vertical fog density
+                option.WORLDn1_FOG_VERTICAL_TI.comment = Vertical fog density at twilight in the Nether. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+                option.WORLDn1_LIGHT_CR = Light red
+                option.WORLDn1_LIGHT_CR.comment = Red channel of the constant light color in the Nether.
+                option.WORLDn1_LIGHT_CG = Light green
+                option.WORLDn1_LIGHT_CG.comment = Green channel of the constant light color in the Nether.
+                option.WORLDn1_LIGHT_CB = Light blue
+                option.WORLDn1_LIGHT_CB.comment = Blue channel of the constant light color in the Nether.
+                option.WORLDn1_LIGHT_CI = Light intensity
+                option.WORLDn1_LIGHT_CI.comment = Intensity of the constant light color in the Nether.
+                option.WORLDn1_SKY_CR = Sky red
+                option.WORLDn1_SKY_CR.comment = Red channel of the constant sky color in the Nether.
+                option.WORLDn1_SKY_CG = Sky green
+                option.WORLDn1_SKY_CG.comment = Green channel of the constant sky color in the Nether.
+                option.WORLDn1_SKY_CB = Sky blue
+                option.WORLDn1_SKY_CB.comment = Blue channel of the constant sky color in the Nether.
+                option.WORLDn1_SKY_CI = Sky intensity
+                option.WORLDn1_SKY_CI.comment = Intensity of the constant sky color in the Nether.
+                option.WORLDn1_FOG_TOTAL_CI = Total fog density
+                option.WORLDn1_FOG_TOTAL_CI.comment = Overall fog density at constant in the Nether. Higher values give thicker fog.
+                option.WORLDn1_FOG_VERTICAL_CI = Vertical fog density
+                option.WORLDn1_FOG_VERTICAL_CI.comment = Vertical fog density at constant in the Nether. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+                option.WORLDn1_STAR_CI = Star intensity
+                option.WORLDn1_STAR_CI.comment = Star brightness at all times in the Nether when Day cycle is Off.
+                option.WORLDn1_STAR_DI = Star intensity
+                option.WORLDn1_STAR_DI.comment = Star brightness at day in the Nether.
+                option.WORLDn1_STAR_NI = Star intensity
+                option.WORLDn1_STAR_NI.comment = Star brightness at night in the Nether.
+                option.WORLDn1_STAR_TI = Star intensity
+                option.WORLDn1_STAR_TI.comment = Star brightness at twilight in the Nether.
+
+        screen.DIM1 = End settings
+        screen.DIM1.comment = §5Features, sky, light, and fog configuration for the End.
+            screen.DIM1_FLAGS = Features
+            screen.DIM1_FLAGS.comment = §6Turn dimension and shader features On or Off for the End. Other options may have no effect when their feature is Off.
+                option.WORLD1_SKYBOX = Skybox
+                option.WORLD1_SKYBOX.comment = Custom skybox rendering for the End.
+                value.WORLD1_SKYBOX.0 = Off
+                value.WORLD1_SKYBOX.1 = On
+
+                option.WORLD1_CLOUDS = Clouds
+                option.WORLD1_CLOUDS.comment = Clouds in the End.
+                value.WORLD1_CLOUDS.0 = Off
+                value.WORLD1_CLOUDS.1 = On
+
+                option.WORLD1_WEATHER = Weather
+                option.WORLD1_WEATHER.comment = Rain and weather effects in the End.
+                value.WORLD1_WEATHER.0 = Off
+                value.WORLD1_WEATHER.1 = On
+
+                option.WORLD1_DAYCYCLE = Day cycle
+                option.WORLD1_DAYCYCLE.comment = Day, night and twilight colors in the End. When Off, the Constant settings are used.
+                value.WORLD1_DAYCYCLE.0 = Off
+                value.WORLD1_DAYCYCLE.1 = On
+
+                option.WORLD1_SKYLIGHT = Real skylight
+                option.WORLD1_SKYLIGHT.comment = On: use the real sky light level of the world in the End. Off: use the fixed Skylight amount instead.
+                value.WORLD1_SKYLIGHT.0 = Off
+                value.WORLD1_SKYLIGHT.1 = On
+
+                option.WORLD1_LIGHT = Directional light
+                option.WORLD1_LIGHT.comment = Directional light (sun/moon light and shadows) in the End.
+                value.WORLD1_LIGHT.0 = Off
+                value.WORLD1_LIGHT.1 = On
+
+                option.WORLD1_STARS = Stars
+                option.WORLD1_STARS.comment = Shader star field in the End (not the vanilla stars).
+                value.WORLD1_STARS.0 = Off
+                value.WORLD1_STARS.1 = On
+
+                option.WORLD1_AETHER = Aether
+                option.WORLD1_AETHER.comment = Aether glow effect in the sky of the End.
+                value.WORLD1_AETHER.0 = Off
+                value.WORLD1_AETHER.1 = On
+
+                option.WORLD1_SKYGROUND = Sky ground
+                option.WORLD1_SKYGROUND.comment = Darkens the sky below the horizon in the End.
+                value.WORLD1_SKYGROUND.0 = Off
+                value.WORLD1_SKYGROUND.1 = On
+
+                option.WORLD1_VANILLAFOG = Vanilla fog color
+                option.WORLD1_VANILLAFOG.comment = Uses the fog color given by the game in the End as the sky color. See Vanilla fog mode.
+                value.WORLD1_VANILLAFOG.0 = Off
+                value.WORLD1_VANILLAFOG.1 = On
+
+            screen.DIM1_BASIC = Basic
+            screen.DIM1_BASIC.comment = §eSkylight, celestial body, and vanilla fog options for the End.
+                option.WORLD1_SKYLIGHT_I = Skylight amount
+                option.WORLD1_SKYLIGHT_I.comment = Fixed skylight level used when Real skylight is Off. 0 is fully dark and 1 is fully lit.
+
+                option.WORLD1_CELESTIAL = Celestial body
+                option.WORLD1_CELESTIAL.comment = What is drawn as the sun/moon equivalent in the End. §cWarning:§r if the dimension has no sun/moon or other celestial body, the vanilla sun/moon option may be unavailable.
+                value.WORLD1_CELESTIAL.0 = None
+                value.WORLD1_CELESTIAL.1 = Sun and moon
+                value.WORLD1_CELESTIAL.2 = Black hole
+
+                option.WORLD1_CELESTIAL_SIZE = Celestial size
+                option.WORLD1_CELESTIAL_SIZE.comment = Size of the celestial body.
+
+                option.WORLD1_VANILLAFOG_MODE = Vanilla fog mode
+                option.WORLD1_VANILLAFOG_MODE.comment = How the vanilla fog color combines with the sky color. Only used when Vanilla fog color is On.
+                value.WORLD1_VANILLAFOG_MODE.0 = Replace
+                value.WORLD1_VANILLAFOG_MODE.1 = Blend
+                value.WORLD1_VANILLAFOG_MODE.2 = Multiply
+
+            screen.DIM1_DAY = Day
+            screen.DIM1_DAY.comment = §eDaytime colors, fog, and stars. Used when Day cycle is On.
+
+            screen.DIM1_NIGHT = Night
+            screen.DIM1_NIGHT.comment = §1Nighttime colors, fog, and stars. Used when Day cycle is On.
+
+            screen.DIM1_TWILIGHT = Twilight
+            screen.DIM1_TWILIGHT.comment = §dSunrise and sunset colors, fog, and stars. Used when Day cycle is On.
+
+            screen.DIM1_CONSTANT = Constant
+            screen.DIM1_CONSTANT.comment = §fColors and fog used at all times when Day cycle is Off. Stars use the Constant intensity.
+
+                option.WORLD1_LIGHT_DR = Light red
+                option.WORLD1_LIGHT_DR.comment = Red channel of the day light color in the End.
+                option.WORLD1_LIGHT_DG = Light green
+                option.WORLD1_LIGHT_DG.comment = Green channel of the day light color in the End.
+                option.WORLD1_LIGHT_DB = Light blue
+                option.WORLD1_LIGHT_DB.comment = Blue channel of the day light color in the End.
+                option.WORLD1_LIGHT_DI = Light intensity
+                option.WORLD1_LIGHT_DI.comment = Intensity of the day light color in the End.
+                option.WORLD1_SKY_DR = Sky red
+                option.WORLD1_SKY_DR.comment = Red channel of the day sky color in the End.
+                option.WORLD1_SKY_DG = Sky green
+                option.WORLD1_SKY_DG.comment = Green channel of the day sky color in the End.
+                option.WORLD1_SKY_DB = Sky blue
+                option.WORLD1_SKY_DB.comment = Blue channel of the day sky color in the End.
+                option.WORLD1_SKY_DI = Sky intensity
+                option.WORLD1_SKY_DI.comment = Intensity of the day sky color in the End.
+                option.WORLD1_FOG_TOTAL_DI = Total fog density
+                option.WORLD1_FOG_TOTAL_DI.comment = Overall fog density at day in the End. Higher values give thicker fog.
+                option.WORLD1_FOG_VERTICAL_DI = Vertical fog density
+                option.WORLD1_FOG_VERTICAL_DI.comment = Vertical fog density at day in the End. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+                option.WORLD1_LIGHT_NR = Light red
+                option.WORLD1_LIGHT_NR.comment = Red channel of the night light color in the End.
+                option.WORLD1_LIGHT_NG = Light green
+                option.WORLD1_LIGHT_NG.comment = Green channel of the night light color in the End.
+                option.WORLD1_LIGHT_NB = Light blue
+                option.WORLD1_LIGHT_NB.comment = Blue channel of the night light color in the End.
+                option.WORLD1_LIGHT_NI = Light intensity
+                option.WORLD1_LIGHT_NI.comment = Intensity of the night light color in the End.
+                option.WORLD1_SKY_NR = Sky red
+                option.WORLD1_SKY_NR.comment = Red channel of the night sky color in the End.
+                option.WORLD1_SKY_NG = Sky green
+                option.WORLD1_SKY_NG.comment = Green channel of the night sky color in the End.
+                option.WORLD1_SKY_NB = Sky blue
+                option.WORLD1_SKY_NB.comment = Blue channel of the night sky color in the End.
+                option.WORLD1_SKY_NI = Sky intensity
+                option.WORLD1_SKY_NI.comment = Intensity of the night sky color in the End.
+                option.WORLD1_FOG_TOTAL_NI = Total fog density
+                option.WORLD1_FOG_TOTAL_NI.comment = Overall fog density at night in the End. Higher values give thicker fog.
+                option.WORLD1_FOG_VERTICAL_NI = Vertical fog density
+                option.WORLD1_FOG_VERTICAL_NI.comment = Vertical fog density at night in the End. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+                option.WORLD1_LIGHT_TR = Light red
+                option.WORLD1_LIGHT_TR.comment = Red channel of the twilight light color in the End.
+                option.WORLD1_LIGHT_TG = Light green
+                option.WORLD1_LIGHT_TG.comment = Green channel of the twilight light color in the End.
+                option.WORLD1_LIGHT_TB = Light blue
+                option.WORLD1_LIGHT_TB.comment = Blue channel of the twilight light color in the End.
+                option.WORLD1_LIGHT_TI = Light intensity
+                option.WORLD1_LIGHT_TI.comment = Intensity of the twilight light color in the End.
+                option.WORLD1_SKY_TR = Sky red
+                option.WORLD1_SKY_TR.comment = Red channel of the twilight sky color in the End.
+                option.WORLD1_SKY_TG = Sky green
+                option.WORLD1_SKY_TG.comment = Green channel of the twilight sky color in the End.
+                option.WORLD1_SKY_TB = Sky blue
+                option.WORLD1_SKY_TB.comment = Blue channel of the twilight sky color in the End.
+                option.WORLD1_SKY_TI = Sky intensity
+                option.WORLD1_SKY_TI.comment = Intensity of the twilight sky color in the End.
+                option.WORLD1_FOG_TOTAL_TI = Total fog density
+                option.WORLD1_FOG_TOTAL_TI.comment = Overall fog density at twilight in the End. Higher values give thicker fog.
+                option.WORLD1_FOG_VERTICAL_TI = Vertical fog density
+                option.WORLD1_FOG_VERTICAL_TI.comment = Vertical fog density at twilight in the End. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+                option.WORLD1_LIGHT_CR = Light red
+                option.WORLD1_LIGHT_CR.comment = Red channel of the constant light color in the End.
+                option.WORLD1_LIGHT_CG = Light green
+                option.WORLD1_LIGHT_CG.comment = Green channel of the constant light color in the End.
+                option.WORLD1_LIGHT_CB = Light blue
+                option.WORLD1_LIGHT_CB.comment = Blue channel of the constant light color in the End.
+                option.WORLD1_LIGHT_CI = Light intensity
+                option.WORLD1_LIGHT_CI.comment = Intensity of the constant light color in the End.
+                option.WORLD1_SKY_CR = Sky red
+                option.WORLD1_SKY_CR.comment = Red channel of the constant sky color in the End.
+                option.WORLD1_SKY_CG = Sky green
+                option.WORLD1_SKY_CG.comment = Green channel of the constant sky color in the End.
+                option.WORLD1_SKY_CB = Sky blue
+                option.WORLD1_SKY_CB.comment = Blue channel of the constant sky color in the End.
+                option.WORLD1_SKY_CI = Sky intensity
+                option.WORLD1_SKY_CI.comment = Intensity of the constant sky color in the End.
+                option.WORLD1_FOG_TOTAL_CI = Total fog density
+                option.WORLD1_FOG_TOTAL_CI.comment = Overall fog density at constant in the End. Higher values give thicker fog.
+                option.WORLD1_FOG_VERTICAL_CI = Vertical fog density
+                option.WORLD1_FOG_VERTICAL_CI.comment = Vertical fog density at constant in the End. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+                option.WORLD1_STAR_CI = Star intensity
+                option.WORLD1_STAR_CI.comment = Star brightness at all times in the End when Day cycle is Off.
+                option.WORLD1_STAR_DI = Star intensity
+                option.WORLD1_STAR_DI.comment = Star brightness at day in the End.
+                option.WORLD1_STAR_NI = Star intensity
+                option.WORLD1_STAR_NI.comment = Star brightness at night in the End.
+                option.WORLD1_STAR_TI = Star intensity
+                option.WORLD1_STAR_TI.comment = Star brightness at twilight in the End.
+
+    screen.DIMDOORS = Dimensional Doors
+    screen.DIMDOORS.comment = §bSettings for the Dimensional Doors dimensions: pockets, limbo, and personal pockets.
+        screen.DIMn2 = Dimdoors: Pockets settings
+        screen.DIMn2.comment = §bFeatures, sky, light, and fog configuration for the Dimensional Doors public and dungeon pockets.
+            screen.DIMn2_FLAGS = Features
+            screen.DIMn2_FLAGS.comment = §6Turn dimension and shader features On or Off for the Dimensional Doors public and dungeon pockets. Other options may have no effect when their feature is Off.
+                option.WORLDn2_SKYBOX = Skybox
+                option.WORLDn2_SKYBOX.comment = Custom skybox rendering for the Dimensional Doors public and dungeon pockets.
+                value.WORLDn2_SKYBOX.0 = Off
+                value.WORLDn2_SKYBOX.1 = On
+
+                option.WORLDn2_CLOUDS = Clouds
+                option.WORLDn2_CLOUDS.comment = Clouds in the Dimensional Doors public and dungeon pockets.
+                value.WORLDn2_CLOUDS.0 = Off
+                value.WORLDn2_CLOUDS.1 = On
+
+                option.WORLDn2_WEATHER = Weather
+                option.WORLDn2_WEATHER.comment = Rain and weather effects in the Dimensional Doors public and dungeon pockets.
+                value.WORLDn2_WEATHER.0 = Off
+                value.WORLDn2_WEATHER.1 = On
+
+                option.WORLDn2_DAYCYCLE = Day cycle
+                option.WORLDn2_DAYCYCLE.comment = Day, night and twilight colors in the Dimensional Doors public and dungeon pockets. When Off, the Constant settings are used.
+                value.WORLDn2_DAYCYCLE.0 = Off
+                value.WORLDn2_DAYCYCLE.1 = On
+
+                option.WORLDn2_SKYLIGHT = Real skylight
+                option.WORLDn2_SKYLIGHT.comment = On: use the real sky light level of the world in the Dimensional Doors public and dungeon pockets. Off: use the fixed Skylight amount instead.
+                value.WORLDn2_SKYLIGHT.0 = Off
+                value.WORLDn2_SKYLIGHT.1 = On
+
+                option.WORLDn2_LIGHT = Directional light
+                option.WORLDn2_LIGHT.comment = Directional light (sun/moon light and shadows) in the Dimensional Doors public and dungeon pockets.
+                value.WORLDn2_LIGHT.0 = Off
+                value.WORLDn2_LIGHT.1 = On
+
+                option.WORLDn2_STARS = Stars
+                option.WORLDn2_STARS.comment = Shader star field in the Dimensional Doors public and dungeon pockets (not the vanilla stars).
+                value.WORLDn2_STARS.0 = Off
+                value.WORLDn2_STARS.1 = On
+
+                option.WORLDn2_AETHER = Aether
+                option.WORLDn2_AETHER.comment = Aether glow effect in the sky of the Dimensional Doors public and dungeon pockets.
+                value.WORLDn2_AETHER.0 = Off
+                value.WORLDn2_AETHER.1 = On
+
+                option.WORLDn2_SKYGROUND = Sky ground
+                option.WORLDn2_SKYGROUND.comment = Darkens the sky below the horizon in the Dimensional Doors public and dungeon pockets.
+                value.WORLDn2_SKYGROUND.0 = Off
+                value.WORLDn2_SKYGROUND.1 = On
+
+                option.WORLDn2_VANILLAFOG = Vanilla fog color
+                option.WORLDn2_VANILLAFOG.comment = Uses the fog color given by the game in the Dimensional Doors public and dungeon pockets as the sky color. See Vanilla fog mode.
+                value.WORLDn2_VANILLAFOG.0 = Off
+                value.WORLDn2_VANILLAFOG.1 = On
+
+            screen.DIMn2_BASIC = Basic
+            screen.DIMn2_BASIC.comment = §eSkylight, celestial body, and vanilla fog options for the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_SKYLIGHT_I = Skylight amount
+                option.WORLDn2_SKYLIGHT_I.comment = Fixed skylight level used when Real skylight is Off. 0 is fully dark and 1 is fully lit.
+
+                option.WORLDn2_CELESTIAL = Celestial body
+                option.WORLDn2_CELESTIAL.comment = What is drawn as the sun/moon equivalent in the Dimensional Doors public and dungeon pockets. §cWarning:§r if the dimension has no sun/moon or other celestial body, the vanilla sun/moon option may be unavailable.
+                value.WORLDn2_CELESTIAL.0 = None
+                value.WORLDn2_CELESTIAL.1 = Sun and moon
+                value.WORLDn2_CELESTIAL.2 = Black hole
+
+                option.WORLDn2_CELESTIAL_SIZE = Celestial size
+                option.WORLDn2_CELESTIAL_SIZE.comment = Size of the celestial body.
+
+                option.WORLDn2_VANILLAFOG_MODE = Vanilla fog mode
+                option.WORLDn2_VANILLAFOG_MODE.comment = How the vanilla fog color combines with the sky color. Only used when Vanilla fog color is On.
+                value.WORLDn2_VANILLAFOG_MODE.0 = Replace
+                value.WORLDn2_VANILLAFOG_MODE.1 = Blend
+                value.WORLDn2_VANILLAFOG_MODE.2 = Multiply
+
+            screen.DIMn2_DAY = Day
+            screen.DIMn2_DAY.comment = §eDaytime colors, fog, and stars. Used when Day cycle is On.
+
+            screen.DIMn2_NIGHT = Night
+            screen.DIMn2_NIGHT.comment = §1Nighttime colors, fog, and stars. Used when Day cycle is On.
+
+            screen.DIMn2_TWILIGHT = Twilight
+            screen.DIMn2_TWILIGHT.comment = §dSunrise and sunset colors, fog, and stars. Used when Day cycle is On.
+
+            screen.DIMn2_CONSTANT = Constant
+            screen.DIMn2_CONSTANT.comment = §fColors and fog used at all times when Day cycle is Off. Stars use the Constant intensity.
+
+                option.WORLDn2_LIGHT_DR = Light red
+                option.WORLDn2_LIGHT_DR.comment = Red channel of the day light color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_LIGHT_DG = Light green
+                option.WORLDn2_LIGHT_DG.comment = Green channel of the day light color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_LIGHT_DB = Light blue
+                option.WORLDn2_LIGHT_DB.comment = Blue channel of the day light color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_LIGHT_DI = Light intensity
+                option.WORLDn2_LIGHT_DI.comment = Intensity of the day light color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_SKY_DR = Sky red
+                option.WORLDn2_SKY_DR.comment = Red channel of the day sky color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_SKY_DG = Sky green
+                option.WORLDn2_SKY_DG.comment = Green channel of the day sky color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_SKY_DB = Sky blue
+                option.WORLDn2_SKY_DB.comment = Blue channel of the day sky color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_SKY_DI = Sky intensity
+                option.WORLDn2_SKY_DI.comment = Intensity of the day sky color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_FOG_TOTAL_DI = Total fog density
+                option.WORLDn2_FOG_TOTAL_DI.comment = Overall fog density at day in the Dimensional Doors public and dungeon pockets. Higher values give thicker fog.
+                option.WORLDn2_FOG_VERTICAL_DI = Vertical fog density
+                option.WORLDn2_FOG_VERTICAL_DI.comment = Vertical fog density at day in the Dimensional Doors public and dungeon pockets. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+                option.WORLDn2_LIGHT_NR = Light red
+                option.WORLDn2_LIGHT_NR.comment = Red channel of the night light color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_LIGHT_NG = Light green
+                option.WORLDn2_LIGHT_NG.comment = Green channel of the night light color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_LIGHT_NB = Light blue
+                option.WORLDn2_LIGHT_NB.comment = Blue channel of the night light color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_LIGHT_NI = Light intensity
+                option.WORLDn2_LIGHT_NI.comment = Intensity of the night light color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_SKY_NR = Sky red
+                option.WORLDn2_SKY_NR.comment = Red channel of the night sky color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_SKY_NG = Sky green
+                option.WORLDn2_SKY_NG.comment = Green channel of the night sky color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_SKY_NB = Sky blue
+                option.WORLDn2_SKY_NB.comment = Blue channel of the night sky color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_SKY_NI = Sky intensity
+                option.WORLDn2_SKY_NI.comment = Intensity of the night sky color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_FOG_TOTAL_NI = Total fog density
+                option.WORLDn2_FOG_TOTAL_NI.comment = Overall fog density at night in the Dimensional Doors public and dungeon pockets. Higher values give thicker fog.
+                option.WORLDn2_FOG_VERTICAL_NI = Vertical fog density
+                option.WORLDn2_FOG_VERTICAL_NI.comment = Vertical fog density at night in the Dimensional Doors public and dungeon pockets. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+                option.WORLDn2_LIGHT_TR = Light red
+                option.WORLDn2_LIGHT_TR.comment = Red channel of the twilight light color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_LIGHT_TG = Light green
+                option.WORLDn2_LIGHT_TG.comment = Green channel of the twilight light color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_LIGHT_TB = Light blue
+                option.WORLDn2_LIGHT_TB.comment = Blue channel of the twilight light color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_LIGHT_TI = Light intensity
+                option.WORLDn2_LIGHT_TI.comment = Intensity of the twilight light color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_SKY_TR = Sky red
+                option.WORLDn2_SKY_TR.comment = Red channel of the twilight sky color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_SKY_TG = Sky green
+                option.WORLDn2_SKY_TG.comment = Green channel of the twilight sky color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_SKY_TB = Sky blue
+                option.WORLDn2_SKY_TB.comment = Blue channel of the twilight sky color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_SKY_TI = Sky intensity
+                option.WORLDn2_SKY_TI.comment = Intensity of the twilight sky color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_FOG_TOTAL_TI = Total fog density
+                option.WORLDn2_FOG_TOTAL_TI.comment = Overall fog density at twilight in the Dimensional Doors public and dungeon pockets. Higher values give thicker fog.
+                option.WORLDn2_FOG_VERTICAL_TI = Vertical fog density
+                option.WORLDn2_FOG_VERTICAL_TI.comment = Vertical fog density at twilight in the Dimensional Doors public and dungeon pockets. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+                option.WORLDn2_LIGHT_CR = Light red
+                option.WORLDn2_LIGHT_CR.comment = Red channel of the constant light color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_LIGHT_CG = Light green
+                option.WORLDn2_LIGHT_CG.comment = Green channel of the constant light color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_LIGHT_CB = Light blue
+                option.WORLDn2_LIGHT_CB.comment = Blue channel of the constant light color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_LIGHT_CI = Light intensity
+                option.WORLDn2_LIGHT_CI.comment = Intensity of the constant light color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_SKY_CR = Sky red
+                option.WORLDn2_SKY_CR.comment = Red channel of the constant sky color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_SKY_CG = Sky green
+                option.WORLDn2_SKY_CG.comment = Green channel of the constant sky color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_SKY_CB = Sky blue
+                option.WORLDn2_SKY_CB.comment = Blue channel of the constant sky color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_SKY_CI = Sky intensity
+                option.WORLDn2_SKY_CI.comment = Intensity of the constant sky color in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_FOG_TOTAL_CI = Total fog density
+                option.WORLDn2_FOG_TOTAL_CI.comment = Overall fog density at constant in the Dimensional Doors public and dungeon pockets. Higher values give thicker fog.
+                option.WORLDn2_FOG_VERTICAL_CI = Vertical fog density
+                option.WORLDn2_FOG_VERTICAL_CI.comment = Vertical fog density at constant in the Dimensional Doors public and dungeon pockets. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+                option.WORLDn2_STAR_CI = Star intensity
+                option.WORLDn2_STAR_CI.comment = Star brightness at all times in the Dimensional Doors public and dungeon pockets when Day cycle is Off.
+                option.WORLDn2_STAR_DI = Star intensity
+                option.WORLDn2_STAR_DI.comment = Star brightness at day in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_STAR_NI = Star intensity
+                option.WORLDn2_STAR_NI.comment = Star brightness at night in the Dimensional Doors public and dungeon pockets.
+                option.WORLDn2_STAR_TI = Star intensity
+                option.WORLDn2_STAR_TI.comment = Star brightness at twilight in the Dimensional Doors public and dungeon pockets.
+
+        screen.DIMn3 = Dimdoors: Limbo settings
+        screen.DIMn3.comment = §bFeatures, sky, light, and fog configuration for Dimensional Doors Limbo.
+            screen.DIMn3_FLAGS = Features
+            screen.DIMn3_FLAGS.comment = §6Turn dimension and shader features On or Off for Dimensional Doors Limbo. Other options may have no effect when their feature is Off.
+                option.WORLDn3_SKYBOX = Skybox
+                option.WORLDn3_SKYBOX.comment = Custom skybox rendering for Dimensional Doors Limbo.
+                value.WORLDn3_SKYBOX.0 = Off
+                value.WORLDn3_SKYBOX.1 = On
+
+                option.WORLDn3_CLOUDS = Clouds
+                option.WORLDn3_CLOUDS.comment = Clouds in Dimensional Doors Limbo.
+                value.WORLDn3_CLOUDS.0 = Off
+                value.WORLDn3_CLOUDS.1 = On
+
+                option.WORLDn3_WEATHER = Weather
+                option.WORLDn3_WEATHER.comment = Rain and weather effects in Dimensional Doors Limbo.
+                value.WORLDn3_WEATHER.0 = Off
+                value.WORLDn3_WEATHER.1 = On
+
+                option.WORLDn3_DAYCYCLE = Day cycle
+                option.WORLDn3_DAYCYCLE.comment = Day, night and twilight colors in Dimensional Doors Limbo. When Off, the Constant settings are used.
+                value.WORLDn3_DAYCYCLE.0 = Off
+                value.WORLDn3_DAYCYCLE.1 = On
+
+                option.WORLDn3_SKYLIGHT = Real skylight
+                option.WORLDn3_SKYLIGHT.comment = On: use the real sky light level of the world in Dimensional Doors Limbo. Off: use the fixed Skylight amount instead.
+                value.WORLDn3_SKYLIGHT.0 = Off
+                value.WORLDn3_SKYLIGHT.1 = On
+
+                option.WORLDn3_LIGHT = Directional light
+                option.WORLDn3_LIGHT.comment = Directional light (sun/moon light and shadows) in Dimensional Doors Limbo.
+                value.WORLDn3_LIGHT.0 = Off
+                value.WORLDn3_LIGHT.1 = On
+
+                option.WORLDn3_STARS = Stars
+                option.WORLDn3_STARS.comment = Shader star field in Dimensional Doors Limbo (not the vanilla stars).
+                value.WORLDn3_STARS.0 = Off
+                value.WORLDn3_STARS.1 = On
+
+                option.WORLDn3_AETHER = Aether
+                option.WORLDn3_AETHER.comment = Aether glow effect in the sky of Dimensional Doors Limbo.
+                value.WORLDn3_AETHER.0 = Off
+                value.WORLDn3_AETHER.1 = On
+
+                option.WORLDn3_SKYGROUND = Sky ground
+                option.WORLDn3_SKYGROUND.comment = Darkens the sky below the horizon in Dimensional Doors Limbo.
+                value.WORLDn3_SKYGROUND.0 = Off
+                value.WORLDn3_SKYGROUND.1 = On
+
+                option.WORLDn3_VANILLAFOG = Vanilla fog color
+                option.WORLDn3_VANILLAFOG.comment = Uses the fog color given by the game in Dimensional Doors Limbo as the sky color. See Vanilla fog mode.
+                value.WORLDn3_VANILLAFOG.0 = Off
+                value.WORLDn3_VANILLAFOG.1 = On
+
+            screen.DIMn3_BASIC = Basic
+            screen.DIMn3_BASIC.comment = §eSkylight, celestial body, and vanilla fog options for Dimensional Doors Limbo.
+                option.WORLDn3_SKYLIGHT_I = Skylight amount
+                option.WORLDn3_SKYLIGHT_I.comment = Fixed skylight level used when Real skylight is Off. 0 is fully dark and 1 is fully lit.
+
+                option.WORLDn3_CELESTIAL = Celestial body
+                option.WORLDn3_CELESTIAL.comment = What is drawn as the sun/moon equivalent in Dimensional Doors Limbo. §cWarning:§r if the dimension has no sun/moon or other celestial body, the vanilla sun/moon option may be unavailable.
+                value.WORLDn3_CELESTIAL.0 = None
+                value.WORLDn3_CELESTIAL.1 = Sun and moon
+                value.WORLDn3_CELESTIAL.2 = Black hole
+
+                option.WORLDn3_CELESTIAL_SIZE = Celestial size
+                option.WORLDn3_CELESTIAL_SIZE.comment = Size of the celestial body.
+
+                option.WORLDn3_VANILLAFOG_MODE = Vanilla fog mode
+                option.WORLDn3_VANILLAFOG_MODE.comment = How the vanilla fog color combines with the sky color. Only used when Vanilla fog color is On.
+                value.WORLDn3_VANILLAFOG_MODE.0 = Replace
+                value.WORLDn3_VANILLAFOG_MODE.1 = Blend
+                value.WORLDn3_VANILLAFOG_MODE.2 = Multiply
+
+            screen.DIMn3_DAY = Day
+            screen.DIMn3_DAY.comment = §eDaytime colors, fog, and stars. Used when Day cycle is On.
+
+            screen.DIMn3_NIGHT = Night
+            screen.DIMn3_NIGHT.comment = §1Nighttime colors, fog, and stars. Used when Day cycle is On.
+
+            screen.DIMn3_TWILIGHT = Twilight
+            screen.DIMn3_TWILIGHT.comment = §dSunrise and sunset colors, fog, and stars. Used when Day cycle is On.
+
+            screen.DIMn3_CONSTANT = Constant
+            screen.DIMn3_CONSTANT.comment = §fColors and fog used at all times when Day cycle is Off. Stars use the Constant intensity.
+
+                option.WORLDn3_LIGHT_DR = Light red
+                option.WORLDn3_LIGHT_DR.comment = Red channel of the day light color in Dimensional Doors Limbo.
+                option.WORLDn3_LIGHT_DG = Light green
+                option.WORLDn3_LIGHT_DG.comment = Green channel of the day light color in Dimensional Doors Limbo.
+                option.WORLDn3_LIGHT_DB = Light blue
+                option.WORLDn3_LIGHT_DB.comment = Blue channel of the day light color in Dimensional Doors Limbo.
+                option.WORLDn3_LIGHT_DI = Light intensity
+                option.WORLDn3_LIGHT_DI.comment = Intensity of the day light color in Dimensional Doors Limbo.
+                option.WORLDn3_SKY_DR = Sky red
+                option.WORLDn3_SKY_DR.comment = Red channel of the day sky color in Dimensional Doors Limbo.
+                option.WORLDn3_SKY_DG = Sky green
+                option.WORLDn3_SKY_DG.comment = Green channel of the day sky color in Dimensional Doors Limbo.
+                option.WORLDn3_SKY_DB = Sky blue
+                option.WORLDn3_SKY_DB.comment = Blue channel of the day sky color in Dimensional Doors Limbo.
+                option.WORLDn3_SKY_DI = Sky intensity
+                option.WORLDn3_SKY_DI.comment = Intensity of the day sky color in Dimensional Doors Limbo.
+                option.WORLDn3_FOG_TOTAL_DI = Total fog density
+                option.WORLDn3_FOG_TOTAL_DI.comment = Overall fog density at day in Dimensional Doors Limbo. Higher values give thicker fog.
+                option.WORLDn3_FOG_VERTICAL_DI = Vertical fog density
+                option.WORLDn3_FOG_VERTICAL_DI.comment = Vertical fog density at day in Dimensional Doors Limbo. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+                option.WORLDn3_LIGHT_NR = Light red
+                option.WORLDn3_LIGHT_NR.comment = Red channel of the night light color in Dimensional Doors Limbo.
+                option.WORLDn3_LIGHT_NG = Light green
+                option.WORLDn3_LIGHT_NG.comment = Green channel of the night light color in Dimensional Doors Limbo.
+                option.WORLDn3_LIGHT_NB = Light blue
+                option.WORLDn3_LIGHT_NB.comment = Blue channel of the night light color in Dimensional Doors Limbo.
+                option.WORLDn3_LIGHT_NI = Light intensity
+                option.WORLDn3_LIGHT_NI.comment = Intensity of the night light color in Dimensional Doors Limbo.
+                option.WORLDn3_SKY_NR = Sky red
+                option.WORLDn3_SKY_NR.comment = Red channel of the night sky color in Dimensional Doors Limbo.
+                option.WORLDn3_SKY_NG = Sky green
+                option.WORLDn3_SKY_NG.comment = Green channel of the night sky color in Dimensional Doors Limbo.
+                option.WORLDn3_SKY_NB = Sky blue
+                option.WORLDn3_SKY_NB.comment = Blue channel of the night sky color in Dimensional Doors Limbo.
+                option.WORLDn3_SKY_NI = Sky intensity
+                option.WORLDn3_SKY_NI.comment = Intensity of the night sky color in Dimensional Doors Limbo.
+                option.WORLDn3_FOG_TOTAL_NI = Total fog density
+                option.WORLDn3_FOG_TOTAL_NI.comment = Overall fog density at night in Dimensional Doors Limbo. Higher values give thicker fog.
+                option.WORLDn3_FOG_VERTICAL_NI = Vertical fog density
+                option.WORLDn3_FOG_VERTICAL_NI.comment = Vertical fog density at night in Dimensional Doors Limbo. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+                option.WORLDn3_LIGHT_TR = Light red
+                option.WORLDn3_LIGHT_TR.comment = Red channel of the twilight light color in Dimensional Doors Limbo.
+                option.WORLDn3_LIGHT_TG = Light green
+                option.WORLDn3_LIGHT_TG.comment = Green channel of the twilight light color in Dimensional Doors Limbo.
+                option.WORLDn3_LIGHT_TB = Light blue
+                option.WORLDn3_LIGHT_TB.comment = Blue channel of the twilight light color in Dimensional Doors Limbo.
+                option.WORLDn3_LIGHT_TI = Light intensity
+                option.WORLDn3_LIGHT_TI.comment = Intensity of the twilight light color in Dimensional Doors Limbo.
+                option.WORLDn3_SKY_TR = Sky red
+                option.WORLDn3_SKY_TR.comment = Red channel of the twilight sky color in Dimensional Doors Limbo.
+                option.WORLDn3_SKY_TG = Sky green
+                option.WORLDn3_SKY_TG.comment = Green channel of the twilight sky color in Dimensional Doors Limbo.
+                option.WORLDn3_SKY_TB = Sky blue
+                option.WORLDn3_SKY_TB.comment = Blue channel of the twilight sky color in Dimensional Doors Limbo.
+                option.WORLDn3_SKY_TI = Sky intensity
+                option.WORLDn3_SKY_TI.comment = Intensity of the twilight sky color in Dimensional Doors Limbo.
+                option.WORLDn3_FOG_TOTAL_TI = Total fog density
+                option.WORLDn3_FOG_TOTAL_TI.comment = Overall fog density at twilight in Dimensional Doors Limbo. Higher values give thicker fog.
+                option.WORLDn3_FOG_VERTICAL_TI = Vertical fog density
+                option.WORLDn3_FOG_VERTICAL_TI.comment = Vertical fog density at twilight in Dimensional Doors Limbo. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+                option.WORLDn3_LIGHT_CR = Light red
+                option.WORLDn3_LIGHT_CR.comment = Red channel of the constant light color in Dimensional Doors Limbo.
+                option.WORLDn3_LIGHT_CG = Light green
+                option.WORLDn3_LIGHT_CG.comment = Green channel of the constant light color in Dimensional Doors Limbo.
+                option.WORLDn3_LIGHT_CB = Light blue
+                option.WORLDn3_LIGHT_CB.comment = Blue channel of the constant light color in Dimensional Doors Limbo.
+                option.WORLDn3_LIGHT_CI = Light intensity
+                option.WORLDn3_LIGHT_CI.comment = Intensity of the constant light color in Dimensional Doors Limbo.
+                option.WORLDn3_SKY_CR = Sky red
+                option.WORLDn3_SKY_CR.comment = Red channel of the constant sky color in Dimensional Doors Limbo.
+                option.WORLDn3_SKY_CG = Sky green
+                option.WORLDn3_SKY_CG.comment = Green channel of the constant sky color in Dimensional Doors Limbo.
+                option.WORLDn3_SKY_CB = Sky blue
+                option.WORLDn3_SKY_CB.comment = Blue channel of the constant sky color in Dimensional Doors Limbo.
+                option.WORLDn3_SKY_CI = Sky intensity
+                option.WORLDn3_SKY_CI.comment = Intensity of the constant sky color in Dimensional Doors Limbo.
+                option.WORLDn3_FOG_TOTAL_CI = Total fog density
+                option.WORLDn3_FOG_TOTAL_CI.comment = Overall fog density at constant in Dimensional Doors Limbo. Higher values give thicker fog.
+                option.WORLDn3_FOG_VERTICAL_CI = Vertical fog density
+                option.WORLDn3_FOG_VERTICAL_CI.comment = Vertical fog density at constant in Dimensional Doors Limbo. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+                option.WORLDn3_STAR_CI = Star intensity
+                option.WORLDn3_STAR_CI.comment = Star brightness at all times in Dimensional Doors Limbo when Day cycle is Off.
+                option.WORLDn3_STAR_DI = Star intensity
+                option.WORLDn3_STAR_DI.comment = Star brightness at day in Dimensional Doors Limbo.
+                option.WORLDn3_STAR_NI = Star intensity
+                option.WORLDn3_STAR_NI.comment = Star brightness at night in Dimensional Doors Limbo.
+                option.WORLDn3_STAR_TI = Star intensity
+                option.WORLDn3_STAR_TI.comment = Star brightness at twilight in Dimensional Doors Limbo.
+
+        screen.DIMn4 = Dimdoors: Personal pockets settings
+        screen.DIMn4.comment = §bFeatures, sky, light, and fog configuration for the Dimensional Doors personal pockets.
+            screen.DIMn4_FLAGS = Features
+            screen.DIMn4_FLAGS.comment = §6Turn dimension and shader features On or Off for the Dimensional Doors personal pockets. Other options may have no effect when their feature is Off.
+                option.WORLDn4_SKYBOX = Skybox
+                option.WORLDn4_SKYBOX.comment = Custom skybox rendering for the Dimensional Doors personal pockets.
+                value.WORLDn4_SKYBOX.0 = Off
+                value.WORLDn4_SKYBOX.1 = On
+
+                option.WORLDn4_CLOUDS = Clouds
+                option.WORLDn4_CLOUDS.comment = Clouds in the Dimensional Doors personal pockets.
+                value.WORLDn4_CLOUDS.0 = Off
+                value.WORLDn4_CLOUDS.1 = On
+
+                option.WORLDn4_WEATHER = Weather
+                option.WORLDn4_WEATHER.comment = Rain and weather effects in the Dimensional Doors personal pockets.
+                value.WORLDn4_WEATHER.0 = Off
+                value.WORLDn4_WEATHER.1 = On
+
+                option.WORLDn4_DAYCYCLE = Day cycle
+                option.WORLDn4_DAYCYCLE.comment = Day, night and twilight colors in the Dimensional Doors personal pockets. When Off, the Constant settings are used.
+                value.WORLDn4_DAYCYCLE.0 = Off
+                value.WORLDn4_DAYCYCLE.1 = On
+
+                option.WORLDn4_SKYLIGHT = Real skylight
+                option.WORLDn4_SKYLIGHT.comment = On: use the real sky light level of the world in the Dimensional Doors personal pockets. Off: use the fixed Skylight amount instead.
+                value.WORLDn4_SKYLIGHT.0 = Off
+                value.WORLDn4_SKYLIGHT.1 = On
+
+                option.WORLDn4_LIGHT = Directional light
+                option.WORLDn4_LIGHT.comment = Directional light (sun/moon light and shadows) in the Dimensional Doors personal pockets.
+                value.WORLDn4_LIGHT.0 = Off
+                value.WORLDn4_LIGHT.1 = On
+
+                option.WORLDn4_STARS = Stars
+                option.WORLDn4_STARS.comment = Shader star field in the Dimensional Doors personal pockets (not the vanilla stars).
+                value.WORLDn4_STARS.0 = Off
+                value.WORLDn4_STARS.1 = On
+
+                option.WORLDn4_AETHER = Aether
+                option.WORLDn4_AETHER.comment = Aether glow effect in the sky of the Dimensional Doors personal pockets.
+                value.WORLDn4_AETHER.0 = Off
+                value.WORLDn4_AETHER.1 = On
+
+                option.WORLDn4_SKYGROUND = Sky ground
+                option.WORLDn4_SKYGROUND.comment = Darkens the sky below the horizon in the Dimensional Doors personal pockets.
+                value.WORLDn4_SKYGROUND.0 = Off
+                value.WORLDn4_SKYGROUND.1 = On
+
+                option.WORLDn4_VANILLAFOG = Vanilla fog color
+                option.WORLDn4_VANILLAFOG.comment = Uses the fog color given by the game in the Dimensional Doors personal pockets as the sky color. See Vanilla fog mode.
+                value.WORLDn4_VANILLAFOG.0 = Off
+                value.WORLDn4_VANILLAFOG.1 = On
+
+            screen.DIMn4_BASIC = Basic
+            screen.DIMn4_BASIC.comment = §eSkylight, celestial body, and vanilla fog options for the Dimensional Doors personal pockets.
+                option.WORLDn4_SKYLIGHT_I = Skylight amount
+                option.WORLDn4_SKYLIGHT_I.comment = Fixed skylight level used when Real skylight is Off. 0 is fully dark and 1 is fully lit.
+
+                option.WORLDn4_CELESTIAL = Celestial body
+                option.WORLDn4_CELESTIAL.comment = What is drawn as the sun/moon equivalent in the Dimensional Doors personal pockets. §cWarning:§r if the dimension has no sun/moon or other celestial body, the vanilla sun/moon option may be unavailable.
+                value.WORLDn4_CELESTIAL.0 = None
+                value.WORLDn4_CELESTIAL.1 = Sun and moon
+                value.WORLDn4_CELESTIAL.2 = Black hole
+
+                option.WORLDn4_CELESTIAL_SIZE = Celestial size
+                option.WORLDn4_CELESTIAL_SIZE.comment = Size of the celestial body.
+
+                option.WORLDn4_VANILLAFOG_MODE = Vanilla fog mode
+                option.WORLDn4_VANILLAFOG_MODE.comment = How the vanilla fog color combines with the sky color. Only used when Vanilla fog color is On.
+                value.WORLDn4_VANILLAFOG_MODE.0 = Replace
+                value.WORLDn4_VANILLAFOG_MODE.1 = Blend
+                value.WORLDn4_VANILLAFOG_MODE.2 = Multiply
+
+            screen.DIMn4_DAY = Day
+            screen.DIMn4_DAY.comment = §eDaytime colors, fog, and stars. Used when Day cycle is On.
+
+            screen.DIMn4_NIGHT = Night
+            screen.DIMn4_NIGHT.comment = §1Nighttime colors, fog, and stars. Used when Day cycle is On.
+
+            screen.DIMn4_TWILIGHT = Twilight
+            screen.DIMn4_TWILIGHT.comment = §dSunrise and sunset colors, fog, and stars. Used when Day cycle is On.
+
+            screen.DIMn4_CONSTANT = Constant
+            screen.DIMn4_CONSTANT.comment = §fColors and fog used at all times when Day cycle is Off. Stars use the Constant intensity.
+
+                option.WORLDn4_LIGHT_DR = Light red
+                option.WORLDn4_LIGHT_DR.comment = Red channel of the day light color in the Dimensional Doors personal pockets.
+                option.WORLDn4_LIGHT_DG = Light green
+                option.WORLDn4_LIGHT_DG.comment = Green channel of the day light color in the Dimensional Doors personal pockets.
+                option.WORLDn4_LIGHT_DB = Light blue
+                option.WORLDn4_LIGHT_DB.comment = Blue channel of the day light color in the Dimensional Doors personal pockets.
+                option.WORLDn4_LIGHT_DI = Light intensity
+                option.WORLDn4_LIGHT_DI.comment = Intensity of the day light color in the Dimensional Doors personal pockets.
+                option.WORLDn4_SKY_DR = Sky red
+                option.WORLDn4_SKY_DR.comment = Red channel of the day sky color in the Dimensional Doors personal pockets.
+                option.WORLDn4_SKY_DG = Sky green
+                option.WORLDn4_SKY_DG.comment = Green channel of the day sky color in the Dimensional Doors personal pockets.
+                option.WORLDn4_SKY_DB = Sky blue
+                option.WORLDn4_SKY_DB.comment = Blue channel of the day sky color in the Dimensional Doors personal pockets.
+                option.WORLDn4_SKY_DI = Sky intensity
+                option.WORLDn4_SKY_DI.comment = Intensity of the day sky color in the Dimensional Doors personal pockets.
+                option.WORLDn4_FOG_TOTAL_DI = Total fog density
+                option.WORLDn4_FOG_TOTAL_DI.comment = Overall fog density at day in the Dimensional Doors personal pockets. Higher values give thicker fog.
+                option.WORLDn4_FOG_VERTICAL_DI = Vertical fog density
+                option.WORLDn4_FOG_VERTICAL_DI.comment = Vertical fog density at day in the Dimensional Doors personal pockets. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+                option.WORLDn4_LIGHT_NR = Light red
+                option.WORLDn4_LIGHT_NR.comment = Red channel of the night light color in the Dimensional Doors personal pockets.
+                option.WORLDn4_LIGHT_NG = Light green
+                option.WORLDn4_LIGHT_NG.comment = Green channel of the night light color in the Dimensional Doors personal pockets.
+                option.WORLDn4_LIGHT_NB = Light blue
+                option.WORLDn4_LIGHT_NB.comment = Blue channel of the night light color in the Dimensional Doors personal pockets.
+                option.WORLDn4_LIGHT_NI = Light intensity
+                option.WORLDn4_LIGHT_NI.comment = Intensity of the night light color in the Dimensional Doors personal pockets.
+                option.WORLDn4_SKY_NR = Sky red
+                option.WORLDn4_SKY_NR.comment = Red channel of the night sky color in the Dimensional Doors personal pockets.
+                option.WORLDn4_SKY_NG = Sky green
+                option.WORLDn4_SKY_NG.comment = Green channel of the night sky color in the Dimensional Doors personal pockets.
+                option.WORLDn4_SKY_NB = Sky blue
+                option.WORLDn4_SKY_NB.comment = Blue channel of the night sky color in the Dimensional Doors personal pockets.
+                option.WORLDn4_SKY_NI = Sky intensity
+                option.WORLDn4_SKY_NI.comment = Intensity of the night sky color in the Dimensional Doors personal pockets.
+                option.WORLDn4_FOG_TOTAL_NI = Total fog density
+                option.WORLDn4_FOG_TOTAL_NI.comment = Overall fog density at night in the Dimensional Doors personal pockets. Higher values give thicker fog.
+                option.WORLDn4_FOG_VERTICAL_NI = Vertical fog density
+                option.WORLDn4_FOG_VERTICAL_NI.comment = Vertical fog density at night in the Dimensional Doors personal pockets. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+                option.WORLDn4_LIGHT_TR = Light red
+                option.WORLDn4_LIGHT_TR.comment = Red channel of the twilight light color in the Dimensional Doors personal pockets.
+                option.WORLDn4_LIGHT_TG = Light green
+                option.WORLDn4_LIGHT_TG.comment = Green channel of the twilight light color in the Dimensional Doors personal pockets.
+                option.WORLDn4_LIGHT_TB = Light blue
+                option.WORLDn4_LIGHT_TB.comment = Blue channel of the twilight light color in the Dimensional Doors personal pockets.
+                option.WORLDn4_LIGHT_TI = Light intensity
+                option.WORLDn4_LIGHT_TI.comment = Intensity of the twilight light color in the Dimensional Doors personal pockets.
+                option.WORLDn4_SKY_TR = Sky red
+                option.WORLDn4_SKY_TR.comment = Red channel of the twilight sky color in the Dimensional Doors personal pockets.
+                option.WORLDn4_SKY_TG = Sky green
+                option.WORLDn4_SKY_TG.comment = Green channel of the twilight sky color in the Dimensional Doors personal pockets.
+                option.WORLDn4_SKY_TB = Sky blue
+                option.WORLDn4_SKY_TB.comment = Blue channel of the twilight sky color in the Dimensional Doors personal pockets.
+                option.WORLDn4_SKY_TI = Sky intensity
+                option.WORLDn4_SKY_TI.comment = Intensity of the twilight sky color in the Dimensional Doors personal pockets.
+                option.WORLDn4_FOG_TOTAL_TI = Total fog density
+                option.WORLDn4_FOG_TOTAL_TI.comment = Overall fog density at twilight in the Dimensional Doors personal pockets. Higher values give thicker fog.
+                option.WORLDn4_FOG_VERTICAL_TI = Vertical fog density
+                option.WORLDn4_FOG_VERTICAL_TI.comment = Vertical fog density at twilight in the Dimensional Doors personal pockets. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+                option.WORLDn4_LIGHT_CR = Light red
+                option.WORLDn4_LIGHT_CR.comment = Red channel of the constant light color in the Dimensional Doors personal pockets.
+                option.WORLDn4_LIGHT_CG = Light green
+                option.WORLDn4_LIGHT_CG.comment = Green channel of the constant light color in the Dimensional Doors personal pockets.
+                option.WORLDn4_LIGHT_CB = Light blue
+                option.WORLDn4_LIGHT_CB.comment = Blue channel of the constant light color in the Dimensional Doors personal pockets.
+                option.WORLDn4_LIGHT_CI = Light intensity
+                option.WORLDn4_LIGHT_CI.comment = Intensity of the constant light color in the Dimensional Doors personal pockets.
+                option.WORLDn4_SKY_CR = Sky red
+                option.WORLDn4_SKY_CR.comment = Red channel of the constant sky color in the Dimensional Doors personal pockets.
+                option.WORLDn4_SKY_CG = Sky green
+                option.WORLDn4_SKY_CG.comment = Green channel of the constant sky color in the Dimensional Doors personal pockets.
+                option.WORLDn4_SKY_CB = Sky blue
+                option.WORLDn4_SKY_CB.comment = Blue channel of the constant sky color in the Dimensional Doors personal pockets.
+                option.WORLDn4_SKY_CI = Sky intensity
+                option.WORLDn4_SKY_CI.comment = Intensity of the constant sky color in the Dimensional Doors personal pockets.
+                option.WORLDn4_FOG_TOTAL_CI = Total fog density
+                option.WORLDn4_FOG_TOTAL_CI.comment = Overall fog density at constant in the Dimensional Doors personal pockets. Higher values give thicker fog.
+                option.WORLDn4_FOG_VERTICAL_CI = Vertical fog density
+                option.WORLDn4_FOG_VERTICAL_CI.comment = Vertical fog density at constant in the Dimensional Doors personal pockets. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+                option.WORLDn4_STAR_CI = Star intensity
+                option.WORLDn4_STAR_CI.comment = Star brightness at all times in the Dimensional Doors personal pockets when Day cycle is Off.
+                option.WORLDn4_STAR_DI = Star intensity
+                option.WORLDn4_STAR_DI.comment = Star brightness at day in the Dimensional Doors personal pockets.
+                option.WORLDn4_STAR_NI = Star intensity
+                option.WORLDn4_STAR_NI.comment = Star brightness at night in the Dimensional Doors personal pockets.
+                option.WORLDn4_STAR_TI = Star intensity
+                option.WORLDn4_STAR_TI.comment = Star brightness at twilight in the Dimensional Doors personal pockets.
+
+    screen.DIM999 = Wildcard dimension settings
+    screen.DIM999.comment = §7Features, sky, light, and fog configuration for any dimension not listed in this shader pack.
+        screen.DIM999_FLAGS = Features
+        screen.DIM999_FLAGS.comment = §6Turn dimension and shader features On or Off for any dimension not listed in this shader pack. Other options may have no effect when their feature is Off.
+            option.WORLD999_SKYBOX = Skybox
+            option.WORLD999_SKYBOX.comment = Custom skybox rendering for any dimension not listed in this shader pack.
+            value.WORLD999_SKYBOX.0 = Off
+            value.WORLD999_SKYBOX.1 = On
+
+            option.WORLD999_CLOUDS = Clouds
+            option.WORLD999_CLOUDS.comment = Clouds in any dimension not listed in this shader pack.
+            value.WORLD999_CLOUDS.0 = Off
+            value.WORLD999_CLOUDS.1 = On
+
+            option.WORLD999_WEATHER = Weather
+            option.WORLD999_WEATHER.comment = Rain and weather effects in any dimension not listed in this shader pack.
+            value.WORLD999_WEATHER.0 = Off
+            value.WORLD999_WEATHER.1 = On
+
+            option.WORLD999_DAYCYCLE = Day cycle
+            option.WORLD999_DAYCYCLE.comment = Day, night and twilight colors in any dimension not listed in this shader pack. When Off, the Constant settings are used.
+            value.WORLD999_DAYCYCLE.0 = Off
+            value.WORLD999_DAYCYCLE.1 = On
+
+            option.WORLD999_SKYLIGHT = Real skylight
+            option.WORLD999_SKYLIGHT.comment = On: use the real sky light level of the world in any dimension not listed in this shader pack. Off: use the fixed Skylight amount instead.
+            value.WORLD999_SKYLIGHT.0 = Off
+            value.WORLD999_SKYLIGHT.1 = On
+
+            option.WORLD999_LIGHT = Directional light
+            option.WORLD999_LIGHT.comment = Directional light (sun/moon light and shadows) in any dimension not listed in this shader pack.
+            value.WORLD999_LIGHT.0 = Off
+            value.WORLD999_LIGHT.1 = On
+
+            option.WORLD999_STARS = Stars
+            option.WORLD999_STARS.comment = Shader star field in any dimension not listed in this shader pack (not the vanilla stars).
+            value.WORLD999_STARS.0 = Off
+            value.WORLD999_STARS.1 = On
+
+            option.WORLD999_AETHER = Aether
+            option.WORLD999_AETHER.comment = Aether glow effect in the sky of any dimension not listed in this shader pack.
+            value.WORLD999_AETHER.0 = Off
+            value.WORLD999_AETHER.1 = On
+
+            option.WORLD999_SKYGROUND = Sky ground
+            option.WORLD999_SKYGROUND.comment = Darkens the sky below the horizon in any dimension not listed in this shader pack.
+            value.WORLD999_SKYGROUND.0 = Off
+            value.WORLD999_SKYGROUND.1 = On
+
+            option.WORLD999_VANILLAFOG = Vanilla fog color
+            option.WORLD999_VANILLAFOG.comment = Uses the fog color given by the game in any dimension not listed in this shader pack as the sky color. See Vanilla fog mode.
+            value.WORLD999_VANILLAFOG.0 = Off
+            value.WORLD999_VANILLAFOG.1 = On
+
+        screen.DIM999_BASIC = Basic
+        screen.DIM999_BASIC.comment = §eSkylight, celestial body, and vanilla fog options for any dimension not listed in this shader pack.
+            option.WORLD999_SKYLIGHT_I = Skylight amount
+            option.WORLD999_SKYLIGHT_I.comment = Fixed skylight level used when Real skylight is Off. 0 is fully dark and 1 is fully lit.
+
+            option.WORLD999_CELESTIAL = Celestial body
+            option.WORLD999_CELESTIAL.comment = What is drawn as the sun/moon equivalent in any dimension not listed in this shader pack. §cWarning:§r if the dimension has no sun/moon or other celestial body, the vanilla sun/moon option may be unavailable.
+            value.WORLD999_CELESTIAL.0 = None
+            value.WORLD999_CELESTIAL.1 = Sun and moon
+            value.WORLD999_CELESTIAL.2 = Black hole
+
+            option.WORLD999_CELESTIAL_SIZE = Celestial size
+            option.WORLD999_CELESTIAL_SIZE.comment = Size of the celestial body.
+
+            option.WORLD999_VANILLAFOG_MODE = Vanilla fog mode
+            option.WORLD999_VANILLAFOG_MODE.comment = How the vanilla fog color combines with the sky color. Only used when Vanilla fog color is On.
+            value.WORLD999_VANILLAFOG_MODE.0 = Replace
+            value.WORLD999_VANILLAFOG_MODE.1 = Blend
+            value.WORLD999_VANILLAFOG_MODE.2 = Multiply
+
+        screen.DIM999_DAY = Day
+        screen.DIM999_DAY.comment = §eDaytime colors, fog, and stars. Used when Day cycle is On.
+
+        screen.DIM999_NIGHT = Night
+        screen.DIM999_NIGHT.comment = §1Nighttime colors, fog, and stars. Used when Day cycle is On.
+
+        screen.DIM999_TWILIGHT = Twilight
+        screen.DIM999_TWILIGHT.comment = §dSunrise and sunset colors, fog, and stars. Used when Day cycle is On.
+
+        screen.DIM999_CONSTANT = Constant
+        screen.DIM999_CONSTANT.comment = §fColors and fog used at all times when Day cycle is Off. Stars use the Constant intensity.
+
+            option.WORLD999_LIGHT_DR = Light red
+            option.WORLD999_LIGHT_DR.comment = Red channel of the day light color in any dimension not listed in this shader pack.
+            option.WORLD999_LIGHT_DG = Light green
+            option.WORLD999_LIGHT_DG.comment = Green channel of the day light color in any dimension not listed in this shader pack.
+            option.WORLD999_LIGHT_DB = Light blue
+            option.WORLD999_LIGHT_DB.comment = Blue channel of the day light color in any dimension not listed in this shader pack.
+            option.WORLD999_LIGHT_DI = Light intensity
+            option.WORLD999_LIGHT_DI.comment = Intensity of the day light color in any dimension not listed in this shader pack.
+            option.WORLD999_SKY_DR = Sky red
+            option.WORLD999_SKY_DR.comment = Red channel of the day sky color in any dimension not listed in this shader pack.
+            option.WORLD999_SKY_DG = Sky green
+            option.WORLD999_SKY_DG.comment = Green channel of the day sky color in any dimension not listed in this shader pack.
+            option.WORLD999_SKY_DB = Sky blue
+            option.WORLD999_SKY_DB.comment = Blue channel of the day sky color in any dimension not listed in this shader pack.
+            option.WORLD999_SKY_DI = Sky intensity
+            option.WORLD999_SKY_DI.comment = Intensity of the day sky color in any dimension not listed in this shader pack.
+            option.WORLD999_FOG_TOTAL_DI = Total fog density
+            option.WORLD999_FOG_TOTAL_DI.comment = Overall fog density at day in any dimension not listed in this shader pack. Higher values give thicker fog.
+            option.WORLD999_FOG_VERTICAL_DI = Vertical fog density
+            option.WORLD999_FOG_VERTICAL_DI.comment = Vertical fog density at day in any dimension not listed in this shader pack. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+            option.WORLD999_LIGHT_NR = Light red
+            option.WORLD999_LIGHT_NR.comment = Red channel of the night light color in any dimension not listed in this shader pack.
+            option.WORLD999_LIGHT_NG = Light green
+            option.WORLD999_LIGHT_NG.comment = Green channel of the night light color in any dimension not listed in this shader pack.
+            option.WORLD999_LIGHT_NB = Light blue
+            option.WORLD999_LIGHT_NB.comment = Blue channel of the night light color in any dimension not listed in this shader pack.
+            option.WORLD999_LIGHT_NI = Light intensity
+            option.WORLD999_LIGHT_NI.comment = Intensity of the night light color in any dimension not listed in this shader pack.
+            option.WORLD999_SKY_NR = Sky red
+            option.WORLD999_SKY_NR.comment = Red channel of the night sky color in any dimension not listed in this shader pack.
+            option.WORLD999_SKY_NG = Sky green
+            option.WORLD999_SKY_NG.comment = Green channel of the night sky color in any dimension not listed in this shader pack.
+            option.WORLD999_SKY_NB = Sky blue
+            option.WORLD999_SKY_NB.comment = Blue channel of the night sky color in any dimension not listed in this shader pack.
+            option.WORLD999_SKY_NI = Sky intensity
+            option.WORLD999_SKY_NI.comment = Intensity of the night sky color in any dimension not listed in this shader pack.
+            option.WORLD999_FOG_TOTAL_NI = Total fog density
+            option.WORLD999_FOG_TOTAL_NI.comment = Overall fog density at night in any dimension not listed in this shader pack. Higher values give thicker fog.
+            option.WORLD999_FOG_VERTICAL_NI = Vertical fog density
+            option.WORLD999_FOG_VERTICAL_NI.comment = Vertical fog density at night in any dimension not listed in this shader pack. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+            option.WORLD999_LIGHT_TR = Light red
+            option.WORLD999_LIGHT_TR.comment = Red channel of the twilight light color in any dimension not listed in this shader pack.
+            option.WORLD999_LIGHT_TG = Light green
+            option.WORLD999_LIGHT_TG.comment = Green channel of the twilight light color in any dimension not listed in this shader pack.
+            option.WORLD999_LIGHT_TB = Light blue
+            option.WORLD999_LIGHT_TB.comment = Blue channel of the twilight light color in any dimension not listed in this shader pack.
+            option.WORLD999_LIGHT_TI = Light intensity
+            option.WORLD999_LIGHT_TI.comment = Intensity of the twilight light color in any dimension not listed in this shader pack.
+            option.WORLD999_SKY_TR = Sky red
+            option.WORLD999_SKY_TR.comment = Red channel of the twilight sky color in any dimension not listed in this shader pack.
+            option.WORLD999_SKY_TG = Sky green
+            option.WORLD999_SKY_TG.comment = Green channel of the twilight sky color in any dimension not listed in this shader pack.
+            option.WORLD999_SKY_TB = Sky blue
+            option.WORLD999_SKY_TB.comment = Blue channel of the twilight sky color in any dimension not listed in this shader pack.
+            option.WORLD999_SKY_TI = Sky intensity
+            option.WORLD999_SKY_TI.comment = Intensity of the twilight sky color in any dimension not listed in this shader pack.
+            option.WORLD999_FOG_TOTAL_TI = Total fog density
+            option.WORLD999_FOG_TOTAL_TI.comment = Overall fog density at twilight in any dimension not listed in this shader pack. Higher values give thicker fog.
+            option.WORLD999_FOG_VERTICAL_TI = Vertical fog density
+            option.WORLD999_FOG_VERTICAL_TI.comment = Vertical fog density at twilight in any dimension not listed in this shader pack. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+            option.WORLD999_LIGHT_CR = Light red
+            option.WORLD999_LIGHT_CR.comment = Red channel of the constant light color in any dimension not listed in this shader pack.
+            option.WORLD999_LIGHT_CG = Light green
+            option.WORLD999_LIGHT_CG.comment = Green channel of the constant light color in any dimension not listed in this shader pack.
+            option.WORLD999_LIGHT_CB = Light blue
+            option.WORLD999_LIGHT_CB.comment = Blue channel of the constant light color in any dimension not listed in this shader pack.
+            option.WORLD999_LIGHT_CI = Light intensity
+            option.WORLD999_LIGHT_CI.comment = Intensity of the constant light color in any dimension not listed in this shader pack.
+            option.WORLD999_SKY_CR = Sky red
+            option.WORLD999_SKY_CR.comment = Red channel of the constant sky color in any dimension not listed in this shader pack.
+            option.WORLD999_SKY_CG = Sky green
+            option.WORLD999_SKY_CG.comment = Green channel of the constant sky color in any dimension not listed in this shader pack.
+            option.WORLD999_SKY_CB = Sky blue
+            option.WORLD999_SKY_CB.comment = Blue channel of the constant sky color in any dimension not listed in this shader pack.
+            option.WORLD999_SKY_CI = Sky intensity
+            option.WORLD999_SKY_CI.comment = Intensity of the constant sky color in any dimension not listed in this shader pack.
+            option.WORLD999_FOG_TOTAL_CI = Total fog density
+            option.WORLD999_FOG_TOTAL_CI.comment = Overall fog density at constant in any dimension not listed in this shader pack. Higher values give thicker fog.
+            option.WORLD999_FOG_VERTICAL_CI = Vertical fog density
+            option.WORLD999_FOG_VERTICAL_CI.comment = Vertical fog density at constant in any dimension not listed in this shader pack. Higher values give a thinner fog at high altitudes and thicker fog at low altitudes.
+
+            option.WORLD999_STAR_CI = Star intensity
+            option.WORLD999_STAR_CI.comment = Star brightness at all times in any dimension not listed in this shader pack when Day cycle is Off.
+            option.WORLD999_STAR_DI = Star intensity
+            option.WORLD999_STAR_DI.comment = Star brightness at day in any dimension not listed in this shader pack.
+            option.WORLD999_STAR_NI = Star intensity
+            option.WORLD999_STAR_NI.comment = Star brightness at night in any dimension not listed in this shader pack.
+            option.WORLD999_STAR_TI = Star intensity
+            option.WORLD999_STAR_TI.comment = Star brightness at twilight in any dimension not listed in this shader pack.
 
     screen.BLOCK_LIGHT_COLOR = Block light settings
     screen.BLOCK_LIGHT_COLOR.comment = §eBlock light color and intensity configuration.
