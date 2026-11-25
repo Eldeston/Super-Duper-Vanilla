@@ -97,7 +97,7 @@
         #endif
 
         #if WORLD_SKYBOX == 1
-            // Allow skybox and other celestial body to pass
+            // Allow skybox and other celestial bodies to pass
             sceneColOut = toLinear(albedo.rgb * albedo.a) * skyBoxIntensitySqrd;
         #endif
     }
