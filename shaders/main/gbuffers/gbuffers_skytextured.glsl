@@ -65,6 +65,8 @@
 
     #if WORLD_CELESTIAL == 1 && SUN_MOON_TYPE == 2 && WORLD_LIGHT == 1 && WORLD_DAYCYCLE == 1
         uniform float twilightPhase;
+
+        #include "/lib/dimension/lightAdapter.glsl"
     #endif
 
     uniform sampler2D gtexture;
@@ -80,14 +82,14 @@
             // Detect sun
             if(renderStage == MC_RENDER_STAGE_SUN){
                 // Convert to linear space
-                sceneColOut = toLinear(albedo.rgb * albedo.a) * SUN_COL_DATA_BLOCK * sunMoonIntensitySqrd;
+                sceneColOut = toLinear(albedo.rgb * albedo.a) * worldLightDay() * sunMoonIntensitySqrd;
                 return;
             }
 
             // Detect moon
             if(renderStage == MC_RENDER_STAGE_MOON){
                 // Convert to linear space
-                sceneColOut = toLinear(albedo.rgb * albedo.a) * MOON_COL_DATA_BLOCK * sunMoonIntensitySqrd;
+                sceneColOut = toLinear(albedo.rgb * albedo.a) * worldLightNight() * sunMoonIntensitySqrd;
                 return;
             }
         #else

@@ -50,13 +50,15 @@
         #if WORLD_DAYCYCLE == 1
             uniform float dayCycle;
             uniform float twilightPhase;
+
         #endif
 
         #include "/lib/utility/depthTex.glsl"
         #include "/lib/utility/projectionFunctions.glsl"
+        
+        #include "/lib/dimension/lightAdapter.glsl"
     #endif
 
-    #include "/lib/dimension/lightAdapter.glsl"
 
     void main(){
         #ifdef BLOOM

@@ -24,6 +24,8 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 
 ## CURRENT
 * [ ] Implement bit packing for optimization
+* [ ] Implement square style sun/moon
+* [ ] Consider early linear color conversion to improve day cycle transition
 
 * [ ] Refactor parallax occlusion mapping
 * [ ] Change cloud texture

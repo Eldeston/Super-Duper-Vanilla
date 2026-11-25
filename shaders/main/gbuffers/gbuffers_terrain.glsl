@@ -222,13 +222,15 @@
         #include "/lib/PBR/labPBR.glsl"
     #endif
 
-
     #if defined LAVA_NOISE || defined SCULK_NOISE
         uniform float fragmentFrameTime;
     #endif
 
-    #ifdef LAVA_NOISE
+    #if defined LAVA_NOISE || defined ENVIRONMENT_PBR && WORLD_WEATHER == 1
         #include "/lib/utility/noiseSample.glsl"
+    #endif
+
+    #ifdef LAVA_NOISE
         #include "/lib/surface/lava.glsl"
     #endif
 

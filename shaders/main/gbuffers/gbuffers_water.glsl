@@ -219,11 +219,13 @@
         #include "/lib/PBR/labPBR.glsl"
     #endif
 
+    #if (defined WATER_NORMAL || defined WATER_NOISE) || defined ENVIRONMENT_PBR && WORLD_WEATHER == 1
+        #include "/lib/utility/noiseSample.glsl"
+    #endif
 
     #if defined WATER_NORMAL || defined WATER_NOISE
         uniform float fragmentFrameTime;
 
-        #include "/lib/utility/noiseSample.glsl"
         #include "/lib/surface/water.glsl"
     #endif
 
