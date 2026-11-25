@@ -2,12 +2,12 @@
 float worldStarIntensity(){
     #if WORLD_DAYCYCLE == 1
         return lerp(
-            float(WORLD_STAR_NI),
-            float(WORLD_STAR_TI),
-            float(WORLD_STAR_DI),
+            WORLD_STAR_NI,
+            WORLD_STAR_TI,
+            WORLD_STAR_DI,
             dayCycle
         );
     #else
-        return float(WORLD_STAR_NI);
+        return WORLD_STAR_CI;
     #endif
 }

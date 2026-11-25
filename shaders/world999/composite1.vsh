@@ -1,0 +1,12 @@
+// Vertex GL version
+#version 330 compatibility
+
+#define COMPOSITE 1
+#define VERTEX
+
+#include "/lib/settings.glsl"
+#include "/lib/utility/common.glsl"
+
+#include "world.glsl"
+#include "/lib/dimension/worldResolver.glsl"
+#include "/main/composite1.glsl"

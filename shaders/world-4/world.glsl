@@ -5,19 +5,19 @@
 
 /* -------- World flags -------- */
 
-#define WORLDn4_SKYBOX 0 // Enable custom skybox rendering
-#define WORLDn4_CLOUDS 0 // Enable clouds
-#define WORLDn4_WEATHER 0 // Enable weather effects
-#define WORLDn4_DAYCYCLE 0 // Enable day/night cycle
-#define WORLDn4_SKYLIGHT 0 // Enable custom skylight override
+#define WORLDn4_SKYBOX 0 // Enable custom skybox rendering [0 1]
+#define WORLDn4_CLOUDS 0 // Enable clouds [0 1]
+#define WORLDn4_WEATHER 0 // Enable weather effects [0 1]
+#define WORLDn4_DAYCYCLE 0 // Enable day/night cycle [0 1]
+#define WORLDn4_SKYLIGHT 0 // Enable custom skylight [0 1]
 
 /* -------- Shader flags -------- */
 
-#define WORLDn4_LIGHT 0 // Enable directional world lighting
-#define WORLDn4_STARS 0 // Enable stars
-#define WORLDn4_AETHER 0 // Enable aether particles
-#define WORLDn4_SKYGROUND 0 // Enable sky ground
-#define WORLDn4_VANILLAFOG 1 // Use vanilla fog color override
+#define WORLDn4_LIGHT 0 // Enable directional world lighting [0 1]
+#define WORLDn4_STARS 0 // Enable stars [0 1]
+#define WORLDn4_AETHER 0 // Enable aether particles [0 1]
+#define WORLDn4_SKYGROUND 0 // Enable sky ground [0 1]
+#define WORLDn4_VANILLAFOG 1 // Use vanilla fog color [0 1]
 
 /* -------- Basic config -------- */
 
@@ -29,6 +29,7 @@
 /* -------- Complex config -------- */
 
 // Only when the star flag is enabled.
+#define WORLDn4_STAR_CI 4.0 // Constant star intensity [0.0 0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0 6.0 8.0 10.0 12.0 14.0 16.0]
 #define WORLDn4_STAR_DI 0.0 // Star day intensity [0.0 0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0 6.0 8.0 10.0 12.0 14.0 16.0]
 #define WORLDn4_STAR_NI 0.0 // Star night intensity [0.0 0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0 6.0 8.0 10.0 12.0 14.0 16.0]
 #define WORLDn4_STAR_TI 0.0 // Star twilight intensity [0.0 0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0 6.0 8.0 10.0 12.0 14.0 16.0]

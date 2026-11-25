@@ -96,7 +96,9 @@
             if(renderStage == MC_RENDER_STAGE_MOON){ discard; return; }
         #endif
 
-        // Allow skybox and other celestial body to pass
-        sceneColOut = toLinear(albedo.rgb * albedo.a) * skyBoxIntensitySqrd;
+        #if WORLD1_SKYBOX == 1
+            // Allow skybox and other celestial body to pass
+            sceneColOut = toLinear(albedo.rgb * albedo.a) * skyBoxIntensitySqrd;
+        #endif
     }
 #endif

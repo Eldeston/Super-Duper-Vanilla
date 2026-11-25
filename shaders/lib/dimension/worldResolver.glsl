@@ -34,6 +34,7 @@
 
 /* ----- Star Config ----- */
 
+#define WORLD_STAR_CI W_SYM(_STAR_CI)
 #define WORLD_STAR_DI W_SYM(_STAR_DI)
 #define WORLD_STAR_TI W_SYM(_STAR_TI)
 #define WORLD_STAR_NI W_SYM(_STAR_NI)

@@ -5,19 +5,19 @@
 
 /* -------- World flags -------- */
 
-#define WORLD0_SKYBOX 1 // Enable skybox
-#define WORLD0_CLOUDS 1 // Enable clouds
-#define WORLD0_WEATHER 1 // Enable weather effects
-#define WORLD0_DAYCYCLE 1 // Enable day/night cycle
-#define WORLD0_SKYLIGHT 1 // Enable skylight
+#define WORLD0_SKYBOX 1 // Enable skybox [0 1]
+#define WORLD0_CLOUDS 1 // Enable clouds [0 1]
+#define WORLD0_WEATHER 1 // Enable weather effects [0 1]
+#define WORLD0_DAYCYCLE 1 // Enable day/night cycle [0 1]
+#define WORLD0_SKYLIGHT 1 // Enable skylight [0 1]
 
 /* -------- Shader flags -------- */
 
-#define WORLD0_LIGHT 1 // Enable directional world lighting
-#define WORLD0_STARS 1 // Enable stars
-#define WORLD0_AETHER 0 // Enable aether particles
-#define WORLD0_SKYGROUND 1 // Enable sky ground
-#define WORLD0_VANILLAFOG 0 // Use vanilla fog color override
+#define WORLD0_LIGHT 1 // Enable directional world lighting [0 1]
+#define WORLD0_STARS 1 // Enable stars [0 1]
+#define WORLD0_AETHER 0 // Enable aether particles [0 1]
+#define WORLD0_SKYGROUND 1 // Enable sky ground [0 1]
+#define WORLD0_VANILLAFOG 0 // Use vanilla fog color [0 1]
 
 /* -------- Basic config -------- */
 
@@ -29,9 +29,10 @@
 /* -------- Complex config -------- */
 
 // Only when the star flag is enabled.
-#define WORLD0_STAR_DI 2.0 // Star day intensity [0.0 0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0 6.0 8.0 10.0 12.0 14.0 16.0]
+#define WORLD0_STAR_CI 4.0 // Constant star intensity [0.0 0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0 6.0 8.0 10.0 12.0 14.0 16.0]
+#define WORLD0_STAR_DI 0.0 // Star day intensity [0.0 0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0 6.0 8.0 10.0 12.0 14.0 16.0]
 #define WORLD0_STAR_NI 4.0 // Star night intensity [0.0 0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0 6.0 8.0 10.0 12.0 14.0 16.0]
-#define WORLD0_STAR_TI 3.0 // Star twilight intensity [0.0 0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0 6.0 8.0 10.0 12.0 14.0 16.0]
+#define WORLD0_STAR_TI 2.0 // Star twilight intensity [0.0 0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0 6.0 8.0 10.0 12.0 14.0 16.0]
 
 // Only when the light flag is enabled.
 #define WORLD0_LIGHT_CR 255 // Constant light red value [3 6 9 12 15 18 21 24 27 30 33 36 39 42 45 48 51 54 57 60 63 66 69 72 75 78 81 84 87 90 93 96 99 102 105 108 111 114 117 120 123 126 129 132 135 138 141 144 147 150 153 156 159 162 165 168 171 174 177 180 183 186 189 192 195 198 201 204 207 210 213 216 219 222 225 228 231 234 237 240 243 246 249 252 255]

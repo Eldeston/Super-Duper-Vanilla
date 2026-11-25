@@ -33,7 +33,7 @@ vec3 getSkyBasic(in float nEyePlayerPosY, in float skyPosZ){
 
 // Sky half render
 vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
-    #if (WORLD_AETHER == 1 && WORLD_LIGHT == 1) || defined WORLD_STARS
+    #if (WORLD_AETHER == 1 && WORLD_LIGHT == 1) || WORLD_STARS == 1
         // Scaled by noise resolution
         vec2 skyCoordScale = skyPos.xy * 256.0;
     #endif
@@ -53,7 +53,7 @@ vec3 getSkyHalf(in vec3 nEyePlayerPos, in vec3 skyPos, in vec3 currSkyCol){
         currSkyCol += exp2(-abs(nEyePlayerPos.y) * 8.0) * cubed(aetherNoise * lightCol + sumOf(aetherNoise) * 0.66666666) * lightCol;
     #endif
 
-    #ifdef WORLD_STARS
+    #if WORLD_STARS == 1
         // Star field generation
         vec2 starData = texelFetch(noisetex, ivec2(skyCoordScale / (abs(skyPos.z) + sqrt(1.0 - skyPos.z * skyPos.z))) & 255, 0).xy;
         float stars = exp(starData.x * starData.y * 64.0 - 64.0);

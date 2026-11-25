@@ -1,0 +1,10 @@
+#define VOXY_GBUFFERS
+#define VOXY_TERRAIN
+#define FRAGMENT
+
+#include "/lib/settings.glsl"
+#include "/lib/utility/common.glsl"
+
+#include "world.glsl"
+#include "/lib/dimension/worldResolver.glsl"
+#include "/main/modded/voxy_opaque.glsl"
