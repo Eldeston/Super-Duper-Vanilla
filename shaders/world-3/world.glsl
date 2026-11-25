@@ -5,7 +5,7 @@
 
 /* -------- World flags -------- */
 
-#define WORLDn3_SKYBOX 0 // Enable custom skybox rendering [0 1]
+#define WORLDn3_SKYBOX 1 // Enable custom skybox rendering [0 1]
 #define WORLDn3_CLOUDS 0 // Enable clouds [0 1]
 #define WORLDn3_WEATHER 0 // Enable weather effects [0 1]
 #define WORLDn3_DAYCYCLE 0 // Enable day/night cycle [0 1]

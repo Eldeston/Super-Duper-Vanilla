@@ -3,7 +3,6 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 
 ## PENDING
 * [ ] Create a custom shadow model view (low priority)
-* [ ] Fix gbuffers_skytextured (medium priority)
 
 * [ ] Find a way to make translucent detection more dynamic (medium priority)
 
@@ -14,7 +13,6 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 * [ ] Separate iPBR for all gbuffers (medium priority)
 
 * [ ] Optimize DOF calculations with noise (low priority)
-* [ ] Optimize block ids in block.properties (medium priority)
 * [ ] Optimize day and night transition calculations (medium priority)
 
 * [ ] Refactor uniform usage and remove unecessary ones (medium priority)
@@ -36,9 +34,13 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 * [ ] Improve tonemapping (medium priority)
 * [ ] Improve Distant Horizons depth
 * [ ] Improve shader menu UI
+    * [ ] General UI, organizing by usage
+    * [x] World config UI, improving expandability
 
 * [ ] Find a way to separate sky light and terrain light, or implement a void sky property with permanent terrain light
 * [ ] Improve albedo calculation, separating it from getPBR(), also improve parallax occlusion mapping
+
+* [ ] Fix missing vanilla fog mode implementations
 
 ## DONE
 * [x] Replace skybox clouds completely with voxelized clouds
@@ -47,6 +49,8 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 * [x] Implement Voxy support
 
 * [x] Optimize alpha testing (high priority)
+* [x] Fix gbuffers_skytextured (medium priority)
+* [x] Optimize block ids in block.properties (medium priority)
 
 * [x] Finish programming dh_generic (medium priority)
 * [x] Fix dragon death beam (medium priority) ?
