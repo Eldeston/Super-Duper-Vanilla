@@ -226,7 +226,7 @@
         uniform float fragmentFrameTime;
     #endif
 
-    #if defined LAVA_NOISE || defined ENVIRONMENT_PBR && WORLD_WEATHER == 1
+    #if (defined LAVA_NOISE || defined SCULK_NOISE) || defined ENVIRONMENT_PBR && WORLD_WEATHER == 1
         #include "/lib/utility/noiseSample.glsl"
     #endif
 

@@ -157,9 +157,7 @@
 
     #include "/lib/PBR/dataStructs.glsl"
 
-    #if defined LAVA_NOISE || defined ENVIRONMENT_PBR && WORLD_WEATHER == 1
-        #include "/lib/utility/noiseSample.glsl"
-    #endif
+    #include "/lib/utility/noiseSample.glsl"
 
     #ifdef LAVA_NOISE
         uniform float fragmentFrameTime;
