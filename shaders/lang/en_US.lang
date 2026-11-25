@@ -445,10 +445,12 @@ screen.CONFIGURATION.comment = §6Per-dimension features, sky, light, and fog co
                 option.WORLD0_CELESTIAL_SIZE.comment = Size of the celestial body.
 
                 option.WORLD0_VANILLAFOG_MODE = Vanilla fog mode
-                option.WORLD0_VANILLAFOG_MODE.comment = How the vanilla fog color combines with the sky color. Only used when Vanilla fog color is On.
+                option.WORLD0_VANILLAFOG_MODE.comment = How the vanilla fog color combines with the sky color in the Overworld. Replace ignores Strength. Only used when Vanilla fog color is On.
                 value.WORLD0_VANILLAFOG_MODE.0 = Replace
                 value.WORLD0_VANILLAFOG_MODE.1 = Blend
                 value.WORLD0_VANILLAFOG_MODE.2 = Multiply
+                option.WORLD0_VANILLAFOG_STRENGTH = Vanilla fog strength
+                option.WORLD0_VANILLAFOG_STRENGTH.comment = How strongly the vanilla fog color affects the sky color in the Overworld. 0 is none and 1 is full. Only used by the Blend and Multiply modes.
 
             screen.DIM0_DAY = Day
             screen.DIM0_DAY.comment = §eDaytime colors, fog, and stars. Used when Day cycle is On.
@@ -624,10 +626,12 @@ screen.CONFIGURATION.comment = §6Per-dimension features, sky, light, and fog co
                 option.WORLDn1_CELESTIAL_SIZE.comment = Size of the celestial body.
 
                 option.WORLDn1_VANILLAFOG_MODE = Vanilla fog mode
-                option.WORLDn1_VANILLAFOG_MODE.comment = How the vanilla fog color combines with the sky color. Only used when Vanilla fog color is On.
+                option.WORLDn1_VANILLAFOG_MODE.comment = How the vanilla fog color combines with the sky color in the Nether. Replace ignores Strength. Only used when Vanilla fog color is On.
                 value.WORLDn1_VANILLAFOG_MODE.0 = Replace
                 value.WORLDn1_VANILLAFOG_MODE.1 = Blend
                 value.WORLDn1_VANILLAFOG_MODE.2 = Multiply
+                option.WORLDn1_VANILLAFOG_STRENGTH = Vanilla fog strength
+                option.WORLDn1_VANILLAFOG_STRENGTH.comment = How strongly the vanilla fog color affects the sky color in the Nether. 0 is none and 1 is full. Only used by the Blend and Multiply modes.
 
             screen.DIMn1_DAY = Day
             screen.DIMn1_DAY.comment = §eDaytime colors, fog, and stars. Used when Day cycle is On.
@@ -803,10 +807,12 @@ screen.CONFIGURATION.comment = §6Per-dimension features, sky, light, and fog co
                 option.WORLD1_CELESTIAL_SIZE.comment = Size of the celestial body.
 
                 option.WORLD1_VANILLAFOG_MODE = Vanilla fog mode
-                option.WORLD1_VANILLAFOG_MODE.comment = How the vanilla fog color combines with the sky color. Only used when Vanilla fog color is On.
+                option.WORLD1_VANILLAFOG_MODE.comment = How the vanilla fog color combines with the sky color in the End. Replace ignores Strength. Only used when Vanilla fog color is On.
                 value.WORLD1_VANILLAFOG_MODE.0 = Replace
                 value.WORLD1_VANILLAFOG_MODE.1 = Blend
                 value.WORLD1_VANILLAFOG_MODE.2 = Multiply
+                option.WORLD1_VANILLAFOG_STRENGTH = Vanilla fog strength
+                option.WORLD1_VANILLAFOG_STRENGTH.comment = How strongly the vanilla fog color affects the sky color in the End. 0 is none and 1 is full. Only used by the Blend and Multiply modes.
 
             screen.DIM1_DAY = Day
             screen.DIM1_DAY.comment = §eDaytime colors, fog, and stars. Used when Day cycle is On.
@@ -984,10 +990,12 @@ screen.CONFIGURATION.comment = §6Per-dimension features, sky, light, and fog co
                 option.WORLDn2_CELESTIAL_SIZE.comment = Size of the celestial body.
 
                 option.WORLDn2_VANILLAFOG_MODE = Vanilla fog mode
-                option.WORLDn2_VANILLAFOG_MODE.comment = How the vanilla fog color combines with the sky color. Only used when Vanilla fog color is On.
+                option.WORLDn2_VANILLAFOG_MODE.comment = How the vanilla fog color combines with the sky color in the Dimensional Doors public and dungeon pockets. Replace ignores Strength. Only used when Vanilla fog color is On.
                 value.WORLDn2_VANILLAFOG_MODE.0 = Replace
                 value.WORLDn2_VANILLAFOG_MODE.1 = Blend
                 value.WORLDn2_VANILLAFOG_MODE.2 = Multiply
+                option.WORLDn2_VANILLAFOG_STRENGTH = Vanilla fog strength
+                option.WORLDn2_VANILLAFOG_STRENGTH.comment = How strongly the vanilla fog color affects the sky color in the Dimensional Doors public and dungeon pockets. 0 is none and 1 is full. Only used by the Blend and Multiply modes.
 
             screen.DIMn2_DAY = Day
             screen.DIMn2_DAY.comment = §eDaytime colors, fog, and stars. Used when Day cycle is On.
@@ -1163,10 +1171,12 @@ screen.CONFIGURATION.comment = §6Per-dimension features, sky, light, and fog co
                 option.WORLDn3_CELESTIAL_SIZE.comment = Size of the celestial body.
 
                 option.WORLDn3_VANILLAFOG_MODE = Vanilla fog mode
-                option.WORLDn3_VANILLAFOG_MODE.comment = How the vanilla fog color combines with the sky color. Only used when Vanilla fog color is On.
+                option.WORLDn3_VANILLAFOG_MODE.comment = How the vanilla fog color combines with the sky color in Dimensional Doors Limbo. Replace ignores Strength. Only used when Vanilla fog color is On.
                 value.WORLDn3_VANILLAFOG_MODE.0 = Replace
                 value.WORLDn3_VANILLAFOG_MODE.1 = Blend
                 value.WORLDn3_VANILLAFOG_MODE.2 = Multiply
+                option.WORLDn3_VANILLAFOG_STRENGTH = Vanilla fog strength
+                option.WORLDn3_VANILLAFOG_STRENGTH.comment = How strongly the vanilla fog color affects the sky color in Dimensional Doors Limbo. 0 is none and 1 is full. Only used by the Blend and Multiply modes.
 
             screen.DIMn3_DAY = Day
             screen.DIMn3_DAY.comment = §eDaytime colors, fog, and stars. Used when Day cycle is On.
@@ -1342,10 +1352,12 @@ screen.CONFIGURATION.comment = §6Per-dimension features, sky, light, and fog co
                 option.WORLDn4_CELESTIAL_SIZE.comment = Size of the celestial body.
 
                 option.WORLDn4_VANILLAFOG_MODE = Vanilla fog mode
-                option.WORLDn4_VANILLAFOG_MODE.comment = How the vanilla fog color combines with the sky color. Only used when Vanilla fog color is On.
+                option.WORLDn4_VANILLAFOG_MODE.comment = How the vanilla fog color combines with the sky color in the Dimensional Doors personal pockets. Replace ignores Strength. Only used when Vanilla fog color is On.
                 value.WORLDn4_VANILLAFOG_MODE.0 = Replace
                 value.WORLDn4_VANILLAFOG_MODE.1 = Blend
                 value.WORLDn4_VANILLAFOG_MODE.2 = Multiply
+                option.WORLDn4_VANILLAFOG_STRENGTH = Vanilla fog strength
+                option.WORLDn4_VANILLAFOG_STRENGTH.comment = How strongly the vanilla fog color affects the sky color in the Dimensional Doors personal pockets. 0 is none and 1 is full. Only used by the Blend and Multiply modes.
 
             screen.DIMn4_DAY = Day
             screen.DIMn4_DAY.comment = §eDaytime colors, fog, and stars. Used when Day cycle is On.
@@ -1521,10 +1533,12 @@ screen.CONFIGURATION.comment = §6Per-dimension features, sky, light, and fog co
             option.WORLD999_CELESTIAL_SIZE.comment = Size of the celestial body.
 
             option.WORLD999_VANILLAFOG_MODE = Vanilla fog mode
-            option.WORLD999_VANILLAFOG_MODE.comment = How the vanilla fog color combines with the sky color. Only used when Vanilla fog color is On.
+            option.WORLD999_VANILLAFOG_MODE.comment = How the vanilla fog color combines with the sky color in any dimension not listed in this shader pack. Replace ignores Strength. Only used when Vanilla fog color is On.
             value.WORLD999_VANILLAFOG_MODE.0 = Replace
             value.WORLD999_VANILLAFOG_MODE.1 = Blend
             value.WORLD999_VANILLAFOG_MODE.2 = Multiply
+            option.WORLD999_VANILLAFOG_STRENGTH = Vanilla fog strength
+            option.WORLD999_VANILLAFOG_STRENGTH.comment = How strongly the vanilla fog color affects the sky color in any dimension not listed in this shader pack. 0 is none and 1 is full. Only used by the Blend and Multiply modes.
 
         screen.DIM999_DAY = Day
         screen.DIM999_DAY.comment = §eDaytime colors, fog, and stars. Used when Day cycle is On.

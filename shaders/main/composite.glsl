@@ -16,6 +16,7 @@
 /// -------------------------------- /// Vertex Shader /// -------------------------------- ///
 
 #ifdef VERTEX
+    flat out vec3 sRGBSkyCol;
     flat out vec3 skyCol;
 
     noperspective out vec2 texCoord;
@@ -74,7 +75,8 @@
         // Get buffer texture coordinates
         texCoord = gl_MultiTexCoord0.xy;
 
-        skyCol = toLinear(worldSkyColor());
+        sRGBSkyCol = worldSkyColor();
+        skyCol = toLinear(sRGBSkyCol);
 
         #if WORLD_LIGHT == 1
             sRGBLightCol = worldLightColor();
@@ -112,6 +114,7 @@
     /* RENDERTARGETS: 4 */
     layout(location = 0) out vec3 sceneColOut; // colortex4
 
+    flat in vec3 sRGBSkyCol;
     flat in vec3 skyCol;
 
     #if WORLD_LIGHT == 1
