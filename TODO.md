@@ -24,7 +24,6 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 
 ## CURRENT
 * [ ] Implement bit packing for optimization
-* [ ] Rebalance block light range for gameplay
 
 * [ ] Refactor parallax occlusion mapping
 * [ ] Change cloud texture
@@ -35,14 +34,17 @@ Notes for pending features/bug fixes to be implemented categorized by importance
 * [ ] Improve Distant Horizons depth
 * [ ] Improve shader menu UI
     * [ ] General UI, organizing by usage
+    * [ ] More iPBR options, enabling specific block families, or enabling new properties like emissive ores
     * [x] World config UI, improving expandability
 
 * [ ] Find a way to separate sky light and terrain light, or implement a void sky property with permanent terrain light
 * [ ] Improve albedo calculation, separating it from getPBR(), also improve parallax occlusion mapping
 
-* [ ] Fix missing vanilla fog mode implementations
-
 ## DONE
+* [x] Rebalance block light range for gameplay
+* [x] Fix missing vanilla fog mode implementations
+* [x] Make aether available in no light environments by using fog instead (through vanilla or custom)
+
 * [x] Replace skybox clouds completely with voxelized clouds
 * [x] Abandon Optifine support (high priority)
 * [x] Fix hand bobbing not working
