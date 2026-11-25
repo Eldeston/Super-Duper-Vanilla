@@ -5,8 +5,6 @@ vec4 complexShadingLOD(in dataPBR material, in vec2 lmCoord, in vec3 feetPlayerP
     // Calculate thunder flash
     totalIllumination += lightningFlash;
 
-    // Get block light squared
-    float blockLightSquared = squared(lmCoord.x);
     // Get sky light squared
     float skyLightSquared = squared(lmCoord.y);
 
@@ -17,7 +15,7 @@ vec4 complexShadingLOD(in dataPBR material, in vec2 lmCoord, in vec3 feetPlayerP
     totalIllumination += toLinear(AMBIENT_LIGHTING + nightVision * 0.5);
 
     // Calculate block light
-    totalIllumination += toLinear(min(1.5, (1.0 + float(material.emissive == 0.0) * 0.5) * blockLightSquared * lmCoord.x) * blockLightColor);
+    totalIllumination += toLinear((lightmapCurve(lmCoord.x) * 1.25) * blockLightColor);
 
     // Get view direction
     vec3 viewDir = -fastNormalize(feetPlayerPos);

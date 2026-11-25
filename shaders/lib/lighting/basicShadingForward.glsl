@@ -7,7 +7,7 @@ vec3 basicShadingForward(in vec3 albedo, in vec2 lmCoord){
     vec3 totalDiffuse = (toLinear(worldSkyColor()) + lightningFlash) * skyLightSquared;
 
     // Calculate block light
-    totalDiffuse += toLinear(squared(lmCoord.x) * blockLightColor * 1.25);
+    totalDiffuse += toLinear((lightmapCurve(lmCoord.x) * 1.25) * blockLightColor);
 
     // Calculate ambient lightning
     totalDiffuse += toLinear(nightVision * 0.5 + AMBIENT_LIGHTING);

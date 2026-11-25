@@ -122,8 +122,6 @@
 #endif
 
 vec4 complexShadingForward(in dataPBR material, in vec2 lmCoord, in vec3 feetPlayerPos){
-    // Get block light squared
-    float blockLightSquared = squared(lmCoord.x);
     // Get sky light squared
     float skyLightSquared = squared(lmCoord.y);
 
@@ -136,13 +134,13 @@ vec4 complexShadingForward(in dataPBR material, in vec2 lmCoord, in vec3 feetPla
 
     #if defined DIRECTIONAL_LIGHTMAPS && (defined TERRAIN || defined WATER)
         vec3 dirLightMapPos = fastNormalize(dFdx(feetPlayerPos) * dFdx(lmCoord.x) + dFdy(feetPlayerPos) * dFdy(lmCoord.x));
-        float dirLightMap = min(1.0, max(0.0, dot(dirLightMapPos, material.normal)) * blockLightSquared * DIRECTIONAL_LIGHTMAP_STRENGTH + lmCoord.x);
+        float dirLightMap = min(1.0, max(0.0, dot(dirLightMapPos, material.normal)) * lightmapCurve(lmCoord.x) * DIRECTIONAL_LIGHTMAP_STRENGTH + lmCoord.x);
 
         // Calculate block light
-        totalIllumination += toLinear(min(1.5, (1.0 + float(material.emissive == 0.0) * 0.5) * cubed(dirLightMap)) * blockLightColor);
+        totalIllumination += toLinear((lightmapCurve(dirLightMap) * (1.0 + float(material.emissive == 0.0) * 0.25)) * blockLightColor);
     #else
         // Calculate block light
-        totalIllumination += toLinear(min(1.5, (1.0 + float(material.emissive == 0.0) * 0.5) * blockLightSquared * lmCoord.x) * blockLightColor);
+        totalIllumination += toLinear((lightmapCurve(lmCoord.x) * (1.0 + float(material.emissive == 0.0) * 0.25)) * blockLightColor);
     #endif
 
     // Apply baked ambient occlussion

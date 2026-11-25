@@ -8,49 +8,6 @@
 // Certain RP artists mistakingly add additional alpha to nontranslucent textures
 #define ALPHA_THRESHOLD 0.1
 
-const float lightMapEpsilon = 1.0 / 16.0;
-const float lightMapVertexScale = 1.0328125 / 240.0;
-const float oneMinusLightMapScale = 1.0 - lightMapEpsilon;
-
-float getDepth(in sampler2D depthTex, in ivec2 screenTexelCoord, in int LOD){
-    float depth = texelFetch(depthTex, screenTexelCoord, LOD).x;
-
-    // Fix for AMD's electriic boogaloo
-    // For some reason, AMD has not fixed this yet
-    #ifdef MC_GL_RENDERER_RADEON
-        if(depth <= 0) return 1.0;
-    #endif
-
-    return depth;
-}
-
-float getDepth(in sampler2D depthTex, in vec2 screenCoord, in float LOD){
-    float depth = textureLod(depthTex, screenCoord, LOD).x;
-
-    // Fix for AMD's electriic boogaloo
-    // For some reason, AMD has not fixed this yet
-    #ifdef MC_GL_RENDERER_RADEON
-        if(depth <= 0) return 1.0;
-    #endif
-
-    return depth;
-}
-
-// For some reason, the lightmap has precision errors and does not reach 0 or 1
-float lightMapCoord(in float lightMap){
-    // lightMap = (lightMap * 33.05 / 32.0) - (1.05 / 32.0);
-    lightMap = lightMap * lightMapVertexScale - 0.0328125;
-
-    if(lightMap < lightMapEpsilon) return 0.0;
-    if(lightMap > oneMinusLightMapScale) return 1.0;
-
-    return lightMap;
-}
-
-vec2 lightMapCoord(in vec2 lightMap){
-    return vec2(lightMapCoord(lightMap.x), lightMapCoord(lightMap.y));
-}
-
 // Saturate/clamp functions
 float saturate(in float x){ return clamp(x, 0.0, 1.0); }
 vec2 saturate(in vec2 x){ return clamp(x, vec2(0), vec2(1)); }
@@ -105,10 +62,28 @@ uint maxOf(in uvec3 x){ return max(x.x, max(x.y, x.z)); }
 uint maxOf(in uvec4 x){ return max(max(x.x, x.y), max(x.z, x.w)); }
 
 // By @foxtrot112 on ShaderLABs
-float smoothMax(float x, float y, float b) {
-    const float c = 1.1283791671;
-    return (x - y) / 2.0 * (1.0 + tanh(c * b * (x - y))) + y;
+// tanh form rewritten using the equivalent sigmoid form.
+float smoothMax(in float x, in float y, in float b) {
+    const float C = 3.2558142; // 2 * 1.1283791671 * log2(e)
+    float d = x - y;
+    return d / (1.0 + exp2(-C * b * d)) + y;
 }
+
+float smoothMin(in float x, in float y, in float b) {
+    const float C = 3.2558142; // 2 * 1.1283791671 * log2(e)
+    float d = x - y;
+    return d / (1.0 + exp2(C * b * d)) + y;
+}
+
+// float smoothMax(in float x, in float y, in float b) {
+//     const float C = 1.1283791671;
+//     return (x - y) / 2.0 * (1.0 + tanh(C * b * (x - y))) + y;
+// }
+
+// float smoothMin(in float x, in float y, in float b) {
+//     const float C = 1.1283791671;
+//     return (x - y) / 2.0 * (1.0 - tanh(C * b * (x - y))) + y;
+// }
 
 // Linear interpolation functions
 float lerp(float a, float b, float c, float d){
@@ -243,3 +218,54 @@ vec3 toLinear(in vec3 x){ return ((2.10545 + x) * (0.0231872 + x)) * x * 0.31520
 float toSRGB(in float x){ return (inversesqrt(x) - 0.126893) * x * 1.14374; }
 vec3 toSRGB(in vec3 x){ return (inversesqrt(x) - 0.126893) * x * 1.14374; }
 */
+
+float getDepth(in sampler2D depthTex, in ivec2 screenTexelCoord, in int LOD){
+    float depth = texelFetch(depthTex, screenTexelCoord, LOD).x;
+
+    // Fix for AMD's electriic boogaloo
+    // For some reason, AMD has not fixed this yet
+    #ifdef MC_GL_RENDERER_RADEON
+        if(depth <= 0) return 1.0;
+    #endif
+
+    return depth;
+}
+
+float getDepth(in sampler2D depthTex, in vec2 screenCoord, in float LOD){
+    float depth = textureLod(depthTex, screenCoord, LOD).x;
+
+    // Fix for AMD's electriic boogaloo
+    // For some reason, AMD has not fixed this yet
+    #ifdef MC_GL_RENDERER_RADEON
+        if(depth <= 0) return 1.0;
+    #endif
+
+    return depth;
+}
+
+const float lightMapEpsilon = 1.0 / 16.0;
+const float lightMapVertexScale = 1.0328125 / 240.0;
+const float oneMinusLightMapScale = 1.0 - lightMapEpsilon;
+
+// For some reason, the lightmap has precision errors and does not reach 0 or 1
+float lightMapCoord(in float lightMap){
+    // lightMap = (lightMap * 33.05 / 32.0) - (1.05 / 32.0);
+    lightMap = lightMap * lightMapVertexScale - 0.0328125;
+
+    if(lightMap < lightMapEpsilon) return 0.0;
+    if(lightMap > oneMinusLightMapScale) return 1.0;
+
+    return lightMap;
+}
+
+vec2 lightMapCoord(in vec2 lightMap){
+    return vec2(lightMapCoord(lightMap.x), lightMapCoord(lightMap.y));
+}
+
+// Blend strength: lower = closer to the average of x and x^4, higher = closer to x^4
+#define LM_BLEND 0.1
+
+float lightmapCurve(in float x) {
+    float y = cubed(x);
+    return smoothMin(x, y, LM_BLEND);
+}
