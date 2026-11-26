@@ -37,15 +37,15 @@ These features are selected or parameterized by the PBR and material settings li
 
 | Feature | Description | Implementation |
 |---|---|---|
-| Sky rendering | Sky color, stars, End aether, sun and moon shapes, and the End black hole; also used for sky reflections | [`skyRender.glsl`](../shaders/lib/atmospherics/skyRender.glsl) |
+| Sky rendering | Sky color, stars, aether, sun and moon shapes, and the black hole celestial body, each toggled per dimension; also used for sky reflections | [`skyRender.glsl`](../shaders/lib/atmospherics/skyRender.glsl), [DIMENSION.md](DIMENSION.md) |
 | Fog | Ground fog, border fog, rain and underwater density changes, and darkness fog | [`fogRender.glsl`](../shaders/lib/atmospherics/fogRender.glsl) |
 | Volumetric lighting | Ray-marches shadow-map light at half resolution into `colortex0`, accumulates history in `colortex6`, then upsamples and adds it to the HDR scene | [`volumetricLight.glsl`](../shaders/lib/rayTracing/volumetricLight.glsl), `composite1.glsl`, `composite2.glsl`, `composite3.glsl` |
 | Vanilla clouds | Vanilla cloud geometry with gradient shading when `CLOUD_TYPE` is `0` | `gbuffers_clouds` |
 | Voxel clouds | DDA-traced voxel clouds read from a cloud map, with an optional second layer, weather response, and fade animation; replaces the older ray-marched `volumetricClouds.glsl`, which no program includes anymore | [`voxelClouds.glsl`](../shaders/lib/rayTracing/voxelClouds.glsl), `composite.glsl` |
 | Terrain, water, and weather animation | Wind-driven and current-driven vertex displacement | [`waveTerrain.glsl`](../shaders/lib/vertex/waveTerrain.glsl), [`waveWater.glsl`](../shaders/lib/vertex/waveWater.glsl), [`weatherWave.glsl`](../shaders/lib/vertex/weatherWave.glsl) |
 | World curvature | Optional downward bend of the world with distance, applied in vertex shaders | Vertex stages of the Gbuffers and shadow programs |
-| Day cycle and timelapse | Light and sky colors blend across day, twilight, and night; timelapse smooths animations by world time | [`world.glsl`](../shaders/world0/world.glsl) macros, custom uniforms in `shaders.properties` |
-| Dimension-specific lighting | World flags and color and fog constants select per-dimension behavior | `shaders/world-X/world.glsl` files |
+| Day cycle and timelapse | Light and sky colors are converted to linear space first, then blended across day, twilight, and night; timelapse smooths animations by world time | [DIMENSION.md](DIMENSION.md), custom uniforms in `shaders.properties` |
+| Per-dimension configuration | Every dimension has the same full option set: feature flags, skylight, celestial body, vanilla fog color, star, light, sky, and fog settings for each time of day. All of it is exposed in the Configuration menu | [DIMENSION.md](DIMENSION.md), `shaders/world-X/world.glsl` files |
 
 ## Post-Processing
 
@@ -72,6 +72,7 @@ For the full pass map and buffer I/O, see [PROGRAMS.md](PROGRAMS.md) and [BUFFER
 - **Distant Horizons**: dedicated terrain, generic geometry, and water programs. LOD terrain uses noise-varied colors and the simplified LOD shading path.
 - **Voxy**: `voxy.json` plus opaque and translucent fragment programs using Voxy's material IDs and depth inputs.
 - **Physics Mod**: ocean geometry and shadow programs, controlled by `PHYSICS_OCEAN_SUPPORT`; adds ocean displacement and physics foam.
-- **Dimensional Doors**: dedicated dimension folders for pockets and Limbo, unshaded fabric blocks, and a custom portal.
+- **Dimensional Doors**: dedicated dimension folders for pockets, Limbo, and personal pockets, unshaded fabric blocks, and a custom portal.
+- **Wildcard dimension**: `world999` applies to any dimension not listed in `dimension.properties`, such as modded dimensions. It has its own full settings screen and defaults to the Overworld look.
 
 Provider/loader availability is cataloged in [PROGRAMS.md](PROGRAMS.md). Settings and exact menu labels are in [SETTINGS.md](SETTINGS.md).

@@ -2,7 +2,7 @@
 
 A reference for the settings available in Super Duper Vanilla (SDV), using the exact English names from `shaders/lang/en_US.lang` and the identifiers/defaults from the shader sources.
 
-`shaders/lib/settings.glsl` defines shared settings and source defaults. `shaders/shaders.properties` controls the menu, profile inheritance, sliders, and program conditions. Profiles can override the source defaults. Per-world values are defined in `shaders/world-X/world.glsl`.
+`shaders/lib/settings.glsl` defines shared settings and source defaults. `shaders/shaders.properties` controls the menu, profile inheritance, sliders, and program conditions. Profiles can override the source defaults. Per-dimension values are defined in `shaders/world-X/world.glsl` and documented in [DIMENSION.md](DIMENSION.md).
 
 ## Contents
 
@@ -26,6 +26,7 @@ A reference for the settings available in Super Duper Vanilla (SDV), using the e
 - **Default** is the value in the source file before a selected profile overrides it.
 - Toggle states are noted as **On** or **Off**. Numeric domains are the values declared for the shader menu/source setting.
 - World-specific settings and non-menu implementation constants are separated into [Developers](#developers); they are not player-facing options unless explicitly listed on a menu page.
+- Per-dimension options are player-facing and are documented in [DIMENSION.md](DIMENSION.md); the [Configuration](#configuration) section shows where they sit in the menu. Non-menu implementation constants are separated into [Developers](#developers).
 
 ## Profiles
 
@@ -235,56 +236,36 @@ The iPBR page also holds the generated-normal settings:
 
 ## Configuration
 
-The Configuration screen contains separate Overworld, Nether, End, and Block light pages. The labels below are the `en_US.lang` labels; each world's values are defined in its own `world.glsl`.
+The Configuration screen holds the per-dimension settings and the block light page. The labels below are the `en_US.lang` labels. Option IDs, ranges, and defaults for every dimension are in [DIMENSION.md](DIMENSION.md).
 
-### Overworld Pages
+```
+Configuration
+├── Vanilla dimensions
+│   ├── Overworld settings
+│   ├── Nether settings
+│   └── End settings
+├── Dimensional Doors
+│   ├── Dimdoors: Pockets settings
+│   ├── Dimdoors: Limbo settings
+│   └── Dimdoors: Personal pockets settings
+├── Wildcard dimension settings
+└── Block light settings
+```
 
-Light and sky pages each use four settings per time of day: red, green, blue (`3` to `255`, step `3`), and intensity (`0.00` to `2.00`, step `0.05`). Defaults come from `world0/world.glsl`.
+### Dimension Screens
 
-| Page | Setting IDs | Default RGB / intensity |
-|---|---|---|
-| Day settings, light | `LIGHT0_DR`, `LIGHT0_DG`, `LIGHT0_DB`, `LIGHT0_DI` | `255, 210, 165` / `1.30` |
-| Day settings, sky | `SKY0_DR`, `SKY0_DG`, `SKY0_DB`, `SKY0_DI` | `45, 105, 165` / `1.30` |
-| Night settings, light | `LIGHT0_NR`, `LIGHT0_NG`, `LIGHT0_NB`, `LIGHT0_NI` | `45, 105, 150` / `1.00` |
-| Night settings, sky | `SKY0_NR`, `SKY0_NG`, `SKY0_NB`, `SKY0_NI` | `0, 30, 120` / `1.00` |
-| Twilight settings, light | `LIGHT0_TR`, `LIGHT0_TG`, `LIGHT0_TB`, `LIGHT0_TI` | `255, 180, 75` / `1.30` |
-| Twilight settings, sky | `SKY0_TR`, `SKY0_TG`, `SKY0_TB`, `SKY0_TI` | `60, 30, 120` / `1.00` |
+Every dimension has the same screens and the same options, so changing a dimension means changing values, not hunting for different options. The wildcard screen applies to any dimension not listed in `dimension.properties`.
 
-Menu labels on these pages are "Light red", "Light green", "Light blue", "Light intensity", "Sky red", "Sky green", "Sky blue", and "Sky intensity".
-
-| Page | Exact UI label | Setting ID | Default |
-|---|---|---|---:|
-| Fog settings | Vertical density day | `FOG0_VERTICAL_DENSITY_D` | `0.080` |
-| Fog settings | Vertical density night | `FOG0_VERTICAL_DENSITY_N` | `0.020` |
-| Fog settings | Vertical density twilight | `FOG0_VERTICAL_DENSITY_T` | `0.040` |
-| Fog settings | Total density | `FOG0_TOTAL_DENSITY` | `0.005` |
-
-### Nether Page
-
-| Exact UI label | Setting ID |
+| Screen | Contents |
 |---|---|
-| Vertical density | `FOGn1_VERTICAL_DENSITY` |
-| Total density | `FOGn1_TOTAL_DENSITY` |
-| Sky intensity | `WORLDn1_VANILLA_FOGCOLI` |
+| Features | Skybox, Clouds, Weather, Day cycle, Real skylight, Directional light, Stars, Aether, Sky ground, Vanilla fog color (each On or Off) |
+| Basic | Skylight amount, Celestial body, Celestial size, Vanilla fog mode, Vanilla fog strength |
+| Day, Night, Twilight | Light red, green, blue, and intensity; Sky red, green, blue, and intensity; Total fog density; Vertical fog density; Star intensity. Used when Day cycle is On |
+| Constant | The same settings, used at all times when Day cycle is Off. Its star intensity uses the Constant value |
 
-Defaults: vertical density `0.010`, total density `0.020`, sky intensity `1.00`.
+Option tooltips say when an option is used. Options of a disabled feature stay visible, because the menu cannot hide them conditionally. For example, the Day, Night, and Twilight screens have no effect when Day cycle is Off.
 
-### End Page
-
-| Exact UI label | Setting ID |
-|---|---|
-| Light red | `LIGHT1_CR` |
-| Light green | `LIGHT1_CG` |
-| Light blue | `LIGHT1_CB` |
-| Light intensity | `LIGHT1_CI` |
-| Sky red | `SKY1_CR` |
-| Sky green | `SKY1_CG` |
-| Sky blue | `SKY1_CB` |
-| Sky intensity | `SKY1_CI` |
-| Vertical density | `FOG1_VERTICAL_DENSITY` |
-| Total density | `FOG1_TOTAL_DENSITY` |
-
-Defaults: light `210, 165, 255` at intensity `1.00`, sky `15, 3, 60` at intensity `1.00`, vertical density `0.025`, total density `0.005`.
+Menu ranges: color channels `3` to `255`, step `3`; intensities `0.00` to `2.00`, step `0.05`. Other ranges are declared in each dimension's `world.glsl`.
 
 ### Block Light Page
 
@@ -295,46 +276,17 @@ Defaults: light `210, 165, 255` at intensity `1.00`, sky `15, 3, 60` at intensit
 | Block light blue | `BLOCKLIGHT_B` | `210` | `3` to `255`, step `3` |
 | Block light intensity | `BLOCKLIGHT_I` | `1.00` | `0.00` to `2.00`, step `0.05` |
 
-World fog densities use the `0.005` to `0.500` domain declared in the world files. The `blockLightColor` vector is derived from block-light RGB and intensity; it is not another menu option.
+Dimension option ranges are declared in each `world.glsl`; see [DIMENSION.md](DIMENSION.md).
 
 ## Developers
 
 This section documents source-side values that do not appear as player options. They are listed for implementation work and are intentionally hidden from the shader menu.
 
-### Hidden Per-World Settings
+### Per-Dimension Settings
 
-These settings are set in `shaders/world-X/world.glsl`, not through `screen.*` options:
+The former developer-only world flags (forced-off clouds, weather, and day cycle, sky ground, Aether, custom skylight, stars, and vanilla fog color) are now regular options on each dimension's Configuration screens. Option IDs, resolution, and defaults per dimension are in [DIMENSION.md](DIMENSION.md). Only `WORLD_ID` and `WORLD_PREFIX` remain source-level identifiers that don't appear in the menu.
 
-| Setting | Meaning |
-|---|---|
-| `WORLD_ID` | Dimension identifier |
-| `WORLD_LIGHT` | Enables the shader sun/moon lighting path |
-| `WORLD_SUN_MOON` | Per-world light mode: `0` off, `1` standard sun/moon, `2` black-hole path |
-| `WORLD_SUN_MOON_SIZE` | Angular size for that world's light source |
-| `FORCE_DISABLE_CLOUDS` | Forces cloud handling off in a dimension |
-| `FORCE_DISABLE_WEATHER` | Forces weather handling off in a dimension |
-| `FORCE_DISABLE_DAY_CYCLE` | Forces day-cycle handling off in a dimension |
-| `WORLD_SKY_GROUND` | Enables the sky-ground path |
-| `WORLD_AETHER` | Enables Aether particle handling |
-| `WORLD_CUSTOM_SKYLIGHT` | Supplies a custom skylight amount |
-| `WORLD_STARS` | Defines the dimension's star contribution |
-| `WORLD_VANILLA_FOG_COLOR` | Selects vanilla fog color handling |
-| `WORLD0_VANILLA_FOGCOLI`, `WORLD1_VANILLA_FOGCOLI` | Optional per-world vanilla fog-color intensity; not registered on the menu |
-
-`WORLDn1_VANILLA_FOGCOLI` is the exception: it is registered as the Nether page's **Sky intensity** setting when defined. The Configuration page exposes selected world color and fog values, but the flags above remain developer-controlled.
-
-Built-in world source defaults include:
-
-| World | Selected defaults |
-|---|---|
-| Overworld (`world0`) | `WORLD_ID=0`, `WORLD_LIGHT`, `WORLD_SUN_MOON=1`, size `0.125`, sky ground enabled, stars `toLinear(4.0 - dayCycle * 2.0)`; day/night/twilight lighting and sky colors plus fog densities are declared in this file. Also the default for dimensions not listed in `dimension.properties` |
-| Nether (`world-1`) | `WORLD_ID=-1`, no `WORLD_LIGHT`, `WORLD_SUN_MOON=0`; clouds/weather/day cycle forced off; custom skylight `1.00`; vanilla fog color enabled, with the sky taken from the square-rooted fog color scaled by `WORLDn1_VANILLA_FOGCOLI` (`1.00`); vertical fog `0.010`, total fog `0.020`. The `SKYn1_C*` color values are declared but not used by the sky |
-| End (`world1`) | `WORLD_ID=1`, `WORLD_LIGHT`, `WORLD_SUN_MOON=2`, size `0.25`; clouds/weather/day cycle forced off; custom skylight `1.00`; Aether and sky-ground enabled; stars `16.0`; light color `210, 165, 255` at `1.00`; sky color `15, 3, 60` at `1.00`; vertical fog `0.025`, total fog `0.005` |
-| Dimensional Doors pockets (`world-2`) | `WORLD_ID=-2`, no `WORLD_LIGHT`, `WORLD_SUN_MOON=0`; clouds/weather/day cycle forced off; custom skylight `0.00`; pitch-black sky (`SKYn2_C*` all `0`); vertical fog `0.010`, total fog `0.020` |
-| Dimensional Doors Limbo (`world-3`) | `WORLD_ID=-3`, no `WORLD_LIGHT`, `WORLD_SUN_MOON=0`; clouds/weather/day cycle forced off; custom skylight `1.00`; vanilla fog color enabled, with the sky taken from the fog color scaled by `WORLDn3_VANILLA_FOGCOLI` (`1.00`); vertical fog `0.010`, total fog `0.020` |
-| Dimensional Doors personal pockets (`world-4`) | `WORLD_ID=-4`, no `WORLD_LIGHT`, `WORLD_SUN_MOON=0`; clouds/weather/day cycle forced off; custom skylight `0.00`; vanilla fog color enabled (`WORLDn4_VANILLA_FOGCOLI` `1.0`); pitch-black sky; no fog (vertical and total density `0.000`) |
-
-The Dimensional Doors world files are credited to Kawwabi. None of their values are menu options.
+The Dimensional Doors world files are credited to Kawwabi.
 
 ### Shadow Sampling Constants
 
@@ -388,4 +340,5 @@ The following are computed from settings rather than independently adjustable co
 | `shaders/shaders.properties` | Menu registration, profiles, slider lists, render-target size, program enable rules, custom uniforms |
 | `shaders/lang/en_US.lang` | Exact English names, descriptions, and enum labels shown to users |
 | `shaders/lib/lighting/shdSampleVar.glsl` | Shadow-map settings and derived shadow values |
-| `shaders/world-X/world.glsl` | Hidden world flags and per-world lighting/fog defaults |
+| `shaders/world-X/world.glsl` | Per-dimension options and defaults; see [DIMENSION.md](DIMENSION.md) |
+| `shaders/lib/dimension/` | World resolver and the sky, light, fog, and star adapters |

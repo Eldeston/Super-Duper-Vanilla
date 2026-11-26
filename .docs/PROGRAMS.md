@@ -58,14 +58,15 @@ Every program has a wrapper in each dimension folder, and each folder supplies i
 
 | Folder | Dimensions |
 |---|---|
-| `world0` | Overworld and every dimension not listed below (`*`) |
+| `world0` | Overworld |
 | `world-1` | The Nether and Undergarden |
 | `world1` | The End |
 | `world-2` | Dimensional Doors public and dungeon pockets |
 | `world-3` | Dimensional Doors Limbo |
 | `world-4` | Dimensional Doors personal pockets |
+| `world999` | Wildcard: every dimension not listed above (`*`), such as modded dimensions |
 
-Program enable conditions in `shaders.properties` are repeated per dimension folder. See [SETTINGS.md](SETTINGS.md) for the world macros.
+Program enable conditions in `shaders.properties` are repeated per dimension folder. See [DIMENSION.md](DIMENSION.md) for how each folder's `world.glsl` is resolved and what it contains.
 
 ---
 
@@ -88,7 +89,7 @@ Render scene geometry from the light source's perspective to generate the shadow
 | `shadow_lightning` | Lightning bolts | Off | Disabled | Always moved off screen and discarded |
 | `physics_ocean_shadow` | Physics Mod ocean | Off | Complex | Ocean displacement, caustics, colored shadows (Physics Mod only) |
 
-All shadow programs are moved off screen and discarded when `WORLD_LIGHT` or `SHADOW_MAPPING` is not defined. Alpha testing in shadow programs is done manually with `ALPHA_THRESHOLD` (`0.1`) instead of the pack's alpha-test properties.
+All shadow programs are moved off screen and discarded when `WORLD_LIGHT` is `0` or `SHADOW_MAPPING` is not defined. Alpha testing in shadow programs is done manually with `ALPHA_THRESHOLD` (`0.1`) instead of the pack's alpha-test properties.
 
 ### Execution Details
 
@@ -160,7 +161,7 @@ Programs with specialized or minimal material shading:
 | `gbuffers_beaconbeam` | Beacon beam | Default | Emissive beam color, TAA jitter, curvature |
 | `gbuffers_spidereyes` | Spider eyes and other glowing eyes | Additive | Emissive color from texture luminance |
 | `gbuffers_clouds` | Vanilla clouds | Off | Only active when `CLOUD_TYPE` is `0`; gradient shading |
-| `gbuffers_weather` | Rain and snow | Default | Sky and lightmap diffuse, wave animation; disabled by `FORCE_DISABLE_WEATHER` |
+| `gbuffers_weather` | Rain and snow | Default | Sky and lightmap diffuse, wave animation; discarded when `WORLD_WEATHER` is `0` |
 | `gbuffers_lightning` | Lightning | Additive | Lightning bolt color (`entityId` `10129`) and emissive color |
 | `gbuffers_skytextured` | Skybox, sun and moon | Additive | Vanilla sun and moon only when `SUN_MOON_TYPE` is `2`; skybox brightness |
 | `gbuffers_skybasic` | Basic sky | Off | Disabled (moved off screen, discards) |
@@ -350,6 +351,7 @@ shaders/
 ├── lib/                        # Shared GLSL libraries
 │   ├── antialiasing/           # FXAA and TAA
 │   ├── atmospherics/           # Sky and fog
+│   ├── dimension/              # World resolver and sky, light, fog, and star adapters
 │   ├── lighting/               # Shadows, GGX, SSAO, shading
 │   ├── modded/                 # Mod shared code (Distant Horizons + Voxy, Physics Mod)
 │   ├── PBR/                    # Integrated PBR, LabPBR, environment PBR
@@ -369,19 +371,19 @@ shaders/
 │   ├── deferred1.glsl
 │   └── final.glsl              # Final output program, buffer formats
 ├── textures/                   # Noise and cloud textures
-└── world0/ world-1/ world1/ world-2/ world-3/ world-4/
+└── world0/ world-1/ world1/ world-2/ world-3/ world-4/ world999/
     ├── *.fsh / *.vsh           # Loader-facing program wrappers
     └── world.glsl              # Per-dimension settings
 ```
 
 ### Dimension-Specific Overrides
 
-Each `world-X/` folder contains the same program wrappers, differing only through that folder's `world.glsl`. Typical per-dimension differences:
-- Sun and moon type, light and sky colors, and fog densities
-- Forced-off clouds, weather, and day cycle (for example in the Nether and End)
-- Custom skylight and stars
+Each `world-X/` folder contains the same program wrappers, differing only through that folder's `world.glsl`. Every `world.glsl` exposes the same option set, so per-dimension differences are values, not different options:
+- Feature flags: skybox, clouds, weather, day cycle, real skylight, directional light, stars, aether, sky ground, and vanilla fog color
+- Skylight amount, celestial body and size, and vanilla fog mode and strength
+- Star intensity, light and sky colors, and fog densities for constant, day, night, and twilight
 
-See [SETTINGS.md](SETTINGS.md) for the macro definitions.
+See [DIMENSION.md](DIMENSION.md) for the option reference and [SETTINGS.md](SETTINGS.md) for the menu screens.
 
 ---
 

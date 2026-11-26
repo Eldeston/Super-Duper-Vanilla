@@ -1,7 +1,7 @@
 # Pipeline Architecture
 
 **Scope**: Core architectural overview, framebuffer design, rendering flow  
-**Related Docs**: [PROGRAMS.md](PROGRAMS.md) | [BUFFERS.md](BUFFERS.md) | [FEATURES.md](FEATURES.md)
+**Related Docs**: [PROGRAMS.md](PROGRAMS.md) | [BUFFERS.md](BUFFERS.md) | [FEATURES.md](FEATURES.md) | [DIMENSION.md](DIMENSION.md)
 
 ---
 
@@ -29,7 +29,8 @@
 | GLSL Version | 3.3 Compatibility | 3.3 Core for `gbuffers_line` only |
 | Maximum Shadow Resolution | 8192 | Shader menu slider domain |
 | Half-Resolution Targets | `colortex0`, `colortex6` | Volumetrics/bloom intermediates and volumetric history |
-| Dimension Folders | 6 | `world0`, `world-1`, `world1`, `world-2`, `world-3`, `world-4` |
+| Dimension Folders | 7 | `world0`, `world-1`, `world1`, `world-2`, `world-3`, `world-4`, and the wildcard `world999` |
+| Dimension Options | 59 per `world.glsl` | Every dimension exposes the same option set; see [DIMENSION.md](DIMENSION.md) |
 
 ### Quick File Map
 
@@ -41,6 +42,7 @@
 | How features work | [FEATURES.md](FEATURES.md) |
 | Macro settings | [SETTINGS.md](SETTINGS.md) |
 | Custom uniforms and pack properties | [Pack-Level Configuration](#pack-level-configuration) |
+| Dimension configuration (`world.glsl`, resolver, adapters) | [DIMENSION.md](DIMENSION.md) |
 
 ---
 
@@ -73,12 +75,28 @@ graph TD
 2. **Hybrid Forward/Deferred Rendering**: Gbuffers programs compute direct lighting forward and also store normals, albedo, and material data for the deferred stage
 3. **Ordered Composite Passes**: Passes execute in order with explicit target dependencies; not every pass reads only its predecessor's output
 4. **Feature Modularity**: Individual features toggle via preprocessor macros in `settings.glsl`; programs that are not needed are disabled in `shaders.properties`
-5. **World-Aware Rendering**: Each dimension folder (`world-X/`) wraps the same main programs and supplies its own `world.glsl` settings
+5. **World-Aware Rendering**: Each dimension folder (`world-X/`) wraps the same main programs and supplies its own `world.glsl` with the same full option set. Shared code reads those options only through the resolver and adapters, never through a dimension's own prefix. See [DIMENSION.md](DIMENSION.md)
 6. **Target Reuse**: Iris is limited to 16 render targets, so lanes are intentionally multipurposed across the frame; `colortex0` and `colortex6` are configured at half width and height for reduced-resolution work
 
 ### Composite Passes
 
 Composite programs run after deferred shading and use explicit buffer dependencies. The detailed pass responsibilities and enable conditions are maintained in [PROGRAMS.md](PROGRAMS.md). Volumetric lighting uses `colortex0` and keeps history in `colortex6`; bloom later reuses `colortex0`; auto exposure state lives in `colortex7`.
+
+### World Configuration Layer
+
+Per-dimension behavior reaches the shared programs through four layers:
+
+| Layer | File | Role |
+|---|---|---|
+| Values | `world-X/world.glsl` | Defines `WORLD_ID`, `WORLD_PREFIX`, and every option with a dimension prefix (`WORLD0_`, `WORLDn1_`, `WORLD1_`, `WORLDn2_` to `WORLDn4_`, `WORLD999_`). The prefix keeps each option distinct for the Iris menu |
+| Resolver | `lib/dimension/worldResolver.glsl` | Maps unprefixed names such as `WORLD_LIGHT` to the active dimension's prefixed option |
+| Adapters | `lib/dimension/*Adapter.glsl` | Turn the resolved options into colors, densities, and intensities for the shaders |
+| Consumers | `main/` and `lib/` | Read only the unprefixed names and adapter functions |
+
+Rules for consumers:
+- Feature flags are `0` or `1` values, so test them with `#if WORLD_X == 1`, never `#ifdef`.
+- `dayCycle`, `twilightPhase`, and `dayCycleAdjust` are only declared when `WORLD_DAYCYCLE` is `1`, and `rainStrength` only when `WORLD_WEATHER` is `1`. Guard any use of them the same way.
+- Adapter color functions return **linear** colors. Each time-of-day endpoint is converted to linear space before blending, so day cycle transitions blend in linear space. Do not wrap their output in `toLinear()`.
 
 ---
 

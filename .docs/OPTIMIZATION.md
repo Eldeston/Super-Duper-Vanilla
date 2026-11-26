@@ -152,9 +152,9 @@ void main(){
 }
 ```
 
-Programs that do this: `shadow_lightning` and `gbuffers_skybasic` (always), the shadow programs when `SHADOW_MAPPING` or `WORLD_LIGHT` is off, `gbuffers_clouds` unless `CLOUD_TYPE` is `0`, and `gbuffers_weather` when `FORCE_DISABLE_WEATHER` is set.
+Programs that do this: `shadow_lightning` and `gbuffers_skybasic` (always), the shadow programs when `SHADOW_MAPPING` is off or `WORLD_LIGHT` is `0`, `gbuffers_clouds` unless `WORLD_CLOUDS` is `1` and `CLOUD_TYPE` is `0`, and `gbuffers_weather` when `WORLD_WEATHER` is `0`.
 
-**Compile only what a dimension needs.** Each dimension folder defines its own flags in `world.glsl`. `FORCE_DISABLE_CLOUDS`, `FORCE_DISABLE_WEATHER`, `FORCE_DISABLE_DAY_CYCLE`, and an undefined `WORLD_LIGHT` compile whole code paths (shadows, clouds, weather, day-cycle uniforms, volumetrics) out of that dimension's programs. Composite vertex shaders also declare varyings and uniforms only when the feature that reads them is enabled.
+**Compile only what a dimension needs.** Each dimension folder defines its own feature flags in `world.glsl` as `0` or `1` values (see [DIMENSION.md](DIMENSION.md)). Setting a flag to `0` compiles the matching code path out of that dimension's programs: `WORLD_LIGHT` (shadows, directional light, volumetrics), `WORLD_CLOUDS`, `WORLD_WEATHER`, `WORLD_DAYCYCLE` (day cycle uniforms and blends), `WORLD_STARS`, `WORLD_AETHER`, `WORLD_SKYGROUND`, and `WORLD_VANILLAFOG` (the `fogColor` uniform). Composite vertex shaders also declare varyings and uniforms only when the feature that reads them is enabled. Consumers must test these flags with `#if WORLD_X == 1`, not `#ifdef`.
 
 ---
 
@@ -179,6 +179,7 @@ vec3 fastNormalize(in vec3 x){ return x * inversesqrt(lengthSquared(x)); }
 vec3 toLinear(in vec3 x){ return ((2.10545 + x) * (0.0231872 + x)) * x * 0.315206; }
 ```
 
+- **Convert color constants to linear at compile time.** The dimension adapters (`lib/dimension/*Adapter.glsl`) call `toLinear()` on each time-of-day endpoint, and the endpoints are macro constants, so the compiler can fold the conversion. Blending in linear space after that conversion adds no runtime conversion cost beyond a plain `mix`.
 - **Multiply by a reciprocal instead of dividing**, and precompute constants at compile time. Constants derived from macros are `const`, so the compiler folds them:
 
 ```glsl
@@ -188,6 +189,16 @@ const vec3 exposureTint = vec3(TINT_R, TINT_G, TINT_B) * (EXPOSURE * 0.003921568
 `settings.glsl` ends with a block of precalculated constants (for example `cloudDepthInverse = 1.0 / CLOUD_THICKNESS`) for the same reason.
 
 - **Use cheap approximations in a known range.** `fastSqrt(x)` is `x * (2.0 - x)` for values in `0`–`1`, and `smoothen` is the cubic smoothstep without the clamp.
+- **Rewrite `tanh` as a sigmoid.** `smoothMin` and `smoothMax` in `common.glsl` use the equivalent `d / (1.0 + exp2(C * b * d)) + y` form instead of `tanh`, which saves a call. `lightmapCurve` uses `smoothMin` to shape block light:
+
+```glsl
+float smoothMin(in float x, in float y, in float b){
+    const float C = 3.2558142; // 2 * 1.1283791671 * log2(e)
+    float d = x - y;
+    return d / (1.0 + exp2(C * b * d)) + y;
+}
+```
+
 - **Wrap power-of-two lookups with a bit mask.** The 256 × 256 noise texture is indexed with `& 255` instead of `fract` or `mod`.
 
 ### Sampling Techniques
@@ -345,7 +356,7 @@ flat out vec3 skyCol;
 
 noperspective out vec2 texCoord;
 ...
-skyCol = toLinear(SKY_COLOR_DATA_BLOCK);
+skyCol = worldSkyColor();
 ```
 
 Examples in the source:

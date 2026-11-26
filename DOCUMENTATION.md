@@ -14,6 +14,8 @@ Super Duper Vanilla (SDV) is a Minecraft shader pack for Iris. This document is 
 | [SETTINGS.md](.docs/SETTINGS.md) | Settings, profiles, defaults, and configuration options |
 | [OPTIMIZATION.md](.docs/OPTIMIZATION.md) | Performance characteristics, profiling, and measurement guidance |
 | [LEGACY.md](.docs/LEGACY.md) | Archived original documentation and project notes |
+| [DIMENSION.md](.docs/DIMENSION.md) | Per-dimension configuration: options, defaults, resolver, and adapters |
+| [IPBR.md](.docs/IPBR.md) | Integrated PBR: material IDs, per-material rules, and how to add one |
 
 Documentation information:
 
@@ -71,7 +73,7 @@ Settings have several source layers:
 | [`shaders/shaders.properties`](shaders/shaders.properties) | Menu pages, profiles, sliders, program enable conditions, buffer sizes, and custom uniforms |
 | [`shaders/lang/en_US.lang`](shaders/lang/en_US.lang) | Exact English menu labels, descriptions, and enum names |
 | [`shaders/lib/lighting/shdSampleVar.glsl`](shaders/lib/lighting/shdSampleVar.glsl) | Shadow-map controls and internal sampling constants |
-| `shaders/world-X/world.glsl` | Per-dimension world flags and lighting and fog defaults |
+| `shaders/world-X/world.glsl` | Per-dimension options and defaults; see [DIMENSION.md](.docs/DIMENSION.md) |
 
 ### Profiles
 
@@ -89,15 +91,15 @@ The full definitions live in `shaders/shaders.properties`; [SETTINGS.md](.docs/S
 
 ### PBR modes
 
-`PBR_MODE` accepts `0` to `3`. The English labels in `en_US.lang` are: `0` OFF, `1` Basic PBR, `2` Integrated PBR, `3` Lab PBR 1.3. Integrated material tables are compiled for modes `0` to `2`; extra rough-reflection materials for stone, soil, and similar blocks apply only in mode `2` with `ROUGH_REFLECTIONS`. LabPBR is mode `3` and requires a LabPBR 1.3 resource pack.
+`PBR_MODE` accepts `0` to `3`. The English labels in `en_US.lang` are: `0` OFF, `1` Basic PBR, `2` Integrated PBR, `3` Lab PBR 1.3. Integrated material tables are compiled for modes `0` to `2`; extra rough-reflection materials for stone, soil, and similar blocks apply only in mode `2` with `ROUGH_REFLECTIONS`. LabPBR is mode `3` and requires a LabPBR 1.3 resource pack. Material rules and IDs are documented in [IPBR.md](.docs/IPBR.md).
 
 ### Menu Navigation
 
-The main screen lists Debug and the profile selector, then Post, Lighting, Atmospherics, World, PBR, and Configuration. Post contains Camera and Tonemap pages. Lighting contains Ray tracing. Atmospherics contains Cloud settings. PBR contains Parallax occlusion and iPBR pages (Water, Lava, and Sculk materials, plus normal generation). Configuration contains Overworld (Day, Night, Twilight, Fog), Nether, End, and Block light pages.
+The main screen lists Debug and the profile selector, then Post, Lighting, Atmospherics, World, PBR, and Configuration. Post contains Camera and Tonemap pages. Lighting contains Ray tracing. Atmospherics contains Cloud settings. PBR contains Parallax occlusion and iPBR pages (Water, Lava, and Sculk materials, plus normal generation). Configuration contains Vanilla dimensions (Overworld, Nether, End), Dimensional Doors (Pockets, Limbo, Personal pockets), the Wildcard dimension, and Block light pages. Each dimension page has Features, Basic, Day, Night, Twilight, and Constant subpages.
 
-### Developer-Hidden World Settings
+### Per-Dimension Settings
 
-Many `world.glsl` values are intentionally not menu options: `WORLD_ID`, `WORLD_LIGHT`, `WORLD_SUN_MOON`, `WORLD_SUN_MOON_SIZE`, `FORCE_DISABLE_CLOUDS`, `FORCE_DISABLE_WEATHER`, `FORCE_DISABLE_DAY_CYCLE`, `WORLD_SKY_GROUND`, `WORLD_AETHER`, `WORLD_CUSTOM_SKYLIGHT`, `WORLD_STARS`, and `WORLD_VANILLA_FOG_COLOR`. `WORLDn1_VANILLA_FOGCOLI` appears as the Nether's Sky intensity when defined. Editing source macros requires a shader reload so programs recompile.
+Every dimension (Overworld, Nether, End, three Dimensional Doors dimensions, and a wildcard for any other) has its own `world.glsl` with the same 59 options, all exposed in the menu. Only `WORLD_ID` and `WORLD_PREFIX` stay source-level. Option IDs, defaults, and how they resolve are in [DIMENSION.md](.docs/DIMENSION.md).
 
 ## Architecture
 
@@ -182,14 +184,14 @@ IDs are assigned in `shaders/block.properties`, `shaders/entity.properties`, and
 |---|---|
 | `10000`-`10999` | Wind-animated land blocks: simple (`100xx`), grounded short/tall (`106xx`/`107xx`), hanging (`108xx`), wall (`109xx`) |
 | `11000`-`11999` | Current-animated water blocks (`11100` lava, `11101` lily pad, `11102` water, `11103` Dimensional Doors fluid), corals and rice (`116xx`/`117xx`) |
-| `12000`-`12199` | Special and default-on PBR blocks: portals, signs, fire, subsurface plants |
-| `12300`-`12520` | Simple PBR: emissive blocks, metals, glass, stone families, ice, snow, soil, concrete |
-| `12600`-`13104` | Per-pixel PBR: ores, pyro and redstone emissives, bioluminescent blocks, sculk, crystals |
-| `13200`-`13202` | Dimensional Doors fabric and portal blocks |
+| `12000`-`12299` | Special and default-on PBR blocks: end portal, signs, portals, fire, potted emissives, subsurface plants |
+| `12300`-`12551` | Simple PBR: emissive blocks, metals, glass, stone families, ice, snow, soil, concrete, jelly |
+| `12600`-`13300` | Per-pixel PBR: ores, pyro and redstone emissives, bioluminescent blocks, sculk, crystals, obsidian |
+| `14000`-`14002` | Dimensional Doors fabric and portal blocks |
 
-Notable entity IDs: `10129` lightning bolt, `10130` whole-entity emission, `10131` end crystal, `10132` charged creeper, `10133` boats.
+Entity IDs start at `20000`: `20000` lightning bolt, `20001` boats, `20100` whole-entity emission, `20101` iron golem, `20102` snow golem, `20200` end crystal, `20201` charged creeper, `20202` copper golem. The full ID tables and per-material rules are in [IPBR.md](.docs/IPBR.md).
 
-Dimension slots: `world0` is the default for all dimensions (`*`), `world-1` covers the Nether and Undergarden, `world-2` to `world-4` cover Dimensional Doors pockets and Limbo, and `world1` covers the End.
+Dimension slots: `world0` is the Overworld, `world-1` covers the Nether and Undergarden, `world1` covers the End, `world-2` covers Dimensional Doors public and dungeon pockets, `world-3` covers Limbo, `world-4` covers personal pockets, and `world999` is the wildcard (`*`) for any other dimension. See [DIMENSION.md](.docs/DIMENSION.md#dimension-mapping).
 
 ## Optimizations
 
