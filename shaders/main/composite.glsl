@@ -77,17 +77,17 @@
 
         // Adapters return linear colors, sRGB copies are only for sRGB space sky rendering
         skyCol = worldSkyColor();
-        sRGBSkyCol = toSRGB(max(skyCol, 1e-6));
+        sRGBSkyCol = toSRGB(skyCol);
 
         #if WORLD_LIGHT == 1
             lightCol = worldLightColor();
-            sRGBLightCol = toSRGB(max(lightCol, 1e-6));
+            sRGBLightCol = toSRGB(lightCol);
 
             #if WORLD_DAYCYCLE == 1
                 sunCol = worldLightDay();
-                sRGBSunCol = toSRGB(max(sunCol, 1e-6));
+                sRGBSunCol = toSRGB(sunCol);
                 moonCol = worldLightNight();
-                sRGBMoonCol = toSRGB(max(moonCol, 1e-6));
+                sRGBMoonCol = toSRGB(moonCol);
             #endif
 
             #if CLOUD_TYPE != 0 && WORLD_CLOUDS == 1

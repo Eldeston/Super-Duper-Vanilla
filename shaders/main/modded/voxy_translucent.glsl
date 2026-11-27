@@ -111,6 +111,7 @@
             #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
                 // Water color and foam. Fast depth linearization by DrDesten
                 float waterDepth = 16.0 / (1.0 - gl_FragCoord.z) - 16.0 / (1.0 - texelFetch(vxDepthTexTrans, ivec2(gl_FragCoord.xy), 0).x);
+                waterDepth = waterDepth + 0.125;
             #endif
 
             #ifdef WATER_STYLIZE_ABSORPTION
@@ -124,8 +125,11 @@
                 material.albedo.rgb *= waterNoise;
             #endif
 
+            // This is to make the water texture more prominent and part of the foam
+            material.albedo += cubed(sumOf(material.albedo.rgb)) * 0.1;
+
             #ifdef WATER_FOAM
-                material.albedo = min(vec4(1), material.albedo + exp2((waterDepth + 0.0625) * 8.0));
+                material.albedo = min(vec4(1), material.albedo + min(0.66666667, exp2(waterDepth * 8.0) * 0.66666667));
             #endif
         }
 

@@ -251,7 +251,8 @@
         if(blockId == 11102 || blockId == 12100){
             // Fast depth linearization by DrDesten
             // Not great, but plausible for most scenarios
-            float blockDepth = near / (1.0 - gl_FragCoord.z) - near / (1.0 - getDepth(depthtex1, ivec2(gl_FragCoord.xy), 0)) + 0.125;
+            float blockDepth = near / (1.0 - gl_FragCoord.z) - near / (1.0 - getDepth(depthtex1, ivec2(gl_FragCoord.xy), 0));
+            blockDepth = blockDepth + 0.125;
             // Get the depth outline for the nether portal and water foam
             float edgeBrightness = exp2(blockDepth * 8.0);
 
