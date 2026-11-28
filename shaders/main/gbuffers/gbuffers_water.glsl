@@ -171,6 +171,11 @@
     uniform sampler2D depthtex1;
     uniform sampler2D gtexture;
 
+    #ifdef MC_GL_RENDERER_APPLE
+        uniform float pixelWidth;
+        uniform float pixelHeight;
+    #endif
+
     #if WORLD_WEATHER == 1
         uniform float rainStrength;
     #endif
@@ -252,7 +257,13 @@
         if(blockId == 11102 || blockId == 12100){
             // Fast depth linearization by DrDesten
             // Not great, but plausible for most scenarios
-            float blockDelta = near / (1.0 - gl_FragCoord.z) - near / (1.0 - texelFetch(depthtex1, ivec2(gl_FragCoord.xy), 0).x);
+            #ifdef MC_GL_RENDERER_APPLE
+                float priorDepth = getDepth(depthtex1, gl_FragCoord.xy * vec2(pixelWidth, pixelHeight), 0);
+            #else
+                float priorDepth = getDepth(depthtex1, ivec2(gl_FragCoord.xy), 0);
+            #endif
+
+            float blockDelta = near / (1.0 - gl_FragCoord.z) - near / (1.0 - priorDepth);
             float blockDepth = clamp(blockDelta, -far, 0) + 0.125;
 
             // Get the depth outline for the nether portal and water foam
