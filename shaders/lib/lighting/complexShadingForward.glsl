@@ -227,7 +227,7 @@ vec4 complexShadingForward(in dataPBR material, in vec2 lmCoord, in vec3 feetPla
         if(isShadow){
             // Get specular GGX
             vec3 specCol = getSpecularBRDF(viewDir, material.normal, material.albedo.rgb, NLZ, NV, material.metallic, material.smoothness) * shdCol;
-            totalLighting.rgb += sunMoonIntensitySqrd * specCol * lightCol;
+            totalLighting.rgb += sunMoonIntensitySqrd * specCol * toSRGB(lightCol);
             if(material.albedo.a < 1) totalLighting.a = max(maxOf(specCol), totalLighting.a);
         }
     #endif

@@ -274,7 +274,7 @@
         // Alpha test, discard and return immediately
         if(material.albedo.a < ALPHA_THRESHOLD){ discard; return; }
 
-        if(blockId == 11100 || blockId == 13005){
+        if(blockId == 11100 || blockId == 13105){
             vec2 blockUv = vertexWorldPos.zy * TBN[2].x + vertexWorldPos.xz * TBN[2].y + vertexWorldPos.xy * TBN[2].z;
 
             // Lava noise
@@ -291,7 +291,7 @@
             }
 
             // Sculk noise
-            else if(blockId == 13005){
+            else if(blockId == 13105){
                 #ifdef SCULK_NOISE
                     float sculkNoise = texelFetch(noisetex, ivec2((blockUv + fragmentFrameTime) * SCULK_TILE_SIZE) & 255, 0).z;
                     material.emissive = min(1.0, material.emissive * squared(squared(sculkNoise) * 4.0) * SCULK_BRIGHTNESS);

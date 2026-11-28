@@ -48,8 +48,8 @@
         texCoord = (gl_TextureMatrix[0] * gl_MultiTexCoord0).xy;
 
         #if WORLD_CELESTIAL == 1 && SUN_MOON_TYPE == 2 && WORLD_LIGHT == 1 && WORLD_DAYCYCLE == 1
-            sRGBSunCol = worldLightDay();
-            sRGBMoonCol = worldLightNight();
+            sRGBSunCol = toSRGB(worldLightDay());
+            sRGBMoonCol = toSRGB(worldLightNight());
         #endif
 
         // Get vertex view position
