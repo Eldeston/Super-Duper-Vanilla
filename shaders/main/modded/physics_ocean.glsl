@@ -150,6 +150,7 @@
     #endif
 
     #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
+        uniform float far;
         uniform float near;
 
         uniform sampler2D depthtex1;
@@ -243,7 +244,7 @@
         #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
             // Water color and foam. Fast depth linearization by DrDesten
             // Not great, but plausible for most scenarios
-            float waterDepth = near / (1.0 - gl_FragCoord.z) - near / (1.0 - getDepth(depthtex1, ivec2(gl_FragCoord.xy), 0));
+            float waterDepth = clamp(-abs(near / (1.0 - gl_FragCoord.z) - near / (1.0 - getDepth(depthtex1, ivec2(gl_FragCoord.xy), 0))), -far, 0.0);
             waterDepth = waterDepth + 0.125;
         #endif
 

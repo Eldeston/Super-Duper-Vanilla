@@ -144,6 +144,7 @@
 
     uniform float fragmentFrameTime;
 
+    uniform float far;
     uniform float near;
 
     uniform sampler2D depthtex0;
@@ -213,7 +214,7 @@
         // End portal
         if(blockEntityId == 12000 || blockEntityId == 14001){
             // Get portal depth
-            float blockDepth = near / (1.0 - gl_FragCoord.z) - near / (1.0 - getDepth(depthtex0, ivec2(gl_FragCoord.xy), 0));
+            float blockDepth = clamp(-abs(near / (1.0 - gl_FragCoord.z) - near / (1.0 - getDepth(depthtex0, ivec2(gl_FragCoord.xy), 0))), -far, 0);;
 
             // Get start pos
             vec2 startPos = vertexWorldPos.zy * TBN[2].x + vertexWorldPos.xz * TBN[2].y + vertexWorldPos.xy * TBN[2].z;
@@ -230,7 +231,7 @@
             endStarField += getEndStarField(endPos.xy * 2.0 - startPos, starSpeed) * 0.33333333;
 
             // Get the depth outline for the end portal
-            float edgeBrightness = min(exp2((blockDepth + 0.0625) * 8.0), EMISSIVE_INTENSITY);
+            float edgeBrightness = min(exp2((blockDepth + 0.125) * 8.0), EMISSIVE_INTENSITY);
 
             // Get noise color to variate the end portal color
             vec3 noiseCol = sin(getRng3(ivec2(startPos * 16.0) & 255) * TAU + fragmentFrameTime * 2.0) * 0.25 + 0.75;
