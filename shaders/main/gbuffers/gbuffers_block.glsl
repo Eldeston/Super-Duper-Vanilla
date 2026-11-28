@@ -214,7 +214,8 @@
         // End portal
         if(blockEntityId == 12000 || blockEntityId == 14001){
             // Get portal depth
-            float blockDepth = clamp(near / (1.0 - gl_FragCoord.z) - near / (1.0 - texelFetch(depthtex0, ivec2(gl_FragCoord.xy), 0).x), -far, 0);
+            float blockDepth = near / (1.0 - gl_FragCoord.z) - near / (1.0 - texelFetch(depthtex0, ivec2(gl_FragCoord.xy), 0).x);
+            blockDepth = clamp(blockDepth, -far, 0) + 0.125;
 
             // Get start pos
             vec2 startPos = vertexWorldPos.zy * TBN[2].x + vertexWorldPos.xz * TBN[2].y + vertexWorldPos.xy * TBN[2].z;
@@ -222,7 +223,7 @@
             // Get end pos
             vec3 endPos = vertexFeetPlayerPos.zyx * TBN[2].x + vertexFeetPlayerPos.xzy * TBN[2].y + vertexFeetPlayerPos.xyz * TBN[2].z;
             endPos.xy /= endPos.z;
-            
+
             // End star uv
             float starSpeed = fragmentFrameTime * 0.0625;
 

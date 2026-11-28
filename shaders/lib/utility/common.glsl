@@ -225,7 +225,7 @@ float getDepth(in sampler2D sourceDepthTex, in ivec2 screenTexelCoord, in int LO
     // Fix for AMD's electriic boogaloo
     // For some reason, AMD has not fixed this yet
     #ifdef MC_GL_RENDERER_RADEON
-        if(depth <= 0) return 1.0;
+        // if(depth <= 0) return 1.0;
     #endif
 
     return depth;
@@ -237,7 +237,7 @@ float getDepth(in sampler2D sourceDepthTex, in vec2 screenCoord, in float LOD){
     // Fix for AMD's electriic boogaloo
     // For some reason, AMD has not fixed this yet
     #ifdef MC_GL_RENDERER_RADEON
-        if(depth <= 0) return 1.0;
+        // if(depth <= 0) return 1.0;
     #endif
 
     return depth;
