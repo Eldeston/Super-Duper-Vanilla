@@ -2,7 +2,7 @@
 vec2 dcdx = dFdx(texCoord);
 vec2 dcdy = dFdy(texCoord);
 
-#if PBR_MODE <= 2 && (defined TERRAIN || defined BLOCK)
+#if PBR_MODE > 0 && (defined TERRAIN || defined BLOCK)
     // Ore overlays (complex materials)
     // These are applied on top of the host block's material, so smoothness can only increase
 
@@ -168,7 +168,7 @@ void getPBR(inout dataPBR material, in int id){
         }
     #endif
 
-    #if PBR_MODE <= 2
+    #if PBR_MODE > 0
         #if defined TERRAIN || defined BLOCK
             float albedoSum = sumOf(material.albedo.rgb);
             float albedoMax = maxOf(material.albedo.rgb);

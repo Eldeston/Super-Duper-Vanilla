@@ -191,13 +191,13 @@ void getPBR(inout dataPBR material, in int id){
 
     #if defined ENTITIES || defined ENTITIES_TRANSLUCENT
         // Basic whole entity emission
-        if(id == 10130) material.emissive = cubed(sumOf(material.albedo.rgb) * 0.33333333);
+        if(id == 20100) material.emissive = cubed(sumOf(material.albedo.rgb) * 0.33333333);
 
         // End crystal
-        else if(id == 10131) material.emissive = float(material.albedo.r > sumOf(material.albedo.gb) * 0.5);
+        else if(id == 20200) material.emissive = float(material.albedo.r > sumOf(material.albedo.gb) * 0.5);
 
         // Charged creeper
-        else if(id == 10132) material.emissive = float(material.albedo.b > material.albedo.g);
+        else if(id == 20201) material.emissive = float(material.albedo.b > material.albedo.g);
     #endif
 
     #if COLOR_MODE == 0
