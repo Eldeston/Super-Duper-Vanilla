@@ -110,7 +110,7 @@ vec3 getSpecularBRDF(in vec3 V, in vec3 N, in vec3 albedo, in float NL, in float
 
     // Distribution
     float denominator = squared(NHSqr * (alphaSqrd - 1.0) + 1.0);
-    float distribution = (smoothness * alphaSqrd * NL) / (denominator * visibility * PI);
+    float distribution = (smoothness * alphaSqrd) / (denominator * visibility * PI);
 
     // Rain occlusion
     #if WORLD_WEATHER == 1
