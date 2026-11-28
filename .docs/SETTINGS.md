@@ -1,8 +1,8 @@
 # Settings Wiki
 
-A reference for the settings available in Super Duper Vanilla (SDV), using the exact English names from `shaders/lang/en_US.lang` and the identifiers/defaults from the shader sources.
+A reference for the settings available in Super Duper Vanilla (SDV), using the exact English names from `shaders/lang/en_US.lang` and the identifiers from the shader sources.
 
-`shaders/lib/settings.glsl` defines shared settings and source defaults. `shaders/shaders.properties` controls the menu, profile inheritance, sliders, and program conditions. Profiles can override the source defaults. Per-dimension values are defined in `shaders/world-X/world.glsl` and documented in [DIMENSION.md](DIMENSION.md).
+`shaders/lib/settings.glsl` defines shared settings and their source values. `shaders/shaders.properties` controls the menu, profile inheritance, sliders, and program conditions. Profiles can override those values. Per-dimension values are defined in `shaders/world-X/world.glsl` and documented in [DIMENSION.md](DIMENSION.md).
 
 ## Contents
 
@@ -23,8 +23,7 @@ A reference for the settings available in Super Duper Vanilla (SDV), using the e
 
 - **UI label** is the localized option name shown in the shader menu.
 - **Setting** is the macro or constant identifier used by the shader.
-- **Default** is the value in the source file before a selected profile overrides it.
-- Toggle states are noted as **On** or **Off**. Numeric domains are the values declared for the shader menu/source setting.
+- Toggle states are noted as **On** or **Off**. Defaults and numeric ranges of menu settings are not repeated here, because the shader menu shows them and they are meant to be tuned. Options with fixed choices list what each value does. Only settings that are not exposed in the menu list their values, under [Developers](#developers).
 - World-specific settings and non-menu implementation constants are separated into [Developers](#developers); they are not player-facing options unless explicitly listed on a menu page.
 - Per-dimension options are player-facing and are documented in [DIMENSION.md](DIMENSION.md); the [Configuration](#configuration) section shows where they sit in the menu. Non-menu implementation constants are separated into [Developers](#developers).
 
@@ -44,199 +43,199 @@ These are profile assignments, not a second set of base defaults. The complete d
 
 ## Debug
 
-| UI label | Setting | Default | Values / meaning |
-|---|---|---:|---|
-| Color mode | `COLOR_MODE` | `0` | `0` Off, `1` White Mode, `2` Black Mode, `3` Foliage Mode |
-| Noise speed | `NOISE_SPEED` | `8` | `2, 4, 8, 16, 32`; temporal noise update speed |
+| UI label | Setting | Meaning |
+|---|---|---|
+| Color mode | `COLOR_MODE` | `0` Off, `1` White Mode, `2` Black Mode, `3` Foliage Mode |
+| Noise speed | `NOISE_SPEED` | Temporal noise update speed |
 
 ## Post
 
-| UI label | Setting | Default | Values / meaning |
-|---|---|---:|---|
-| Outlines | `OUTLINES` | `2` | `0` Off, `1` Standard, `2` Dungeons |
-| Outline brightness | `OUTLINE_BRIGHTNESS` | `1.00` | `-1.00` to `1.00`, step `0.05`; negative is black, positive highlights |
-| Outline pixel size | `OUTLINE_PIXEL_SIZE` | `1` | `1, 2, 4, 8, 16, 32, 64` |
-| Retro filter | `RETRO_FILTER` | Off | Enables retro presentation filter; works best at low render quality |
-| Anti aliasing | `ANTI_ALIASING` | `2` | `0` OFF, `1` FXAA, `2` TAA, `3` Lite TAA + FXAA |
-| Sharpen filter | `SHARPEN_FILTER` | Off | Enables image sharpening; only applies when anti-aliasing is not off |
+| UI label | Setting | Meaning |
+|---|---|---|
+| Outlines | `OUTLINES` | `0` Off, `1` Standard, `2` Dungeons |
+| Outline brightness | `OUTLINE_BRIGHTNESS` | Negative is black, positive highlights |
+| Outline pixel size | `OUTLINE_PIXEL_SIZE` | Outline pixel size. Adjust to change the thickness of the outlines. |
+| Retro filter | `RETRO_FILTER` | Enables retro presentation filter; works best at low render quality |
+| Anti aliasing | `ANTI_ALIASING` | `0` OFF, `1` FXAA, `2` TAA, `3` Lite TAA + FXAA |
+| Sharpen filter | `SHARPEN_FILTER` | Enables image sharpening; only applies when anti-aliasing is not off |
 
 Anti-aliasing mode `3` runs TAA without projection jitter, followed by FXAA. TAA does not work with custom-resolution screenshots.
 
 ## Camera
 
-| UI label | Setting | Default | Values / meaning |
-|---|---|---:|---|
-| Depth of field | `DOF` | Off | Enables depth-of-field effect |
-| Depth of field strength | `DOF_STRENGTH` | `1` | `1, 2, 3, 4` |
-| Chromatic aberration | `CHROMATIC_ABERRATION` | Off | Enables chromatic aberration |
-| Aberration pixel size | `ABERRATION_PIXEL_SIZE` | `4` | `1, 2, 4, 8, 16` |
-| Bloom | `BLOOM` | On | Enables bloom processing |
-| Bloom strength | `BLOOM_STRENGTH` | `0.75` | `0.00` to `1.00`, step `0.05` |
-| Lens flare | `LENS_FLARE` | On | Enables lens flare |
-| Lens flare strength | `LENS_FLARE_STRENGTH` | `1.00` | `0.00` to `2.00`, step `0.05` |
-| Vignette | `VIGNETTE` | Off | Enables vignette |
-| Vignette strength | `VIGNETTE_STRENGTH` | `1.00` | `0.00` to `2.00`, step `0.05` |
-| Motion blur | `MOTION_BLUR` | Off | Enables motion blur |
-| Motion blur strength | `MOTION_BLUR_STRENGTH` | `1.00` | `0.00` to `2.00`, step `0.05` |
+| UI label | Setting | Meaning |
+|---|---|---|
+| Depth of field | `DOF` | Enables depth-of-field effect |
+| Depth of field strength | `DOF_STRENGTH` | Depth of field strength. |
+| Chromatic aberration | `CHROMATIC_ABERRATION` | Enables chromatic aberration |
+| Aberration pixel size | `ABERRATION_PIXEL_SIZE` | Chromatic aberration length. Increase for stronger effects. |
+| Bloom | `BLOOM` | Enables bloom processing |
+| Bloom strength | `BLOOM_STRENGTH` | Bloom brightness. |
+| Lens flare | `LENS_FLARE` | Enables lens flare |
+| Lens flare strength | `LENS_FLARE_STRENGTH` | Lens flare intensity. |
+| Vignette | `VIGNETTE` | Enables vignette |
+| Vignette strength | `VIGNETTE_STRENGTH` | Vignette intensity. |
+| Motion blur | `MOTION_BLUR` | Enables motion blur |
+| Motion blur strength | `MOTION_BLUR_STRENGTH` | Motion blur strength. |
 
 ## Tonemap
 
-| UI label | Setting | Default | Values / meaning |
-|---|---|---:|---|
-| Contrast | `CONTRAST` | `1.00` | `0.00` to `2.00`, step `0.05` |
-| Saturation | `SATURATION` | `1.00` | `0.00` to `2.00`, step `0.05` |
-| White point | `WHITE_POINT` | `2.0` | `0.0` to `4.0`, step `0.1` |
-| Shoulder strength | `SHOULDER_STRENGTH` | `0.00` | `0.00` to `1.00`, step `0.05` |
-| Auto exposure | `AUTO_EXPOSURE` | Off | Enables real-time auto exposure; does not work with custom-resolution screenshots |
-| Auto exposure speed | `AUTO_EXPOSURE_SPEED` | `1.00` | `0.00` to `2.00`, step `0.05`; higher values adapt faster |
-| Exposure | `EXPOSURE` | `1.00` | `0.00` to `2.00`, step `0.05` |
-| Min exposure | `MINIMUM_EXPOSURE` | `0.10` | `0.10` to `0.90`, step `0.10`; lower values brighten dark scenes more under auto exposure |
-| Red tint | `TINT_R` | `255` | `3` to `255`, step `3` |
-| Green tint | `TINT_G` | `255` | `3` to `255`, step `3` |
-| Blue tint | `TINT_B` | `255` | `3` to `255`, step `3` |
+| UI label | Setting | Meaning |
+|---|---|---|
+| Contrast | `CONTRAST` | Controls color contrast. |
+| Saturation | `SATURATION` | Controls how much color saturation. |
+| White point | `WHITE_POINT` | Tonemap whitepoint. |
+| Shoulder strength | `SHOULDER_STRENGTH` | Tonemap shoulder strength. |
+| Auto exposure | `AUTO_EXPOSURE` | Enables real-time auto exposure; does not work with custom-resolution screenshots |
+| Auto exposure speed | `AUTO_EXPOSURE_SPEED` | Higher values adapt faster |
+| Exposure | `EXPOSURE` | Controls color exposure. |
+| Min exposure | `MINIMUM_EXPOSURE` | Lower values brighten dark scenes more under auto exposure |
+| Red tint | `TINT_R` | Red tint value. |
+| Green tint | `TINT_G` | Green tint value. |
+| Blue tint | `TINT_B` | Blue tint value. |
 
 ## Lighting
 
-| UI label | Setting | Default | Values / meaning |
-|---|---|---:|---|
-| Shadowmapping | `SHADOW_MAPPING` | On | Dynamic shadow mapping; disabled mode uses lightmap-based fake shadows |
-| Shadowmap color | `SHADOW_COLOR` | On | Colored data from transparent shadow casters |
-| Shadowmap filter | `SHADOW_FILTER` | On | Noise-based soft shadow filtering; may impact performance |
-| Entity shadows | `ENTITY_SHADOWS` | On | Enables entity shadows |
-| Block entity shadows | `BLOCK_ENTITY_SHADOWS` | On | Enables block-entity shadows |
-| Underwater caustics | `UNDERWATER_CAUSTICS` | `1` | `0` OFF, `1` Underwater, `2` Full; requires shadow color |
-| SSAO | `SSAO` | On | Screen-space ambient occlusion |
-| Ambient lighting | `AMBIENT_LIGHTING` | `0.05` | `0.00` to `0.50`, step `0.01`; `0.50` acts like night vision |
+| UI label | Setting | Meaning |
+|---|---|---|
+| Shadowmapping | `SHADOW_MAPPING` | Dynamic shadow mapping; disabled mode uses lightmap-based fake shadows |
+| Shadowmap color | `SHADOW_COLOR` | Colored data from transparent shadow casters |
+| Shadowmap filter | `SHADOW_FILTER` | Noise-based soft shadow filtering; may impact performance |
+| Entity shadows | `ENTITY_SHADOWS` | Enables entity shadows |
+| Block entity shadows | `BLOCK_ENTITY_SHADOWS` | Enables block-entity shadows |
+| Underwater caustics | `UNDERWATER_CAUSTICS` | `0` OFF, `1` Underwater, `2` Full; requires shadow color |
+| SSAO | `SSAO` | Screen-space ambient occlusion |
+| Ambient lighting | `AMBIENT_LIGHTING` | `0.50` acts like night vision |
 
 ### Shadow Map and Light Path
 
 These are shader-menu values backed by `shaders/lib/lighting/shdSampleVar.glsl`.
 
-| UI label | Setting | Default | Values |
-|---|---|---:|---|
-| Shadowmap resolution | `shadowMapResolution` | `1024` | `512` to `8192`, step `512` |
-| Shadowmap distance | `shadowDistance` | `128.0` blocks | `32.0` to `1024.0`, step `32.0` |
-| Light path angle | `sunPathRotation` | `30.0` degrees | `-60.0` to `60.0`, step `5.0` |
+| UI label | Setting | Meaning |
+|---|---|---|
+| Shadowmap resolution | `shadowMapResolution` | Shadowmap resolution. |
+| Shadowmap distance | `shadowDistance` | Shadowmap distance. |
+| Light path angle | `sunPathRotation` | Light path angle. This also affects sky angle. |
 
 ## Ray Tracing
 
-| UI label | Setting | Default | Values / meaning |
-|---|---|---:|---|
-| SSGI | `SSGI` | Off | Experimental screen-space global illumination; works best with TAA |
-| SSR | `SSR` | On | Screen-space reflections |
-| Raytracer steps | `RAYTRACER_STEPS` | `16` | `2, 4, 8, 16, 32, 64, 128` |
-| Raytracer refinement steps | `RAYTRACER_BISTEPS` | `4` | `0, 2, 4, 6, 8` |
-| Rough reflections | `ROUGH_REFLECTIONS` | On | Roughness-dependent reflections; some AA may hide artifacts |
-| Previous frame buffer | `PREVIOUS_FRAME` | On | Previous-frame color for temporal reflection/GI accumulation; impacts performance |
+| UI label | Setting | Meaning |
+|---|---|---|
+| SSGI | `SSGI` | Experimental screen-space global illumination; works best with TAA |
+| SSR | `SSR` | Screen-space reflections |
+| Raytracer steps | `RAYTRACER_STEPS` | Number of steps for ray tracing. Higher values increase quality but reduce performance. |
+| Raytracer refinement steps | `RAYTRACER_BISTEPS` | Number of refinement steps for ray tracing. Improves detail in reflections and GI. |
+| Rough reflections | `ROUGH_REFLECTIONS` | Roughness-dependent reflections; some AA may hide artifacts |
+| Previous frame buffer | `PREVIOUS_FRAME` | Previous-frame color for temporal reflection/GI accumulation; impacts performance |
 
 ## Atmospherics
 
-| UI label | Setting | Default | Values / meaning |
-|---|---|---:|---|
-| Sun/moon type | `SUN_MOON_TYPE` | `0` | `0` Squircle, `1` Round, `2` Vanilla |
-| Sun/moon intensity | `SUN_MOON_INTENSITY` | `4` | `0` through `8`; also affects specular reflections |
-| Volumetric lighting | `VOLUMETRIC_LIGHTING` | On | Enables volumetric lighting |
-| Volumetric lighting strength | `VOLUMETRIC_LIGHTING_STRENGTH` | `0.50` | `0.00` to `1.00`, step `0.05`; zero disables its contribution |
-| Border fog | `BORDER_FOG` | On | Covers visible world edges with fog |
-| Ground fog strength | `GROUND_FOG_STRENGTH` | `0.50` | `0.00` to `1.00`, step `0.05` |
-| Skybox brightness | `SKYBOX_BRIGHTNESS` | `1.00` | `0.00` to `2.00`, step `0.05` |
+| UI label | Setting | Meaning |
+|---|---|---|
+| Sun/moon type | `SUN_MOON_TYPE` | `0` Squircle, `1` Round, `2` Vanilla |
+| Sun/moon intensity | `SUN_MOON_INTENSITY` | Also affects specular reflections |
+| Volumetric lighting | `VOLUMETRIC_LIGHTING` | Enables volumetric lighting |
+| Volumetric lighting strength | `VOLUMETRIC_LIGHTING_STRENGTH` | Zero disables its contribution |
+| Border fog | `BORDER_FOG` | Covers visible world edges with fog |
+| Ground fog strength | `GROUND_FOG_STRENGTH` | The strength of mist/ground fog. |
+| Skybox brightness | `SKYBOX_BRIGHTNESS` | Sky box brightness. |
 
 ### Cloud Settings
 
-| UI label | Setting | Default | Values / meaning |
-|---|---|---:|---|
-| Cloud type | `CLOUD_TYPE` | `1` | `0` Vanilla, `1` Voxel |
-| Double layered clouds | `DOUBLE_LAYERED_CLOUDS` | On | Adds a second voxel cloud layer; may use up performance |
-| Dynamic clouds | `DYNAMIC_CLOUDS` | On | Weather-responsive, fading voxel clouds |
-| Fade speed | `FADE_SPEED` | `0.10` | `0.00` to `4.00`, step `0.05` |
-| 2nd cloud height | `SECOND_CLOUD_HEIGHT` | `128.0` | `0.0` to `256.0`, step `4.0` |
-| Cloud thickness | `CLOUD_THICKNESS` | `8.0` | `4.0, 6.0, 8.0, 10.0, 12.0`; thickness of voxel clouds in blocks |
+| UI label | Setting | Meaning |
+|---|---|---|
+| Cloud type | `CLOUD_TYPE` | `0` Vanilla, `1` Voxel |
+| Double layered clouds | `DOUBLE_LAYERED_CLOUDS` | Adds a second voxel cloud layer; may use up performance |
+| Dynamic clouds | `DYNAMIC_CLOUDS` | Weather-responsive, fading voxel clouds |
+| Fade speed | `FADE_SPEED` | Cloud fade speed. |
+| 2nd cloud height | `SECOND_CLOUD_HEIGHT` | 2nd layer cloud height, if double vanilla clouds is on. |
+| Cloud thickness | `CLOUD_THICKNESS` | Thickness of voxel clouds in blocks |
 
 ## World
 
-| UI label | Setting | Default | Values / meaning |
-|---|---|---:|---|
-| Terrain animation | `TERRAIN_ANIMATION` | On | Terrain/foliage animation |
-| Water animation | `WATER_ANIMATION` | On | Water animation |
-| Weather animation | `WEATHER_ANIMATION` | On | Rain/weather animation |
-| Timelapse mode | `TIMELAPSE_MODE` | `0` | `0` OFF, `1` Fragment, `2` Full |
-| Wind speed | `WIND_SPEED` | `1.00` | `0.00` to `4.00`, step `0.05` |
-| Current speed | `CURRENT_SPEED` | `1.00` | `0.00` to `4.00`, step `0.05` |
-| Wind frequency | `WIND_FREQUENCY` | `1.00` | `0.00` to `4.00`, step `0.05` |
-| Current frequency | `CURRENT_FREQUENCY` | `1.00` | `0.00` to `4.00`, step `0.05` |
-| World curvature | `WORLD_CURVATURE` | Off | Enables world curvature |
-| World curvature size | `WORLD_CURVATURE_SIZE` | `256` | `-4096, -2048, -1024, -512, -256, -128, 128, 256, 512, 1024, 2048, 4096` |
+| UI label | Setting | Meaning |
+|---|---|---|
+| Terrain animation | `TERRAIN_ANIMATION` | Terrain/foliage animation |
+| Water animation | `WATER_ANIMATION` | Water animation |
+| Weather animation | `WEATHER_ANIMATION` | Rain/weather animation |
+| Timelapse mode | `TIMELAPSE_MODE` | `0` OFF, `1` Fragment, `2` Full |
+| Wind speed | `WIND_SPEED` | Adjust wind speed. Affects plants, swinging objects, and weather. Increases the animation speed. |
+| Current speed | `CURRENT_SPEED` | Adjust liquid and under water flow speed. Affects underwater plants and liquids. Increases the animation speed. |
+| Wind frequency | `WIND_FREQUENCY` | Adjust wind frequency. Affects plants, swinging objects, and weather. Increases the animation change frequency. |
+| Current frequency | `CURRENT_FREQUENCY` | Adjust liquid and under water flow frequency. Affects underwater plants and liquids. Increases the animation change frequency. |
+| World curvature | `WORLD_CURVATURE` | Enables world curvature |
+| World curvature size | `WORLD_CURVATURE_SIZE` | World curvature size. |
 
 Timelapse mode `1` applies fragment-level time behavior for water normals and sky; mode `2` also applies it to waves. Vanilla clouds, the skybox, and sun/moon are not affected.
 
 ## PBR
 
-| UI label | Setting | Default | Values / meaning |
-|---|---|---:|---|
-| PBR mode | `PBR_MODE` | `1` | `0` OFF, `1` Basic PBR, `2` Integrated PBR, `3` Lab PBR 1.3 |
-| Specular highlights | `SPECULAR_HIGHLIGHTS` | On | Approximate sun reflections |
-| Enviro PBR materials | `ENVIRONMENT_PBR` | On | Environment-dependent material response (rain wetness) |
-| Subsurface scattering | `SUBSURFACE_SCATTERING` | On | Scattering on thin/organic materials |
-| Emissive intensity | `EMISSIVE_INTENSITY` | `8` | `2, 4, 8, 16, 32`; requires PBR; does not affect lightmaps |
-| Normal strength | `NORMAL_STRENGTH` | `1.00` | `0.00` to `1.00`, step `0.05`; applies to LabPBR normal maps and auto-generated normals |
-| Slope normals | `SLOPE_NORMALS` | Off | Sharper slope normals for parallax occlusion surfaces; disable with high-resolution packs that have normal maps |
-| Directional lightmaps | `DIRECTIONAL_LIGHTMAPS` | Off | Requires generated or PBR normals |
-| Directional lightmaps strength | `DIRECTIONAL_LIGHTMAP_STRENGTH` | `1.00` | `0.00` to `1.00`, step `0.05` |
+| UI label | Setting | Meaning |
+|---|---|---|
+| PBR mode | `PBR_MODE` | `0` OFF, `1` Basic PBR, `2` Integrated PBR, `3` Lab PBR 1.3 |
+| Specular highlights | `SPECULAR_HIGHLIGHTS` | Approximate sun reflections |
+| Enviro PBR materials | `ENVIRONMENT_PBR` | Environment-dependent material response (rain wetness) |
+| Subsurface scattering | `SUBSURFACE_SCATTERING` | Scattering on thin/organic materials |
+| Emissive intensity | `EMISSIVE_INTENSITY` | Requires PBR; does not affect lightmaps |
+| Normal strength | `NORMAL_STRENGTH` | Applies to LabPBR normal maps and auto-generated normals |
+| Slope normals | `SLOPE_NORMALS` | Sharper slope normals for parallax occlusion surfaces; disable with high-resolution packs that have normal maps |
+| Directional lightmaps | `DIRECTIONAL_LIGHTMAPS` | Requires generated or PBR normals |
+| Directional lightmaps strength | `DIRECTIONAL_LIGHTMAP_STRENGTH` | Directional lightmap strength. Effective if directional lightmaps is enabled. |
 
 Integrated PBR infers materials from vanilla albedo textures; mode `2` also gives rough-reflection smoothness to stone, soil, and similar blocks when rough reflections are on. LabPBR (mode `3`) requires a resource pack with LabPBR 1.3 materials.
 
 ### Parallax Occlusion
 
-| UI label | Setting | Default | Values / meaning |
-|---|---|---:|---|
-| Parallax occlusion | `PARALLAX_OCCLUSION` | Off | Requires LabPBR and a LabPBR resource pack |
-| Parallax depth | `PARALLAX_DEPTH` | `0.25` | `0.00` to `0.50`, step `0.05` |
-| Parallax steps | `PARALLAX_STEPS` | `128` | `16, 32, 64, 128, 256, 512` |
-| Parallax shadows | `PARALLAX_SHADOW` | On | Self-shadowing for parallax surfaces |
-| Parallax shadow steps | `PARALLAX_SHADOW_STEPS` | `32` | `16, 32, 64, 128, 256, 512` |
+| UI label | Setting | Meaning |
+|---|---|---|
+| Parallax occlusion | `PARALLAX_OCCLUSION` | Requires LabPBR and a LabPBR resource pack |
+| Parallax depth | `PARALLAX_DEPTH` | Sets the maximum depth for parallax occlusion mapping. Higher values increase the effect. |
+| Parallax steps | `PARALLAX_STEPS` | Number of steps for parallax occlusion mapping. More steps improve quality but reduce performance. |
+| Parallax shadows | `PARALLAX_SHADOW` | Self-shadowing for parallax surfaces |
+| Parallax shadow steps | `PARALLAX_SHADOW_STEPS` | Number of steps for parallax shadowing. Higher values improve shadow detail. |
 
 ### iPBR Material Subpages
 
 The iPBR page also holds the generated-normal settings:
 
-| UI label | Setting | Default | Values / meaning |
-|---|---|---:|---|
-| Auto gen normals | `NORMAL_GENERATION` | Off | Generates normals from albedo; disabled with LabPBR; works mostly on vanilla-style packs |
-| Auto gen normal resolution | `NORMAL_GENERATION_RESOLUTION` | `128` | `16, 32, 64, 128, 256, 512, 1024`; minor performance effect |
+| UI label | Setting | Meaning |
+|---|---|---|
+| Auto gen normals | `NORMAL_GENERATION` | Generates normals from albedo; disabled with LabPBR; works mostly on vanilla-style packs |
+| Auto gen normal resolution | `NORMAL_GENERATION_RESOLUTION` | Minor performance effect |
 
 #### Water Material Settings
 
-| UI label | Setting | Default | Values / meaning |
-|---|---|---:|---|
-| Water noise | `WATER_NOISE` | On | Varies water brightness with noise |
-| Water brightness | `WATER_BRIGHTNESS` | `1.00` | `0.00` to `1.00`, step `0.05`; lower is deeper color |
-| Water normalmap | `WATER_NORMAL` | On | Water surface normals |
-| Water normalmap blur size | `WATER_BLUR_SIZE` | `8.0` | `1, 2, 4, 8, 16, 32, 64`; smaller is more defined waves |
-| Water normalmap depth size | `WATER_DEPTH_SIZE` | `0.5` | `0.125, 0.25, 0.5, 1.0, 2.0`; smaller is deeper |
-| Water tile size | `WATER_TILE_SIZE` | `16` | `4, 8, 16, 24, 32` |
-| Water absorption | `WATER_STYLIZE_ABSORPTION` | On | Depth-based stylized absorption |
-| Water foam | `WATER_FOAM` | On | Foam at solid surfaces, including entities |
-| Flat water albedo | `WATER_FLAT` | Off | Flat water albedo |
+| UI label | Setting | Meaning |
+|---|---|---|
+| Water noise | `WATER_NOISE` | Varies water brightness with noise |
+| Water brightness | `WATER_BRIGHTNESS` | Lower is deeper color |
+| Water normalmap | `WATER_NORMAL` | Water surface normals |
+| Water normalmap blur size | `WATER_BLUR_SIZE` | Smaller is more defined waves |
+| Water normalmap depth size | `WATER_DEPTH_SIZE` | Smaller is deeper |
+| Water tile size | `WATER_TILE_SIZE` | Sets the tiling scale for water textures. |
+| Water absorption | `WATER_STYLIZE_ABSORPTION` | Depth-based stylized absorption |
+| Water foam | `WATER_FOAM` | Foam at solid surfaces, including entities |
+| Flat water albedo | `WATER_FLAT` | Flat water albedo |
 
 #### Lava Material Settings
 
-| UI label | Setting | Default | Values / meaning |
-|---|---|---:|---|
-| Lava brightness | `LAVA_BRIGHTNESS` | `1.00` | `0.00` to `1.00`, step `0.05` |
-| Lava noise | `LAVA_NOISE` | On | Lava brightness noise |
-| Lava tile size | `LAVA_TILE_SIZE` | `16` | `4, 8, 16, 24, 32` |
+| UI label | Setting | Meaning |
+|---|---|---|
+| Lava brightness | `LAVA_BRIGHTNESS` | Adjusts the brightness of lava materials. |
+| Lava noise | `LAVA_NOISE` | Lava brightness noise |
+| Lava tile size | `LAVA_TILE_SIZE` | Sets the tiling scale for lava textures. |
 
 #### Sculk Material Settings
 
-| UI label | Setting | Default | Values / meaning |
-|---|---|---:|---|
-| Sculk brightness | `SCULK_BRIGHTNESS` | `1.00` | `0.00` to `1.00`, step `0.05` |
-| Sculk noise | `SCULK_NOISE` | On | Sculk emission noise |
-| Sculk tile size | `SCULK_TILE_SIZE` | `8` | `2, 4, 8, 16, 24` |
+| UI label | Setting | Meaning |
+|---|---|---|
+| Sculk brightness | `SCULK_BRIGHTNESS` | Adjusts the brightness of sculk materials. |
+| Sculk noise | `SCULK_NOISE` | Sculk emission noise |
+| Sculk tile size | `SCULK_TILE_SIZE` | Sets the tiling scale for sculk textures. |
 
 ## Configuration
 
-The Configuration screen holds the per-dimension settings and the block light page. The labels below are the `en_US.lang` labels. Option IDs, ranges, and defaults for every dimension are in [DIMENSION.md](DIMENSION.md).
+The Configuration screen holds the per-dimension settings and the block light page. The labels below are the `en_US.lang` labels. Option IDs and what each option does are in [DIMENSION.md](DIMENSION.md).
 
 ```
 Configuration
@@ -265,18 +264,17 @@ Every dimension has the same screens and the same options, so changing a dimensi
 
 Option tooltips say when an option is used. Options of a disabled feature stay visible, because the menu cannot hide them conditionally. For example, the Day, Night, and Twilight screens have no effect when Day cycle is Off.
 
-Menu ranges: color channels `3` to `255`, step `3`; intensities `0.00` to `2.00`, step `0.05`. Other ranges are declared in each dimension's `world.glsl`.
 
 ### Block Light Page
 
-| Exact UI label | Setting ID | Default | Values |
-|---|---|---:|---|
-| Block light red | `BLOCKLIGHT_R` | `255` | `3` to `255`, step `3` |
-| Block light green | `BLOCKLIGHT_G` | `240` | `3` to `255`, step `3` |
-| Block light blue | `BLOCKLIGHT_B` | `210` | `3` to `255`, step `3` |
-| Block light intensity | `BLOCKLIGHT_I` | `1.00` | `0.00` to `2.00`, step `0.05` |
+| UI label | Setting | Meaning |
+|---|---|---|
+| Block light red | `BLOCKLIGHT_R` | Red channel for block light color. |
+| Block light green | `BLOCKLIGHT_G` | Green channel for block light color. |
+| Block light blue | `BLOCKLIGHT_B` | Blue channel for block light color. |
+| Block light intensity | `BLOCKLIGHT_I` | Intensity for block light color. |
 
-Dimension option ranges are declared in each `world.glsl`; see [DIMENSION.md](DIMENSION.md).
+Dimension options are documented in [DIMENSION.md](DIMENSION.md).
 
 ## Developers
 
@@ -290,13 +288,10 @@ The Dimensional Doors world files are credited to Kawwabi.
 
 ### Shadow Sampling Constants
 
-`shaders/lib/lighting/shdSampleVar.glsl` defines the shadow controls and implementation constants.
+`shaders/lib/lighting/shdSampleVar.glsl` defines the shadow menu settings (documented under [Lighting](#lighting)) and the implementation constants below.
 
-| Setting | Default | Domain / status |
+| Constant | Value | Status |
 |---|---:|---|
-| `shadowMapResolution` | `1024` | Menu setting: `512` to `8192`, step `512` |
-| `shadowDistance` | `128.0` blocks | Menu setting: `32.0` to `1024.0`, step `32.0` |
-| `sunPathRotation` | `30.0` degrees | Menu setting: `-60.0` to `60.0`, step `5.0` |
 | `shadowHardwareFiltering` | `true` | Internal constant |
 | `shadowDistanceRenderMul` | `1.0` | Fixed internal constant |
 | `entityShadowDistanceMul` | `0.5` | Internal constant; entity shadows use half the shadow distance |
@@ -336,9 +331,9 @@ The following are computed from settings rather than independently adjustable co
 
 | File | Settings responsibility |
 |---|---|
-| `shaders/lib/settings.glsl` | Shared feature toggles, numeric defaults, and Physics Mod constants |
+| `shaders/lib/settings.glsl` | Shared feature toggles, numeric settings, and Physics Mod constants |
 | `shaders/shaders.properties` | Menu registration, profiles, slider lists, render-target size, program enable rules, custom uniforms |
 | `shaders/lang/en_US.lang` | Exact English names, descriptions, and enum labels shown to users |
 | `shaders/lib/lighting/shdSampleVar.glsl` | Shadow-map settings and derived shadow values |
-| `shaders/world-X/world.glsl` | Per-dimension options and defaults; see [DIMENSION.md](DIMENSION.md) |
+| `shaders/world-X/world.glsl` | Per-dimension options; see [DIMENSION.md](DIMENSION.md) |
 | `shaders/lib/dimension/` | World resolver and the sky, light, fog, and star adapters |

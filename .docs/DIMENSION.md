@@ -1,6 +1,6 @@
 # Dimension Configuration
 
-**Scope**: How each dimension is configured, every per-dimension option, its range, and its default  
+**Scope**: How each dimension is configured, and what every per-dimension option does  
 **Related Docs**: [SETTINGS.md](SETTINGS.md) | [ARCHITECTURE.md](ARCHITECTURE.md) | [PROGRAMS.md](PROGRAMS.md) | [FEATURES.md](FEATURES.md)
 
 ---
@@ -11,12 +11,11 @@
 2. [Dimension Mapping](#dimension-mapping)
 3. [Configuration Layers](#configuration-layers)
 4. [Option Reference](#option-reference)
-5. [Default Values](#default-values)
-6. [Color Pipeline](#color-pipeline)
-7. [Vanilla Fog Color](#vanilla-fog-color)
-8. [Rules for Consumers](#rules-for-consumers)
-9. [Adding a Dimension](#adding-a-dimension)
-10. [Portability Note](#portability-note)
+5. [Color Pipeline](#color-pipeline)
+6. [Vanilla Fog Color](#vanilla-fog-color)
+7. [Rules for Consumers](#rules-for-consumers)
+8. [Adding a Dimension](#adding-a-dimension)
+9. [Portability Note](#portability-note)
 
 ---
 
@@ -88,7 +87,7 @@ With `WORLD_DAYCYCLE == 1`, each adapter blends the Night, Twilight, and Day val
 
 ## Option Reference
 
-Suffix convention: **C** = constant (used when the day cycle is off), **D** = day, **N** = night, **T** = twilight.
+Suffix convention: **C** = constant (used when the day cycle is off), **D** = day, **N** = night, **T** = twilight. Ranges and defaults are set by each dimension's `world.glsl` and shown in the shader menu, so they are not repeated here.
 
 ### Features
 
@@ -107,45 +106,43 @@ Each is `0` (Off) or `1` (On), and is tested with `#if WORLD_X == 1`.
 | `SKYGROUND` | Ground color below the horizon |
 | `VANILLAFOG` | Use the vanilla fog color for the sky. Declares `fogColor` |
 
-`SKYLIGHT` has inverted-looking polarity on purpose: `1` means real skylight, and only the Overworld sets it to `1`. Dimensions with `0` use `SKYLIGHT_I` as a constant.
+`SKYLIGHT` polarity is deliberate: `1` means real skylight, and `0` means the dimension has no sky to sample, so `SKYLIGHT_I` is used as a constant instead.
 
 ### Basic
 
-| Option | Values | Notes |
-|---|---|---|
-| `SKYLIGHT_I` | `0.00` to `1.00`, step `0.05` | Used when `SKYLIGHT` is `0` |
-| `CELESTIAL` | `0` None, `1` Sun/Moon, `2` Black hole | Selects the celestial body drawn in the sky and the lens flare |
-| `CELESTIAL_SIZE` | `0.00` to `0.50`, step `0.05` | Size of the celestial body |
-| `VANILLAFOG_MODE` | `0` Replace, `1` Blend, `2` Multiply | See [Vanilla Fog Color](#vanilla-fog-color) |
-| `VANILLAFOG_STRENGTH` | `0.00` to `1.00`, step `0.05` | Used by modes `1` and `2`, ignored by mode `0` |
+| Option | Meaning |
+|---|---|
+| `SKYLIGHT_I` | Constant skylight amount, used when `SKYLIGHT` is `0` |
+| `CELESTIAL` | Celestial body drawn in the sky and used for the lens flare and specular highlight: `0` None, `1` Sun/Moon, `2` Black hole |
+| `CELESTIAL_SIZE` | Size of the celestial body, including the size of its specular reflection |
+| `VANILLAFOG_MODE` | How the vanilla fog color combines with the sky: `0` Replace, `1` Blend, `2` Multiply. See [Vanilla Fog Color](#vanilla-fog-color) |
+| `VANILLAFOG_STRENGTH` | Amount of fog color applied in modes `1` and `2`. Ignored by mode `0` |
 
 ### Stars
 
-| Option | Values |
-|---|---|
-| `STAR_CI`, `STAR_DI`, `STAR_NI`, `STAR_TI` | `0.0` to `4.0` in steps of `0.5`, then `6.0` to `16.0` in steps of `2.0` |
+`STAR_CI`, `STAR_DI`, `STAR_NI`, and `STAR_TI` set the star brightness for the constant, day, night, and twilight states. They only matter when `STARS` is `1`, and `STAR_CI` only when `DAYCYCLE` is `0`.
 
 ### Light and Sky Colors
 
-Twelve light options and twelve sky options per dimension.
+Each time state has a color and an intensity for the directional light and for the sky:
 
-| Pattern | Values |
+| Pattern | Meaning |
 |---|---|
-| `LIGHT_{C,D,N,T}{R,G,B}` | `3` to `255`, step `3` |
-| `SKY_{C,D,N,T}{R,G,B}` | `3` to `255`, step `3` |
-| `LIGHT_{C,D,N,T}I` | `0.00` to `2.00`, step `0.05` |
-| `SKY_{C,D,N,T}I` | `0.00` to `2.00`, step `0.05` |
+| `LIGHT_{C,D,N,T}{R,G,B}` | Red, green, and blue of the directional light (sun or moon), on a 0 to 255 scale |
+| `LIGHT_{C,D,N,T}I` | Intensity multiplier of that light |
+| `SKY_{C,D,N,T}{R,G,B}` | Red, green, and blue of the sky, on a 0 to 255 scale |
+| `SKY_{C,D,N,T}I` | Intensity multiplier of that sky color |
 
-The menu list starts at `3`, so it has no `0` entry. Several dimensions default to `0` (black), which is valid in the file but is outside the slider's list.
+The directional light drives direct lighting, specular highlights, volumetric lighting, and the lens flare. The sky color is the sky itself and also the ambient light that skylight lets in. Each state's color is `RGB * (I / 255)`, converted to linear (see [Color Pipeline](#color-pipeline)).
 
 ### Fog
 
-| Pattern | Values |
+| Pattern | Meaning |
 |---|---|
-| `FOG_TOTAL_{C,D,N,T}I` | `0.005` to `0.500`, step `0.010` |
-| `FOG_VERTICAL_{C,D,N,T}I` | `0.005` to `0.500`, step `0.010` |
+| `FOG_TOTAL_{C,D,N,T}I` | Overall atmospheric fog density |
+| `FOG_VERTICAL_{C,D,N,T}I` | How quickly fog thins out with height. Larger values keep the fog closer to the ground |
 
-`world-4` additionally allows `0.000`, because it disables fog entirely.
+Both are used by the atmospheric fog calculation in `lib/atmospherics/fogRender.glsl`.
 
 ### Option Count
 
@@ -163,86 +160,6 @@ Seven dimensions give 413 options.
 
 ---
 
-## Default Values
-
-### Features
-
-| Option | `0` Overworld | `-1` Nether | `1` End | `-2` Pockets | `-3` Limbo | `-4` Personal | `999` Wildcard |
-|---|---|---|---|---|---|---|---|
-| `SKYBOX` | 1 | 0 | 0 | 0 | 1 | 0 | 1 |
-| `CLOUDS` | 1 | 0 | 0 | 0 | 0 | 0 | 1 |
-| `WEATHER` | 1 | 0 | 0 | 0 | 0 | 0 | 1 |
-| `DAYCYCLE` | 1 | 0 | 0 | 0 | 0 | 0 | 1 |
-| `SKYLIGHT` | 1 | 0 | 0 | 0 | 0 | 0 | 1 |
-| `LIGHT` | 1 | 0 | 1 | 0 | 0 | 0 | 1 |
-| `STARS` | 1 | 0 | 1 | 0 | 0 | 0 | 1 |
-| `AETHER` | 0 | 0 | 1 | 0 | 0 | 0 | 0 |
-| `SKYGROUND` | 1 | 0 | 1 | 0 | 0 | 0 | 1 |
-| `VANILLAFOG` | 0 | 1 | 0 | 0 | 1 | 1 | 0 |
-
-### Basic
-
-| Option | `0` | `-1` | `1` | `-2` | `-3` | `-4` | `999` |
-|---|---|---|---|---|---|---|---|
-| `SKYLIGHT_I` | 1.00 | 1.00 | 1.00 | 0.00 | 1.00 | 0.00 | 1.00 |
-| `CELESTIAL` | 1 | 0 | 2 | 0 | 0 | 0 | 1 |
-| `CELESTIAL_SIZE` | 0.10 | 0.00 | 0.25 | 0.00 | 0.00 | 0.00 | 0.10 |
-| `VANILLAFOG_MODE` | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
-| `VANILLAFOG_STRENGTH` | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |
-
-### Stars
-
-| Option | `0` | `-1` | `1` | `-2` | `-3` | `-4` | `999` |
-|---|---|---|---|---|---|---|---|
-| `STAR_CI` | 4.0 | 4.0 | 16.0 | 4.0 | 4.0 | 4.0 | 4.0 |
-| `STAR_DI` | 0.0 | 1.0 | 16.0 | 0.0 | 0.0 | 0.0 | 2.0 |
-| `STAR_NI` | 4.0 | 1.0 | 16.0 | 0.0 | 0.0 | 0.0 | 4.0 |
-| `STAR_TI` | 2.0 | 1.0 | 16.0 | 0.0 | 0.0 | 0.0 | 3.0 |
-
-Star values of a dimension with `STARS` set to `0` have no effect.
-
-### Light Color
-
-Written as `R, G, B @ intensity`.
-
-| Time | `0` Overworld | `1` End | `999` Wildcard |
-|---|---|---|---|
-| Constant | 255, 210, 165 @ 1.40 | 210, 165, 255 @ 1.00 | 255, 210, 165 @ 1.40 |
-| Day | 255, 210, 165 @ 1.40 | 210, 165, 255 @ 1.00 | 255, 210, 165 @ 1.40 |
-| Night | 45, 105, 150 @ 1.00 | 210, 165, 255 @ 1.00 | 45, 105, 150 @ 1.00 |
-| Twilight | 255, 180, 75 @ 1.40 | 210, 165, 255 @ 1.00 | 255, 180, 75 @ 1.40 |
-
-`-1`, `-2`, `-3`, and `-4` all use `3, 3, 3 @ 0.00` for every time, because `LIGHT` is off in those dimensions.
-
-### Sky Color
-
-| Time | `0` Overworld | `-1` Nether | `1` End | `999` Wildcard |
-|---|---|---|---|---|
-| Constant | 45, 105, 165 @ 1.40 | 39, 3, 78 @ 1.00 | 15, 3, 60 @ 1.00 | 45, 105, 165 @ 1.40 |
-| Day | 45, 105, 165 @ 1.40 | 39, 3, 78 @ 1.00 | 15, 3, 60 @ 1.00 | 45, 105, 165 @ 1.40 |
-| Night | 3, 30, 120 @ 1.00 | 39, 3, 78 @ 1.00 | 15, 3, 60 @ 1.00 | 3, 30, 120 @ 1.00 |
-| Twilight | 60, 30, 120 @ 1.00 | 39, 3, 78 @ 1.00 | 15, 3, 60 @ 1.00 | 60, 30, 120 @ 1.00 |
-
-`-2`, `-3`, and `-4` use `0, 0, 0 @ 1.00` for every time (black sky). In `-3` and `-4` the vanilla fog color provides the visible sky color.
-
-### Fog Density
-
-| Option | `0` | `-1` | `1` | `-2` | `-3` | `-4` | `999` |
-|---|---|---|---|---|---|---|---|
-| `FOG_TOTAL_{C,D,N,T}I` | 0.005 | 0.020 | 0.005 | 0.020 | 0.020 | 0.000 | 0.005 |
-| `FOG_VERTICAL_CI` | 0.080 | 0.010 | 0.025 | 0.010 | 0.010 | 0.000 | 0.080 |
-| `FOG_VERTICAL_DI` | 0.080 | 0.010 | 0.025 | 0.010 | 0.010 | 0.000 | 0.080 |
-| `FOG_VERTICAL_NI` | 0.020 | 0.010 | 0.025 | 0.010 | 0.010 | 0.000 | 0.020 |
-| `FOG_VERTICAL_TI` | 0.040 | 0.010 | 0.025 | 0.010 | 0.010 | 0.000 | 0.040 |
-
-### Notes on the Defaults
-
-- The wildcard dimension starts as a copy of the Overworld, except for the star day and twilight intensities (`2.0` and `3.0` instead of `0.0` and `2.0`).
-- `-4` sets all fog densities to `0.000`. A vertical density of `0` currently divides by zero in the atmospheric fog calculation; this is tracked in [TODO.md](../TODO.md).
-- The Day, Night, and Twilight values of a dimension with `DAYCYCLE` set to `0` are unused. Only the Constant values apply.
-
----
-
 ## Color Pipeline
 
 Adapters return **linear** colors. Each time-of-day value is converted once:
@@ -253,12 +170,12 @@ toLinear(vec3(R, G, B) * (I / 255.0))
 
 and the results are blended with `lerp` (a three-point mix over `dayCycle`, 0 to 2) in linear space. Blending after conversion gives a different intermediate color than blending sRGB values and then converting, and the result is what the shader now uses.
 
-Sky and lens flare code still work in sRGB. They receive `sRGB*Col` varyings computed in the vertex stage with `toSRGB(max(x, 1e-6))`, because `toSRGB(0.0)` produces NaN.
+Sky and lens flare code still work in sRGB. They receive `sRGB*Col` varyings computed in the vertex stage with `toSRGB` from the linear adapter values.
 
 | Helper | Definition | Notes |
 |---|---|---|
 | `toLinear(x)` | `((2.10545 + x) * (0.0231872 + x)) * x * 0.315206` | Polynomial; constant-folds for constant inputs |
-| `toSRGB(x)` | `(inversesqrt(x) - 0.126893) * x * 1.14374` | Undefined at `0.0` |
+| `toSRGB(x)` | `(inversesqrt(x) - 0.126893) * x * 1.14374` | Inverse of `toLinear` |
 
 ---
 
@@ -272,7 +189,7 @@ When `VANILLAFOG` is `1`, the adapter reads the vanilla fog color as `toLinear(f
 | `1` Blend | `mix(baseSky, fog, STRENGTH)` |
 | `2` Multiply | `baseSky * mix(vec3(1.0), fog, STRENGTH)` |
 
-`baseSky` is the Day, Night, and Twilight blend, or the Constant color when the day cycle is off. Only the Nether defaults to mode `1`; Limbo and Personal pockets default to mode `0`.
+`baseSky` is the Day, Night, and Twilight blend, or the Constant color when the day cycle is off.
 
 ---
 
