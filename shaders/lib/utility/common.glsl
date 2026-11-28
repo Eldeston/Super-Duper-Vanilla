@@ -219,8 +219,8 @@ float toSRGB(in float x){ return (inversesqrt(x) - 0.126893) * x * 1.14374; }
 vec3 toSRGB(in vec3 x){ return (inversesqrt(x) - 0.126893) * x * 1.14374; }
 */
 
-float getDepth(in sampler2D depthTex, in ivec2 screenTexelCoord, in int LOD){
-    float depth = texelFetch(depthTex, screenTexelCoord, LOD).x;
+float getDepth(in sampler2D sourceDepthTex, in ivec2 screenTexelCoord, in int LOD){
+    float depth = texelFetch(sourceDepthTex, screenTexelCoord, LOD).x;
 
     // Fix for AMD's electriic boogaloo
     // For some reason, AMD has not fixed this yet
@@ -231,8 +231,8 @@ float getDepth(in sampler2D depthTex, in ivec2 screenTexelCoord, in int LOD){
     return depth;
 }
 
-float getDepth(in sampler2D depthTex, in vec2 screenCoord, in float LOD){
-    float depth = textureLod(depthTex, screenCoord, LOD).x;
+float getDepth(in sampler2D sourceDepthTex, in vec2 screenCoord, in float LOD){
+    float depth = textureLod(sourceDepthTex, screenCoord, LOD).x;
 
     // Fix for AMD's electriic boogaloo
     // For some reason, AMD has not fixed this yet

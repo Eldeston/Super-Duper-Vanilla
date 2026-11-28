@@ -110,7 +110,7 @@
 
             #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
                 // Water color and foam. Fast depth linearization by DrDesten
-                float waterDepth = clamp(-abs(16.0 / (1.0 - gl_FragCoord.z) - 16.0 / (1.0 - texelFetch(vxDepthTexTrans, ivec2(gl_FragCoord.xy), 0).x)), -48000.0, 0);;
+                float waterDepth = clamp(16.0 / (1.0 - gl_FragCoord.z) - 16.0 / (1.0 - getDepth(vxDepthTexTrans, ivec2(gl_FragCoord.xy), 0).x), -48000.0, 0);;
                 waterDepth = waterDepth + 0.125;
             #endif
 
