@@ -168,7 +168,7 @@
     uniform float far;
     uniform float near;
 
-    uniform sampler2D depthtex0;
+    uniform sampler2D depthtex2;
     uniform sampler2D gtexture;
 
     #if WORLD_WEATHER == 1
@@ -252,7 +252,7 @@
         if(blockId == 11102 || blockId == 12100){
             // Fast depth linearization by DrDesten
             // Not great, but plausible for most scenarios
-            float blockDepth = clamp(near / (1.0 - gl_FragCoord.z) - near / (1.0 - getDepth(depthtex0, ivec2(gl_FragCoord.xy), 0)), -far, 0);
+            float blockDepth = clamp(near / (1.0 - gl_FragCoord.z) - near / (1.0 - getDepth(depthtex2, ivec2(gl_FragCoord.xy), 0)), -far, 0);
             blockDepth = blockDepth + 0.125;
             // Get the depth outline for the nether portal and water foam
             float edgeBrightness = exp2(blockDepth * 8.0);
