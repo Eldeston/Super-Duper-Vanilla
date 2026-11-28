@@ -24,7 +24,8 @@
     "samplers": {
         "noisetex": "sampler2D",
         "depthtex0": "sampler2D",
-        "vxDepthTexTrans": "sampler2D"
+        "vxDepthTexTrans": "sampler2D",
+        "vxDepthTexOpaque": "sampler2D"
     },
     "opaqueDrawBuffers": [
         4,

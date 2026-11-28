@@ -147,7 +147,7 @@
     uniform float far;
     uniform float near;
 
-    uniform sampler2D depthtex1;
+    uniform sampler2D depthtex0;
     uniform sampler2D gtexture;
 
     #if WORLD_WEATHER == 1
@@ -214,7 +214,7 @@
         // End portal
         if(blockEntityId == 12000 || blockEntityId == 14001){
             // Get portal depth
-            float blockDepth = clamp(near / (1.0 - gl_FragCoord.z) - near / (1.0 - getDepth(depthtex1, ivec2(gl_FragCoord.xy), 0)), -far, 0);
+            float blockDepth = clamp(near / (1.0 - gl_FragCoord.z) - near / (1.0 - texelFetch(depthtex0, ivec2(gl_FragCoord.xy), 0).x), -far, 0);
 
             // Get start pos
             vec2 startPos = vertexWorldPos.zy * TBN[2].x + vertexWorldPos.xz * TBN[2].y + vertexWorldPos.xy * TBN[2].z;
