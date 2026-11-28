@@ -110,13 +110,7 @@
 
             #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
                 // Water color and foam. Fast depth linearization by DrDesten
-                #ifdef MC_GL_RENDERER_APPLE
-                    float priorDepth = getDepth(vxDepthTexOpaque, gl_FragCoord.xy * vec2(pixelWidth, pixelHeight), 0);
-                #else
-                    float priorDepth = getDepth(vxDepthTexOpaque, ivec2(gl_FragCoord.xy), 0);
-                #endif
-
-                float blockDelta = 16.0 / (1.0 - gl_FragCoord.z) - 16.0 / (1.0 - priorDepth);
+                float blockDelta = 16.0 / (1.0 - gl_FragCoord.z) - 16.0 / (1.0 - texelFetch(vxDepthTexOpaque, ivec2(gl_FragCoord.xy), 0).x);
                 float blockDepth = clamp(blockDelta, -48000.0, 0) + 0.125;
             #endif
 

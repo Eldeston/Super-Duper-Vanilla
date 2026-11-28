@@ -150,11 +150,6 @@
     uniform sampler2D depthtex0;
     uniform sampler2D gtexture;
 
-    #ifdef MC_GL_RENDERER_APPLE
-        uniform float pixelWidth;
-        uniform float pixelHeight;
-    #endif
-
     #if WORLD_WEATHER == 1
         uniform float rainStrength;
     #endif
@@ -219,13 +214,7 @@
         // End portal
         if(blockEntityId == 12000 || blockEntityId == 14001){
             // Get portal depth
-            #ifdef MC_GL_RENDERER_APPLE
-                float priorDepth = getDepth(depthtex0, gl_FragCoord.xy * vec2(pixelWidth, pixelHeight), 0);
-            #else
-                float priorDepth = getDepth(depthtex0, ivec2(gl_FragCoord.xy), 0);
-            #endif
-
-            float blockDelta = near / (1.0 - gl_FragCoord.z) - near / (1.0 - priorDepth);
+            float blockDelta = near / (1.0 - gl_FragCoord.z) - near / (1.0 - texelFetch(depthtex0, ivec2(gl_FragCoord.xy), 0).x);
             float blockDepth = clamp(blockDelta, -far, 0) + 0.125;
 
             // Get start pos
