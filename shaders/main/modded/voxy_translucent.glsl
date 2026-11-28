@@ -110,13 +110,13 @@
 
             #if defined WATER_STYLIZE_ABSORPTION || defined WATER_FOAM
                 // Water color and foam. Fast depth linearization by DrDesten
-                float waterDepth = 16.0 / (1.0 - gl_FragCoord.z) - 16.0 / (1.0 - texelFetch(vxDepthTexOpaque, ivec2(gl_FragCoord.xy), 0).x);
-                waterDepth = clamp(waterDepth, -48000.0, 0) + 0.125;
+                float blockDelta = 16.0 / (1.0 - gl_FragCoord.z) - 16.0 / (1.0 - texelFetch(vxDepthTexOpaque, ivec2(gl_FragCoord.xy), 0).x);
+                float blockDepth = clamp(blockDelta, -48000.0, 0) + 0.125;
             #endif
 
             #ifdef WATER_STYLIZE_ABSORPTION
                 if(isEyeInWater == 0){
-                    float depthBrightness = exp2(waterDepth * 0.25);
+                    float depthBrightness = exp2(blockDepth * 0.25);
                     material.albedo.rgb = material.albedo.rgb * (waterNoise * (1.0 - depthBrightness) + depthBrightness);
                     material.albedo.a = fastSqrt(material.albedo.a) * (1.0 - depthBrightness);
                 }
@@ -129,7 +129,7 @@
             material.albedo += cubed(sumOf(material.albedo.rgb)) * 0.1;
 
             #ifdef WATER_FOAM
-                material.albedo = min(vec4(1), material.albedo + min(0.66666667, exp2(waterDepth * 8.0) * 0.66666667));
+                material.albedo = min(vec4(1), material.albedo + min(0.66666667, exp2(blockDepth * 8.0) * 0.66666667));
             #endif
         }
 
